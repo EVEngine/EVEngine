@@ -6,11 +6,6 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-EditorResult<T> settingsError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -51,7 +46,11 @@ ProjectSettingsTarget::ProjectSettingsTarget(std::string id, ProjectSettingsSche
 }
 
 TargetDescriptor ProjectSettingsTarget::describe() const {
-    return {TargetId(id_), "project-settings", revision_, false, {CapabilityId("eve.editor.target.project-settings")}};
+    return {TargetId(id_),
+            "project-settings",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.project-settings")}};
 }
 
 void* ProjectSettingsTarget::queryCapability(const CapabilityId& capability) {
@@ -72,29 +71,29 @@ bool ProjectSettingsTarget::selectionMatches(const SelectionSnapshot& selection)
 
 EditorResult<void> ProjectSettingsTarget::applyDomainOperation(const DomainOperation& domainOperation) {
     if (domainOperation.target != TargetId(id_) || domainOperation.type != "project.setting.set.v1")
-        return settingsError<void>(EditorStatus::Rejected, "editor.settings.operation",
-                                   "Unsupported or mismatched settings operation");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.operation"),
+                                          "Unsupported or mismatched settings operation");
     const auto* pathEntry = field(domainOperation.payload, "path");
     const auto* value     = field(domainOperation.payload, "value");
     const auto* path      = pathEntry ? pathEntry->getIf<std::string>() : nullptr;
     const auto* setting   = path ? descriptor(PropertyPath(*path)) : nullptr;
     if (!setting || !value)
-        return settingsError<void>(EditorStatus::Rejected, "editor.settings.payload",
-                                   "Settings operation payload is incomplete");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.payload"),
+                                          "Settings operation payload is incomplete");
     auto valid = validatePropertyValue(setting->property, *value);
     if (!valid.ok()) return valid;
     if (setting->sensitive) {
         const auto* reference = value->getIf<std::string>();
         if (!reference || !reference->starts_with("secret://"))
-            return settingsError<void>(
-                EditorStatus::Rejected, "editor.settings.raw-secret",
+            return eve::editing::failed<void>(
+                EditorStatus::Rejected, RuleId("editor.settings.raw-secret"),
                 "Sensitive settings accept secret:// references only; raw credentials are never stored");
     }
     if (values_.at(*path) == *value) return eve::editing::noOp();
     values_[*path] = *value;
     if (setting->requiresRestart) restartDirty_[*path] = true;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -102,7 +101,7 @@ eve::Result<eve::Revision> ProjectSettingsTarget::currentRevision(const Selectio
     if (!selectionMatches(selection))
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not match settings target"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema ProjectSettingsTarget::schema(const SelectionSnapshot&) const {
@@ -139,22 +138,22 @@ EditorResult<DomainOperation> ProjectSettingsTarget::makeSet(const SelectionSnap
                                                              const PropertyPath& path, const EditorValue& value,
                                                              PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return settingsError<DomainOperation>(EditorStatus::Rejected, "editor.settings.selection",
-                                              "Selection does not match settings target");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.settings.selection"),
+                                                     "Selection does not match settings target");
     const auto* setting = descriptor(path);
     if (!setting)
-        return settingsError<DomainOperation>(EditorStatus::Unsupported, "editor.settings.property",
-                                              "Unknown project setting: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.settings.property"),
+                                                     "Unknown project setting: " + path.value());
     const EditorValue candidate = mode == PropertySetMode::Reset ? setting->property.defaultValue : value;
     auto              valid     = validatePropertyValue(setting->property, candidate);
     if (!valid.ok())
-        return settingsError<DomainOperation>(valid.code(), "editor.settings.value",
-                                              "Project setting value is invalid");
+        return eve::editing::failed<DomainOperation>(valid.code(), RuleId("editor.settings.value"),
+                                                     "Project setting value is invalid");
     if (setting->sensitive) {
         const auto* reference = candidate.getIf<std::string>();
         if (!reference || (!reference->empty() && !reference->starts_with("secret://")))
-            return settingsError<DomainOperation>(
-                EditorStatus::Rejected, "editor.settings.raw-secret",
+            return eve::editing::failed<DomainOperation>(
+                EditorStatus::Rejected, RuleId("editor.settings.raw-secret"),
                 "Sensitive settings accept an empty value or secret:// reference only");
     }
     return eve::editing::applied<DomainOperation>(operation(id_, path, candidate, values_.at(path.value())));
@@ -192,30 +191,30 @@ EditorResult<void> ProjectSettingsTarget::loadSnapshot(const EditorValue& snapsh
     const auto* version      = versionEntry ? versionEntry->getIf<int64_t>() : nullptr;
     const auto* values       = valuesEntry ? valuesEntry->getIf<EditorValue::Object>() : nullptr;
     if (!schema || *schema != schema_.typeId || !version || *version != schema_.version || !values)
-        return settingsError<void>(EditorStatus::Rejected, "editor.settings.snapshot",
-                                   "Settings snapshot schema does not match this target");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.snapshot"),
+                                          "Settings snapshot schema does not match this target");
     ProjectSettingsTarget candidate(id_, schema_);
     for (const auto& [path, value] : *values) {
         const auto* setting = candidate.descriptor(PropertyPath(path));
         if (!setting)
-            return settingsError<void>(EditorStatus::Rejected, "editor.settings.unknown-snapshot-key",
-                                       "Settings snapshot contains an unknown key");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.unknown-snapshot-key"),
+                                              "Settings snapshot contains an unknown key");
         auto valid = validatePropertyValue(setting->property, value);
         if (!valid.ok())
-            return settingsError<void>(EditorStatus::Rejected, "editor.settings.invalid-snapshot-value",
-                                       "Settings snapshot contains an invalid value");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.invalid-snapshot-value"),
+                                              "Settings snapshot contains an invalid value");
         if (setting->sensitive) {
             const auto* reference = value.getIf<std::string>();
             if (!reference || (!reference->empty() && !reference->starts_with("secret://")))
-                return settingsError<void>(EditorStatus::Rejected, "editor.settings.raw-secret",
-                                           "Settings snapshot contains a raw sensitive value");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.raw-secret"),
+                                                  "Settings snapshot contains a raw sensitive value");
         }
         candidate.values_[path] = value;
     }
     values_ = std::move(candidate.values_);
     restartDirty_.clear();
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

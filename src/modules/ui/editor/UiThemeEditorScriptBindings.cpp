@@ -12,33 +12,18 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "editor/EditorScriptProjection.h"
 
 namespace eve::ui_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.ui.theme.squirrel";
 
-Status statusFrom(const ui_editing::EditorResult<void>& result) { return result.status(); }
-
-template <class T>
-Status statusFrom(const ui_editing::EditorResult<T>& result) {
-    return result.status();
-}
-
-ssq::Table project(HSQUIRRELVM vm, const ui_editing::EditorResult<void>& result) {
-    return script::projectStatusResult(vm, statusFrom(result), result.ok(), false);
-}
-
-template <class T>
-ssq::Table project(HSQUIRRELVM vm, const ui_editing::EditorResult<T>& result, Value value) {
-    const bool hasValue = result.ok();
-    return script::projectStatusResult(vm, statusFrom(result), hasValue, hasValue, value);
-}
+using eve::editor::project;
 
 ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
     return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)), false,
-        false);
+        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
 }
 
 class ScriptUiThemeEditor {
@@ -170,9 +155,9 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
                                   "targetId");
         auto object = script::makeOwnedSquirrelInstance<ScriptUiThemeEditor>(
             vm, std::make_unique<ScriptUiThemeEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        if (!object) return script::projectStatusResult(vm, object.status());
         ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", owned);
         result.set("ownership", std::string("owned"));
         return result;

@@ -18,11 +18,6 @@ Result<void> carrierError(DiagnosticCode code, std::string message, std::string 
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
-template <typename T>
-Result<T> carrierValueError(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finite(const ProjectilePoint& value) {
     return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
 }
@@ -121,9 +116,8 @@ Result<std::vector<ProjectileVector>> volleyDirections(const ProjectileVector& b
     auto valid = validateVolley(volley);
     if (!valid) return Result<std::vector<ProjectileVector>>::failure(valid.status());
     if (length(base) <= 1e-12)
-        return carrierValueError<std::vector<ProjectileVector>>(DiagnosticCode::InvalidArgument,
-                                                                "Volley base direction must be non-zero",
-                                                                "direction");
+        return Result<std::vector<ProjectileVector>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Volley base direction must be non-zero", "direction"));
 
     const auto forward = normalized(base);
     ProjectileVector yawAxis{0.0, 1.0, 0.0};
@@ -275,8 +269,8 @@ Result<CarrierRecipe> carrierRecipeFromProjectile(const ProjectileDefinition& de
     auto valid = definition.validate();
     if (!valid) return Result<CarrierRecipe>::failure(valid.status());
     if (!std::isfinite(damage) || damage < 0.0)
-        return carrierValueError<CarrierRecipe>(DiagnosticCode::InvalidArgument,
-                                                "Bridge damage must be finite and non-negative", "damage");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Bridge damage must be finite and non-negative", "damage"));
 
     CarrierRecipe recipe;
     recipe.id       = definition.id;
@@ -415,14 +409,16 @@ Result<CarrierHandle> CombatCarrierRuntime::spawnPrepared(const LiveRecipe&     
         ++activeCount_;
         return Result<CarrierHandle>::success(cell.state->handle);
     }
-    return carrierValueError<CarrierHandle>(DiagnosticCode::Conflict, "Carrier pool is full", "capacity");
+    return Result<CarrierHandle>::failure(
+        Diagnostic::error(DiagnosticCode::Conflict, "Carrier pool is full", "capacity"));
 }
 
 Result<CarrierHandle> CombatCarrierRuntime::spawn(const LogicalId& recipeId, const CarrierSpawnRequest& request) {
     for (const auto& live : recipes_) {
         if (live.recipe.id == recipeId) return spawnPrepared(live, request);
     }
-    return carrierValueError<CarrierHandle>(DiagnosticCode::NotFound, "Carrier recipe is not registered", "recipeId");
+    return Result<CarrierHandle>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "Carrier recipe is not registered", "recipeId"));
 }
 
 Result<CarrierHandle> CombatCarrierRuntime::spawn(const CarrierRecipe& recipe, const CarrierSpawnRequest& request) {
@@ -437,8 +433,8 @@ Result<std::vector<CarrierHandle>> CombatCarrierRuntime::spawnVolley(const Logic
     auto dirs = volleyDirections(request.direction, volley);
     if (!dirs) return Result<std::vector<CarrierHandle>>::failure(dirs.status());
     if (activeCount_ + dirs.value().size() > slots_.size())
-        return carrierValueError<std::vector<CarrierHandle>>(DiagnosticCode::Conflict,
-                                                             "Carrier pool cannot fit the full volley", "capacity");
+        return Result<std::vector<CarrierHandle>>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Carrier pool cannot fit the full volley", "capacity"));
 
     std::vector<CarrierHandle> handles;
     handles.reserve(dirs.value().size());
@@ -471,8 +467,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
                                                   const ICarrierHitProbe*            hits,
                                                   const ICarrierBodyDefenseProvider* bodies) {
     if (delta < Duration::zero())
-        return carrierValueError<CarrierFrame>(DiagnosticCode::InvalidArgument, "Carrier update delta must be >= 0",
-                                               "delta");
+        return Result<CarrierFrame>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier update delta must be >= 0", "delta"));
     if (delta.isZero()) return Result<CarrierFrame>::success({}, Status::success(StatusCode::NoOp));
 
     struct Candidate {
@@ -500,27 +496,26 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
         if (!slot.state.has_value()) continue;
         const LiveRecipe* live = lookupLive(slot.state->recipeId);
         if (live == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::NotFound,
-                                                   "Live carrier references an unregistered recipe", "recipeId");
+            return Result<CarrierFrame>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Live carrier references an unregistered recipe", "recipeId"));
         if ((live->needsHoming || live->needsProximity) && targets == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::Unsupported,
-                                                   "Homing/proximity carrier update requires a target provider",
-                                                   "targets");
+            return Result<CarrierFrame>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "Homing/proximity carrier update requires a target provider", "targets"));
         if (live->needsHit && hits == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::Unsupported,
-                                                   "OnHit carrier update requires a hit probe", "hits");
+            return Result<CarrierFrame>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "OnHit carrier update requires a hit probe", "hits"));
         if (live->needsBodyAvoid && bodies == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::Unsupported,
-                                                   "SteerAvoidBody carrier update requires a body-defense provider",
-                                                   "bodies");
+            return Result<CarrierFrame>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported,
+                                  "SteerAvoidBody carrier update requires a body-defense provider", "bodies"));
         candidates.push_back({*slot.state, false});
     }
 
     for (auto& candidate : candidates) {
         const LiveRecipe* live = lookupLive(candidate.state.recipeId);
         if (live == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::NotFound,
-                                                   "Live carrier references an unregistered recipe", "recipeId");
+            return Result<CarrierFrame>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Live carrier references an unregistered recipe", "recipeId"));
 
         const Duration previousAge = candidate.state.age;
         CarrierMotion  previous    = candidate.state.motion;
@@ -529,8 +524,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
         std::optional<ProjectilePoint> targetPos;
         if (live->needsHoming || live->needsProximity) {
             if (!candidate.state.target.has_value())
-                return carrierValueError<CarrierFrame>(DiagnosticCode::InvalidArgument,
-                                                       "Homing/proximity carrier lost its target handle", "target");
+                return Result<CarrierFrame>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "Homing/proximity carrier lost its target handle", "target"));
             auto resolved = targets->position(*candidate.state.target);
             if (!resolved) return Result<CarrierFrame>::failure(resolved.status());
             targetPos = resolved.value();
@@ -558,9 +553,9 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
                                                                           : ProjectileVector{1.0, 0.0, 0.0};
                     for (const auto& body : samples.value()) {
                         if (!std::isfinite(body.radius) || body.radius < 0.0) {
-                            return carrierValueError<CarrierFrame>(
-                                DiagnosticCode::InvalidArgument,
-                                "Body defense radius must be finite and non-negative", "bodies");
+                            return Result<CarrierFrame>::failure(
+                                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                  "Body defense radius must be finite and non-negative", "bodies"));
                         }
                         const auto   toCenter = directionTo(motion.position, body.center);
                         const double dist     = length(toCenter);
@@ -646,8 +641,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
         }
 
         if (!finite(motion.position) || !finite(motion.velocity))
-            return carrierValueError<CarrierFrame>(DiagnosticCode::Failed,
-                                                   "Carrier motion produced non-finite values", "motion");
+            return Result<CarrierFrame>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "Carrier motion produced non-finite values", "motion"));
 
         auto nextAge = previousAge.tryAdd(delta);
         if (!nextAge) return Result<CarrierFrame>::failure(nextAge.status());
@@ -784,8 +779,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
     for (const auto& candidate : candidates) {
         auto& cell = staged[candidate.state.handle.slot];
         if (cell.generation != candidate.state.handle.generation || !cell.state.has_value())
-            return carrierValueError<CarrierFrame>(DiagnosticCode::StaleHandle, "Carrier handle became stale",
-                                                   "handle");
+            return Result<CarrierFrame>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "Carrier handle became stale", "handle"));
         if (candidate.release) {
             cell.state.reset();
             --stagedActive;
@@ -799,8 +794,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
     for (const auto& child : childSpawns) {
         const LiveRecipe* childLive = lookupLive(child.recipeId);
         if (childLive == nullptr)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::NotFound,
-                                                   "Child spawn references an unregistered recipe", "childRecipeId");
+            return Result<CarrierFrame>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Child spawn references an unregistered recipe", "childRecipeId"));
         auto valid = validateSpawn(childLive->recipe, child.request);
         if (!valid) return Result<CarrierFrame>::failure(valid.status());
 
@@ -830,8 +825,8 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
             break;
         }
         if (!placed)
-            return carrierValueError<CarrierFrame>(DiagnosticCode::Conflict,
-                                                   "Carrier pool cannot fit deferred child spawns", "capacity");
+            return Result<CarrierFrame>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "Carrier pool cannot fit deferred child spawns", "capacity"));
     }
 
     slots_       = std::move(staged);

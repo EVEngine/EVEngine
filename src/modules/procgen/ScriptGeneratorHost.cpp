@@ -26,9 +26,9 @@ eve::Result<T> hostFailure(eve::DiagnosticCode code, std::string message, std::s
 
 ssq::Table projectHostResult(HSQUIRRELVM vm, eve::Result<eve::Value>&& result) {
     const eve::Status status = result.status();
-    if (!result.ok()) return eve::script::projectStatusResult(vm, status, false, false);
+    if (!result.ok()) return eve::script::projectStatusResult(vm, status);
     eve::Value value = std::move(result).takeValue();
-    return eve::script::projectStatusResult(vm, status, true, true, value);
+    return eve::script::projectStatusResult(vm, status, value);
 }
 
 class ActiveSystemScope {

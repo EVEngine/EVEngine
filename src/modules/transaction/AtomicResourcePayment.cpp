@@ -8,11 +8,6 @@
 namespace eve::transaction {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 eve::Result<TransactionReceipt> AtomicResourcePayment::execute(const TransactionContext&           context,
@@ -40,8 +35,8 @@ eve::Result<TransactionReceipt> AtomicResourcePayment::execute(const Transaction
                                                                const eve::resource::CostSpec&      cost,
                                                                std::span<ITransactionParticipant*> participants) {
     if (!cost.isValid())
-        return failure<TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                           "resource payment requires a validated non-empty CostSpec", "cost");
+        return eve::Result<TransactionReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "resource payment requires a validated non-empty CostSpec", "cost"));
 
     ResourceDebitParticipant              debit(account, cost, "resource-payment");
     std::vector<ITransactionParticipant*> all;
@@ -60,8 +55,9 @@ eve::Result<TransactionReceipt> AtomicResourcePayment::execute(std::string      
                                                                const eve::resource::CostSpec&   cost,
                                                                ITransactionParticipant&         effect) {
     if (transactionId.empty())
-        return failure<TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                           "resource payment transaction id must not be empty", "transactionId");
+        return eve::Result<TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "resource payment transaction id must not be empty", "transactionId"));
     return execute(TransactionContext(std::move(transactionId)), account, cost, effect);
 }
 

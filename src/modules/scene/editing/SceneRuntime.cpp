@@ -11,11 +11,6 @@
 namespace eve::scene_editing {
 namespace {
 
-template <class T>
-EditorResult<T> liveError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 std::map<ObjectId, SceneObjectSnapshot> collect(const SceneTargetBase& target) {
     std::map<ObjectId, SceneObjectSnapshot> result;
     const EditorValue snapshot = target.snapshotValue();
@@ -103,12 +98,14 @@ EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::com
     const ObjectId& object) const {
     auto* live = host();
     if (!live)
-        return liveError<std::vector<SceneComponentLinkSnapshot>>(EditorStatus::Unsupported,
-            "editor.scene.live-host-required", "Component links are unavailable on a staging target");
+        return eve::editing::failed<std::vector<SceneComponentLinkSnapshot>>(
+            EditorStatus::Unsupported, RuleId("editor.scene.live-host-required"),
+            "Component links are unavailable on a staging target");
     auto nodeResult = live->findById(object.value());
     if (!nodeResult.ok() || !nodeResult.value())
-        return liveError<std::vector<SceneComponentLinkSnapshot>>(EditorStatus::NotFound,
-            "editor.scene.component-object-not-found", "Live scene object does not exist: " + object.value());
+        return eve::editing::failed<std::vector<SceneComponentLinkSnapshot>>(
+            EditorStatus::NotFound, RuleId("editor.scene.component-object-not-found"),
+            "Live scene object does not exist: " + object.value());
     std::vector<SceneComponentLinkSnapshot> result;
     for (const scene::SceneLink& link : nodeResult.value()->links) {
         const scene::LinkOps* operations = scene::linkOps(link.kind);
@@ -124,8 +121,8 @@ EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOpera
     auto candidate = cloneDomainState();
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged)
-        return liveError<void>(EditorStatus::Failed, "editor.scene.live-stage-failed",
-                               "Could not stage live scene operation");
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.scene.live-stage-failed"),
+                                          "Could not stage live scene operation");
     EditorResult<void> applied = staged->SceneTargetBase::applyDomainOperation(operation);
     if (!applied.ok()) return applied;
     return commitDomainState(std::move(candidate));
@@ -145,22 +142,22 @@ scene::SceneHost* SceneHostEditorTarget::host() const {
 EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase& desiredTarget) {
     auto* live = host();
     if (!live)
-        return liveError<void>(EditorStatus::NotFound, "editor.scene.live-host-required",
-                               "Live scene host has been destroyed");
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.scene.live-host-required"),
+                                          "Live scene host has been destroyed");
     const auto current = collect(*this);
     const auto desired = collect(desiredTarget);
     const auto tree    = live->tree();
     if (tree->nodes.size() != current.size())
-        return liveError<void>(EditorStatus::Conflict, "editor.scene.live-host-diverged",
-                               "Live scene structure changed; start a new editing session");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.live-host-diverged"),
+                                          "Live scene structure changed; start a new editing session");
     for (const auto& [id, object] : current) {
         if (!hostMatches(live, object))
-            return liveError<void>(EditorStatus::Conflict, "editor.scene.live-host-diverged",
-                                   "Live scene changed outside this target: " + id.value());
+            return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.live-host-diverged"),
+                                              "Live scene changed outside this target: " + id.value());
         const auto* node = live->getNode(live->findIndexById(id.value()));
         if (!desired.contains(id) && (!node->links.empty() || node->objectId != 0))
-            return liveError<void>(EditorStatus::Rejected, "editor.scene.live-delete-attached",
-                                   "Detach domain links and behaviors before deleting this node");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene.live-delete-attached"),
+                                              "Detach domain links and behaviors before deleting this node");
     }
     // Validate the whole candidate before publishing any host mutation.
     auto valid = desiredTarget.makeRestore(desiredTarget.snapshotValue());
@@ -210,8 +207,8 @@ EditorResult<void> SceneHostEditorTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged || staged->targetId() != targetId())
-        return liveError<void>(EditorStatus::Conflict, "editor.scene.live-candidate-mismatch",
-                               "Live scene candidate has an incompatible type");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.live-candidate-mismatch"),
+                                          "Live scene candidate has an incompatible type");
     EditorResult<void> synchronized = synchronizeHost(*staged);
     if (!synchronized.ok()) return synchronized;
     auto committed = SceneTargetBase::commitDomainState(std::move(candidate));

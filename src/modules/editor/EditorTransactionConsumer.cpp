@@ -12,11 +12,6 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
     switch (status) {
         case EditorStatus::Rejected: return eve::DiagnosticCode::InvalidArgument;
@@ -93,15 +88,17 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation, "editor command participant is not idle",
-                                 "editor.commands.prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor command participant is not idle",
+                                                                     "editor.commands.prepare"));
         if (batch_.commands.empty())
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "editor transaction must contain at least one command", "editor.commands");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "editor transaction must contain at least one command", "editor.commands"));
         for (const auto& command : batch_.commands) {
             if (!command)
-                return failure<void>(eve::DiagnosticCode::InvalidArgument, "editor command must not be null",
-                                     "editor.commands");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "editor command must not be null", "editor.commands"));
         }
         phase_ = Phase::Prepared;
         return eve::Result<void>::success();
@@ -109,8 +106,9 @@ public:
 
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor command participant is not prepared", "editor.commands.commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor command participant is not prepared",
+                                                                     "editor.commands.commit"));
         if (!batch_.previewApplied) {
             std::size_t applied = 0;
             try {
@@ -118,25 +116,25 @@ public:
                     if (!command->apply()) {
                         const bool reverted = revertPrefix(applied);
                         if (!reverted) batch_.previewApplied = true;
-                        return failure<void>(
+                        return eve::Result<void>::failure(eve::Diagnostic::error(
                             reverted ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::Failed,
                             reverted ? "editor command rejected during commit"
                                      : "editor command commit failed and compensation was incomplete",
-                            "editor.commands.commit");
+                            "editor.commands.commit"));
                     }
                     ++applied;
                 }
             } catch (const std::exception& exception) {
                 const bool reverted = revertPrefix(applied);
                 if (!reverted) batch_.previewApplied = true;
-                return failure<void>(eve::DiagnosticCode::Failed,
-                                     std::string("editor command threw during commit: ") + exception.what(),
-                                     "editor.commands.commit");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, std::string("editor command threw during commit: ") + exception.what(),
+                    "editor.commands.commit"));
             } catch (...) {
                 const bool reverted = revertPrefix(applied);
                 if (!reverted) batch_.previewApplied = true;
-                return failure<void>(eve::DiagnosticCode::Failed, "editor command threw during commit",
-                                     "editor.commands.commit");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "editor command threw during commit", "editor.commands.commit"));
             }
             batch_.previewApplied = true;
         }
@@ -146,11 +144,13 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor command participant is not prepared", "editor.commands.rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor command participant is not prepared",
+                                                                     "editor.commands.rollback"));
         if (batch_.previewApplied && !revertAll())
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command preview rollback was incomplete",
-                                 "editor.commands.rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                     "editor command preview rollback was incomplete",
+                                                                     "editor.commands.rollback"));
         batch_.previewApplied = false;
         phase_                = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -158,11 +158,13 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor command participant is not committed", "editor.commands.compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor command participant is not committed",
+                                                                     "editor.commands.compensate"));
         if (!batch_.previewApplied || !revertAll())
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command compensation was incomplete",
-                                 "editor.commands.compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                     "editor command compensation was incomplete",
+                                                                     "editor.commands.compensate"));
         batch_.previewApplied = false;
         phase_                = Phase::Compensated;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -204,11 +206,12 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Idle)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation, "editor authority participant is not idle",
-                                 "editor.authority.prepare");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor authority participant is not idle",
+                                                                     "editor.authority.prepare"));
         if (!authority_)
-            return failure<void>(eve::DiagnosticCode::Failed, "editor authority participant has no authority",
-                                 "editor.authority");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor authority participant has no authority", "editor.authority"));
         auto plan = authority_->preflight(specification_, operations_);
         if (!plan.ok()) return convertEditorFailure<void>(plan, "editor authority preflight");
         plan_  = std::move(plan.value());
@@ -218,8 +221,9 @@ public:
 
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared || !plan_)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor authority participant is not prepared", "editor.authority.commit");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor authority participant is not prepared",
+                                                                     "editor.authority.commit"));
         auto result = authority_->commit(*plan_);
         if (!result.ok()) return convertEditorFailure<void>(result, "editor authority commit");
         receipt_ = std::move(result.value());
@@ -229,8 +233,9 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Prepared)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor authority participant is not prepared", "editor.authority.rollback");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "editor authority participant is not prepared",
+                                                                     "editor.authority.rollback"));
         plan_.reset();
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -238,9 +243,9 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (phase_ != Phase::Committed || !receipt_)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "editor authority participant has no committed receipt",
-                                 "editor.authority.compensate");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "editor authority participant has no committed receipt",
+                "editor.authority.compensate"));
         auto result = authority_->compensate(*receipt_);
         if (!result.ok())
             return convertEditorFailure<void>(result, "editor authority compensation");
@@ -307,19 +312,21 @@ EditorTransactionConsumer::~EditorTransactionConsumer() = default;
 
 eve::Result<void> EditorTransactionConsumer::setAuthority(IEditAuthority* authority) {
     if (impl_->pending)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "editor authority cannot change during an active transaction", "editor.authority");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "editor authority cannot change during an active transaction", "editor.authority"));
     impl_->authority = authority;
     return eve::Result<void>::success();
 }
 
 eve::Result<TransactionId> EditorTransactionConsumer::begin(TransactionSpec specification) {
     if (impl_->pending)
-        return failure<TransactionId>(eve::DiagnosticCode::PreconditionViolation,
-                                      "an editor transaction is already active", "editor.transaction");
+        return eve::Result<TransactionId>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                          "an editor transaction is already active",
+                                                                          "editor.transaction"));
     if (specification.id.empty())
-        return failure<TransactionId>(eve::DiagnosticCode::InvalidArgument, "editor transaction id is required",
-                                      "editor.transaction.id");
+        return eve::Result<TransactionId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "editor transaction id is required", "editor.transaction.id"));
     const TransactionId id = specification.id;
     Impl::Pending       pending;
     pending.specification = std::move(specification);
@@ -333,8 +340,9 @@ eve::Result<TransactionId> EditorTransactionConsumer::begin(TransactionSpec spec
 
 eve::Result<TransactionId> EditorTransactionConsumer::beginLegacy(std::string label) {
     if (impl_->nextLegacyId == std::numeric_limits<std::uint64_t>::max())
-        return failure<TransactionId>(eve::DiagnosticCode::Failed,
-                                      "legacy editor transaction id allocator is exhausted", "editor.transaction.id");
+        return eve::Result<TransactionId>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "legacy editor transaction id allocator is exhausted",
+                                   "editor.transaction.id"));
     TransactionSpec specification;
     specification.id    = TransactionId("editor.legacy." + std::to_string(impl_->nextLegacyId++));
     specification.label = std::move(label);
@@ -343,17 +351,18 @@ eve::Result<TransactionId> EditorTransactionConsumer::beginLegacy(std::string la
 
 eve::Result<void> EditorTransactionConsumer::append(std::unique_ptr<IEditCommand> command) {
     if (!impl_->pending)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
     if (!command)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "editor command must not be null", "editor.command");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "editor command must not be null", "editor.command"));
     if (!impl_->pending->operations.empty())
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "commands and authority operations cannot share one editor transaction",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "commands and authority operations cannot share one editor transaction",
+            "editor.transaction"));
     if (impl_->pending->commandModeSet && impl_->pending->previewMode)
-        return failure<void>(eve::DiagnosticCode::Conflict, "a strict command cannot follow a preview command",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "a strict command cannot follow a preview command", "editor.transaction"));
     impl_->pending->commandModeSet = true;
     impl_->pending->previewMode    = false;
     if (!impl_->pending->commands) impl_->pending->commands = std::make_unique<CommandBatch>();
@@ -361,11 +370,12 @@ eve::Result<void> EditorTransactionConsumer::append(std::unique_ptr<IEditCommand
         try {
             if (impl_->pending->commands->commands.back()->mergeWith(*command)) return eve::Result<void>::success();
         } catch (const std::exception& exception) {
-            return failure<void>(eve::DiagnosticCode::Failed,
-                                 std::string("editor command merge threw: ") + exception.what(),
-                                 "editor.command.merge");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, std::string("editor command merge threw: ") + exception.what(),
+                "editor.command.merge"));
         } catch (...) {
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command merge threw", "editor.command.merge");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor command merge threw", "editor.command.merge"));
         }
     }
     impl_->pending->commands->commands.push_back(std::move(command));
@@ -374,17 +384,18 @@ eve::Result<void> EditorTransactionConsumer::append(std::unique_ptr<IEditCommand
 
 eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEditCommand> command) {
     if (!impl_->pending)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
     if (!command)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "editor command must not be null", "editor.command");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "editor command must not be null", "editor.command"));
     if (!impl_->pending->operations.empty())
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "commands and authority operations cannot share one editor transaction",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "commands and authority operations cannot share one editor transaction",
+            "editor.transaction"));
     if (impl_->pending->commandModeSet && !impl_->pending->previewMode)
-        return failure<void>(eve::DiagnosticCode::Conflict, "a preview command cannot follow a strict command",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "a preview command cannot follow a strict command", "editor.transaction"));
     if (!impl_->pending->commands) impl_->pending->commands = std::make_unique<CommandBatch>();
 
     // A command is applied only after merge evaluation has completed on an
@@ -396,11 +407,12 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
         try {
             mergedCandidate = impl_->pending->commands->commands.back()->clone();
         } catch (const std::exception& exception) {
-            return failure<void>(eve::DiagnosticCode::Failed,
-                                 std::string("editor command staging threw: ") + exception.what(),
-                                 "editor.command.stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, std::string("editor command staging threw: ") + exception.what(),
+                "editor.command.stage"));
         } catch (...) {
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command staging threw", "editor.command.stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor command staging threw", "editor.command.stage"));
         }
         if (mergedCandidate) {
             try {
@@ -415,34 +427,37 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
                         try {
                             command->revert();
                         } catch (...) {
-                            return failure<void>(eve::DiagnosticCode::Failed,
-                                                 "editor command preview failed and could not be reverted",
-                                                 "editor.command.preview");
+                            return eve::Result<void>::failure(eve::Diagnostic::error(
+                                eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
+                                "editor.command.preview"));
                         }
-                        return failure<void>(eve::DiagnosticCode::Failed,
-                                             std::string("editor command preview threw: ") + exception.what(),
-                                             "editor.command.preview");
+                        return eve::Result<void>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                   std::string("editor command preview threw: ") + exception.what(),
+                                                   "editor.command.preview"));
                     } catch (...) {
                         try {
                             command->revert();
                         } catch (...) {
-                            return failure<void>(eve::DiagnosticCode::Failed,
-                                                 "editor command preview failed and could not be reverted",
-                                                 "editor.command.preview");
+                            return eve::Result<void>::failure(eve::Diagnostic::error(
+                                eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
+                                "editor.command.preview"));
                         }
-                        return failure<void>(eve::DiagnosticCode::Failed, "editor command preview threw",
-                                             "editor.command.preview");
+                        return eve::Result<void>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::Failed, "editor command preview threw", "editor.command.preview"));
                     }
                     if (!applied) {
                         try {
                             command->revert();
                         } catch (...) {
-                            return failure<void>(eve::DiagnosticCode::Failed,
-                                                 "editor command preview was rejected and could not be reverted",
-                                                 "editor.command.preview");
+                            return eve::Result<void>::failure(
+                                eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                       "editor command preview was rejected and could not be reverted",
+                                                       "editor.command.preview"));
                         }
-                        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                             "editor command preview was rejected", "editor.command.preview");
+                        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "editor command preview was rejected",
+                                                                                 "editor.command.preview"));
                     }
                     impl_->pending->commands->commands.back() = std::move(mergedCandidate);
                     impl_->pending->commands->previewApplied  = true;
@@ -451,11 +466,12 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
                     return eve::Result<void>::success();
                 }
             } catch (const std::exception& exception) {
-                return failure<void>(eve::DiagnosticCode::Failed,
-                                     std::string("editor command merge threw: ") + exception.what(),
-                                     "editor.command.merge");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, std::string("editor command merge threw: ") + exception.what(),
+                    "editor.command.merge"));
             } catch (...) {
-                return failure<void>(eve::DiagnosticCode::Failed, "editor command merge threw", "editor.command.merge");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "editor command merge threw", "editor.command.merge"));
             }
         }
     }
@@ -465,12 +481,12 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
         // observable failure after the target has been changed.
         impl_->pending->commands->commands.reserve(impl_->pending->commands->commands.size() + 1);
     } catch (const std::exception& exception) {
-        return failure<void>(eve::DiagnosticCode::Failed,
-                             std::string("editor command staging allocation threw: ") + exception.what(),
-                             "editor.command.stage");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("editor command staging allocation threw: ") + exception.what(),
+            "editor.command.stage"));
     } catch (...) {
-        return failure<void>(eve::DiagnosticCode::Failed, "editor command staging allocation threw",
-                             "editor.command.stage");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "editor command staging allocation threw", "editor.command.stage"));
     }
 
     bool applied = false;
@@ -480,31 +496,34 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
         try {
             command->revert();
         } catch (...) {
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
-                                 "editor.command.preview");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
+                "editor.command.preview"));
         }
-        return failure<void>(eve::DiagnosticCode::Failed,
-                             std::string("editor command preview threw: ") + exception.what(),
-                             "editor.command.preview");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("editor command preview threw: ") + exception.what(),
+            "editor.command.preview"));
     } catch (...) {
         try {
             command->revert();
         } catch (...) {
-            return failure<void>(eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
-                                 "editor.command.preview");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor command preview failed and could not be reverted",
+                "editor.command.preview"));
         }
-        return failure<void>(eve::DiagnosticCode::Failed, "editor command preview threw", "editor.command.preview");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "editor command preview threw", "editor.command.preview"));
     }
     if (!applied) {
         try {
             command->revert();
         } catch (...) {
-            return failure<void>(eve::DiagnosticCode::Failed,
-                                 "editor command preview was rejected and could not be reverted",
-                                 "editor.command.preview");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor command preview was rejected and could not be reverted",
+                "editor.command.preview"));
         }
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "editor command preview was rejected",
-                             "editor.command.preview");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "editor command preview was rejected", "editor.command.preview"));
     }
     impl_->pending->commands->commands.push_back(std::move(command));
     impl_->pending->commands->previewApplied = true;
@@ -515,44 +534,46 @@ eve::Result<void> EditorTransactionConsumer::appendPreview(std::unique_ptr<IEdit
 
 eve::Result<void> EditorTransactionConsumer::append(DomainOperation operation) {
     if (!impl_->pending)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
     if (operation.type.empty() || operation.target.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "authority operation type and target are required",
-                             "editor.operation");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "authority operation type and target are required",
+                                                                 "editor.operation"));
     if (impl_->pending->commands)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "commands and authority operations cannot share one editor transaction",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "commands and authority operations cannot share one editor transaction",
+            "editor.transaction"));
     if (impl_->pending->specification.target.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "authority transaction target is required",
-                             "editor.transaction.target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "authority transaction target is required",
+                                                                 "editor.transaction.target"));
     if (operation.target != impl_->pending->specification.target)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "authority operation target does not match the transaction target",
-                             "editor.operation.target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "authority operation target does not match the transaction target",
+            "editor.operation.target"));
     impl_->pending->operations.push_back(std::move(operation));
     return eve::Result<void>::success();
 }
 
 eve::Result<EditorDryRunReport> EditorTransactionConsumer::dryRun() const {
     if (!impl_->pending)
-        return failure<EditorDryRunReport>(eve::DiagnosticCode::PreconditionViolation,
-                                           "no editor transaction is active", "editor.transaction");
+        return eve::Result<EditorDryRunReport>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
     const auto&       pending      = *impl_->pending;
     const std::size_t commandCount = pending.commands ? pending.commands->commands.size() : 0;
     if (commandCount == 0 && pending.operations.empty())
-        return failure<EditorDryRunReport>(eve::DiagnosticCode::InvalidArgument, "editor transaction has no work",
-                                           "editor.transaction");
+        return eve::Result<EditorDryRunReport>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "editor transaction has no work", "editor.transaction"));
     EditorDryRunReport report;
     report.specification  = pending.specification;
     report.commandCount   = commandCount;
     report.operationCount = pending.operations.size();
     if (!pending.operations.empty()) {
         if (!impl_->authority)
-            return failure<EditorDryRunReport>(eve::DiagnosticCode::Unsupported,
-                                               "authority preflight requires an injected authority",
-                                               "editor.authority");
+            return eve::Result<EditorDryRunReport>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                       "authority preflight requires an injected authority", "editor.authority"));
         auto plan = impl_->authority->preflight(pending.specification, pending.operations);
         if (!plan.ok())
             return convertEditorFailure<EditorDryRunReport>(plan, "editor authority preflight");
@@ -573,27 +594,29 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commit(
 eve::Result<EditorTransactionRecord> EditorTransactionConsumer::retry(
     std::span<transaction::ITransactionParticipant*> additional) {
     if (!impl_->pending)
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::PreconditionViolation,
-                                                "no failed editor transaction is pending", "editor.transaction.retry");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "no failed editor transaction is pending", "editor.transaction.retry"));
     if (impl_->state != EditorCommitState::FailedRetryable)
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::PreconditionViolation,
-                                                "editor transaction is not awaiting retry", "editor.transaction.retry");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "editor transaction is not awaiting retry", "editor.transaction.retry"));
     if (!impl_->retryAllowed)
-        return failure<EditorTransactionRecord>(
+        return eve::Result<EditorTransactionRecord>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict,
             impl_->retryBlockedByCommittedParticipant
                 ? "editor transaction cannot be retried after an additional participant committed; reconcile or "
                   "discard it"
                 : "editor transaction cannot be retried after incomplete cleanup; discard it",
-            "editor.transaction.retry");
+            "editor.transaction.retry"));
     return commitAttempt(additional, true);
 }
 
 eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commitAttempt(
     std::span<transaction::ITransactionParticipant*> additional, bool retryAttempt) {
     if (!impl_->pending)
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::PreconditionViolation,
-                                                "no editor transaction is active", "editor.transaction");
+        return eve::Result<EditorTransactionRecord>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
 
     auto retainFailure = [&](const eve::Status& status, bool retryAllowed) {
         impl_->state                              = EditorCommitState::FailedRetryable;
@@ -603,7 +626,8 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commitAttempt(
         return eve::Result<EditorTransactionRecord>::failure(status);
     };
     auto reject = [&](eve::DiagnosticCode code, std::string message, std::string path) {
-        auto       result             = failure<EditorTransactionRecord>(code, std::move(message), std::move(path));
+        auto result = eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path)));
         const bool preserveRetryBlock = impl_->state == EditorCommitState::FailedRetryable;
         impl_->state                  = EditorCommitState::FailedRetryable;
         if (!preserveRetryBlock) {
@@ -719,25 +743,25 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commitAttempt(
 
 eve::Result<void> EditorTransactionConsumer::discard() {
     if (!impl_->pending)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active",
-                             "editor.transaction");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no editor transaction is active", "editor.transaction"));
     Impl::Pending& pending = *impl_->pending;
     if (pending.commands && pending.commands->previewApplied) {
         try {
             for (auto it = pending.commands->commands.rbegin(); it != pending.commands->commands.rend(); ++it)
                 (*it)->revert();
         } catch (const std::exception& exception) {
-            auto result                               = failure<void>(eve::DiagnosticCode::Failed,
-                                                                      std::string("editor preview rollback threw: ") + exception.what(),
-                                                                      "editor.transaction.discard");
+            auto result                               = eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, std::string("editor preview rollback threw: ") + exception.what(),
+                "editor.transaction.discard"));
             impl_->state                              = EditorCommitState::FailedRetryable;
             impl_->retryAllowed                       = false;
             impl_->retryBlockedByCommittedParticipant = false;
             impl_->diagnostics                        = result.diagnostics();
             return result;
         } catch (...) {
-            auto result         = failure<void>(eve::DiagnosticCode::Failed, "editor preview rollback threw",
-                                                "editor.transaction.discard");
+            auto result                               = eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "editor preview rollback threw", "editor.transaction.discard"));
             impl_->state        = EditorCommitState::FailedRetryable;
             impl_->retryAllowed = false;
             impl_->retryBlockedByCommittedParticipant = false;
@@ -758,12 +782,12 @@ eve::Result<void> EditorTransactionConsumer::rollback() { return discard(); }
 
 eve::Result<EditorTransactionRecord> EditorTransactionConsumer::undo() {
     if (impl_->pending)
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::PreconditionViolation,
-                                                "cannot undo while an editor transaction is active",
-                                                "editor.transaction.undo");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "cannot undo while an editor transaction is active", "editor.transaction.undo"));
     if (impl_->undo.empty())
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::NotFound, "there is no editor transaction to undo",
-                                                "editor.history.undo");
+        return eve::Result<EditorTransactionRecord>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "there is no editor transaction to undo", "editor.history.undo"));
     Impl::HistoryEntry history = std::move(impl_->undo.back());
     impl_->undo.pop_back();
 
@@ -782,9 +806,9 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::undo() {
     }
     if (participants.empty()) {
         impl_->undo.push_back(std::move(history));
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::Unsupported,
-                                                "editor history entry has no compensatable participant",
-                                                "editor.history.undo");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                   "editor history entry has no compensatable participant", "editor.history.undo"));
     }
     const std::string compensationId =
         history.specification.id.value() + ".undo." + std::to_string(++impl_->redoSequence);
@@ -811,24 +835,24 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::undo() {
 
 eve::Result<EditorTransactionRecord> EditorTransactionConsumer::redo() {
     if (impl_->pending)
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::PreconditionViolation,
-                                                "cannot redo while an editor transaction is active",
-                                                "editor.transaction.redo");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "cannot redo while an editor transaction is active", "editor.transaction.redo"));
     if (impl_->redo.empty())
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::NotFound, "there is no editor transaction to redo",
-                                                "editor.history.redo");
+        return eve::Result<EditorTransactionRecord>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "there is no editor transaction to redo", "editor.history.redo"));
     Impl::HistoryEntry history = std::move(impl_->redo.back());
     impl_->redo.pop_back();
     if (history.operations.empty() && !history.commands) {
         impl_->redo.push_back(std::move(history));
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::Unsupported,
-                                                "editor history entry has no replayable participant",
-                                                "editor.history.redo");
+        return eve::Result<EditorTransactionRecord>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                   "editor history entry has no replayable participant", "editor.history.redo"));
     }
     if (!history.operations.empty() && !impl_->authority) {
         impl_->redo.push_back(std::move(history));
-        return failure<EditorTransactionRecord>(eve::DiagnosticCode::Unsupported,
-                                                "authority redo requires an injected authority", "editor.authority");
+        return eve::Result<EditorTransactionRecord>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "authority redo requires an injected authority", "editor.authority"));
     }
 
     TransactionSpec specification = history.specification;

@@ -29,16 +29,11 @@ constexpr std::string_view kContractSchemaId = "evengine.game-agent-contract";
 constexpr std::int64_t     kSchemaVersion    = 1;
 constexpr std::int64_t     kMaxFrameSteps    = 1024;
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
-        return failure<const Value::Object*>(DiagnosticCode::ParseError, "play value must be an object",
-                                             std::move(path));
+        return Result<const Value::Object*>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "play value must be an object", std::move(path)));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -47,8 +42,8 @@ Result<void> knownFields(const Value::Object& object, const std::set<std::string
     for (const auto& [name, value] : object) {
         (void)value;
         if (!allowed.contains(name))
-            return failure<void>(DiagnosticCode::ParseError, "unknown play field",
-                                 std::string(path) + "." + name);
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "unknown play field", std::string(path) + "." + name));
     }
     return Result<void>::success();
 }
@@ -57,8 +52,8 @@ Result<const Value*> member(const Value::Object& object, std::string_view name, 
                             std::string_view path) {
     const auto found = object.find(std::string(name));
     if (found == object.end() || found->second.type() != type)
-        return failure<const Value*>(DiagnosticCode::ParseError, "missing or invalid play field",
-                                     std::string(path) + "." + std::string(name));
+        return Result<const Value*>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "missing or invalid play field", std::string(path) + "." + std::string(name)));
     return Result<const Value*>::success(&found->second);
 }
 
@@ -80,8 +75,8 @@ Result<void> optionalString(const Value::Object& object, std::string_view name, 
     const auto found = object.find(std::string(name));
     if (found == object.end()) return Result<void>::success();
     if (!found->second.isString())
-        return failure<void>(DiagnosticCode::ParseError, "play field must be a string",
-                             std::string(path) + "." + std::string(name));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "play field must be a string",
+                                                       std::string(path) + "." + std::string(name)));
     *out = found->second.asString();
     return Result<void>::success();
 }
@@ -105,16 +100,17 @@ Result<Value> walkPath(const Value& root, std::string_view dotted, std::string p
     const Value* current = &root;
     auto         parts   = splitPath(dotted);
     if (parts.empty())
-        return failure<Value>(DiagnosticCode::ParseError, "observation field path must not be empty", std::move(path));
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "observation field path must not be empty", std::move(path)));
     for (std::size_t index = 0; index < parts.size(); ++index) {
         const auto* object = current->getIf<Value::Object>();
         if (!object)
-            return failure<Value>(DiagnosticCode::NotFound, "observation path is not an object",
-                                  path + "." + std::string(dotted));
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "observation path is not an object", path + "." + std::string(dotted)));
         const auto found = object->find(parts[index]);
         if (found == object->end())
-            return failure<Value>(DiagnosticCode::NotFound, "observation field was not found",
-                                  path + "." + std::string(dotted));
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "observation field was not found",
+                                                            path + "." + std::string(dotted)));
         current = &found->second;
     }
     return Result<Value>::success(*current);
@@ -164,14 +160,13 @@ struct ParsedContract {
 Result<std::vector<std::string>> stringArray(const Value& value, std::string path) {
     const auto* array = value.getIf<Value::Array>();
     if (!array)
-        return failure<std::vector<std::string>>(DiagnosticCode::ParseError, "play array must contain strings",
-                                                 std::move(path));
+        return Result<std::vector<std::string>>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "play array must contain strings", std::move(path)));
     std::vector<std::string> out;
     for (std::size_t index = 0; index < array->size(); ++index) {
         if (!(*array)[index].isString())
-            return failure<std::vector<std::string>>(
-                DiagnosticCode::ParseError, "play array entry must be a string",
-                path + "." + std::to_string(index));
+            return Result<std::vector<std::string>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "play array entry must be a string", path + "." + std::to_string(index)));
         out.push_back((*array)[index].asString());
     }
     return Result<std::vector<std::string>>::success(std::move(out));
@@ -195,10 +190,11 @@ Result<ParsedContract> parseContract(const Value& contract) {
     if (!id) return Result<ParsedContract>::failure(id.status());
     if (!entry) return Result<ParsedContract>::failure(entry.status());
     if (schemaId.value() != kContractSchemaId || version.value() != kSchemaVersion)
-        return failure<ParsedContract>(DiagnosticCode::Unsupported, "unsupported game agent contract schema",
-                                       "contract.schemaVersion");
+        return Result<ParsedContract>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unsupported game agent contract schema", "contract.schemaVersion"));
     if (id.value().empty())
-        return failure<ParsedContract>(DiagnosticCode::ParseError, "contract id must not be empty", "contract.id");
+        return Result<ParsedContract>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "contract id must not be empty", "contract.id"));
 
     ParsedContract parsed;
     parsed.id          = id.value();
@@ -214,15 +210,15 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!step) return Result<ParsedContract>::failure(step.status());
         parsed.defaultStep = step.value();
         if (parsed.defaultStep != "frame")
-            return failure<ParsedContract>(DiagnosticCode::Unsupported,
-                                           "P0 play host only supports frame defaultStep",
-                                           "contract.clock.defaultStep");
+            return Result<ParsedContract>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                     "P0 play host only supports frame defaultStep",
+                                                                     "contract.clock.defaultStep"));
     }
 
     const auto observations = root.value()->find("observations");
     if (observations == root.value()->end() || !observations->second.isArray())
-        return failure<ParsedContract>(DiagnosticCode::ParseError, "contract requires observations",
-                                       "contract.observations");
+        return Result<ParsedContract>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "contract requires observations", "contract.observations"));
     const auto* array = observations->second.getIf<Value::Array>();
     for (std::size_t index = 0; index < array->size(); ++index) {
         const std::string itemPath = "contract.observations." + std::to_string(index);
@@ -274,8 +270,8 @@ Result<ParsedContract> parseContract(const Value& contract) {
         auto backend = stringMember(*object.value(), "backend", "contract.capture");
         if (!backend) return Result<ParsedContract>::failure(backend.status());
         if (backend.value() != "engine-readback")
-            return failure<ParsedContract>(DiagnosticCode::Unsupported, "capture backend must be engine-readback",
-                                           "contract.capture.backend");
+            return Result<ParsedContract>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "capture backend must be engine-readback", "contract.capture.backend"));
         const auto requiredFor = object.value()->find("requiredFor");
         if (requiredFor != object.value()->end()) {
             auto names = stringArray(requiredFor->second, "contract.capture.requiredFor");
@@ -294,16 +290,16 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!source) return Result<ParsedContract>::failure(source.status());
         parsed.actionSource = source.value();
         if (parsed.actionSource != "script-map" && parsed.actionSource != "gameplay-domain")
-            return failure<ParsedContract>(DiagnosticCode::Unsupported, "unsupported actions.source",
-                                           "contract.actions.source");
+            return Result<ParsedContract>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "unsupported actions.source", "contract.actions.source"));
         auto domainField = optionalString(*object.value(), "domain", "contract.actions", &parsed.actionDomain);
         if (!domainField) return Result<ParsedContract>::failure(domainField.status());
         const auto map = object.value()->find("map");
         if (map != object.value()->end()) {
             const auto* array = map->second.getIf<Value::Array>();
             if (!array)
-                return failure<ParsedContract>(DiagnosticCode::ParseError, "actions.map must be an array",
-                                               "contract.actions.map");
+                return Result<ParsedContract>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "actions.map must be an array", "contract.actions.map"));
             for (std::size_t index = 0; index < array->size(); ++index) {
                 const std::string itemPath = "contract.actions.map." + std::to_string(index);
                 auto item = asObject((*array)[index], itemPath);
@@ -319,11 +315,11 @@ Result<ParsedContract> parseContract(const Value& contract) {
                 auto mappedAction = optionalString(*item.value(), "action", itemPath, &spec.action);
                 if (!mappedAction) return Result<ParsedContract>::failure(mappedAction.status());
                 if (parsed.actionSource == "script-map" && spec.script.empty())
-                    return failure<ParsedContract>(DiagnosticCode::ParseError, "script-map action requires script",
-                                                   itemPath + ".script");
+                    return Result<ParsedContract>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "script-map action requires script", itemPath + ".script"));
                 if (parsed.actionSource == "gameplay-domain" && spec.action.empty())
-                    return failure<ParsedContract>(DiagnosticCode::ParseError,
-                                                   "gameplay-domain action requires action", itemPath + ".action");
+                    return Result<ParsedContract>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "gameplay-domain action requires action", itemPath + ".action"));
                 parsed.actions.push_back(std::move(spec));
             }
         }
@@ -344,23 +340,24 @@ Result<const ObservationSpec*> findObservation(const ParsedContract& contract, s
     for (const auto& spec : contract.observations) {
         if (spec.id == id) return Result<const ObservationSpec*>::success(&spec);
     }
-    return failure<const ObservationSpec*>(DiagnosticCode::NotFound, "observation id was not declared",
-                                           "request.observation");
+    return Result<const ObservationSpec*>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "observation id was not declared", "request.observation"));
 }
 
 Result<const ActionSpec*> findAction(const ParsedContract& contract, std::string_view id) {
     for (const auto& spec : contract.actions) {
         if (spec.id == id) return Result<const ActionSpec*>::success(&spec);
     }
-    return failure<const ActionSpec*>(DiagnosticCode::NotFound, "action id was not declared", "request.action");
+    return Result<const ActionSpec*>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "action id was not declared", "request.action"));
 }
 
 Result<Value> requireContract(IPlayHostRuntime& runtime) {
     auto loaded = runtime.loadContract();
     if (!loaded) {
         if (loaded.code() == StatusCode::NotFound)
-            return failure<Value>(DiagnosticCode::Unsupported,
-                                  "play observe requires game.agent.json", "contract");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "play observe requires game.agent.json", "contract"));
         return Result<Value>::failure(loaded.status());
     }
     return loaded;
@@ -396,7 +393,8 @@ Result<Value> opClock(const Value::Object& root, IPlayHostRuntime& runtime) {
     if (mode.value() == "pause") runtime.pause();
     else if (mode.value() == "play") runtime.play();
     else
-        return failure<Value>(DiagnosticCode::ParseError, "clock mode must be pause or play", "request.mode");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "clock mode must be pause or play", "request.mode"));
     return Result<Value>::success(
         playResponse("clock", {{"mode", Value(mode.value())}, {"paused", Value(runtime.paused())}}));
 }
@@ -406,12 +404,13 @@ Result<Value> opStep(const Value::Object& root, IPlayHostRuntime& runtime) {
     auto        clockField = optionalString(root, "clock", "request", &clock);
     if (!clockField) return Result<Value>::failure(clockField.status());
     if (clock != "frame")
-        return failure<Value>(DiagnosticCode::Unsupported, "P0 play host only steps the host frame clock",
-                              "request.clock");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "P0 play host only steps the host frame clock", "request.clock"));
     auto count = intMember(root, "count", "request");
     if (!count) return Result<Value>::failure(count.status());
     if (count.value() < 1 || count.value() > kMaxFrameSteps)
-        return failure<Value>(DiagnosticCode::ParseError, "step count must be between 1 and 1024", "request.count");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "step count must be between 1 and 1024", "request.count"));
     auto stepped = runtime.stepFrames(count.value());
     if (!stepped) return Result<Value>::failure(stepped.status());
     return Result<Value>::success(playResponse(
@@ -431,8 +430,8 @@ Result<Value> opObserve(const Value::Object& root, IPlayHostRuntime& runtime) {
     auto spec = findObservation(parsed.value(), observation.value());
     if (!spec) return Result<Value>::failure(spec.status());
     if (spec.value()->kind != "script-root")
-        return failure<Value>(DiagnosticCode::Unsupported, "P0 play host only observes script-root",
-                              "request.observation");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "P0 play host only observes script-root", "request.observation"));
     auto state = runtime.observeScriptRoot(spec.value()->path, spec.value()->fields);
     if (!state) return Result<Value>::failure(state.status());
     return Result<Value>::success(playResponse("observe", {{"observation", Value(observation.value())},
@@ -469,8 +468,8 @@ Result<Value> opCheckpoint(const Value::Object& root, IPlayHostRuntime& runtime)
         if (!restored) return Result<Value>::failure(restored.status());
         return Result<Value>::success(playResponse("checkpoint", {{"mode", Value("restore")}}));
     }
-    return failure<Value>(DiagnosticCode::ParseError, "checkpoint mode must be capture or restore",
-                          "request.mode");
+    return Result<Value>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "checkpoint mode must be capture or restore", "request.mode"));
 }
 
 Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
@@ -490,10 +489,12 @@ Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
                                                            {"receipt", std::move(invoked).takeValue()}}));
     }
     if (parsed.value().actionSource != "gameplay-domain")
-        return failure<Value>(DiagnosticCode::Unsupported, "unsupported actions.source", "contract.actions.source");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported actions.source", "contract.actions.source"));
     const auto commandField = root.find("command");
     if (commandField == root.end())
-        return failure<Value>(DiagnosticCode::ParseError, "gameplay-domain act requires command", "request.command");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "gameplay-domain act requires command", "request.command"));
     auto commandObject = asObject(commandField->second, "request.command");
     if (!commandObject) return Result<Value>::failure(commandObject.status());
     Value::Object command = *commandObject.value();
@@ -502,12 +503,13 @@ Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
     auto domainField = optionalString(root, "domain", "request", &domain);
     if (!domainField) return Result<Value>::failure(domainField.status());
     if (domain.empty())
-        return failure<Value>(DiagnosticCode::ParseError, "gameplay-domain act requires domain", "request.domain");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "gameplay-domain act requires domain", "request.domain"));
     const auto sessionField = root.find("session");
     const auto instanceField = root.find("instance");
     if (sessionField == root.end() || instanceField == root.end())
-        return failure<Value>(DiagnosticCode::ParseError, "gameplay-domain act requires session and instance",
-                              "request.session");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "gameplay-domain act requires session and instance", "request.session"));
     Value::Object gameplay{{"schemaId", Value("evengine.gameplay-control-request")},
                            {"schemaVersion", Value(std::int64_t{1})},
                            {"op", Value("submit")},
@@ -530,7 +532,8 @@ Result<Value> opTrace() {
 Result<Value> opReplay(const Value::Object& root, IPlayHostRuntime& runtime) {
     const auto recording = root.find("recording");
     if (recording == root.end())
-        return failure<Value>(DiagnosticCode::ParseError, "replay requires recording", "request.recording");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "replay requires recording", "request.recording"));
     return replayPlayTrace(recording->second, runtime);
 }
 
@@ -673,19 +676,21 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     if (!schemaId) return Result<Value>::failure(schemaId.status());
     if (!version) return Result<Value>::failure(version.status());
     if (schemaId.value() != kPlaySchemaId || version.value() != kSchemaVersion)
-        return failure<Value>(DiagnosticCode::Unsupported, "unsupported play request schema",
-                              "request.schemaVersion");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported play request schema", "request.schemaVersion"));
     std::string trace;
     auto        traceField = optionalString(*root.value(), "trace", "request", &trace);
     if (!traceField) return Result<Value>::failure(traceField.status());
     if (!trace.empty() && trace != "off" && trace != "append")
-        return failure<Value>(DiagnosticCode::ParseError, "trace must be off or append", "request.trace");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "trace must be off or append", "request.trace"));
     auto op = stringMember(*root.value(), "op", "request");
     if (!op) return Result<Value>::failure(op.status());
     auto executed = [&]() -> Result<Value> {
         if (op.value() == "batch") {
             if (inBatch)
-                return failure<Value>(DiagnosticCode::Unsupported, "nested play batch is not allowed", "request.op");
+                return Result<Value>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "nested play batch is not allowed", "request.op"));
             return opBatch(*root.value(), runtime);
         }
         if (op.value() == "status") return opStatus(runtime);
@@ -697,7 +702,8 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
         if (op.value() == "act") return opAct(*root.value(), runtime);
         if (op.value() == "trace") return opTrace();
         if (op.value() == "replay") return opReplay(*root.value(), runtime);
-        return failure<Value>(DiagnosticCode::Unsupported, "unsupported play operation", "request.op");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported play operation", "request.op"));
     }();
     if (!executed) return executed;
     afterPlaySuccess(request, executed.value(), runtime);
@@ -705,27 +711,29 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
 }
 
 Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName) {
-    if (!vm) return failure<Value>(DiagnosticCode::Unsupported, "play observe requires an attached script VM",
-                                   "observation");
+    if (!vm)
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                        "play observe requires an attached script VM", "observation"));
     std::string error;
     std::string json = Snapshot::instance().capture(vm, &error);
     if (json.empty())
-        return failure<Value>(DiagnosticCode::Failed,
-                              error.empty() ? "script snapshot capture failed" : std::move(error),
-                              "observation");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Failed,
+                              error.empty() ? "script snapshot capture failed" : std::move(error), "observation"));
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<Value>::failure(parsed.status());
     auto object = asObject(parsed.value(), "snapshot");
     if (!object) return Result<Value>::failure(object.status());
     const auto roots = object.value()->find("roots");
     if (roots == object.value()->end())
-        return failure<Value>(DiagnosticCode::NotFound, "snapshot does not contain roots", "observation");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "snapshot does not contain roots", "observation"));
     auto rootsObject = asObject(roots->second, "snapshot.roots");
     if (!rootsObject) return Result<Value>::failure(rootsObject.status());
     const auto found = rootsObject.value()->find(std::string(rootName));
     if (found == rootsObject.value()->end())
-        return failure<Value>(DiagnosticCode::NotFound, "marked script root was not in the snapshot",
-                              "observation.path");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "marked script root was not in the snapshot", "observation.path"));
     return Result<Value>::success(found->second);
 }
 
@@ -748,15 +756,18 @@ public:
             std::error_code ec;
             root = std::filesystem::current_path(ec);
             if (ec)
-                return failure<Value>(DiagnosticCode::Failed, "cannot resolve game root", "contract");
+                return Result<Value>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "cannot resolve game root", "contract"));
         }
         const auto path = root / "game.agent.json";
         std::error_code ec;
         if (!std::filesystem::is_regular_file(path, ec))
-            return failure<Value>(DiagnosticCode::NotFound, "game.agent.json was not found", "contract");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "game.agent.json was not found", "contract"));
         std::ifstream in(path, std::ios::binary);
         if (!in)
-            return failure<Value>(DiagnosticCode::Failed, "cannot read game.agent.json", "contract");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "cannot read game.agent.json", "contract"));
         std::ostringstream contents;
         contents << in.rdbuf();
         return Value::fromJson(contents.str());
@@ -772,12 +783,13 @@ public:
     Result<Value> capturePng(std::string path) override {
         auto* capture = eve::cap::query<IRenderCapture>();
         if (!capture)
-            return failure<Value>(DiagnosticCode::Unsupported, "IRenderCapture is not available", "capture");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "IRenderCapture is not available", "capture"));
         int         width = 0, height = 0;
         std::string error;
         if (!capture->savePng(path, &width, &height, &error))
-            return failure<Value>(DiagnosticCode::Failed,
-                                  error.empty() ? "engine screenshot failed" : std::move(error), "capture");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, error.empty() ? "engine screenshot failed" : std::move(error), "capture"));
         return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(height))},
                                                           {"path", Value(std::move(path))},
                                                           {"width", Value(static_cast<std::int64_t>(width))}}));
@@ -786,48 +798,48 @@ public:
     Result<std::string> captureCheckpoint() override {
         HSQUIRRELVM vm = Debugger::instance().vm();
         if (!vm)
-            return failure<std::string>(DiagnosticCode::Unsupported, "play checkpoint requires an attached script VM",
-                                        "checkpoint");
+            return Result<std::string>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "play checkpoint requires an attached script VM", "checkpoint"));
         std::string error;
         std::string json = Snapshot::instance().capture(vm, &error);
         if (json.empty())
-            return failure<std::string>(DiagnosticCode::Failed,
-                                        error.empty() ? "checkpoint capture failed" : std::move(error),
-                                        "checkpoint");
+            return Result<std::string>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, error.empty() ? "checkpoint capture failed" : std::move(error), "checkpoint"));
         return Result<std::string>::success(std::move(json));
     }
 
     Result<void> restoreCheckpoint(std::string_view json) override {
         HSQUIRRELVM vm = Debugger::instance().vm();
         if (!vm)
-            return failure<void>(DiagnosticCode::Unsupported, "play checkpoint requires an attached script VM",
-                                 "checkpoint");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "play checkpoint requires an attached script VM", "checkpoint"));
         std::string error;
         if (!Snapshot::instance().restore(vm, std::string(json), &error))
-            return failure<void>(DiagnosticCode::Failed,
-                                 error.empty() ? "checkpoint restore failed" : std::move(error), "checkpoint");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, error.empty() ? "checkpoint restore failed" : std::move(error), "checkpoint"));
         return Result<void>::success();
     }
 
     Result<Value> invokeScriptAction(std::string_view id, std::string_view source) override {
         HSQUIRRELVM vm = Debugger::instance().vm();
         if (!vm)
-            return failure<Value>(DiagnosticCode::Unsupported, "play act requires an attached script VM",
-                                  "request.action");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "play act requires an attached script VM", "request.action"));
         const SQInteger top = sq_gettop(vm);
         const std::string snippet(source);
         if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()),
                                        "<play-action>", SQTrue))) {
             sq_settop(vm, top);
-            return failure<Value>(DiagnosticCode::Failed, eve::script::formatScriptError(eve::script::captureCompileError(vm)),
-                                  "request.action");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, eve::script::formatScriptError(eve::script::captureCompileError(vm)),
+                "request.action"));
         }
         sq_pushroottable(vm);
         if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
             sq_settop(vm, top);
-            return failure<Value>(DiagnosticCode::Failed,
-                                  eve::script::formatScriptError(eve::script::takeLastScriptError(vm)),
-                                  "request.action");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, eve::script::formatScriptError(eve::script::takeLastScriptError(vm)),
+                "request.action"));
         }
         sq_settop(vm, top);
         return Result<Value>::success(Value(Value::Object{{"action", Value(std::string(id))}}));

@@ -13,13 +13,6 @@
 namespace eve::archspace {
 namespace {
 
-template <class T>
-ssq::Table failNull(HSQUIRRELVM vm, const char* message) {
-    return eve::script::projectResult(
-        vm, eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, "receiver",
-                                                           {}, "archspace.squirrel")));
-}
-
 ssq::Table bakeArraysTable(HSQUIRRELVM vm, const MeshArrays& arrays) {
     ssq::Array positions(vm);
     for (float v : arrays.positions) positions.push(v);
@@ -60,14 +53,21 @@ void ArchSpace::expose(ssq::Table& table) {
     });
     document.addFunc("bootstrap", [vm](Document* self, const std::string& siteId, const std::string& buildingId,
                                        const std::string& levelId, float levelHeight) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         return eve::script::projectResult(vm, self->bootstrap(siteId, buildingId, levelId, levelHeight));
     });
     document.addFunc("createRectRoom", [vm](Document* self, const std::string& levelId, const std::string& roomId,
                                             const std::string& roomName, float originX, float originZ, float sizeX,
-                                            float sizeZ, float wallHeight, float wallThickness,
-                                            float slabThickness) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+                                            float sizeZ, float wallHeight, float wallThickness, float slabThickness) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         std::vector<Vec2> polygon = {{originX, originZ},
                                      {originX + sizeX, originZ},
                                      {originX + sizeX, originZ + sizeZ},
@@ -79,14 +79,22 @@ void ArchSpace::expose(ssq::Table& table) {
     document.addFunc("createWall", [vm](Document* self, const std::string& levelId, const std::string& wallId,
                                         const std::string& wallName, float x0, float z0, float x1, float z1,
                                         float height, float thickness) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         return eve::script::projectResult(
             vm, self->createWall(levelId, wallId, wallName, Vec2{x0, z0}, Vec2{x1, z1}, height, thickness));
     });
     document.addFunc("createOpening", [vm](Document* self, const std::string& wallId, const std::string& openingId,
                                            const std::string& openingName, const std::string& kindText, float t,
                                            float width, float height, float sill) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         auto kind = parseOpeningKind(kindText);
         if (!kind.ok()) return eve::script::projectResult(vm, eve::Result<void>::failure(kind.status()));
         return eve::script::projectResult(
@@ -95,12 +103,20 @@ void ArchSpace::expose(ssq::Table& table) {
     document.addFunc("placeItem", [vm](Document* self, const std::string& levelId, const std::string& itemId,
                                        const std::string& itemName, const std::string& catalogId, float x, float y,
                                        float z, float yawDegrees) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         return eve::script::projectResult(
             vm, self->placeItem(levelId, itemId, itemName, catalogId, Vec3{x, y, z}, yawDegrees));
     });
     document.addFunc("deleteNode", [vm](Document* self, const std::string& id) {
-        if (!self) return failNull<void>(vm, "ArchSpaceDocument receiver must not be null");
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")));
         return eve::script::projectResult(vm, self->eraseCascade(id));
     });
     document.addFunc("bakeMeshArrays", [vm](Document* self) {

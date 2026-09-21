@@ -12,13 +12,7 @@
 #include <map>
 
 namespace eve::asset_procgen {
-namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrainDetailGpu"));
-}
-}
+namespace {}
 
 struct TerrainDetailGpuResolver::Impl {
     Impl(const asset::EvpackResourceReader& sourceReader, const asset::EvpackCapabilities& sourceCapabilities,
@@ -84,7 +78,8 @@ TerrainDetailRuntime::~TerrainDetailRuntime() {
 
 Result<void> TerrainDetailRuntime::setFrame(TerrainVegetationGpuFrame frame) {
     if (!renderer_)
-        return failure<void>(DiagnosticCode::Conflict, "terrain Detail runtime is released");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "terrain Detail runtime is released",
+                                                       {}, {}, "asset.procgen.terrainDetailGpu"));
     return renderer_->setFrame(frame);
 }
 
@@ -104,19 +99,22 @@ Result<void> TerrainDetailRuntime::release() {
 Result<TerrainVegetationGpuPrototype> TerrainDetailGpuResolver::resolve(
     const TerrainVegetationGpuPrototypeRequest& request) {
     if (!request.detail)
-        return failure<TerrainVegetationGpuPrototype>(DiagnosticCode::NotFound,
-                                                      "terrain Detail metadata is required", std::string(request.prototype));
+        return Result<TerrainVegetationGpuPrototype>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "terrain Detail metadata is required",
+                              std::string(request.prototype), {}, "asset.procgen.terrainDetailGpu"));
     const auto& detail = *request.detail;
     if (detail.resourceAsset.empty())
-        return failure<TerrainVegetationGpuPrototype>(DiagnosticCode::NotFound,
-                                                      "terrain Detail resource is unresolved", detail.prototype);
+        return Result<TerrainVegetationGpuPrototype>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "terrain Detail resource is unresolved", detail.prototype, {},
+                              "asset.procgen.terrainDetailGpu"));
     const std::string key = detail.prototype + "\n" + detail.renderMode + "\n" + detail.resourceAsset;
     if (const auto found = impl_->resources.find(key); found != impl_->resources.end()) {
         if (found->second.slots.parts.empty() &&
             (found->second.slots.meshId == graphics::kInvalidGpuDrivenSlot ||
              found->second.slots.materialId == graphics::kInvalidGpuDrivenSlot))
-            return failure<TerrainVegetationGpuPrototype>(DiagnosticCode::Conflict,
-                                                          "terrain Detail resource cleanup is pending", detail.prototype);
+            return Result<TerrainVegetationGpuPrototype>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "terrain Detail resource cleanup is pending",
+                                  detail.prototype, {}, "asset.procgen.terrainDetailGpu"));
         return Result<TerrainVegetationGpuPrototype>::success(found->second.slots);
     }
     auto reference = AssetRef::parse(detail.resourceAsset);
@@ -176,9 +174,9 @@ Result<TerrainVegetationGpuPrototype> TerrainDetailGpuResolver::resolve(
             impl_->resources.emplace(key, std::move(resource));
             return Result<TerrainVegetationGpuPrototype>::failure(status);
         }
-        return failure<TerrainVegetationGpuPrototype>(DiagnosticCode::Unsupported,
-                                                      "terrain Detail material is unavailable to GPU-driven rendering",
-                                                      detail.prototype);
+        return Result<TerrainVegetationGpuPrototype>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "terrain Detail material is unavailable to GPU-driven rendering",
+            detail.prototype, {}, "asset.procgen.terrainDetailGpu"));
     }
     resource.slots.meshId     = impl_->graphics.gpuDrivenMeshRecord(resource.mesh);
     resource.slots.materialId = impl_->graphics.gpuDrivenMaterialRecord(resource.material.get());
@@ -197,8 +195,9 @@ Result<TerrainVegetationGpuPrototype> TerrainDetailGpuResolver::resolve(
             impl_->resources.emplace(key, std::move(resource));
             return Result<TerrainVegetationGpuPrototype>::failure(status);
         }
-        return failure<TerrainVegetationGpuPrototype>(DiagnosticCode::Failed,
-                                                      "terrain Detail GPU table registration failed", detail.prototype);
+        return Result<TerrainVegetationGpuPrototype>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "terrain Detail GPU table registration failed", detail.prototype,
+                              {}, "asset.procgen.terrainDetailGpu"));
     }
     const auto slots = resource.slots;
     impl_->resources.emplace(key, std::move(resource));
@@ -209,8 +208,9 @@ Result<void> TerrainDetailGpuResolver::drawShadow(
     const TerrainVegetationGpuPrototypeRequest& request, const std::array<float, 16>& transform,
     const std::array<float, 16>& lightViewProjection) {
     if (!request.detail)
-        return failure<void>(DiagnosticCode::NotFound, "terrain Detail shadow metadata is required",
-                             std::string(request.prototype));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "terrain Detail shadow metadata is required",
+                              std::string(request.prototype), {}, "asset.procgen.terrainDetailGpu"));
     const auto& detail = *request.detail;
     const std::string key = detail.prototype + "\n" + detail.renderMode + "\n" + detail.resourceAsset;
     const auto found = impl_->resources.find(key);
@@ -220,8 +220,9 @@ Result<void> TerrainDetailGpuResolver::drawShadow(
     if (found->second.prefab)
         return found->second.prefab->drawShadow(impl_->graphics, transform, lightViewProjection);
     if (!found->second.mesh || !found->second.texture)
-        return failure<void>(DiagnosticCode::Conflict, "terrain Detail shadow resource cleanup is pending",
-                             detail.prototype);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                       "terrain Detail shadow resource cleanup is pending",
+                                                       detail.prototype, {}, "asset.procgen.terrainDetailGpu"));
     const glm::mat4 lightMvp = glm::make_mat4(lightViewProjection.data()) * glm::make_mat4(transform.data());
     impl_->graphics.drawMeshShadowAlpha(found->second.mesh, lightMvp, found->second.texture, true);
     return Result<void>::success();

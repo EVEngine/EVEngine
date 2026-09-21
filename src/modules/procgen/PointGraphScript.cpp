@@ -46,13 +46,11 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("execute", &PointGraph::execute);
     graph.addFunc("executeResult", [vm = graph.getHandle()](PointGraph* self, const std::string& output) {
         auto result = self->executeResult(output);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
             vm, std::make_unique<PointSet>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     graph.addFunc("validateResult", [vm = graph.getHandle()](PointGraph* self) {
         return eve::script::projectResult(vm, self->validateResult());

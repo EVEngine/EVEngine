@@ -10,10 +10,6 @@
 
 namespace eve::spritestack_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 std::uint64_t checksum(const image::ImageData& image) {
     const auto*   bytes = static_cast<const unsigned char*>(image.getData());
     std::uint64_t hash  = 1469598103934665603ull;
@@ -50,9 +46,9 @@ EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake
             raw = spritestack::slicePrimitiveToLayers(document.value().source, document.value().bake);
         else {
             if (!resolver)
-                return fail<std::vector<SpriteStackLayerArtifact>>(EditorStatus::Rejected,
-                                                                   "editor.spritestack.resolver",
-                                                                   "Model SpriteStack bake requires an asset resolver");
+                return eve::editing::failed<std::vector<SpriteStackLayerArtifact>>(
+                    EditorStatus::Rejected, RuleId("editor.spritestack.resolver"),
+                    "Model SpriteStack bake requires an asset resolver");
             auto resolved = resolver->resolveModel(document.value().source);
             if (!resolved.ok() || !resolved.value())
                 return EditorResult<std::vector<SpriteStackLayerArtifact>>::failure(resolved.status());
@@ -60,14 +56,15 @@ EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake
         }
     } catch (const std::exception& exception) {
         for (auto* layer : raw) delete layer;
-        return fail<std::vector<SpriteStackLayerArtifact>>(EditorStatus::Failed, "editor.spritestack.bake",
-                                                           exception.what());
+        return eve::editing::failed<std::vector<SpriteStackLayerArtifact>>(
+            EditorStatus::Failed, RuleId("editor.spritestack.bake"), exception.what());
     }
     if (raw.size() != static_cast<std::size_t>(document.value().bake.layerCount) ||
         std::any_of(raw.begin(), raw.end(), [](auto* p) { return p == nullptr; })) {
         for (auto* layer : raw) delete layer;
-        return fail<std::vector<SpriteStackLayerArtifact>>(EditorStatus::Failed, "editor.spritestack.layer-count",
-                                                           "SpriteStack baker returned an incomplete generation");
+        return eve::editing::failed<std::vector<SpriteStackLayerArtifact>>(
+            EditorStatus::Failed, RuleId("editor.spritestack.layer-count"),
+            "SpriteStack baker returned an incomplete generation");
     }
     std::vector<std::unique_ptr<image::ImageData>> candidate;
     std::vector<SpriteStackLayerArtifact>          artifacts;
@@ -87,11 +84,12 @@ EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake
 EditorResult<spritestack::SpriteStack2D*> SpriteStackBakeRuntime::publish(graphics::Graphics* graphics,
                                                                           Revision expectedRevision) {
     if (expectedRevision != revision_)
-        return fail<spritestack::SpriteStack2D*>(EditorStatus::Conflict, "editor.spritestack.stale",
-                                                 "SpriteStack bake generation is stale");
+        return eve::editing::failed<spritestack::SpriteStack2D*>(
+            EditorStatus::Conflict, RuleId("editor.spritestack.stale"), "SpriteStack bake generation is stale");
     if (!graphics || layers_.empty())
-        return fail<spritestack::SpriteStack2D*>(EditorStatus::Rejected, "editor.spritestack.publish",
-                                                 "SpriteStack publication requires Graphics and baked layers");
+        return eve::editing::failed<spritestack::SpriteStack2D*>(
+            EditorStatus::Rejected, RuleId("editor.spritestack.publish"),
+            "SpriteStack publication requires Graphics and baked layers");
     auto candidate = std::make_unique<spritestack::SpriteStack2D>();
     try {
         candidate->setLayerCount(static_cast<int>(layers_.size()));
@@ -103,7 +101,8 @@ EditorResult<spritestack::SpriteStack2D*> SpriteStackBakeRuntime::publish(graphi
         candidate->setShadowOpacity(value_.shadowOpacity);
         candidate->setOutline(value_.outlineWidth);
     } catch (const std::exception& exception) {
-        return fail<spritestack::SpriteStack2D*>(EditorStatus::Failed, "editor.spritestack.publish", exception.what());
+        return eve::editing::failed<spritestack::SpriteStack2D*>(
+            EditorStatus::Failed, RuleId("editor.spritestack.publish"), exception.what());
     }
     stack_ = std::move(candidate);
     return eve::editing::applied<spritestack::SpriteStack2D*>(stack_.get());

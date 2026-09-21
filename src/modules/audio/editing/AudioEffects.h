@@ -19,15 +19,13 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public virtual IEditableTarget,
+class AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:
     explicit AudioEffectChainTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -52,7 +50,7 @@ public:
     EditorResult<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
                                                    const ObjectId& bus) const;
 private:
-    std::string id_; Revision revision_ = 1; EditRegion dirty_;
+    std::string                           id_;
     std::map<StableId, AudioEffectRecord> effects_;
     std::vector<StableId> order_;
 };

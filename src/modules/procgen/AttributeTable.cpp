@@ -6,11 +6,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-std::vector<std::optional<T>> makeColumn(std::size_t rows) {
-    return std::vector<std::optional<T>>(rows);
-}
-
 Result<void> invalidAttribute(std::string message, std::string path) {
     return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
@@ -177,11 +172,13 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
     Column replacement;
     replacement.type = type;
     switch (type) {
-        case ProcgenAttributeType::Float: replacement.storage = makeColumn<float>(rows_); break;
-        case ProcgenAttributeType::Int: replacement.storage = makeColumn<std::int64_t>(rows_); break;
-        case ProcgenAttributeType::Bool: replacement.storage = makeColumn<bool>(rows_); break;
-        case ProcgenAttributeType::Vector: replacement.storage = makeColumn<ProcgenAttributeVector>(rows_); break;
-        case ProcgenAttributeType::String: replacement.storage = makeColumn<std::string>(rows_); break;
+        case ProcgenAttributeType::Float: replacement.storage = std::vector<std::optional<float>>(rows_); break;
+        case ProcgenAttributeType::Int: replacement.storage = std::vector<std::optional<std::int64_t>>(rows_); break;
+        case ProcgenAttributeType::Bool: replacement.storage = std::vector<std::optional<bool>>(rows_); break;
+        case ProcgenAttributeType::Vector:
+            replacement.storage = std::vector<std::optional<ProcgenAttributeVector>>(rows_);
+            break;
+        case ProcgenAttributeType::String: replacement.storage = std::vector<std::optional<std::string>>(rows_); break;
     }
     auto inserted = columns_.emplace(key, std::move(replacement));
     try {

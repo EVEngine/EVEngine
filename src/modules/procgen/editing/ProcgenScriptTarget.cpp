@@ -11,11 +11,6 @@
 namespace eve::procgen_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 EditorDiagnostic diagnostic(const char* rule, editing::DiagnosticSeverity severity, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, editing::RuleId(rule), severity,
                                         std::move(message));
@@ -255,19 +250,23 @@ EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std
                                                                              std::string displayName, std::string kind,
                                                                              const EditorValue& schema) {
     if (id.empty())
-        return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.id",
-                                             "Generator module id must not be empty");
+        return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                             editing::RuleId("editor.procgen-script.id"),
+                                                             "Generator module id must not be empty");
     if (kind.empty()) kind = "points";
     if (kind != "points")
-        return fail<ProcgenScriptModuleSpec>(EditorStatus::Unsupported, "editor.procgen-script.kind",
-                                             "Only kind=points generators are supported in this editor version");
+        return eve::editing::failed<ProcgenScriptModuleSpec>(
+            EditorStatus::Unsupported, editing::RuleId("editor.procgen-script.kind"),
+            "Only kind=points generators are supported in this editor version");
     const auto* rows = schema.getIf<EditorValue::Array>();
     if (!rows)
-        return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.schema",
-                                             "Generator schema must be an array");
+        return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                             editing::RuleId("editor.procgen-script.schema"),
+                                                             "Generator schema must be an array");
     if (rows->size() > 128)
-        return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.schema-size",
-                                             "Generator schema exceeds 128 parameters");
+        return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                             editing::RuleId("editor.procgen-script.schema-size"),
+                                                             "Generator schema exceeds 128 parameters");
 
     ProcgenScriptModuleSpec spec;
     spec.uri         = std::move(uri);
@@ -278,17 +277,20 @@ EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std
     for (const auto& rowValue : *rows) {
         const auto* row = rowValue.getIf<EditorValue::Object>();
         if (!row)
-            return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.param",
-                                                 "Each schema entry must be an object");
+            return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                                 editing::RuleId("editor.procgen-script.param"),
+                                                                 "Each schema entry must be an object");
         procgen::ParamDescriptor param;
         param.key = requireString(rowValue, "key");
         if (param.key.empty())
-            return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.param-key",
-                                                 "Parameter key must not be empty");
+            return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                                 editing::RuleId("editor.procgen-script.param-key"),
+                                                                 "Parameter key must not be empty");
         for (const auto& existing : spec.params)
             if (existing.key == param.key)
-                return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected, "editor.procgen-script.param-dup",
-                                                     "Duplicate parameter key: " + param.key);
+                return eve::editing::failed<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
+                                                                     editing::RuleId("editor.procgen-script.param-dup"),
+                                                                     "Duplicate parameter key: " + param.key);
         param.displayName = requireString(rowValue, "displayName", requireString(rowValue, "label", param.key));
         param.description = requireString(rowValue, "description");
         param.category    = requireString(rowValue, "category", "Generator");
@@ -313,9 +315,9 @@ EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std
                 for (const auto& choice : *array) {
                     const auto* text = choice.getIf<std::string>();
                     if (!text)
-                        return fail<ProcgenScriptModuleSpec>(EditorStatus::Rejected,
-                                                             "editor.procgen-script.choice",
-                                                             "Choice values must be strings");
+                        return eve::editing::failed<ProcgenScriptModuleSpec>(
+                            EditorStatus::Rejected, editing::RuleId("editor.procgen-script.choice"),
+                            "Choice values must be strings");
                     param.choices.push_back(*text);
                 }
             }
@@ -352,20 +354,24 @@ EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std
 EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeLoadModule(
     ProcgenScriptModuleSpec spec) const {
     if (spec.id.empty())
-        return fail<editing::DomainOperation>(EditorStatus::Rejected, "editor.procgen-script.id",
-                                              "Generator module id must not be empty");
+        return eve::editing::failed<editing::DomainOperation>(EditorStatus::Rejected,
+                                                              editing::RuleId("editor.procgen-script.id"),
+                                                              "Generator module id must not be empty");
     if (spec.kind != "points")
-        return fail<editing::DomainOperation>(EditorStatus::Unsupported, "editor.procgen-script.kind",
-                                              "Only kind=points generators are supported in this editor version");
+        return eve::editing::failed<editing::DomainOperation>(
+            EditorStatus::Unsupported, editing::RuleId("editor.procgen-script.kind"),
+            "Only kind=points generators are supported in this editor version");
     if (spec.params.size() > 128)
-        return fail<editing::DomainOperation>(EditorStatus::Rejected, "editor.procgen-script.schema-size",
-                                              "Generator schema exceeds 128 parameters");
+        return eve::editing::failed<editing::DomainOperation>(EditorStatus::Rejected,
+                                                              editing::RuleId("editor.procgen-script.schema-size"),
+                                                              "Generator schema exceeds 128 parameters");
 
     ProcgenScriptDocumentTarget candidate = *this;
     candidate.applySpec(std::move(spec));
     if (hasErrors(candidate.validate()))
-        return fail<editing::DomainOperation>(EditorStatus::Rejected, "editor.procgen-script.invalid",
-                                              "Generator module validation failed");
+        return eve::editing::failed<editing::DomainOperation>(EditorStatus::Rejected,
+                                                              editing::RuleId("editor.procgen-script.invalid"),
+                                                              "Generator module validation failed");
 
     editing::DomainOperation operation;
     operation.type        = "procgen.script.replace.v1";
@@ -385,8 +391,9 @@ EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeSet(
     const auto descriptor = schema(selection).find(path);
     if (!matches(selection) || !descriptor || mode != editing::PropertySetMode::Absolute ||
         !editing::validatePropertyValue(*descriptor, value).ok())
-        return fail<editing::DomainOperation>(EditorStatus::Rejected, "editor.procgen-script.set",
-                                              "Generator parameter edit is invalid");
+        return eve::editing::failed<editing::DomainOperation>(EditorStatus::Rejected,
+                                                              editing::RuleId("editor.procgen-script.set"),
+                                                              "Generator parameter edit is invalid");
     auto values                    = values_;
     values[path.value().substr(6)] = value;
     editing::DomainOperation operation;
@@ -409,8 +416,9 @@ EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeReset(
     const editing::SelectionSnapshot& selection, const editing::PropertyPath& path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return fail<editing::DomainOperation>(EditorStatus::Unsupported, "editor.procgen-script.property",
-                                              "Unknown generator parameter");
+        return eve::editing::failed<editing::DomainOperation>(EditorStatus::Unsupported,
+                                                              editing::RuleId("editor.procgen-script.property"),
+                                                              "Unknown generator parameter");
     return makeSet(selection, path, descriptor->defaultValue, editing::PropertySetMode::Absolute);
 }
 
@@ -436,8 +444,8 @@ std::vector<EditorDiagnostic> ProcgenScriptDocumentTarget::validate() const {
 
 EditorResult<void> ProcgenScriptDocumentTarget::applyDomainOperation(const editing::DomainOperation& operation) {
     if (operation.target != editing::TargetId(id_) || operation.type != "procgen.script.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.procgen-script.operation",
-                          "Generator operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, editing::RuleId("editor.procgen-script.operation"),
+                                          "Generator operation is invalid");
     const auto parsed = parseSpec(requireString(operation.payload, "uri"), requireString(operation.payload, "id"),
                                   requireString(operation.payload, "displayName"),
                                   requireString(operation.payload, "kind", "points"),
@@ -447,15 +455,15 @@ EditorResult<void> ProcgenScriptDocumentTarget::applyDomainOperation(const editi
     const EditorValue* valuesField = field(operation.payload, "values");
     const auto*        values      = valuesField ? valuesField->getIf<EditorValue::Object>() : nullptr;
     if (!values || values->size() > 128)
-        return fail<void>(EditorStatus::Rejected, "editor.procgen-script.payload",
-                          "Generator payload is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, editing::RuleId("editor.procgen-script.payload"),
+                                          "Generator payload is invalid");
 
     ProcgenScriptDocumentTarget candidate = *this;
     candidate.applySpec(parsed.value());
     candidate.values_ = *values;
     if (hasErrors(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.procgen-script.invalid",
-                          "Generator validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, editing::RuleId("editor.procgen-script.invalid"),
+                                          "Generator validation failed");
     *this = std::move(candidate);
     ++revision_;
     dirty_.include(0, 0);
@@ -470,8 +478,8 @@ EditorResult<void> ProcgenScriptDocumentTarget::commitDomainState(
     std::unique_ptr<editing::IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ProcgenScriptDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.procgen-script.candidate",
-                          "Generator candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, editing::RuleId("editor.procgen-script.candidate"),
+                                          "Generator candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -485,8 +493,8 @@ EditorResult<void> ProcgenScriptDocumentTarget::loadSnapshot(const EditorValue& 
     const EditorValue* content      = field(snapshot, "content");
     const auto*        version      = versionField ? versionField->getIf<std::int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.procgen-script.snapshot",
-                          "Unsupported generator snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, editing::RuleId("editor.procgen-script.snapshot"),
+                                          "Unsupported generator snapshot");
     editing::DomainOperation operation;
     operation.target  = editing::TargetId(id_);
     operation.type    = "procgen.script.replace.v1";

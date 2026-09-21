@@ -170,9 +170,10 @@ void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("loadMeshShaderSpv", [vm](Graphics* self, const std::string& vertex,
                                          const std::string& fragment) {
         auto result = loadMeshShader(*self, vertex, fragment);
-        if (!result) return eve::script::projectStatusResult(vm, result.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, result.status(), true, true);
+        if (!result) return eve::script::projectStatusResult(vm, result.status());
+        auto projected = eve::script::projectStatusResult(vm, result.status());
         projected.set("value", &result.value().get());
+        eve::script::markResultHasValue(projected);
         projected.set("ownership", std::string("borrowed-from-graphics"));
         return projected;
     });

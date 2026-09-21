@@ -26,9 +26,8 @@ void exposeVegetationScriptBindings(ssq::Table& table, ssq::Class& graphicsClass
                                                      std::function<VegetationField*()>([] { return nullptr; }), false);
     graphicsClass.addFunc("newVegetationField", [vm](Graphics*) {
         auto owned = script::makeOwnedSquirrelInstance(vm, std::make_unique<VegetationField>());
-        if (!owned.ok()) return script::projectStatusResult(vm, owned.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(), true, true);
-        result.set("value", std::move(owned).takeValue());
+        if (!owned.ok()) return script::projectStatusResult(vm, owned.status());
+        auto result = script::projectStatusResult(vm, Status::success(), std::move(owned).takeValue());
         result.set("ownership", std::string("owned"));
         return result;
     });
@@ -62,9 +61,8 @@ void exposeVegetationScriptBindings(ssq::Table& table, ssq::Class& graphicsClass
         "VegetationDetails", std::function<VegetationDetailSettings*()>([] { return nullptr; }), false);
     graphicsClass.addFunc("newVegetationDetails", [vm](Graphics*) {
         auto owned = script::makeOwnedSquirrelInstance(vm, std::make_unique<VegetationDetailSettings>());
-        if (!owned.ok()) return script::projectStatusResult(vm, owned.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(), true, true);
-        result.set("value", std::move(owned).takeValue());
+        if (!owned.ok()) return script::projectStatusResult(vm, owned.status());
+        auto result = script::projectStatusResult(vm, Status::success(), std::move(owned).takeValue());
         result.set("ownership", std::string("owned"));
         return result;
     });

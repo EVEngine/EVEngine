@@ -8,11 +8,6 @@
 namespace eve::animation_editing {
 namespace {
 
-template <class T>
-EditorResult<T> animationError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -54,8 +49,8 @@ GraphConnectionDecision AnimationStateGraphDomain::canConnect(const GraphPinReco
 EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const GraphNodeId& id,
                                                                        const std::string& clipAsset) const {
     if (id.empty() || clipAsset.empty())
-        return animationError<GraphNodeRecord>(EditorStatus::Rejected, "editor.animation.invalid-state",
-                                               "Animation state id and clip asset are required");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.animation.invalid-state"),
+                                                     "Animation state id and clip asset are required");
     GraphNodeRecord node;
     node.id = id;
     node.type = "animation.state";
@@ -71,8 +66,9 @@ EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeStateNode(const Gra
 
 EditorResult<GraphNodeRecord> AnimationStateGraphDomain::makeTransitionNode(const GraphNodeId& id) const {
     if (id.empty())
-        return animationError<GraphNodeRecord>(EditorStatus::Rejected, "editor.animation.invalid-transition",
-                                               "Animation transition id is required");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected,
+                                                     RuleId("editor.animation.invalid-transition"),
+                                                     "Animation transition id is required");
     GraphNodeRecord node;
     node.id = id;
     node.type = "animation.transition";

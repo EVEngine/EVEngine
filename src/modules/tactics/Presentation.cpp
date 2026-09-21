@@ -12,11 +12,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 /** @brief Resting state of a subject, defaulting to the neutral resting state. */
 UnitVisualState restingFor(const PresentationFrame& frame, SubjectRef subject) {
     const auto found = frame.restingState.find(subject.format());
@@ -120,8 +115,8 @@ Result<std::vector<PresentationCommand>> PresentationProjector::project(const Ba
 Result<PresentationIntent> PresentationProjector::revert(const PresentationIntent& intent,
                                                         const PresentationRevert& spec) const {
     if (!spec.isRevertable())
-        return failure<PresentationIntent>(DiagnosticCode::Unsupported,
-                                          "durable presentation intent cannot be reverted", "presentation.revert");
+        return Result<PresentationIntent>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "durable presentation intent cannot be reverted", "presentation.revert"));
     PresentationIntent inverse;
     inverse.sequence = spec.sequence;
     inverse.subject  = intent.subject;

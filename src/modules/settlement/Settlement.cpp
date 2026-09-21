@@ -9,45 +9,38 @@
 namespace eve::settlement {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <class T>
-eve::Result<T> failure(eve::Status status) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
 eve::Result<void> success(eve::StatusCode code = eve::StatusCode::Ok) {
     return eve::Result<void>::success(eve::Status::success(code));
 }
 
 eve::Result<void> validateFiniteNonNegative(double value, std::string_view name) {
     if (!std::isfinite(value) || value < 0.0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             std::string(name) + " must be finite and non-negative", std::string(name));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 std::string(name) + " must be finite and non-negative",
+                                                                 std::string(name)));
     return eve::Result<void>::success();
 }
 
 eve::Result<void> validateRequest(const SettlementRequest& request) {
     if (!request.target.isValid())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "settlement target must be a valid SubjectRef",
-                             "target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "settlement target must be a valid SubjectRef", "target"));
     if (request.kind.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "settlement kind must not be empty", "kind");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "settlement kind must not be empty", "kind"));
 
     auto magnitude = validateFiniteNonNegative(request.magnitude, "magnitude");
     if (!magnitude) {
         const auto status = magnitude.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     if (!request.causation.isCanonical())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "settlement causation must use a canonical event or command id", "causation");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "settlement causation must use a canonical event or command id", "causation"));
     if (!request.correlation.isCanonical())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "settlement correlation must use a canonical id",
-                             "correlation");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "settlement correlation must use a canonical id", "correlation"));
     return eve::Result<void>::success();
 }
 
@@ -55,17 +48,17 @@ eve::Result<void> validateFrame(const SettlementContext& context) {
     auto magnitude = validateFiniteNonNegative(context.magnitude(), "working magnitude");
     if (!magnitude) {
         const auto status = magnitude.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto absorbed = validateFiniteNonNegative(context.projectedResult().absorbed, "absorbed");
     if (!absorbed) {
         const auto status = absorbed.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto resisted = validateFiniteNonNegative(context.projectedResult().resisted, "resisted");
     if (!resisted) {
         const auto status = resisted.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     return eve::Result<void>::success();
 }
@@ -91,8 +84,9 @@ eve::Result<game_event::GameEvent> makeEvent(const SettlementContext& context) {
 
     auto schema = eve::LogicalId::parse("settlement:result");
     if (!schema)
-        return failure<game_event::GameEvent>(eve::DiagnosticCode::InvariantViolation,
-                                              "settlement result schema id is not a valid LogicalId", "event.schemaId");
+        return eve::Result<game_event::GameEvent>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "settlement result schema id is not a valid LogicalId", "event.schemaId"));
 
     eve::Value::Object payload;
     payload["kind"]      = request.kind;
@@ -127,7 +121,7 @@ eve::Result<game_event::GameEvent> makeEvent(const SettlementContext& context) {
     auto encoded = eve::Value(std::move(payload)).toJson();
     if (!encoded) {
         const auto status = encoded.status();
-        return failure<game_event::GameEvent>(status);
+        return eve::Result<game_event::GameEvent>::failure(status);
     }
 
     game_event::GameEvent envelope;
@@ -208,8 +202,8 @@ bool PreparedApply::isValid() const noexcept {
 eve::Result<void> PreparedApply::commit() {
     if (committed_) return success(eve::StatusCode::Applied);
     if (!isValid())
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "settlement mutation is empty or already rolled back", "apply");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "settlement mutation is empty or already rolled back", "apply"));
 
     try {
         auto       outcome = commit_();
@@ -219,13 +213,13 @@ eve::Result<void> PreparedApply::commit() {
             return outcome;
         }
         const auto status = outcome.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     } catch (const std::exception& exception) {
-        return failure<void>(eve::DiagnosticCode::Failed,
-                             std::string("settlement apply commit threw: ") + exception.what(), "apply");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("settlement apply commit threw: ") + exception.what(), "apply"));
     } catch (...) {
-        return failure<void>(eve::DiagnosticCode::Failed, "settlement apply commit threw an unknown exception",
-                             "apply");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "settlement apply commit threw an unknown exception", "apply"));
     }
 }
 
@@ -250,13 +244,13 @@ SettlementContext::SettlementContext(const SettlementRequest& request, Settlemen
 eve::Result<void> SettlementContext::setMagnitude(double value) {
     if (applyPrepared_) {
         recordMutationViolation("settlement magnitude cannot change after apply preparation", "magnitude");
-        return failure<void>(eve::DiagnosticCode::Conflict, "settlement magnitude is frozen after apply preparation",
-                             "magnitude");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement magnitude is frozen after apply preparation", "magnitude"));
     }
     auto valid = validateFiniteNonNegative(value, "working magnitude");
     if (!valid) {
         const auto status = valid.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     magnitude_ = value;
     return eve::Result<void>::success();
@@ -265,16 +259,17 @@ eve::Result<void> SettlementContext::setMagnitude(double value) {
 eve::Result<void> SettlementContext::addAbsorbed(double value) {
     if (applyPrepared_) {
         recordMutationViolation("settlement absorbed amount cannot change after apply preparation", "absorbed");
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "settlement absorbed amount is frozen after apply preparation", "absorbed");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement absorbed amount is frozen after apply preparation", "absorbed"));
     }
     auto valid = validateFiniteNonNegative(value, "absorbed amount");
     if (!valid) {
         const auto status = valid.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     if (value > std::numeric_limits<double>::max() - absorbed_)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "absorbed amount overflowed", "absorbed");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "absorbed amount overflowed", "absorbed"));
     absorbed_ += value;
     return eve::Result<void>::success();
 }
@@ -282,16 +277,17 @@ eve::Result<void> SettlementContext::addAbsorbed(double value) {
 eve::Result<void> SettlementContext::addResisted(double value) {
     if (applyPrepared_) {
         recordMutationViolation("settlement resisted amount cannot change after apply preparation", "resisted");
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "settlement resisted amount is frozen after apply preparation", "resisted");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement resisted amount is frozen after apply preparation", "resisted"));
     }
     auto valid = validateFiniteNonNegative(value, "resisted amount");
     if (!valid) {
         const auto status = valid.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     if (value > std::numeric_limits<double>::max() - resisted_)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "resisted amount overflowed", "resisted");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "resisted amount overflowed", "resisted"));
     resisted_ += value;
     return eve::Result<void>::success();
 }
@@ -299,16 +295,17 @@ eve::Result<void> SettlementContext::addResisted(double value) {
 eve::Result<void> SettlementContext::addClamped(double value) {
     if (applyPrepared_) {
         recordMutationViolation("settlement clamped amount cannot change after apply preparation", "clamped");
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "settlement clamped amount is frozen after apply preparation", "clamped");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement clamped amount is frozen after apply preparation", "clamped"));
     }
     auto valid = validateFiniteNonNegative(value, "clamped amount");
     if (!valid) {
         const auto status = valid.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     if (value > std::numeric_limits<double>::max() - clamped_)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "clamped amount overflowed", "clamped");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "clamped amount overflowed", "clamped"));
     clamped_ += value;
     return eve::Result<void>::success();
 }
@@ -316,14 +313,14 @@ eve::Result<void> SettlementContext::addClamped(double value) {
 eve::Result<void> SettlementContext::setClampMax(std::optional<double> value) {
     if (applyPrepared_) {
         recordMutationViolation("settlement clamp cannot change after apply preparation", "clamp");
-        return failure<void>(eve::DiagnosticCode::Conflict, "settlement clamp is frozen after apply preparation",
-                             "clamp");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement clamp is frozen after apply preparation", "clamp"));
     }
     if (value) {
         auto valid = validateFiniteNonNegative(*value, "clamp maximum");
         if (!valid) {
             const auto status = valid.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
     }
     clampMax_ = value;
@@ -347,7 +344,7 @@ eve::Result<void> SettlementContext::applyClamp() {
         auto recorded = addClamped(lost);
         if (!recorded) {
             const auto status = recorded.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
     }
     magnitude_ = next;
@@ -356,17 +353,18 @@ eve::Result<void> SettlementContext::applyClamp() {
 
 eve::Result<void> SettlementContext::prepareApply() {
     if (applyPrepared_)
-        return failure<void>(eve::DiagnosticCode::Conflict, "settlement apply preparation may run only once", "apply");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement apply preparation may run only once", "apply"));
     auto       prepared   = policy().prepareApply(*this);
     const bool preparedOk = prepared.ok();
     if (!preparedOk) {
         const auto status = prepared.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto mutation = std::move(prepared).takeValue();
     if (!mutation.isValid())
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "settlement policy returned an invalid mutation",
-                             "apply");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "settlement policy returned an invalid mutation", "apply"));
     pendingApply_.emplace(std::move(mutation));
     applyPrepared_ = true;
     return eve::Result<void>::success();
@@ -374,13 +372,14 @@ eve::Result<void> SettlementContext::prepareApply() {
 
 eve::Result<void> SettlementContext::prepareEvent() {
     if (eventPrepared_)
-        return failure<void>(eve::DiagnosticCode::Conflict, "settlement event preparation may run only once", "event");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "settlement event preparation may run only once", "event"));
     synchronizeResult();
     auto       event   = makeEvent(*this);
     const bool eventOk = event.ok();
     if (!eventOk) {
         const auto status = event.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     pendingEvent_.emplace(std::move(event).takeValue());
     eventPrepared_ = true;
@@ -422,7 +421,7 @@ SettlementPipeline::SettlementPipeline() {
         const bool genericOk = generic.ok();
         if (!genericOk) {
             const auto status = generic.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
         return context.policy().validate(context);
     });
@@ -437,7 +436,7 @@ SettlementPipeline::SettlementPipeline() {
         const bool configuredOk = configured.ok();
         if (!configuredOk) {
             const auto status = configured.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
         return context.applyClamp();
     });
@@ -460,19 +459,19 @@ SettlementPipeline::SettlementPipeline() {
 
 eve::Result<void> SettlementPipeline::addStage(StageKind kind, std::string name, int priority, StageFunction function) {
     if (name.empty())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "settlement stage name must not be empty",
-                             "stage.name");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "settlement stage name must not be empty", "stage.name"));
     if (!function)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "settlement stage function must not be empty",
-                             "stage.function");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "settlement stage function must not be empty", "stage.function"));
     const auto duplicate =
         std::find_if(stages_.begin(), stages_.end(), [&](const auto& stage) { return stage.name == name; });
     if (duplicate != stages_.end())
-        return failure<void>(eve::DiagnosticCode::AlreadyExists, "settlement stage name is already registered",
-                             "stage.name");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::AlreadyExists, "settlement stage name is already registered", "stage.name"));
     if (nextRegistration_ == std::numeric_limits<std::uint64_t>::max())
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "settlement stage registration sequence exhausted", "stage");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "settlement stage registration sequence exhausted", "stage"));
     stages_.push_back(StageEntry{kind, std::move(name), priority, nextRegistration_++, false, std::move(function)});
     return eve::Result<void>::success();
 }
@@ -535,30 +534,30 @@ eve::Result<SettlementResult> SettlementPipeline::settle(const SettlementRequest
 
         if (!outcomeOk) {
             rollback();
-            return failure<SettlementResult>(stageFailureStatus(entry->name, outcomeStatus));
+            return eve::Result<SettlementResult>::failure(stageFailureStatus(entry->name, outcomeStatus));
         }
         if (!frameOk) {
             rollback();
-            return failure<SettlementResult>(stageFailureStatus(entry->name, frameStatus));
+            return eve::Result<SettlementResult>::failure(stageFailureStatus(entry->name, frameStatus));
         }
         if (violationPresent) {
             rollback();
-            return failure<SettlementResult>(stageFailureStatus(entry->name, violationStatus));
+            return eve::Result<SettlementResult>::failure(stageFailureStatus(entry->name, violationStatus));
         }
     }
 
     context.synchronizeResult();
     auto* pending = context.pendingApply();
     if (pending == nullptr)
-        return failure<SettlementResult>(eve::DiagnosticCode::InvariantViolation,
-                                         "settlement pipeline did not prepare an apply mutation", "apply");
+        return eve::Result<SettlementResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "settlement pipeline did not prepare an apply mutation", "apply"));
 
     auto       committed   = pending->commit();
     const bool committedOk = committed.ok();
     if (!committedOk) {
         const auto status = committed.status();
         rollback();
-        return failure<SettlementResult>(status);
+        return eve::Result<SettlementResult>::failure(status);
     }
 
     if (const auto* preparedEvent = context.pendingEvent()) {
@@ -571,7 +570,7 @@ eve::Result<SettlementResult> SettlementPipeline::settle(const SettlementRequest
                 if (!appendedOk) {
                     const auto status = appended.status();
                     rollback();
-                    return failure<SettlementResult>(status);
+                    return eve::Result<SettlementResult>::failure(status);
                 }
                 const auto sequence = std::move(appended).takeValue();
                 envelope.sequence   = sequence;
@@ -582,13 +581,13 @@ eve::Result<SettlementResult> SettlementPipeline::settle(const SettlementRequest
                 }
             } catch (const std::exception& exception) {
                 rollback();
-                return failure<SettlementResult>(
+                return eve::Result<SettlementResult>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::Failed,
-                    std::string("settlement result event append threw: ") + exception.what(), "event");
+                    std::string("settlement result event append threw: ") + exception.what(), "event"));
             } catch (...) {
                 rollback();
-                return failure<SettlementResult>(eve::DiagnosticCode::Failed,
-                                                 "settlement result event append threw an unknown exception", "event");
+                return eve::Result<SettlementResult>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "settlement result event append threw an unknown exception", "event"));
             }
         }
     }

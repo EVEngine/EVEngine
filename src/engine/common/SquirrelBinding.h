@@ -77,16 +77,42 @@ struct EVENGINE_API SquirrelValueOptions {
 [[nodiscard]] EVENGINE_API ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status);
 
 /**
- * @brief Project an already-consumed native status and optional Value payload.
+ * @brief Project a checked native status that carries no payload.
  * @param vm Active Squirrel VM.
  * @param status Native status copied from the checked Result.
- * @param ok Whether the native operation completed successfully.
- * @param hasValue Whether the native Result had a payload.
- * @param value Payload to expose when `hasValue` is true.
+ * @return A table with the stable Result projection schema and `hasValue = false`.
+ * @remarks `ok` is derived from `status`, so a caller can no longer hand the same
+ *          outcome twice and make the table contradict itself.
+ */
+[[nodiscard]] EVENGINE_API ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status);
+
+/**
+ * @brief Project a checked native status together with its canonical payload.
+ * @param vm Active Squirrel VM.
+ * @param status Native status copied from the checked Result.
+ * @param value Payload to expose; passing one sets `hasValue = true`.
  * @return A table with the stable Result projection schema.
  */
-[[nodiscard]] EVENGINE_API ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, bool ok, bool hasValue,
-                                                          const Value& value = {});
+[[nodiscard]] EVENGINE_API ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, const Value& value);
+
+/**
+ * @brief Project a checked native status together with an already-bound script object.
+ * @param vm Active Squirrel VM.
+ * @param status Native status copied from the checked Result.
+ * @param value Payload produced by makeOwnedSquirrelInstance/makeOwnedProxy and friends.
+ * @return A table with the stable Result projection schema.
+ * @remarks Payload presence is carried by the overload; there is no flag to disagree with.
+ */
+[[nodiscard]] EVENGINE_API ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, ssq::Object value);
+
+/**
+ * @brief Declare that a projected table received a payload the caller attached itself.
+ * @param result Table returned by a payload-free projectStatusResult call.
+ * @remarks For payloads that only simplesquirrel can bind (a raw registered pointer, for
+ *          example). Sets `hasValue = true` so the schema stays truthful; call it in the
+ *          same statement that attaches the value, never on its own.
+ */
+EVENGINE_API void markResultHasValue(ssq::Table& result);
 
 /**
  * @brief Consume and project a value-bearing native Result.
@@ -101,13 +127,11 @@ struct EVENGINE_API SquirrelValueOptions {
  */
 template <class T, class Projector>
 [[nodiscard]] ssq::Table projectResult(HSQUIRRELVM vm, Result<T>&& result, Projector&& projector) {
-    const bool   hasValue = result.ok();
-    const Status status   = result.status();
-    if (!hasValue) return projectStatusResult(vm, status, false, false);
+    if (!result.ok()) return projectStatusResult(vm, result.status());
 
-    T payload = std::move(result).takeValue();
-    return projectStatusResult(vm, status, true, true,
-                               std::invoke(std::forward<Projector>(projector), std::move(payload)));
+    const Status status  = result.status();
+    T            payload = std::move(result).takeValue();
+    return projectStatusResult(vm, status, std::invoke(std::forward<Projector>(projector), std::move(payload)));
 }
 
 /** @brief Consume and project a void native Result using the common schema. */

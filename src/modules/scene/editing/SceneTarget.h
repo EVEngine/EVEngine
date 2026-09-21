@@ -73,7 +73,8 @@ public:
  * Concrete subclasses differ only in host-facing target type. The mutation
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
-class SceneTargetBase : public virtual IEditableTarget,
+class SceneTargetBase : public ::eve::editing::EditableTargetState,
+                        public virtual IEditableTarget,
                         public IDomainOperationTarget,
                         public IDomainOperationTargetStaging,
                         public eve::editing::IEditingSnapshotProvider,
@@ -83,10 +84,7 @@ public:
     SceneTargetBase(std::string id, std::string type);
     ~SceneTargetBase() override = default;
 
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion         dirtyRegion() const override { return dirty_; }
-    void               clearDirtyRegion() override { dirty_.clear(); }
+    TargetId           targetId() const override { return TargetId(id_); }
     TargetDescriptor   describe() const override;
     /** @return Borrowed non-owning capability pointer, or null. @lifetime Valid until this target is mutated or destroyed. */
     void*              queryCapability(const CapabilityId& capability) override;
@@ -129,8 +127,6 @@ private:
 
     std::string                             id_;
     std::string                             type_;
-    unsigned long long                      revision_ = 0;
-    EditRegion                              dirty_;
     std::map<ObjectId, SceneObjectSnapshot> objects_;
     SceneComponentPayloadRegistry*          componentPayloads_ = nullptr;
 };

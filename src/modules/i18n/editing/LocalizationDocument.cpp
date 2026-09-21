@@ -6,11 +6,6 @@
 namespace eve::localization_editing {
 namespace {
 
-template <class T>
-EditorResult<T> localizationError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 std::set<std::string> placeholders(const std::string& text) {
     std::set<std::string> result;
     for (size_t start = text.find('{'); start != std::string::npos; start = text.find('{', start + 1)) {
@@ -42,11 +37,11 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 
 EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sourceText, std::string context) {
     if (key.empty() || sourceText.empty())
-        return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-source",
-                                       "Localization key and source text are required");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-source"),
+                                          "Localization key and source text are required");
     if (rows_.contains(key))
-        return localizationError<void>(EditorStatus::Conflict, "editor.localization.duplicate-key",
-                                       "Localization key already exists: " + key);
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.localization.duplicate-key"),
+                                          "Localization key already exists: " + key);
     LocalizationRow row;
     row.key        = key;
     row.context    = std::move(context);
@@ -58,8 +53,8 @@ EditorResult<void> LocalizationDocument::addRow(std::string key, std::string sou
 
 EditorResult<void> LocalizationDocument::removeRow(const std::string& key) {
     if (rows_.erase(key) == 0)
-        return localizationError<void>(EditorStatus::NotFound, "editor.localization.key-not-found",
-                                       "Localization key was not found: " + key);
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.localization.key-not-found"),
+                                          "Localization key was not found: " + key);
     ++revision_;
     return eve::editing::applied<void>();
 }
@@ -68,15 +63,15 @@ EditorResult<void> LocalizationDocument::setVariant(const std::string& key, std:
                                                     LocalizationVariant variant) {
     auto row = rows_.find(key);
     if (row == rows_.end())
-        return localizationError<void>(EditorStatus::NotFound, "editor.localization.key-not-found",
-                                       "Localization key was not found: " + key);
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.localization.key-not-found"),
+                                          "Localization key was not found: " + key);
     if (locale.empty() || variant.voiceDuration < 0.0)
-        return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-variant",
-                                       "Locale is required and voice duration cannot be negative");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-variant"),
+                                          "Locale is required and voice duration cannot be negative");
     static const std::set<std::string> statuses{"", "missing", "recording", "review", "approved"};
     if (!statuses.contains(variant.voiceStatus))
-        return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-voice-status",
-                                       "Unknown voice production status: " + variant.voiceStatus);
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-voice-status"),
+                                          "Unknown voice production status: " + variant.voiceStatus);
     row->second.variants[std::move(locale)] = std::move(variant);
     ++revision_;
     return eve::editing::applied<void>();
@@ -155,8 +150,8 @@ EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapsho
     const auto* version   = schema ? schema->getIf<int64_t>() : nullptr;
     const auto* rows      = rowsValue ? rowsValue->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !rows)
-        return localizationError<void>(EditorStatus::Unsupported, "editor.localization.invalid-snapshot",
-                                       "Localization snapshot schema is unsupported");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.localization.invalid-snapshot"),
+                                          "Localization snapshot schema is unsupported");
     LocalizationDocument candidate;
     for (const EditorValue& rowValue : *rows) {
         const auto* keyValue      = field(rowValue, "key");
@@ -168,8 +163,8 @@ EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapsho
         const auto* context       = contextValue ? contextValue->getIf<std::string>() : nullptr;
         const auto* variants      = variantsValue ? variantsValue->getIf<EditorValue::Object>() : nullptr;
         if (!key || !source || !context || !variants || !candidate.addRow(*key, *source, *context).ok())
-            return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-row",
-                                           "Localization snapshot contains an invalid source row");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-row"),
+                                              "Localization snapshot contains an invalid source row");
         for (const auto& [locale, variantValue] : *variants) {
             const auto* textValue     = field(variantValue, "text");
             const auto* assetValue    = field(variantValue, "voiceAsset");
@@ -181,8 +176,8 @@ EditorResult<void> LocalizationDocument::loadSnapshot(const EditorValue& snapsho
             const auto* duration      = durationValue ? durationValue->getIf<double>() : nullptr;
             if (!text || !asset || !status || !duration ||
                 !candidate.setVariant(*key, locale, {*text, *asset, *status, *duration}).ok())
-                return localizationError<void>(EditorStatus::Rejected, "editor.localization.invalid-variant",
-                                               "Localization snapshot contains an invalid locale variant");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.localization.invalid-variant"),
+                                                  "Localization snapshot contains an invalid locale variant");
         }
     }
     rows_ = std::move(candidate.rows_);

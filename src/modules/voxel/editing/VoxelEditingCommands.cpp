@@ -43,11 +43,6 @@ bool readBool(const editing::Value& value, const char* key, bool& output, bool r
     return true;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::Result<void> addCommand(editing::IEditingCommandRegistry& registry, const char* id, const char* displayName,
                                  editing::EditingCommandPlanner planner) {
     editing::EditingCommandDescriptor descriptor;
@@ -79,8 +74,8 @@ editing::SelectionSnapshot selectionFor(const VoxelCatalogTarget& target, const 
 editing::Result<editing::CommandPlan> planFrom(editing::Result<editing::DomainOperation> operation,
                                                editing::Value summary) {
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "voxel.editing.operation",
-                                           "Voxel catalog rejected the planned edit");
+        return eve::editing::failed<editing::CommandPlan>(operation.code(), editing::RuleId("voxel.editing.operation"),
+                                                          "Voxel catalog rejected the planned edit");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation).takeValue());
     plan.summary = std::move(summary);
@@ -96,8 +91,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             auto* catalog = asCatalog(target);
             const std::string* id = stringField(request.payload, "id");
             if (!catalog || !id || id->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "voxel.editing.model-payload",
-                                                   "Voxel model create requires id");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("voxel.editing.model-payload"),
+                                                                  "Voxel model create requires id");
             const std::string* name = stringField(request.payload, "name");
             VoxelModelValue model;
             model.id   = editing::ObjectId(*id);
@@ -105,8 +101,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             if (!readInt(request.payload, "sizeX", model.sizeX, false) ||
                 !readInt(request.payload, "sizeY", model.sizeY, false) ||
                 !readInt(request.payload, "sizeZ", model.sizeZ, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "voxel.editing.size",
-                                                   "Voxel model size must be integers");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("voxel.editing.size"),
+                                                                  "Voxel model size must be integers");
             return planFrom(catalog->makeCreateModel(model), editing::Value::Object{{"id", *id}});
         });
     if (!registered.ok()) return registered;
@@ -117,8 +114,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             auto* catalog = asCatalog(target);
             const std::string* id = stringField(request.payload, "id");
             if (!catalog || !id || id->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "voxel.editing.model-payload",
-                                                   "Voxel model delete requires id");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("voxel.editing.model-payload"),
+                                                                  "Voxel model delete requires id");
             return planFrom(catalog->makeDeleteModel(editing::ObjectId(*id)), editing::Value::Object{{"id", *id}});
         });
     if (!registered.ok()) return registered;
@@ -133,8 +131,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             if (!catalog || !item || item->empty() || !readInt(request.payload, "x", x, true) ||
                 !readInt(request.payload, "y", y, true) || !readInt(request.payload, "z", z, true) ||
                 !readBool(request.payload, "occupied", occupied, true))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "voxel.editing.voxel-payload",
-                                                   "Voxel occupancy requires item, x, y, z and occupied");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("voxel.editing.voxel-payload"),
+                    "Voxel occupancy requires item, x, y, z and occupied");
             return planFrom(catalog->makeSetVoxel(editing::ObjectId(*item), x, y, z, occupied),
                             editing::Value::Object{{"item", *item}});
         });
@@ -150,8 +149,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const std::string* path = stringField(request.payload, "path");
             const editing::Value* value = field(request.payload, "value");
             if (!catalog || !properties || !item || item->empty() || !path || !value)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "voxel.editing.property-payload",
-                                                   "Voxel property requires item, path and value");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("voxel.editing.property-payload"),
+                                                                  "Voxel property requires item, path and value");
             return planFrom(properties->makeSet(selectionFor(*catalog, *item), editing::PropertyPath(*path), *value,
                                                 editing::PropertySetMode::Absolute),
                             editing::Value::Object{{"item", *item}, {"path", *path}});

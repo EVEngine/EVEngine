@@ -5,11 +5,6 @@
 
 namespace eve::procgen {
 namespace {
-template <class T>
-Result<T> invalidPreset(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
-
 std::string namespacedRuleId(const std::string& entryId, const std::string& ruleId) {
     return std::to_string(entryId.size()) + ":" + entryId + ruleId;
 }
@@ -19,9 +14,11 @@ Result<int> TerrainBiomePreset::addSpawner(const std::string& entryId, const Ter
                                             bool activeInBiome, bool activeInStamper,
                                             bool autoAssignResources) {
     if (entryId.empty() || plan.rules().empty())
-        return invalidPreset<int>("terrain.biomePreset: nonempty entry ID and spawn plan required");
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.biomePreset: nonempty entry ID and spawn plan required"));
     if (std::any_of(entries_.begin(), entries_.end(), [&](const auto& entry) { return entry.entryId == entryId; }))
-        return invalidPreset<int>("terrain.biomePreset: unique entry ID required");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.biomePreset: unique entry ID required"));
     auto candidate = entries_;
     candidate.push_back({entryId, plan, activeInBiome, activeInStamper, autoAssignResources});
     entries_.swap(candidate);
@@ -33,7 +30,9 @@ Result<void> TerrainBiomePreset::setActiveInBiome(const std::string& entryId, bo
     auto found = std::find_if(candidate.begin(), candidate.end(), [&](const auto& entry) {
         return entry.entryId == entryId;
     });
-    if (found == candidate.end()) return invalidPreset<void>("terrain.biomePreset: entry ID not found");
+    if (found == candidate.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.biomePreset: entry ID not found"));
     found->activeInBiome = active;
     entries_.swap(candidate);
     return Result<void>::success();
@@ -44,7 +43,9 @@ Result<void> TerrainBiomePreset::setActiveInStamper(const std::string& entryId, 
     auto found = std::find_if(candidate.begin(), candidate.end(), [&](const auto& entry) {
         return entry.entryId == entryId;
     });
-    if (found == candidate.end()) return invalidPreset<void>("terrain.biomePreset: entry ID not found");
+    if (found == candidate.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.biomePreset: entry ID not found"));
     found->activeInStamper = active;
     entries_.swap(candidate);
     return Result<void>::success();
@@ -82,7 +83,9 @@ Result<TerrainSpawnPlan> TerrainBiomePreset::compile(bool biomeScope) const {
             if (!added.ok()) return Result<TerrainSpawnPlan>::failure(added.status());
         }
     }
-    if (result.rules().empty()) return invalidPreset<TerrainSpawnPlan>("terrain.biomePreset: no active spawners");
+    if (result.rules().empty())
+        return Result<TerrainSpawnPlan>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.biomePreset: no active spawners"));
     return Result<TerrainSpawnPlan>::success(std::move(result));
 }
 
@@ -94,7 +97,9 @@ Result<bool> TerrainBiomePreset::getAutoAssignResources(const std::string& entry
     auto found = std::find_if(entries_.begin(), entries_.end(), [&](const auto& entry) {
         return entry.entryId == entryId;
     });
-    if (found == entries_.end()) return invalidPreset<bool>("terrain.biomePreset: entry ID not found");
+    if (found == entries_.end())
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.biomePreset: entry ID not found"));
     return Result<bool>::success(found->autoAssignResources);
 }
 

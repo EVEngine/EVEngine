@@ -74,11 +74,6 @@ decision::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* car
 
 namespace {
 
-template <class T>
-eve::Result<T> cardFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Result<void> cardLifecycleConflict(std::string message) {
     return eve::Result<void>::failure(
         eve::Status::failure(eve::StatusCode::Conflict,
@@ -101,7 +96,8 @@ public:
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext&) override {
         if (prepared_ || committed_) return cardLifecycleConflict("card transfer participant is already in flight");
         if (&source_ == &destination_)
-            return cardFailure<void>(eve::DiagnosticCode::Conflict, "card play source and destination must differ");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "card play source and destination must differ", {}));
 
         auto sourceResult = source_.snapshot();
         if (!sourceResult) return eve::Result<void>::failure(sourceResult.status());
@@ -114,45 +110,47 @@ public:
         const auto sourceIt = std::find_if(beforeSource_.entries.begin(), beforeSource_.entries.end(),
                                            [&object](const auto& entry) { return entry.membership.object == object; });
         if (sourceIt == beforeSource_.entries.end())
-            return cardFailure<void>(eve::DiagnosticCode::NotFound, "card is not present in the source container",
-                                     "source");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "card is not present in the source container", "source"));
         if (sourceSlot_ && *sourceSlot_ != sourceIt->membership.slot)
-            return cardFailure<void>(eve::DiagnosticCode::StaleHandle, "card source slot is stale", "sourceSlot");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "card source slot is stale", "sourceSlot"));
 
         auto accepted = destination_.validateInsert(sourceIt->object, destinationSlot_, std::nullopt);
         if (!accepted) return accepted;
         if (destinationSlot_ && (destinationSlot_->value() < 0 || static_cast<std::size_t>(destinationSlot_->value()) >
                                                                       beforeDestination_.entries.size()))
-            return cardFailure<void>(eve::DiagnosticCode::InvalidArgument, "card destination slot is out of range",
-                                     "destinationSlot");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "card destination slot is out of range", "destinationSlot"));
 
         afterSource_ = beforeSource_;
         afterSource_.entries.erase(afterSource_.entries.begin() + (sourceIt - beforeSource_.entries.begin()));
         renumber(afterSource_);
         afterSource_.revision = nextRevision(beforeSource_.revision);
         if (afterSource_.revision == beforeSource_.revision)
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation, "source container revision is exhausted");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                     "source container revision is exhausted", {}));
 
         afterDestination_       = beforeDestination_;
         auto              moved = *sourceIt;
         const std::size_t insertion =
             destinationSlot_ ? static_cast<std::size_t>(destinationSlot_->value()) : afterDestination_.entries.size();
         if (insertion > afterDestination_.entries.size())
-            return cardFailure<void>(eve::DiagnosticCode::InvalidArgument, "card destination slot is out of range",
-                                     "destinationSlot");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "card destination slot is out of range", "destinationSlot"));
         afterDestination_.entries.insert(afterDestination_.entries.begin() + insertion, std::move(moved));
         renumber(afterDestination_);
         afterDestination_.revision = nextRevision(beforeDestination_.revision);
         if (afterDestination_.revision == beforeDestination_.revision)
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "destination container revision is exhausted");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "destination container revision is exhausted", {}));
 
         auto sourcePrepared = source_.prepare(beforeSource_, afterSource_);
         if (!sourcePrepared) return eve::Result<void>::failure(sourcePrepared.status());
         sourceStage_ = std::move(sourcePrepared).takeValue();
         if (!sourceStage_)
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "source container returned an empty stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                     "source container returned an empty stage", {}));
         auto destinationPrepared = destination_.prepare(beforeDestination_, afterDestination_);
         if (!destinationPrepared) {
             sourceStage_->rollback();
@@ -163,8 +161,8 @@ public:
         if (!destinationStage_) {
             sourceStage_->rollback();
             sourceStage_.reset();
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "destination container returned an empty stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "destination container returned an empty stage", {}));
         }
         prepared_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -197,22 +195,23 @@ public:
         if (!currentDestination) return eve::Result<void>::failure(currentDestination.status());
         if (currentSource.value().revision != afterSource_.revision ||
             currentDestination.value().revision != afterDestination_.revision)
-            return cardFailure<void>(eve::DiagnosticCode::StaleHandle, "card containers changed before compensation");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle, "card containers changed before compensation", {}));
         auto sourceCandidate          = beforeSource_;
         auto destinationCandidate     = beforeDestination_;
         sourceCandidate.revision      = nextRevision(currentSource.value().revision);
         destinationCandidate.revision = nextRevision(currentDestination.value().revision);
         if (sourceCandidate.revision == currentSource.value().revision ||
             destinationCandidate.revision == currentDestination.value().revision)
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "card transfer compensation revision is exhausted");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "card transfer compensation revision is exhausted", {}));
 
         auto sourceRestore = source_.prepare(currentSource.value(), sourceCandidate);
         if (!sourceRestore) return eve::Result<void>::failure(sourceRestore.status());
         auto sourceStage = std::move(sourceRestore).takeValue();
         if (!sourceStage)
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "source compensation returned an empty stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "source compensation returned an empty stage", {}));
         auto destinationRestore = destination_.prepare(currentDestination.value(), destinationCandidate);
         if (!destinationRestore) {
             sourceStage->rollback();
@@ -221,8 +220,8 @@ public:
         auto destinationStage = std::move(destinationRestore).takeValue();
         if (!destinationStage) {
             sourceStage->rollback();
-            return cardFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "destination compensation returned an empty stage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "destination compensation returned an empty stage", {}));
         }
         destinationStage->commit();
         sourceStage->commit();
@@ -308,11 +307,11 @@ eve::Result<void> CardPlayParticipant::compensate(const eve::transaction::Transa
 
 eve::Result<std::optional<eve::resource::CostSpec>> CardPlayPaymentAdapter::manaCost(const CardDefinition& definition) {
     if (definition.id.empty())
-        return cardFailure<std::optional<eve::resource::CostSpec>>(
-            eve::DiagnosticCode::InvalidArgument, "card definition id must not be empty", "definition.id");
+        return eve::Result<std::optional<eve::resource::CostSpec>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card definition id must not be empty", "definition.id"));
     if (definition.cost < 0)
-        return cardFailure<std::optional<eve::resource::CostSpec>>(
-            eve::DiagnosticCode::InvalidArgument, "card mana cost must not be negative", "definition.cost");
+        return eve::Result<std::optional<eve::resource::CostSpec>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card mana cost must not be negative", "definition.cost"));
     if (definition.cost == 0) return eve::Result<std::optional<eve::resource::CostSpec>>::success(std::nullopt);
     auto cost = eve::resource::CostSpec::single("mana", definition.cost);
     if (!cost) return eve::Result<std::optional<eve::resource::CostSpec>>::failure(cost.status());
@@ -332,14 +331,14 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(
 
 eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(CardPlayRequest request) {
     if (request.card == nullptr || request.definition == nullptr)
-        return cardFailure<eve::transaction::TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                 "card play requires a card and definition", "request");
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card play requires a card and definition", "request"));
     auto&       card       = *request.card;
     const auto& definition = *request.definition;
     if ((request.composition.source == nullptr) != (request.composition.destination == nullptr))
-        return cardFailure<eve::transaction::TransactionReceipt>(
-            eve::DiagnosticCode::InvalidArgument, "card play requires both source and destination containers",
-            "composition");
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "card play requires both source and destination containers", "composition"));
 
     const auto condition = CardPlayConditionAdapter::evaluate(&card, definition, definition.playCondition,
                                                               request.composition.conditionQueries);
@@ -354,9 +353,9 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
     auto cost = manaCost(definition);
     if (!cost) return eve::Result<eve::transaction::TransactionReceipt>::failure(cost.status());
     if (cost.value() && request.playerAccount == nullptr)
-        return cardFailure<eve::transaction::TransactionReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                 "a mana-bearing card play requires a player account",
-                                                                 "playerAccount");
+        return eve::Result<eve::transaction::TransactionReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "a mana-bearing card play requires a player account", "playerAccount"));
     if (request.transactionId.empty()) request.transactionId = "card.play." + definition.id;
 
     CardPlayParticipant                                     state(card);

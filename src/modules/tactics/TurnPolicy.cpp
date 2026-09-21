@@ -12,11 +12,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 /**
  * @brief Group a side's units together, in declared side order.
  *
@@ -86,12 +81,12 @@ ChargeModel ITurnPolicy::chargeModel(const Battle&) const { return ChargeModel{}
 
 Result<void> TurnPolicyRegistry::add(std::shared_ptr<const ITurnPolicy> policy) {
     if (policy == nullptr || policy->id().empty())
-        return failure<void>(DiagnosticCode::InvalidArgument, "tactics turn policy requires a non-empty stable id",
-                             "turnPolicy.id");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "tactics turn policy requires a non-empty stable id", "turnPolicy.id"));
     const std::string key(policy->id());
     if (policies_.contains(key))
-        return failure<void>(DiagnosticCode::Conflict, "tactics turn policy id is already registered",
-                             "turnPolicy.id");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "tactics turn policy id is already registered", "turnPolicy.id"));
     policies_.emplace(key, std::move(policy));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -99,8 +94,8 @@ Result<void> TurnPolicyRegistry::add(std::shared_ptr<const ITurnPolicy> policy) 
 Result<const ITurnPolicy*> TurnPolicyRegistry::find(std::string_view id) const {
     const auto found = policies_.find(id);
     if (found == policies_.end())
-        return failure<const ITurnPolicy*>(DiagnosticCode::NotFound, "tactics turn policy is not registered",
-                                           "turnPolicy");
+        return Result<const ITurnPolicy*>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics turn policy is not registered", "turnPolicy"));
     return Result<const ITurnPolicy*>::success(found->second.get());
 }
 

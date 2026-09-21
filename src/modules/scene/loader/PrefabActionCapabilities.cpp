@@ -29,11 +29,6 @@ using ActiveKey = std::pair<action::ActionExecutionId, std::string>;
 
 using PrefabLease = action::PrefabInstanceHandle;
 
-template <typename T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 struct WorldTransform {
     float x = 0.f;
     float y = 0.f;
@@ -69,14 +64,14 @@ public:
         auto* graphics = ModuleManager::getInstance<graphics::Graphics>("Graphics");
         auto* models = ModuleManager::getInstance<model3d::Model3D>("Model3D");
         if (!graphics || !models)
-            return fail<PrefabLease>(DiagnosticCode::NotFound,
-                                     "Prefab spawn requires Graphics and Model3D modules", "uri");
+            return Result<PrefabLease>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Prefab spawn requires Graphics and Model3D modules", "uri"));
         try {
             auto* model = models->newModelDataFromFile(uri);
             auto renderables = model3d::buildRenderables(*graphics, model);
             if (renderables.empty())
-                return fail<PrefabLease>(DiagnosticCode::Failed,
-                                         "Prefab model contains no renderable meshes", "uri");
+                return Result<PrefabLease>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "Prefab model contains no renderable meshes", "uri"));
             Slot slot;
             slot.uri = uri;
             slot.occupied = true;
@@ -88,7 +83,7 @@ public:
             setSlotVisible(slots_.back(), visible);
             return Result<PrefabLease>::success(PrefabLease(index, slots_.back().generation));
         } catch (const std::exception& error) {
-            return fail<PrefabLease>(DiagnosticCode::Failed, error.what(), "uri");
+            return Result<PrefabLease>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "uri"));
         }
     }
 
@@ -142,8 +137,8 @@ public:
         auto slot = resolve(lease);
         if (!slot) return Result<void>::failure(slot.status());
         if (!slot.value()->independent)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "Prefab instance is still owned by an action block", "instance");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Prefab instance is still owned by an action block", "instance"));
         return recycle(lease);
     }
 
@@ -159,10 +154,12 @@ private:
 
     [[nodiscard]] Result<Slot*> resolve(PrefabLease lease) {
         if (!lease.isValid() || lease.index() >= slots_.size())
-            return fail<Slot*>(DiagnosticCode::NotFound, "Prefab instance handle is invalid", "instance");
+            return Result<Slot*>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "Prefab instance handle is invalid", "instance"));
         auto& slot = slots_[lease.index()];
         if (!slot.occupied || slot.generation != lease.generation() || !allEntitiesAlive(slot))
-            return fail<Slot*>(DiagnosticCode::NotFound, "Prefab instance handle is missing or stale", "instance");
+            return Result<Slot*>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "Prefab instance handle is missing or stale", "instance"));
         return Result<Slot*>::success(&slot);
     }
 
@@ -269,18 +266,19 @@ public:
         const ActiveKey key{context.executionId, event.itemId.format()};
         if (event.kind == action::ActionTimelineEventKind::StateExit) return exit(key, context);
         if (event.kind != action::ActionTimelineEventKind::StateEnter)
-            return fail<void>(DiagnosticCode::InvalidArgument,
-                              "Prefab spawn requires state enter or exit", "event.kind");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "Prefab spawn requires state enter or exit", "event.kind"));
         if (active_.contains(key))
-            return fail<void>(DiagnosticCode::Conflict, "Prefab spawn state is already active", "itemId");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "Prefab spawn state is already active", "itemId"));
         auto binding = action::ActionPrefabSpawnBinding::fromPayload(event.payload);
         if (!binding) return Result<void>::failure(binding.status());
         auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return Result<void>::failure(pose.status());
         auto* instances = pool();
         if (!instances)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
         auto lease = instances->spawn(binding.value().uri, worldTransform(binding.value().spatial, pose.value()));
         if (!lease) return Result<void>::failure(lease.status());
         auto deadline = context.time.tryAdd(binding.value().customDuration);
@@ -298,15 +296,16 @@ public:
                         const action::ActionNotifyContext& context) override {
         const auto found = active_.find({context.executionId, block.itemId.format()});
         if (found == active_.end())
-            return fail<void>(DiagnosticCode::NotFound, "Active prefab state has no instance", "itemId");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "Active prefab state has no instance", "itemId"));
         auto& active = found->second;
         if (active.recycled) return Result<void>::success(Status::success(StatusCode::NoOp));
         if (active.binding.lifecycle == action::PrefabSpawnLifecycle::CustomDuration &&
             context.time >= active.deadline) {
             auto* instances = pool();
             if (!instances)
-                return fail<void>(DiagnosticCode::NotFound,
-                                  "SceneLoader prefab instance service is unavailable", "sceneloader");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
             auto recycled = instances->recycle(active.lease);
             if (!recycled) return recycled;
             active.recycled = true;
@@ -325,8 +324,8 @@ public:
         }
         auto* instances = pool();
         if (!instances)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
         return instances->update(active.lease, worldTransform(active.binding.spatial, active.pose));
     }
 
@@ -346,8 +345,8 @@ public:
             }
             auto* instances = pool();
             if (!instances)
-                return fail<void>(DiagnosticCode::NotFound,
-                                  "SceneLoader prefab instance service is unavailable", "sceneloader");
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
             auto recycled = instances->recycle(timed_[index].lease);
             if (!recycled) return recycled;
             timed_.erase(timed_.begin() + static_cast<std::ptrdiff_t>(index));
@@ -384,8 +383,8 @@ private:
         }
         auto* instances = pool();
         if (!instances)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
         auto result = found->second.binding.lifecycle == action::PrefabSpawnLifecycle::RecycleOnBlockExit
                           ? instances->recycle(found->second.lease)
                           : instances->makeIndependent(found->second.lease);
@@ -403,8 +402,8 @@ private:
             attachments = context.sourceAttachment;
         } else {
             if (spatial.targetIndex >= context.targets.size())
-                return fail<EntitySpatialPose>(DiagnosticCode::NotFound,
-                                               "Prefab target index is unavailable", "targetIndex");
+                return Result<EntitySpatialPose>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "Prefab target index is unavailable", "targetIndex"));
             handle = context.targets[spatial.targetIndex];
             if (spatial.targetIndex < context.targetAttachments.size())
                 attachments = context.targetAttachments[spatial.targetIndex];
@@ -417,8 +416,8 @@ private:
         }
         if (spatial.bone.empty()) return Result<EntitySpatialPose>::success(std::move(pose));
         if (!attachments)
-            return fail<EntitySpatialPose>(DiagnosticCode::Unsupported,
-                                           "Prefab bone requires an attachment source", "bone");
+            return Result<EntitySpatialPose>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "Prefab bone requires an attachment source", "bone"));
         auto point = attachments->get().sampleAttachmentPoint(
             spatial.bone, {static_cast<float>(spatial.positionOffset.x),
                            static_cast<float>(spatial.positionOffset.y),
@@ -465,8 +464,8 @@ public:
 
     Result<void> install(action::ActionNotifyRegistry& registry) override {
         if (!pool_)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
         return registry.registerHandler("gameplay:prefab-spawn", std::make_shared<PrefabActionHandler>(*this));
     }
 
@@ -476,15 +475,15 @@ public:
 
     Result<void> recycleIndependent(action::PrefabInstanceHandle handle) override {
         if (!pool_)
-            return fail<void>(DiagnosticCode::NotFound,
-                              "SceneLoader prefab instance service is unavailable", "sceneloader");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab instance service is unavailable", "sceneloader"));
         return pool_->recycleIndependent(handle);
     }
 
     Result<std::unique_ptr<action::IActionPreviewSink>> createActionPreviewSink() override {
         if (!pool_)
-            return fail<std::unique_ptr<action::IActionPreviewSink>>(
-                DiagnosticCode::NotFound, "SceneLoader prefab preview service is unavailable", "sceneloader");
+            return Result<std::unique_ptr<action::IActionPreviewSink>>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "SceneLoader prefab preview service is unavailable", "sceneloader"));
         return Result<std::unique_ptr<action::IActionPreviewSink>>::success(
             std::make_unique<PrefabActionPreviewSink>());
     }

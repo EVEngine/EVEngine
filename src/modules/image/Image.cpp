@@ -239,12 +239,10 @@ void Image::expose(ssq::Table& table) {
     });
     paint.addFunc("currentImageResult", [vm = paint.getHandle()](UvPaintSession* self) {
         auto result = self->currentImageResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<ImageData>(vm, std::move(result).takeValue());
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     paint.addFunc("copyCurrentTo", [vm = paint.getHandle()](UvPaintSession* self, ImageData* destination) {
         if (!destination)

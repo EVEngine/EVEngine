@@ -9,11 +9,6 @@
 namespace eve::action {
 namespace {
 
-template <class T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Result<void> invalid(std::string message, std::string path) {
     return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
@@ -23,19 +18,25 @@ const Value* field(const Value& value, std::string_view name) { return value.fin
 
 Result<std::string> stringField(const Value& value, std::string_view name, std::string path) {
     const Value* member = field(value, name);
-    if (!member || !member->isString()) return invalid<std::string>("expected string field", std::move(path));
+    if (!member || !member->isString())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected string field", std::move(path)));
     return Result<std::string>::success(member->asString());
 }
 
 Result<std::int64_t> intField(const Value& value, std::string_view name, std::string path) {
     const Value* member = field(value, name);
-    if (!member || !member->isInt64()) return invalid<std::int64_t>("expected integer field", std::move(path));
+    if (!member || !member->isInt64())
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", std::move(path)));
     return Result<std::int64_t>::success(member->asInt());
 }
 
 Result<bool> boolField(const Value& value, std::string_view name, std::string path) {
     const Value* member = field(value, name);
-    if (!member || !member->isBool()) return invalid<bool>("expected boolean field", std::move(path));
+    if (!member || !member->isBool())
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", std::move(path)));
     return Result<bool>::success(member->asBool());
 }
 
@@ -43,7 +44,9 @@ Result<LogicalId> logicalIdField(const Value& value, std::string_view name, std:
     auto text = stringField(value, name, path);
     if (!text) return Result<LogicalId>::failure(text.status());
     auto parsed = LogicalId::parse(text.value());
-    if (!parsed) return invalid<LogicalId>("expected namespace:name logical id", std::move(path));
+    if (!parsed)
+        return Result<LogicalId>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected namespace:name logical id", std::move(path)));
     return Result<LogicalId>::success(std::move(*parsed));
 }
 
@@ -51,7 +54,9 @@ Value payloadValue(const Value::Object& payload) { return Value(payload); }
 
 Result<Value::Object> payloadField(const Value& value, std::string path) {
     const Value* payload = field(value, "payload");
-    if (!payload || !payload->isObject()) return invalid<Value::Object>("expected object payload", std::move(path));
+    if (!payload || !payload->isObject())
+        return Result<Value::Object>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object payload", std::move(path)));
     return Result<Value::Object>::success(*payload->getIf<Value::Object>());
 }
 
@@ -91,7 +96,9 @@ Value encodeAnimationSection(const ActionAnimationSection& section) {
 
 Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const std::string& path,
                                                       std::int64_t schemaVersion) {
-    if (!value.isObject()) return invalid<ActionAnimationSection>("expected animation section object", path);
+    if (!value.isObject())
+        return Result<ActionAnimationSection>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected animation section object", path));
     auto id = logicalIdField(value, "id", path + ".id");
     if (!id) return Result<ActionAnimationSection>::failure(id.status());
     auto uri = stringField(value, "animationUri", path + ".animationUri");
@@ -113,7 +120,9 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
         auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
         if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
         auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
-        if (!parsedCurve) return invalid<ActionAnimationSection>("unknown animation blend curve", path + ".blendCurve");
+        if (!parsedCurve)
+            return Result<ActionAnimationSection>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "unknown animation blend curve", path + ".blendCurve"));
         section.sourceStart = Duration::fromNanoseconds(sourceStart.value());
         section.sourceEnd   = Duration::fromNanoseconds(sourceEnd.value());
         section.blendCurve  = *parsedCurve;
@@ -122,7 +131,9 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
 }
 
 Result<ActionNotify> decodeNotify(const Value& value, const std::string& path, std::int64_t schemaVersion) {
-    if (!value.isObject()) return invalid<ActionNotify>("expected notify object", path);
+    if (!value.isObject())
+        return Result<ActionNotify>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected notify object", path));
     auto id = logicalIdField(value, "id", path + ".id");
     if (!id) return Result<ActionNotify>::failure(id.status());
     auto type = logicalIdField(value, "type", path + ".type");
@@ -143,7 +154,9 @@ Result<ActionNotify> decodeNotify(const Value& value, const std::string& path, s
 }
 
 Result<ActionNotifyState> decodeState(const Value& value, const std::string& path, std::int64_t schemaVersion) {
-    if (!value.isObject()) return invalid<ActionNotifyState>("expected notify-state object", path);
+    if (!value.isObject())
+        return Result<ActionNotifyState>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected notify-state object", path));
     auto id = logicalIdField(value, "id", path + ".id");
     if (!id) return Result<ActionNotifyState>::failure(id.status());
     auto type = logicalIdField(value, "type", path + ".type");
@@ -204,7 +217,8 @@ Result<ActionTrackKind> parseActionTrackKind(std::string_view text) {
          {ActionTrackKind::Animation, ActionTrackKind::Gameplay, ActionTrackKind::Effect, ActionTrackKind::Audio,
           ActionTrackKind::Camera, ActionTrackKind::Movement, ActionTrackKind::Tag, ActionTrackKind::Custom})
         if (actionTrackKindName(kind) == text) return Result<ActionTrackKind>::success(kind);
-    return invalid<ActionTrackKind>("unknown action track kind", "tracks.kind");
+    return Result<ActionTrackKind>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown action track kind", "tracks.kind"));
 }
 
 Result<void> ActionTimeline::validate() const {
@@ -282,7 +296,8 @@ Result<std::vector<ActionTimelineEvent>> ActionTimeline::sample(Duration previou
     auto valid = validate();
     if (!valid) return Result<std::vector<ActionTimelineEvent>>::failure(valid.status());
     if (previous < Duration::zero() || current < previous || current > duration)
-        return invalid<std::vector<ActionTimelineEvent>>("sample range is outside the timeline", "sample");
+        return Result<std::vector<ActionTimelineEvent>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "sample range is outside the timeline", "sample"));
 
     std::vector<ActionTimelineEvent> out;
     for (const auto& track : tracks) {
@@ -316,7 +331,8 @@ Result<std::vector<ActionActiveBlock>> ActionTimeline::activeBlocks(Duration tim
     auto valid = validate();
     if (!valid) return Result<std::vector<ActionActiveBlock>>::failure(valid.status());
     if (time < Duration::zero() || time > duration)
-        return invalid<std::vector<ActionActiveBlock>>("active-block sample is outside the timeline", "time");
+        return Result<std::vector<ActionActiveBlock>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "active-block sample is outside the timeline", "time"));
 
     std::vector<ActionActiveBlock> out;
     for (const auto& track : tracks) {
@@ -389,11 +405,14 @@ Result<Value> ActionTimeline::toValue() const {
 }
 
 Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
-    if (!value.isObject()) return invalid<ActionTimeline>("expected action timeline object", "timeline");
+    if (!value.isObject())
+        return Result<ActionTimeline>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected action timeline object", "timeline"));
     auto schema = stringField(value, "schema", "schema");
     if (!schema) return Result<ActionTimeline>::failure(schema.status());
     if (schema.value() != kActionTimelineSchemaId)
-        return invalid<ActionTimeline>("unexpected action timeline schema", "schema");
+        return Result<ActionTimeline>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unexpected action timeline schema", "schema"));
     auto version = intField(value, "schemaVersion", "schemaVersion");
     if (!version) return Result<ActionTimeline>::failure(version.status());
     auto actionId = logicalIdField(value, "actionId", "actionId");
@@ -404,13 +423,17 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
     if (!animationUri) return Result<ActionTimeline>::failure(animationUri.status());
     const Value* tracksValue   = field(value, "tracks");
     const Value* metadataValue = field(value, "metadata");
-    if (!tracksValue || !tracksValue->isArray()) return invalid<ActionTimeline>("expected tracks array", "tracks");
+    if (!tracksValue || !tracksValue->isArray())
+        return Result<ActionTimeline>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected tracks array", "tracks"));
     if (!metadataValue || !metadataValue->isObject())
-        return invalid<ActionTimeline>("expected metadata object", "metadata");
+        return Result<ActionTimeline>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected metadata object", "metadata"));
 
     ActionTimeline candidate;
     if (version.value() < 1 || version.value() > static_cast<std::int64_t>(kActionTimelineSchemaVersion))
-        return invalid<ActionTimeline>("unsupported action timeline schema version", "schemaVersion");
+        return Result<ActionTimeline>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "unsupported action timeline schema version", "schemaVersion"));
     candidate.schemaVersion = SchemaVersion(kActionTimelineSchemaVersion);
     candidate.actionId      = std::move(actionId).takeValue();
     candidate.duration      = Duration::fromNanoseconds(duration.value());
@@ -425,7 +448,8 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
     } else {
         const Value* sectionsValue = field(value, "animationSections");
         if (!sectionsValue || !sectionsValue->isArray())
-            return invalid<ActionTimeline>("expected animationSections array", "animationSections");
+            return Result<ActionTimeline>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "expected animationSections array", "animationSections"));
         const auto& sections = *sectionsValue->getIf<Value::Array>();
         for (std::size_t index = 0; index < sections.size(); ++index) {
             auto decoded = decodeAnimationSection(sections[index], "animationSections[" + std::to_string(index) + "]",
@@ -438,17 +462,20 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
         if (version.value() >= 3) {
             const Value* splitsValue = field(value, "splitTimestampsNs");
             if (!splitsValue || !splitsValue->isArray())
-                return invalid<ActionTimeline>("expected splitTimestampsNs array", "splitTimestampsNs");
+                return Result<ActionTimeline>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "expected splitTimestampsNs array", "splitTimestampsNs"));
             const auto& splits = *splitsValue->getIf<Value::Array>();
             for (std::size_t index = 0; index < splits.size(); ++index) {
                 if (!splits[index].isInt64())
-                    return invalid<ActionTimeline>("expected physical section timestamp",
-                                                   "splitTimestampsNs[" + std::to_string(index) + "]");
+                    return Result<ActionTimeline>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "expected physical section timestamp",
+                                          "splitTimestampsNs[" + std::to_string(index) + "]"));
                 candidate.splitTimestamps.push_back(Duration::fromNanoseconds(splits[index].asInt()));
             }
             const Value* montageValue = field(value, "montage");
             if (!montageValue || !montageValue->isObject())
-                return invalid<ActionTimeline>("expected montage settings object", "montage");
+                return Result<ActionTimeline>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "expected montage settings object", "montage"));
             const Value* basePlayRate   = field(*montageValue, "basePlayRate");
             auto         looping        = boolField(*montageValue, "looping", "montage.looping");
             auto         footIk         = boolField(*montageValue, "footIk", "montage.footIk");
@@ -462,7 +489,8 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
             if (!basePlayRate || (!basePlayRate->isDouble() && !basePlayRate->isInt64()) || !looping || !footIk ||
                 !layer || !blendIn || !blendOut || !blendOutOffset || !rootHorizontal || !rootVertical ||
                 !rootRotation || layer.value() < 0)
-                return invalid<ActionTimeline>("montage settings are invalid", "montage");
+                return Result<ActionTimeline>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "montage settings are invalid", "montage"));
             candidate.montage.basePlayRate =
                 basePlayRate->isDouble() ? basePlayRate->asDouble() : static_cast<double>(basePlayRate->asInt());
             candidate.montage.looping              = looping.value();
@@ -480,7 +508,9 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
     for (std::size_t trackIndex = 0; trackIndex < tracks.size(); ++trackIndex) {
         const Value&      trackValue = tracks[trackIndex];
         const std::string path       = "tracks[" + std::to_string(trackIndex) + "]";
-        if (!trackValue.isObject()) return invalid<ActionTimeline>("expected track object", path);
+        if (!trackValue.isObject())
+            return Result<ActionTimeline>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "expected track object", path));
         auto id       = logicalIdField(trackValue, "id", path + ".id");
         auto label    = stringField(trackValue, "label", path + ".label");
         auto kindText = stringField(trackValue, "kind", path + ".kind");
@@ -496,8 +526,11 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
         const Value* notifies = field(trackValue, "notifies");
         const Value* states   = field(trackValue, "states");
         if (!notifies || !notifies->isArray())
-            return invalid<ActionTimeline>("expected notifies array", path + ".notifies");
-        if (!states || !states->isArray()) return invalid<ActionTimeline>("expected states array", path + ".states");
+            return Result<ActionTimeline>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "expected notifies array", path + ".notifies"));
+        if (!states || !states->isArray())
+            return Result<ActionTimeline>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "expected states array", path + ".states"));
         ActionTrack track;
         track.id                 = std::move(id).takeValue();
         track.label              = std::move(label).takeValue();
@@ -527,7 +560,8 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
 
 Result<std::pair<Duration, Duration>> ActionTimeline::sectionRange(std::size_t index) const {
     if (index >= sectionCount())
-        return invalid<std::pair<Duration, Duration>>("physical section index is outside the timeline", "index");
+        return Result<std::pair<Duration, Duration>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "physical section index is outside the timeline", "index"));
     const Duration start = index == 0 ? Duration::zero() : splitTimestamps[index - 1];
     const Duration end   = index < splitTimestamps.size() ? splitTimestamps[index] : duration;
     return Result<std::pair<Duration, Duration>>::success({start, end});

@@ -12,24 +12,6 @@
 namespace eve::weapon {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "weapon.attributes"));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::Status status, std::string, std::string = {}) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::StatusCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
-                                                          std::move(path), {}, "weapon.attributes")));
-}
-
 eve::Result<void> failureVoid(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<void>::failure(
         eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "weapon.attributes"));
@@ -111,12 +93,20 @@ eve::Result<void> WeaponAttributeAdapter::project(WeaponEntity& weapon) {
 
 eve::Result<double> WeaponAttributeAdapter::read(WeaponEntity& weapon, std::string_view attribute) {
     if (!selected(attribute))
-        return failure<double>(eve::DiagnosticCode::Unsupported,
-                               "weapon attribute is outside the mana/stamina projection", "attribute");
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "weapon attribute is outside the mana/stamina projection", "attribute",
+            {}, "weapon.attributes"));
     auto projected = project(weapon);
-    if (!projected) return failure<double>(projected.code(), "weapon compatibility projection failed", "resource");
+    if (!projected)
+        return eve::Result<double>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon compatibility projection failed", "resource",
+                                   {}, "weapon.attributes")));
     auto value = weapon.attributes()->values.getFinal(attribute);
-    if (!value) return failure<double>(value.code(), "weapon attribute read failed", "attribute");
+    if (!value)
+        return eve::Result<double>::failure(eve::Status::failure(
+            value.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attribute read failed",
+                                                 "attribute", {}, "weapon.attributes")));
     return eve::Result<double>::success(value.value());
 }
 
@@ -154,27 +144,32 @@ eve::Result<eve::attributes::ModifierId> WeaponAttributeAdapter::addModifier(
     WeaponEntity& weapon, std::string id, std::string_view attribute, std::string source,
     eve::attributes::AttributeOperation operation, double value, eve::attributes::ModifierPriority priority) {
     if (!selected(attribute) || source.empty())
-        return failure<eve::attributes::ModifierId>(
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "weapon modifier requires a selected attribute and non-empty source",
-            "modifier");
+            "modifier", {}, "weapon.attributes"));
     auto ready = ensure(weapon);
     if (!ready)
-        return failure<eve::attributes::ModifierId>(ready.code(), "weapon attributes are not available", "attributes");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available",
+                                                 "attributes", {}, "weapon.attributes")));
     auto added = weapon.attributes()->values.addModifier(eve::attributes::AttributeModifier(
         std::move(id), std::string(attribute), std::move(source), operation, value, priority));
     if (!added) return added;
     auto projected = project(weapon);
     if (!projected)
-        return failure<eve::attributes::ModifierId>(projected.code(), "weapon compatibility projection failed",
-                                                    "resource");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon compatibility projection failed", "resource",
+                                   {}, "weapon.attributes")));
     return added;
 }
 
 eve::Result<eve::attributes::AttributeProjectionSnapshot> WeaponAttributeAdapter::snapshot(WeaponEntity& weapon) {
     auto ready = ensure(weapon);
     if (!ready)
-        return failure<eve::attributes::AttributeProjectionSnapshot>(
-            ready.code(), "weapon attributes are not available", "attributes");
+        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "weapon attributes are not available",
+                                                 "attributes", {}, "weapon.attributes")));
     const auto names = selectedAttributes();
     return weapon.attributes()->values.snapshot(names);
 }

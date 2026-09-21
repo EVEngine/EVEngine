@@ -8,11 +8,6 @@
 namespace eve::dialogue_editing {
 namespace {
 
-template <class T>
-EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -37,18 +32,17 @@ EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build
     auto document = std::make_unique<dialogue::ConversationDocument>(*id);
     document->removeNode("end");
     if (!document->setVersion(static_cast<int>(*version)))
-        return runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                              "editor.dialogue.version-rejected",
-                                                              "Conversation version was rejected");
+        return eve::editing::failed<dialogue::ConversationDocument*>(
+            EditorStatus::Failed, RuleId("editor.dialogue.version-rejected"), "Conversation version was rejected");
     for (const EditorValue& parameter : *parameters)
         document->addParameter(*parameter.getIf<std::string>());
     for (const EditorValue& nodeValue : *nodes) {
         const auto* nodeId = field(nodeValue, "id")->getIf<std::string>();
         const auto* kind = field(nodeValue, "kind")->getIf<std::string>();
         if (!document->addNode(*nodeId, *kind))
-            return runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                                  "editor.dialogue.node-rejected",
-                                                                  "Conversation node was rejected: " + *nodeId);
+            return eve::editing::failed<dialogue::ConversationDocument*>(EditorStatus::Failed,
+                                                                         RuleId("editor.dialogue.node-rejected"),
+                                                                         "Conversation node was rejected: " + *nodeId);
     }
     for (const EditorValue& nodeValue : *nodes) {
         const auto* nodeId = field(nodeValue, "id")->getIf<std::string>();
@@ -57,26 +51,24 @@ EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build
         for (const auto& [key, value] : *properties) {
             const auto* text = value.getIf<std::string>();
             if (!text || !document->setField(*nodeId, key, *text))
-                return runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                                      "editor.dialogue.field-rejected",
-                                                                      "Conversation field was rejected: " +
-                                                                          *nodeId + "." + key);
+                return eve::editing::failed<dialogue::ConversationDocument*>(
+                    EditorStatus::Failed, RuleId("editor.dialogue.field-rejected"),
+                    "Conversation field was rejected: " + *nodeId + "." + key);
         }
         if (*kind != "branch" && *kind != "choice" && *kind != "end") {
             const auto* next = field(nodeValue, "next")->getIf<std::string>();
             if (!document->setField(*nodeId, "next", *next))
-                return runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                                      "editor.dialogue.next-rejected",
-                                                                      "Conversation next target was rejected");
+                return eve::editing::failed<dialogue::ConversationDocument*>(EditorStatus::Failed,
+                                                                             RuleId("editor.dialogue.next-rejected"),
+                                                                             "Conversation next target was rejected");
         }
         const auto* routes = field(nodeValue, "routes")->getIf<EditorValue::Array>();
         for (const EditorValue& route : *routes) {
             const auto* label = field(route, "label")->getIf<std::string>();
             const auto* target = field(route, "target")->getIf<std::string>();
             if (!document->addRoute(*nodeId, *label, *target))
-                return runtimeError<dialogue::ConversationDocument*>(EditorStatus::Failed,
-                                                                      "editor.dialogue.route-rejected",
-                                                                      "Conversation route was rejected");
+                return eve::editing::failed<dialogue::ConversationDocument*>(
+                    EditorStatus::Failed, RuleId("editor.dialogue.route-rejected"), "Conversation route was rejected");
         }
     }
     if (!document->setEntry(*entry) || !document->validate()) {

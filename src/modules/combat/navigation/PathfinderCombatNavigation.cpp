@@ -10,11 +10,6 @@
 namespace eve::combat::navigation {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finite(CombatVector2 value) { return std::isfinite(value.x) && std::isfinite(value.z); }
 
 double length(CombatVector2 value) { return std::hypot(value.x, value.z); }
@@ -28,8 +23,8 @@ Result<int> worldToCell(double coordinate, double origin, double cellSize, std::
     const double projected = std::floor((coordinate - origin) / cellSize);
     if (!std::isfinite(projected) || projected < static_cast<double>(std::numeric_limits<int>::min()) ||
         projected > static_cast<double>(std::numeric_limits<int>::max()))
-        return failure<int>(DiagnosticCode::InvalidArgument, "navigation coordinate is outside grid range",
-                            std::move(path));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "navigation coordinate is outside grid range", std::move(path)));
     return Result<int>::success(static_cast<int>(projected));
 }
 
@@ -37,8 +32,8 @@ Result<int> worldToCell(double coordinate, double origin, double cellSize, std::
 
 Result<void> PathfinderCombatNavigationConfig::validate() const {
     if (!finite(origin) || !std::isfinite(cellSize) || cellSize <= 0.0)
-        return failure<void>(DiagnosticCode::InvalidArgument, "combat navigation grid projection is invalid",
-                             "config");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "combat navigation grid projection is invalid", "config"));
     return Result<void>::success();
 }
 
@@ -61,8 +56,8 @@ Result<CombatNavigationSteering> PathfinderCombatNavigationProvider::steer(
     (void)tick;
     if (!finite(state.position) || !finite(goal.position) || !std::isfinite(goal.acceptanceRadius) ||
         goal.acceptanceRadius < 0.0)
-        return failure<CombatNavigationSteering>(DiagnosticCode::InvalidArgument,
-                                                 "combat navigation request is invalid", "navigation");
+        return Result<CombatNavigationSteering>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "combat navigation request is invalid", "navigation"));
 
     const CombatVector2 goalDelta{goal.position.x - state.position.x,
                                   goal.position.z - state.position.z};
@@ -82,9 +77,8 @@ Result<CombatNavigationSteering> PathfinderCombatNavigationProvider::steer(
     std::unique_ptr<map::Path> path(pathfinder_.get().findPath(startX.value(), startY.value(),
                                                                goalX.value(), goalY.value()));
     if (!path || path->empty())
-        return failure<CombatNavigationSteering>(DiagnosticCode::NotFound,
-                                                 "combat navigation goal is unreachable",
-                                                 state.subject.format());
+        return Result<CombatNavigationSteering>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "combat navigation goal is unreachable", state.subject.format()));
 
     CombatVector2 waypoint = goal.position;
     if (path->getLength() > 1) {

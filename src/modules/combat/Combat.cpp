@@ -22,17 +22,11 @@
 namespace eve::combat {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "combat.squirrel"));
-}
-
 Result<SubjectRef> parseSubject(const std::string& text, std::string path) {
     const auto parsed = PersistentId::parse(text);
     if (!parsed)
-        return failure<SubjectRef>(DiagnosticCode::InvalidArgument, "combat subject must be a UUID",
-                                   std::move(path));
+        return Result<SubjectRef>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "combat subject must be a UUID", std::move(path), {}, "combat.squirrel"));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*parsed));
 }
 
@@ -79,7 +73,8 @@ public:
         auto valid = combatState.validate();
         if (!valid) return Result<Value>::failure(valid.status());
         if (states_.contains(subjectText))
-            return failure<Value>(DiagnosticCode::AlreadyExists, "combat fighter already exists", subjectText);
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::AlreadyExists, "combat fighter already exists", subjectText, {}, "combat.squirrel"));
         auto registered = locomotion_.registerSubject(
             {subject.value(), ownerId, {x, z}, maximumSpeed, acceleration});
         if (!registered) return Result<Value>::failure(registered.status());
@@ -115,7 +110,8 @@ public:
 
     Result<Value> advance(std::int64_t tick, double seconds) {
         if (tick < 0)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "combat tick must be non-negative", "tick");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "combat tick must be non-negative", "tick", {}, "combat.squirrel"));
         auto delta = Duration::fromSeconds(seconds);
         if (!delta) return Result<Value>::failure(delta.status());
         auto advanced = locomotion_.advance(
@@ -146,7 +142,8 @@ public:
         if (!target) return Result<Value>::failure(target.status());
         const auto found = states_.find(targetText);
         if (found == states_.end())
-            return failure<Value>(DiagnosticCode::NotFound, "combat target was not found", targetText);
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "combat target was not found",
+                                                            targetText, {}, "combat.squirrel"));
         DamageRequest request;
         request.source       = source.value();
         request.target       = target.value();
@@ -173,8 +170,9 @@ public:
         if (!decoded) return Result<Value>::failure(decoded.status());
         const auto* payload = decoded.value().getIf<Value::Object>();
         if (!payload)
-            return failure<Value>(DiagnosticCode::InvalidArgument,
-                                  "combat timeline damage payload must be an object", "payload");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "combat timeline damage payload must be an object",
+                                                            "payload", {}, "combat.squirrel"));
         auto binding = action::ActionDamageBinding::fromPayload(*payload);
         if (!binding) return Result<Value>::failure(binding.status());
         return applyDamage(sourceText, targetText, binding.value().damageType, binding.value().amount,
@@ -185,12 +183,14 @@ public:
     Result<Value> grantAbility(const std::string& ownerId, const std::string& definitionText) {
         auto definitionId = LogicalId::parse(definitionText);
         if (!definitionId)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability definition id is invalid",
-                                  "definitionId");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "ability definition id is invalid", "definitionId", {},
+                                                            "combat.squirrel"));
         const auto action = abilityActions_.find(definitionText);
         if (action == abilityActions_.end())
-            return failure<Value>(DiagnosticCode::NotFound, "ability definition is not registered",
-                                  definitionText);
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                            "ability definition is not registered", definitionText, {},
+                                                            "combat.squirrel"));
         auto granted = abilities_.grant(ownerId, *definitionId);
         if (!granted) return Result<Value>::failure(granted.status());
         return abilityGrantValue(granted.value());
@@ -221,8 +221,9 @@ public:
                                      const std::string& triggerTag, bool replace) {
         auto definitionId = LogicalId::parse(definitionText);
         if (!definitionId)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability definition id is invalid",
-                                  "definitionId");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "ability definition id is invalid", "definitionId", {},
+                                                            "combat.squirrel"));
         auto decoded = Value::fromJson(timelineJson);
         if (!decoded) return Result<Value>::failure(decoded.status());
         auto timeline = action::ActionTimeline::fromValue(decoded.value());
@@ -242,8 +243,9 @@ public:
         else if (instancingText == "per-execution")
             definition.instancing = action::AbilityInstancingPolicy::PerExecution;
         else
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability instancing policy is invalid",
-                                  "instancing");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "ability instancing policy is invalid", "instancing", {},
+                                                            "combat.squirrel"));
         if (groupText == "independent")
             definition.activationGroup = action::AbilityActivationGroup::Independent;
         else if (groupText == "exclusive-replaceable")
@@ -251,12 +253,14 @@ public:
         else if (groupText == "exclusive-blocking")
             definition.activationGroup = action::AbilityActivationGroup::ExclusiveBlocking;
         else
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability activation group is invalid",
-                                  "activationGroup");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "ability activation group is invalid", "activationGroup",
+                                                            {}, "combat.squirrel"));
         if (!triggerTag.empty()) {
             if (!tags::isValidGameplayTagName(triggerTag))
-                return failure<Value>(DiagnosticCode::InvalidArgument, "ability trigger tag is invalid",
-                                      "triggerTag");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "ability trigger tag is invalid", "triggerTag", {},
+                                                                "combat.squirrel"));
             definition.triggers.push_back({triggerTag, tags::GameplayTagMatch::Exact});
         }
 
@@ -290,13 +294,15 @@ public:
         auto grant = parseGrant(grantValue);
         if (!grant) return Result<Value>::failure(grant.status());
         if (tickValue < 0)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick", {}, "combat.squirrel"));
         auto grantState = abilities_.findGrant(grant.value());
         if (!grantState) return Result<Value>::failure(grantState.status());
         const auto action = abilityActions_.find(grantState.value().definitionId.format());
         if (action == abilityActions_.end())
-            return failure<Value>(DiagnosticCode::NotFound, "ability definition action is unavailable",
-                                  "definitionId");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                            "ability definition action is unavailable", "definitionId",
+                                                            {}, "combat.squirrel"));
         action::ActionRequest request;
         request.actionId      = action->second;
         request.requestedTick = SimulationTick(static_cast<std::uint64_t>(tickValue));
@@ -309,7 +315,8 @@ public:
 
     Result<Value> advanceAbilities(std::int64_t tickValue, double seconds) {
         if (tickValue < 0)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick", {}, "combat.squirrel"));
         auto delta = Duration::fromSeconds(seconds);
         if (!delta) return Result<Value>::failure(delta.status());
         Value::Array advances;
@@ -337,14 +344,16 @@ public:
 
     Result<Value> cancelAbility(std::int64_t activationValue, std::int64_t tickValue) {
         if (activationValue <= 0 || tickValue < 0)
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability activation or tick is invalid",
-                                  "activation");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "ability activation or tick is invalid", "activation", {},
+                                                            "combat.squirrel"));
         const action::AbilityActivationId activationId(static_cast<std::uint64_t>(activationValue));
         const auto active = abilities_.activeActivations();
         const auto found = std::find_if(active.begin(), active.end(),
                                         [&](const auto& item) { return item.id == activationId; });
         if (found == active.end())
-            return failure<Value>(DiagnosticCode::NotFound, "ability activation was not found", "activationId");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "ability activation was not found", "activationId", {}, "combat.squirrel"));
         auto cancelled = actions_.cancel(found->executionId,
                                          SimulationTick(static_cast<std::uint64_t>(tickValue)));
         if (!cancelled) return Result<Value>::failure(cancelled.status());
@@ -364,7 +373,8 @@ public:
 
     Result<Value> matchingAbilities(const std::string& ownerId, const std::string& eventTag) const {
         if (!tags::isValidGameplayTagName(eventTag))
-            return failure<Value>(DiagnosticCode::InvalidArgument, "ability event tag is invalid", "eventTag");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "ability event tag is invalid", "eventTag", {}, "combat.squirrel"));
         Value::Array result;
         for (const auto grant : abilities_.matchingGrants(ownerId, eventTag))
             result.emplace_back(static_cast<std::int64_t>(grant.value()));
@@ -376,7 +386,8 @@ public:
         if (!subject) return Result<Value>::failure(subject.status());
         const auto found = states_.find(subjectText);
         if (found == states_.end())
-            return failure<Value>(DiagnosticCode::NotFound, "combat fighter was not found", subjectText);
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "combat fighter was not found",
+                                                            subjectText, {}, "combat.squirrel"));
         auto movement = locomotion_.state(subject.value());
         if (!movement) return Result<Value>::failure(movement.status());
         Value::Object result;
@@ -396,8 +407,9 @@ public:
 private:
     static Result<action::AbilityGrantId> parseGrant(std::int64_t value) {
         if (value <= 0)
-            return failure<action::AbilityGrantId>(DiagnosticCode::InvalidArgument,
-                                                   "ability grant id must be positive", "grantId");
+            return Result<action::AbilityGrantId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                             "ability grant id must be positive",
+                                                                             "grantId", {}, "combat.squirrel"));
         return Result<action::AbilityGrantId>::success(
             action::AbilityGrantId(static_cast<std::uint64_t>(value)));
     }
@@ -439,10 +451,10 @@ ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {
 ssq::Table newRuntime(HSQUIRRELVM vm) {
     auto runtime = std::make_unique<ScriptCombatRuntime>();
     auto initialized = runtime->initializeAbilities();
-    if (!initialized) return script::projectStatusResult(vm, initialized.status(), false, false);
+    if (!initialized) return script::projectStatusResult(vm, initialized.status());
     auto object = script::makeOwnedSquirrelInstance<ScriptCombatRuntime>(vm, std::move(runtime));
-    if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-    auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+    if (!object) return script::projectStatusResult(vm, object.status());
+    auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
     result.set("value", std::move(object).takeValue());
     result.set("ownership", std::string("owned"));
     return result;
@@ -457,107 +469,117 @@ void Combat::expose(ssq::Table& table) {
     auto runtime = table.addClass<ScriptCombatRuntime>(
         "CombatRuntime", std::function<ScriptCombatRuntime*()>([] { return nullptr; }), true);
     runtime.addFunc("ownership", [](ScriptCombatRuntime*) { return std::string("owned"); });
-    runtime.addFunc("registerFighter", [vm](ScriptCombatRuntime* self, const std::string& subject,
-                                             const std::string& owner, float x, float z, float health,
-                                             float poise, float speed, float acceleration) {
-        return project(vm, self ? self->registerFighter(subject, owner, x, z, health, poise, speed, acceleration)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
-    });
-    runtime.addFunc("setMoveIntent", [vm](ScriptCombatRuntime* self, const std::string& subject,
-                                           float x, float z, float speed) {
-        return project(vm, self ? self->setMoveIntent(subject, x, z, speed)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
-    });
-    runtime.addFunc("navigateTo", [vm](ScriptCombatRuntime* self, const std::string& subject,
-                                       float x, float z, float radius) {
-        return project(vm, self ? self->navigateTo(subject, x, z, radius)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
-    });
+    runtime.addFunc(
+        "registerFighter", [vm](ScriptCombatRuntime* self, const std::string& subject, const std::string& owner,
+                                float x, float z, float health, float poise, float speed, float acceleration) {
+            return project(vm, self ? self->registerFighter(subject, owner, x, z, health, poise, speed, acceleration)
+                                    : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "combat runtime must not be null",
+                                                                               "runtime", {}, "combat.squirrel")));
+        });
+    runtime.addFunc(
+        "setMoveIntent", [vm](ScriptCombatRuntime* self, const std::string& subject, float x, float z, float speed) {
+            return project(vm, self ? self->setMoveIntent(subject, x, z, speed)
+                                    : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "combat runtime must not be null",
+                                                                               "runtime", {}, "combat.squirrel")));
+        });
+    runtime.addFunc(
+        "navigateTo", [vm](ScriptCombatRuntime* self, const std::string& subject, float x, float z, float radius) {
+            return project(vm, self ? self->navigateTo(subject, x, z, radius)
+                                    : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "combat runtime must not be null",
+                                                                               "runtime", {}, "combat.squirrel")));
+        });
     runtime.addFunc("stop", [vm](ScriptCombatRuntime* self, const std::string& subject) {
         return project(vm, self ? self->stop(subject)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
     runtime.addFunc("advance", [vm](ScriptCombatRuntime* self, std::int64_t tick, float seconds) {
         return project(vm, self ? self->advance(tick, seconds)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("applyDamage", [vm](ScriptCombatRuntime* self, const std::string& source,
-                                         const std::string& target, const std::string& type,
-                                         float health, float poise, float x, float y, float z) {
+    runtime.addFunc("applyDamage", [vm](ScriptCombatRuntime* self, const std::string& source, const std::string& target,
+                                        const std::string& type, float health, float poise, float x, float y, float z) {
         return project(vm, self ? self->applyDamage(source, target, type, health, poise, x, y, z)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("applyTimelineDamage",
-                    [vm](ScriptCombatRuntime* self, const std::string& source,
-                         const std::string& target, const std::string& payloadJson) {
+    runtime.addFunc("applyTimelineDamage", [vm](ScriptCombatRuntime* self, const std::string& source,
+                                                const std::string& target, const std::string& payloadJson) {
         return project(vm, self ? self->applyTimelineDamage(source, target, payloadJson)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("grantAbility", [vm](ScriptCombatRuntime* self, const std::string& owner,
-                                           const std::string& definitionId) {
-        return project(vm, self ? self->grantAbility(owner, definitionId)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+    runtime.addFunc(
+        "grantAbility", [vm](ScriptCombatRuntime* self, const std::string& owner, const std::string& definitionId) {
+            return project(vm, self ? self->grantAbility(owner, definitionId)
+                                    : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "combat runtime must not be null",
+                                                                               "runtime", {}, "combat.squirrel")));
+        });
+    runtime.addFunc("registerTimelineAbility", [vm](ScriptCombatRuntime* self, const std::string& definitionId,
+                                                    const std::string& timelineJson, float cooldownSeconds,
+                                                    const std::string& instancing, const std::string& activationGroup,
+                                                    const std::string& triggerTag) {
+        return project(vm, self ? self->registerTimelineAbility(definitionId, timelineJson, cooldownSeconds, instancing,
+                                                                activationGroup, triggerTag)
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("registerTimelineAbility",
-                    [vm](ScriptCombatRuntime* self, const std::string& definitionId,
-                         const std::string& timelineJson, float cooldownSeconds,
-                         const std::string& instancing, const std::string& activationGroup,
-                         const std::string& triggerTag) {
-        return project(vm, self ? self->registerTimelineAbility(definitionId, timelineJson, cooldownSeconds,
-                                                                 instancing, activationGroup, triggerTag)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+    runtime.addFunc("replaceTimelineAbility", [vm](ScriptCombatRuntime* self, const std::string& definitionId,
+                                                   const std::string& timelineJson, float cooldownSeconds,
+                                                   const std::string& instancing, const std::string& activationGroup,
+                                                   const std::string& triggerTag) {
+        return project(vm, self ? self->replaceTimelineAbility(definitionId, timelineJson, cooldownSeconds, instancing,
+                                                               activationGroup, triggerTag)
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("replaceTimelineAbility",
-                    [vm](ScriptCombatRuntime* self, const std::string& definitionId,
-                         const std::string& timelineJson, float cooldownSeconds,
-                         const std::string& instancing, const std::string& activationGroup,
-                         const std::string& triggerTag) {
-        return project(vm, self ? self->replaceTimelineAbility(definitionId, timelineJson, cooldownSeconds,
-                                                                instancing, activationGroup, triggerTag)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
-    });
-    runtime.addFunc("activateAbility", [vm](ScriptCombatRuntime* self, std::int64_t grantId,
-                                              std::int64_t tick) {
+    runtime.addFunc("activateAbility", [vm](ScriptCombatRuntime* self, std::int64_t grantId, std::int64_t tick) {
         return project(vm, self ? self->activateAbility(grantId, tick)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
     runtime.addFunc("advanceAbilities", [vm](ScriptCombatRuntime* self, std::int64_t tick, float seconds) {
         return project(vm, self ? self->advanceAbilities(tick, seconds)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("cancelAbility", [vm](ScriptCombatRuntime* self, std::int64_t activationId,
-                                            std::int64_t tick) {
+    runtime.addFunc("cancelAbility", [vm](ScriptCombatRuntime* self, std::int64_t activationId, std::int64_t tick) {
         return project(vm, self ? self->cancelAbility(activationId, tick)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
     runtime.addFunc("abilityGrant", [vm](ScriptCombatRuntime* self, std::int64_t grantId) {
         return project(vm, self ? self->abilityGrant(grantId)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
-    runtime.addFunc("matchingAbilities", [vm](ScriptCombatRuntime* self, const std::string& owner,
-                                                const std::string& eventTag) {
-        return project(vm, self ? self->matchingAbilities(owner, eventTag)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
-    });
+    runtime.addFunc(
+        "matchingAbilities", [vm](ScriptCombatRuntime* self, const std::string& owner, const std::string& eventTag) {
+            return project(vm, self ? self->matchingAbilities(owner, eventTag)
+                                    : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                               "combat runtime must not be null",
+                                                                               "runtime", {}, "combat.squirrel")));
+        });
     runtime.addFunc("state", [vm](ScriptCombatRuntime* self, const std::string& subject) {
         return project(vm, self ? self->state(subject)
-                                : failure<Value>(DiagnosticCode::InvalidArgument,
-                                                 "combat runtime must not be null", "runtime"));
+                                : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "combat runtime must not be null", "runtime",
+                                                                           {}, "combat.squirrel")));
     });
 
     auto module = table.addClass(name, Combat::create, false);
