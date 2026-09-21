@@ -770,7 +770,12 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx debug
-        timeout-minutes: 40
+        # Same reasoning as the win32 guard above: a cache-cold pull-request ref
+        # compiles the whole engine, and run 35611511939 was killed standing at
+        # 40m13s with 1442 sccache hits / 2576 misses and no compiler error, while
+        # the same step finished in 38.2 min on the warm run 35554916566. Keep a
+        # bounded hang guard with room for the cold case.
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
