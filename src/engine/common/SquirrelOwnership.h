@@ -259,7 +259,7 @@ public:
     RuntimeSlotStore& operator=(const RuntimeSlotStore&)     = delete;
     RuntimeSlotStore(RuntimeSlotStore&&) noexcept            = default;
     RuntimeSlotStore& operator=(RuntimeSlotStore&&) noexcept = default;
-    ~RuntimeSlotStore();
+    EVENGINE_API ~RuntimeSlotStore();
 
     /**
      * @brief Stores one object in a fresh or recycled slot.
@@ -300,7 +300,7 @@ private:
     [[nodiscard]] static bool                  coordinatesValid(std::uint32_t index, std::uint32_t generation) noexcept;
     /** @brief Mirrors RuntimeHandle<Tag>::nextGeneration so the rule lives once. */
     [[nodiscard]] static std::optional<std::uint32_t> nextGeneration(std::uint32_t current) noexcept;
-    [[nodiscard]] static std::uint64_t                nextEpoch() noexcept;
+    [[nodiscard]] EVENGINE_API static std::uint64_t   nextEpoch() noexcept;
     void                                              destroySlot(Slot& slot) noexcept;
 
     OwnedInstanceDestroy       destroy_;
