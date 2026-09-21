@@ -800,6 +800,21 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 
 **Linux 侧复核**（WSL、16 核、全新 clone 的 `codex/test-domain-split`）：不传任何 linkage 参数 configure → `EVENGINE_MODULE_LINKAGE:STRING=SHARED` + 7 行 link group；第三方同时产出 `libBox2D.a` / `libBox2D-dynamic.so` 与 `libbox3d.a` / `libbox3d-dynamic.so`（双形态在 ELF 上同样成立，动态路线链 `-lBox2D-dynamic` / `-lbox3d-dynamic`）；`env -u LD_LIBRARY_PATH ctest -E "^bundle/" --timeout 120` → **platform 27/27、physics 277/277、scene 58/58、building 96/96、combat 151/151、rpg 301/301**（含全部 ECS 族与 box2d 用例）。ECS 补丁在 configure 期落地的直接证据：`external/ECS.hpp:178,184` 出现 `EVE_ECS_DEFAULT_TABLE_API Table &engine_default_table();` 与 `return engine_default_table();`。
 
+### 7.28 外部评审（Qodo）六条：四条有效已修 + 一条误报（2026-09-21）
+
+自动评审在 `0d8fddcf2` 上给了 6 条 findings，逐条以构建/运行证据核实后的处置：
+
+| # | 结论 | 处置与取证 |
+| --- | --- | --- |
+| 1 | **误报** | 称 `create_module(EVCommon common)` 在 SHARED 下会因 `EVE_MODULE_common_LINK_GROUP` 缺失而 fatal。实测 `CMakeCache.txt` 里 `EVE_MODULE_common_LINK_GROUP:INTERNAL=EVFoundation`、`EVCommon` 的 TU 带 `EVENGINE_EXPORTS_FOUNDATION`，默认 SHARED 配置本来就跑通；`common` 是 manifest 模块（`core_foundation.cmake:5`），不是"非 manifest 目标"。 |
+| 2 | **有效已修** | `eve_third_party_runtime` 只是 `ALL` 目标，而 `ninja unit_test_<domain>` 这类直接目标构建**不建 ALL** → POST_BUILD 的 discovery 可能先于 DLL 拷贝。已让每个组库 `add_dependencies(... eve_third_party_runtime)`；测试 exe 链组库，这一条边覆盖所有消费者。取证：`build.ninja` 中 `build EVWorld.dll` 的依赖含 `eve_third_party_runtime`。 |
+| 3 | **有效已修** | `ZeroErrDiscoverTests.cmake` 用 configure 期 `EXISTS` 过滤 loader 目录，干净 configure 时第三方安装树还不存在 → 丢掉 SDL 所在目录；且 `-DZEROERR_DLL_DIR=${list}` 未加引号，分号列表会被拆成多个参数。改为只跳过未设置/NOTFOUND 的目录，并给该参数加引号。 |
+| 4 | **有效已修** | 单体配置（`EVENGINE_TEST_DOMAIN_SPLIT=OFF`）下 `DOMAIN=` 只匹配到 `unit_test` 标签 → 选中 0 个用例却退出 0（假成功）。`CTEST_DOMAIN_SEL` 现在同时带 `--no-tests=error`。取证：`make -n test/win32-debug DOMAIN=physics` 出 `--no-tests=error`，不带 `DOMAIN` 时不出。 |
+| 5 | **有效已修** | `check_architecture_contracts.py` 默认路径用 `HEAD` 算 changed lines 却把 `None` 当声明基线 → 仅加导出宏的既有声明被判成"新契约面"。两者现在共用同一有效基线（`--base` → 环境变量 → `HEAD`）。 |
+| 6 | **有效已修** | "既有声明"原本是**整文件词边界搜索**，名字只要在注释/字符串/成员里出现过就被豁免。改为逐行按声明形状匹配（与 `_declared_surface` 同构），并补两条回归测试（仅注释提及仍要契约；默认路径基线为 `HEAD`）。 |
+
+**教训**：自动评审的 findings 要逐条用构建/运行证据复核；这轮最有价值的第 2、4 条都属于"只在特定调用路径下才现形"（直接构建单个目标 / 单体配置），本地全量构建 + 全量 ctest 都覆盖不到。
+
 **OBJECT 侧验证口径（磁盘）**：OBJECT 路由每个域测试 exe 带完整调试信息约 2 GB、增量链接状态 `.ilk` 各约 2.5 GB；30 个一起链接会把 80 GB 空闲空间吃光（`LNK1116 无法增大 ilk 文件` / `LNK1180 没有足够的磁盘空间完成链接`）。做法：删掉 `build/<tree>/**/*.ilk`，再用 `-j 1` 串行链接要验收的目标（`eve.exe` 本身只有 228 MB）。**取证**：`dumpbin /dependents C:\evs\src\engine\eve.exe` → 只有系统 DLL（vulkan-1 / MSVCP140D / ucrtbased / …），**没有** `Box2D-dynamic.dll`、`box3d-dynamic.dll`、`SDL2d.dll`，也没有任何 `EV*.dll` —— 双形态设计下 OBJECT 路线仍然只链归档，单文件产物成立。Linux 侧的 OBJECT 复测（WSL，`-DEVENGINE_MODULE_LINKAGE=OBJECT`）：不产出任何 `libEV*.so`，`unit_test_platform` 27/27，`ldd` 里没有 `libEV*` / `box*` / `SDL*`（陷阱 11 修好之前这里会漏出 `libSDL2-2.0.so.0`）。
 
 **子模块补丁的落点**：`external/ECS.hpp` 的 `default_table()` 是"内联函数 + 函数局部静态"，MSVC 与 ELF 都不跨 image 合并，于是宿主与 7 个组各持一张表（§7.24 探针：27 targets / 197 objs）。补丁把它转发给 `ecs::engine_default_table()`，实现在 FOUNDATION 组（`src/engine/common/EcsDefaultTable.cpp`），**进程内唯一所有者**——与"每个可变事实只有一个权威所有者"这条架构规范同向。补丁在 **configure 期**用现成的 `cmake/patch_third_party.cmake` 应用（模块 TU 直接编译该头，没有任何 per-module 依赖能排在它们之前），子模块缺失时静默跳过；OBJECT 路线的预处理输出不变（整块包在 `#if defined(EVENGINE_MODULE_DLL)` 里）。`scripts/tests/test_patch_third_party.py` 增加了幂等覆盖：box3d / box2d / ECS 三个补丁各连打两次。

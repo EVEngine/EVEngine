@@ -121,6 +121,55 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertEqual(["ecs-system"], [finding.rule for finding in findings])
         self.assertEqual("src/modules/scene/BrandNewSystem.h", findings[0].path)
 
+    def test_name_mentioned_only_in_a_comment_is_still_new_surface(self):
+        # The established check must look for a declaration: a name that the
+        # baseline only mentions in a comment, a string or an unrelated member is
+        # not proof that the surface already existed.
+        metadata = {"entries": []}
+        lines = [
+            contracts.SourceLine(
+                "src/modules/scene/CommentOnlySystem.h", 13, "class EVENGINE_API_WORLD CommentOnlySystem {"
+            ),
+        ]
+        original = contracts._base_source
+        contracts._base_source = lambda base, path: (
+            "// CommentOnlySystem is planned; see the design note.\n"
+            "void touch(CommentOnlySystemTag tag);\n"
+        )
+        try:
+            findings = contracts.lint_contract_coverage(lines, metadata, "base")
+        finally:
+            contracts._base_source = original
+
+        self.assertEqual(["ecs-system"], [finding.rule for finding in findings])
+
+    def test_default_path_uses_head_as_the_contract_baseline(self):
+        # Without --base the changed lines are diffed against HEAD, so the
+        # declaration baseline must be HEAD too; leaving it unset disabled the
+        # established-declaration suppression and flagged export-only edits.
+        captured: dict[str, str | None] = {}
+        original_changed = contracts._changed_lines
+        original_lint = contracts.lint_contract_coverage
+
+        def fake_changed(base):
+            captured["changed"] = base
+            return []
+
+        def fake_lint(lines, metadata, base=None):
+            captured["lint"] = base
+            return []
+
+        contracts._changed_lines = fake_changed
+        contracts.lint_contract_coverage = fake_lint
+        try:
+            contracts.main([])
+        finally:
+            contracts._changed_lines = original_changed
+            contracts.lint_contract_coverage = original_lint
+
+        self.assertEqual("HEAD", captured["changed"])
+        self.assertEqual("HEAD", captured["lint"])
+
 
 if __name__ == "__main__":
     unittest.main()

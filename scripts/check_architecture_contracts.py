@@ -657,11 +657,16 @@ def lint_contract_coverage(
         # silently stop firing on every annotated declaration.
         macro = r"(?:EVENGINE_API\w*\s+)?"
         declared = _declared_surface(text)
-        established = bool(
-            declared
-            and base
-            and re.search(rf"\b{re.escape(declared)}\b", _base_source(base, item.path))
-        )
+        # Established means the baseline *declares* the same name. A bare
+        # word-boundary search over the whole baseline file also matched a name
+        # mentioned in a comment, a string or an unrelated member, which let a
+        # genuinely new Link/System declaration skip catalogue coverage.
+        established = False
+        if declared and base:
+            established = any(
+                _declared_surface(base_line) == declared
+                for base_line in _base_source(base, item.path).splitlines()
+            )
         if not established and re.search(rf"\b(?:struct|class)\s+{macro}[A-Za-z_]\w*Link\b|\busing\s+\w*Link\b", text):
             triggers.append(("link", "new Link declaration"))
         if not established and re.search(rf"\b(?:class|struct)\s+{macro}[A-Za-z_]\w*System\b", text):
@@ -725,8 +730,13 @@ def main(argv: list[str] | None = None) -> int:
         base = args.base
         if base is None:
             base = os.environ.get("EVENGINE_ARCHITECTURE_BASE")
-        lint_base = base or None
-        lines = _changed_lines(base or "HEAD")
+        # One effective baseline for both halves of the changed-line lint: the
+        # revision the lines are diffed against is also the revision that decides
+        # whether a declaration is established. Leaving the latter None disabled
+        # that suppression in the default (no --base) mode, so an ordinary
+        # export-only edit looked like newly introduced contract surface.
+        lint_base = base or "HEAD"
+        lines = _changed_lines(lint_base)
     findings = lint_api_shapes(lines) + lint_contract_coverage(lines, metadata, lint_base)
     return render(findings, catalogue_errors, args.json)
 

@@ -1055,8 +1055,10 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # test/<name-prefix> pattern rule below.
 # Only meaningful when the suite is split (EVENGINE_TEST_DOMAIN_SPLIT, on by
 # default for the SHARED route and off for the archive route, where the suite is
-# one monolithic unit_test to keep its debug info small).
-CTEST_DOMAIN_SEL = $(if $(DOMAIN),-L '^unit_test_$(DOMAIN)$$',)
+# one monolithic unit_test to keep its debug info small). A monolithic build
+# carries only the `unit_test` label, so DOMAIN= there would silently select zero
+# cases and exit 0; --no-tests=error turns that into a failure instead.
+CTEST_DOMAIN_SEL = $(if $(DOMAIN),-L '^unit_test_$(DOMAIN)$$' --no-tests=error,)
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
 # main runs 1526 cases in ~2-11 min).  "bundle/<file>" entries stay registered

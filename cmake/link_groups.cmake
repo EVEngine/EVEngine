@@ -145,6 +145,16 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
+        # The shared third-party runtime (SDL, box2d/box3d twins on Windows) is
+        # copied beside the executables by eve_third_party_runtime, and the group
+        # libraries link those import libraries. Being an ALL target is not enough:
+        # `ninja unit_test_<domain>` (and any other direct target build) does not
+        # build ALL, so the copy has to be in this target's dependency chain or the
+        # test executable's post-build discovery runs before the DLLs exist. Test
+        # executables link the groups, so this one edge orders every consumer.
+        if(TARGET eve_third_party_runtime)
+            add_dependencies(${_eve_group} eve_third_party_runtime)
+        endif()
     endif()
     list(APPEND _eve_lower_groups "${_eve_group}")
 
