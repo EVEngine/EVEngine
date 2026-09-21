@@ -236,7 +236,7 @@ TEST_CASE("snapshot.consumers.productionEnvelopeRoundTripAndUnknownVersionIsAtom
     REQUIRE(migrated.restoreSnapshot(old, hash).ok());
     CHECK_EQ(snapshotJson(migrated), snapshotJson(queue));
 
-    auto              newer   = reseal(captured.value(), SchemaVersion(2), captured.value().payload, hash);
+    auto              newer   = reseal(captured.value(), SchemaVersion(7), captured.value().payload, hash);
     const std::string before  = snapshotJson(restored);
     auto              unknown = restored.restoreSnapshot(newer, hash);
     CHECK(!unknown.ok());
@@ -244,7 +244,7 @@ TEST_CASE("snapshot.consumers.productionEnvelopeRoundTripAndUnknownVersionIsAtom
     CHECK_EQ(snapshotJson(restored), before);
 
     auto duplicateRevision =
-        reseal(captured.value(), SchemaVersion(1),
+        reseal(captured.value(), SchemaVersion(6),
                withPayloadMetadata(captured.value().payload, "revision", captured.value().revision.value() + 1), hash);
     auto duplicateFailure = restored.restoreSnapshot(duplicateRevision, hash);
     CHECK(!duplicateFailure.ok());

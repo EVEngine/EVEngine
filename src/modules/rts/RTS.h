@@ -250,13 +250,15 @@ public:
      * @param productionKind Production queue kind, defaulting to `unit`.
      * @param priority Production queue priority.
      * @param transactionId Optional transaction correlation id.
+     * @param definition Optional pinned definition generation used during settlement.
      * @return Committed build receipt or a checked failure with no partial state.
      */
     [[nodiscard]] Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
                                                 resource::IResourceAccount& account, resource::CostSpec cost,
                                                 std::string product, Duration duration,
                                                 std::string productionKind = "unit", int priority = 0,
-                                                std::string transactionId = {});
+                                                std::string transactionId = {},
+                                                definition::DefinitionHandle definition = {});
 
     /** @brief Configure or clear a faction-wide production resource floor shared by all factories. */
     [[nodiscard]] Result<void> setProductionResourceReserve(

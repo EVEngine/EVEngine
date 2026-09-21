@@ -5279,7 +5279,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
             DiagnosticCode::InvalidArgument, "RTS reinforcement policy delta must be non-negative", "step.delta"));
     struct Demand {
         Building* building = nullptr;
-        production::ProductionTask* task = nullptr;
+        const production::ProductionTask* task = nullptr;
         std::string product;
         int priority = 0;
     };
@@ -5307,7 +5307,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
         if (!integrity->alive || !rally->enabled || rally->combatGroup == 0) continue;
         auto* building = dynamic_cast<Building*>(ecs::try_get(identity->self));
         if (building == nullptr || &*building->identity() != identity) continue;
-        production::ProductionTask* active = nullptr;
+        const production::ProductionTask* active = nullptr;
         for (int index = 0; index < production->values.taskCount(); ++index) {
             auto task = production->values.taskAt(index);
             if (!task || task->get().kind != "unit") continue;
@@ -5409,7 +5409,13 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
         advanced.value();
         ++processed;
         if (!spawn) continue;
-        const auto completed = production->values.completed("unit");
+        std::vector<production::ProductionTask> completed = production->values.readyToSettle("unit");
+        for (int index = 0; index < production->values.taskCount(); ++index) {
+            auto task = production->values.taskAt(index);
+            if (task && task->get().kind == "unit" && task->get().state == production::TaskState::Completed &&
+                !task->get().settlementRequired)
+                completed.push_back(task->get());
+        }
         if (building->rally()->productionSpawnBlocked &&
             std::none_of(completed.begin(), completed.end(), [&](const auto& task) {
                 return task.id == building->rally()->blockedProductionTask;
@@ -5420,8 +5426,6 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 events({LifecycleEventKind::ProductionSpawnCleared, identity->subject, {}, {}, 0.0}, step.tick);
         }
         for (const auto& task : completed) {
-            auto& settled = building->rally()->settledProductionTasks;
-            if (std::find(settled.begin(), settled.end(), task.id) != settled.end()) continue;
             settlements.push_back({identity->self, task});
         }
     }
@@ -5432,7 +5436,15 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                     Diagnostic::error(DiagnosticCode::StaleHandle,
                                       "RTS producer disappeared during production settlement", "production"));
             auto& settled = building->rally()->settledProductionTasks;
-            if (std::find(settled.begin(), settled.end(), settlement.task.id) != settled.end()) continue;
+            if (std::find(settled.begin(), settled.end(), settlement.task.id) != settled.end()) {
+                if (settlement.task.settlementRequired) {
+                    production::ProductionSettlementReceipt receipt;
+                    receipt.settlementId = "rts.unit:" + settlement.task.id;
+                    auto committed = building->production()->values.settle(settlement.task.id, std::move(receipt));
+                    if (!committed) return Result<std::size_t>::failure(committed.status());
+                }
+                continue;
+            }
             std::optional<WorldPosition> spawnPosition;
             if (position) {
                 auto available = position(*building, settlement.task);
@@ -5483,6 +5495,12 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 std::move(queued).takeValue();
             }
             settled.push_back(settlement.task.id);
+            if (settlement.task.settlementRequired) {
+                production::ProductionSettlementReceipt receipt;
+                receipt.settlementId = "rts.unit:" + settlement.task.id;
+                auto committed = building->production()->values.settle(settlement.task.id, std::move(receipt));
+                if (!committed) return Result<std::size_t>::failure(committed.status());
+            }
             if (events)
                 events({LifecycleEventKind::UnitProduced, building->identity()->subject,
                         unit->identity()->subject, settlement.task.product, 1.0}, step.tick);

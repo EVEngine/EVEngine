@@ -46,6 +46,8 @@ struct RTSBuildRequest {
     std::string        productionKind = "build";
     std::string        product;
     eve::Value         context  = eve::Value(eve::Value::Object{});
+    eve::definition::DefinitionHandle definition;
+    eve::Value         reservation = eve::Value(eve::Value::Object{});
     Duration           duration = Duration::zero();
     int                priority = 0;
     std::vector<RTSProductionResourceReserve> resourceReserves;
@@ -125,7 +127,8 @@ public:
                                                             resource::CostSpec cost, std::string product,
                                                             Duration duration, std::string productionKind = "unit",
                                                             int priority = 0, std::string transactionId = {},
-                                                            std::vector<RTSProductionResourceReserve> resourceReserves = {});
+                                                            std::vector<RTSProductionResourceReserve> resourceReserves = {},
+                                                            eve::definition::DefinitionHandle definition = {});
 
     /**
      * @brief Atomically enqueue an RTS build/production action and charge cost.
