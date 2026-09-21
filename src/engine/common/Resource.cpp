@@ -73,10 +73,12 @@ Resource *ResourceManager::loadUncached(const std::string &norm) {
 }
 
 void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
-    Resource *loaded = nullptr;
+    // The candidate is owned from the moment the provider hands it over, so every
+    // early return below releases it exactly once without an explicit delete.
+    script::Owned<Resource> loaded;
     std::string error;
     try {
-        loaded = loadUncached(norm);
+        loaded.reset(loadUncached(norm));
     } catch (const std::exception &ex) {
         error = ex.what();
     } catch (...) {
@@ -86,7 +88,6 @@ void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
     std::lock_guard<std::mutex> lock(mu_);
     auto pendingIt = pending_.find(norm);
     if (epoch_ != epoch) {
-        delete loaded;
         if (pendingIt != pending_.end()) {
             pendingIt->second->done = true;
             pending_.erase(pendingIt);
@@ -94,7 +95,7 @@ void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
         cv_.notify_all();
         return;
     }
-    if (!error.empty() || loaded == nullptr) {
+    if (!error.empty() || !loaded) {
         if (pendingIt != pending_.end()) {
             pendingIt->second->done = true;
             pendingIt->second->failed = true;
@@ -102,12 +103,24 @@ void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
                 error.empty() ? std::string("no provider claimed key") : std::move(error);
             pending_.erase(pendingIt);
         }
-        delete loaded;
         cv_.notify_all();
         return;
     }
-    auto [it, inserted] = resources.emplace(norm, loaded);
-    if (!inserted) delete loaded;
+    auto entry = registry_.emplace(std::move(loaded));
+    if (!entry.ok()) {
+        if (pendingIt != pending_.end()) {
+            pendingIt->second->done   = true;
+            pendingIt->second->failed = true;
+            pendingIt->second->error  = entry.status().describe();
+            pending_.erase(pendingIt);
+        }
+        cv_.notify_all();
+        return;
+    }
+    // A concurrent load of the same key may have won the race: keep its entry and
+    // release the candidate we just registered.
+    auto [it, inserted] = resources.emplace(norm, entry.value());
+    if (!inserted) registry_.erase(entry.value()).ignore("released the duplicate candidate");
     if (pendingIt != pending_.end()) {
         pendingIt->second->done = true;
         pending_.erase(pendingIt);
@@ -195,7 +208,9 @@ OptionalRef<Resource> ResourceManager::peek(const std::string &key) {
     std::lock_guard<std::mutex> lock(mu_);
     auto it = resources.find(norm);
     if (it == resources.end()) return std::nullopt;
-    return std::ref(*it->second.get());
+    Resource *live = borrowLocked(it->second);
+    if (live == nullptr) return std::nullopt;
+    return std::ref(*live);
 }
 
 ResultRef<Resource> ResourceManager::waitFor(std::string key) {
@@ -210,15 +225,21 @@ ResultRef<Resource> ResourceManager::waitFor(std::string key) {
     {
         std::unique_lock<std::mutex> lock(mu_);
         auto cached = resources.find(norm);
-        if (cached != resources.end())
-            return ResultRef<Resource>::success(std::ref(*cached->second.get()));
+        if (cached != resources.end()) {
+            if (Resource *live = borrowLocked(cached->second)) {
+                return ResultRef<Resource>::success(std::ref(*live));
+            }
+        }
         auto pendingIt = pending_.find(norm);
         if (pendingIt != pending_.end()) job = pendingIt->second;
         if (job) {
             cv_.wait(lock, [&] { return job->done || resources.find(norm) != resources.end(); });
             cached = resources.find(norm);
-            if (cached != resources.end())
-                return ResultRef<Resource>::success(std::ref(*cached->second.get()));
+            if (cached != resources.end()) {
+                if (Resource *live = borrowLocked(cached->second)) {
+                    return ResultRef<Resource>::success(std::ref(*live));
+                }
+            }
             if (job->failed) {
                 return ResultRef<Resource>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::Failed,
@@ -230,8 +251,11 @@ ResultRef<Resource> ResourceManager::waitFor(std::string key) {
     if (job && job->done) {
         std::lock_guard<std::mutex> lock(mu_);
         auto cached = resources.find(norm);
-        if (cached != resources.end())
-            return ResultRef<Resource>::success(std::ref(*cached->second.get()));
+        if (cached != resources.end()) {
+            if (Resource *live = borrowLocked(cached->second)) {
+                return ResultRef<Resource>::success(std::ref(*live));
+            }
+        }
         if (job->failed) {
             return ResultRef<Resource>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Failed,
@@ -239,9 +263,9 @@ ResultRef<Resource> ResourceManager::waitFor(std::string key) {
         }
     }
 
-    Resource *loaded = nullptr;
+    script::Owned<Resource> loaded;
     try {
-        loaded = loadUncached(norm);
+        loaded.reset(loadUncached(norm));
     } catch (const std::exception &ex) {
         return ResultRef<Resource>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::Failed, ex.what(), norm));
@@ -252,9 +276,36 @@ ResultRef<Resource> ResourceManager::waitFor(std::string key) {
     }
 
     std::lock_guard<std::mutex> lock(mu_);
-    auto [it, inserted] = resources.emplace(norm, loaded);
-    if (!inserted) delete loaded;
-    return ResultRef<Resource>::success(std::ref(*it->second.get()));
+    // The decode ran outside the lock, so another thread may have cached the key
+    // meanwhile: keep that entry and drop this candidate instead of inserting twice.
+    auto existing = resources.find(norm);
+    if (existing != resources.end()) {
+        if (Resource *live = borrowLocked(existing->second)) {
+            return ResultRef<Resource>::success(std::ref(*live));
+        }
+    }
+    auto entry = registry_.emplace(std::move(loaded));
+    if (!entry.ok()) {
+        return ResultRef<Resource>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, entry.status().describe(), norm));
+    }
+    resources.emplace(norm, entry.value());
+    Resource *live = borrowLocked(entry.value());
+    if (live == nullptr) {
+        return ResultRef<Resource>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cached resource could not be resolved", norm));
+    }
+    return ResultRef<Resource>::success(std::ref(*live));
+}
+
+eve::Result<ResourcePin> ResourceManager::pin(Resource &resource) {
+    std::lock_guard<std::mutex> lock(mu_);
+    for (auto &kv : resources) {
+        if (borrowLocked(kv.second) != &resource) continue;
+        return registry_.pin(kv.second);
+    }
+    return eve::Result<ResourcePin>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "resource is not cached", resource.getUri()));
 }
 
 size_t ResourceManager::pendingCount() const {
@@ -264,17 +315,24 @@ size_t ResourceManager::pendingCount() const {
 
 void ResourceManager::unload(std::string key) {
     std::lock_guard<std::mutex> lock(mu_);
-    resources.erase(makeKey(std::move(key)));
+    auto                        it = resources.find(makeKey(std::move(key)));
+    if (it == resources.end()) return;
+    // The handle goes stale at once; a pinned payload is destroyed when the last
+    // pin is released, which is what keeps a playing SoundData alive.
+    registry_.erase(it->second).ignore("the entry handle became stale before the drop");
+    resources.erase(it);
 }
 
 void ResourceManager::unloadPath(const std::string &path) {
     const std::string norm = normalizePath(path);
     std::lock_guard<std::mutex> lock(mu_);
     for (auto it = resources.begin(); it != resources.end();) {
-        if (pathOfKey(it->first) == norm)
+        if (pathOfKey(it->first) == norm) {
+            registry_.erase(it->second).ignore("the entry handle became stale before the drop");
             it = resources.erase(it);
-        else
+        } else {
             ++it;
+        }
     }
 }
 
@@ -289,6 +347,7 @@ void ResourceManager::clear() {
             return true;
         });
         pending_.clear();
+        registry_.clear();
         resources.clear();
     }
     if (registered_) {
@@ -312,9 +371,9 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
     if (norm.empty()) return eve::Result<bool>::success(false);
 
     struct Prepared {
-        std::string               key;
-        Resource                 *cached = nullptr;
-        std::unique_ptr<Resource> replacement;
+        std::string             key;
+        Resource               *cached = nullptr;
+        script::Owned<Resource> replacement;
     };
 
     std::vector<std::string> keys;
@@ -324,9 +383,11 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
         std::lock_guard<std::mutex> lock(mu_);
         for (auto &kv : resources) {
             if (pathOfKey(kv.first) != norm) continue;
+            Resource *cached = borrowLocked(kv.second);
+            if (cached == nullptr) continue;
             keys.push_back(kv.first);
             selectedKeys.insert(kv.first);
-            selectedResources.insert(kv.second.get());
+            selectedResources.insert(cached);
         }
 
         // Close over reverse dependencies before loading anything. This gives
@@ -336,9 +397,11 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
             expanded = false;
             for (auto &kv : resources) {
                 if (selectedKeys.count(kv.first)) continue;
+                Resource *cached = borrowLocked(kv.second);
+                if (cached == nullptr) continue;
                 bool dependsOnSelection = false;
-                for (auto dependency : kv.second->getDependencies()) {
-                    if (selectedResources.count(dependency.get())) {
+                for (Resource *dependency : cached->getDependencies()) {
+                    if (selectedResources.count(dependency)) {
                         dependsOnSelection = true;
                         break;
                     }
@@ -346,7 +409,7 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
                 if (!dependsOnSelection) continue;
                 keys.push_back(kv.first);
                 selectedKeys.insert(kv.first);
-                selectedResources.insert(kv.second.get());
+                selectedResources.insert(cached);
                 expanded = true;
             }
         }
@@ -355,8 +418,8 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
 
     // Decode every root and dependent into detached candidates. A single
     // invalid file aborts the whole graph without touching live objects.
-    std::vector<Prepared> prepared;
-    std::vector<ref<Resource>> keepAlive;
+    std::vector<Prepared>    prepared;
+    std::vector<ResourcePin> keepAlive;
     prepared.reserve(keys.size());
     keepAlive.reserve(keys.size());
     for (const auto &key : keys) {
@@ -365,10 +428,16 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
             std::lock_guard<std::mutex> lock(mu_);
             auto it = resources.find(key);
             if (it == resources.end()) return eve::Result<bool>::success(false);
-            cached = it->second.get();
-            keepAlive.emplace_back(cached);
+            cached = borrowLocked(it->second);
+            if (cached == nullptr) return eve::Result<bool>::success(false);
+            // Pin the entry while the replacement decodes outside the lock: an
+            // unload() racing this reload must not destroy a resource we are
+            // about to refresh in place.
+            auto pinned = registry_.pin(it->second);
+            if (!pinned.ok()) return eve::Result<bool>::success(false);
+            keepAlive.push_back(std::move(pinned).takeValue());
         }
-        std::unique_ptr<Resource> replacement(loadReplacement(key));
+        script::Owned<Resource> replacement(loadReplacement(key));
         if (!replacement) return eve::Result<bool>::success(false);
         prepared.push_back({key, cached, std::move(replacement)});
     }
@@ -376,7 +445,9 @@ eve::Result<bool> ResourceManager::reload(const std::string &normPath) {
     std::lock_guard<std::mutex> lock(mu_);
     for (const auto &item : prepared) {
         auto it = resources.find(item.key);
-        if (it == resources.end() || it->second.get() != item.cached) return eve::Result<bool>::success(false);
+        if (it == resources.end() || borrowLocked(it->second) != item.cached) {
+            return eve::Result<bool>::success(false);
+        }
     }
 
     size_t committed = 0;
@@ -407,6 +478,20 @@ Resource *ResourceManager::loadReplacement(const std::string &key) {
     } catch (...) {
         return nullptr;
     }
+}
+
+std::vector<Resource *> Resource::getDependencies() const {
+    std::vector<Resource *> borrowed;
+    borrowed.reserve(dependencies.size());
+    for (const auto &pin : dependencies) borrowed.push_back(pin.get());
+    return borrowed;
+}
+
+eve::Result<void> Resource::addDependency(Resource &dependency) {
+    auto pinned = ResourceManager::getInstance().pin(dependency);
+    if (!pinned.ok()) return eve::Result<void>::failure(pinned.status());
+    dependencies.push_back(std::move(pinned).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 }  // namespace eve
