@@ -1,6 +1,23 @@
 # 移除 `eve::ref<T>` 与 `Object::ref_count`：资源句柄迁移方案
 
-> 状态：**方案（尚未实现）**。本文件先固定所有权契约与分阶段计划，实现按 P1→P5 逐步落地，每阶段可独立构建与测试通过。
+> 状态：**已实现 P1–P4**（P5 的测试迁移已完成，失败注入契约测试待补）。
+> 本文件先固定所有权契约与分阶段计划，实现按 P1→P5 逐步落地，每阶段可独立构建与测试通过。
+>
+> 落地记录：
+> - P1（`1b4ebbe5f`）：`detail::RuntimeSlotStore` 的 pin 计数与延迟销毁、`RuntimePin`、
+>   `RuntimeObjectRegistry::pin`，2 个契约测试。
+> - P2（`4b9fc6d27`）：`ResourceManager` 改由 `RuntimeObjectRegistry<Resource, ResourceCacheTag>`
+>   独占持有，命名映射存 `RuntimeHandleRef`，`get/peek/waitFor` 走 `resolve()` 借用，
+>   `Resource::dependencies` 改为 `RuntimePin`，新增 `ResourceManager::pin()` 与 3 个契约测试。
+> - P3（`34245857a`）：20 个生产用点迁移完毕——新建对象用 `script::Owned`，缓存对象用
+>   `RuntimePin`；`HouseLayout::loadModel` 的两义 `ref` 换成显式的 `ModelHandle`。
+> - P4（`916f429b9`）：删除 `ref<T>`、`Object::ref_count`、`update` 链与 `Object` 本身，同时删除
+>   只依赖它的死代码 `common/Model.h/.cpp`。D2 选择的「换别的类型标识分派」经取证后无调用点：
+>   全树的向下转型都经过 `Resource`，唯一在 `Object` 上分派的是 `ref<T>` 自己，因此直接删除通用根
+>   才是诚实答案。测试侧用 `test/ResourceTestSupport.h` 的 `PinnedResource<T>` 承载 pin。
+>
+> 各阶段验证：严格构建（`-DEVENGINE_ENABLE_STRICT_WARNINGS=ON`）0 告警 0 错误；P4 后全套
+> 5560/5560 通过。
 
 ## 1. 目标与范围
 
