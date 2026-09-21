@@ -1619,6 +1619,25 @@ Sculpt 七种结果。
 - 在每帧 update 生成大地图或纹理。
 - 在每帧重新生成树木网格；应缓存 `Mesh`，仅在 seed 或参数变化时重建。
 
+## 运行时质量与延迟任务
+
+`eve.PcgFrameRateManager()` 提供可回放的帧率采样和地形质量档策略。调用
+`configure(targetFrameRate, checkInterval, minQuality, maxQuality, currentQuality)` 原子配置状态机；
+调用方每帧注入 `dt` 与 `timeScale` 给 `update()`，因此它不依赖 OS 墙钟。随后可读取
+`getFps()`、`getQuality()`、`getQualityChanged()` 和 `getPreset()`。手动选择使用
+`selectManualQuality(level)`，自动模式使用 `setAutomatic(enabled)` / `getAutomatic()`。
+返回的 `PcgTerrainQualityPreset` 提供 `treeDistance`、`treeBillboardDistance`、
+`treeCrossFadeLength`、`treeMaximumFullLodCount`、`detailObjectDistance`、
+`detailObjectDensity`、`heightmapPixelError`、`heightmapMaximumLod` 和 `basemapDistance`。
+
+`eve.PcgTaskQueue()` 提供 callback-free 的延迟任务状态机。`add(waitSeconds)` 加入任务并返回
+稳定 ID；`tick(deltaSeconds)` 只把到期任务发布为 Ready，调用方通过 `getReadyTaskId()` 取得
+ID、在队列外执行任务，再调用 `resolveReady(finished)`。未完成任务留待下一轮，完成任务被移除；
+`cancelAll()` 清空队列，`getQueueSize()` 与 `getStatus()` 提供状态。队列不保存回调或脚本对象，
+显式 dt 使调度可回放，非法时间不会改变队列。
+
+这两个 PCG 策略类型由 `procgen` 模块绑定，不属于 `os`。
+
 ## L-system 文法生成
 
 通用随机括号 L-system 引擎(`procgen.newLSystem()`)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 `/` 折返、`[ ]` 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 `mesh.lsystem` 网格配方外,`trace()` 可把枝段作为样条控制点输出(道路、二维布局)。

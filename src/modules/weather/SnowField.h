@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace eve::snow {
+namespace eve::weather {
 
 /**
  * @brief Interactive snow depth field: a dense [0,1] float grid.
@@ -16,7 +16,7 @@ namespace eve::snow {
  * rendered snow surface instead of being a flat decal.
  *
  * Pure CPU data (no graphics / procgen includes): render and heightmap
- * bridging live in the Snow module (Snow.h).
+ * bridging live in the weather module (Snow.h).
  */
 class EVENGINE_API_ORCHESTRATION SnowField {
 public:
@@ -26,6 +26,7 @@ public:
     void resize(int width, int height);
     int  getWidth() const { return width_; }
     int  getHeight() const { return height_; }
+    /** @brief Compatibility predicate returning whether a cell is inside the field. */
     bool inBounds(int x, int y) const;
 
     /** @brief Set every cell to v (clamped to [0,1]). */
@@ -65,23 +66,35 @@ public:
     void addSnowfall(float amount);
 
     /**
-     * @brief POM height map as RGBA8 (width*height*4): R = snow depth, G = B = 0,
+     * @ownership Returned value owns its pixels.
+     * @lifetime Independent of this field after return.
+     * @brief POM height map as RGBA8 (width x height x 4): R = snow depth, G = B = 0,
      * A = 255 (white = raised toward the viewer, matches parallax_map.glsl).
      */
     std::vector<uint8_t> toHeightRGBA() const;
 
     /**
+     * @ownership Returned value owns its pixels.
+     * @lifetime Independent of this field after return.
      * @brief Albedo as RGBA8: cool-white snow blended to dark ground by depth,
      * plus a tiny per-cell hash, so bare ground reads dark and deep snow white.
      */
     std::vector<uint8_t> toAlbedoRGBA() const;
 
     /**
+     * @ownership Returned value owns its pixels.
+     * @lifetime Independent of this field after return.
      * @brief Tangent-space normal map as RGBA8 derived from the snow-depth
      * gradient (flat = 128,128,255, OpenGL-style, matches applyNormalMap).
      */
     std::vector<uint8_t> toNormalRGBA() const;
 
+    /**
+     * @brief Return an immediate read-only view of the dense field storage.
+     * @ownership Borrowed from this SnowField.
+     * @lifetime Invalidated by resize or destruction of this SnowField.
+     * @thread The caller must externally synchronize mutation.
+     */
     const std::vector<float> &data() const { return data_; }
 
 private:
@@ -93,4 +106,4 @@ private:
     bool              dirty_ = true;
 };
 
-}  // namespace eve::snow
+}  // namespace eve::weather

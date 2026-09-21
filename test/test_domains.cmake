@@ -78,7 +78,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "ik;core"
     "grid;core"
     "timer;core"
-    "system;core"
+    "os;core"
     "thread;core"
     "property_access;core"
     "statepatch;core"
@@ -167,7 +167,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "npc_ai;npc_ai"
     "crowd;npc_ai"
     "sensing;npc_ai"
-    "steering;npc_ai"
 
     # --- construction
     "building;building"
@@ -186,7 +185,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "window;platform"
     "weather;weather"
     "daynight;weather"
-    "snow;weather"
 
     # --- ml and search
     "tensor;tensor"

@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 namespace ssq { class Table; }
-namespace eve::system {
+namespace eve::procgen {
 /** @brief Observable state of Pcg's delayed task processor. */
 enum class PcgTaskQueueStatus { Idle = 0, Waiting = 1, Ready = 2 };
 /**
@@ -13,7 +13,7 @@ enum class PcgTaskQueueStatus { Idle = 0, Waiting = 1, Ready = 2 };
  * @details tick() only publishes a ready task ID. The caller executes work outside the queue and calls resolveReady().
  * @thread Owning thread only; no pointers or callbacks are retained.
  */
-class EVENGINE_API_FOUNDATION PcgTaskQueue {
+class EVENGINE_API_DOMAINS PcgTaskQueue {
 public:
     /** @brief Append a task with Pcg's default 0.25-second delay unless overridden. */
     [[nodiscard]] Result<std::uint64_t> add(double waitSeconds = 0.25);
@@ -38,4 +38,4 @@ private:
 };
 /** @brief Register PcgTaskQueue Squirrel bindings. */
 void exposePcgTaskQueueBindings(ssq::Table& table);
-}  // namespace eve::system
+}  // namespace eve::procgen

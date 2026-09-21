@@ -22,7 +22,7 @@
 #include "procgen/heightmap/PcgTerrainPhotoMode.h"
 #include "procgen/heightmap/PcgTerrainStreaming.h"
 #include "procgen/heightmap/TerrainPipeline.h"
-#include "system/System.h"
+#include "os/OS.h"
 #include <chrono>
 #include <vector>
 using namespace eve;
@@ -198,15 +198,21 @@ TEST_CASE("ui.pcgPhotoModeApply.lightingShadowMultiplierUsesGraphicsShadowAuthor
   "m_globalShadowDistanceMultiplier",PhotoModeDomain::Lighting,5.1f};CHECK(!authority.applyPhotoModeField(invalid).ok());
  CHECK_EQ(camera->getShadowLayerCullDistance(7),500.f);
 }
-TEST_CASE("ui.pcgPhotoModeApply.systemAuthorityAppliesVSyncAndRealFrameCap"){
+TEST_CASE("ui.pcgPhotoModeApply.framePacingAuthorityAppliesVSyncAndRealFrameCap"){
  cap::detail::clearAllRaw();PresentationMock presentation;cap::provide<IFramePresentation>(&presentation);
- system::System system;PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();after.setInt("m_targetFPS",120).value();
+ os::OS os;PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();after.setInt("m_targetFPS",120).value();
  PcgPhotoModeApplyPlan plan;REQUIRE(plan.compile(before,after).ok());REQUIRE_EQ(plan.getCommandCount(),2u);
- REQUIRE(plan.executeRegistered().ok());CHECK_EQ(presentation.count,2);CHECK_EQ(system.getPhotoModeVSync(),2);
- CHECK_EQ(system.getPhotoModeTargetFPS(),120);PhotoModeAssignment disable{"m_vSync",PhotoModeDomain::System,int64_t{0}};
- REQUIRE(system.applyPhotoModeField(disable).ok());system.limitFrame();const auto start=std::chrono::steady_clock::now();
- system.limitFrame();const auto elapsed=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
+ auto domain=plan.getCommandDomain(0);REQUIRE(domain.ok());CHECK_EQ(domain.value(),static_cast<int>(PhotoModeDomain::FramePacing));
+ REQUIRE(plan.executeRegistered().ok());CHECK_EQ(presentation.count,2);CHECK_EQ(os.getTargetFramesPerSecond(),120);
+ os.limitFrame();const auto start=std::chrono::steady_clock::now();
+ os.limitFrame();const auto elapsed=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
  CHECK_GE(elapsed,1);cap::revoke<IFramePresentation>(&presentation);
+}
+TEST_CASE("ui.pcgPhotoModeApply.framePacingAbsenceFailsBeforePresentationMutation"){
+ cap::detail::clearAllRaw();PresentationMock presentation;cap::provide<IFramePresentation>(&presentation);
+ PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();PcgPhotoModeApplyPlan plan;
+ REQUIRE(plan.compile(before,after).ok());CHECK(!plan.executeRegistered().ok());CHECK_EQ(presentation.count,0);
+ cap::revoke<IFramePresentation>(&presentation);
 }
 TEST_CASE("ui.pcgPhotoModeApply.streamingAuthorityDrivesRealChunkResidencyAndImpostorTier"){
  cap::detail::clearAllRaw();procgen::Heightmap heightmap(24,24);

@@ -79,6 +79,44 @@ public:
     float normalize3Y(float x, float y, float z) const;
     float normalize3Z(float x, float y, float z) const;
 
+    // --- steering (stateless vector calculations) ---
+    /** @brief Creates a 2D seek velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec2 *steeringSeek2(float x, float y, float targetX, float targetY, float maxSpeed) const;
+    /** @brief Creates a 3D seek velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec3 *steeringSeek3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                        float maxSpeed) const;
+    /** @brief Creates a 2D flee velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec2 *steeringFlee2(float x, float y, float targetX, float targetY, float maxSpeed) const;
+    /** @brief Creates a 3D flee velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec3 *steeringFlee3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                        float maxSpeed) const;
+    /** @brief Creates a 2D arrive velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec2 *steeringArrive2(float x, float y, float targetX, float targetY, float maxSpeed,
+                          float slowRadius, float stopRadius) const;
+    /** @brief Creates a 3D arrive velocity. @ownership owned @lifetime Caller deletes the result. */
+    Vec3 *steeringArrive3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                          float maxSpeed, float slowRadius, float stopRadius) const;
+    /** @brief Creates 2D separation acceleration from CSV. @ownership owned @lifetime Caller deletes the result. */
+    Vec2 *steeringSeparation2(float x, float y, const std::string &neighbors, float radius,
+                              float maxAcceleration) const;
+    /** @brief Creates 3D separation acceleration from CSV. @ownership owned @lifetime Caller deletes the result. */
+    Vec3 *steeringSeparation3(float x, float y, float z, const std::string &neighbors,
+                              float radius, float maxAcceleration) const;
+    /** @brief Selects a 2D path point from CSV x:y points, or -1 for no valid points. */
+    int steeringPathTarget2(float x, float y, const std::string &points, int current,
+                            float tolerance) const;
+    /** @brief Selects a 3D path point from CSV x:y:z points, or -1 for no valid points. */
+    int steeringPathTarget3(float x, float y, float z, const std::string &points, int current,
+                            float tolerance) const;
+    /** @brief Creates 2D avoidance acceleration. @ownership owned @lifetime Caller deletes the result. */
+    Vec2 *steeringAvoid2(float x, float y, float velocityX, float velocityY, float obstacleX,
+                         float obstacleY, float obstacleRadius, float lookAhead,
+                         float maxAcceleration) const;
+    /** @brief Creates 3D avoidance acceleration. @ownership owned @lifetime Caller deletes the result. */
+    Vec3 *steeringAvoid3(float x, float y, float z, float velocityX, float velocityY,
+                         float velocityZ, float obstacleX, float obstacleY, float obstacleZ,
+                         float obstacleRadius, float lookAhead, float maxAcceleration) const;
+
     /** @brief Rotate (x,y) by radians around origin. */
     float rotate2X(float x, float y, float radians) const;
     float rotate2Y(float x, float y, float radians) const;

@@ -1115,7 +1115,7 @@ macro(get_available_build)
     # DataModule files that require Poco. Font/FreeType is supported on WASM.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(_eve_excluded_module_files
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp;Snow.cpp;SnowField.cpp")
         set(_eve_module_exclusion_help
             "Exact basenames excluded from module source scan on Emscripten")
     else()

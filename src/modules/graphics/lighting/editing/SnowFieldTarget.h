@@ -6,17 +6,17 @@
 
 #include <string>
 
-namespace eve::snow {
+namespace eve::weather {
 class SnowField;
 }
 
-namespace eve::snow_editing {
+namespace eve::lighting_editing {
 
 /** @brief Non-owning scalar-field adapter for a live interactive snow field. */
 class EVENGINE_API_ORCHESTRATION SnowFieldTarget final : public editing::IEditableTarget, public editing::IScalarFieldTarget {
 public:
     /** @brief Bind a live snow field which must outlive this adapter. */
-    SnowFieldTarget(std::string id, snow::SnowField* field);
+    SnowFieldTarget(std::string id, weather::SnowField* field);
     editing::TargetId         targetId() const override { return editing::TargetId(id_); }
     std::uint64_t             revision() const override { return revision_; }
     editing::EditRegion       dirtyRegion() const override { return dirty_; }
@@ -31,13 +31,13 @@ public:
      * @return Borrowed pointer owned by the caller that constructed this adapter.
      * @lifetime Valid only while the source field outlives this adapter.
      */
-    snow::SnowField* field() const { return field_; }
+    weather::SnowField* field() const { return field_; }
 
 private:
     std::string         id_;
-    snow::SnowField*    field_    = nullptr;
+    weather::SnowField* field_    = nullptr;
     unsigned long long  revision_ = 1;
     editing::EditRegion dirty_;
 };
 
-}  // namespace eve::snow_editing
+}  // namespace eve::lighting_editing

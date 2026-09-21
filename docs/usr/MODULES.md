@@ -16,7 +16,7 @@
 - [事件](modules/event.md)：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
 - [响应式编程](modules/rx.md)：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。
 - [计时器](modules/timer.md)：读取启动后的高精度时间和帧间隔。
-- [系统信息](modules/system.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
+- [OS](modules/os.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
 - [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。
@@ -72,7 +72,7 @@
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
-- [可交互积雪](modules/snow.md)：深度场积雪，真实位移深坑 + POM 微细节 + 降雪回填（脚印 / 弹坑 / 行走痕迹）。
+- [天气](modules/weather.md)及其[可交互积雪服务](modules/snow.md)：降水、风、雷暴，以及深度场积雪的真实位移、POM 微细节与降雪回填。
 - [Avatar 分层渲染](modules/avatar.md)：Image 图层 / Live2D / VRoid 立绘，表达式、口型与动作。
 - [对话与剧情](modules/dialogue.md)：角色舞台、打字机、选项分支、口型与台词池（.dnut）。
 - [3D 相机控制器](modules/camera.md)：跟随 / 环绕 / 俯视 / 第一人称 / 过场视角序列。

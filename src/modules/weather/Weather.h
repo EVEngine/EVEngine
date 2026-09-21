@@ -33,7 +33,7 @@ namespace eve::weather {
  *
  * Presets: "clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard".
  */
-class EVENGINE_API_WORLD Weather : public Module, public IPhotoModeFieldSink {
+class EVENGINE_API_ORCHESTRATION Weather : public Module, public IPhotoModeFieldSink {
 public:
     Module_REG(Weather);
 
