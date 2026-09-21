@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::graphics {
 
 /** @brief GLSL stage accepted by compileGlslToSpirv. */
@@ -20,7 +22,7 @@ enum class GlslStage { eVertex, eFragment, eCompute };
  *
  * @return True when compileGlslToSpirv can be expected to succeed.
  */
-bool glslRuntimeCompilationAvailable();
+EVENGINE_API_BACKENDS bool glslRuntimeCompilationAvailable();
 
 /**
  * @brief Compile GLSL text to SPIR-V words.
@@ -40,7 +42,7 @@ bool glslRuntimeCompilationAvailable();
  *         eve::Exception: this also runs on CPU worker threads that must not
  *         trigger the global render tracer.
  */
-std::vector<std::uint32_t> compileGlslToSpirv(const std::string &source, GlslStage stage,
-                                              const std::string &debugName);
+EVENGINE_API_BACKENDS std::vector<std::uint32_t> compileGlslToSpirv(const std::string &source, GlslStage stage,
+                                                                    const std::string &debugName);
 
 }  // namespace eve::graphics
