@@ -116,7 +116,7 @@ public:
         if (extensionOf(path) == ".evmodel" || extensionOf(path) == ".vrm") {
             filesystem::FileData *packedRaw = fs->read(path);
             if (!packedRaw) return nullptr;
-            eve::ref<filesystem::FileData> packed(packedRaw);
+            eve::script::Owned<filesystem::FileData> packed(packedRaw);
             Model3D *module = ModuleManager::getInstance<Model3D>("Model3D");
             if (!module) module = Model3D::create();
             return module->newModelData(packed.get(), extensionOf(path), options);

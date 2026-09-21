@@ -3,6 +3,7 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimSkeleton.h"
+#include "common/SquirrelOwnership.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
@@ -11,6 +12,10 @@
 #include <stdexcept>
 
 namespace eve::animation {
+
+// A provider read hands over a freshly allocated FileData that this call owns until
+// the batch load finishes; `Owned` is std::unique_ptr under the ownership vocabulary.
+using eve::script::Owned;
 
 void exposeAnimClipBindings(ssq::Table& table) {
     exposeAnimCurveLibraryBindings(table);
@@ -22,7 +27,7 @@ void exposeAnimClipBindings(ssq::Table& table) {
                 throw std::runtime_error("invalid animation batch arguments");
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
             if (!fs) throw std::runtime_error("filesystem unavailable");
-            std::vector<eve::ref<eve::filesystem::FileData>> buffers;
+            std::vector<Owned<eve::filesystem::FileData>>    buffers;
             std::vector<AnimationTrackInput>                 inputs;
             std::size_t                                      total = 0;
             for (std::size_t i = 0; i < clips.size(); ++i) {
@@ -30,12 +35,12 @@ void exposeAnimClipBindings(ssq::Table& table) {
                 if (!destination) throw std::runtime_error("missing animation batch destination");
                 auto* raw = fs->read(paths.get<std::string>(i));
                 if (!raw) throw std::runtime_error("animation track file unavailable");
-                eve::ref<eve::filesystem::FileData> data(raw);
+                Owned<eve::filesystem::FileData> data(raw);
                 if (data->getSize() > 256 * 1024 * 1024 - total)
                     throw std::runtime_error("animation batch exceeds 256 MiB limit");
                 total += data->getSize();
                 inputs.push_back({*destination, {static_cast<const std::byte*>(data->getData()), data->getSize()}});
-                buffers.push_back(data);
+                buffers.push_back(std::move(data));
             }
             auto loaded = loadAnimationTrackBatch(inputs, *skeleton, workers);
             result.set("ok", loaded.ok());
@@ -91,7 +96,7 @@ void exposeAnimClipBindings(ssq::Table& table) {
             if (!fs) throw std::runtime_error("filesystem unavailable");
             auto* raw = fs->read(path);
             if (!raw) throw std::runtime_error("animation track file unavailable");
-            eve::ref<eve::filesystem::FileData> data(raw);
+            Owned<eve::filesystem::FileData> data(raw);
             auto loaded = loadAnimationTracks(*self, {static_cast<const std::byte*>(data->getData()), data->getSize()},
                                               *skeleton);
             result.set("ok", loaded.ok());

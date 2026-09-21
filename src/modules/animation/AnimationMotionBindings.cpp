@@ -3,12 +3,15 @@
 #include <stdexcept>
 #include "animation/AnimationBindings.h"
 #include "animation/MotionDatabase.h"
-#include "animation/MotionMatcher.h"
 #include "animation/MotionFeatureLayout.h"
+#include "animation/MotionMatcher.h"
+#include "common/SquirrelOwnership.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
 namespace eve::animation {
+// A provider read hands over a freshly allocated FileData that this call owns.
+using eve::script::Owned;
 void exposeMotionMatcherBindings(ssq::Table& table) {
     exposeAnimInertializerBindings(table);
     auto db = table.addClass<MotionDatabase>(
@@ -49,7 +52,7 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
             if (!fs) throw std::runtime_error("filesystem unavailable");
             auto* raw = fs->read(path);
             if (!raw) throw std::runtime_error("feature curve file unavailable");
-            eve::ref<eve::filesystem::FileData> data(raw);
+            Owned<eve::filesystem::FileData> data(raw);
             auto loaded = self->setFeatureCurves({static_cast<const std::byte*>(data->getData()), data->getSize()}, names);
             result.set("ok", loaded.ok()); result.set("message", loaded.status().describe());
         } catch (const std::exception& e) { result.set("ok", false); result.set("message", std::string(e.what())); }

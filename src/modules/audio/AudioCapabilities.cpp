@@ -100,8 +100,12 @@ public:
                 (data->getChannelCount() != 1 && data->getChannelCount() != 2))
                 return failure(eve::DiagnosticCode::Unsupported,
                                "Audio waveform requires bounded PCM8 or PCM16 data", "uri");
-            eve::ref<eve::sound::SoundData> retained(data);
-            (void)retained;
+            // The provider returns a cache-owned SoundData; pin it so a concurrent
+            // unload cannot destroy the payload while this request samples it.
+            auto retained = eve::ResourceManager::getInstance().pin(*data);
+            if (!retained.ok())
+                return failure(eve::DiagnosticCode::NotFound, "audio waveform resource is no longer cached", "uri");
+            eve::ResourcePin                 keepAlive = std::move(retained).takeValue();
             eve::action::ActionAudioWaveform result;
             result.clipDurationSeconds = data->getDuration();
             result.buckets.resize(request.bucketCount);
@@ -291,13 +295,15 @@ public:
         try {
             const auto seed = stableAudioSeed(context.executionId, event.itemId);
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding.value(), seed));
+            auto       dataPin = eve::ResourceManager::getInstance().pin(*data);
+            if (!dataPin.ok()) return fail(eve::DiagnosticCode::NotFound, "audio resource is no longer cached", "uri");
             std::unique_ptr<Source> source(audio->newSource(data));
             configureAudioSource(*source, binding.value(), selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
             applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
-            ActiveSource owned{data, std::move(source), binding.value().spatial,
-                               std::move(pose).takeValue(), binding.value().volume,
-                               binding.value().fadeOutOnExit, binding.value().fadeOutDuration};
+            ActiveSource owned{std::move(dataPin).takeValue(), std::move(source),      binding.value().spatial,
+                               std::move(pose).takeValue(),    binding.value().volume, binding.value().fadeOutOnExit,
+                               binding.value().fadeOutDuration};
             if (instant) {
                 auto duration = eve::Duration::fromSeconds(owned.source->getDuration() / owned.source->getPitch());
                 if (!duration) return eve::Result<void>::failure(duration.status());
@@ -368,8 +374,8 @@ public:
 
 private:
     struct ActiveSource {
-        // Source borrows this data; the ref keeps it alive across cache unload.
-        eve::ref<eve::sound::SoundData> data;
+        // Source borrows this data; the pin keeps it alive across cache unload.
+        eve::ResourcePin                  data;
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose pose;
@@ -519,12 +525,12 @@ public:
 
 private:
     struct OwnedAudio {
-        OwnedAudio(eve::sound::SoundData* data, std::unique_ptr<Source> source)
-            : data(data), source(std::move(source)) {}
+        OwnedAudio(eve::ResourcePin data, std::unique_ptr<Source> source)
+            : data(std::move(data)), source(std::move(source)) {}
 
-        // Source borrows this data; the ref keeps it alive across cache unload.
-        eve::ref<eve::sound::SoundData> data;
-        std::unique_ptr<Source>         source;
+        // Source borrows this data; the pin keeps it alive across cache unload.
+        eve::ResourcePin        data;
+        std::unique_ptr<Source> source;
     };
     struct PreviewAudio {
         eve::Value::Object payload;
@@ -544,8 +550,10 @@ private:
                 eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
         try {
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding, seed));
+            auto  dataPin = eve::ResourceManager::getInstance().pin(*data);
+            if (!dataPin.ok()) return eve::Result<std::optional<OwnedAudio>>::failure(dataPin.status());
             std::unique_ptr<Source> source(audio->newSource(data));
-            OwnedAudio owned(data, std::move(source));
+            OwnedAudio              owned(std::move(dataPin).takeValue(), std::move(source));
             configureAudioSource(*owned.source, binding,
                                  selectAudioPitch(binding, seed ^ 0x9e3779b97f4a7c15ULL));
             owned.source->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
