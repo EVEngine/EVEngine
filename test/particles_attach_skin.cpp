@@ -1,16 +1,20 @@
+#include "ResourceTestSupport.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "particles/Particles.h"
+#include "ResourceTestSupport.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
+#include "particles/Particles.h"
 
+#include "ResourceTestSupport.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 
+#include "ResourceTestSupport.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
@@ -27,6 +31,7 @@ using namespace eve::animation;
 namespace {
 
 #include "PathBesideSource.h"
+#include "ResourceTestSupport.h"
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
@@ -205,8 +210,7 @@ TEST_CASE("particles.attach.emitsAtBone") {
 TEST_CASE("particles.skin.surfaceEmitCesiumMan") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_surface"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_surface"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -313,8 +317,7 @@ TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
 TEST_CASE("particles.attach.clipSampleMovesEmitter") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_attach_clip"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_particles_attach_clip"));
     REQUIRE(model.get() != nullptr);
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
     REQUIRE(skeleton.get() != nullptr);
@@ -361,8 +364,7 @@ TEST_CASE("particles.attach.clipSampleMovesEmitter") {
 TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_empty_filter"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_empty_filter"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);

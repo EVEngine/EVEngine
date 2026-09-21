@@ -1,10 +1,9 @@
 #pragma once
-#include "Object.h"
 #include "common/AssetReloader.h"
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
-// Cached resources are owned by a RuntimeObjectRegistry instead of an intrusive
-// ref<T>, so this header needs the registry, RuntimePin and Owned/Borrowed
+// Cached resources are owned by a RuntimeObjectRegistry rather than by an intrusive
+// reference count, so this header needs the registry, RuntimePin and Owned/Borrowed
 // definitions. Both headers live in common/, so this is a same-layer include;
 // splitting the Squirrel-independent half of SquirrelOwnership.h (the registry,
 // store and pin) into its own header would keep <squirrel.h> out of the ~12 TUs
@@ -50,7 +49,7 @@ using ResourcePin = script::RuntimePin<Resource, ResourceCacheTag>;
  * path, optionally with `?param=value` suffixes for parameters that change the
  * decoded asset (e.g. a font's pixel size). See ResourceManager::makeKey.
  */
-class Resource : public Object {
+class Resource {
 public:
     virtual ~Resource() {}
 

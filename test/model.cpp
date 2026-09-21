@@ -1,6 +1,8 @@
-#include "common/Model.h"
-#include "ScriptTest.h"
 #include <cassert>
+#include <map>
+#include <string>
+#include <vector>
+#include "ScriptTest.h"
 #include "squirrel.h"
 
 #include "sqobject.h"

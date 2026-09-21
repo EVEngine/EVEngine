@@ -150,11 +150,13 @@ TEST_CASE("resource.unloadDropsEntryButKeepsHoldersAlive") {
 
     eve::Resource *a = get("a.dat");
     REQUIRE(a != nullptr);
-    eve::ref<eve::Resource> holder(a);  // an external holder keeps it alive
+    // An external holder pins the payload; the pin is what survives unload() now.
+    auto holder = eve::ResourceManager::getInstance().pin(*a);
+    REQUIRE(holder.ok());
+    eve::ResourcePin keepAlive = std::move(holder).takeValue();
     eve::ResourceManager::getInstance().unload("a.dat");
     CHECK_EQ(eve::ResourceManager::getInstance().count(), 0u);
-    // The holder's ref keeps the object alive and usable.
-    CHECK_EQ(static_cast<TestResource *>(a)->value, 1);
+    CHECK_EQ(static_cast<TestResource *>(keepAlive.get())->value, 1);
 
     // A later get() loads a fresh instance.
     eve::Resource *b = get("a.dat");

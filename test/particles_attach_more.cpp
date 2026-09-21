@@ -1,24 +1,29 @@
+#include "ResourceTestSupport.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "particles/Particles.h"
+#include "ResourceTestSupport.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
+#include "particles/Particles.h"
 
-#include "animation/Animation.h"
+#include "ResourceTestSupport.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
+#include "animation/Animation.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
 
+#include "ResourceTestSupport.h"
 #include "ik/Skeleton2D.h"
 #include "ik/Skeleton3D.h"
 #include "ik/Solver2D.h"
 
+#include "ResourceTestSupport.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
@@ -39,6 +44,7 @@ using namespace eve::ik;
 namespace {
 
 #include "PathBesideSource.h"
+#include "ResourceTestSupport.h"
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
@@ -463,8 +469,7 @@ TEST_CASE("particles.attach.emitZeroAndNegativeNoOp") {
 TEST_CASE("particles.skin.planeXzYzCesiumMan") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_planes"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_planes"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -525,8 +530,7 @@ TEST_CASE("particles.skin.planeXzYzCesiumMan") {
 TEST_CASE("particles.skin.clearRestoresBoneOriginSpawn") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_clear"));
+    auto      model     = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_clear"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));

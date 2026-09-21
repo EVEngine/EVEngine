@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common/Object.h"
-
 #include <AL/al.h>
 #include <AL/alc.h>
 
@@ -27,13 +25,13 @@ class Audio;
  * Not thread-safe for playback control except fillPendingFromDecoder(), which is
  * synchronized for the Audio worker thread.
  */
-class Source : public Object {
+class Source {
 public:
     /** @brief Creates a static source from decoded audio (both arguments required). */
     Source(Audio *audio, sound::SoundData *data);
     /** @brief Creates a streaming (or static-decoder) source; ownership of decoder is optional. */
     Source(Audio *audio, sound::Decoder *decoder, bool streaming, bool takeDecoderOwnership = false);
-    ~Source() override;
+    ~Source();
 
     /** @brief Starts (or resumes) playback. */
     void play();

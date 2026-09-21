@@ -1,25 +1,30 @@
+#include "ResourceTestSupport.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "particles/Particles.h"
+#include "ResourceTestSupport.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
+#include "particles/Particles.h"
 
-#include "animation/Animation.h"
+#include "ResourceTestSupport.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
+#include "animation/Animation.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
 
+#include "ResourceTestSupport.h"
 #include "ik/Skeleton2D.h"
 #include "ik/Skeleton3D.h"
 #include "ik/Solver2D.h"
 #include "ik/Solver3D.h"
 
+#include "ResourceTestSupport.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
@@ -41,6 +46,7 @@ using namespace eve::ik;
 namespace {
 
 #include "PathBesideSource.h"
+#include "ResourceTestSupport.h"
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
@@ -503,8 +509,7 @@ TEST_CASE("particles.attach.ik3dSolverStepContinuous") {
 TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_filter_idx"));
+    auto      model     = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_filter_idx"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -536,8 +541,7 @@ TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
 TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_buffer"));
+    auto      model     = eve::test::pinResource(loadCesiumMan("ev_ut_particles_skin_buffer"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -562,8 +566,7 @@ TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
 TEST_CASE("particles.attach.cesiumManBoneByNameIfPresent") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_attach_byname"));
+    auto                          model = eve::test::pinResource(loadCesiumMan("ev_ut_particles_attach_byname"));
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
     REQUIRE(skeleton.get() != nullptr);
     REQUIRE(skeleton->getBoneCount() > 1);
