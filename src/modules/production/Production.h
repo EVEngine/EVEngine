@@ -59,10 +59,10 @@ public:
     // so it is not copyable; dllexport must not instantiate the implicitly declared
     // copy operations, whose bodies cannot compile. Deleting the copies is a no-op and
     // the defaulted moves keep the previous implicit behaviour.
-    WorkQueue(const WorkQueue&) = delete;
+    WorkQueue(const WorkQueue&)            = delete;
     WorkQueue& operator=(const WorkQueue&) = delete;
-    WorkQueue(WorkQueue&&) = default;
-    WorkQueue& operator=(WorkQueue&&) = default;
+    WorkQueue(WorkQueue&&)                 = default;
+    WorkQueue& operator=(WorkQueue&&)      = default;
 
     /** @brief Creates an empty queue with an optional persistent identity. */
     explicit WorkQueue(eve::PersistentId instanceId = {});

@@ -393,7 +393,7 @@ struct ClimbingCandidateKey {
 
 /** @brief Creates the opaque key for one candidate at its deterministic sorted rank. */
 [[nodiscard]] EVENGINE_API_DOMAINS ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate,
-                                                             std::uint32_t sortedRank) noexcept;
+                                                                                 std::uint32_t sortedRank) noexcept;
 
 /** @brief Client-to-server request containing selection identity only, never a world-space target. */
 struct ClimbingPredictionRequest {
@@ -443,13 +443,17 @@ struct ClimbingPredictionDecision {
 };
 
 /** @brief Encodes a validated prediction request to its canonical owning Value representation. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionRequest(const ClimbingPredictionRequest& request);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionRequest(
+    const ClimbingPredictionRequest& request);
 /** @brief Decodes a complete request and rejects unknown schema versions transactionally. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(
+    const eve::Value& value);
 /** @brief Encodes a validated authoritative decision to its canonical owning Value representation. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionDecision(const ClimbingPredictionDecision& decision);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionDecision(
+    const ClimbingPredictionDecision& decision);
 /** @brief Decodes a complete authoritative decision transactionally. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(
+    const eve::Value& value);
 
 /** @brief Owning evidence returned by one committed climbing selection transaction. */
 struct ClimbingStart {

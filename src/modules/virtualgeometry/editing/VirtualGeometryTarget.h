@@ -59,10 +59,10 @@ struct VirtualGeometryImportValue {
 
 /** @brief Revisioned VirtualGeometry importer preset. */
 class EVENGINE_API_ORCHESTRATION VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                            public virtual IEditableTarget,
-                                            public IDomainOperationTarget,
-                                            public IDomainOperationTargetStaging,
-                                            public IPropertyProvider {
+                                                                       public virtual IEditableTarget,
+                                                                       public IDomainOperationTarget,
+                                                                       public IDomainOperationTargetStaging,
+                                                                       public IPropertyProvider {
 public:
     explicit VirtualGeometryDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

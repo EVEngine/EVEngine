@@ -66,11 +66,9 @@ struct EVENGINE_API_FOUNDATION_INLINE SnapshotEnvelope {
  * @param hashProvider Injected digest provider; must not be empty.
  * @return A sealed envelope, or a structured validation/hash failure.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema,
-                                                                         SchemaVersion schemaVersion,
-                                                                         PersistentId instanceId, Revision revision,
-                                                                         SimulationTick tick, Value payload,
-                                                                         const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> makeSnapshotEnvelope(
+    std::string type, LogicalId schema, SchemaVersion schemaVersion, PersistentId instanceId, Revision revision,
+    SimulationTick tick, Value payload, const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Produce the canonical JSON input used for a snapshot content hash.
@@ -87,7 +85,7 @@ struct EVENGINE_API_FOUNDATION_INLINE SnapshotEnvelope {
  * @return Success when the computed digest equals contentHash.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> verifySnapshotEnvelope(const SnapshotEnvelope&     snapshot,
-                                                               const SnapshotHashProvider& hashProvider);
+                                                                          const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Validate optional payload copies of envelope revision and tick.
@@ -100,8 +98,9 @@ struct EVENGINE_API_FOUNDATION_INLINE SnapshotEnvelope {
  *          helper gives legacy payloads one uniform compatibility rule before
  *          any consumer state is mutated.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revision,
-                                                                        SimulationTick tick);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateSnapshotPayloadMetadata(const Value&   payload,
+                                                                                   Revision       revision,
+                                                                                   SimulationTick tick);
 
 /**
  * @brief Convert an envelope to its strict canonical value representation.
@@ -134,8 +133,8 @@ struct EVENGINE_API_FOUNDATION_INLINE SnapshotEnvelope {
  * @param hashProvider Provider used to verify contentHash.
  * @return A verified envelope, or a parse/version/hash failure.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view            json,
-                                                                          const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> parseSnapshotEnvelope(
+    std::string_view json, const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief One directed payload migration step.

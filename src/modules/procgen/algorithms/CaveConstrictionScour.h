@@ -50,7 +50,7 @@ struct CaveConstrictionScourSample {
  * @param sites Sites derived by createCaveConstrictionScourSites.
  * @return Maximum local scour response and contributing site.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS CaveConstrictionScourSample sampleCaveConstrictionScour(
-    CaveHydrologyVec3 point, const std::vector<CaveConstrictionScourSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveConstrictionScourSample
+sampleCaveConstrictionScour(CaveHydrologyVec3 point, const std::vector<CaveConstrictionScourSite>& sites);
 
 }  // namespace eve::procgen

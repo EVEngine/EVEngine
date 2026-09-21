@@ -52,9 +52,9 @@ using editing::validatePropertyValue;
 
 /** @brief Shared property-document implementation for light and environment targets. */
 class EVENGINE_API_ORCHESTRATION LightingPropertyTargetBase : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IPropertyProvider {
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IPropertyProvider {
 public:
     TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;

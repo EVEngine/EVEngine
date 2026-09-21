@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Export.h"
 #include <string>
 #include <vector>
+#include "common/Export.h"
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -24,10 +24,10 @@ struct SceneImportValue {
     bool sharedMeshes = true, mipmaps = true, importLights = true, importCameras = false, importAnimations = true;
 };
 class EVENGINE_API_ORCHESTRATION SceneImportTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IPropertyProvider {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public IPropertyProvider {
 public:
     explicit SceneImportTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }

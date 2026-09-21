@@ -50,6 +50,6 @@ public:
  * @reentrancy Providers must not mutate the capability listener registry.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<EntitySpatialPose> resolveEntitySpatialPose(ecs::EntityHandle entity,
-                                                                              std::string_view bone = {});
+                                                                                         std::string_view  bone = {});
 
 }  // namespace eve

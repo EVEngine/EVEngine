@@ -44,7 +44,7 @@ struct RibbonParams {
  * @param strands Must already be structurally valid (or validate() is called).
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
-                                              const RibbonParams &params = {});
+                                                                    const RibbonParams &params = {});
 
 /**
  * @brief Append `src` into `dst`, rebasing triangle indices by `dst` vertex count.

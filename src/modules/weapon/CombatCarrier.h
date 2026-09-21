@@ -277,8 +277,8 @@ public:
  * OnHit→EmitHit+Release. Homing requires a positive turn rate already validated
  * by ProjectileDefinition.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<CarrierRecipe> carrierRecipeFromProjectile(const ProjectileDefinition& definition,
-                                                                double damage = 0.0);
+[[nodiscard]] EVENGINE_API_WORLD Result<CarrierRecipe> carrierRecipeFromProjectile(
+    const ProjectileDefinition& definition, double damage = 0.0);
 
 /**
  * @brief Owner-thread deterministic carrier simulator with composable behaviors.

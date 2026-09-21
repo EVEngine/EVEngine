@@ -52,7 +52,7 @@ struct CaveObstacleScourSample {
  * @param sites Sites derived by createCaveObstacleScourSites.
  * @return Maximum bounded obstacle-scour response.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS CaveObstacleScourSample sampleCaveObstacleScour(CaveHydrologyVec3                         point,
-                                                              const std::vector<CaveObstacleScourSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveObstacleScourSample
+sampleCaveObstacleScour(CaveHydrologyVec3 point, const std::vector<CaveObstacleScourSite>& sites);
 
 }  // namespace eve::procgen

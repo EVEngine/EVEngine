@@ -54,8 +54,9 @@ struct AssetCookReceipt {
  * @thread Worker-safe when source is not concurrently mutated.
  * @reentrancy Does not execute scripts, tools, network requests or callbacks.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<AssetCookReceipt> cookEvaToEvpack(
-    const EvaArchive& source, const AssetCookProfile& profile,
-    const EvaArchiveLimits& evaLimits = {}, const EvpackLimits& evpackLimits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<AssetCookReceipt> cookEvaToEvpack(const EvaArchive&       source,
+                                                                               const AssetCookProfile& profile,
+                                                                               const EvaArchiveLimits& evaLimits = {},
+                                                                               const EvpackLimits& evpackLimits  = {});
 
 }  // namespace eve::asset

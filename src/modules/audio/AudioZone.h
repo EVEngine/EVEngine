@@ -51,8 +51,11 @@ struct AudioZoneOutput { bool play=false,stop=false; int trackIndex=-1; float vo
  * @param masterVolume Pcg master-volume ceiling.
  * @param seed Named audio-zone RNG stream seed used when a new track starts.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& profile, AudioZoneState& state,
-    float now,float playerX,float playerY,float playerZ,float masterVolume,std::uint32_t seed);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& profile,
+                                                                              AudioZoneState& state, float now,
+                                                                              float playerX, float playerY,
+                                                                              float playerZ, float masterVolume,
+                                                                              std::uint32_t seed);
 /** @brief Apply one evaluated command to the caller-selected track Source without retaining it. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyAudioZoneOutput(Source* source,const AudioZoneOutput& output);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyAudioZoneOutput(Source* source, const AudioZoneOutput& output);
 }

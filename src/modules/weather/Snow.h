@@ -24,7 +24,7 @@ namespace eve::weather {
  * `terrain`; values are not clamped (the terrain mesh scales them).
  */
 EVENGINE_API_ORCHESTRATION void applySnowToHeightmap(const SnowField &field, const procgen::Heightmap &terrain,
-                          procgen::Heightmap &out, float heightScale);
+                                                     procgen::Heightmap &out, float heightScale);
 
 /**
  * @brief Interactive snow service owned by the weather module.

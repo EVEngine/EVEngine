@@ -136,9 +136,11 @@ public:
                                                             const PropertyPath&      path) const          = 0;
 };
 
-[[nodiscard]] EVENGINE_API_PLATFORM Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value);
-[[nodiscard]] EVENGINE_API_PLATFORM property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
-[[nodiscard]] EVENGINE_API_PLATFORM eve::Value                          toPresentationValue(const Value& value);
-[[nodiscard]] EVENGINE_API_PLATFORM Value                               toEditingValue(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> validatePropertyValue(const PropertyDescriptor& descriptor,
+                                                                       const Value&              value);
+[[nodiscard]] EVENGINE_API_PLATFORM property_access::PropertyDescriptor toPresentationDescriptor(
+    const PropertyDescriptor& source);
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Value toPresentationValue(const Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Value      toEditingValue(const eve::Value& value);
 
 }  // namespace eve::editing

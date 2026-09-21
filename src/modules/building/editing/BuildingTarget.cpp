@@ -508,10 +508,9 @@ BuildingPlacementTarget::BuildingPlacementTarget(std::string id, std::unique_ptr
 // Defined here (PlacementWorld.h is included above) so every other translation unit
 // gets a declaration to call instead of instantiating the deleter itself; see the
 // special-member comment in BuildingTarget.h.
-BuildingPlacementTarget::BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept = default;
-BuildingPlacementTarget& BuildingPlacementTarget::operator=(BuildingPlacementTarget&&) noexcept =
-    default;
-BuildingPlacementTarget::~BuildingPlacementTarget() = default;
+BuildingPlacementTarget::BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept            = default;
+BuildingPlacementTarget& BuildingPlacementTarget::operator=(BuildingPlacementTarget&&) noexcept = default;
+BuildingPlacementTarget::~BuildingPlacementTarget()                                             = default;
 
 TargetDescriptor BuildingPlacementTarget::describe() const {
     TargetDescriptor result;

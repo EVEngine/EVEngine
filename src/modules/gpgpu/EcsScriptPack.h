@@ -19,8 +19,8 @@ class GpuBuffer;
  * fields: Squirrel array of field name strings (e.g. ["x","y"])
  * Returns entity count packed (0 on empty / error).
  */
-EVENGINE_API_WORLD int packScriptEntityFloats(ssq::Object entities, const std::string &slot,
-                           ssq::Object fields, GpuBuffer *buf);
+EVENGINE_API_WORLD int packScriptEntityFloats(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                              GpuBuffer *buf);
 
 /**
  * @brief Pack a contiguous entity range into the matching range of an existing buffer.
@@ -28,12 +28,12 @@ EVENGINE_API_WORLD int packScriptEntityFloats(ssq::Object entities, const std::s
  * @param entityCount Number of entities to pack; values past the view are clamped.
  * @return Number of entities packed.
  */
-EVENGINE_API_WORLD int packScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields, GpuBuffer *buf,
-                                int firstEntity, int entityCount);
+EVENGINE_API_WORLD int packScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                   GpuBuffer *buf, int firstEntity, int entityCount);
 
 /** @brief Inverse of packScriptEntityFloats; entityCount should match pack result. */
-EVENGINE_API_WORLD int unpackScriptEntityFloats(ssq::Object entities, const std::string &slot,
-                             ssq::Object fields, GpuBuffer *buf, int entityCount);
+EVENGINE_API_WORLD int unpackScriptEntityFloats(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                GpuBuffer *buf, int entityCount);
 
 /**
  * @brief Unpack a contiguous buffer range into the matching stable ECS view range.
@@ -41,7 +41,7 @@ EVENGINE_API_WORLD int unpackScriptEntityFloats(ssq::Object entities, const std:
  * @param entityCount Number of entities to unpack; values past the view are clamped.
  * @return Number of entities unpacked.
  */
-EVENGINE_API_WORLD int unpackScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields, GpuBuffer *buf,
-                                  int firstEntity, int entityCount);
+EVENGINE_API_WORLD int unpackScriptEntityFloatsRange(ssq::Object entities, const std::string &slot, ssq::Object fields,
+                                                     GpuBuffer *buf, int firstEntity, int entityCount);
 
 }  // namespace eve::gpgpu

@@ -49,8 +49,7 @@ struct EvaArchive {
  * @reentrancy Does not invoke callbacks.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> buildEvaArchive(
-    const EvaManifest& manifest, std::vector<EvaArchiveEntry> entries,
-    const EvaArchiveLimits& limits = {});
+    const EvaManifest& manifest, std::vector<EvaArchiveEntry> entries, const EvaArchiveLimits& limits = {});
 
 /**
  * @brief Parse and fully verify an untrusted `.eva` ZIP64 image.
@@ -60,7 +59,7 @@ struct EvaArchive {
  * @thread Worker-safe; no state is retained across calls.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> parseEvaArchive(
-    std::span<const std::uint8_t> bytes, const EvaArchiveLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes,
+                                                                         const EvaArchiveLimits&       limits = {});
 
 }  // namespace eve::asset

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Export.h"
 #include <memory>
 #include <span>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::physics {

@@ -88,8 +88,8 @@ public:
     // `MotionRuntime motions_` is itself neither copyable nor movable
     // (MotionRuntime.h:130 deletes copy and declares no move), which would make a
     // defaulted move operation ill-formed.
-    Animation(const Animation&)            = delete;
-    Animation& operator=(const Animation&) = delete;
+    Animation(const Animation &)            = delete;
+    Animation &operator=(const Animation &) = delete;
 
     /** @brief Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);

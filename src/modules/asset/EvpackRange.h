@@ -73,7 +73,6 @@ private:
  * @return Prepared range mount; no chunk payload has been fetched yet.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<EvpackRangeMount> prepareEvpackRangeMount(
-    std::shared_ptr<const EvpackRangeSource> source, const EvpackLimits& limits = {},
-    const EvpackTrust& trust = {});
+    std::shared_ptr<const EvpackRangeSource> source, const EvpackLimits& limits = {}, const EvpackTrust& trust = {});
 
 }  // namespace eve::asset

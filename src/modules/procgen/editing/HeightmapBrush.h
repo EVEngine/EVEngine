@@ -18,7 +18,7 @@ namespace eve::procgen_editing {
  * @return Applied with the changed sample count, NoOp when strength is zero, or a validation failure.
  */
 [[nodiscard]] EVENGINE_API_ORCHESTRATION editing::Result<int> applyHeightmapBrush(procgen::Heightmap* heightmap,
-                                                       float centerX, float centerY,
-                                                       float radius, float strength);
+                                                                                  float centerX, float centerY,
+                                                                                  float radius, float strength);
 
 }  // namespace eve::procgen_editing

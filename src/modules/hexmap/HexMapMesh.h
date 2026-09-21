@@ -100,7 +100,8 @@ void buildRoadMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out)
  *                because it also needs the visibility state, use `buildFogMesh`.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-EVENGINE_API_WORLD void buildChunkSurfaceMesh(const HexMap& map, std::int32_t chunkIndex, HexSurface surface, HexMeshData& out);
+EVENGINE_API_WORLD void buildChunkSurfaceMesh(const HexMap& map, std::int32_t chunkIndex, HexSurface surface,
+                                              HexMeshData& out);
 
 /**
  * @brief Builds the fog-of-war overlay of one chunk.
@@ -118,6 +119,7 @@ EVENGINE_API_WORLD void buildChunkSurfaceMesh(const HexMap& map, std::int32_t ch
  * @param chunkIndex Chunk to build.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-EVENGINE_API_WORLD void buildFogMesh(const HexMap& map, const HexVisibility& visibility, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildFogMesh(const HexMap& map, const HexVisibility& visibility, std::int32_t chunkIndex,
+                                     HexMeshData& out);
 
 }  // namespace eve::hexmap

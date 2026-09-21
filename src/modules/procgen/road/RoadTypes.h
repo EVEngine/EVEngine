@@ -112,7 +112,8 @@ struct RoadProfile {
  * @param lanesBackward Optional opposite lanes (>= 0).
  * @return Owning profile, or a structured validation diagnostic.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward,
+                                                                       int lanesBackward);
 
 /**
  * @brief Map a material tag to the MeshBuild group name used by the baker.

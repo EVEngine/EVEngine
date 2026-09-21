@@ -21,6 +21,6 @@ namespace eve::map {
  * @reentrancy No callbacks are invoked and no engine state is mutated.
  */
 [[nodiscard]] EVENGINE_API_WORLD eve::Result<void> validateMapObjects(std::span<const MapObject> objects,
-                                                   std::string_view contractJson);
+                                                                      std::string_view           contractJson);
 
 }  // namespace eve::map

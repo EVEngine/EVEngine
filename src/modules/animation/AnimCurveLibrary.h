@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/Export.h"
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string_view>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::animation {

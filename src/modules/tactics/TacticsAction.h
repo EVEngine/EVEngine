@@ -49,12 +49,13 @@ using MoveActionExecutor = TacticsActionExecutor;
  * @param destination Logical target cell.
  * @param tick Deterministic request tick.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeMoveRequest(ecs::EntityHandle unit, Cell destination,
-                                                            SimulationTick tick);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeMoveRequest(ecs::EntityHandle unit,
+                                                                                 Cell destination, SimulationTick tick);
 /** @brief Build a checked facing request with optimistic battle revision. */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeFaceRequest(ecs::EntityHandle unit, int facing,
-                                                            SimulationTick tick);
+                                                                                 SimulationTick tick);
 /** @brief Build a checked wait request with optimistic battle revision. */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeWaitRequest(ecs::EntityHandle unit, SimulationTick tick);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeWaitRequest(ecs::EntityHandle unit,
+                                                                                 SimulationTick    tick);
 
 }  // namespace eve::tactics

@@ -154,7 +154,7 @@ using HexOccupancyQuery = std::function<bool(HexCoordinates)>;
  * @return True when the cell can hold an actor.
  */
 [[nodiscard]] EVENGINE_API_WORLD bool isValidDestination(const HexMap& map, HexCoordinates coordinates,
-                                      const HexOccupancyQuery& occupied = {});
+                                                         const HexOccupancyQuery& occupied = {});
 
 /**
  * @brief Cost of moving between two adjacent cells.
@@ -170,8 +170,8 @@ using HexOccupancyQuery = std::function<bool(HexCoordinates)>;
  * @param occupied Occupancy predicate; may be empty.
  * @return A positive cost, or a negative value when the move is blocked.
  */
-[[nodiscard]] EVENGINE_API_WORLD std::int32_t moveCost(const HexMap& map, HexCoordinates from, HexCoordinates to, HexDirection direction,
-                                    const HexOccupancyQuery& occupied = {});
+[[nodiscard]] EVENGINE_API_WORLD std::int32_t moveCost(const HexMap& map, HexCoordinates from, HexCoordinates to,
+                                                       HexDirection direction, const HexOccupancyQuery& occupied = {});
 
 /** @brief One found path: the cells from origin to goal, with the turn each one is reached on. */
 struct HexPath {
@@ -203,9 +203,10 @@ struct HexPath {
  *         when an endpoint is outside the grid.
  * @cost Proportional to the number of cells expanded; bounded by `map.cellCount()`.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordinates from,
-                                       HexCoordinates to, const HexMoveRules& rules,
-                                       const HexOccupancyQuery& occupied = {});
+[[nodiscard]] EVENGINE_API_WORLD Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch,
+                                                          HexCoordinates from, HexCoordinates to,
+                                                          const HexMoveRules&      rules,
+                                                          const HexOccupancyQuery& occupied = {});
 
 /**
  * @brief Collects every cell visible from `from` within `range`.

@@ -21,7 +21,7 @@ namespace eve::asset {
  * @remarks Supports the current version and N-1. Unknown newer versions and downgrade
  * requests are rejected. No files or registries are mutated by this operation.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> migrateEvaArchive(EvaArchive source,
-                                                   const EvaArchiveLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> migrateEvaArchive(EvaArchive              source,
+                                                                           const EvaArchiveLimits& limits = {});
 
 }  // namespace eve::asset

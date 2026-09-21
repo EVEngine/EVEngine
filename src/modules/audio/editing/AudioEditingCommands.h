@@ -13,6 +13,7 @@ namespace eve::audio_editing {
  * @thread Main-thread composition only.
  * @reentrancy Must not re-enter module registration.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry);
+[[nodiscard]] EVENGINE_API_BACKENDS editing::Result<void> registerEditingCommands(
+    editing::IEditingCommandRegistry& registry);
 
 }  // namespace eve::audio_editing

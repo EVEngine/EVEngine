@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include "common/Export.h"
 #include "common/Result.h"
 namespace eve::graphics {
 class Texture;

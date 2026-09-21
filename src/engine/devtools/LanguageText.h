@@ -35,7 +35,8 @@ EVENGINE_API_FOUNDATION size_t lastLineIndex(std::string_view source) noexcept;
  * @brief Half-open LSP range covering `startLine` through `endLine` inclusive.
  * Ends at the start of the following line when one exists.
  */
-EVENGINE_API_FOUNDATION Range coveringLines(std::string_view source, size_t startLine, size_t endLineInclusive) noexcept;
+EVENGINE_API_FOUNDATION Range coveringLines(std::string_view source, size_t startLine,
+                                            size_t endLineInclusive) noexcept;
 
 /** @brief Source bytes for `coveringLines` of the same line span. */
 EVENGINE_API_FOUNDATION std::string sliceLines(std::string_view source, size_t startLine, size_t endLineInclusive);

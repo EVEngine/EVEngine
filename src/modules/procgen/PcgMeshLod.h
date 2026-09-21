@@ -25,7 +25,8 @@ class PcgMeshCombinePlan;
  * declarations inside PcgMeshTransform/PcgMeshCombinePlan fix a different
  * linkage and this dllexport declaration would be C2375.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePlan& plan);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&                output,
+                                                                          const PcgMeshCombinePlan& plan);
 
 /** @brief Pcg/Unity renderer policies retained per generated mesh LOD. */
 struct PcgMeshLodRendererState {
@@ -167,7 +168,8 @@ public:
     /** @brief Return injected-time transition duration. */
     [[nodiscard]] float getCrossFadeAnimationDuration() const noexcept { return crossFadeAnimationDuration_; }
 private:
-    friend EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&, const PcgMeshLodProfile&);
+    friend EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&,
+                                                                  const PcgMeshLodProfile&);
     std::vector<PcgMeshLodLevel> levels_;
     std::vector<MeshBuild> meshes_;
     int fadeMode_ = 0;
@@ -184,7 +186,7 @@ private:
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source,
-                                                 const PcgMeshLodProfile& profile);
+                                                                     const PcgMeshLodProfile& profile);
 
 /**
  * @brief Combine an ordered static-renderer plan and generate every combined LOD atomically.
@@ -194,8 +196,8 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet& output,
-                                                         const PcgMeshCombinePlan& plan,
-                                                         const PcgMeshLodProfile& profile);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet&            output,
+                                                                             const PcgMeshCombinePlan& plan,
+                                                                             const PcgMeshLodProfile&  profile);
 
 }  // namespace eve::procgen

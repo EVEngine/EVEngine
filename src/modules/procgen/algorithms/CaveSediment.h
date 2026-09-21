@@ -54,16 +54,18 @@ struct CaveSedimentSet {
  * @param seed Deterministic generator seed.
  * @return Bars, clasts, and observable deposition statistics.
  */
-EVENGINE_API_DOMAINS CaveSedimentSet createCaveSediment(const std::vector<CaveSedimentPathPoint>& path, int barCount, float strength,
-                                   float paragenesis, uint32_t seed);
+EVENGINE_API_DOMAINS CaveSedimentSet createCaveSediment(const std::vector<CaveSedimentPathPoint>& path, int barCount,
+                                                        float strength, float paragenesis, uint32_t seed);
 
 /** @brief Carve flow-aligned antigravitative ceiling channels above generated sediment bars. */
-EVENGINE_API_DOMAINS float carveCaveParagenesis(float x, float y, float z, float current, const CaveSedimentSet& sediment);
+EVENGINE_API_DOMAINS float carveCaveParagenesis(float x, float y, float z, float current,
+                                                const CaveSedimentSet& sediment);
 
 /** @brief Union sediment bars and imbricated clasts into a cave SDF. */
 EVENGINE_API_DOMAINS float addCaveSediment(float x, float y, float z, float current, const CaveSedimentSet& sediment);
 
 /** @brief Test whether a point lies on a generated sediment surface. */
-EVENGINE_API_DOMAINS bool isCaveSedimentSurface(float x, float y, float z, float tolerance, const CaveSedimentSet& sediment);
+EVENGINE_API_DOMAINS bool isCaveSedimentSurface(float x, float y, float z, float tolerance,
+                                                const CaveSedimentSet& sediment);
 
 }  // namespace eve::procgen

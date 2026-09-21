@@ -33,11 +33,12 @@ WidgetDesc buildPropertyField(property_access::IPropertyAccess &model, const std
  * IPropertyAccess::write(), so gameplay models and command-backed editor models
  * use the same UI generation path.
  */
-EVENGINE_API_WORLD WidgetDesc buildPropertyView(property_access::IPropertyAccess &model, const PropertyViewOptions &options = {});
+EVENGINE_API_WORLD WidgetDesc buildPropertyView(property_access::IPropertyAccess &model,
+                                                const PropertyViewOptions        &options = {});
 
 /** @brief Pull current model values into an existing compatible UI tree. */
 EVENGINE_API_WORLD void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model,
-                      const PropertyViewOptions &options = {});
+                                         const PropertyViewOptions &options = {});
 
 /** @brief Component wrapper that becomes dirty when its bound model changes. */
 class EVENGINE_API_WORLD PropertyComponent final : public Component {

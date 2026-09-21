@@ -31,6 +31,6 @@ EVE_ECS_DEFAULT_TABLE_API Table& engine_default_table() {
     return table;
 }
 
-} // namespace ecs
+}  // namespace ecs
 
 #endif

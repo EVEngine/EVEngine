@@ -25,6 +25,7 @@ struct TerrainDetailCardGeometry {
  * @thread Worker-safe; allocates only detached CPU arrays and invokes no callbacks.
  * @remarks Mesh-backed and VertexLit prototypes return Unsupported so their authored mesh is never replaced.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainDetailCardGeometry> buildTerrainDetailCard(const RuntimeInstancePrototype& prototype);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainDetailCardGeometry> buildTerrainDetailCard(
+    const RuntimeInstancePrototype& prototype);
 
 }  // namespace eve::asset_procgen

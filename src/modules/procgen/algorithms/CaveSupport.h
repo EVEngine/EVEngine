@@ -11,7 +11,7 @@ struct CaveDetachmentResult {
     int detachedVoxels    = 0;
 };
 
-EVENGINE_API_DOMAINS CaveDetachmentResult detachUnsupportedCaveFragments(std::vector<float>& density, int nx, int ny, int nz,
-                                                    float strength);
+EVENGINE_API_DOMAINS CaveDetachmentResult detachUnsupportedCaveFragments(std::vector<float>& density, int nx, int ny,
+                                                                         int nz, float strength);
 
 }  // namespace eve::procgen

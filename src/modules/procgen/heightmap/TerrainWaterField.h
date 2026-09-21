@@ -43,7 +43,7 @@ struct TerrainWaterFlowMapSettings {
  * and smoothing is the source's order-dependent in-place clamped four-neighbor pass.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainWaterFlowMap(Heightmap& target, const Heightmap& source,
-                                                       const TerrainWaterFlowMapSettings& settings);
+                                                                           const TerrainWaterFlowMapSettings& settings);
 
 /**
  * @brief Generate Pcg HeightMap.FlowMap's normalized four-direction velocity magnitude.
@@ -54,7 +54,8 @@ struct TerrainWaterFlowMapSettings {
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access; deterministic with no RNG, callbacks, or implicit time.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainVelocityFlowMap(Heightmap& target, const Heightmap& source, int iterations);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainVelocityFlowMap(Heightmap&       target,
+                                                                              const Heightmap& source, int iterations);
 
 /**
  * @brief Owned water/flux/velocity state for deterministic execution of the Pcg water stage.

@@ -49,7 +49,7 @@ inline constexpr std::uint32_t kHexSaveVersion = 1;
  * @cost Proportional to the cell count.
  */
 [[nodiscard]] EVENGINE_API_WORLD Result<void> saveHexMap(const HexMap& map, const std::vector<HexUnitState>& units,
-                                      std::vector<std::uint8_t>& out);
+                                                         std::vector<std::uint8_t>& out);
 
 /**
  * @brief Restores a map and its units from a payload produced by `saveHexMap`.
@@ -67,6 +67,6 @@ inline constexpr std::uint32_t kHexSaveVersion = 1;
  * @cost Proportional to the cell count.
  */
 [[nodiscard]] EVENGINE_API_WORLD Result<void> loadHexMap(const std::vector<std::uint8_t>& bytes, HexMap& map,
-                                      std::vector<HexUnitState>& units);
+                                                         std::vector<HexUnitState>& units);
 
 }  // namespace eve::hexmap

@@ -57,10 +57,10 @@ struct Hd2dAssetValue {
 };
 /** @brief Revisioned HD-2D sprite/tilemap presentation asset. */
 class EVENGINE_API_ORCHESTRATION Hd2dDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider {
 public:
     explicit Hd2dDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }

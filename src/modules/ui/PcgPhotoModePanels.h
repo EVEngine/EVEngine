@@ -1,10 +1,10 @@
 #pragma once
 
+#include <array>
+#include <cstdint>
 #include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgUiStatus.h"
-#include <array>
-#include <cstdint>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Seven-panel selection transaction used by Pcg photo mode. */

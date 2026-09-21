@@ -160,9 +160,10 @@ private:
  * @thread Worker-safe when the reader is safe for concurrent reads.
  * @reentrancy Performs no callbacks, GPU calls, global mutation, clocks or filesystem access.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneElementMasks(
-    const asset::EvpackResourceReader& reader, const LoadedVegetationScene& scene,
-    const asset::EvpackCapabilities& capabilities, std::uint64_t maximumDecodedBytes = 256 * 1024 * 1024);
+[[nodiscard]] EVENGINE_API_WORLD Result<std::map<std::string, graphics::VegetationMask>>
+loadVegetationSceneElementMasks(const asset::EvpackResourceReader& reader, const LoadedVegetationScene& scene,
+                                const asset::EvpackCapabilities& capabilities,
+                                std::uint64_t                    maximumDecodedBytes = 256 * 1024 * 1024);
 
 /**
  * @brief Evaluate one TVE Element fragment using caller-supplied texture, instance and particle inputs.
@@ -175,8 +176,8 @@ private:
     const VegetationSceneElement& element, const VegetationSceneElementPixelInput& input);
 
 /** @brief Apply one evaluated source pixel to a destination with TVE's separate blend factors and ColorMask. */
-[[nodiscard]] EVENGINE_API_WORLD glm::vec4 composeVegetationSceneElementPixel(glm::vec4 destination,
-                                                            const VegetationSceneElementPixel& source) noexcept;
+[[nodiscard]] EVENGINE_API_WORLD glm::vec4 composeVegetationSceneElementPixel(
+    glm::vec4 destination, const VegetationSceneElementPixel& source) noexcept;
 
 /**
  * @brief Rasterize the ordered TVE Element list over an owning four-channel atlas candidate.

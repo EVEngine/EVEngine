@@ -344,10 +344,10 @@ public:
     // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
     // spell the four out so the export surface stays defined. Semantics unchanged:
     // the ledger was never copyable in practice.
-    Ledger(const Ledger&) = delete;
+    Ledger(const Ledger&)            = delete;
     Ledger& operator=(const Ledger&) = delete;
     Ledger(Ledger&&)                 = default;
-    Ledger& operator=(Ledger&&) = default;
+    Ledger& operator=(Ledger&&)      = default;
     /**
      * @brief Creates an open plan with a UUID-backed identity.
      * @param correlation Stable business-chain projection.
@@ -420,10 +420,10 @@ public:
     // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
     // spell the four out so the export surface stays defined. Semantics unchanged:
     // a module instance was never copyable in practice.
-    Transaction(const Transaction&) = delete;
+    Transaction(const Transaction&)            = delete;
     Transaction& operator=(const Transaction&) = delete;
     Transaction(Transaction&&)                 = default;
-    Transaction& operator=(Transaction&&) = default;
+    Transaction& operator=(Transaction&&)      = default;
 
     /**
      * @brief Allocates a module-owned transaction ledger.

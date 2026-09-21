@@ -23,6 +23,7 @@ struct CaveRoughnessTransferSample {
  * @param input Signed wall relief, hydraulic exposure, and opt-in coupling strength.
  * @return Deterministic ridge exposure, recess shelter, and bounded rate multiplier.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS CaveRoughnessTransferSample sampleCaveRoughnessTransfer(const CaveRoughnessTransferInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveRoughnessTransferSample
+sampleCaveRoughnessTransfer(const CaveRoughnessTransferInput& input);
 
 }  // namespace eve::procgen

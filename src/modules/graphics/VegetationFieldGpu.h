@@ -68,34 +68,26 @@ struct VegetationGpuRuntime {
  * @return Factory-owned texture and detached projection metadata. Failure publishes no texture.
  * @thread Graphics thread only because upload is synchronous and non-reentrant.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationExtrasGpuAtlas> uploadVegetationExtrasAtlas(IResourceFactory&      factory,
-                                                                           const VegetationField& field,
-                                                                           glm::vec3 center, glm::vec3 extent,
-                                                                           uint32_t width, uint32_t height,
-                                                                           bool snapToTexel = true);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationExtrasGpuAtlas> uploadVegetationExtrasAtlas(
+    IResourceFactory& factory, const VegetationField& field, glm::vec3 center, glm::vec3 extent, uint32_t width,
+    uint32_t height, bool snapToTexel = true);
 
 /** @brief Bake and atomically upload all nine Colors layers as a linear RGBA16F 2D array.
  * Ownership, revision, geometry, budget and threading contracts match uploadVegetationExtrasAtlas.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationColorsGpuAtlas> uploadVegetationColorsAtlas(IResourceFactory&      factory,
-                                                                           const VegetationField& field,
-                                                                           glm::vec3 center, glm::vec3 extent,
-                                                                           uint32_t width, uint32_t height,
-                                                                           bool snapToTexel = true);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationColorsGpuAtlas> uploadVegetationColorsAtlas(
+    IResourceFactory& factory, const VegetationField& field, glm::vec3 center, glm::vec3 extent, uint32_t width,
+    uint32_t height, bool snapToTexel = true);
 
 /** @brief Bake and atomically upload all nine Motion layers as a linear RGBA16F 2D array. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationMotionGpuAtlas> uploadVegetationMotionAtlas(IResourceFactory&      factory,
-                                                                           const VegetationField& field,
-                                                                           glm::vec3 center, glm::vec3 extent,
-                                                                           uint32_t width, uint32_t height,
-                                                                           bool snapToTexel = true);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationMotionGpuAtlas> uploadVegetationMotionAtlas(
+    IResourceFactory& factory, const VegetationField& field, glm::vec3 center, glm::vec3 extent, uint32_t width,
+    uint32_t height, bool snapToTexel = true);
 
 /** @brief Bake and atomically upload all nine Vertex layers as a linear RGBA16F 2D array. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationVertexGpuAtlas> uploadVegetationVertexAtlas(IResourceFactory&      factory,
-                                                                           const VegetationField& field,
-                                                                           glm::vec3 center, glm::vec3 extent,
-                                                                           uint32_t width, uint32_t height,
-                                                                           bool snapToTexel = true);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationVertexGpuAtlas> uploadVegetationVertexAtlas(
+    IResourceFactory& factory, const VegetationField& field, glm::vec3 center, glm::vec3 extent, uint32_t width,
+    uint32_t height, bool snapToTexel = true);
 
 /** @brief Bake and upload all four nine-layer projections as one publication.
  * Earlier uploads are released if any later channel fails. The returned set is
@@ -103,10 +95,9 @@ struct VegetationGpuRuntime {
  * @return Four factory-owned textures, or failure with no published texture.
  * @thread Graphics thread only. Synchronous, non-reentrant and without callbacks.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationGpuFieldSet> uploadVegetationGpuFieldSet(IResourceFactory&      factory,
-                                                                        const VegetationField& field, glm::vec3 center,
-                                                                        glm::vec3 extent, uint32_t width,
-                                                                        uint32_t height, bool snapToTexel = true);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationGpuFieldSet> uploadVegetationGpuFieldSet(
+    IResourceFactory& factory, const VegetationField& field, glm::vec3 center, glm::vec3 extent, uint32_t width,
+    uint32_t height, bool snapToTexel = true);
 
 /** @brief Atomically upload nine pre-baked layer atlases into four coherent RGBA16F arrays.
  * @param factory Borrowed resource factory used synchronously on its graphics thread.
@@ -132,7 +123,8 @@ struct VegetationGpuRuntime {
  * @return Success when every non-null texture was released; otherwise Failed.
  * @thread Same graphics thread and factory used for upload; no callbacks.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> releaseVegetationGpuFieldSet(IResourceFactory& factory, VegetationGpuFieldSet& set);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> releaseVegetationGpuFieldSet(IResourceFactory&      factory,
+                                                                              VegetationGpuFieldSet& set);
 
 /** @brief Atomically bind four coherent GPU projections to an owning PBR parameter snapshot.
  * @param surface Owning parameter snapshot; unchanged on validation failure.
@@ -145,21 +137,21 @@ struct VegetationGpuRuntime {
  * @return InvalidArgument without mutation for incoherent/stale projections or invalid runtime values.
  * @thread Graphics thread only. Synchronous, non-reentrant and without callbacks.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(PbrSurface& surface, const VegetationField& field,
-                                                   const VegetationExtrasGpuAtlas& extras,
-                                                   const VegetationColorsGpuAtlas& colors,
-                                                   const VegetationMotionGpuAtlas& motion,
-                                                   const VegetationVertexGpuAtlas& vertex,
-                                                   const VegetationGpuRuntime&     runtime);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(
+    PbrSurface& surface, const VegetationField& field, const VegetationExtrasGpuAtlas& extras,
+    const VegetationColorsGpuAtlas& colors, const VegetationMotionGpuAtlas& motion,
+    const VegetationVertexGpuAtlas& vertex, const VegetationGpuRuntime& runtime);
 
 /** @brief Convenience overload for a coherent detached four-channel set. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(PbrSurface& surface, const VegetationField& field,
-                                                   const VegetationGpuFieldSet& set,
-                                                   const VegetationGpuRuntime&  runtime);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(PbrSurface&                  surface,
+                                                                         const VegetationField&       field,
+                                                                         const VegetationGpuFieldSet& set,
+                                                                         const VegetationGpuRuntime&  runtime);
 
 /** @brief Bind a coherent field set owned by a scene/runtime revision rather than VegetationField. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(PbrSurface& surface, const VegetationGpuFieldSet& set,
-                                                   std::uint64_t expectedRevision,
-                                                   const VegetationGpuRuntime& runtime);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> bindVegetationGpuFields(PbrSurface&                  surface,
+                                                                         const VegetationGpuFieldSet& set,
+                                                                         std::uint64_t                expectedRevision,
+                                                                         const VegetationGpuRuntime&  runtime);
 
 }  // namespace eve::graphics

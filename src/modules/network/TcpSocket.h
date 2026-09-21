@@ -34,10 +34,10 @@ public:
     ~TcpSocket();
     // Class-level dllexport instantiates every member; `accepted_` is a container
     // of unique_ptr, so the implicit copy assignment would be a hard C2280.
-    TcpSocket(const TcpSocket&) = delete;
+    TcpSocket(const TcpSocket&)            = delete;
     TcpSocket& operator=(const TcpSocket&) = delete;
-    TcpSocket(TcpSocket&&) = default;
-    TcpSocket& operator=(TcpSocket&&) = default;
+    TcpSocket(TcpSocket&&)                 = default;
+    TcpSocket& operator=(TcpSocket&&)      = default;
 
     /** @brief Connects to host:port; true on success. */
     bool connect(std::string host, uint16_t port);

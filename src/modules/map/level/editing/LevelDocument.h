@@ -64,10 +64,10 @@ public:
     // operations were already deleted; a class-level dllexport would nonetheless
     // instantiate std::vector<LevelLayer>::operator= and hard-error (C2280).
     // Spell the four out so the export surface stays defined; semantics unchanged.
-    LevelDocument(const LevelDocument&) = delete;
+    LevelDocument(const LevelDocument&)            = delete;
     LevelDocument& operator=(const LevelDocument&) = delete;
     LevelDocument(LevelDocument&&)                 = default;
-    LevelDocument& operator=(LevelDocument&&) = default;
+    LevelDocument& operator=(LevelDocument&&)      = default;
 
     /** @brief Changes map dimensions and resizes all tile layers. */
     void               resize(int width, int height);

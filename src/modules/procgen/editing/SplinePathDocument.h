@@ -84,10 +84,10 @@ public:
  * Unknown snapshot fields are ignored. Known fields are validated into an isolated candidate before commit.
  */
 class EVENGINE_API_ORCHESTRATION SplinePathDocument final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public ISplinePathDocumentEditTarget {
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public ISplinePathDocumentEditTarget {
 public:
     /** @brief Construct an empty document with a stable target id. */
     explicit SplinePathDocument(std::string id);

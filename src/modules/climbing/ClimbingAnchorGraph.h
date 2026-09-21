@@ -89,9 +89,11 @@ struct ClimbingAnchorGraphDefinition {
 /** @brief Validates all graph identities, frames, slots, tags, and edge endpoints. */
 [[nodiscard]] eve::Result<void> validateClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph);
 /** @brief Encodes a validated graph to its canonical owning Value representation. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorGraphDefinition(
+    const ClimbingAnchorGraphDefinition& graph);
 /** @brief Decodes and validates a complete owning graph candidate transactionally. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(
+    const eve::Value& value);
 
 namespace detail {
 struct ClimbingAnchorReservationIdTag {};

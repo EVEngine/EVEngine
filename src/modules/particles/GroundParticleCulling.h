@@ -18,5 +18,5 @@ class ParticleEmitter;
  * A matching enter starts the emitter and a matching exit stops it. Unrelated visitors are ignored.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<void> applyGroundParticleCulling(ParticleEmitter* emitter, int playerTag,
-                                                       int visitorTag, bool entered, bool exited);
+                                                                           int visitorTag, bool entered, bool exited);
 }

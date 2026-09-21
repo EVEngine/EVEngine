@@ -25,11 +25,11 @@ using EditorStatus = editing::Status; using EditorValue = editing::Value; using 
 
 /** @brief UI-neutral, serializable material authoring target. */
 class EVENGINE_API_BACKENDS MaterialDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                     public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging,
-                                     public eve::editing::IEditingSnapshotProvider,
-                                     public IPropertyProvider {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public eve::editing::IEditingSnapshotProvider,
+                                                           public IPropertyProvider {
 public:
     explicit MaterialDocumentTarget(std::string id);
 
@@ -78,7 +78,7 @@ public:
 
 /** @brief Candidate-first material operation target with live commit/undo publication. */
 class EVENGINE_API_BACKENDS MaterialPublishingTarget final : public IDomainOperationTarget,
-                                       public IDomainOperationTargetStaging {
+                                                             public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned material document bound to a non-owning runtime sink. */
     MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink);

@@ -37,8 +37,8 @@ struct TerrainProbePlacementSettings {
  * @thread Synchronous exclusive output access; no scene object, callback, clock or RNG state is retained.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
-                                                   const Heightmap& heights,
-                                                   const TerrainProbePlacementSettings& settings);
+                                                                        const Heightmap&                     heights,
+                                                                        const TerrainProbePlacementSettings& settings);
 
 /** @brief One exclusively borrowed terrain probe owner and immutable height source. */
 struct TerrainProbeTile {

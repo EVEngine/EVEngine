@@ -158,7 +158,6 @@ private:
 };
 
 
-
 /**
  * @brief Sink that writes into borrowed float x/y pointers.
  * @ownership Does not own the pointers; caller must keep them alive while bound.

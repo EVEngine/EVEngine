@@ -9,8 +9,7 @@
 namespace eve::touch
 {
 
-class EVENGINE_API_BACKENDS Touch : public Module
-{
+class EVENGINE_API_BACKENDS Touch : public Module {
 public:
 	Module_REG(Touch);
 	struct TouchInfo
@@ -39,7 +38,7 @@ public:
 	double getTouchX(int index) const;
 	double getTouchY(int index) const;
 
-}; // Touch
+};  // Touch
 
 } // eve::touch
 

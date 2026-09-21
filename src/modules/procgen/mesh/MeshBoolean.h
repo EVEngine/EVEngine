@@ -17,6 +17,6 @@ namespace eve::procgen {
  * @reentrancy Does not invoke callbacks.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<MeshBuild> meshBooleanResult(const MeshBuild& left, const MeshBuild& right,
-                                                  std::string_view operation);
+                                                                       std::string_view operation);
 
 }  // namespace eve::procgen

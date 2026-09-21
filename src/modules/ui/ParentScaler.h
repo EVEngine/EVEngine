@@ -45,10 +45,9 @@ struct ParentScalerOutput {
  * @ownership All values remain caller-owned and no references are retained.
  * @thread UI owner thread; no callbacks are invoked.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<void> evaluateParentScaler(ParentScalerState* state,
-                                                ParentScalerOutput* output,
-                                                const ParentScalerSettings* settings,
-                                                const ParentScalerInput* input);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> evaluateParentScaler(ParentScalerState* state, ParentScalerOutput* output,
+                                                                   const ParentScalerSettings* settings,
+                                                                   const ParentScalerInput*    input);
 
 /** @brief Register ParentScaler value types and evaluator with the root script table. */
 void exposeParentScalerBindings(ssq::Table& table);

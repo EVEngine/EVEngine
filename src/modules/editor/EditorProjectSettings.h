@@ -29,9 +29,9 @@ struct ProjectSettingsSchema {
 
 /** @brief Schema-driven, reversible settings target with secret-reference enforcement. */
 class EVENGINE_API_ORCHESTRATION ProjectSettingsTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IPropertyProvider {
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IPropertyProvider {
 public:
     ProjectSettingsTarget(std::string id, ProjectSettingsSchema schema);
     TargetId         targetId() const override { return TargetId(id_); }

@@ -42,7 +42,8 @@ struct StrandGuideWeights {
  *
  * @ownership Returned datas uniquely owned by the caller.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> extractGuides(const StrandsDatas &strands, float guideFraction);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> extractGuides(const StrandsDatas &strands,
+                                                                       float               guideFraction);
 
 /**
  * @brief Build k-nearest guide weights for every render strand (by root distance).
@@ -52,17 +53,16 @@ struct StrandGuideWeights {
  *
  * @param maxInfluences Clamped to [1, StrandGuideWeights::kMaxInfluences].
  */
-[[nodiscard]] Result<std::vector<StrandGuideWeights>>
-EVENGINE_API_BACKENDS buildGuideWeights(const StrandsDatas &strands, const StrandsDatas &guides, int maxInfluences = 3,
+[[nodiscard]] Result<std::vector<StrandGuideWeights>> EVENGINE_API_BACKENDS
+buildGuideWeights(const StrandsDatas &strands, const StrandsDatas &guides, int maxInfluences = 3,
                   InterpolationMode mode = InterpolationMode::Offset);
 
 /**
  * @brief Drive rest render strands with deformed guides using precomputed weights.
  * @ownership Returned datas uniquely owned by the caller; inputs unchanged.
  */
-[[nodiscard]] Result<StrandsDatas>
-EVENGINE_API_BACKENDS interpolateStrands(const StrandsDatas &strandsRest, const StrandsDatas &guidesRest,
-                   const StrandsDatas &guidesDeformed,
+[[nodiscard]] Result<StrandsDatas> EVENGINE_API_BACKENDS
+interpolateStrands(const StrandsDatas &strandsRest, const StrandsDatas &guidesRest, const StrandsDatas &guidesDeformed,
                    const std::vector<StrandGuideWeights> &weights, InterpolationMode mode);
 
 }  // namespace eve::graphics::hair

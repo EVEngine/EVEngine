@@ -62,10 +62,10 @@ struct StylizePassValue {
 
 /** @brief Serializable ordered style recipe with dynamic parameter Inspector. */
 class EVENGINE_API_DOMAINS StylizeRecipeTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider {
+                                                       public virtual IEditableTarget,
+                                                       public IDomainOperationTarget,
+                                                       public IDomainOperationTargetStaging,
+                                                       public IPropertyProvider {
 public:
     explicit StylizeRecipeTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

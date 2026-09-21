@@ -93,10 +93,10 @@ public:
     // ill-formed (C2280) the moment a class-level dllexport instantiates them;
     // spell the four out so the export surface stays defined. Semantics unchanged:
     // a module instance was never copyable or assignable in practice.
-    Card(const Card &) = delete;
+    Card(const Card &)            = delete;
     Card &operator=(const Card &) = delete;
-    Card(Card &&) = default;
-    Card &operator=(Card &&) = default;
+    Card(Card &&)                 = default;
+    Card &operator=(Card &&)      = default;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
     int registerCardsFromJson(const std::string &json);

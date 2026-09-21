@@ -15,8 +15,8 @@ class Heightmap;
  * Output retains caller units without Unity height packing or output clamping.
  * Cross-tile filtering requires caller-provided neighboring samples (halo then crop).
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainContrast(Heightmap& target, const Heightmap& mask, float strength,
-                                               float featureSize);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainContrast(Heightmap& target, const Heightmap& mask,
+                                                                    float strength, float featureSize);
 
 /** @brief Two-pass smoothing controls; radius in texels, verticality in [-1,1], strength in [0,1]. */
 struct TerrainSmoothSettings {
@@ -53,7 +53,7 @@ struct TerrainTerraceSettings {
  * Samples use Clamp/Bilinear; tiled callers supply a halo and crop. No height packing.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainSmooth(Heightmap& target, const Heightmap& mask,
-                                             const TerrainSmoothSettings& settings);
+                                                                  const TerrainSmoothSettings& settings);
 
 /**
  * @brief Apply ordered horizontal/vertical ridge powers, neighbor mixing and per-pass clipping.
@@ -68,7 +68,7 @@ struct TerrainTerraceSettings {
  * Edge neighbors clamp; tiled callers require a halo covering the requested passes.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainRidges(Heightmap& target, const Heightmap& mask,
-                                             const TerrainRidgeSettings& settings);
+                                                                  const TerrainRidgeSettings& settings);
 
 /**
  * @brief Terrace scalar heights using nearest-even rounding and the shader's one-sided bevel.
@@ -80,7 +80,7 @@ struct TerrainTerraceSettings {
  * @thread Synchronous exclusive target; no retained borrows/callbacks/RNG/time.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainTerrace(Heightmap& target, const Heightmap& mask,
-                                              const TerrainTerraceSettings& settings);
+                                                                   const TerrainTerraceSettings& settings);
 
 /**
  * @brief Apply the Pcg PowerOf control: lerp(height,pow(height,4-power),mask).
@@ -117,8 +117,9 @@ struct TerrainHeightMixSettings {
  * Output is lerp(height,(maximum-minimum)*curve(smoothstep(minimum,maximum,height)),mask).
  * The source shader does not add minimum back to the transformed value.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightCurve(Heightmap& target, const Heightmap& mask, const Heightmap& curve,
-                                                  float minimum, float maximum);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightCurve(Heightmap& target, const Heightmap& mask,
+                                                                       const Heightmap& curve, float minimum,
+                                                                       float maximum);
 
 /**
  * @brief Mix centered local brush heights into terrain, then globally mask and clip.
@@ -133,6 +134,7 @@ struct TerrainHeightMixSettings {
  * Zero global mask still clips, as in the source shader. Rasters cover the full operation footprint;
  * brush-UV transforms and out-of-footprint preservation belong to the caller's rasterization stage.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightMix(Heightmap& target, const Heightmap& local, const Heightmap& global,
-                                                const TerrainHeightMixSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainHeightMix(Heightmap& target, const Heightmap& local,
+                                                                     const Heightmap&                global,
+                                                                     const TerrainHeightMixSettings& settings);
 }  // namespace eve::procgen

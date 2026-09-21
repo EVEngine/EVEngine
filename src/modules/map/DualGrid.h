@@ -100,7 +100,8 @@ struct DualGridRgbaImage {
  * @determinism Bit-stable for the same
  * config on IEEE-754 implementations.
  */
-[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(const DualGridMaskConfig& config);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(
+    const DualGridMaskConfig &config);
 
 /**
  * @brief Bake two ordinary same-size RGBA8 tiles into a row-major 4x4 transition atlas.
@@ -120,9 +121,8 @@ struct DualGridRgbaImage {
  * @cost O(16 * width * height), intended
  * for import/load time and cacheable by content hash.
  */
-[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(const DualGridRgbaImage&  terrainA,
-                                                                         const DualGridRgbaImage&  terrainB,
-                                                                         const DualGridMaskConfig& config);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(
+    const DualGridRgbaImage &terrainA, const DualGridRgbaImage &terrainB, const DualGridMaskConfig &config);
 
 /** @brief Pack four corner occupancy bits: TL=1, TR=2, BL=4, BR=8. */
 inline int dualGridMaskFromCorners(bool tl, bool tr, bool bl, bool br) {
@@ -165,7 +165,7 @@ EVENGINE_API_WORLD int dualGridMaskAt(TileLayer &logic, int dx, int dy, int fill
  * Returns false and sets error on invalid args.
  */
 EVENGINE_API_WORLD bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions &opts,
-                     std::string *error = nullptr);
+                                        std::string *error = nullptr);
 
 /** @brief Convenience: any non-zero filled, default frame table, half offset, hide logic. */
 EVENGINE_API_WORLD bool resolveDualGrid(TileLayer *logic, TileLayer *display, std::string *error = nullptr);

@@ -42,8 +42,9 @@ struct TerrainStampSettings {
  * retained references, renderer, or ECS state. Repeatable on one toolchain;
  * cross-platform floating-point results are compared with tolerance.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> blendTerrainMask(Heightmap& target, const Heightmap& source, TerrainMaskBlend mode,
-                                           float strength = 1, bool invert = false);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> blendTerrainMask(Heightmap& target, const Heightmap& source,
+                                                                TerrainMaskBlend mode, float strength = 1,
+                                                                bool invert = false);
 
 /**
  * @brief Apply a rotated, bilinearly sampled stamp; publish only after all checks succeed.
@@ -64,6 +65,7 @@ struct TerrainStampSettings {
  * call. No borrowed data is retained and no callbacks are invoked. No RNG/time.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainStamp(Heightmap& target, const Heightmap& stamp,
-                                            const TerrainStampSettings& settings, const Heightmap& localMask,
-                                            const Heightmap& globalMask);
+                                                                 const TerrainStampSettings& settings,
+                                                                 const Heightmap&            localMask,
+                                                                 const Heightmap&            globalMask);
 }  // namespace eve::procgen

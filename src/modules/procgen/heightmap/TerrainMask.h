@@ -28,8 +28,10 @@ struct TerrainConcavitySettings {
  * Integer neighbor offset truncates featureSize; border attenuation uses its untruncated value.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainConcavityMask(Heightmap& target, const Heightmap& input,
-                                                       const Heightmap& heights, const Heightmap& curve,
-                                                       const TerrainConcavitySettings& settings, TerrainMaskBlend mode);
+                                                                            const Heightmap&                heights,
+                                                                            const Heightmap&                curve,
+                                                                            const TerrainConcavitySettings& settings,
+                                                                            TerrainMaskBlend                mode);
 
 /** @brief Radial curvature controls; radius is UV distance, worldUnits scales signed height-minus-blur. */
 struct TerrainCurvatureSettings {
@@ -54,8 +56,10 @@ struct TerrainCurvatureSettings {
  * counts explicitly instead of reproducing GPU floating-loop drift; no GPU bit parity claim.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainCurvatureMask(Heightmap& target, const Heightmap& input,
-                                                       const Heightmap& heights, const Heightmap& curve,
-                                                       const TerrainCurvatureSettings& settings, TerrainMaskBlend mode);
+                                                                            const Heightmap&                heights,
+                                                                            const Heightmap&                curve,
+                                                                            const TerrainCurvatureSettings& settings,
+                                                                            TerrainMaskBlend                mode);
 
 /**
  * @brief Ordered radial Grow/Shrink followed by the reference strength curve.
@@ -71,8 +75,8 @@ struct TerrainCurvatureSettings {
  * toward the current accumulator using radial smoothstep before max/min selection.
  * Integer-indexed double offsets resolve shader float-loop drift explicitly; no GPU bit parity claim.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> growShrinkTerrainMask(Heightmap& target, const Heightmap& source, const Heightmap& curve,
-                                                float distance);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> growShrinkTerrainMask(Heightmap& target, const Heightmap& source,
+                                                                     const Heightmap& curve, float distance);
 
 /** @brief StrengthTransform pass order; source pass 0 named Multiply actually replaces with the curve value. */
 enum class TerrainStrengthMode { Replace, Maximum, Minimum, Add, Subtract };
@@ -89,8 +93,9 @@ enum class TerrainStrengthMode { Replace, Maximum, Minimum, Add, Subtract };
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous exclusive target access, immutable input snapshots, no retained borrows/callbacks.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainStrength(Heightmap& target, const Heightmap& source, const Heightmap& curve,
-                                               TerrainStrengthMode mode, float strength, bool invert);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainStrength(Heightmap& target, const Heightmap& source,
+                                                                    const Heightmap& curve, TerrainStrengthMode mode,
+                                                                    float strength, bool invert);
 
 /**
  * @brief Apply Pcg's two-pass Smooth ImageMask operation to a scalar mask.
@@ -104,8 +109,8 @@ enum class TerrainStrengthMode { Replace, Maximum, Minimum, Add, Subtract };
  * The vertical pass deliberately uses the X texel size, matching SmoothHeight.shader on rectangular rasters.
  * The shader computes but does not apply HeightTransformTex, so this operation has no curve or blend stage.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> smoothTerrainMask(Heightmap& target, const Heightmap& input, float verticality,
-                                            float blurRadius);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> smoothTerrainMask(Heightmap& target, const Heightmap& input,
+                                                                 float verticality, float blurRadius);
 
 /** @brief Paint-context affine UV mappings, evaluated at destination pixel centers. */
 struct TerrainBrushBlendSettings {
@@ -137,8 +142,9 @@ struct TerrainSampleGrid {
  * Result coefficients must fit finite floats; float UV arithmetic has its usual precision limits.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> configureTerrainBrushWorld(TerrainBrushBlendSettings&  target,
-                                                     const TerrainStampSettings& world, int contextWidth,
-                                                     int contextHeight, const TerrainSampleGrid& heights);
+                                                                          const TerrainStampSettings& world,
+                                                                          int contextWidth, int contextHeight,
+                                                                          const TerrainSampleGrid& heights);
 
 /**
  * @brief Blend an erosion scalar output with old heights through transformed brush UVs.
@@ -154,8 +160,9 @@ struct TerrainSampleGrid {
  * height is retained. Inside, weight=strength*brush, without saturation, as SimpleHeightBlend.
  * Inputs/outputs are native scalars; Unity packed-height encoding is not applied.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> blendTerrainBrush(Heightmap& target, const Heightmap& oldHeights, const Heightmap& newHeights,
-                                            const Heightmap& brush, const TerrainBrushBlendSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> blendTerrainBrush(Heightmap& target, const Heightmap& oldHeights,
+                                                                 const Heightmap& newHeights, const Heightmap& brush,
+                                                                 const TerrainBrushBlendSettings& settings);
 
 /**
  * @brief Compose spatial erosion-output blending and the source's inverted strength filter atomically.
@@ -173,10 +180,10 @@ struct TerrainSampleGrid {
  * @thread Synchronous exclusive target access and immutable borrowed inputs; no callbacks or retained references.
  * Simulation is supplied separately; this operation does not advance or mutate a water field.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainErosionMask(Heightmap& target, const Heightmap& oldHeights,
-                                                     const Heightmap& erosion, const Heightmap& brush,
-                                                     const TerrainBrushBlendSettings& spatial, const Heightmap& curve,
-                                                     TerrainStrengthMode mode, float strength, bool userInvert);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainErosionMask(
+    Heightmap& target, const Heightmap& oldHeights, const Heightmap& erosion, const Heightmap& brush,
+    const TerrainBrushBlendSettings& spatial, const Heightmap& curve, TerrainStrengthMode mode, float strength,
+    bool userInvert);
 
 /** @brief Distance coordinates used by the Pcg distance-mask shader. */
 enum class TerrainDistanceAxis { Circle, X, Z, RoundedSquare };
@@ -200,7 +207,8 @@ struct TerrainDistanceMaskSettings {
  * @throws std::bad_alloc Target is unchanged on allocation failure.
  * @thread Synchronous, exclusively owned target; immutable inputs, no retained borrows or callbacks.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> transformTerrainMask(Heightmap& target, const Heightmap& source, const Heightmap& curve);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> transformTerrainMask(Heightmap& target, const Heightmap& source,
+                                                                    const Heightmap& curve);
 
 /**
  * @brief Generate height/range fitness with smoothstep followed by filter and strength curves.
@@ -214,9 +222,10 @@ struct TerrainDistanceMaskSettings {
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous exclusive target access; no retained borrows, RNG, time or callbacks.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainRangeMask(Heightmap& target, const Heightmap& source, float minimum,
-                                                   float maximum, const Heightmap& filterCurve,
-                                                   const Heightmap& strengthCurve);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainRangeMask(Heightmap& target, const Heightmap& source,
+                                                                        float minimum, float maximum,
+                                                                        const Heightmap& filterCurve,
+                                                                        const Heightmap& strengthCurve);
 
 /**
  * @brief Derive the shader's slope metric 1-normal.y from world-scaled height gradients.
@@ -232,8 +241,9 @@ struct TerrainDistanceMaskSettings {
  * @thread Synchronous exclusive target access, no retained borrows or callbacks.
  * This derives normals from heights; imported Unity normals may yield different gradients.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> deriveTerrainSlope(Heightmap& target, const Heightmap& heights, float spacingX,
-                                             float spacingZ, float heightScale = 1);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> deriveTerrainSlope(Heightmap& target, const Heightmap& heights,
+                                                                  float spacingX, float spacingZ,
+                                                                  float heightScale = 1);
 
 /**
  * @brief Generate a transformed distance mask using circle, X, Z or rounded-square coordinates.
@@ -247,6 +257,8 @@ struct TerrainDistanceMaskSettings {
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Exclusive target, immutable input snapshots; synchronous, no callbacks/RNG/time.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainDistanceMask(Heightmap& target, const TerrainDistanceMaskSettings& settings,
-                                                      const Heightmap& filterCurve, const Heightmap& strengthCurve);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainDistanceMask(Heightmap&                         target,
+                                                                           const TerrainDistanceMaskSettings& settings,
+                                                                           const Heightmap& filterCurve,
+                                                                           const Heightmap& strengthCurve);
 }  // namespace eve::procgen

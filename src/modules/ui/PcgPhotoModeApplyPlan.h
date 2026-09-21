@@ -1,9 +1,9 @@
 #pragma once
 
+#include <vector>
 #include "common/Export.h"
 #include "common/PcgPhotoModeApply.h"
 #include "ui/PcgPhotoModeValues.h"
-#include <vector>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Stable, reversible difference between two complete Pcg photo-mode snapshots. */

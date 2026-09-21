@@ -50,6 +50,6 @@ struct EVENGINE_API_PLATFORM DnutCompileOutput {
  *       per `story` block.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
-                                            const StepKindRegistry& registry);
+                                                                  const StepKindRegistry& registry);
 
 }  // namespace eve::dnut

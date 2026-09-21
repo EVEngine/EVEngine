@@ -44,9 +44,9 @@ private:
     std::unique_ptr<Impl> impl_;
     friend EVENGINE_API_DOMAINS Result<int> paintTerrainSplatLayer(TerrainSplatmap&, const Heightmap&, int);
     friend EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
-                                           const GtsHeightBlendSet&, float);
+                                                                const GtsHeightBlendSet&, float);
     friend EVENGINE_API_DOMAINS Result<int> alignTerrainSplatTextures(TerrainSplatmap&, TerrainSplatmap&,
-                                                  const TerrainTextureAlignSettings&);
+                                                                      const TerrainTextureAlignSettings&);
     friend EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
         const std::vector<struct TerrainSplatTile>&, const Heightmap&, int, const TerrainStampSettings&, bool,
         const std::vector<std::string>&);
@@ -74,9 +74,9 @@ struct TerrainTextureAlignSettings {
  * @param settings Finite world geometry and blend controls, borrowed only for this call.
  * @return Total changed texels across both maps, or a structured failure with neither map modified.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> alignTerrainSplatTextures(TerrainSplatmap& terrainA,
-                                                    TerrainSplatmap& terrainB,
-                                                    const TerrainTextureAlignSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> alignTerrainSplatTextures(TerrainSplatmap&                   terrainA,
+                                                                         TerrainSplatmap&                   terrainB,
+                                                                         const TerrainTextureAlignSettings& settings);
 
 /** @brief Owning ordered GTS layer-height rasters and their alpha-channel transforms. */
 class EVENGINE_API_DOMAINS GtsHeightBlendSet {
@@ -96,15 +96,16 @@ private:
     struct Impl;
     std::unique_ptr<Impl> impl_;
     friend EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
-                                           const GtsHeightBlendSet&, float);
+                                                                const GtsHeightBlendSet&, float);
 };
 
 /**
  * @brief Recompute all splat weights using the GTS texture-height blending equation.
  * @return Changed texel count or InvalidArgument; output remains unchanged on failure.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap& output, const TerrainSplatmap& input,
-                                              const GtsHeightBlendSet& heights, float blendFactor);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&         output,
+                                                                   const TerrainSplatmap&   input,
+                                                                   const GtsHeightBlendSet& heights, float blendFactor);
 
 /** @brief Borrowed terrain splat owner and world geometry for one synchronous texture transaction. */
 struct TerrainSplatTile {
@@ -122,7 +123,7 @@ struct TerrainSplatTile {
  * @return Changed texel count or structured diagnostic. No references, callbacks, RNG or time survive the call.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> paintTerrainSplatLayer(TerrainSplatmap& target, const Heightmap& paint,
-                                                int targetLayer);
+                                                                      int targetLayer);
 
 /**
  * @brief Paint one shared Pcg Texture-domain operation raster across selected tiles atomically.

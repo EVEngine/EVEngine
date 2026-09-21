@@ -19,8 +19,7 @@ namespace image
  * This module does not know how to draw images on screen; only love.graphics
  * knows that.
  **/
-class EVENGINE_API_PLATFORM Image : public Module
-{
+class EVENGINE_API_PLATFORM Image : public Module {
 public:
 	using FormatHandler = medialoader::FormatHandler;
 
@@ -90,7 +89,7 @@ private:
 	// Image format handlers we can use for decoding and encoding ImageData.
 	std::list<FormatHandler *> formatHandlers;
 
-}; // Image
+};  // Image
 
 } // image
 } // eve

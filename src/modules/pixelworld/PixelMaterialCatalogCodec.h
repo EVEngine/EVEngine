@@ -11,7 +11,8 @@
 namespace eve::pixelworld {
 
 /** @brief Encode schema `eve.pixelworld.material-catalog` version 1 canonically. */
-[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> encodeMaterialCatalogJson(const MaterialCatalog& catalog);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> encodeMaterialCatalogJson(
+    const MaterialCatalog& catalog);
 
 /**
  * @brief Decode and validate schema `eve.pixelworld.material-catalog` version 1.

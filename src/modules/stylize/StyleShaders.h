@@ -47,7 +47,7 @@ std::string styleIdAt(int index);
 EVENGINE_API_WORLD bool styleSupports(const std::string &style, const std::string &feature);
 
 /** Built-in post param name table (for tooling / UI introspection). */
-EVENGINE_API_WORLD int styleParamCount(const std::string &style);
+EVENGINE_API_WORLD int                       styleParamCount(const std::string &style);
 std::string styleParamName(const std::string &style, int index);
 EVENGINE_API_WORLD const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name);
 EVENGINE_API_WORLD const StyleParameterDesc *styleParameterAt(const std::string &style, int index);

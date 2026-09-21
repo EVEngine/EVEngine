@@ -41,11 +41,12 @@ struct ModelRenderOptions {
  * Returns nullptr for invalid/empty meshes. The entity is registered in the
  * current ECS; the caller keeps it alive by owning a reference in script state.
  */
-EVENGINE_API_WORLD graphics::Renderable3D *buildRenderable(graphics::IResourceFactory &gfx, ModelData *model, int meshIndex,
-                                        const ModelRenderOptions &options = {});
+EVENGINE_API_WORLD graphics::Renderable3D *buildRenderable(graphics::IResourceFactory &gfx, ModelData *model,
+                                                           int meshIndex, const ModelRenderOptions &options = {});
 
 /** Build one Renderable3D per mesh referenced by the scene graph. */
-EVENGINE_API_WORLD std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx, ModelData *model,
-                                                       const ModelRenderOptions &options = {});
+EVENGINE_API_WORLD std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx,
+                                                                          ModelData                  *model,
+                                                                          const ModelRenderOptions   &options = {});
 
 }  // namespace eve::model3d

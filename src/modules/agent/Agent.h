@@ -181,8 +181,9 @@ struct Report {
  * @param backend CPU, eager Tensor or GPU; missing provider/device returns Unsupported.
  * @remarks No retained references; CPU is pure, Tensor calls are owner-thread affine.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<double>> infer(const Policy& policy, const Observation& observation,
-                                                             Backend backend = Backend::Cpu);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<double>> infer(const Policy&      policy,
+                                                                        const Observation& observation,
+                                                                        Backend            backend = Backend::Cpu);
 
 /**
  * @brief Reset and replay actual actions, checking all observations and failure evidence.
@@ -193,6 +194,6 @@ struct Report {
  * @return Conflict for divergence, or the original adapter failure; no locks/callback retention.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> replay(const Trace& trace, IEnvironment& environment,
-                                               double absoluteTolerance = 1e-6);
+                                                          double absoluteTolerance = 1e-6);
 
 }  // namespace eve::agent

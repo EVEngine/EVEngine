@@ -107,10 +107,10 @@ public:
     // Class-level dllexport instantiates every member; `buffered_` holds an
     // Assembly with a vector<unique_ptr>, so the implicit copy assignment would be
     // a hard C2280. Moves stay available (create() returns by value).
-    ReliablePixelChunkReceiver(const ReliablePixelChunkReceiver&) = delete;
+    ReliablePixelChunkReceiver(const ReliablePixelChunkReceiver&)            = delete;
     ReliablePixelChunkReceiver& operator=(const ReliablePixelChunkReceiver&) = delete;
-    ReliablePixelChunkReceiver(ReliablePixelChunkReceiver&&) = default;
-    ReliablePixelChunkReceiver& operator=(ReliablePixelChunkReceiver&&) = default;
+    ReliablePixelChunkReceiver(ReliablePixelChunkReceiver&&)                 = default;
+    ReliablePixelChunkReceiver& operator=(ReliablePixelChunkReceiver&&)      = default;
     /** @brief Validate policy and create a receiver for one nonzero stream session. */
     [[nodiscard]] static eve::Result<ReliablePixelChunkReceiver> create(
         std::uint64_t streamId, PixelChunkTransportConfig config = {});

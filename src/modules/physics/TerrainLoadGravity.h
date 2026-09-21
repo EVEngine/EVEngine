@@ -22,7 +22,7 @@ public:
 private:
     friend EVENGINE_API_WORLD Result<void> beginTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool);
     friend EVENGINE_API_WORLD Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool, float,
-                                                   float);
+                                                                     float);
     bool monitoring_ = false;
     bool activationScheduled_ = false;
     bool completed_ = false;
@@ -40,7 +40,7 @@ private:
  * @thread Physics simulation owner thread only.
  */
 [[nodiscard]] EVENGINE_API_WORLD Result<void> beginTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
-                                                    bool terrainFound);
+                                                                      bool terrainFound);
 
 /**
  * @brief Advance terrain-load waiting and restore gravity after the configured delay.
@@ -54,6 +54,6 @@ private:
  * @thread Physics simulation owner thread only; no callbacks are invoked.
  */
 [[nodiscard]] EVENGINE_API_WORLD Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
-                                                      bool terrainLoaded, float deltaSeconds,
-                                                      float activationDelay);
+                                                                        bool terrainLoaded, float deltaSeconds,
+                                                                        float activationDelay);
 }

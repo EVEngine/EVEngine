@@ -205,17 +205,14 @@ struct GeneratedArtifact {
  * @brief Validate and construct one artifact record.
  * @return A complete owning artifact or a structured rejection diagnostic.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> makeArtifact(ArtifactId id, ArtifactType type,
-                                                          eve::SchemaVersion schemaVersion, BuildKey buildKey,
-                                                          Bounds bounds, std::vector<ArtifactId> dependencies,
-                                                          eve::Value::Object         metadata,
-                                                          GeneratedArtifact::Payload payload);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> makeArtifact(
+    ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion, BuildKey buildKey, Bounds bounds,
+    std::vector<ArtifactId> dependencies, eve::Value::Object metadata, GeneratedArtifact::Payload payload);
 
 /** @brief Validate and construct a leaf part for a composite artifact. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ArtifactPart> makeArtifactPart(std::string role, ArtifactId id, ArtifactType type,
-                                                         eve::SchemaVersion schemaVersion, BuildKey buildKey,
-                                                         Bounds bounds, std::vector<ArtifactId> dependencies,
-                                                         eve::Value::Object metadata, ArtifactLeafPayload payload);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ArtifactPart> makeArtifactPart(
+    std::string role, ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion, BuildKey buildKey,
+    Bounds bounds, std::vector<ArtifactId> dependencies, eve::Value::Object metadata, ArtifactLeafPayload payload);
 
 /**
  * @brief In-memory owner and publisher for generated artifacts.
@@ -323,7 +320,8 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateHexTerrainArtifact(const Params& params, ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateHexTerrainArtifact(const Params& params,
+                                                                                             ArtifactId    id);
 
 /**
  * @brief Generate a castle composite containing mesh, collider, ring topology
@@ -332,7 +330,8 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params, ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params,
+                                                                                         ArtifactId    id);
 
 /**
  * @brief Generate any registered mesh recipe as a CPU artifact.

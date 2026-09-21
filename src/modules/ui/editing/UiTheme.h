@@ -54,11 +54,11 @@ struct UiThemeAsset {
 
 /** @brief Serializable catalog of named UI themes with one active publication slot. */
 class EVENGINE_API_DOMAINS UiThemeCatalogTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider,
-                                   public IEditingSnapshotProvider {
+                                                        public virtual IEditableTarget,
+                                                        public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider,
+                                                        public IEditingSnapshotProvider {
 public:
     /**
      * @brief Construct a catalog seeded with built-in dark and light assets.

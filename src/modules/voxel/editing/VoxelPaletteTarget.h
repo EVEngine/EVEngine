@@ -53,10 +53,10 @@ struct VoxelPaletteEntryValue {
 
 /** @brief Revisioned Voxel CubeType palette with face-material Inspector. */
 class EVENGINE_API_ORCHESTRATION VoxelPaletteTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider {
 public:
     explicit VoxelPaletteTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }

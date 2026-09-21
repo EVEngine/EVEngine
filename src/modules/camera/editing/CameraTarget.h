@@ -63,10 +63,10 @@ struct CameraTimelineKeyValue {
 
 /** @brief Revisioned camera-rig and director-timeline editing document. */
 class EVENGINE_API_DOMAINS CameraDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider {
+                                                        public virtual IEditableTarget,
+                                                        public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider {
 public:
     explicit CameraDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

@@ -112,16 +112,16 @@ struct TextureCreateInfo;
 struct TextureSampler;
 
 class EVENGINE_API_BACKENDS Graphics : public Module,
-                 public Canvas,
-                 public IWindowSurfaceHost,
-                 public IGraphics2D,
-                 public IGraphics3D,
-                 public ICanvasFactory,
-                 public ICanvasTarget,
-                 public IResourceFactory,
-                 public ISolidRectRenderer,
-                 public IPostFX,
-                 public IFramePresentation {
+                                       public Canvas,
+                                       public IWindowSurfaceHost,
+                                       public IGraphics2D,
+                                       public IGraphics3D,
+                                       public ICanvasFactory,
+                                       public ICanvasTarget,
+                                       public IResourceFactory,
+                                       public ISolidRectRenderer,
+                                       public IPostFX,
+                                       public IFramePresentation {
 public:
     Module_REG(Graphics);
     Graphics();

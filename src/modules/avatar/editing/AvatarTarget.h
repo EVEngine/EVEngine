@@ -74,10 +74,10 @@ struct AvatarExpressionValue {
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
 class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider {
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IDomainOperationTargetStaging,
+                                                              public IPropertyProvider {
 public:
     explicit AvatarDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }

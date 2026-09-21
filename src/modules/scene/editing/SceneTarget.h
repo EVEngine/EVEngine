@@ -76,12 +76,12 @@ public:
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
 class EVENGINE_API_BACKENDS SceneTargetBase : public ::eve::editing::EditableTargetState,
-                        public virtual IEditableTarget,
-                        public IDomainOperationTarget,
-                        public IDomainOperationTargetStaging,
-                        public eve::editing::IEditingSnapshotProvider,
-                        public ISceneHierarchyEditTarget,
-                        public ITransformEditTarget {
+                                              public virtual IEditableTarget,
+                                              public IDomainOperationTarget,
+                                              public IDomainOperationTargetStaging,
+                                              public eve::editing::IEditingSnapshotProvider,
+                                              public ISceneHierarchyEditTarget,
+                                              public ITransformEditTarget {
 public:
     SceneTargetBase(std::string id, std::string type);
     ~SceneTargetBase() override = default;

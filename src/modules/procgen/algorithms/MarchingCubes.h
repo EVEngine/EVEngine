@@ -19,11 +19,11 @@ namespace eve::procgen {
  * Cell (x,y,z) spans corners [x..x+1]×[y..y+1]×[z..z+1] (so loops are nx-1 etc.).
  */
 EVENGINE_API_DOMAINS bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
-                   std::string *error = nullptr);
+                                        std::string *error = nullptr);
 
 /** @brief Fill a density volume from a named field recipe (sphere / noise / terrain / torus). */
 EVENGINE_API_DOMAINS bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
-                      std::string &error);
+                                           std::string &error);
 
 /** @brief Build mesh from Params (field + resolution + isolevel). */
 bool generateMarchingCubesMesh(const Params &params, MeshBuild &out, std::string &error);

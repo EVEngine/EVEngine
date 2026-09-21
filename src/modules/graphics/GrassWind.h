@@ -18,7 +18,7 @@ struct VegetationWindProfile;
  * callers reapply their authoritative snapshot after baking. This function does not advance state.
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyGrassWind(Shader& shader, const VegetationWindState& state,
-                                          const VegetationWindProfile& profile, double seconds);
+                                                                const VegetationWindProfile& profile, double seconds);
 /** @brief Register wind state/profile and checked operations on the VM owner thread, retaining no table reference. */
 EVENGINE_API_BACKENDS void exposeGrassWindBindings(ssq::Table& table);
 }  // namespace eve::graphics

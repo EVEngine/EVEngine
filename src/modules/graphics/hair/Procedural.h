@@ -41,6 +41,6 @@ struct ProceduralParams {
  * @param sizeX / sizeZ Full plane extents.
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> generateOnPlane(float sizeX, float sizeZ,
-                                                   const ProceduralParams &params);
+                                                                         const ProceduralParams &params);
 
 }  // namespace eve::graphics::hair

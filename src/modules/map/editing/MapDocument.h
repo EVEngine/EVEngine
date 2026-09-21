@@ -125,10 +125,10 @@ public:
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
 class EVENGINE_API_WORLD MapDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IMapStructureEditTarget {
+                                                   public virtual IEditableTarget,
+                                                   public IDomainOperationTarget,
+                                                   public IDomainOperationTargetStaging,
+                                                   public IMapStructureEditTarget {
 public:
     explicit MapDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

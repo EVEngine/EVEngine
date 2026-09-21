@@ -46,7 +46,7 @@ struct BeamBuildResult {
  * @reentrancy Does not invoke callbacks or retain arguments.
  */
 [[nodiscard]] EVENGINE_API_WORLD BeamBuildResult buildBeamEffect(const glm::vec3& start, const glm::vec3& end,
-                                              const glm::vec3& cameraForward,
-                                              const BeamEffectConfig& config = {});
+                                                                 const glm::vec3&        cameraForward,
+                                                                 const BeamEffectConfig& config = {});
 
 }  // namespace eve::stylize

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
 #include <cstddef>
 #include <functional>
 #include <span>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::animation {
@@ -18,8 +18,9 @@ class AnimSkeleton;
  * @details Unknown versions/flags/trailing bytes are rejected. No implicit migration. Float32 tracks
  * retain source sampling precision; the offline encoder only removes exactly constant keys.
  */
-[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> loadAnimationTracks(AnimClip& destination, std::span<const std::byte> bytes,
-                                                    const AnimSkeleton& skeleton);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> loadAnimationTracks(AnimClip&                  destination,
+                                                                       std::span<const std::byte> bytes,
+                                                                       const AnimSkeleton&        skeleton);
 
 /** @brief One synchronous borrowed batch input; destination and bytes must outlive the call. */
 struct AnimationTrackInput {
@@ -36,5 +37,6 @@ struct AnimationTrackInput {
  * @details Uses the same version-1 codec and exact sampling as loadAnimationTracks.
  */
 [[nodiscard]] EVENGINE_API_WORLD eve::Result<int> loadAnimationTrackBatch(std::span<const AnimationTrackInput> inputs,
-                                                       const AnimSkeleton& skeleton, int workerCount = 0);
+                                                                          const AnimSkeleton&                  skeleton,
+                                                                          int workerCount = 0);
 }  // namespace eve::animation

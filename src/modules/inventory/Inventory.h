@@ -64,7 +64,6 @@ public:
     int getChangeEventSlot(int index) const;
     int getChangeEventOtherSlot(int index) const;
     std::string getChangeEventEquipSlot(int index) const;
-
 };
 
 }  // namespace eve::inventory

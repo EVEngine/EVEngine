@@ -27,10 +27,10 @@ using EditorGizmoSnapshot=editing::GizmoSnapshot; using EditorGizmoPrimitive=edi
 
 /** @brief Stable, serializable authoring document for one projected decal. */
 class EVENGINE_API_DOMAINS DecalDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider {
+                                                       public virtual IEditableTarget,
+                                                       public IDomainOperationTarget,
+                                                       public IDomainOperationTargetStaging,
+                                                       public IPropertyProvider {
 public:
     explicit DecalDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -97,7 +97,7 @@ private:
 
 /** @brief Candidate-first operation target synchronizing author state and a live decal. */
 class EVENGINE_API_DOMAINS DecalPublishingTarget final : public IDomainOperationTarget,
-                                    public IDomainOperationTargetStaging {
+                                                         public IDomainOperationTargetStaging {
 public:
     DecalPublishingTarget(std::string id, IDecalRuntimeSink* sink)
         : document_(std::move(id)), sink_(sink) {}

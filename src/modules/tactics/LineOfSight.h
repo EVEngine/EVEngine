@@ -167,8 +167,9 @@ public:
  *       the result is a projection of the current board and must be recomputed after any
  *       change to it.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<Cell>> visibleCellsInRange(const BoardState& board,
-                                                           const ILineOfSightPolicy& policy, Cell origin,
-                                                           int minimum, int maximum, CellRangeMetric metric);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<Cell>> visibleCellsInRange(const BoardState&         board,
+                                                                                 const ILineOfSightPolicy& policy,
+                                                                                 Cell origin, int minimum, int maximum,
+                                                                                 CellRangeMetric metric);
 
 }  // namespace eve::tactics

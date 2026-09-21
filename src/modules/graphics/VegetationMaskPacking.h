@@ -12,5 +12,6 @@ struct VegetationMask;
  * Worker-safe and reentrant; input is borrowed synchronously without callbacks.
  * @return Complete linear texture or checked validation/allocation failure.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationMask> packVegetationOrm(const VegetationMask& source, float occlusion, float smoothness);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationMask> packVegetationOrm(const VegetationMask& source,
+                                                                             float occlusion, float smoothness);
 }  // namespace eve::graphics

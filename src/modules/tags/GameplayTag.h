@@ -37,7 +37,7 @@ struct GameplayTagDefinition {
 [[nodiscard]] GameplayTagId gameplayTagId(std::string_view name) noexcept;
 /** @brief Tests exact or dot-boundary descendant membership. */
 [[nodiscard]] EVENGINE_API_FOUNDATION bool gameplayTagMatches(std::string_view candidate, std::string_view query,
-                                      GameplayTagMatch match) noexcept;
+                                                              GameplayTagMatch match) noexcept;
 
 /**
  * @brief Canonical owner of versioned gameplay-tag definitions.

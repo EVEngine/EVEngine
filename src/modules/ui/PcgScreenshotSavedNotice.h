@@ -1,8 +1,8 @@
 #pragma once
 
+#include <string>
 #include "common/Export.h"
 #include "common/Result.h"
-#include <string>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned notification state ported from Pcg ScreenshotSavedManager. */

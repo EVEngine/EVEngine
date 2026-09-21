@@ -55,9 +55,9 @@ struct ClusteredLightingUpload {
  * @param dirs    world-space directional lights (optional; first becomes primary)
  */
 EVENGINE_API_BACKENDS ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
-                                               const std::vector<ClusteredLightGpu> &dirs,
-                                               const glm::mat4 &view, float nearZ, float farZ,
-                                               int screenW, int screenH, float fovYRad,
-                                               const glm::vec4 &ambient);
+                                                                     const std::vector<ClusteredLightGpu> &dirs,
+                                                                     const glm::mat4 &view, float nearZ, float farZ,
+                                                                     int screenW, int screenH, float fovYRad,
+                                                                     const glm::vec4 &ambient);
 
 }  // namespace eve::graphics

@@ -39,7 +39,8 @@ struct ShadowUpload {
  * Camera far is clamped to kMaxDistance so large scenes keep usable texel density.
  */
 EVENGINE_API_BACKENDS ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const glm::vec3 &eye,
-                                 const glm::vec3 &target, const glm::vec3 &up, float fovYRad,
-                                 float aspect, float nearZ, float farZ, float bias, float strength);
+                                                       const glm::vec3 &target, const glm::vec3 &up, float fovYRad,
+                                                       float aspect, float nearZ, float farZ, float bias,
+                                                       float strength);
 
 }  // namespace eve::graphics

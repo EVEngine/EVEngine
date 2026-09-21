@@ -26,7 +26,7 @@ struct WaterMeshSettings {
 };
 
 /** @brief Calculate Pcg PWS_WaterSystem's triangle count without allocating a mesh. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<int> calculateWaterMeshTriangles(const WaterMeshSettings& settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<int> calculateWaterMeshTriangles(const WaterMeshSettings &settings);
 
 class Graphics;
 class Mesh;

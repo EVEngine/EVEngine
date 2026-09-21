@@ -41,7 +41,8 @@ struct RadialTessellation {
 };
 
 /** @brief Resolves a radial tessellation policy to a validated segment count. */
-[[nodiscard]] EVENGINE_API_BACKENDS std::uint32_t resolveRadialSegments(const RadialTessellation& tessellation, float projectedRadiusPixels);
+[[nodiscard]] EVENGINE_API_BACKENDS std::uint32_t resolveRadialSegments(const RadialTessellation& tessellation,
+                                                                        float projectedRadiusPixels);
 
 /** @brief Owning alternating draw/gap pattern for stroked primitives. */
 struct EVENGINE_API_BACKENDS DashPattern {

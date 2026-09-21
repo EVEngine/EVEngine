@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
-#include "common/Result.h"
 #include <cstdint>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::procgen {
 /** @brief Observable state of Pcg's delayed task processor. */

@@ -43,9 +43,9 @@ struct ProcgenScriptModuleSpec {
  * @reentrancy No unknown callbacks.
  */
 class EVENGINE_API_ORCHESTRATION ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
-                                          public editing::IDomainOperationTarget,
-                                          public editing::IDomainOperationTargetStaging,
-                                          public editing::IPropertyProvider {
+                                                                     public editing::IDomainOperationTarget,
+                                                                     public editing::IDomainOperationTargetStaging,
+                                                                     public editing::IPropertyProvider {
 public:
     /** @brief Construct an empty generator document. @param id Stable target identity. */
     explicit ProcgenScriptDocumentTarget(std::string id);

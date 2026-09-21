@@ -79,9 +79,9 @@ private:
  * field mappings.
  */
 class EVENGINE_API_EDITORS ActionTimelineTarget final : public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider,
-                                   public eve::editing::IEditingSnapshotProvider {
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider,
+                                                        public eve::editing::IEditingSnapshotProvider {
 public:
     /**
      * @brief Construct an empty, valid seed timeline for automation and inspectors.
@@ -351,10 +351,10 @@ public:
     explicit ActionTimelineDocumentWorkspace(DocumentService& documents);
 
     /** @brief Tab editors are uniquely owned; the workspace is move-only. */
-    ActionTimelineDocumentWorkspace(const ActionTimelineDocumentWorkspace&) = delete;
+    ActionTimelineDocumentWorkspace(const ActionTimelineDocumentWorkspace&)            = delete;
     ActionTimelineDocumentWorkspace& operator=(const ActionTimelineDocumentWorkspace&) = delete;
-    ActionTimelineDocumentWorkspace(ActionTimelineDocumentWorkspace&&) = default;
-    ActionTimelineDocumentWorkspace& operator=(ActionTimelineDocumentWorkspace&&) = default;
+    ActionTimelineDocumentWorkspace(ActionTimelineDocumentWorkspace&&)                 = default;
+    ActionTimelineDocumentWorkspace& operator=(ActionTimelineDocumentWorkspace&&)      = default;
 
     /**
      * @brief Open or activate one Montage asset document.

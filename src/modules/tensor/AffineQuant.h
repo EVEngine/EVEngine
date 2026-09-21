@@ -39,8 +39,8 @@ struct ByteView {
  * @return Owning packed bytes; rejects invalid scale, zero point or nonfinite input.
  * @note CPU, thread-safe; spans are borrowed only during the call.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale, int zeroPoint,
-                                                    bool signedValues);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale,
+                                                                         int zeroPoint, bool signedValues);
 
 /**
  * @brief Affine dequantization using scalar or per-axis scale/zero point.
@@ -57,8 +57,9 @@ struct ByteView {
  * @param compute Optional borrowed GPU provider; null selects CPU. No retry on GPU failure.
  * @note Synchronous. CPU is thread-safe; GPU uses the provider thread. Weights remain packed.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k, size_t n, int aZero = 0,
-                                                  int bZero = 0, OnnxCompute* compute = nullptr);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k,
+                                                                       size_t n, int aZero = 0, int bZero = 0,
+                                                                       OnnxCompute* compute = nullptr);
 
 /** @brief Explicit 1D/2D NCHW convolution geometry; missing 1D height is one. */
 struct ConvShape {
@@ -74,6 +75,7 @@ struct ConvShape {
  * @param compute Optional borrowed GPU provider; null selects CPU. No retry on GPU failure.
  * @note Synchronous. CPU is thread-safe; GPU uses the provider thread. Padding represents real zero.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& shape, int xZero,
-                                                std::span<const int32_t> wZeros, OnnxCompute* compute = nullptr);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& shape,
+                                                                     int xZero, std::span<const int32_t> wZeros,
+                                                                     OnnxCompute* compute = nullptr);
 }  // namespace eve::tensor::affine

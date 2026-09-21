@@ -100,7 +100,7 @@ Material *makeCardMaterial(Graphics *gfx, Texture *albedo = nullptr, Shader *hai
  * @param switchDistance Camera distance that selects the far mesh.
  */
 EVENGINE_API_BACKENDS void configureCardLod(Renderable3D *renderable, Mesh *nearCards, Mesh *farProxy,
-                      float switchDistance);
+                                            float switchDistance);
 
 }  // namespace hair
 

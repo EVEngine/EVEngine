@@ -52,9 +52,9 @@ struct SocialEdgeRecord {
 
 /** @brief UI-neutral revisioned social graph authoring document. */
 class EVENGINE_API_BACKENDS SocialDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging {
+                                                         public virtual IEditableTarget,
+                                                         public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging {
 public:
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.social-graph"); }
     explicit SocialDocumentTarget(std::string id);

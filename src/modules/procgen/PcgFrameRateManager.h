@@ -26,5 +26,6 @@ public:
 private:
  int target_=60,min_=0,max_=5,quality_=0,frames_=0; float interval_=10,left_=10,fpsLeft_=.5f,accum_=0,fps_=0; bool automatic_=true,changed_=false;
 };
-/** @brief Register Pcg frame-rate manager bindings. */ EVENGINE_API_DOMAINS void exposePcgFrameRateManagerBindings(ssq::Table& table);
+/** @brief Register Pcg frame-rate manager bindings. */ EVENGINE_API_DOMAINS void exposePcgFrameRateManagerBindings(
+    ssq::Table& table);
 }  // namespace eve::procgen

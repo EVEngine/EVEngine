@@ -43,9 +43,8 @@ struct VolumeGranularEmitterBlueprint3D {
  * @details resolution and restDensity must be finite and at least 0.001; smoothing must
  * be finite and at least 1. The pure setup-time call allocates nothing and mutates no solver.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintMetrics> evaluateVolumeFluidEmitterBlueprint3D(float resolution,
-                                                                                               float restDensity,
-                                                                                               float smoothing);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintMetrics> evaluateVolumeFluidEmitterBlueprint3D(
+    float resolution, float restDensity, float smoothing);
 
 /** @brief Owned precomputed local emission sample, including shape-specific color. */
 struct VolumeFluidDistributionPoint {
@@ -78,17 +77,15 @@ struct VolumeFluidDistributionPoint {
  * their radial normals; volume points emit along local +Z. Candidate and output counts
  * are limited to 65536 and 4096 respectively; failure returns no partial distribution.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidSphereDistribution(float radius,
-                                                                                                   float spacing,
-                                                                                                   bool  surface);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidSphereDistribution(
+    float radius, float spacing, bool surface);
 /** @brief Builds an Fluid3D-compatible box surface or volume lattice during setup.
  * @details size is the full local box size. Surface points emit along the normalized
  * sum of their incident face normals; volume points emit along local +Z. Candidate and
  * output counts are limited to 65536 and 4096; failure returns no partial distribution.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidCubeDistribution(glm::vec3 size,
-                                                                                                 float     spacing,
-                                                                                                 bool      surface);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidCubeDistribution(
+    glm::vec3 size, float spacing, bool surface);
 /** @brief Builds Fluid3D's edge lattice with per-sample radial velocity directions.
  * @details length is the full local X extent. Samples use spacing plus Fluid3D's
  * 0.01 metre separation bias; radialVelocityDegrees rotates local +Z around X
@@ -101,9 +98,8 @@ struct VolumeFluidDistributionPoint {
  * their radial normal; filled-disk samples emit along local +Z. Setup-time only,
  * owning, with 65536 candidate and 4096 output limits.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidDiskDistribution(float radius,
-                                                                                                 float spacing,
-                                                                                                 bool  edgeEmission);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDistributionPoint>> buildVolumeFluidDiskDistribution(
+    float radius, float spacing, bool edgeEmission);
 
 /** @brief Value-owned emission description; +Z is mapped to direction. */
 struct VolumeFluidEmission {
@@ -144,8 +140,8 @@ struct VolumeFluidEmission {
  * @param shapes Borrowed ordered shape descriptions, valid only for this synchronous call.
  * @return Owning combined Distribution description, or a structured validation diagnostic.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmission> composeVolumeFluidEmitterShapes(const VolumeFluidEmission&           base,
-                                                                          std::span<const VolumeFluidEmission> shapes);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmission> composeVolumeFluidEmitterShapes(
+    const VolumeFluidEmission& base, std::span<const VolumeFluidEmission> shapes);
 
 /** @brief Fully owned native setup prepared from one Fluid3D-emitter blueprint. */
 struct VolumeFluidEmitterBlueprintApplication3D {
@@ -159,22 +155,23 @@ struct VolumeFluidEmitterBlueprintApplication3D {
  * all data; no solver, callback, render resource or GPU work is created. The default shared-solver
  * capacity equals the actor blueprint capacity and may be increased before solver construction.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintApplication3D> prepareVolumeFluidEmitterBlueprint3D(
-    const VolumeFluidEmitterBlueprint3D& blueprint);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintApplication3D>
+                                   prepareVolumeFluidEmitterBlueprint3D(const VolumeFluidEmitterBlueprint3D& blueprint);
 
 /** @brief Atomically maps an Fluid3DGranularEmitterBlueprint to owned native 3D setup values.
  * @details Pure setup-time operation. Radius variation uses the existing seeded emission stream;
  * no global RNG, solver, render resource or GPU work is created by this call.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintApplication3D> prepareVolumeGranularEmitterBlueprint3D(
-    const VolumeGranularEmitterBlueprint3D& blueprint);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprintApplication3D>
+prepareVolumeGranularEmitterBlueprint3D(const VolumeGranularEmitterBlueprint3D& blueprint);
 
 /** @brief Generates at most 4096 particles and admits the entire burst atomically.
  * @details Simulation-thread only. Retains no solver/description pointers, invokes no callbacks.
  * Same seed/count/input produces repeatable results on the same build; float parity is tolerance-based.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<unsigned> emitVolumeFluidBurst(VolumeFluid& solver, const VolumeFluidEmission& emission,
-                                                    unsigned count);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<unsigned> emitVolumeFluidBurst(VolumeFluid&               solver,
+                                                                         const VolumeFluidEmission& emission,
+                                                                         unsigned                   count);
 
 /** @brief Version-1 owning state for rate (kind 0) or jet (kind 1) controllers. */
 struct VolumeFluidEmitterSnapshot {
@@ -293,23 +290,21 @@ private:
 };
 
 /** @brief Captures one completed-step rate-emitter checkpoint without retaining references. */
-[[nodiscard]] EVENGINE_API_DOMAINS VolumeFluidEmitterCheckpoint captureVolumeFluidEmitterCheckpoint(const VolumeFluid&         solver,
-                                                                               const VolumeFluidEmission& emission,
-                                                                               const VolumeFluidEmitter&  controller);
+[[nodiscard]] EVENGINE_API_DOMAINS VolumeFluidEmitterCheckpoint captureVolumeFluidEmitterCheckpoint(
+    const VolumeFluid& solver, const VolumeFluidEmission& emission, const VolumeFluidEmitter& controller);
 /** @brief Captures one completed-step moving-jet checkpoint without retaining references. */
-[[nodiscard]] EVENGINE_API_DOMAINS VolumeFluidEmitterCheckpoint captureVolumeFluidEmitterCheckpoint(const VolumeFluid&           solver,
-                                                                               const VolumeFluidEmission&   emission,
-                                                                               const VolumeFluidJetEmitter& controller);
+[[nodiscard]] EVENGINE_API_DOMAINS VolumeFluidEmitterCheckpoint captureVolumeFluidEmitterCheckpoint(
+    const VolumeFluid& solver, const VolumeFluidEmission& emission, const VolumeFluidJetEmitter& controller);
 /** @brief Atomically restores solver and rate controller after validating the complete owning candidate.
  * @details Simulation-thread only. Schema/version, solver state, emission description and
  * controller kind/state are preflighted before either destination changes. No callbacks,
  * external references or GPU work are involved. The emission description remains owned by
  * the checkpoint and is returned to script callers by the binding layer.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<void> restoreVolumeFluidEmitterCheckpoint(VolumeFluid& solver, VolumeFluidEmitter& controller,
-                                                                               const VolumeFluidEmitterCheckpoint& checkpoint);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> restoreVolumeFluidEmitterCheckpoint(
+    VolumeFluid& solver, VolumeFluidEmitter& controller, const VolumeFluidEmitterCheckpoint& checkpoint);
 /** @brief Atomically restores solver and moving-jet controller under the same checkpoint contract. */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<void> restoreVolumeFluidEmitterCheckpoint(VolumeFluid& solver, VolumeFluidJetEmitter& controller,
-                                                                               const VolumeFluidEmitterCheckpoint& checkpoint);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> restoreVolumeFluidEmitterCheckpoint(
+    VolumeFluid& solver, VolumeFluidJetEmitter& controller, const VolumeFluidEmitterCheckpoint& checkpoint);
 
 }  // namespace eve::fluids

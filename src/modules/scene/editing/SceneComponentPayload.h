@@ -148,7 +148,6 @@ private:
 
 /** @brief Build a property selection for one or more homogeneous component references. */
 EVENGINE_API_BACKENDS EditorResult<SelectionSnapshot> makeSceneComponentSelection(
-    std::string channel, const std::vector<SceneComponentPayloadRef>& components,
-    std::uint64_t sequence = 0);
+    std::string channel, const std::vector<SceneComponentPayloadRef>& components, std::uint64_t sequence = 0);
 
 }  // namespace eve::scene_editing

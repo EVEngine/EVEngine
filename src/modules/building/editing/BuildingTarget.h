@@ -154,9 +154,9 @@ struct BuildingPlacementPreview {
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
 class EVENGINE_API_DOMAINS BuildingPlacementTarget final : public ::eve::editing::EditableTargetState,
-                                      public virtual IEditableTarget,
-                                      public IDomainOperationTarget,
-                                      public editing::IDomainOperationTargetStaging {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public editing::IDomainOperationTargetStaging {
 public:
     /** @brief Stable capability id for placement preview and mutation. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.building-placement"); }
@@ -177,7 +177,7 @@ public:
      */
     BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept;
     BuildingPlacementTarget& operator=(BuildingPlacementTarget&&) noexcept;
-    BuildingPlacementTarget(const BuildingPlacementTarget&) = delete;
+    BuildingPlacementTarget(const BuildingPlacementTarget&)            = delete;
     BuildingPlacementTarget& operator=(const BuildingPlacementTarget&) = delete;
     ~BuildingPlacementTarget();
     TargetId         targetId() const override { return TargetId(id_); }

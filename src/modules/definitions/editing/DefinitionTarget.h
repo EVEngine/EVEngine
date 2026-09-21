@@ -32,8 +32,8 @@ struct DefinitionReferenceField {
 
 /** @brief UI-neutral versioned definition asset and cross-reference model. */
 class EVENGINE_API_BACKENDS DefinitionDocument : public ::eve::editing::EditableTargetState,
-                           public virtual IEditableTarget,
-                           public IDomainOperationTarget {
+                                                 public virtual IEditableTarget,
+                                                 public IDomainOperationTarget {
 public:
     using ReferenceResolver = std::function<bool(const std::string& type, const std::string& id)>;
     using SchemaValidator = std::function<std::vector<EditorDiagnostic>(const std::string& type,

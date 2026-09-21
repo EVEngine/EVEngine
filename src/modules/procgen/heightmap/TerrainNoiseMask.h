@@ -33,7 +33,7 @@ struct TerrainNoiseMaskSettings {
  * Rotation is radians in the X/Z plane. Fractional octave and warp counts interpolate the final step.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainNoiseMask(Heightmap& target, const Heightmap& input,
-                                                   const Heightmap& curve,
-                                                   const TerrainNoiseMaskSettings& settings,
-                                                   TerrainMaskBlend mode);
+                                                                        const Heightmap&                curve,
+                                                                        const TerrainNoiseMaskSettings& settings,
+                                                                        TerrainMaskBlend                mode);
 }  // namespace eve::procgen

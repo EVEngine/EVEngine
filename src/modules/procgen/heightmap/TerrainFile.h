@@ -61,8 +61,8 @@ struct DecodedTerrainFile {
  * @param format Encoding selector, or `Auto` to detect from the magic.
  * @return The decoded height field, or a failure diagnostic naming the reason.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<DecodedTerrainFile> decodeTerrainFile(std::span<const std::uint8_t> bytes,
-                                                                TerrainFileFormat format);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<DecodedTerrainFile> decodeTerrainFile(
+    std::span<const std::uint8_t> bytes, TerrainFileFormat format);
 
 /**
  * @brief Read and decode a terrain height field through the filesystem capability.

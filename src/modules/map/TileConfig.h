@@ -56,20 +56,19 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path,
  */
 EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
 EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
-                                     std::string *error = nullptr);
+                                                        std::string *error = nullptr);
 
 /** @brief Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
 EVENGINE_API_WORLD std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
-                                     std::string *error = nullptr);
+                                                        std::string *error = nullptr);
 
 /**
  * @brief Imports RPG Maker MV/MZ MapXXX.json plus Tilesets.json without modifying the project.
  * @ownership Returned layer entities are owned by the ECS world, as with loadMapFile.
  * @thread Main-thread affine and non-reentrant.
  */
-[[nodiscard]] EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath,
-                                                                   const std::string &tilesetsPath,
-                                                                   const std::string &sourceEngine = "RPG Maker MV/MZ");
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(
+    const std::string &mapPath, const std::string &tilesetsPath, const std::string &sourceEngine = "RPG Maker MV/MZ");
 
 /** @brief Decodes one MV/MZ tile id into normal or quarter-tile atlas projections. */
 [[nodiscard]] EVENGINE_API_WORLD TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);

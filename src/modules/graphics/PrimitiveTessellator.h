@@ -50,13 +50,14 @@ struct ResolvedPrimitiveTriangles {
  * @param viewport Positive pixel dimensions of the current Canvas target.
  * @return Owning triangle stream; six vertices are emitted per non-zero segment.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS ResolvedPrimitiveTriangles resolvePrimitiveStrokes2D(const PrimitiveCanvas2D& canvas,
-                                                                   glm::ivec2               viewport);
+[[nodiscard]] EVENGINE_API_BACKENDS ResolvedPrimitiveTriangles
+resolvePrimitiveStrokes2D(const PrimitiveCanvas2D& canvas, glm::ivec2 viewport);
 
 /**
  * @brief Resolves 3D stroke segment bodies with near-plane clipping.
  * @return Owning clip-space triangles. Fully clipped and zero-length segments are omitted.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS ResolvedPrimitiveTriangles resolvePrimitiveStrokes3D(const PrimitiveSceneCanvas3D& canvas);
+[[nodiscard]] EVENGINE_API_BACKENDS ResolvedPrimitiveTriangles
+resolvePrimitiveStrokes3D(const PrimitiveSceneCanvas3D& canvas);
 
 }  // namespace eve::graphics

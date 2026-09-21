@@ -59,7 +59,8 @@ struct ParsedAttributeOperation {
  * @brief Parse a built-in operation spelling used by existing data and APIs.
  * @return A normalized operation, or a rejected Result for an unknown spelling.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view operation, double value);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<ParsedAttributeOperation> parseAttributeOperation(
+    std::string_view operation, double value);
 
 /** @brief Registry for explicitly named custom attribute policies. */
 class EVENGINE_API_FOUNDATION AttributeOperationRegistry {
@@ -140,8 +141,8 @@ struct AttributeValue {
  * MultiplicativePercent factors, then priority/sequence ordered Override and
  * Clamp operations. Custom policies participate in the final ordered phase.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(const AttributeValue&             attribute,
-                                           const AttributeOperationRegistry* customOperations = nullptr);
+[[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(
+    const AttributeValue& attribute, const AttributeOperationRegistry* customOperations = nullptr);
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */
 class EVENGINE_API_FOUNDATION AttributeSet {

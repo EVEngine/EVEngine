@@ -16,29 +16,27 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 
-#include <filesystem>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-#include <utility>
-#include <vector>
+#include <filesystem>
 #include <fstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 using eve::image::ImageData;
 
 bool saveImagePng(const ImageData &img, const std::string &path) {
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
-    eve::filesystem::FileData *png =
-        img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false);
+    eve::filesystem::FileData   *png         = img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false);
     if (!png) return false;
     std::error_code ec;
     std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
     std::ofstream out(path, std::ios::binary);
-    const bool ok = out.good();
+    const bool    ok = out.good();
     if (ok) {
-        out.write(static_cast<const char *>(png->getData()),
-                  static_cast<std::streamsize>(png->getSize()));
+        out.write(static_cast<const char *>(png->getData()), static_cast<std::streamsize>(png->getSize()));
     }
     delete png;
     return ok && out.good();
@@ -47,20 +45,18 @@ bool saveImagePng(const ImageData &img, const std::string &path) {
 // --- CPU-side framebuffer audit implementation (moved from RenderImageAudit.cpp; shared by every consumer domain) ---
 namespace {
 
-constexpr int kTile = 16;
-constexpr int kMaxDefects = 32;
-constexpr int kEmptyDist2 = 14 * 14;  // ~0.055 in 8-bit
-constexpr int kDeadLumaSum = 15;      // (r+2g+b) < 15 ≈ luma 0.02
-constexpr float kOccTile = 0.40f;
-constexpr float kEmptyTile = 0.12f;
-constexpr float kFlickerTile = 0.07f;
+constexpr int   kTile          = 16;
+constexpr int   kMaxDefects    = 32;
+constexpr int   kEmptyDist2    = 14 * 14;  // ~0.055 in 8-bit
+constexpr int   kDeadLumaSum   = 15;       // (r+2g+b) < 15 ≈ luma 0.02
+constexpr float kOccTile       = 0.40f;
+constexpr float kEmptyTile     = 0.12f;
+constexpr float kFlickerTile   = 0.07f;
 constexpr float kFlickerSevere = 0.15f;
 
 int lumaSumU8(const uint8_t *p) { return int(p[0]) + 2 * int(p[1]) + int(p[2]); }
 
-float lumaU8(const uint8_t *p) {
-    return (0.2126f * p[0] + 0.7152f * p[1] + 0.0722f * p[2]) / 255.f;
-}
+float lumaU8(const uint8_t *p) { return (0.2126f * p[0] + 0.7152f * p[1] + 0.0722f * p[2]) / 255.f; }
 
 struct BgBytes {
     int r, g, b;
@@ -101,24 +97,24 @@ std::string jsonEscape(const std::string &s) {
     return o;
 }
 
-void addDefect(RenderAuditResult &r, RenderDefect::Kind kind, int x, int y, int w, int h,
-               float score, const std::string &detail) {
+void addDefect(RenderAuditResult &r, RenderDefect::Kind kind, int x, int y, int w, int h, float score,
+               const std::string &detail) {
     if (int(r.defects.size()) >= kMaxDefects) return;
     x = std::max(0, x);
     y = std::max(0, y);
     RenderDefect d;
-    d.kind = kind;
-    d.x = x;
-    d.y = y;
-    d.w = std::max(1, w);
-    d.h = std::max(1, h);
-    d.score = score;
+    d.kind   = kind;
+    d.x      = x;
+    d.y      = y;
+    d.w      = std::max(1, w);
+    d.h      = std::max(1, h);
+    d.score  = score;
     d.detail = detail;
     r.defects.push_back(std::move(d));
 }
 
 struct TileStat {
-    float occ = 0.f;
+    float occ   = 0.f;
     float meanL = 0.f;
 };
 
@@ -136,8 +132,7 @@ int occupiedNeighbors(const std::vector<TileStat> &tiles, int tilesX, int tilesY
     return n;
 }
 
-void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int w, int h,
-                 RenderAuditResult &r) {
+void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int w, int h, RenderAuditResult &r) {
     std::vector<uint8_t> hole(size_t(tilesX * tilesY), 0);
     for (int ty = 1; ty < tilesY - 1; ++ty) {
         for (int tx = 1; tx < tilesX - 1; ++tx) {
@@ -151,19 +146,19 @@ void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int
         for (int tx = 1; tx < tilesX - 1; ++tx) {
             const int seed = ty * tilesX + tx;
             if (!hole[size_t(seed)] || seen[size_t(seed)]) continue;
-            int minX = tx, maxX = tx, minY = ty, maxY = ty, count = 0;
+            int              minX = tx, maxX = tx, minY = ty, maxY = ty, count = 0;
             std::vector<int> stack{seed};
             seen[size_t(seed)] = 1;
             while (!stack.empty()) {
                 const int i = stack.back();
                 stack.pop_back();
                 ++count;
-                const int cx = i % tilesX;
-                const int cy = i / tilesX;
-                minX = std::min(minX, cx);
-                maxX = std::max(maxX, cx);
-                minY = std::min(minY, cy);
-                maxY = std::max(maxY, cy);
+                const int cx    = i % tilesX;
+                const int cy    = i / tilesX;
+                minX            = std::min(minX, cx);
+                maxX            = std::max(maxX, cx);
+                minY            = std::min(minY, cy);
+                maxY            = std::max(maxY, cy);
                 const int nb[4] = {i - 1, i + 1, i - tilesX, i + tilesX};
                 for (int n : nb) {
                     if (n < 0 || n >= tilesX * tilesY) continue;
@@ -176,7 +171,7 @@ void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int
             const int py = minY * kTile;
             const int pw = std::min(w, (maxX + 1) * kTile) - px;
             const int ph = std::min(h, (maxY + 1) * kTile) - py;
-            char buf[96];
+            char      buf[96];
             std::snprintf(buf, sizeof(buf), "interior hole tiles=%d occ=%.2f", count,
                           tiles[size_t(ty * tilesX + tx)].occ);
             addDefect(r, RenderDefect::Kind::Incomplete, px, py, pw, ph, float(count), buf);
@@ -184,8 +179,8 @@ void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int
     }
 }
 
-void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int w, int h,
-                            float occupancy, RenderAuditResult &r) {
+void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int w, int h, float occupancy,
+                            RenderAuditResult &r) {
     // Sparse frames (small object + lots of sky) have empty quadrants by design.
     // Only look for missing chunks when the frame is mostly filled.
     if (occupancy < 0.40f) return;
@@ -198,7 +193,7 @@ void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int 
             const int ty1 = (tilesY * (gyi + 1)) / gy;
             if (tx1 <= tx0 || ty1 <= ty0) continue;
             double occSum = 0.0;
-            int n = 0;
+            int    n      = 0;
             for (int ty = ty0; ty < ty1; ++ty) {
                 for (int tx = tx0; tx < tx1; ++tx) {
                     occSum += tiles[size_t(ty * tilesX + tx)].occ;
@@ -207,7 +202,7 @@ void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int 
             }
             const float cellOcc = n ? float(occSum / n) : 0.f;
             if (cellOcc > 0.08f) continue;
-            int richN = 0;
+            int       richN     = 0;
             const int nbs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
             for (auto &d : nbs) {
                 const int nx = gxi + d[0];
@@ -217,8 +212,8 @@ void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int 
                 const int ntx1 = (tilesX * (nx + 1)) / gx;
                 const int nty0 = (tilesY * ny) / gy;
                 const int nty1 = (tilesY * (ny + 1)) / gy;
-                double nOcc = 0.0;
-                int nn = 0;
+                double    nOcc = 0.0;
+                int       nn   = 0;
                 for (int ty = nty0; ty < nty1; ++ty) {
                     for (int tx = ntx0; tx < ntx1; ++tx) {
                         nOcc += tiles[size_t(ty * tilesX + tx)].occ;
@@ -232,7 +227,7 @@ void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int 
             const int py = (h * gyi) / gy;
             const int pw = (w * (gxi + 1)) / gx - px;
             const int ph = (h * (gyi + 1)) / gy - py;
-            char buf[80];
+            char      buf[80];
             std::snprintf(buf, sizeof(buf), "coarse empty cell occ=%.2f neighbors=%d", cellOcc, richN);
             addDefect(r, RenderDefect::Kind::Incomplete, px, py, pw, ph, 1.f - cellOcc, buf);
         }
@@ -241,20 +236,20 @@ void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int 
 
 struct ScanAccum {
     std::vector<TileStat> tiles;
-    int tilesX = 0;
-    int tilesY = 0;
-    double sumL = 0.0;
-    int n = 0;
-    int occ = 0;
-    int interiorOcc = 0;
-    int interiorN = 0;
-    int magN = 0, cyanN = 0;
-    int magX0 = 0, magY0 = 0, magX1 = 0, magY1 = 0;
-    int cyanX0 = 0, cyanY0 = 0, cyanX1 = 0, cyanY1 = 0;
-    std::vector<int> rowLit;
-    std::vector<int> rowN;
-    std::vector<int> colLit;
-    std::vector<int> colN;
+    int                   tilesX      = 0;
+    int                   tilesY      = 0;
+    double                sumL        = 0.0;
+    int                   n           = 0;
+    int                   occ         = 0;
+    int                   interiorOcc = 0;
+    int                   interiorN   = 0;
+    int                   magN = 0, cyanN = 0;
+    int                   magX0 = 0, magY0 = 0, magX1 = 0, magY1 = 0;
+    int                   cyanX0 = 0, cyanY0 = 0, cyanX1 = 0, cyanY1 = 0;
+    std::vector<int>      rowLit;
+    std::vector<int>      rowN;
+    std::vector<int>      colLit;
+    std::vector<int>      colN;
 };
 
 ScanAccum scanFrame(const uint8_t *rgba, int w, int h, const BgBytes &bg, int step) {
@@ -266,21 +261,21 @@ ScanAccum scanFrame(const uint8_t *rgba, int w, int h, const BgBytes &bg, int st
     a.rowN.assign(size_t(h), 0);
     a.colLit.assign(size_t(w), 0);
     a.colN.assign(size_t(w), 0);
-    a.magX0 = w;
-    a.magY0 = h;
-    a.cyanX0 = w;
-    a.cyanY0 = h;
-    const int ix0 = w / 10, ix1 = w - w / 10;
-    const int iy0 = h / 10, iy1 = h - h / 10;
-    std::vector<int> tileOcc(size_t(a.tilesX * a.tilesY), 0);
-    std::vector<int> tileN(size_t(a.tilesX * a.tilesY), 0);
+    a.magX0                 = w;
+    a.magY0                 = h;
+    a.cyanX0                = w;
+    a.cyanY0                = h;
+    const int           ix0 = w / 10, ix1 = w - w / 10;
+    const int           iy0 = h / 10, iy1 = h - h / 10;
+    std::vector<int>    tileOcc(size_t(a.tilesX * a.tilesY), 0);
+    std::vector<int>    tileN(size_t(a.tilesX * a.tilesY), 0);
     std::vector<double> tileL(size_t(a.tilesX * a.tilesY), 0.0);
 
     for (int y = 0; y < h; y += step) {
         for (int x = 0; x < w; x += step) {
-            const uint8_t *p = pxAt(rgba, w, x, y);
-            const float L = lumaU8(p);
-            const bool emptyPx = pixelEmpty(p, bg);
+            const uint8_t *p       = pxAt(rgba, w, x, y);
+            const float    L       = lumaU8(p);
+            const bool     emptyPx = pixelEmpty(p, bg);
             a.sumL += L;
             ++a.n;
             if (!emptyPx) ++a.occ;
@@ -317,8 +312,8 @@ ScanAccum scanFrame(const uint8_t *rgba, int w, int h, const BgBytes &bg, int st
         }
     }
     for (int i = 0; i < a.tilesX * a.tilesY; ++i) {
-        const int n = tileN[size_t(i)];
-        a.tiles[size_t(i)].occ = n ? float(tileOcc[size_t(i)]) / float(n) : 0.f;
+        const int n              = tileN[size_t(i)];
+        a.tiles[size_t(i)].occ   = n ? float(tileOcc[size_t(i)]) / float(n) : 0.f;
         a.tiles[size_t(i)].meanL = n ? float(tileL[size_t(i)] / n) : 0.f;
     }
     return a;
@@ -329,14 +324,14 @@ void emitDamage(const ScanAccum &a, int w, int h, int step, RenderAuditResult &r
     if (a.magN >= magMin) {
         char buf[64];
         std::snprintf(buf, sizeof(buf), "debug magenta samples=%d", a.magN);
-        addDefect(r, RenderDefect::Kind::Damage, a.magX0, a.magY0, a.magX1 - a.magX0 + 1,
-                  a.magY1 - a.magY0 + 1, float(a.magN), buf);
+        addDefect(r, RenderDefect::Kind::Damage, a.magX0, a.magY0, a.magX1 - a.magX0 + 1, a.magY1 - a.magY0 + 1,
+                  float(a.magN), buf);
     }
     if (a.cyanN >= magMin) {
         char buf[64];
         std::snprintf(buf, sizeof(buf), "debug cyan samples=%d", a.cyanN);
-        addDefect(r, RenderDefect::Kind::Damage, a.cyanX0, a.cyanY0, a.cyanX1 - a.cyanX0 + 1,
-                  a.cyanY1 - a.cyanY0 + 1, float(a.cyanN), buf);
+        addDefect(r, RenderDefect::Kind::Damage, a.cyanX0, a.cyanY0, a.cyanX1 - a.cyanX0 + 1, a.cyanY1 - a.cyanY0 + 1,
+                  float(a.cyanN), buf);
     }
 
     auto tornRun = [&](const std::vector<int> &lit, const std::vector<int> &nn, int n, bool rows) {
@@ -345,7 +340,7 @@ void emitDamage(const ScanAccum &a, int w, int h, int step, RenderAuditResult &r
         };
         int y = step;
         while (y < n - step) {
-            const float o = occAt(y);
+            const float o    = occAt(y);
             const float prev = occAt(y - step);
             const float next = occAt(y + step);
             if (!(o >= 0.f && o < 0.05f && prev > 0.35f && next > 0.35f)) {
@@ -360,7 +355,7 @@ void emitDamage(const ScanAccum &a, int w, int h, int step, RenderAuditResult &r
                 y += step;
             }
             const int len = std::max(step, y - start);
-            char buf[72];
+            char      buf[72];
             if (rows) {
                 std::snprintf(buf, sizeof(buf), "torn scanlines y=%d..%d", start, start + len - 1);
                 addDefect(r, RenderDefect::Kind::Damage, 0, start, w, len, float(len), buf);
@@ -379,7 +374,7 @@ void emitDamage(const ScanAccum &a, int w, int h, int step, RenderAuditResult &r
 bool RenderAuditResult::hasSevere() const {
     if (empty) return true;
     int holeArea = 0;
-    int imgArea = std::max(1, cfg.width * cfg.height);
+    int imgArea  = std::max(1, cfg.width * cfg.height);
     for (const auto &d : defects) {
         if (d.kind == RenderDefect::Kind::Damage) return true;
         if (d.kind == RenderDefect::Kind::Flicker && d.score >= kFlickerSevere) return true;
@@ -389,22 +384,22 @@ bool RenderAuditResult::hasSevere() const {
     return holeArea > imgArea / 16;
 }
 
-RenderAuditResult auditRgba8(const uint8_t *rgba, int w, int h, const RenderAuditConfig &cfg,
-                             const RenderAuditBg &bg, int step) {
+RenderAuditResult auditRgba8(const uint8_t *rgba, int w, int h, const RenderAuditConfig &cfg, const RenderAuditBg &bg,
+                             int step) {
     RenderAuditResult r;
-    r.cfg = cfg;
-    r.cfg.width = w;
+    r.cfg        = cfg;
+    r.cfg.width  = w;
     r.cfg.height = h;
     if (!rgba || w <= 0 || h <= 0) {
         r.empty = true;
         return r;
     }
-    step = std::max(1, step);
-    const ScanAccum a = scanFrame(rgba, w, h, toBytes(bg), step);
-    r.meanLuma = a.n ? float(a.sumL / a.n) : 0.f;
-    r.occupancy = a.n ? float(a.occ) / float(a.n) : 0.f;
+    step                = std::max(1, step);
+    const ScanAccum a   = scanFrame(rgba, w, h, toBytes(bg), step);
+    r.meanLuma          = a.n ? float(a.sumL / a.n) : 0.f;
+    r.occupancy         = a.n ? float(a.occ) / float(a.n) : 0.f;
     r.interiorOccupancy = a.interiorN ? float(a.interiorOcc) / float(a.interiorN) : 0.f;
-    r.empty = r.interiorOccupancy < 0.02f;
+    r.empty             = r.interiorOccupancy < 0.02f;
 
     detectHoles(a.tiles, a.tilesX, a.tilesY, w, h, r);
     detectCoarseIncomplete(a.tiles, a.tilesX, a.tilesY, w, h, r.occupancy, r);
@@ -416,34 +411,32 @@ RenderAuditResult auditRgba8(const uint8_t *rgba, int w, int h, const RenderAudi
     return r;
 }
 
-RenderAuditResult auditImage(const ImageData &img, const RenderAuditConfig &cfg,
-                             const RenderAuditBg &bg, int step) {
-    return auditRgba8(static_cast<const uint8_t *>(img.getData()), img.getWidth(), img.getHeight(),
-                      cfg, bg, step);
+RenderAuditResult auditImage(const ImageData &img, const RenderAuditConfig &cfg, const RenderAuditBg &bg, int step) {
+    return auditRgba8(static_cast<const uint8_t *>(img.getData()), img.getWidth(), img.getHeight(), cfg, bg, step);
 }
 
-RenderAuditResult auditFlickerRgba8(const uint8_t *a, const uint8_t *b, int w, int h,
-                                    const RenderAuditConfig &cfg, const RenderAuditBg &bg, int step) {
+RenderAuditResult auditFlickerRgba8(const uint8_t *a, const uint8_t *b, int w, int h, const RenderAuditConfig &cfg,
+                                    const RenderAuditBg &bg, int step) {
     RenderAuditResult r;
-    r.cfg = cfg;
-    r.cfg.width = w;
+    r.cfg        = cfg;
+    r.cfg.width  = w;
     r.cfg.height = h;
-    r.cfg.extra = r.cfg.extra.empty() ? "flicker" : r.cfg.extra + "+flicker";
+    r.cfg.extra  = r.cfg.extra.empty() ? "flicker" : r.cfg.extra + "+flicker";
     if (!a || !b || w <= 0 || h <= 0) return r;
     step = std::max(1, step);
 
-    double sumMad = 0.0;
-    int nAll = 0;
+    double    sumMad = 0.0;
+    int       nAll   = 0;
     const int tilesX = (w + kTile - 1) / kTile;
     const int tilesY = (h + kTile - 1) / kTile;
     for (int ty = 0; ty < tilesY; ++ty) {
         for (int tx = 0; tx < tilesX; ++tx) {
-            const int x0 = tx * kTile;
-            const int y0 = ty * kTile;
-            const int x1 = std::min(w, x0 + kTile);
-            const int y1 = std::min(h, y0 + kTile);
-            double tileMad = 0.0;
-            int n = 0;
+            const int x0      = tx * kTile;
+            const int y0      = ty * kTile;
+            const int x1      = std::min(w, x0 + kTile);
+            const int y1      = std::min(h, y0 + kTile);
+            double    tileMad = 0.0;
+            int       n       = 0;
             for (int y = y0; y < y1; y += step) {
                 for (int x = x0; x < x1; x += step) {
                     const float d = std::fabs(lumaU8(pxAt(a, w, x, y)) - lumaU8(pxAt(b, w, x, y)));
@@ -474,9 +467,8 @@ RenderAuditResult auditFlicker(const ImageData &a, const ImageData &b, const Ren
                   "flicker compare size mismatch");
         return r;
     }
-    return auditFlickerRgba8(static_cast<const uint8_t *>(a.getData()),
-                             static_cast<const uint8_t *>(b.getData()), a.getWidth(), a.getHeight(),
-                             cfg, bg, step);
+    return auditFlickerRgba8(static_cast<const uint8_t *>(a.getData()), static_cast<const uint8_t *>(b.getData()),
+                             a.getWidth(), a.getHeight(), cfg, bg, step);
 }
 
 void mergeAudit(RenderAuditResult &dst, const RenderAuditResult &src) {
@@ -488,16 +480,16 @@ void mergeAudit(RenderAuditResult &dst, const RenderAuditResult &src) {
 }
 
 void paintDefectOverlay(ImageData &img, const std::vector<RenderDefect> &defs) {
-    const int w = img.getWidth();
-    const int h = img.getHeight();
-    auto *data = static_cast<uint8_t *>(img.getData());
-    auto plot = [&](int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+    const int w    = img.getWidth();
+    const int h    = img.getHeight();
+    auto     *data = static_cast<uint8_t *>(img.getData());
+    auto      plot = [&](int x, int y, uint8_t r, uint8_t g, uint8_t b) {
         if (x < 0 || y < 0 || x >= w || y >= h) return;
         uint8_t *p = data + (size_t(y) * size_t(w) + size_t(x)) * 4u;
-        p[0] = r;
-        p[1] = g;
-        p[2] = b;
-        p[3] = 255;
+        p[0]       = r;
+        p[1]       = g;
+        p[2]       = b;
+        p[3]       = 255;
     };
     for (const auto &d : defs) {
         uint8_t cr = 255, cg = 40, cb = 40;
@@ -548,16 +540,15 @@ void appendAuditReport(const std::string &outDir, const RenderAuditResult &r) {
         md << "\n\n";
         md << "- size=" << r.cfg.width << "x" << r.cfg.height;
         if (r.cfg.frame >= 0) md << " frame=" << r.cfg.frame;
-        md << "\n- meanLuma=" << r.meanLuma << " occupancy=" << r.occupancy
-           << " interiorOcc=" << r.interiorOccupancy << " flickerMad=" << r.flickerMad << "\n";
+        md << "\n- meanLuma=" << r.meanLuma << " occupancy=" << r.occupancy << " interiorOcc=" << r.interiorOccupancy
+           << " flickerMad=" << r.flickerMad << "\n";
         if (r.empty) md << "- **empty interior**\n";
         if (r.defects.empty()) {
             md << "- no defects\n\n";
         } else {
             for (const auto &d : r.defects) {
-                md << "- DEFECT `" << RenderDefect::kindName(d.kind) << "` bbox=(" << d.x << ","
-                   << d.y << "," << d.w << "," << d.h << ") score=" << d.score << " " << d.detail
-                   << "\n";
+                md << "- DEFECT `" << RenderDefect::kindName(d.kind) << "` bbox=(" << d.x << "," << d.y << "," << d.w
+                   << "," << d.h << ") score=" << d.score << " " << d.detail << "\n";
             }
             md << "\n";
         }
@@ -565,29 +556,28 @@ void appendAuditReport(const std::string &outDir, const RenderAuditResult &r) {
 
     {
         std::ofstream js(jsPath, std::ios::app);
-        js << "{\"scene\":\"" << jsonEscape(r.cfg.scene) << "\",\"phase\":\""
-           << jsonEscape(r.cfg.phase) << "\",\"extra\":\"" << jsonEscape(r.cfg.extra)
-           << "\",\"width\":" << r.cfg.width << ",\"height\":" << r.cfg.height
-           << ",\"frame\":" << r.cfg.frame << ",\"meanLuma\":" << r.meanLuma
+        js << "{\"scene\":\"" << jsonEscape(r.cfg.scene) << "\",\"phase\":\"" << jsonEscape(r.cfg.phase)
+           << "\",\"extra\":\"" << jsonEscape(r.cfg.extra) << "\",\"width\":" << r.cfg.width
+           << ",\"height\":" << r.cfg.height << ",\"frame\":" << r.cfg.frame << ",\"meanLuma\":" << r.meanLuma
            << ",\"occupancy\":" << r.occupancy << ",\"interiorOccupancy\":" << r.interiorOccupancy
            << ",\"flickerMad\":" << r.flickerMad << ",\"empty\":" << (r.empty ? "true" : "false")
            << ",\"severe\":" << (r.hasSevere() ? "true" : "false") << ",\"defects\":[";
         for (size_t i = 0; i < r.defects.size(); ++i) {
             const auto &d = r.defects[i];
             if (i) js << ",";
-            js << "{\"kind\":\"" << RenderDefect::kindName(d.kind) << "\",\"x\":" << d.x
-               << ",\"y\":" << d.y << ",\"w\":" << d.w << ",\"h\":" << d.h << ",\"score\":" << d.score
-               << ",\"detail\":\"" << jsonEscape(d.detail) << "\"}";
+            js << "{\"kind\":\"" << RenderDefect::kindName(d.kind) << "\",\"x\":" << d.x << ",\"y\":" << d.y
+               << ",\"w\":" << d.w << ",\"h\":" << d.h << ",\"score\":" << d.score << ",\"detail\":\""
+               << jsonEscape(d.detail) << "\"}";
         }
         js << "]}\n";
     }
 
     std::printf("RenderImageAudit[%s/%s] defects=%zu severe=%d meanLuma=%.4f occ=%.3f flickerMad=%.4f\n",
-                r.cfg.scene.c_str(), r.cfg.phase.c_str(), r.defects.size(), int(r.hasSevere()),
-                r.meanLuma, r.occupancy, r.flickerMad);
+                r.cfg.scene.c_str(), r.cfg.phase.c_str(), r.defects.size(), int(r.hasSevere()), r.meanLuma, r.occupancy,
+                r.flickerMad);
     for (const auto &d : r.defects) {
-        std::printf("  %s bbox=(%d,%d,%d,%d) score=%.3f %s\n", RenderDefect::kindName(d.kind), d.x,
-                    d.y, d.w, d.h, d.score, d.detail.c_str());
+        std::printf("  %s bbox=(%d,%d,%d,%d) score=%.3f %s\n", RenderDefect::kindName(d.kind), d.x, d.y, d.w, d.h,
+                    d.score, d.detail.c_str());
     }
 }
 

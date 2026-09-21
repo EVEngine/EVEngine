@@ -60,10 +60,9 @@ struct TerrainMaterialAtlasLimits {
  *         group zero without a control map uses red, and missing holes use white.
  * @thread Worker-safe when reader is read concurrently; performs no GPU calls or callbacks.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainMaterialAtlases> buildTerrainMaterialAtlases(const asset::EvpackResourceReader& reader,
-                                                                         const LoadedTerrainMaterial&       material,
-                                                                         const asset::EvpackCapabilities&  capabilities,
-                                                                         const TerrainMaterialAtlasLimits& limits = {});
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainMaterialAtlases> buildTerrainMaterialAtlases(
+    const asset::EvpackResourceReader& reader, const LoadedTerrainMaterial& material,
+    const asset::EvpackCapabilities& capabilities, const TerrainMaterialAtlasLimits& limits = {});
 
 
 /** @brief Four backend-owned textures for one uploaded terrain group. */
@@ -92,23 +91,24 @@ struct PackedTerrainMaterialGpuSet {
 };
 
 /** @brief Upload every atlas transactionally; partial failure releases earlier textures. */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainMaterialGpuSet> uploadTerrainMaterialAtlases(graphics::IResourceFactory&   factory,
-                                                                         const TerrainMaterialAtlases& atlases);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainMaterialGpuSet> uploadTerrainMaterialAtlases(
+    graphics::IResourceFactory& factory, const TerrainMaterialAtlases& atlases);
 
 /** @brief Release every texture in a GPU set and clear it even if one backend release fails. */
 [[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> releaseTerrainMaterialAtlases(graphics::IResourceFactory& factory,
-                                                         TerrainMaterialGpuSet&      set);
+                                                                                    TerrainMaterialGpuSet&      set);
 
 /** @brief Upload a packed terrain set transactionally. */
 [[nodiscard]] EVENGINE_API_ORCHESTRATION Result<PackedTerrainMaterialGpuSet> uploadPackedTerrainMaterialAtlases(
     graphics::IResourceFactory& factory, const PackedTerrainMaterialAtlases& atlases);
 
 /** @brief Release and clear a packed terrain GPU set. */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> releasePackedTerrainMaterialAtlases(graphics::IResourceFactory&  factory,
-                                                               PackedTerrainMaterialGpuSet& set);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> releasePackedTerrainMaterialAtlases(
+    graphics::IResourceFactory& factory, PackedTerrainMaterialGpuSet& set);
 
 /** @brief Bind a packed terrain set for one draw and publish its feature counts. */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> bindPackedTerrainMaterial(graphics::Shader& shader, const PackedTerrainMaterialGpuSet& gpu);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> bindPackedTerrainMaterial(graphics::Shader& shader,
+                                                                                const PackedTerrainMaterialGpuSet& gpu);
 
 /**
  * @brief Bind one uploaded group and its four layer values to a terrain shader.
@@ -119,6 +119,8 @@ struct PackedTerrainMaterialGpuSet {
  * @return Success after all bindings are published, or failure before an invalid index is used.
  * @thread Graphics thread only; synchronous and non-reentrant.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> bindTerrainMaterialGroup(graphics::Shader& shader, const TerrainMaterialGpuSet& gpu,
-                                                    const LoadedTerrainMaterial& material, std::size_t groupIndex);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> bindTerrainMaterialGroup(graphics::Shader&            shader,
+                                                                               const TerrainMaterialGpuSet& gpu,
+                                                                               const LoadedTerrainMaterial& material,
+                                                                               std::size_t                  groupIndex);
 }  // namespace eve::asset_procgen

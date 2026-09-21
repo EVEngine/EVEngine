@@ -125,16 +125,17 @@ struct VoxelPick {
  * @brief Raycast occupied cells with MagicaVoxel-style previous-cell attach.
  * @param maxDistance Maximum travel along the normalized ray.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy, float oz, float dx, float dy,
-                                       float dz, float maxDistance);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy,
+                                                                  float oz, float dx, float dy, float dz,
+                                                                  float maxDistance);
 
 /** @brief Revisioned project of MagicaVoxel-style sculpted models. */
 class EVENGINE_API_ORCHESTRATION VoxelCatalogTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider,
-                                 public IEditingSnapshotProvider {
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider,
+                                                            public IEditingSnapshotProvider {
 public:
     explicit VoxelCatalogTarget(std::string id);
 

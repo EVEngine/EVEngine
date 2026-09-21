@@ -53,9 +53,9 @@ struct FollowPlayerOutput {
  * @ownership Inputs and output remain caller-owned; no pointers are retained.
  * @thread Any thread; this function has no callbacks or global state.
  */
-[[nodiscard]] EVENGINE_API_PLATFORM Result<void> evaluateFollowPlayer(FollowPlayerOutput* output,
-                                                const FollowPlayerSettings* settings,
-                                                const FollowPlayerInput* input);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> evaluateFollowPlayer(FollowPlayerOutput*         output,
+                                                                      const FollowPlayerSettings* settings,
+                                                                      const FollowPlayerInput*    input);
 
 /** @brief Register FollowPlayer value types and evaluator with the root script table. */
 void exposeFollowPlayerBindings(ssq::Table& table);

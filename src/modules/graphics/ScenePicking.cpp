@@ -26,28 +26,25 @@ namespace {
 
 class CameraProjection final : public eve::scene::ISceneCameraProjection {
 public:
-    std::optional<eve::scene::ScreenRay> screenRay(Camera3D &cam, float screenX, float screenY,
-                                                  float viewW, float viewH) const override {
+    std::optional<eve::scene::ScreenRay> screenRay(Camera3D &cam, float screenX, float screenY, float viewW,
+                                                   float viewH) const override {
         cam.screenToRay(screenX, screenY, viewW, viewH);
         eve::scene::ScreenRay ray;
-        ray.origin = {cam.getScreenRayOriginX(), cam.getScreenRayOriginY(),
-                      cam.getScreenRayOriginZ()};
+        ray.origin    = {cam.getScreenRayOriginX(), cam.getScreenRayOriginY(), cam.getScreenRayOriginZ()};
         ray.direction = {cam.getScreenRayDirX(), cam.getScreenRayDirY(), cam.getScreenRayDirZ()};
         return ray;
     }
 
-    std::optional<eve::scene::CameraClip> clipForViewport(Camera3D &cam, float viewW,
-                                                         float viewH) const override {
+    std::optional<eve::scene::CameraClip> clipForViewport(Camera3D &cam, float viewW, float viewH) const override {
         if (!(viewW > 0.f) || !(viewH > 0.f)) return std::nullopt;
-        auto d = cam.data();
-        const glm::mat4 view = glm::lookAtRH(glm::vec3(d->eyeX, d->eyeY, d->eyeZ),
-                                            glm::vec3(d->targetX, d->targetY, d->targetZ),
-                                            glm::vec3(d->upX, d->upY, d->upZ));
+        auto            d = cam.data();
+        const glm::mat4 view =
+            glm::lookAtRH(glm::vec3(d->eyeX, d->eyeY, d->eyeZ), glm::vec3(d->targetX, d->targetY, d->targetZ),
+                          glm::vec3(d->upX, d->upY, d->upZ));
         const glm::mat4 projection = graphics::cameraProjectionVulkanRH_ZO(
-            d->orthographic, glm::radians(d->fovYDeg), d->orthoHeight, viewW / viewH, d->nearZ,
-            d->farZ);
+            d->orthographic, glm::radians(d->fovYDeg), d->orthoHeight, viewW / viewH, d->nearZ, d->farZ);
         eve::scene::CameraClip clip;
-        clip.clip = projection * view;
+        clip.clip    = projection * view;
         clip.inverse = glm::inverse(clip.clip);
         return clip;
     }
@@ -60,9 +57,7 @@ CameraProjection g_cameraProjection;
 // Camera3D without constructing the Graphics module (test/scene.cpp does), and
 // the adapter holds no state, so there is nothing to tear down.
 struct RegisterCameraProjection {
-    RegisterCameraProjection() {
-        eve::cap::provide<eve::scene::ISceneCameraProjection>(&g_cameraProjection);
-    }
+    RegisterCameraProjection() { eve::cap::provide<eve::scene::ISceneCameraProjection>(&g_cameraProjection); }
 } g_registerCameraProjection;
 
 }  // namespace

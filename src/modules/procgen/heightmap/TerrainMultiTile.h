@@ -70,9 +70,8 @@ struct TerrainMultiTileReport {
  * @ownership Retains no descriptor or name. Caller owns inputs for the synchronous call. No callbacks, RNG or hidden time.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> mapTerrainOperationMultiTile(
-    const std::vector<TerrainOperationTile>& tiles, const TerrainStampSettings& settings,
-    TerrainOperationDomain domain, bool worldMapOperation = false,
-    const std::vector<std::string>& validTerrainNames = {});
+    const std::vector<TerrainOperationTile>& tiles, const TerrainStampSettings& settings, TerrainOperationDomain domain,
+    bool worldMapOperation = false, const std::vector<std::string>& validTerrainNames = {});
 
 /**
  * @brief Apply one shared Pcg detail-distribution raster to every selected tile atomically.
@@ -118,9 +117,9 @@ struct TerrainMultiTileReport {
  * @return Unique changed sample count across both tiles; neither publishes when validation fails.
  * @ownership No pointer or reference survives this synchronous caller-thread operation.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> stitchTerrainHeightmaps(const TerrainHeightTile& terrainA,
-                                                  const TerrainHeightTile& terrainB,
-                                                  const TerrainHeightStitchSettings& settings = {});
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> stitchTerrainHeightmaps(
+    const TerrainHeightTile& terrainA, const TerrainHeightTile& terrainB,
+    const TerrainHeightStitchSettings& settings = {});
 
 /** @brief Owning script-safe collection of height tiles with atomic multi-tile operations.
  * Tiles are copied on insertion and never retain caller rasters. The workspace is one mutable owner,

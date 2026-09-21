@@ -38,10 +38,10 @@ EVENGINE_API_FOUNDATION Vector3 flee(Vector3 position, Vector3 target, float max
 
 /** @brief Slows toward target inside slowRadius and stops inside stopRadius. */
 EVENGINE_API_FOUNDATION Vector2 arrive(Vector2 position, Vector2 target, float maxSpeed, float slowRadius,
-               float stopRadius);
+                                       float stopRadius);
 /** @brief Slows toward target inside slowRadius and stops inside stopRadius. */
 EVENGINE_API_FOUNDATION Vector3 arrive(Vector3 position, Vector3 target, float maxSpeed, float slowRadius,
-               float stopRadius);
+                                       float stopRadius);
 
 /**
  * @brief Computes bounded separation acceleration from a borrowed neighbor snapshot.
@@ -49,35 +49,33 @@ EVENGINE_API_FOUNDATION Vector3 arrive(Vector3 position, Vector3 target, float m
  * @cost Linear in the number of neighbors.
  */
 EVENGINE_API_FOUNDATION Vector2 separation(Vector2 position, std::span<const Vector2> neighbors, float radius,
-                   float maxAcceleration);
+                                           float maxAcceleration);
 /**
  * @brief Computes bounded separation acceleration from a borrowed neighbor snapshot.
  * @param neighbors Borrowed only for this call; the function retains no references.
  * @cost Linear in the number of neighbors.
  */
 EVENGINE_API_FOUNDATION Vector3 separation(Vector3 position, std::span<const Vector3> neighbors, float radius,
-                   float maxAcceleration);
+                                           float maxAcceleration);
 
 /**
  * @brief Selects the current path point, advancing across points within tolerance.
  * @return A valid point index, or -1 when points is empty or contains a non-finite point.
  * @cost Linear in the number of points advanced during this call.
  */
-EVENGINE_API_FOUNDATION int pathTarget(Vector2 position, std::span<const Vector2> points, int current,
-               float tolerance);
+EVENGINE_API_FOUNDATION int pathTarget(Vector2 position, std::span<const Vector2> points, int current, float tolerance);
 /**
  * @brief Selects the current path point, advancing across points within tolerance.
  * @return A valid point index, or -1 when points is empty or contains a non-finite point.
  * @cost Linear in the number of points advanced during this call.
  */
-EVENGINE_API_FOUNDATION int pathTarget(Vector3 position, std::span<const Vector3> points, int current,
-               float tolerance);
+EVENGINE_API_FOUNDATION int pathTarget(Vector3 position, std::span<const Vector3> points, int current, float tolerance);
 
 /** @brief Computes avoidance acceleration away from a predicted obstacle overlap. */
 EVENGINE_API_FOUNDATION Vector2 avoid(Vector2 position, Vector2 velocity, Vector2 obstacle, float obstacleRadius,
-              float lookAhead, float maxAcceleration);
+                                      float lookAhead, float maxAcceleration);
 /** @brief Computes avoidance acceleration away from a predicted obstacle overlap. */
 EVENGINE_API_FOUNDATION Vector3 avoid(Vector3 position, Vector3 velocity, Vector3 obstacle, float obstacleRadius,
-              float lookAhead, float maxAcceleration);
+                                      float lookAhead, float maxAcceleration);
 
 }  // namespace eve::math::steering

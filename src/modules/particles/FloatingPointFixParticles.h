@@ -16,5 +16,5 @@ class ParticleEmitter;
  * Playback, pause state, velocity, lifetime and emitter position remain unchanged.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> shiftWorldSpaceParticles(ParticleEmitter* emitter, float shiftX,
-                                                    float shiftY);
+                                                                        float shiftY);
 }

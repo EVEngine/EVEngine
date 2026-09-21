@@ -261,10 +261,10 @@ public:
     // so it is not copyable; dllexport must not instantiate the implicitly declared
     // copy operations, whose bodies cannot compile. Deleting the copies is a no-op and
     // the defaulted moves keep the previous implicit behaviour.
-    GameEventLog(const GameEventLog&) = delete;
+    GameEventLog(const GameEventLog&)            = delete;
     GameEventLog& operator=(const GameEventLog&) = delete;
-    GameEventLog(GameEventLog&&) = default;
-    GameEventLog& operator=(GameEventLog&&) = default;
+    GameEventLog(GameEventLog&&)                 = default;
+    GameEventLog& operator=(GameEventLog&&)      = default;
 
     /** @brief Creates a stream without an implicit entropy source. */
     GameEventLog() = default;

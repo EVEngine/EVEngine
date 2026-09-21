@@ -2,7 +2,8 @@
 #include "common/Result.h"
 namespace ssq{class Table;} namespace eve::graphics{class Camera3D;} namespace eve::camera{
 /** @brief Device-independent input snapshot for Pcg free-camera movement. */ struct PcgFreeCameraInput{float mouseX=0,mouseY=0,scroll=0,forward=0,right=0,up=0;bool sprint=false,rightPressed=false,rightReleased=false,leftPressed=false,escapePressed=false,focused=true;};
-/** @brief Caller-owned six-degree free-camera state ported from Pcg FreeCamera. */ class EVENGINE_API_WORLD PcgFreeCamera{
+/** @brief Caller-owned six-degree free-camera state ported from Pcg FreeCamera. */ class EVENGINE_API_WORLD
+    PcgFreeCamera {
 public:
  /** @brief Configure capture and movement settings atomically. */ [[nodiscard]] Result<void> configure(bool enabled,bool lockCursor,bool holdRight,float lookSpeed,float moveSpeed,float sprintSpeed,bool scrollIncrease,float increase,float roll);
  /** @brief Capture input and initialize pose from a live camera. */ [[nodiscard]] Result<void> capture(graphics::Camera3D* camera);

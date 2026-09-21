@@ -48,7 +48,7 @@ struct EVENGINE_API_FOUNDATION_INLINE SquirrelValueOptions {
  * @remarks The VM stack is restored to its original height before returning.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> valueFromSquirrel(HSQUIRRELVM vm, SQInteger index,
-                                                           const SquirrelValueOptions& options = {});
+                                                                      const SquirrelValueOptions& options = {});
 
 /**
  * @brief Convert a rooted Squirrel object into the canonical owning Value tree.
@@ -57,7 +57,7 @@ struct EVENGINE_API_FOUNDATION_INLINE SquirrelValueOptions {
  * @return An owning Value, or a path-aware conversion diagnostic.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> valueFromSquirrel(const ssq::Object&          object,
-                                                           const SquirrelValueOptions& options = {});
+                                                                      const SquirrelValueOptions& options = {});
 
 /**
  * @brief Push a canonical Value into the active Squirrel VM.
@@ -68,7 +68,7 @@ struct EVENGINE_API_FOUNDATION_INLINE SquirrelValueOptions {
  *         the VM stack is restored to its original height.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> pushValue(HSQUIRRELVM vm, const Value& value,
-                                                  const SquirrelValueOptions& options = {});
+                                                             const SquirrelValueOptions& options = {});
 
 /** @brief Project one Diagnostic using the common script table schema. */
 [[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectDiagnostic(HSQUIRRELVM vm, const Diagnostic& diagnostic);
@@ -93,7 +93,8 @@ struct EVENGINE_API_FOUNDATION_INLINE SquirrelValueOptions {
  * @param value Payload to expose; passing one sets `hasValue = true`.
  * @return A table with the stable Result projection schema.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, const Value& value);
+[[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status,
+                                                                     const Value& value);
 
 /**
  * @brief Project a checked native status together with an already-bound script object.
@@ -103,7 +104,8 @@ struct EVENGINE_API_FOUNDATION_INLINE SquirrelValueOptions {
  * @return A table with the stable Result projection schema.
  * @remarks Payload presence is carried by the overload; there is no flag to disagree with.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, ssq::Object value);
+[[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status,
+                                                                     ssq::Object value);
 
 /**
  * @brief Declare that a projected table received a payload the caller attached itself.

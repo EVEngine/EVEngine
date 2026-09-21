@@ -69,7 +69,8 @@ EVENGINE_API_DOMAINS Polygon approximatePolygon(const Polygon& ring);
  * I = γ1·(1/N)·Σ(θi−θ̄)² + γ2·(1/(N·l̄²))·Σ(li−l̄)².
  * Smaller is more regular; 0 for an ideal regular polygon.
  */
-EVENGINE_API_DOMAINS double shapeIrregularity(const Polygon& approxRing, double gammaAngle = 0.75, double gammaSide = 0.25);
+EVENGINE_API_DOMAINS double shapeIrregularity(const Polygon& approxRing, double gammaAngle = 0.75,
+                                              double gammaSide = 0.25);
 
 /**
  * @brief Split a CCW simple polygon by a polyline whose endpoints lie on the boundary and
@@ -77,8 +78,9 @@ EVENGINE_API_DOMAINS double shapeIrregularity(const Polygon& approxRing, double 
  * to boundary point B; the two resulting CCW rings are returned in `outA`/`outB`.
  * Returns false on degenerate input. Callers verify area constraints afterwards.
  */
-EVENGINE_API_DOMAINS bool splitPolygonByPolyline(const Polygon& poly, const Polyline& split, const BoundaryPosition& posA,
-                            const BoundaryPosition& posB, Polygon& outA, Polygon& outB);
+EVENGINE_API_DOMAINS bool splitPolygonByPolyline(const Polygon& poly, const Polyline& split,
+                                                 const BoundaryPosition& posA, const BoundaryPosition& posB,
+                                                 Polygon& outA, Polygon& outB);
 
 /** @brief Validity of a candidate split: both halves simple, positive area, inside the original. */
 bool validSplit(const Polygon& poly, const Polyline& split, double minHalfArea, Polygon* outA, Polygon* outB,

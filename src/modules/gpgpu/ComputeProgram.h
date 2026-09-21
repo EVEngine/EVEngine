@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/Export.h"
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::gpgpu {
@@ -21,5 +21,6 @@ class ComputeShader;
  * @note Device thread only, no concurrent calls/reentrancy or Graphics retirement during the call.
  * The caller must destroy the shader before the active Graphics device retires.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<std::unique_ptr<ComputeShader>> createComputeShader(const std::vector<uint32_t>& words);
+[[nodiscard]] EVENGINE_API_WORLD Result<std::unique_ptr<ComputeShader>> createComputeShader(
+    const std::vector<uint32_t>& words);
 }  // namespace eve::gpgpu

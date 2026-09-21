@@ -30,8 +30,9 @@ struct CaveVerticalSpan {
  * @param preferredY Preferred point inside the requested air interval.
  * @return Floor and ceiling zero crossings, or no value when no reliable air interval exists.
  */
-EVENGINE_API_DOMAINS std::optional<CaveVerticalSpan> findCaveVerticalSpan(const std::vector<float>& density, int nx, int ny, int nz, float x,
-                                                     float z, float preferredY);
+EVENGINE_API_DOMAINS std::optional<CaveVerticalSpan> findCaveVerticalSpan(const std::vector<float>& density, int nx,
+                                                                          int ny, int nz, float x, float z,
+                                                                          float preferredY);
 
 /**
  * @brief Projects a nearby field-space point to the final cave zero isosurface.
@@ -43,7 +44,9 @@ EVENGINE_API_DOMAINS std::optional<CaveVerticalSpan> findCaveVerticalSpan(const 
  * @param maximumDistance Maximum accepted displacement from point.
  * @return Surface position and normal pointing into rock, or no value when projection is unreliable.
  */
-EVENGINE_API_DOMAINS std::optional<CaveSurfaceAnchor> projectToFinalCaveSurface(const std::vector<float>& density, int nx, int ny, int nz,
-                                                           CaveFieldPoint point, float maximumDistance);
+EVENGINE_API_DOMAINS std::optional<CaveSurfaceAnchor> projectToFinalCaveSurface(const std::vector<float>& density,
+                                                                                int nx, int ny, int nz,
+                                                                                CaveFieldPoint point,
+                                                                                float          maximumDistance);
 
 }  // namespace eve::procgen

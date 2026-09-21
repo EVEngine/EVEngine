@@ -1,8 +1,8 @@
 #pragma once
 
-#include "common/Export.h"
 #include <array>
 #include "asset/EvpackResourceReader.h"
+#include "common/Export.h"
 namespace eve {
 class Value;
 }

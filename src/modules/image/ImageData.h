@@ -35,8 +35,7 @@ struct UvPaintReceipt {
 /**
  * @brief Represents raw pixel data.
  **/
-class EVENGINE_API_PLATFORM ImageData : public Resource
-{
+class EVENGINE_API_PLATFORM ImageData : public Resource {
 public:
 	using float16 = medialoader::float16;
 	using Colorf = medialoader::Colorf;
@@ -204,7 +203,7 @@ private:
 	PixelSetFunction pixelSetFunction;
 	PixelGetFunction pixelGetFunction;
 
-}; // ImageData
+};  // ImageData
 
 } // image
 } // eve

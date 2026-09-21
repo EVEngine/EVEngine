@@ -21,6 +21,6 @@ namespace eve::physics::softbody_cook {
  */
 [[nodiscard("check soft-body model cooking")]]
 EVENGINE_API_WORLD eve::Result<SoftBodyModel> cookSoftBodyModel(const eve::asset::CanonicalMeshData& mesh,
-                                             const SoftBodyModelDefinition&       definition);
+                                                                const SoftBodyModelDefinition&       definition);
 
 }  // namespace eve::physics::softbody_cook

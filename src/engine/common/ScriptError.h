@@ -59,8 +59,8 @@ EVENGINE_API_FOUNDATION ScriptErrorContext captureCompileError(HSQUIRRELVM vm);
  * @param message Receives the raw compiler description (may be nullptr).
  * @return True when the message matched the expected layout.
  */
-EVENGINE_API_FOUNDATION bool parseCompileError(const std::string& text, std::string* source,
-                                    int* line, int* column, std::string* message);
+EVENGINE_API_FOUNDATION bool parseCompileError(const std::string& text, std::string* source, int* line, int* column,
+                                               std::string* message);
 
 /**
  * @brief Extracts one 1-based line from script source text.

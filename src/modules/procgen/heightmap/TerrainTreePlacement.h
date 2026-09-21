@@ -141,8 +141,8 @@ private:
  * on failure.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainTreePoints(PointSet& output, const Heightmap& fitness,
-                                                  const Heightmap& heights,
-                                                  const TerrainTreePlacementSettings& settings);
+                                                                       const Heightmap&                    heights,
+                                                                       const TerrainTreePlacementSettings& settings);
 
 /**
  * @brief Remove matching tree points wherever the current fitness is strictly above the threshold.
@@ -153,8 +153,9 @@ private:
  * @return Removed count or a structured diagnostic. Points outside the rectangle and other assets remain untouched.
  * Caller serializes access on the owner thread; no references or callbacks survive the call.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainTreePoints(PointSet& output, const PointSet& input, const Heightmap& fitness,
-                                                  const TerrainTreePlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainTreePoints(PointSet& output, const PointSet& input,
+                                                                       const Heightmap&                    fitness,
+                                                                       const TerrainTreePlacementSettings& settings);
 
 /**
  * @brief Atomically refresh scale, bounds and bend metadata for one tree asset while preserving identity/transform.
@@ -166,5 +167,5 @@ private:
  * row order and unrelated attributes are retained. Owner-thread only; no callbacks or retained references.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> rescaleTerrainTreePoints(PointSet& output, const PointSet& input,
-                                                   const TerrainTreeRescaleSettings& settings);
+                                                                        const TerrainTreeRescaleSettings& settings);
 }  // namespace eve::procgen

@@ -21,6 +21,6 @@ class Source;
  * @thread Audio owner thread only; callbacks are not invoked.
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyUnderwaterAudio(Source* submergeDown, Source* submergeUp,
-                                                 Source* ambience, bool playDown, bool playUp,
-                                                 bool loopAmbience, float volume);
+                                                                      Source* ambience, bool playDown, bool playUp,
+                                                                      bool loopAmbience, float volume);
 }

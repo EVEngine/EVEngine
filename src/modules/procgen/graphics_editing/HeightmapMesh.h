@@ -36,8 +36,10 @@ namespace eve::procgen_graphics_editing {
  * @return Applied, or a structured validation/backend failure.
  * @thread Render-thread only.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION editing::Result<void> updateHeightmapMesh(
-    graphics::Mesh* mesh, graphics::Graphics* graphics, procgen::Heightmap* heightmap,
-    float cellSize, float heightScale, bool smoothNormals);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION editing::Result<void> updateHeightmapMesh(graphics::Mesh*     mesh,
+                                                                                   graphics::Graphics* graphics,
+                                                                                   procgen::Heightmap* heightmap,
+                                                                                   float cellSize, float heightScale,
+                                                                                   bool smoothNormals);
 
 }  // namespace eve::procgen_graphics_editing

@@ -73,7 +73,8 @@ enum class PresentationRevertTrigger : std::uint8_t {
 /** @brief Human-readable stable spelling of a visual state (protocol text). */
 [[nodiscard]] EVENGINE_API_DOMAINS std::string_view unitVisualStateName(UnitVisualState state) noexcept;
 /** @brief Human-readable stable spelling of a revert trigger (protocol text). */
-[[nodiscard]] EVENGINE_API_DOMAINS std::string_view presentationRevertTriggerName(PresentationRevertTrigger trigger) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view presentationRevertTriggerName(
+    PresentationRevertTrigger trigger) noexcept;
 
 /**
  * @brief One presentation instruction: what to show, where, and until when.

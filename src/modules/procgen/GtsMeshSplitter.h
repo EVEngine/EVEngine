@@ -38,7 +38,7 @@ public:
     /** @brief Return the Z offset that restores one translated tile to world space. */
     float getTileOffsetZ(int index) const noexcept;
 private:
-    friend EVENGINE_API_DOMAINS Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild&,int,int,GtsMeshPivot);
+    friend EVENGINE_API_DOMAINS Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild&, int, int, GtsMeshPivot);
     friend Result<void> splitGtsMeshInto(GtsMeshSplitResult&,const MeshBuild&,int,int,GtsMeshPivot);
     int columns_=0,rows_=0;
     std::vector<GtsMeshSplitTile> tiles_;
@@ -52,8 +52,9 @@ private:
  * @param pivot Optional per-cell vertex translation with a matching restoration offset.
  * @return Owned row-major cells; empty cells are retained.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<GtsMeshSplitResult> splitGtsMesh(
-    const MeshBuild& source,int xSplits,int zSplits,GtsMeshPivot pivot=GtsMeshPivot::None);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<GtsMeshSplitResult> splitGtsMesh(const MeshBuild& source, int xSplits,
+                                                                           int          zSplits,
+                                                                           GtsMeshPivot pivot = GtsMeshPivot::None);
 /** @brief Atomically replace an owned result with a GTS mesh split. */
 [[nodiscard]] Result<void> splitGtsMeshInto(GtsMeshSplitResult& output,const MeshBuild& source,
                                             int xSplits,int zSplits,GtsMeshPivot pivot=GtsMeshPivot::None);

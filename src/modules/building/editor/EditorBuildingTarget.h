@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/Export.h"
 #include "building/editing/BuildingTarget.h"
+#include "common/Export.h"
 #include "editor/EditorPresentation.h"
 #include "editor/EditorTool.h"
 

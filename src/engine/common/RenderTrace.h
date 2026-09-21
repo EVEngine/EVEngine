@@ -24,7 +24,7 @@ public:
     virtual void error(const char* message) {}
 };
 
-EVENGINE_API_FOUNDATION void setRenderTracer(IRenderTracer* tracer);
+EVENGINE_API_FOUNDATION void           setRenderTracer(IRenderTracer* tracer);
 EVENGINE_API_FOUNDATION IRenderTracer* renderTracer();
 
 inline void rtFrameBegin() {

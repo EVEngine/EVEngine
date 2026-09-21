@@ -34,6 +34,6 @@ Shader* createTreeWindShader(Graphics* graphics);
  * @ownership Retains no references and invokes no callbacks. Call on the shader owner thread.
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyTreeWind(Shader& shader, const VegetationWindState& state,
-                                         const VegetationWindProfile& vegetation,
-                                         const TreeWindProfile& tree, double seconds);
+                                                               const VegetationWindProfile& vegetation,
+                                                               const TreeWindProfile& tree, double seconds);
 }  // namespace eve::graphics

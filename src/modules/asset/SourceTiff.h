@@ -1,8 +1,8 @@
 #pragma once
-#include "common/Export.h"
 #include <cstdint>
 #include <span>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::asset::detail {
@@ -18,5 +18,5 @@ struct TiffPixels {
  * @thread Reentrant, no callbacks or global state.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<TiffPixels> decodeTiffRgba8(std::span<const std::uint8_t> bytes,
-                                                 std::uint64_t                 maximumDecodedBytes);
+                                                                         std::uint64_t maximumDecodedBytes);
 }  // namespace eve::asset::detail

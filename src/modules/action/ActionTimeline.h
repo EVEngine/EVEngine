@@ -73,7 +73,8 @@ struct ActionAnimationSection {
 /** @brief Stable persisted name for a montage cross-fade curve. */
 [[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
 /** @brief Parse a persisted montage cross-fade curve name. */
-[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionBlendCurve> actionBlendCurveFromName(
+    std::string_view name) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {

@@ -29,7 +29,6 @@ public:
     [[nodiscard]] eve::Result<void> unbindGeneratedColliders();
     /** @brief Current bound world identity, or invalid when unbound/stale. */
     [[nodiscard]] eve::physics::PhysicsWorldHandle boundWorld() const noexcept;
-
 };
 
 }  // namespace eve::scene_physics

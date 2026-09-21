@@ -78,9 +78,9 @@ struct CrowdOverlayResult {
 
 /** @brief UI-neutral agent/zone/path document with reversible domain operations. */
 class EVENGINE_API_BACKENDS CrowdDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging {
+                                                        public virtual IEditableTarget,
+                                                        public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging {
 public:
     /** @brief Stable capability id for crowd agent, zone and path editing. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.crowd-structure"); }

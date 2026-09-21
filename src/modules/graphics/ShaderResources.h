@@ -84,6 +84,7 @@ struct ShaderImageRegion {
  * @param image Borrowed input, read only during this call; may be validated on workers.
  * @return Owning region metadata, or a diagnostic. No GPU state is touched.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput& image);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<ShaderImageRegion>> shaderImageRegions(
+    const ShaderImageInput& image);
 
 }  // namespace eve::graphics

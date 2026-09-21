@@ -67,8 +67,8 @@ enum class TerrainDetailQuality { VeryLow64, Low32, Medium16, High8, VeryHigh4, 
 EVENGINE_API_BACKENDS TerrainDetailQuality terrainDetailQuality(int resolutionPerPatch) noexcept;
 
 /** @brief Validate and copy TerrainDetailOverwrite distances/density into a foliage profile atomically. */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<int> applyTerrainDetailOverwrite(GrassFoliageSettings &foliage,
-                                                      const TerrainDetailOverwriteSettings &settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<int> applyTerrainDetailOverwrite(
+    GrassFoliageSettings &foliage, const TerrainDetailOverwriteSettings &settings);
 
 struct Point {
     glm::vec3 position{0.f};
@@ -97,12 +97,14 @@ struct BillboardMesh {
 };
 
 /** @brief Fast Poisson-disk / dart-throwing blue noise on a triangle mesh. */
-EVENGINE_API_BACKENDS std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-                                 int indexCount, const SampleParams &params = {});
+EVENGINE_API_BACKENDS std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int vertexCount,
+                                                       const uint32_t *indices, int indexCount,
+                                                       const SampleParams &params = {});
 
 /** @brief Area-weighted Halton samples (deterministic, evenly spread). */
-EVENGINE_API_BACKENDS std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-                                int indexCount, int count, uint32_t seed = 1, float minSlopeDot = 0.25f);
+EVENGINE_API_BACKENDS std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount,
+                                                      const uint32_t *indices, int indexCount, int count,
+                                                      uint32_t seed = 1, float minSlopeDot = 0.25f);
 
 /**
  * @brief Expand a unit rectangle per point. Vertex layout:
@@ -116,8 +118,8 @@ EVENGINE_API_BACKENDS std::vector<Point> sampleHalton(const float *posXYZ, const
  *   The shader derives animation identity from the local root for tinted points, so model
  * transforms do not change the wind phase. Alpha remains texture-owned.
  */
-EVENGINE_API_BACKENDS BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f, float height = 0.95f,
-                              bool alwaysDark = false);
+EVENGINE_API_BACKENDS BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f,
+                                                    float height = 0.95f, bool alwaysDark = false);
 
 /** @brief Discrete 4-frame index with a per-instance phase offset. */
 EVENGINE_API_BACKENDS int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);
@@ -145,26 +147,27 @@ struct PackedAtlasInfo {
 };
 
 /** @brief Load white-on-black (or RGBA) 2x2 sway PNGs and pack them into one atlas. */
-EVENGINE_API_BACKENDS void     packSwayAtlasRGBA(const std::vector<std::string> &grassFiles, const std::vector<std::string> &leafFiles,
-                           std::vector<uint8_t> &rgbaOut, PackedAtlasInfo &info);
+EVENGINE_API_BACKENDS void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
+                                             const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
+                                             PackedAtlasInfo &info);
 Texture *createSwayAtlasFromFiles(Graphics *gfx, const std::vector<std::string> &grassFiles,
                                   const std::vector<std::string> &leafFiles, PackedAtlasInfo *infoOut = nullptr);
 
 Shader *createShader(Graphics *gfx);
-EVENGINE_API_BACKENDS void    bindDefaults(Shader *shader);
-EVENGINE_API_BACKENDS void    bindLayer(Shader *shader, bool alwaysDark);
+EVENGINE_API_BACKENDS void bindDefaults(Shader *shader);
+EVENGINE_API_BACKENDS void bindLayer(Shader *shader, bool alwaysDark);
 void    bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info);
 /** @brief Select the static foliage profile and copy its validated surface parameters. */
-EVENGINE_API_BACKENDS void    bindFoliage(Shader *shader, const GrassFoliageSettings &settings);
+EVENGINE_API_BACKENDS void bindFoliage(Shader *shader, const GrassFoliageSettings &settings);
 void    setTime(Shader *shader, float seconds);
 void    setFrameDuration(Shader *shader, float seconds);
 
-EVENGINE_API_BACKENDS int         paramCount();
+EVENGINE_API_BACKENDS int paramCount();
 EVENGINE_API_BACKENDS std::string paramName(int index);
 
 /** @brief Unit XZ plane (Y-up) for tests / demos. */
-EVENGINE_API_BACKENDS void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ, std::vector<float> &nrmXYZ,
-               std::vector<uint32_t> &indices);
+EVENGINE_API_BACKENDS void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ,
+                                     std::vector<float> &nrmXYZ, std::vector<uint32_t> &indices);
 
 }  // namespace grass
 

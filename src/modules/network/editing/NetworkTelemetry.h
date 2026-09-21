@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/Export.h"
-#include "editing/EditingProtocol.h"
 #include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <vector>
+#include "common/Export.h"
+#include "editing/EditingProtocol.h"
 namespace eve::network { class Network; }
 namespace eve::network_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;

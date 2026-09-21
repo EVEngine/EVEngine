@@ -23,7 +23,7 @@ struct TerrainCurveTextureReceipt {
  * @reentrancy Does not invoke callbacks or retain references.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainCurveTextureReceipt> bakeTerrainCurveTexture(image::ImageData& output,
-                                                                         const Heightmap& curve);
+                                                                                              const Heightmap&  curve);
 /** @brief Register the Pcg terrain curve texture adapter; VM-thread only. */
 EVENGINE_API_DOMAINS void exposeTerrainCurveTexture(ssq::Table& table);
 }  // namespace eve::procgen

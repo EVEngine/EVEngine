@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
 #include <memory>
 #include <string>
 #include <vector>
+#include "common/Export.h"
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -58,11 +58,11 @@ using editing::validatePropertyValue;
 };
 /** @brief Revisioned BiomeRules asset. */
 class EVENGINE_API_ORCHESTRATION BiomeDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider,
-                                  public IEditingSnapshotProvider {
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public IPropertyProvider,
+                                                             public IEditingSnapshotProvider {
 public:
     explicit BiomeDocumentTarget(std::string id);
     /** @brief Capability identity published by describe() for Inspector property editing. */

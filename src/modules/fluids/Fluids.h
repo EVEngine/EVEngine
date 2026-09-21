@@ -202,10 +202,10 @@ public:
     // ill-formed (C2280) the moment a class-level dllexport instantiates them;
     // spell the four out so the export surface stays defined. Semantics unchanged:
     // a module instance was never copyable or assignable in practice.
-    Fluids(const Fluids &) = delete;
-    Fluids &operator=(const Fluids &) = delete;
-    Fluids(Fluids &&) = default;
-    Fluids &operator=(Fluids &&) = default;
+    Fluids(const Fluids&)            = delete;
+    Fluids& operator=(const Fluids&) = delete;
+    Fluids(Fluids&&)                 = default;
+    Fluids& operator=(Fluids&&)      = default;
 
     /**
      * @brief Create a surface fluid simulator.

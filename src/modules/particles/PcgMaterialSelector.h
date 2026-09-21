@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
-#include "common/Result.h"
 #include <cstdint>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace eve::graphics { class Texture; }
 namespace eve::particles {
 class ParticleEmitter;

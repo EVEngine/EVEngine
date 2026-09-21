@@ -37,9 +37,9 @@ struct TerrainLegacyHydraulicSettings {
  * updates water, moves newly dissolved material to every strictly lower 8-neighbor in proportion to height drop,
  * evaporates 1/rainFrequency, and clears the sediment delta. The unused source water-diff raster is omitted.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainLegacyHydraulic(Heightmap& heights, Heightmap& sediment,
-                                                       const Heightmap& hardness, const Heightmap& rain,
-                                                       const TerrainLegacyHydraulicSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainLegacyHydraulic(
+    Heightmap& heights, Heightmap& sediment, const Heightmap& hardness, const Heightmap& rain,
+    const TerrainLegacyHydraulicSettings& settings);
 
 /** @brief Thresholds and iteration count for Pcg HeightMap.Erode's synchronous cardinal transport. */
 struct TerrainLegacyDistributedErosionSettings {
@@ -98,9 +98,11 @@ struct TerrainLegacySteepestErosionSettings {
  * sediment samples are explicitly zero. No conservative transport claim or GPU bit parity.
  * At zero velocity and zero deposit rate, nonnegative sediment doubles, including when dt is zero.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainSediment(Heightmap& heights, Heightmap& sediment, const Heightmap& velocityX,
-                                               const Heightmap& velocityZ, const TerrainWaterSettings& water,
-                                               const TerrainSedimentSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainSediment(Heightmap& heights, Heightmap& sediment,
+                                                                    const Heightmap&               velocityX,
+                                                                    const Heightmap&               velocityZ,
+                                                                    const TerrainWaterSettings&    water,
+                                                                    const TerrainSedimentSettings& settings);
 
 /**
  * @brief Explicit simulation controls for the Pcg eight-neighbor thermal kernel.
@@ -133,5 +135,5 @@ struct TerrainThermalSettings {
  * terrain-only mass conservation is not implied. No Unity height packing is performed.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainThermal(Heightmap& heights, Heightmap& sediment,
-                                              const TerrainThermalSettings& settings);
+                                                                   const TerrainThermalSettings& settings);
 }  // namespace eve::procgen

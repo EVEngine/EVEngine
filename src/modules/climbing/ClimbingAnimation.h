@@ -42,15 +42,16 @@ struct ClimbingAnimationFrame {
  * @reentrancy Does not invoke callbacks or scripts.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> beginClimbingAnimation(animation::AnimPlayer& player,
-                                                                            animation::AnimClip&  clip,
-                                                                            int rootMotionBone);
+                                                                            animation::AnimClip&   clip,
+                                                                            int                    rootMotionBone);
 
 /**
  * @brief Starts an action-bound clip after validating clip identity and resolving the named root bone.
  * @param binding Owning definition metadata borrowed only for this synchronous call.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> beginClimbingAnimation(
-    animation::AnimPlayer& player, animation::AnimClip& clip, const ClimbingAnimationBinding& binding);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> beginClimbingAnimation(animation::AnimPlayer&          player,
+                                                                            animation::AnimClip&            clip,
+                                                                            const ClimbingAnimationBinding& binding);
 
 /**
  * @brief Advances a borrowed player once and extracts root motion plus known semantic notifies.
@@ -61,9 +62,8 @@ struct ClimbingAnimationFrame {
  * @thread Animation owner thread before ClimbingRuntime::advance for the same tick.
  * @reentrancy Does not invoke callbacks or scripts.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnimationFrame> advanceClimbingAnimation(animation::AnimPlayer& player,
-                                                                           const eve::SimulationStep& step,
-                                                                           Vec3 facing, Vec3 pelvisOffset = {});
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnimationFrame> advanceClimbingAnimation(
+    animation::AnimPlayer& player, const eve::SimulationStep& step, Vec3 facing, Vec3 pelvisOffset = {});
 
 /**
  * @brief Triggers a graph one-shot exactly once for a new climbing execution.
@@ -72,9 +72,8 @@ struct ClimbingAnimationFrame {
  * @param executionId Non-zero committed climbing execution identity.
  * @param state Caller-owned non-authoritative projection state.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingGraphProvider> driveClimbingGraph(animation::AnimGraph& graph, int oneShotNode,
-                                                                    ClimbingExecutionId executionId,
-                                                                    ClimbingGraphState& state);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingGraphProvider> driveClimbingGraph(
+    animation::AnimGraph& graph, int oneShotNode, ClimbingExecutionId executionId, ClimbingGraphState& state);
 
 /**
  * @brief Advances ordinary locomotion Motion Matching and marks it as the current presentation provider.
@@ -83,11 +82,11 @@ struct ClimbingAnimationFrame {
  * @remarks Call only outside an active ClimbingExecution; action clips/graphs supersede this provider explicitly.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingGraphProvider> driveClimbingMotionMatching(
-    animation::MotionMatcher& matcher, const eve::SimulationStep& step, Vec3 desiredVelocity,
-    float desiredYaw, ClimbingGraphState& state);
+    animation::MotionMatcher& matcher, const eve::SimulationStep& step, Vec3 desiredVelocity, float desiredYaw,
+    ClimbingGraphState& state);
 
 /** @brief Selects the explicit no-graph degradation path without mutating gameplay authority. */
 [[nodiscard]] EVENGINE_API_DOMAINS ClimbingGraphProvider useDirectClimbingPose(ClimbingExecutionId executionId,
-                                                          ClimbingGraphState& state) noexcept;
+                                                                               ClimbingGraphState& state) noexcept;
 
 }  // namespace eve::climbing

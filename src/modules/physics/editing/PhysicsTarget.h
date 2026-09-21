@@ -48,10 +48,10 @@ using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAsse
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
 class EVENGINE_API_DOMAINS PhysicsColliderTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IDomainOperationTargetStaging,
-                                    public IPropertyProvider {
+                                                         public virtual IEditableTarget,
+                                                         public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging,
+                                                         public IPropertyProvider {
 public:
     explicit PhysicsColliderTarget(std::string id, int dimensions = 3);
 
@@ -99,7 +99,8 @@ public:
 };
 
 /** @brief Candidate-first collider target whose commit/undo publishes to a live sink. */
-class EVENGINE_API_DOMAINS PhysicsColliderPublishingTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS PhysicsColliderPublishingTarget final : public IDomainOperationTarget,
+                                                                   public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned collider document bound to a non-owning runtime sink. */
     PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink* sink);
@@ -123,10 +124,10 @@ private:
 
 /** @brief Serializable joint authoring target using stable body references. */
 class EVENGINE_API_DOMAINS PhysicsJointTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider {
 public:
     explicit PhysicsJointTarget(std::string id);
 

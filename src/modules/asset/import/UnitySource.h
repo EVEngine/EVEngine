@@ -58,7 +58,7 @@ struct UnitySourceIndex {
  * @reentrancy No callbacks, filesystem access, Unity execution, or partial publication.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<UnitySourceFiles> readUnityPackage(std::span<const std::uint8_t> bytes,
-                                                        const AssetImportLimits&      limits = {});
+                                                                              const AssetImportLimits& limits = {});
 
 /**
  * @brief Validate project paths and .meta identities and index serialized GUID/fileID references.
@@ -71,6 +71,6 @@ struct UnitySourceIndex {
  * @reentrancy No callbacks, filesystem access, execution, or mutation of input.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles&  files,
-                                                         const AssetImportLimits& limits = {});
+                                                                               const AssetImportLimits& limits = {});
 
 }  // namespace eve::asset_import

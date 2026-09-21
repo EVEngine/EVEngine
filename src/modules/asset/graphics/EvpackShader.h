@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/Export.h"
 #include <array>
 #include <memory>
 #include <span>
 #include "common/BorrowedRef.h"
+#include "common/Export.h"
 #include "common/ResourceRef.h"
 
 namespace eve::asset {

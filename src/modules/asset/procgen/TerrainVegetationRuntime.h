@@ -77,9 +77,8 @@ struct TerrainVegetationWeightDomain {
  * @thread Worker-safe across distinct graph objects. Does not perform GPU calls or callbacks.
  * @reentrancy Not reentrant for the same graph object.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph*        graph,
-                                                                            const LoadedInstanceSet* explicitInstances,
-                                                                            const TerrainVegetationLimits& limits = {});
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainVegetationRealization> realizeTerrainVegetation(
+    LoadedPointGraph* graph, const LoadedInstanceSet* explicitInstances, const TerrainVegetationLimits& limits = {});
 
 /**
  * @brief Apply terrain RGBA layer weights to procedural instances using stable stochastic thinning.

@@ -56,12 +56,14 @@ struct EVENGINE_API_PLATFORM ActionParameterCurveBinding {
 };
 
 /** @brief Stable persisted interpolation spelling. */
-[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterInterpolationName(ActionParameterInterpolation value) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterInterpolationName(
+    ActionParameterInterpolation value) noexcept;
 /** @brief Parse a stable persisted interpolation spelling. */
 [[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionParameterInterpolation> actionParameterInterpolationFromName(
     std::string_view value) noexcept;
 /** @brief Stable persisted operation spelling. */
-[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterOperationName(ActionParameterOperation value) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterOperationName(
+    ActionParameterOperation value) noexcept;
 
 /** @brief Parameter lifecycle projected to a target-specific optional sink. */
 enum class ActionParameterPhase : std::uint8_t { Begin, Update, End };

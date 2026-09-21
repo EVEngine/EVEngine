@@ -104,15 +104,15 @@ struct EVENGINE_API_FOUNDATION_INLINE ReflectedAttribute {
 
 /** @brief Runtime value kind read from a live script instance slot. */
 enum class EVENGINE_API_FOUNDATION ReflectedValueKind : uint8_t {
-    None = 0,     /**< @brief Missing / null slot. */
-    Bool = 1,     /**< @brief OT_BOOL. */
-    Integer = 2,  /**< @brief OT_INTEGER. */
-    Float = 3,    /**< @brief OT_FLOAT. */
-    String = 4,   /**< @brief OT_STRING. */
-    Array = 5,    /**< @brief OT_ARRAY (not yet editable). */
-    Table = 6,    /**< @brief OT_TABLE (not yet editable). */
+    None     = 0, /**< @brief Missing / null slot. */
+    Bool     = 1, /**< @brief OT_BOOL. */
+    Integer  = 2, /**< @brief OT_INTEGER. */
+    Float    = 3, /**< @brief OT_FLOAT. */
+    String   = 4, /**< @brief OT_STRING. */
+    Array    = 5, /**< @brief OT_ARRAY (not yet editable). */
+    Table    = 6, /**< @brief OT_TABLE (not yet editable). */
     Instance = 7, /**< @brief Nested script instance (not yet editable). */
-    Other = 8,    /**< @brief Any other slot kind. */
+    Other    = 8, /**< @brief Any other slot kind. */
 };
 
 /**

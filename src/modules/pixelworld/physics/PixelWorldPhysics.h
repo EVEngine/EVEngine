@@ -81,8 +81,7 @@ struct PixelTerrainContact {
  * so shared Chunk borders do not emit internal collision edges. Output is deterministic and owning.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
-    const eve::pixelworld::PixelWorld& pixelWorld, int chunkX, int chunkY,
-    std::uint32_t maximumVertices = 4096);
+    const eve::pixelworld::PixelWorld& pixelWorld, int chunkX, int chunkY, std::uint32_t maximumVertices = 4096);
 
 /**
  * @brief Probe a circular character contact directly against authoritative solid material cells.
@@ -97,8 +96,8 @@ struct PixelTerrainContact {
  * @remarks Uses an exact segment-vs-expanded-cell slab test and deterministic fraction/cell tie-breaks.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS eve::Result<PixelTerrainContact> sweepTerrainCircle(
-    const eve::pixelworld::PixelWorld& pixelWorld, float startX, float startY, float endX,
-    float endY, float radius, std::uint32_t maximumCells = 16384);
+    const eve::pixelworld::PixelWorld& pixelWorld, float startX, float startY, float endX, float endY, float radius,
+    std::uint32_t maximumCells = 16384);
 
 /**
  * @brief Owning detached bitmap plus a non-owning, stale-safe dynamic body link.

@@ -15,9 +15,9 @@ namespace eve::graphics_editing {
  * The live field is borrowed and must outlive this main-thread-affine target. No callbacks are invoked.
  */
 class EVENGINE_API_WORLD VegetationFieldTarget final : public virtual editing::IEditableTarget,
-                                    public editing::IDomainOperationTarget,
-                                    public editing::IDomainOperationTargetStaging,
-                                    public editing::IPropertyProvider {
+                                                       public editing::IDomainOperationTarget,
+                                                       public editing::IDomainOperationTargetStaging,
+                                                       public editing::IPropertyProvider {
 public:
     /** @brief Import a complete runtime field into a new authoring target.
      * @return Owning target, or a structured failure without modifying the field.

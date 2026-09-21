@@ -73,9 +73,9 @@ struct FluidSimulationPreview {
 
 /** @brief Reversible property document for fluid simulation authoring. */
 class EVENGINE_API_ORCHESTRATION FluidSimulationTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IPropertyProvider {
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IPropertyProvider {
 public:
     explicit FluidSimulationTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

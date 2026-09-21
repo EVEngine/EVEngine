@@ -13,7 +13,8 @@ class VoxelWorld;
 namespace eve::voxel_editing {
 
 /** @brief Non-owning authoring adapter from a live voxel world to the volume protocol. */
-class EVENGINE_API_ORCHESTRATION VoxelWorldTarget final : public virtual editing::IEditableTarget, public editing::IIntVolumeTarget {
+class EVENGINE_API_ORCHESTRATION VoxelWorldTarget final : public virtual editing::IEditableTarget,
+                                                          public editing::IIntVolumeTarget {
 public:
     VoxelWorldTarget(std::string id, voxel::VoxelWorld* world);
     editing::TargetId         targetId() const override { return editing::TargetId(id_); }
@@ -43,6 +44,7 @@ private:
  * @param world Borrowed voxel world that must outlive the adapter.
  * @return Independently owned adapter.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION std::unique_ptr<VoxelWorldTarget> createVoxelWorldTarget(std::string id, voxel::VoxelWorld* world);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION std::unique_ptr<VoxelWorldTarget> createVoxelWorldTarget(
+    std::string id, voxel::VoxelWorld* world);
 
 }  // namespace eve::voxel_editing

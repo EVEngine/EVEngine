@@ -61,9 +61,11 @@ struct ClimbingAnchorBakeRequest {
 };
 
 /** @brief Encodes an owning bake request for editor/script transport. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorBakeRequest(const ClimbingAnchorBakeRequest& request);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorBakeRequest(
+    const ClimbingAnchorBakeRequest& request);
 /** @brief Decodes all known bake request fields without publishing a graph. */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(
+    const eve::Value& value);
 
 /** @brief Measured bake result used by tools and build telemetry. */
 struct ClimbingAnchorBakeResult {

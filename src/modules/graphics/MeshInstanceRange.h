@@ -26,6 +26,6 @@ struct MeshInstanceRange {
  * @param eye World-space camera origin.
  * @return Whether any of the supplied bounds can be visible. Worker-safe.
  */
-EVENGINE_API_BACKENDS bool meshInstanceRangeVisible(const MeshInstanceRange& range, const glm::mat4& model, const glm::mat4& viewProjection,
-                              const glm::vec3& eye);
+EVENGINE_API_BACKENDS bool meshInstanceRangeVisible(const MeshInstanceRange& range, const glm::mat4& model,
+                                                    const glm::mat4& viewProjection, const glm::vec3& eye);
 }  // namespace eve::graphics

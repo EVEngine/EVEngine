@@ -30,7 +30,6 @@ struct Handler {
 
 /** @brief 命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。 */
 class EVENGINE_API_FOUNDATION Cmdline : public Module {
-
 public:
     Module_REG(Cmdline);
 

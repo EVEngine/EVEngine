@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/Export.h"
-#include "common/Result.h"
 #include <string>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief One configured controller-description row from Pcg UIControllerType. */ struct PcgControllerTypeRow{std::string name,widgetId;int controllerType=0;bool visible=false;};

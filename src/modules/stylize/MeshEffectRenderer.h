@@ -87,10 +87,9 @@ struct MeshParticleRenderInputs {
  * @return Owning vectors with matching stable IDs and no retained snapshot references.
  */
 [[nodiscard]] EVENGINE_API_WORLD MeshParticleRenderInputs buildMeshParticleRenderInputs(
-    std::span<const MeshParticleInstance> instances, MeshEffectInstance* effect,
-    graphics::Mesh* mesh, graphics::Texture* albedo, const MeshVfxBatchKey& key,
-    std::uint64_t emitterStableId, const glm::vec3& cameraPosition,
-    float projectionScalePixels, float maximumDistance, std::int32_t priority = 0);
+    std::span<const MeshParticleInstance> instances, MeshEffectInstance* effect, graphics::Mesh* mesh,
+    graphics::Texture* albedo, const MeshVfxBatchKey& key, std::uint64_t emitterStableId,
+    const glm::vec3& cameraPosition, float projectionScalePixels, float maximumDistance, std::int32_t priority = 0);
 
 /**
  * @brief Validate and convert a ribbon snapshot into packed graphics arrays.

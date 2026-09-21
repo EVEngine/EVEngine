@@ -70,9 +70,9 @@ struct FlexResult {
  * so it can be unit-tested headlessly.
  */
 EVENGINE_API_WORLD FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
-                       FlexAlign containerAlign, FlexJustify justify,
-                       const std::vector<FlexItemSpec> &items, bool wrap = false,
-                       float crossGap = -1.f);
+                                          FlexAlign containerAlign, FlexJustify justify,
+                                          const std::vector<FlexItemSpec> &items, bool wrap = false,
+                                          float crossGap = -1.f);
 
 struct GridItemSpec {
     float basisW = 0.f;
@@ -94,7 +94,7 @@ struct GridResult {
 
 /** @brief Places source-ordered items into equal-width fixed columns. */
 EVENGINE_API_WORLD GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
-                       const std::vector<GridItemSpec> &items);
+                                          const std::vector<GridItemSpec> &items);
 
 /** Measure one node (recursively) and fill UINode::measuredW/H. */
 void measureNode(UIHost::Tree &tree, int index);

@@ -7,6 +7,7 @@
 namespace eve::animation_editing {
 
 /** @brief Register animation-clip commands with a generic editing host. */
-[[nodiscard]] EVENGINE_API_DOMAINS editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry);
+[[nodiscard]] EVENGINE_API_DOMAINS editing::Result<void> registerEditingCommands(
+    editing::IEditingCommandRegistry& registry);
 
 }  // namespace eve::animation_editing

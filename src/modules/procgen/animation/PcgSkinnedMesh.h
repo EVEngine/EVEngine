@@ -31,7 +31,7 @@ private:
         animation::AnimSkinStreamData skin;
     };
     friend EVENGINE_API_ORCHESTRATION Result<void> combinePcgSkinnedMeshesInto(class PcgSkinnedMeshResult&,
-                                                      const PcgSkinnedMeshPlan&);
+                                                                               const PcgSkinnedMeshPlan&);
     std::vector<Source> sources_;
 };
 
@@ -50,7 +50,8 @@ public:
     [[nodiscard]] bool valid() const noexcept { return skin_ != nullptr; }
 
 private:
-    friend EVENGINE_API_ORCHESTRATION Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult&, const PcgSkinnedMeshPlan&);
+    friend EVENGINE_API_ORCHESTRATION Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult&,
+                                                                               const PcgSkinnedMeshPlan&);
     procgen::MeshBuild mesh_;
     std::unique_ptr<animation::AnimSkin> skin_;
 };
@@ -62,7 +63,7 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; callers serialize output access.
  */
-[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult& output,
-                                                        const PcgSkinnedMeshPlan& plan);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> combinePcgSkinnedMeshesInto(PcgSkinnedMeshResult&     output,
+                                                                                  const PcgSkinnedMeshPlan& plan);
 
 }  // namespace eve::procgen_animation

@@ -41,9 +41,9 @@ struct VolumeFluidAuthoringPreview {
  * @reentrancy Does not invoke callbacks.
  */
 class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IPropertyProvider {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IPropertyProvider {
 public:
     explicit VolumeFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

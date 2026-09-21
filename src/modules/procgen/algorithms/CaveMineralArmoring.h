@@ -27,6 +27,7 @@ struct CaveMineralArmoringSample {
  * @param input Wall coordinates, hydraulic removal, mineral supply, and deterministic seed.
  * @return Coating coverage, retained fraction, and remaining dissolution-rate multiplier.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS CaveMineralArmoringSample sampleCaveMineralArmoring(const CaveMineralArmoringInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveMineralArmoringSample
+sampleCaveMineralArmoring(const CaveMineralArmoringInput& input);
 
 }  // namespace eve::procgen

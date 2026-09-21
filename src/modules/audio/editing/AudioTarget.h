@@ -12,11 +12,11 @@ namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
 class EVENGINE_API_BACKENDS AudioSourceTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IPropertyProvider,
-                                public IEditingSnapshotProvider {
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider,
+                                                      public IEditingSnapshotProvider {
 public:
     /** @brief Stable capability identity for audio-source property editing. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.audio-source"); }
@@ -74,7 +74,7 @@ public:
  * transaction undo/redo follows the same live path.
  */
 class EVENGINE_API_BACKENDS AudioSourcePublishingTarget final : public IDomainOperationTarget,
-                                          public IDomainOperationTargetStaging {
+                                                                public IDomainOperationTargetStaging {
 public:
     /** @brief Create an authoring target bound to a non-owning runtime sink. */
     AudioSourcePublishingTarget(std::string id, IAudioSourceRuntimeSink* sink);
@@ -119,9 +119,9 @@ struct AudioBusSnapshot {
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
 class EVENGINE_API_BACKENDS AudioMixerTarget final : public ::eve::editing::EditableTargetState,
-                               public virtual IEditableTarget,
-                               public IDomainOperationTarget,
-                               public IDomainOperationTargetStaging {
+                                                     public virtual IEditableTarget,
+                                                     public IDomainOperationTarget,
+                                                     public IDomainOperationTargetStaging {
 public:
     explicit AudioMixerTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

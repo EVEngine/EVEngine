@@ -58,9 +58,10 @@ struct DepthOfFieldFocusOutput {
  * @ownership All objects remain caller-owned and no pointer is retained.
  * @thread Any thread; raycasts and rendering are performed by the caller.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> evaluateDepthOfFieldFocus(DepthOfFieldFocusState* state, DepthOfFieldFocusOutput* output,
-                                                     const DepthOfFieldFocusSettings* settings,
-                                                     const DepthOfFieldFocusInput*    input);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> evaluateDepthOfFieldFocus(DepthOfFieldFocusState*          state,
+                                                                           DepthOfFieldFocusOutput*         output,
+                                                                           const DepthOfFieldFocusSettings* settings,
+                                                                           const DepthOfFieldFocusInput*    input);
 
 /** @brief Register Pcg autofocus value types and evaluator. */
 void exposeDepthOfFieldFocusBindings(ssq::Table& table);

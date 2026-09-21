@@ -22,9 +22,9 @@ struct AudioEffectRecord {
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
 class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
-                                     public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging {
 public:
     explicit AudioEffectChainTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

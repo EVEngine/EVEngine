@@ -37,7 +37,8 @@ enum ContainerType
  *              Specific formats may not use every level.
  * @return The newly compressed data.
  **/
-EVENGINE_API_FOUNDATION CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level = -1);
+EVENGINE_API_FOUNDATION CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize,
+                                                 int level = -1);
 
 /**
  * @brief Decompresses existing compressed data into raw bytes.
@@ -72,7 +73,8 @@ EVENGINE_API_FOUNDATION char *decompress(std::string format, const char *cbytes,
  * @return The newly allocated encoded buffer (allocated with new[]; caller frees).
  * @throws eve::Exception on an unsupported format.
  **/
-EVENGINE_API_FOUNDATION char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
+EVENGINE_API_FOUNDATION char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen,
+                                     size_t linelen = 0);
 
 /**
  * @brief Decodes a text buffer (hex / base64) back into raw bytes.
@@ -95,14 +97,11 @@ EVENGINE_API_FOUNDATION char *decode(std::string format, const char *src, size_t
  **/
 EVENGINE_API_FOUNDATION std::string hash(std::string function, Data *input);
 EVENGINE_API_FOUNDATION std::string hash(std::string function, const char *input, uint64_t size);
-EVENGINE_API_FOUNDATION void hash(std::string function, Data *input, HashFunction::Value &output);
-EVENGINE_API_FOUNDATION void hash(std::string function, const char *input, uint64_t size,
-                                   HashFunction::Value &output);
+EVENGINE_API_FOUNDATION void        hash(std::string function, Data *input, HashFunction::Value &output);
+EVENGINE_API_FOUNDATION void hash(std::string function, const char *input, uint64_t size, HashFunction::Value &output);
 
 
-
-class EVENGINE_API_FOUNDATION DataModule : public Module
-{
+class EVENGINE_API_FOUNDATION DataModule : public Module {
 public:
 	Module_REG(DataModule);
 	DataModule();
@@ -127,7 +126,7 @@ public:
 	std::string  encodeXml(XmlDocument *doc, bool pretty = false);
 	ByteData *   encodeXmlData(XmlDocument *doc, bool pretty = false);
 
-}; // DataModule
+};  // DataModule
 
 } // data
 } // eve

@@ -37,9 +37,11 @@ struct SmrFeatureBatch {
  * @lifetime All raw pointers are borrowed for the duration of this call only.
  * @thread Owner thread.
  */
-EVENGINE_API_ORCHESTRATION SmrFeatureBatch buildSmrFeatures(const AnimClip& sourceClip, const AnimSkeleton* sourceSkeleton,
-                                 const AnimSkeleton* targetSkeleton, const AnimSkin* sourceSkin,
-                                 const AnimSkin* targetSkin, int ringsPerBone = 2, int pointsPerRing = 4);
+EVENGINE_API_ORCHESTRATION SmrFeatureBatch buildSmrFeatures(const AnimClip&     sourceClip,
+                                                            const AnimSkeleton* sourceSkeleton,
+                                                            const AnimSkeleton* targetSkeleton,
+                                                            const AnimSkin* sourceSkin, const AnimSkin* targetSkin,
+                                                            int ringsPerBone = 2, int pointsPerRing = 4);
 
 /** @brief Convert unit quaternion to MeshRet-style rotation-6D. */
 EVENGINE_API_ORCHESTRATION void quatToRot6d(float qx, float qy, float qz, float qw, float out[6]);

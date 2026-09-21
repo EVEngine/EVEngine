@@ -19,7 +19,7 @@ enum class Utf8NullPolicy : std::uint8_t { Allow, Reject };
  * @return True only for a complete sequence containing no surrogate code points.
  * @thread Worker-safe; no shared state or allocation.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION bool isValidUtf8(
-    std::string_view text, Utf8NullPolicy nullPolicy = Utf8NullPolicy::Allow) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isValidUtf8(std::string_view text,
+                                                       Utf8NullPolicy   nullPolicy = Utf8NullPolicy::Allow) noexcept;
 
 }  // namespace eve

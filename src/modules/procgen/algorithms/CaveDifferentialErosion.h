@@ -26,6 +26,7 @@ struct CaveDifferentialErosionSample {
  * @param input World position, local passage shell, normalized intensity, and deterministic seed.
  * @return Bounded host retreat and the local resistant-vein protection weight.
  */
-EVENGINE_API_DOMAINS CaveDifferentialErosionSample sampleCaveDifferentialVeinErosion(const CaveDifferentialErosionInput& input);
+EVENGINE_API_DOMAINS CaveDifferentialErosionSample
+sampleCaveDifferentialVeinErosion(const CaveDifferentialErosionInput& input);
 
 }  // namespace eve::procgen

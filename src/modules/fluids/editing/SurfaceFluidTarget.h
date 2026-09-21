@@ -64,9 +64,9 @@ struct SurfaceFluidSettings {
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
 class EVENGINE_API_ORCHESTRATION SurfaceFluidTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IPropertyProvider {
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IPropertyProvider {
 public:
     explicit SurfaceFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

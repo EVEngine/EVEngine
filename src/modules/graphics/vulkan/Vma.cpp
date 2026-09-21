@@ -7,7 +7,7 @@
 // 导出表（否则 EVWorld 链接期报 LNK2019）。非 SHARED 模式未定义
 // EVENGINE_EXPORTS_BACKENDS，保持原样。
 #if defined(EVENGINE_EXPORTS_BACKENDS) && defined(_WIN32)
-#  define VMA_CALL_PRE __declspec(dllexport)
+#define VMA_CALL_PRE __declspec(dllexport)
 #endif
 
 #define VMA_IMPLEMENTATION

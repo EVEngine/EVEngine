@@ -48,6 +48,7 @@ private:
  * @param layer Borrowed layer that must outlive the adapter.
  * @return Independently owned adapter.
  */
-[[nodiscard]] EVENGINE_API_WORLD std::unique_ptr<TileLayerTarget> createTileLayerTarget(std::string id, map::TileLayer* layer);
+[[nodiscard]] EVENGINE_API_WORLD std::unique_ptr<TileLayerTarget> createTileLayerTarget(std::string     id,
+                                                                                        map::TileLayer* layer);
 
 }  // namespace eve::map_editing

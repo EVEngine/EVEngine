@@ -307,9 +307,9 @@ namespace detail {
  * @return Applied when all shared backend invariants hold.
  */
 [[nodiscard("check simulation-step validation")]]
-EVENGINE_API_BACKENDS eve::Result<void> validateSimulationStep(const eve::SimulationStep& step,
-                                                              const SimulationSettings&  settings,
-                                                              const SimulationObservation& observation);
+EVENGINE_API_BACKENDS eve::Result<void> validateSimulationStep(const eve::SimulationStep&   step,
+                                                               const SimulationSettings&    settings,
+                                                               const SimulationObservation& observation);
 
 /**
  * @brief Produces the next observation without mutating the current one.
@@ -318,8 +318,8 @@ EVENGINE_API_BACKENDS eve::Result<void> validateSimulationStep(const eve::Simula
  * @return The next observation, or an overflow/invalid-input failure.
  */
 [[nodiscard("check observation advancement")]]
-EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObservation(const SimulationObservation& current,
-                                                                const eve::SimulationStep&   step);
+EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObservation(
+    const SimulationObservation& current, const eve::SimulationStep& step);
 
 /**
  * @brief Validates restored backend progress metadata.
@@ -329,7 +329,7 @@ EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObserv
  */
 [[nodiscard("check observation validation")]]
 EVENGINE_API_BACKENDS eve::Result<void> validateSimulationObservation(const SimulationObservation& observation,
-                                                                     const char*                   path);
+                                                                      const char*                  path);
 
 /**
  * @brief Creates the built-in Box2D CPU backend adapter.
@@ -351,10 +351,8 @@ EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeBox2DSimulationBac
  * @return An owning backend adapter.
  */
 [[nodiscard("retain the backend while its callback state is live")]]
-EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(void* context,
-                                                                                       SimulationStepCallback callback,
-                                                                                       SimulationBackendKind   kind,
-                                                                                       SimulationDeterminism determinism);
+EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(
+    void* context, SimulationStepCallback callback, SimulationBackendKind kind, SimulationDeterminism determinism);
 
 /**
  * @brief Creates a no-op mock accelerator used for headless contract tests.

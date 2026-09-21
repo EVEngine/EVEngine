@@ -22,10 +22,10 @@ namespace eve::virtualgeometry {
  * screenError(cluster) = errorR * projScale / dist
  */
 EVENGINE_API_DOMAINS int selectClusters(const VirtualGeometryAsset &asset, float dist, float projScale, float errorPx,
-                   std::vector<std::uint32_t> &outSelected);
+                                        std::vector<std::uint32_t> &outSelected);
 
 /** @brief Per-LOD-level counts of the selected clusters (size = maxLod+1). */
 EVENGINE_API_DOMAINS void lodHistogram(const VirtualGeometryAsset &asset, const std::vector<std::uint32_t> &selected,
-                  std::vector<int> &perLevelCount);
+                                       std::vector<int> &perLevelCount);
 
 }  // namespace eve::virtualgeometry

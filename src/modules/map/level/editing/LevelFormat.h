@@ -41,10 +41,10 @@ public:
     // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
     // spell the four out so the export surface stays defined. Semantics unchanged:
     // the registry was never copyable in practice.
-    LevelFormatRegistry(const LevelFormatRegistry&) = delete;
+    LevelFormatRegistry(const LevelFormatRegistry&)            = delete;
     LevelFormatRegistry& operator=(const LevelFormatRegistry&) = delete;
     LevelFormatRegistry(LevelFormatRegistry&&)                 = default;
-    LevelFormatRegistry& operator=(LevelFormatRegistry&&) = default;
+    LevelFormatRegistry& operator=(LevelFormatRegistry&&)      = default;
 
     [[nodiscard]] eve::Result<void> registerFormat(std::unique_ptr<LevelFormat> format);
     int                             getFormatCount() const { return static_cast<int>(formats_.size()); }

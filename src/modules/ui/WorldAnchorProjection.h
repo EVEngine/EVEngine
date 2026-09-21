@@ -61,9 +61,9 @@ struct WorldAnchorLayoutResult {
  * @thread Pure and thread-safe; invokes no callbacks and retains no references.
  */
 [[nodiscard]] EVENGINE_API_WORLD WorldAnchorProjection projectWorldAnchor(const UIHost::WorldAnchor &anchor,
-                                                       const glm::mat4 &viewProjection,
-                                                       float cameraX, float cameraY, float cameraZ,
-                                                       float viewportWidth, float viewportHeight);
+                                                                          const glm::mat4           &viewProjection,
+                                                                          float cameraX, float cameraY, float cameraZ,
+                                                                          float viewportWidth, float viewportHeight);
 
 /**
  * @brief Resolves projected host overlap with bounded deterministic vertical displacement.

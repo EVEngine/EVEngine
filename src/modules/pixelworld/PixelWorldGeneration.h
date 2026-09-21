@@ -68,8 +68,7 @@ struct PixelWorldGenerationOutput {
  * Unknown schema versions are rejected and no world state is observed or changed.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<PixelWorldGenerationOutput> generatePixelWorld(
-    const PixelWorldGenerationRequest& request, const MaterialCatalog& catalog,
-    std::uint64_t sourceRevision, eve::SimulationTick sourceTick = eve::SimulationTick::zero(),
-    std::uint64_t sourceLastEditSequence = 0);
+    const PixelWorldGenerationRequest& request, const MaterialCatalog& catalog, std::uint64_t sourceRevision,
+    eve::SimulationTick sourceTick = eve::SimulationTick::zero(), std::uint64_t sourceLastEditSequence = 0);
 
 }  // namespace eve::pixelworld

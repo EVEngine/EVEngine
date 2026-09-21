@@ -1111,8 +1111,7 @@ TEST_CASE("Scene.cull.frustum") {
 // returning a result, and with it restored they must work again.
 TEST_CASE("Scene.pick.withoutProjectionProvider") {
     Scene *mod = Scene::create();
-    mod->mountAs("np", node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)}))
-        .ignore("test setup");
+    mod->mountAs("np", node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)})).ignore("test setup");
     mod->updateTransformsAll();
     auto *cam = eve::graphics::Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);

@@ -32,10 +32,9 @@ struct TerrainImageMaskSettings {
  * the source sRGB-to-Lab/CIE76 equations and strict threshold; accuracy=1 rejects even exact matches.
  * No implicit strength or inversion is applied. Image decoding and GPU resources remain caller-owned.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainImageMask(Heightmap& target, const Heightmap& input, const Heightmap& red,
-                                                   const Heightmap& green, const Heightmap& blue,
-                                                   const Heightmap& alpha, const Heightmap& curve,
-                                                   const TerrainImageMaskSettings& settings, TerrainMaskBlend mode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainImageMask(
+    Heightmap& target, const Heightmap& input, const Heightmap& red, const Heightmap& green, const Heightmap& blue,
+    const Heightmap& alpha, const Heightmap& curve, const TerrainImageMaskSettings& settings, TerrainMaskBlend mode);
 
 /**
  * @brief Apply a scalar GlobalSpawnerMaskStack output through Pcg's image-mask transform, curve and blend pass.
@@ -50,7 +49,8 @@ struct TerrainImageMaskSettings {
  * @thread Synchronous exclusive target access; no retained resources, callbacks, time, or RNG.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainGlobalSpawnerMask(Heightmap& target, const Heightmap& input,
-                                                        const Heightmap& source, const Heightmap& curve,
-                                                        const TerrainImageMaskSettings& settings,
-                                                        TerrainMaskBlend mode);
+                                                                             const Heightmap&                source,
+                                                                             const Heightmap&                curve,
+                                                                             const TerrainImageMaskSettings& settings,
+                                                                             TerrainMaskBlend                mode);
 }  // namespace eve::procgen

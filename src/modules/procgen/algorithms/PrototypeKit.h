@@ -45,7 +45,8 @@ EVENGINE_API_DOMAINS std::span<const PrototypePieceDescriptor> prototypePieceDes
  * @thread Safe; the function mutates no shared state.
  * @reentrancy Does not invoke external callbacks.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<MeshBuild> generatePrototypePiece(std::string_view pieceId, const Params& params);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<MeshBuild> generatePrototypePiece(std::string_view pieceId,
+                                                                                 const Params&    params);
 
 /**
  * @brief Register all prototype modules as `prototype.*` mesh recipes.

@@ -43,8 +43,8 @@ EVENGINE_API_DOMAINS std::span<const PrototypeTextureDescriptor> prototypeTextur
  * @thread Safe; no shared state is mutated.
  * @reentrancy Does not invoke external callbacks.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<std::unique_ptr<image::ImageData>> generatePrototypeTexture(std::string_view patternId,
-                                                                                      const Params&    params);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<std::unique_ptr<image::ImageData>> generatePrototypeTexture(
+    std::string_view patternId, const Params& params);
 
 /**
  * @brief Register all patterns as `tex.prototype.*` texture recipes.

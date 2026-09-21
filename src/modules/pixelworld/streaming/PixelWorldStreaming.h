@@ -24,8 +24,8 @@ enum class PixelChunkArchiveCodec : std::uint8_t { None = 0, Zstd = 1 };
  * @return Integrity-sealed archive with independently compressed Chunk records.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM eve::Result<eve::SnapshotEnvelope> archiveChunkBatch(
-    const eve::pixelworld::PixelChunkBatch& batch, eve::PersistentId instanceId,
-    PixelChunkArchiveCodec codec, const eve::SnapshotHashProvider& hashProvider);
+    const eve::pixelworld::PixelChunkBatch& batch, eve::PersistentId instanceId, PixelChunkArchiveCodec codec,
+    const eve::SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Verify and decode a version 1, 2 or 3 Chunk-batch archive into an owning candidate.

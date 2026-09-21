@@ -39,9 +39,8 @@ struct CaveKnickpointSample {
  * @param sedimentLoad Normalized mobile-sediment supply, including high-load cover protection.
  * @return Deterministic knickpoint sites; branches are intentionally excluded because they flow toward index zero.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CaveKnickpointSite> createCaveKnickpointSites(const std::vector<CaveHydrologyPoint>& trunk,
-                                                                        const std::vector<float>& hydraulicWeights,
-                                                                        float                     sedimentLoad);
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CaveKnickpointSite> createCaveKnickpointSites(
+    const std::vector<CaveHydrologyPoint>& trunk, const std::vector<float>& hydraulicWeights, float sedimentLoad);
 
 /**
  * @brief Sample plunge-pool drilling and lower-headwall erosion around derived knickpoints.
@@ -49,7 +48,7 @@ struct CaveKnickpointSample {
  * @param sites Sites derived by createCaveKnickpointSites.
  * @return Maximum bounded knickpoint erosion response.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS CaveKnickpointSample sampleCaveKnickpointErosion(CaveHydrologyVec3                      point,
-                                                               const std::vector<CaveKnickpointSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveKnickpointSample
+sampleCaveKnickpointErosion(CaveHydrologyVec3 point, const std::vector<CaveKnickpointSite>& sites);
 
 }  // namespace eve::procgen

@@ -50,6 +50,7 @@ struct HexSphereGeneratorSettings {
  * @cost One 3D fBm evaluation per cell for the continents and one more for the
  *       moisture, so proportional to the cell count and dominated by the noise.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<void> generateSphereMap(HexSphereMap& map, const HexSphereGeneratorSettings& settings);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> generateSphereMap(HexSphereMap&                     map,
+                                                                const HexSphereGeneratorSettings& settings);
 
 }  // namespace eve::hexmap

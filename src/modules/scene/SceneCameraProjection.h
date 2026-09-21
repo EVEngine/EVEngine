@@ -77,9 +77,8 @@ public:
      * @lifetime The camera must stay valid for this call only.
      * @cost O(1).
      */
-    virtual std::optional<ScreenRay> screenRay(graphics::Camera3D& cam, float screenX,
-                                              float screenY, float viewW,
-                                              float viewH) const = 0;
+    virtual std::optional<ScreenRay> screenRay(graphics::Camera3D& cam, float screenX, float screenY, float viewW,
+                                               float viewH) const = 0;
 
     /**
      * @brief Clip matrix and its inverse for a camera and viewport.
@@ -90,8 +89,7 @@ public:
      * @lifetime The camera must stay valid for this call only.
      * @cost O(1) plus one 4x4 inverse.
      */
-    virtual std::optional<CameraClip> clipForViewport(graphics::Camera3D& cam, float viewW,
-                                                     float viewH) const = 0;
+    virtual std::optional<CameraClip> clipForViewport(graphics::Camera3D& cam, float viewW, float viewH) const = 0;
 };
 
 }  // namespace eve::scene

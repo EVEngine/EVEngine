@@ -170,10 +170,9 @@ struct UnityVegetationBatchImportRequest {
  * @return Owning context whose property, texture, and keyword sets agree with the candidate.
  * @thread Worker-safe and reentrant; no callbacks, IO, shared mutation, or retained pointers.
  */
-[[nodiscard]] EVENGINE_API_PLATFORM VegetationPresetContext makeVegetationPresetContext(const VegetationConversionCandidate& candidate,
-                                                                  std::string shaderName, std::string materialName,
-                                                                  std::string           shaderPipeline,
-                                                                  std::set<std::string> outputOptions = {});
+[[nodiscard]] EVENGINE_API_PLATFORM VegetationPresetContext makeVegetationPresetContext(
+    const VegetationConversionCandidate& candidate, std::string shaderName, std::string materialName,
+    std::string shaderPipeline, std::set<std::string> outputOptions = {});
 
 /**
  * @brief Decode, resolve and evaluate a library of canonical TVE preset definitions.

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "common/Export.h"
-#include "common/Result.h"
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 struct PcgPhotoModeColor { float r=0,g=0,b=0,a=1; bool operator==(const PcgPhotoModeColor&) const = default; };

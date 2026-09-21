@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/Export.h"
 #include <memory>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::agent {

@@ -96,8 +96,9 @@ private:
  * @param implementation Type-erased owning capability implementation.
  * @return Generation-qualified provider handle.
  */
-[[nodiscard]] EVENGINE_API_PLATFORM Result<ProviderHandle> registerStaticProvider(
-    ExtensionProviderRegistry& registry, ExtensionDescriptor descriptor,
-    CapabilityId capability, std::shared_ptr<void> implementation);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ProviderHandle> registerStaticProvider(ExtensionProviderRegistry& registry,
+                                                                                  ExtensionDescriptor        descriptor,
+                                                                                  CapabilityId               capability,
+                                                                                  std::shared_ptr<void> implementation);
 
 }  // namespace eve::editing

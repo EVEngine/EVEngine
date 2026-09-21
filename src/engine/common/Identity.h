@@ -488,8 +488,8 @@ private:
  * @param entropy Source for the UUID random portion.
  * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
  */
-[[nodiscard]] EVENGINE_API_FOUNDATION std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
-                                                                      const UuidEntropySource&              entropy);
+[[nodiscard]] EVENGINE_API_FOUNDATION std::optional<PersistentId> generateUuidV7(
+    std::chrono::system_clock::time_point timestamp, const UuidEntropySource& entropy);
 
 }  // namespace eve
 

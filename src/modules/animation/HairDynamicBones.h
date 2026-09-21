@@ -44,17 +44,16 @@ struct ChainDesc {
  * @brief Replace or append hair chains.
  * @param clearFirst When true, clears existing chains before adding.
  */
-[[nodiscard]] EVENGINE_API_WORLD Result<void> setupChains(DynamicBoneSolver &solver,
-                                       const std::vector<ChainDesc> &chains,
-                                       bool clearFirst = true);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> setupChains(DynamicBoneSolver            &solver,
+                                                          const std::vector<ChainDesc> &chains, bool clearFirst = true);
 
 /**
  * @brief Attach a bone-following sphere collider (typically the head) for hair chains.
  * @return Collider count after add, or failure when the bone cannot be resolved.
  */
 [[nodiscard]] EVENGINE_API_WORLD Result<int> addHeadCollider(DynamicBoneSolver &solver, const std::string &boneName,
-                                          float radius = 0.12f, float offsetX = 0.f,
-                                          float offsetY = 0.f, float offsetZ = 0.f);
+                                                             float radius = 0.12f, float offsetX = 0.f,
+                                                             float offsetY = 0.f, float offsetZ = 0.f);
 
 }  // namespace hair
 

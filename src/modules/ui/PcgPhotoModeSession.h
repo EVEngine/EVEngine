@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
 #include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgPhotoModeValues.h"
-#include <cstdint>
-#include <string>
 namespace ssq { class Table; }
 namespace eve::ui {
 enum class PcgPhotoModeLoadDecision { Current=0, Saved=1, SaveCurrent=2 };

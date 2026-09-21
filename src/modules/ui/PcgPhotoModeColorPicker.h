@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
 #include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgUiStatus.h"
-#include <cstdint>
-#include <string>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned runtime model of Pcg PhotoModeColorPicker. */

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "common/Export.h"
-#include "common/Result.h"
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Stored Pcg tooltip profile row. */ struct PcgTooltipEntry{std::string id,header,text;};

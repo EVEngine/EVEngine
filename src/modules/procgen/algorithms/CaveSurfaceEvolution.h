@@ -14,10 +14,12 @@ struct CaveSurfaceEvolutionResult {
     float maximumRateMultiplier = 1.f;
 };
 
-EVENGINE_API_DOMAINS CaveSurfaceEvolutionResult evolveCaveSurfaceByCurvature(std::vector<float>& density, int nx, int ny, int nz,
-                                                        float strength, int iterations = 2);
+EVENGINE_API_DOMAINS CaveSurfaceEvolutionResult evolveCaveSurfaceByCurvature(std::vector<float>& density, int nx,
+                                                                             int ny, int nz, float strength,
+                                                                             int iterations = 2);
 EVENGINE_API_DOMAINS CaveSurfaceEvolutionResult evolveCaveSurfaceByCurvature(std::vector<float>&       density,
-                                                        const std::vector<float>& rateField, int nx, int ny, int nz,
-                                                        float strength, int iterations = 2);
+                                                                             const std::vector<float>& rateField,
+                                                                             int nx, int ny, int nz, float strength,
+                                                                             int iterations = 2);
 
 }  // namespace eve::procgen

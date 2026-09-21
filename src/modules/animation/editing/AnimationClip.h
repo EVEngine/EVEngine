@@ -98,11 +98,11 @@ public:
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
 class EVENGINE_API_DOMAINS AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                          public virtual IEditableTarget,
-                                          public IDomainOperationTarget,
-                                          public IDomainOperationTargetStaging,
-                                          public eve::editing::IEditingSnapshotProvider,
-                                          public IAnimationClipEditTarget {
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IDomainOperationTargetStaging,
+                                                               public eve::editing::IEditingSnapshotProvider,
+                                                               public IAnimationClipEditTarget {
 public:
     explicit AnimationClipDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

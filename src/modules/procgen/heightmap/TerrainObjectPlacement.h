@@ -76,18 +76,18 @@ struct EVENGINE_API_DOMAINS TerrainObjectPlacementSettings {
  * Candidate traversal uses one Pcg XorshiftPlus stream and no time source. Stable identities derive from namespace,
  * candidate cell, resource index and child ordinal. Asset resolution and scene ownership remain downstream.
  */
-[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainObjectPoints(PointSet& output, const Heightmap& fitness,
-                                                    const Heightmap& heights,
-                                                    const TerrainObjectPlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainObjectPoints(
+    PointSet& output, const Heightmap& fitness, const Heightmap& heights,
+    const TerrainObjectPlacementSettings& settings);
 
 /**
  * @brief Remove matching prototype points wherever fitness is strictly above removalStrength.
  * @return Removed count; output and all attributes are published atomically on success.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainObjectPoints(PointSet& output, const PointSet& input,
-                                                    const Heightmap& fitness,
-                                                    const TerrainObjectPlacementSettings& settings,
-                                                    float removalStrength);
+                                                                         const Heightmap&                      fitness,
+                                                                         const TerrainObjectPlacementSettings& settings,
+                                                                         float removalStrength);
 
 /** @brief One exclusively borrowed terrain object owner and its immutable height source. */
 struct TerrainObjectTile {

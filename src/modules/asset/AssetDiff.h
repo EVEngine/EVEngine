@@ -38,6 +38,6 @@ struct EvaPackageDiff {
 
 /** @brief Compare two admitted manifests without using paths, timestamps or archive order. */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaPackageDiff> diffEvaManifests(const EvaManifest& before,
-                                                      const EvaManifest& after);
+                                                                              const EvaManifest& after);
 
 }  // namespace eve::asset

@@ -23,7 +23,6 @@ namespace eve::editor {
  * @reentrancy Does not invoke callbacks.
  */
 [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<std::vector<AssetRecord>> publishEvaAssetProjection(
-    MemoryAssetDatabase& database, const asset::EvaManifest& manifest, std::string archiveUri,
-    std::string importerId);
+    MemoryAssetDatabase& database, const asset::EvaManifest& manifest, std::string archiveUri, std::string importerId);
 
 }  // namespace eve::editor

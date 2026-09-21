@@ -163,15 +163,15 @@ enum class StyleClassStatus : uint8_t {
  * @reentrancy Does not invoke callbacks.
  */
 [[nodiscard]] EVENGINE_API_WORLD StyleClassStatus defineStyleClass(const std::string &name,
-                                                const std::string &parent = "");
+                                                                   const std::string &parent = "");
 /** @brief Sets text/background/border/accent RGBA on an existing style class. */
 [[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassColor(const std::string &name,
-                                                 const std::string &property, float r, float g,
-                                                 float b, float a);
+                                                                     const std::string &property, float r, float g,
+                                                                     float b, float a);
 /** @brief Sets padding, rounding, or alpha on an existing style class. */
 [[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassMetric(const std::string &name,
-                                                  const std::string &property, float x,
-                                                  float y = 0.f);
+                                                                      const std::string &property, float x,
+                                                                      float y = 0.f);
 /** @brief Resolves inheritance into a sparse class and reports an explicit lookup status. */
 [[nodiscard]] EVENGINE_API_WORLD StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
 /** @brief Clears user-defined style classes. Intended for runtime/test teardown. */
@@ -190,7 +190,7 @@ EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme, const std::string &na
 bool setThemeByName(const std::string &name);
 
 /** @brief Logical (point-space) UI scale. Default 1.0. */
-EVENGINE_API_WORLD void setThemeUiScale(float scale);
+EVENGINE_API_WORLD void  setThemeUiScale(float scale);
 EVENGINE_API_WORLD float themeUiScale();
 
 /** Display DPI ratio (e.g. 1.5 on Windows at 150%, 2.0 on Retina). The font

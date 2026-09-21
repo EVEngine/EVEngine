@@ -13,8 +13,7 @@ namespace eve
 namespace data
 {
 
-class EVENGINE_API_FOUNDATION HashFunction
-{
+class EVENGINE_API_FOUNDATION HashFunction {
 public:
 
 	struct Value
@@ -62,7 +61,7 @@ protected:
 
 	HashFunction() {}
 
-}; // HashFunction
+};  // HashFunction
 
 } // data
 } // eve

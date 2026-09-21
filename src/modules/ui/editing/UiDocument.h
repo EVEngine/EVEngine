@@ -131,11 +131,11 @@ public:
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
 class EVENGINE_API_DOMAINS UiDocumentTarget final : public ::eve::editing::EditableTargetState,
-                               public virtual IEditableTarget,
-                               public IDomainOperationTarget,
-                               public IDomainOperationTargetStaging,
-                               public IUiDocumentEditTarget,
-                               public IPropertyProvider {
+                                                    public virtual IEditableTarget,
+                                                    public IDomainOperationTarget,
+                                                    public IDomainOperationTargetStaging,
+                                                    public IUiDocumentEditTarget,
+                                                    public IPropertyProvider {
 public:
     explicit UiDocumentTarget(std::string id);
 

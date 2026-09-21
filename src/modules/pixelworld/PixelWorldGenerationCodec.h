@@ -19,7 +19,7 @@ namespace eve::pixelworld {
  * @remarks Unknown fields and versions are rejected. The returned request owns every
  * stamp cell, and decoding cannot mutate a live PixelWorld.
  */
-[[nodiscard]] eve::Result<PixelWorldGenerationRequest>
-EVENGINE_API_FOUNDATION decodePixelWorldGenerationRequestJson(std::string_view json);
+[[nodiscard]] eve::Result<PixelWorldGenerationRequest> EVENGINE_API_FOUNDATION
+decodePixelWorldGenerationRequestJson(std::string_view json);
 
 }  // namespace eve::pixelworld

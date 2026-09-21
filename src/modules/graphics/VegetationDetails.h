@@ -41,9 +41,8 @@ struct VegetationDetailRuntime {
  * @return A detached candidate, or InvalidArgument without changing either input.
  * @thread Worker-safe and reentrant; performs no IO, callbacks, clocks or GPU calls.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationDetailRuntime> configureVegetationDetails(const PbrSurface&               baseSurface,
-                                                                         const VegetationMotion&         baseMotion,
-                                                                         const VegetationDetailSettings& settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationDetailRuntime> configureVegetationDetails(
+    const PbrSurface& baseSurface, const VegetationMotion& baseMotion, const VegetationDetailSettings& settings);
 
 /**
  * @brief Encode one owning Global Details document using `eve.graphics.vegetation-details/1`.

@@ -54,11 +54,11 @@ using editing::validatePropertyValue;
  * replacements without bypassing validation.
  */
 class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                      public virtual IEditableTarget,
-                                      public IDomainOperationTarget,
-                                      public IDomainOperationTargetStaging,
-                                      public IPropertyProvider,
-                                      public IEditingSnapshotProvider {
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public IPropertyProvider,
+                                                           public IEditingSnapshotProvider {
 public:
     explicit ArchSpaceDocumentTarget(std::string id);
 
