@@ -1082,6 +1082,8 @@ docs:
 # (per-case run; use FILTER=bundle/<file> for a single-file bundle, e.g.
 #  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
+LABEL_FILTER ?=
+CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)')
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
 # main runs 1526 cases in ~2-11 min).  "bundle/<file>" entries stay registered
@@ -1109,31 +1111,31 @@ CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FR
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
 test/win32: ensure-built/win32
-	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/win32-debug: ensure-built/win32-debug
-	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/linux: ensure-built/linux
-	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/linux-debug: ensure-built/linux-debug
-	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 # Sanitizer (ASan+UBSan) and coverage builds are opt-in Linux variants; CI
 # uses them for the quality-gate jobs. Runtime env for tests:
 #   ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1
 test/linux-asan:
-	$(CTEST_ENV) ctest --test-dir build/linux-asan --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-asan --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/linux-coverage:
-	$(CTEST_ENV) ctest --test-dir build/linux-coverage --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-coverage --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/macosx: ensure-built/macosx
-	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 test/macosx-debug: ensure-built/macosx-debug
-	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_LABEL_FILTER) $(CTEST_REPEAT)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).

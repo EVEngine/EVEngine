@@ -116,8 +116,12 @@ const HexUnitRegistry::Unit* HexUnitRegistry::find(std::int32_t unitId) const no
 
 std::int32_t HexUnitRegistry::unitIdAt(HexCoordinates coordinates) const noexcept {
     // Ids are positional, and `Unit::location` caches the occupied coordinates so
-    // this lookup needs no map.
+    // this lookup needs no map. A detached unit (`locationIndex < 0`, e.g. after the
+    // map shrank under it) must not answer for a cell: its cached coordinates are a
+    // leftover, and reporting it made it occupy - and block - whatever cell that
+    // leftover happened to name.
     for (std::size_t index = 0; index < units_.size(); ++index) {
+        if (units_[index].locationIndex < 0) continue;
         if (units_[index].location == coordinates) return static_cast<std::int32_t>(index);
     }
     return -1;
@@ -165,9 +169,14 @@ Result<void> HexUnitRegistry::removeUnit(HexMap& map, HexVisibility& visibility,
 
     // Vision is always granted from `visionIndex`; while a unit travels that is the
     // cell it walks through, not the destination cell `locationIndex` reserves.
-    const HexCoordinates viewer    = map.coordinatesAt(unit->visionIndex);
-    auto                 withdrawn = visibility.decrease(map, scratch, viewer, tuning_.visionRange);
-    if (!withdrawn.ok()) return Result<void>::failure(withdrawn.status());
+    // A detached unit (`visionIndex < 0`) holds no counter, so there is nothing to
+    // withdraw - `coordinatesAt(-1)` would have named cell (0, 0) and corrupted
+    // another viewer's counter there.
+    if (unit->visionIndex >= 0) {
+        const HexCoordinates viewer    = map.coordinatesAt(unit->visionIndex);
+        auto                 withdrawn = visibility.decrease(map, scratch, viewer, tuning_.visionRange);
+        if (!withdrawn.ok()) return Result<void>::failure(withdrawn.status());
+    }
 
     // Ids are positional: every unit after `unitId` shifts down by one, so callers
     // must re-read `sample`/`snapshot` instead of reusing ids captured earlier.
@@ -175,9 +184,9 @@ Result<void> HexUnitRegistry::removeUnit(HexMap& map, HexVisibility& visibility,
     return Result<void>::success();
 }
 
-void HexUnitRegistry::removeAll(HexVisibility& visibility) noexcept {
+void HexUnitRegistry::removeAll(HexMap& map, HexVisibility& visibility) noexcept {
     units_.clear();
-    visibility.clear();
+    visibility.clear(map);
 }
 
 // --- snapshots ---------------------------------------------------------------
@@ -233,8 +242,14 @@ Result<void> HexUnitRegistry::beginTravel(HexMap& map, HexVisibility& visibility
 
     if (path.size() <= 1) return Result<void>::success();
 
-    const HexCoordinates origin    = unit->location;
-    const HexCoordinates firstStep = map.coordinatesAt(path[1]);
+    // Withdraw from the cell that actually holds this unit's vision. While travelling
+    // that is `visionIndex` (the cell the unit has reached), *not* `location`, which
+    // already reserves the destination: withdrawing there decremented a counter the
+    // unit never raised and left the corridor it was walking through permanently lit,
+    // including after the plan was replaced by this very call.
+    const std::int32_t   viewerIndex = unit->visionIndex >= 0 ? unit->visionIndex : unit->locationIndex;
+    const HexCoordinates origin      = map.coordinatesAt(viewerIndex);
+    const HexCoordinates firstStep   = map.coordinatesAt(path[1]);
 
     // Visibility moves before the unit does, so a failed sweep leaves the unit
     // exactly where it was instead of half-way into a travel plan.
@@ -315,8 +330,11 @@ void HexUnitRegistry::advanceAll(HexMap& map, HexVisibility& visibility, HexSear
 // --- bulk state --------------------------------------------------------------
 
 void HexUnitRegistry::refreshVisibility(HexMap& map, HexVisibility& visibility, HexSearchContext& scratch) {
-    visibility.clear();
+    visibility.clear(map);
     for (const Unit& unit : units_) {
+        // A detached unit holds no counter, and `coordinatesAt(-1)` would resolve to
+        // cell (0, 0) and grant a viewer there that no unit owns.
+        if (unit.visionIndex < 0) continue;
         // The viewer cell is `visionIndex`, the cell whose fog of war this unit
         // currently holds; an idle unit's `visionIndex` is its occupied cell.
         visibility.increase(map, scratch, map.coordinatesAt(unit.visionIndex), tuning_.visionRange)
@@ -361,7 +379,7 @@ Result<void> HexUnitRegistry::restore(HexMap& map, HexVisibility& visibility, He
     // registry any caller could observe. The map's explored latches stay latched
     // because those are one-way by design.
     units_.clear();
-    visibility.clear();
+    visibility.clear(map);
 
     const std::int32_t        cellCount = map.cellCount();
     std::vector<std::int32_t> claimed;

@@ -1,11 +1,11 @@
-#include "system/PcgTaskQueue.h"
+#include "procgen/PcgTaskQueue.h"
 #include "common/SquirrelBinding.h"
 #include <algorithm>
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
-namespace eve::system {
+namespace eve::procgen {
 namespace { template<class T> Result<T> invalid(const char* message) { return Result<T>::failure(Diagnostic::error(
-    DiagnosticCode::InvalidArgument,message,{}, {},"system.pcgTaskQueue")); } }
+    DiagnosticCode::InvalidArgument,message,{}, {},"procgen.taskQueue")); } }
 Result<std::uint64_t> PcgTaskQueue::add(double wait) {
     if(!std::isfinite(wait)||wait<0) return invalid<std::uint64_t>("task wait time must be finite and non-negative");
     const auto id=nextId_++; tasks_.push_back({id,wait,wait});
@@ -41,4 +41,4 @@ void exposePcgTaskQueueBindings(ssq::Table& table) {
     cls.addFunc("getQueueSize",[](const PcgTaskQueue* q){return q->queueSize();});
     cls.addFunc("getStatus",[](const PcgTaskQueue* q){return static_cast<int>(q->status());});
 }
-}  // namespace eve::system
+}  // namespace eve::procgen

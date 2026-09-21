@@ -218,13 +218,6 @@ if(NOT _has_hd2d_editor_bridge)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-eve_module_enabled(snow _has_snow_editor_bridge)
-if(NOT _has_snow_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SnowFieldTarget.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
-endif()
-
 # Schema-driven definition forms consume reflected SchemaDefinition metadata;
 # raw DefinitionDocument editing remains available without the schema module.
 eve_module_enabled(schema _has_schema_editor_bridge)

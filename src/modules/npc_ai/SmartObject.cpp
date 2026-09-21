@@ -6,11 +6,6 @@
 
 namespace eve::npc_ai {
 namespace {
-template <class T>
-Result<T> smartFailure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "npc_ai.smart_object"));
-}
-
 bool finitePosition(const std::array<double, 3>& position) {
     return std::all_of(position.begin(), position.end(), [](double value) { return std::isfinite(value); });
 }
@@ -18,21 +13,25 @@ bool finitePosition(const std::array<double, 3>& position) {
 
 Result<SmartObjectHandle> SmartObjectWorld::registerObject(SmartObjectDefinition definition) {
     if (definition.logicalId.empty() || definition.slots.empty())
-        return smartFailure<SmartObjectHandle>(DiagnosticCode::InvalidArgument,
-                                               "smart object logical id and slots are required");
+        return Result<SmartObjectHandle>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                    "smart object logical id and slots are required",
+                                                                    {}, {}, "npc_ai.smart_object"));
     if (objectsByLogicalId_.contains(definition.logicalId))
-        return smartFailure<SmartObjectHandle>(DiagnosticCode::AlreadyExists, "smart object logical id already exists");
+        return Result<SmartObjectHandle>::failure(Diagnostic::error(
+            DiagnosticCode::AlreadyExists, "smart object logical id already exists", {}, {}, "npc_ai.smart_object"));
     std::set<std::string> slotIds;
     for (auto& slot : definition.slots) {
         if (slot.id.empty() || slot.activity.empty() || !finitePosition(slot.position) ||
             !slotIds.insert(slot.id).second)
-            return smartFailure<SmartObjectHandle>(
-                DiagnosticCode::InvalidArgument,
-                "smart object slots require unique ids, activities and finite positions");
+            return Result<SmartObjectHandle>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "smart object slots require unique ids, activities and finite positions", {}, {},
+                                  "npc_ai.smart_object"));
         std::sort(slot.tags.begin(), slot.tags.end());
         if (std::adjacent_find(slot.tags.begin(), slot.tags.end()) != slot.tags.end())
-            return smartFailure<SmartObjectHandle>(DiagnosticCode::InvalidArgument,
-                                                   "smart object slot tags must be unique");
+            return Result<SmartObjectHandle>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "smart object slot tags must be unique", {}, {},
+                                                                        "npc_ai.smart_object"));
     }
     std::uint32_t index;
     if (freeObjects_.empty()) {
@@ -51,45 +50,47 @@ Result<SmartObjectHandle> SmartObjectWorld::registerObject(SmartObjectDefinition
 
 Result<std::reference_wrapper<SmartObjectWorld::Object>> SmartObjectWorld::resolveObject(SmartObjectHandle handle) {
     if (!handle.isValid() || handle.index() >= objects_.size())
-        return smartFailure<std::reference_wrapper<Object>>(DiagnosticCode::StaleHandle,
-                                                            "smart object handle is stale");
+        return Result<std::reference_wrapper<Object>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object handle is stale", {}, {}, "npc_ai.smart_object"));
     auto& slot = objects_[handle.index()];
     if (!slot.value || slot.generation != handle.generation())
-        return smartFailure<std::reference_wrapper<Object>>(DiagnosticCode::StaleHandle,
-                                                            "smart object handle is stale");
+        return Result<std::reference_wrapper<Object>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object handle is stale", {}, {}, "npc_ai.smart_object"));
     return Result<std::reference_wrapper<Object>>::success(std::ref(*slot.value));
 }
 
 Result<std::reference_wrapper<const SmartObjectWorld::Object>> SmartObjectWorld::resolveObject(
     SmartObjectHandle handle) const {
     if (!handle.isValid() || handle.index() >= objects_.size())
-        return smartFailure<std::reference_wrapper<const Object>>(DiagnosticCode::StaleHandle,
-                                                                  "smart object handle is stale");
+        return Result<std::reference_wrapper<const Object>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object handle is stale", {}, {}, "npc_ai.smart_object"));
     const auto& slot = objects_[handle.index()];
     if (!slot.value || slot.generation != handle.generation())
-        return smartFailure<std::reference_wrapper<const Object>>(DiagnosticCode::StaleHandle,
-                                                                  "smart object handle is stale");
+        return Result<std::reference_wrapper<const Object>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object handle is stale", {}, {}, "npc_ai.smart_object"));
     return Result<std::reference_wrapper<const Object>>::success(std::cref(*slot.value));
 }
 
 Result<std::reference_wrapper<SmartObjectWorld::Claim>> SmartObjectWorld::resolveClaim(SmartObjectClaimHandle handle) {
     if (!handle.isValid() || handle.index() >= claims_.size())
-        return smartFailure<std::reference_wrapper<Claim>>(DiagnosticCode::StaleHandle, "smart object claim is stale");
+        return Result<std::reference_wrapper<Claim>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object claim is stale", {}, {}, "npc_ai.smart_object"));
     auto& slot = claims_[handle.index()];
     if (!slot.value || slot.generation != handle.generation())
-        return smartFailure<std::reference_wrapper<Claim>>(DiagnosticCode::StaleHandle, "smart object claim is stale");
+        return Result<std::reference_wrapper<Claim>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object claim is stale", {}, {}, "npc_ai.smart_object"));
     return Result<std::reference_wrapper<Claim>>::success(std::ref(*slot.value));
 }
 
 Result<std::reference_wrapper<const SmartObjectWorld::Claim>> SmartObjectWorld::resolveClaim(
     SmartObjectClaimHandle handle) const {
     if (!handle.isValid() || handle.index() >= claims_.size())
-        return smartFailure<std::reference_wrapper<const Claim>>(DiagnosticCode::StaleHandle,
-                                                                 "smart object claim is stale");
+        return Result<std::reference_wrapper<const Claim>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object claim is stale", {}, {}, "npc_ai.smart_object"));
     const auto& slot = claims_[handle.index()];
     if (!slot.value || slot.generation != handle.generation())
-        return smartFailure<std::reference_wrapper<const Claim>>(DiagnosticCode::StaleHandle,
-                                                                 "smart object claim is stale");
+        return Result<std::reference_wrapper<const Claim>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "smart object claim is stale", {}, {}, "npc_ai.smart_object"));
     return Result<std::reference_wrapper<const Claim>>::success(std::cref(*slot.value));
 }
 
@@ -98,7 +99,8 @@ Result<void> SmartObjectWorld::removeObject(SmartObjectHandle object, SmartObjec
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     auto& value = resolved.value().get();
     if (!value.claimsBySlot.empty() && policy == SmartObjectRemoval::RejectClaimed)
-        return smartFailure<void>(DiagnosticCode::Conflict, "smart object still has live claims");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "smart object still has live claims",
+                                                       {}, {}, "npc_ai.smart_object"));
     std::vector<SmartObjectClaimHandle> claims;
     for (const auto& [slot, claim] : value.claimsBySlot) {
         (void)slot;
@@ -119,8 +121,8 @@ Result<void> SmartObjectWorld::removeObject(SmartObjectHandle object, SmartObjec
 Result<std::vector<SmartObjectCandidate>> SmartObjectWorld::query(const SmartObjectQuery& queryValue) const {
     if (queryValue.activity.empty() || !finitePosition(queryValue.origin) || !std::isfinite(queryValue.maxDistance) ||
         queryValue.maxDistance < 0.0)
-        return smartFailure<std::vector<SmartObjectCandidate>>(DiagnosticCode::InvalidArgument,
-                                                               "smart object query is invalid");
+        return Result<std::vector<SmartObjectCandidate>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "smart object query is invalid", {}, {}, "npc_ai.smart_object"));
     std::vector<SmartObjectCandidate> result;
     for (std::uint32_t index = 0; index < objects_.size(); ++index) {
         const auto& objectSlot = objects_[index];
@@ -150,16 +152,19 @@ Result<SmartObjectClaimHandle> SmartObjectWorld::claim(AgentHandle agent, SmartO
                                                        std::string_view slotId, std::uint64_t currentTick,
                                                        std::uint64_t leaseTicks) {
     if (!agent.isValid() || slotId.empty() || leaseTicks == 0 || currentTick > UINT64_MAX - leaseTicks)
-        return smartFailure<SmartObjectClaimHandle>(DiagnosticCode::InvalidArgument, "smart object claim is invalid");
+        return Result<SmartObjectClaimHandle>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "smart object claim is invalid", {}, {}, "npc_ai.smart_object"));
     auto resolved = resolveObject(object);
     if (!resolved.ok()) return Result<SmartObjectClaimHandle>::failure(resolved.status());
     auto&      value      = resolved.value().get();
     const auto definition = std::find_if(value.definition.slots.begin(), value.definition.slots.end(),
                                          [&](const auto& slot) { return slot.id == slotId; });
     if (definition == value.definition.slots.end())
-        return smartFailure<SmartObjectClaimHandle>(DiagnosticCode::NotFound, "smart object slot was not found");
+        return Result<SmartObjectClaimHandle>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "smart object slot was not found", {}, {}, "npc_ai.smart_object"));
     if (value.claimsBySlot.contains(std::string(slotId)))
-        return smartFailure<SmartObjectClaimHandle>(DiagnosticCode::Conflict, "smart object slot is already claimed");
+        return Result<SmartObjectClaimHandle>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "smart object slot is already claimed", {}, {}, "npc_ai.smart_object"));
     std::uint32_t index;
     if (freeClaims_.empty()) {
         index = static_cast<std::uint32_t>(claims_.size());
@@ -177,13 +182,18 @@ Result<SmartObjectClaimHandle> SmartObjectWorld::claim(AgentHandle agent, SmartO
 Result<void> SmartObjectWorld::renew(SmartObjectClaimHandle claimHandle, AgentHandle agent, std::uint64_t currentTick,
                                      std::uint64_t leaseTicks) {
     if (leaseTicks == 0 || currentTick > UINT64_MAX - leaseTicks)
-        return smartFailure<void>(DiagnosticCode::InvalidArgument, "smart object lease duration is invalid");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "smart object lease duration is invalid", {}, {}, "npc_ai.smart_object"));
     auto resolved = resolveClaim(claimHandle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     auto& claim = resolved.value().get();
-    if (claim.agent != agent) return smartFailure<void>(DiagnosticCode::Conflict, "smart object claim owner mismatch");
+    if (claim.agent != agent)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "smart object claim owner mismatch",
+                                                       {}, {}, "npc_ai.smart_object"));
     if (claim.expiresAtTick <= currentTick)
-        return smartFailure<void>(DiagnosticCode::PreconditionViolation, "smart object claim already expired");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "smart object claim already expired", {}, {},
+                                                       "npc_ai.smart_object"));
     claim.expiresAtTick = currentTick + leaseTicks;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -192,7 +202,8 @@ Result<void> SmartObjectWorld::release(SmartObjectClaimHandle claimHandle, Agent
     auto resolved = resolveClaim(claimHandle);
     if (!resolved.ok()) return Result<void>::failure(resolved.status());
     if (resolved.value().get().agent != agent)
-        return smartFailure<void>(DiagnosticCode::Conflict, "smart object claim owner mismatch");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "smart object claim owner mismatch",
+                                                       {}, {}, "npc_ai.smart_object"));
     releaseClaimUnchecked(claimHandle);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -213,7 +224,8 @@ void SmartObjectWorld::releaseClaimUnchecked(SmartObjectClaimHandle handle) noex
 
 Result<std::uint32_t> SmartObjectWorld::releaseAgentClaims(AgentHandle agent) {
     if (!agent.isValid())
-        return smartFailure<std::uint32_t>(DiagnosticCode::InvalidArgument, "agent handle is invalid");
+        return Result<std::uint32_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "agent handle is invalid", {}, {}, "npc_ai.smart_object"));
     std::vector<SmartObjectClaimHandle> owned;
     for (std::uint32_t index = 0; index < claims_.size(); ++index)
         if (claims_[index].value && claims_[index].value->agent == agent)

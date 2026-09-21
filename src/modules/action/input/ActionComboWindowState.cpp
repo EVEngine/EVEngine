@@ -8,11 +8,6 @@
 namespace eve::action::input {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 ActionComboWindowState::ActionComboWindowState(ComboSubjectResolver resolver) : resolver_(std::move(resolver)) {}
@@ -41,28 +36,36 @@ Result<void> ActionComboWindowState::enter(const ActionStateWindowBinding& bindi
                                            const ActionTimelineEvent& event,
                                            const ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure<void>(DiagnosticCode::Unsupported, "input adapter does not own this window kind", "kind");
-    if (!resolver_) return failure<void>(DiagnosticCode::NotFound, "combo subject resolver is unavailable", "resolver");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "input adapter does not own this window kind", "kind"));
+    if (!resolver_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "combo subject resolver is unavailable", "resolver"));
     std::optional<ecs::EntityHandle> handle;
     if (binding.targetIndex) {
         if (*binding.targetIndex >= context.targets.size())
-            return failure<void>(DiagnosticCode::NotFound, "combo target index is unavailable", "targetIndex");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "combo target index is unavailable", "targetIndex"));
         handle = context.targets[*binding.targetIndex];
     } else {
         handle = context.source;
     }
-    if (!handle) return failure<void>(DiagnosticCode::NotFound, "combo window has no source or target", "subject");
+    if (!handle)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "combo window has no source or target", "subject"));
     auto subject = resolver_(*handle);
     if (!subject) return Result<void>::failure(subject.status());
     if (!subject.value().isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "combo-window subject is nil", "subject");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "combo-window subject is nil", "subject"));
 
     ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
     if (found != active_.end()) {
         if (found->second.subject == subject.value() && found->second.input == binding.resource)
             return Result<void>::success(Status::success(StatusCode::NoOp));
-        return failure<void>(DiagnosticCode::Conflict, "combo-window key has different active data", "itemId");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "combo-window key has different active data", "itemId"));
     }
     active_.emplace(std::move(key), ActiveCombo{event.itemId, subject.value(), binding.resource});
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -72,7 +75,8 @@ Result<void> ActionComboWindowState::exit(const ActionStateWindowBinding& bindin
                                           const ActionTimelineEvent& event,
                                           const ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure<void>(DiagnosticCode::Unsupported, "input adapter does not own this window kind", "kind");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "input adapter does not own this window kind", "kind"));
     const ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
     if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
@@ -93,14 +97,18 @@ std::vector<std::string> ActionComboWindowState::availableInputs(SubjectRef subj
 
 Result<ActionComboMatch> ActionComboWindowState::match(SubjectRef subject, std::string_view input) const {
     if (!subject.isValid())
-        return failure<ActionComboMatch>(DiagnosticCode::InvalidArgument, "combo subject is nil", "subject");
-    if (input.empty()) return failure<ActionComboMatch>(DiagnosticCode::InvalidArgument, "combo input is empty", "input");
+        return Result<ActionComboMatch>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "combo subject is nil", "subject"));
+    if (input.empty())
+        return Result<ActionComboMatch>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "combo input is empty", "input"));
     for (const auto& [key, combo] : active_) {
         if (combo.subject == subject && combo.input == input)
             return Result<ActionComboMatch>::success(
                 ActionComboMatch{key.first, combo.itemId, combo.subject, combo.input});
     }
-    return failure<ActionComboMatch>(DiagnosticCode::NotFound, "no active combo window accepts the input", "input");
+    return Result<ActionComboMatch>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "no active combo window accepts the input", "input"));
 }
 
 }  // namespace eve::action::input

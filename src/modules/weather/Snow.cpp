@@ -1,4 +1,4 @@
-#include "snow/Snow.h"
+#include "weather/Snow.h"
 
 #include "graphics/Graphics.h"
 #include "procgen/heightmap/Heightmap.h"
@@ -9,7 +9,7 @@
 #include <functional>
 #include <vector>
 
-namespace eve::snow {
+namespace eve::weather {
 
 Module_IMPL(Snow, new Snow());
 
@@ -106,4 +106,4 @@ void Snow::expose(ssq::Class &cls) {
     cls.addFunc("updateTexture", &Snow::updateTexture);
 }
 
-}  // namespace eve::snow
+}  // namespace eve::weather

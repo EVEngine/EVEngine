@@ -1,35 +1,29 @@
 #pragma once
 
 #include "common/Module.h"
-#include "common/PcgPhotoModeApply.h"
+#include "common/FramePacing.h"
 
 #include <cstdint>
 #include <string>
 
-namespace eve::system {
+namespace eve::os {
 
 /**
- * @brief System module — OS / hardware / wall-clock / clipboard / optional GPU info.
+ * @brief OS module — host OS / hardware / wall-clock / clipboard / optional GPU info.
  * Frame timing stays on Timer; this is host/environment queries.
  *
- * Script: `sys <- eve.HostSystem();`. `eve.System` is reserved for the script
- * ECS system base class.
+ * Script: `os <- eve.OS();`.
  */
-class System : public Module, public IPhotoModeFieldSink {
+class OS : public Module, public IFramePacing {
 public:
-    Module_REG(System);
-    System();
-    ~System() override;
-    /** @brief Apply the configured software frame cap after presentation. */
-    void limitFrame();
-    /** @brief Return Pcg's VSync count. */
-    int getPhotoModeVSync() const noexcept { return photoModeVSync_; }
-    /** @brief Return Pcg's requested target FPS. */
-    int getPhotoModeTargetFPS() const noexcept { return photoModeTargetFPS_; }
-    /** @brief Report whether this module owns the assignment's System domain. */
-    PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment&) const noexcept override;
-    /** @brief Validate and apply one Pcg System-domain field atomically. */
-    [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment&) override;
+    Module_REG(OS);
+    OS();
+    ~OS() override;
+    [[nodiscard]] Result<void> setVerticalSyncCount(int count) override;
+    [[nodiscard]] int getVerticalSyncCount() const noexcept override { return verticalSyncCount_; }
+    [[nodiscard]] Result<void> setTargetFramesPerSecond(int target) override;
+    [[nodiscard]] int getTargetFramesPerSecond() const noexcept override { return targetFramesPerSecond_; }
+    void limitFrame() override;
 
     /** @brief Engine version string (e.g. "v0.1.0"). */
     std::string getEngineVersion() const;
@@ -78,9 +72,9 @@ public:
     /** @brief Sum of DEVICE_LOCAL heap sizes in MB (0 if unknown / not ready). */
     int getGpuMemoryTotalMB() const;
 private:
-    int      photoModeVSync_     = 0;
-    int      photoModeTargetFPS_ = -1;
-    uint64_t lastFrameCounter_   = 0;
+    int      verticalSyncCount_      = 0;
+    int      targetFramesPerSecond_  = -1;
+    uint64_t lastFrameCounter_        = 0;
 };
 
-}  // namespace eve::system
+}  // namespace eve::os

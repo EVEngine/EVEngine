@@ -20,12 +20,6 @@ enum class Tag : std::uint8_t {
     Object = 7,
 };
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {},
-                                                "asset.runtime-definition"));
-}
-
 void put32(std::vector<std::uint8_t>& out, std::uint32_t value) {
     for (unsigned shift = 0; shift != 32; shift += 8)
         out.push_back(static_cast<std::uint8_t>(value >> shift));
@@ -40,8 +34,9 @@ Result<void> appendString(std::vector<std::uint8_t>& out, std::string_view value
                           const RuntimeDefinitionLimits& limits) {
     if (value.size() > limits.maximumStringBytes ||
         value.size() > std::numeric_limits<std::uint32_t>::max() || !isValidUtf8(value))
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "runtime definition string is invalid or exceeds limits");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "runtime definition string is invalid or exceeds limits", {}, {},
+                                                       "asset.runtime-definition"));
     put32(out, static_cast<std::uint32_t>(value.size()));
     out.insert(out.end(), value.begin(), value.end());
     return Result<void>::success();
@@ -51,8 +46,9 @@ Result<void> encodeValue(const Value& value, std::vector<std::uint8_t>& out,
                          const RuntimeDefinitionLimits& limits, std::uint32_t depth,
                          std::uint32_t& count) {
     if (depth > limits.maximumDepth || count >= limits.maximumValues)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "runtime definition structure exceeds limits");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "runtime definition structure exceeds limits", {}, {},
+                                                       "asset.runtime-definition"));
     ++count;
     switch (value.type()) {
         case Value::Type::Null: out.push_back(static_cast<std::uint8_t>(Tag::Null)); break;
@@ -65,8 +61,9 @@ Result<void> encodeValue(const Value& value, std::vector<std::uint8_t>& out,
             break;
         case Value::Type::Double:
             if (!std::isfinite(value.asDouble()))
-                return failure<void>(DiagnosticCode::InvalidArgument,
-                                     "runtime definition contains a non-finite number");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "runtime definition contains a non-finite number", {},
+                                                               {}, "asset.runtime-definition"));
             out.push_back(static_cast<std::uint8_t>(Tag::Double));
             put64(out, std::bit_cast<std::uint64_t>(value.asDouble()));
             break;
@@ -79,8 +76,9 @@ Result<void> encodeValue(const Value& value, std::vector<std::uint8_t>& out,
         case Value::Type::Array: {
             const auto* values = value.getIf<Value::Array>();
             if (!values || values->size() > std::numeric_limits<std::uint32_t>::max())
-                return failure<void>(DiagnosticCode::InvalidArgument,
-                                     "runtime definition array exceeds limits");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "runtime definition array exceeds limits", {}, {},
+                                                               "asset.runtime-definition"));
             out.push_back(static_cast<std::uint8_t>(Tag::Array));
             put32(out, static_cast<std::uint32_t>(values->size()));
             for (const auto& child : *values) {
@@ -92,8 +90,9 @@ Result<void> encodeValue(const Value& value, std::vector<std::uint8_t>& out,
         case Value::Type::Object: {
             const auto* object = value.getIf<Value::Object>();
             if (!object || object->size() > std::numeric_limits<std::uint32_t>::max())
-                return failure<void>(DiagnosticCode::InvalidArgument,
-                                     "runtime definition object exceeds limits");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "runtime definition object exceeds limits", {}, {},
+                                                               "asset.runtime-definition"));
             out.push_back(static_cast<std::uint8_t>(Tag::Object));
             put32(out, static_cast<std::uint32_t>(object->size()));
             for (const auto& [key, child] : *object) {
@@ -106,8 +105,9 @@ Result<void> encodeValue(const Value& value, std::vector<std::uint8_t>& out,
         }
     }
     if (out.size() > limits.maximumBytes)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "runtime definition exceeds byte budget");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "runtime definition exceeds byte budget", {}, {},
+                                                       "asset.runtime-definition"));
     return Result<void>::success();
 }
 
@@ -118,29 +118,36 @@ public:
 
     Result<Value> value(std::uint32_t depth = 0) {
         if (depth > limits_.maximumDepth || count_ >= limits_.maximumValues)
-            return failure<Value>(DiagnosticCode::InvalidArgument,
-                                  "runtime definition structure exceeds limits");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "runtime definition structure exceeds limits", {}, {},
+                                                            "asset.runtime-definition"));
         ++count_;
         std::uint8_t rawTag = 0;
         if (!byte(rawTag))
-            return failure<Value>(DiagnosticCode::ParseError,
-                                  "runtime definition value is truncated");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                            "runtime definition value is truncated", {}, {},
+                                                            "asset.runtime-definition"));
         const auto tag = static_cast<Tag>(rawTag);
         if (tag == Tag::Null) return Result<Value>::success(Value());
         if (tag == Tag::False) return Result<Value>::success(Value(false));
         if (tag == Tag::True) return Result<Value>::success(Value(true));
         if (tag == Tag::Int64) {
             std::uint64_t raw = 0;
-            if (!u64(raw)) return failure<Value>(DiagnosticCode::ParseError, "int64 is truncated");
+            if (!u64(raw))
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "int64 is truncated", {},
+                                                                {}, "asset.runtime-definition"));
             return Result<Value>::success(Value(std::bit_cast<std::int64_t>(raw)));
         }
         if (tag == Tag::Double) {
             std::uint64_t raw = 0;
-            if (!u64(raw)) return failure<Value>(DiagnosticCode::ParseError, "double is truncated");
+            if (!u64(raw))
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "double is truncated", {},
+                                                                {}, "asset.runtime-definition"));
             const double decoded = std::bit_cast<double>(raw);
             if (!std::isfinite(decoded))
-                return failure<Value>(DiagnosticCode::ParseError,
-                                      "runtime definition double is non-finite");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "runtime definition double is non-finite", {}, {},
+                                                                "asset.runtime-definition"));
             return Result<Value>::success(Value(decoded));
         }
         if (tag == Tag::String) {
@@ -151,8 +158,9 @@ public:
         std::uint32_t size = 0;
         if ((tag != Tag::Array && tag != Tag::Object) || !u32(size) ||
             size > limits_.maximumValues - count_)
-            return failure<Value>(DiagnosticCode::ParseError,
-                                  "runtime definition collection is invalid");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                            "runtime definition collection is invalid", {}, {},
+                                                            "asset.runtime-definition"));
         if (tag == Tag::Array) {
             Value::Array result;
             result.reserve(size);
@@ -169,8 +177,9 @@ public:
             auto key = string();
             if (!key) return Result<Value>::failure(key.status());
             if (key.value().empty() || (!previous.empty() && key.value() <= previous))
-                return failure<Value>(DiagnosticCode::ParseError,
-                                      "runtime definition object keys are not canonical");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "runtime definition object keys are not canonical", {},
+                                                                {}, "asset.runtime-definition"));
             previous = key.value();
             auto child = value(depth + 1);
             if (!child) return child;
@@ -204,13 +213,15 @@ private:
     Result<std::string> string() {
         std::uint32_t size = 0;
         if (!u32(size) || size > limits_.maximumStringBytes || size > bytes_.size() - cursor_)
-            return failure<std::string>(DiagnosticCode::ParseError,
-                                        "runtime definition string is invalid");
+            return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                  "runtime definition string is invalid", {}, {},
+                                                                  "asset.runtime-definition"));
         std::string result(reinterpret_cast<const char*>(bytes_.data() + cursor_), size);
         cursor_ += size;
         if (!isValidUtf8(result))
-            return failure<std::string>(DiagnosticCode::ParseError,
-                                        "runtime definition string is not valid UTF-8");
+            return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                  "runtime definition string is not valid UTF-8", {},
+                                                                  {}, "asset.runtime-definition"));
         return Result<std::string>::success(std::move(result));
     }
 
@@ -237,14 +248,15 @@ Result<Value> decodeRuntimeDefinition(std::span<const std::uint8_t> bytes,
     static constexpr std::uint8_t magic[] = {'E', 'V', 'D', 'E', 'F', 0, 1, 0};
     if (bytes.size() < sizeof(magic) || bytes.size() > limits.maximumBytes ||
         !std::equal(std::begin(magic), std::end(magic), bytes.begin()))
-        return failure<Value>(DiagnosticCode::ParseError,
-                              "runtime definition header or byte budget is invalid");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                        "runtime definition header or byte budget is invalid", {}, {},
+                                                        "asset.runtime-definition"));
     Decoder decoder(bytes.subspan(sizeof(magic)), limits);
     auto result = decoder.value();
     if (!result) return result;
     if (decoder.cursor() != bytes.size() - sizeof(magic))
-        return failure<Value>(DiagnosticCode::ParseError,
-                              "runtime definition has trailing bytes");
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime definition has trailing bytes", {}, {}, "asset.runtime-definition"));
     return result;
 }
 

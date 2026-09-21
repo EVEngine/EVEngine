@@ -22,6 +22,8 @@
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
+#include "procgen/PcgFrameRateManager.h"
+#include "procgen/PcgTaskQueue.h"
 #include "procgen/GtsTerrainExportSettings.h"
 #include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/JsonExport.h"
@@ -37,6 +39,7 @@
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/shaders/terrain_material_compat_frag_spv.inc"
+#include "procgen/shaders/terrain_water_compat_frag_spv.inc"
 
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
@@ -107,18 +110,17 @@ SQInteger releaseNativeProxy(SQUserPointer pointer, SQInteger) {
 
 template <class T, class Ref, class Resolve, class Release>
 ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Resolve&& resolve, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
 
     const auto ref  = std::move(reference).takeValue();
     const auto view = std::invoke(std::forward<Resolve>(resolve), ref);
     if (!view.isBound()) {
         std::invoke(release, ref).ignore("rollback unbound Squirrel procgen proxy");
         return eve::script::projectStatusResult(
-            vm,
-            procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                        "procgen proxy could not resolve its owned object", "procgen")
-                .status(),
-            false, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                  "procgen proxy could not resolve its owned object",
+                                                                  "procgen", {}, "procgen.squirrel"))
+                    .status());
     }
 
     const SQInteger top      = sq_gettop(vm);
@@ -128,11 +130,10 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
         sq_settop(vm, top);
         std::invoke(release, ref).ignore("rollback failed Squirrel procgen instance");
         return eve::script::projectStatusResult(
-            vm,
-            procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "failed to create Squirrel procgen proxy",
-                                        "procgen")
-                .status(),
-            false, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                  "failed to create Squirrel procgen proxy", "procgen",
+                                                                  {}, "procgen.squirrel"))
+                    .status());
     }
     sq_remove(vm, -2);
     auto* native = view.get();
@@ -152,7 +153,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     sq_addref(vm, &value.getRaw());
     sq_settop(vm, top);
 
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", value);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -164,12 +165,11 @@ template <class T>
 ssq::Table projectBorrowedResult(HSQUIRRELVM vm, eve::script::Borrowed<T> borrowed, const char* objectName) {
     if (!borrowed.isBound())
         return eve::script::projectStatusResult(
-            vm,
-            procgenBindingFailure<void>(eve::DiagnosticCode::Failed, std::string(objectName) + " could not be produced",
-                                        objectName)
-                .status(),
-            false, false);
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                  std::string(objectName) + " could not be produced",
+                                                                  objectName, {}, "procgen.squirrel"))
+                    .status());
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", borrowed.get());
     result.set("ownership", std::string("borrowed"));
     return result;
@@ -182,8 +182,9 @@ ssq::Table makeOwnedPointSetProxy(HSQUIRRELVM vm, eve::Result<ProcgenPointSetHan
         [](ProcgenPointSetHandleRef ref) {
             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
             return owner ? owner->releasePointSet(ref)
-                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                       "Procgen module is no longer loaded", "pointSet");
+                         : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "Procgen module is no longer loaded",
+                                                                             "pointSet", {}, "procgen.squirrel"));
         });
 }
 
@@ -194,8 +195,9 @@ ssq::Table makeOwnedGridProxy(HSQUIRRELVM vm, eve::Result<ProcgenGridHandleRef>&
         [](ProcgenGridHandleRef ref) {
             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
             return owner ? owner->release(ref)
-                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                       "Procgen module is no longer loaded", "grid");
+                         : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "Procgen module is no longer loaded",
+                                                                             "grid", {}, "procgen.squirrel"));
         });
 }
 
@@ -206,15 +208,10 @@ ssq::Table makeOwnedSpatialProxy(HSQUIRRELVM vm, eve::Result<ProcgenSpatialDataH
         [](ProcgenSpatialDataHandleRef ref) {
             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
             return owner ? owner->release(ref)
-                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                       "Procgen module is no longer loaded", "spatialData");
+                         : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "Procgen module is no longer loaded",
+                                                                             "spatialData", {}, "procgen.squirrel"));
         });
-}
-
-template <class T>
-eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.squirrel"));
 }
 
 eve::Value boundsValue(const Bounds& bounds) {
@@ -263,29 +260,22 @@ eve::Value publishReceiptProjection(ArtifactPublishReceipt&& receipt) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned procgen proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned procgen allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
     result.set("handle", static_cast<std::int64_t>(ref.packed()));
     return result;
-}
-
-template <class T>
-ssq::Table staleProcgenResult(HSQUIRRELVM vm, const char* objectName) {
-    return eve::script::projectResult(
-        vm, procgenBindingFailure<T>(eve::DiagnosticCode::StaleHandle,
-                                     std::string("owned procgen ") + objectName + " handle is stale", objectName));
 }
 
 /** @brief Projects a decoded terrain file as an owned heightmap proxy plus metadata.
@@ -296,7 +286,7 @@ ssq::Table staleProcgenResult(HSQUIRRELVM vm, const char* objectName) {
  * metres-per-cell and leaves that to the level that references it.
  */
 ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrainFile>&& decoded) {
-    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status(), false, false);
+    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status());
     DecodedTerrainFile terrain = std::move(decoded).takeValue();
     const std::int64_t width   = terrain.heightmap.getWidth();
     const std::int64_t height  = terrain.heightmap.getHeight();
@@ -307,8 +297,9 @@ ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrai
         [](ProcgenHeightmapHandleRef ref) {
             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
             return owner ? owner->releaseHeightmap(ref)
-                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                       "Procgen module is no longer loaded", "heightmap");
+                         : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "Procgen module is no longer loaded",
+                                                                             "heightmap", {}, "procgen.squirrel"));
         });
     result.set("spacingX", terrain.spacingX);
     result.set("spacingZ", terrain.spacingZ);
@@ -330,7 +321,7 @@ ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrai
 ssq::Table projectRecipeDescriptorResult(HSQUIRRELVM vm, eve::Result<RecipeDescriptor>&& result) {
     const bool        ok     = result.ok();
     const eve::Status status = result.status();
-    if (!ok) return eve::script::projectStatusResult(vm, status, false, false);
+    if (!ok) return eve::script::projectStatusResult(vm, status);
 
     auto descriptor = std::move(result).takeValue();
     auto object     = eve::script::makeOwnedSquirrelInstance<RecipeDescriptor>(
@@ -338,12 +329,10 @@ ssq::Table projectRecipeDescriptorResult(HSQUIRRELVM vm, eve::Result<RecipeDescr
     if (!object) {
         const eve::Status failure = object.status();
         object.ignore("failed to create owned Procgen recipe schema");
-        return eve::script::projectStatusResult(vm, failure, false, false);
+        return eve::script::projectStatusResult(vm, failure);
     }
 
-    auto projected = eve::script::projectStatusResult(vm, status, true, true);
-    projected.set("value", std::move(object).takeValue());
-    return projected;
+    return eve::script::projectStatusResult(vm, status, std::move(object).takeValue());
 }
 
 template <class T, class Tag>
@@ -412,8 +401,8 @@ eve::script::Borrowed<Params> Procgen::resolve(ProcgenParamsHandleRef reference)
 eve::Result<void> Procgen::release(ProcgenParamsHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "params", {}, "procgen.squirrel"));
     return module->params_.erase(reference);
 }
 
@@ -436,8 +425,8 @@ eve::script::Borrowed<OutputSpec> Procgen::resolveOutput(ProcgenOutputHandleRef 
 eve::Result<void> Procgen::releaseOutput(ProcgenOutputHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "output");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "output", {}, "procgen.squirrel"));
     return module->ownership_->outputs.erase(reference);
 }
 
@@ -447,8 +436,9 @@ bool Procgen::isOutputStale(ProcgenOutputHandleRef reference) const noexcept {
 
 eve::Result<ProcgenGridHandleRef> Procgen::newGridHandle(int width, int height) {
     if (width <= 0 || height <= 0)
-        return procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                           "procedural grid dimensions must be positive", "grid");
+        return eve::Result<ProcgenGridHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "procedural grid dimensions must be positive",
+                                   "grid", {}, "procgen.squirrel"));
     auto grid = std::make_unique<Grid2D>();
     grid->resize(width, height);
     Procgen* module = Procgen::create();
@@ -464,8 +454,8 @@ eve::script::Borrowed<Grid2D> Procgen::resolve(ProcgenGridHandleRef reference) n
 eve::Result<void> Procgen::release(ProcgenGridHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "grid");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "grid", {}, "procgen.squirrel"));
     return module->grids_.erase(reference);
 }
 
@@ -494,8 +484,9 @@ bool Procgen::isPointSetStale(ProcgenPointSetHandleRef reference) const noexcept
 eve::Result<ProcgenPointSetHandleRef> Procgen::sampleGridHandle(int width, int depth, float spacing, uint32_t seed,
                                                                 float jitter) {
     if (width <= 0 || depth <= 0 || spacing <= 0.f)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::InvalidArgument, "sampleGrid requires positive dimensions and spacing", "pointSet");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "sampleGrid requires positive dimensions and spacing", "pointSet", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(sampleGridPoints(width, depth, spacing, seed, jitter)));
 }
@@ -504,8 +495,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterHeightHandle(ProcgenPointSe
                                                                   float maxHeight) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterHeight input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "filterHeight input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointHeight(*view, minHeight, maxHeight)));
 }
@@ -514,8 +506,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterDensityHandle(ProcgenPointS
                                                                    float maxDensity) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "filterDensity input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "filterDensity input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointDensity(*view, minDensity, maxDensity)));
 }
@@ -525,8 +518,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterBoxHandle(ProcgenPointSetHa
                                                                bool invert) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterBox input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "filterBox input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(
                                                     filterPointBox(*view, minX, minY, minZ, maxX, maxY, maxZ, invert)));
 }
@@ -535,8 +529,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterSlopeHandle(ProcgenPointSet
                                                                  float maxDegrees) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterSlope input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "filterSlope input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointSlope(*view, minDegrees, maxDegrees)));
 }
@@ -546,8 +541,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterPolygonHandle(ProcgenPointS
     auto source = resolvePointSet(input);
     auto shape  = resolvePointSet(polygon);
     if (!source.isBound() || !shape.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterPolygon input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "filterPolygon input handle is stale", "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointsByPolygon(*source, *shape, invert)));
 }
@@ -558,8 +553,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterSplineDistanceHandle(Procge
     auto source  = resolvePointSet(input);
     auto control = resolvePointSet(controlPoints);
     if (!source.isBound() || !control.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterSplineDistance input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "filterSplineDistance input handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(filterPointsBySplineDistance(
                                                     *source, *control, minDistance, maxDistance)));
 }
@@ -568,8 +564,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::excludeRadiusHandle(ProcgenPointS
                                                                    float radius) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "excludeRadius input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "excludeRadius input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(excludePointRadius(*view, x, z, radius)));
 }
 
@@ -577,8 +574,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::jitterPointsHandle(ProcgenPointSe
                                                                   float amountX, float amountZ) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "jitterPoints input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "jitterPoints input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(jitterPointPositions(*view, seed, amountX, amountZ)));
 }
@@ -586,8 +584,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::jitterPointsHandle(ProcgenPointSe
 eve::Result<ProcgenPointSetHandleRef> Procgen::selfPruneHandle(ProcgenPointSetHandleRef input, float radius) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "selfPrune input point-set handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "selfPrune input point-set handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(selfPrunePoints(*view, radius)));
 }
 
@@ -598,11 +597,13 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToHeightmapHandle(ProcgenP
     auto points = resolvePointSet(input);
     auto map    = resolveHeightmap(heightmap);
     if (!points.isBound() || !map.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "projectToHeightmap input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "projectToHeightmap input handle is stale",
+                                   "input", {}, "procgen.squirrel"));
     if (cellSize <= 0.f)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::InvalidArgument, "projectToHeightmap cellSize must be positive", "cellSize");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "projectToHeightmap cellSize must be positive",
+                                   "cellSize", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(projectPointsToHeightmap(
                                                     *points, *map, originX, originZ, cellSize, heightScale)));
 }
@@ -611,11 +612,13 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSplineHandle(ProcgenPointSe
                                                                   uint32_t seed, float lateralJitter) {
     auto control = resolvePointSet(controlPoints);
     if (!control.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "sampleSpline control point-set handle is stale", "controlPoints");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "sampleSpline control point-set handle is stale",
+                                   "controlPoints", {}, "procgen.squirrel"));
     if (spacing <= 0.f)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                               "sampleSpline spacing must be positive", "spacing");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "sampleSpline spacing must be positive",
+                                   "spacing", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(samplePolylinePoints(*control, spacing, seed, lateralJitter)));
 }
@@ -625,8 +628,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::mergePointsHandle(ProcgenPointSet
     auto a = resolvePointSet(first);
     auto b = resolvePointSet(second);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "mergePoints input handle is stale", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "mergePoints input handle is stale", "points", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(mergePointSets(*a, *b)));
 }
 
@@ -635,8 +638,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::unionPointsHandle(ProcgenPointSet
     auto a = resolvePointSet(first);
     auto b = resolvePointSet(second);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "unionPoints requires live point sets", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "unionPoints requires live point sets", "points",
+                                   {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(unionPointSets(*a, *b)));
 }
 
@@ -645,8 +649,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::intersectPointsHandle(ProcgenPoin
     auto a = resolvePointSet(first);
     auto b = resolvePointSet(second);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "intersectPoints requires live point sets", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "intersectPoints requires live point sets",
+                                   "points", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(intersectPointSets(*a, *b)));
 }
 
@@ -655,8 +660,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::differencePointsHandle(ProcgenPoi
     auto a = resolvePointSet(first);
     auto b = resolvePointSet(second);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "differencePoints requires live point sets", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "differencePoints requires live point sets",
+                                   "points", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(differencePointSets(*a, *b)));
 }
 
@@ -666,8 +672,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPointsHandle(ProcgenPoin
                                                                      float scaleZ) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "transformPoints input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "transformPoints input handle is stale", "input",
+                                   {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(transformPointSet(*view, translateX, translateY, translateZ,
                                                                          yawDegrees, scaleX, scaleY, scaleZ)));
@@ -680,8 +687,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPoints3DHandle(ProcgenPo
                                                                        float scaleZ) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "transformPoints3D input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "transformPoints3D input handle is stale", "input",
+                                   {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(transformPointSet3D(
                                                     *view, translateX, translateY, translateZ, pitchDegrees, yawDegrees,
                                                     rollDegrees, scaleX, scaleY, scaleZ)));
@@ -693,8 +701,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::copyPointsHandle(ProcgenPointSetH
     auto sourceView = resolvePointSet(source);
     auto targetView = resolvePointSet(targets);
     if (!sourceView.isBound() || !targetView.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "copyPoints requires live point sets", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "copyPoints requires live point sets", "points", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(copyPointsToTargets(
                                                     *sourceView, *targetView, inheritTargetAttributes)));
 }
@@ -704,12 +712,14 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::remapDensityHandle(ProcgenPointSe
                                                                   bool clampOutput) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "remapDensity point-set handle is stale", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "remapDensity point-set handle is stale", "points",
+                                   {}, "procgen.squirrel"));
     if (!std::isfinite(inputMin) || !std::isfinite(inputMax) || inputMin == inputMax || !std::isfinite(outputMin) ||
         !std::isfinite(outputMax))
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::InvalidArgument, "remapDensity requires finite non-zero input range", "inputRange");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "remapDensity requires finite non-zero input range", "inputRange", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(remapPointDensity(
                                                     *view, inputMin, inputMax, outputMin, outputMax, clampOutput)));
 }
@@ -721,15 +731,17 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::mathFloatAttributeHandle(ProcgenP
                                                                         float defaultValue) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "mathFloatAttribute point-set handle is stale", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "mathFloatAttribute point-set handle is stale",
+                                   "points", {}, "procgen.squirrel"));
     if (attribute.empty() || outputAttribute.empty() ||
         (operation != "add" && operation != "subtract" && operation != "multiply" && operation != "divide" &&
          operation != "min" && operation != "max") ||
         (operation == "divide" && operand == 0.f))
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::InvalidArgument,
-            "mathFloatAttribute requires a supported operation and valid attributes", "operation");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "mathFloatAttribute requires a supported operation and valid attributes",
+                                   "operation", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(mathPointFloatAttribute(*view, attribute, outputAttribute,
                                                                                operation, operand, defaultValue)));
@@ -740,9 +752,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterFloatAttributeHandle(Procge
                                                                           float maxValue, bool invert) {
     auto view = resolvePointSet(input);
     if (!view.isBound() || name.empty())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
-            "filterFloatAttribute requires a live input and attribute name", "input");
+            "filterFloatAttribute requires a live input and attribute name", "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(filterPointFloatAttribute(
                                                     *view, name, minValue, maxValue, invert)));
 }
@@ -752,9 +764,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterStringAttributeHandle(Procg
                                                                            const std::string& value, bool invert) {
     auto view = resolvePointSet(input);
     if (!view.isBound() || name.empty())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             name.empty() ? eve::DiagnosticCode::InvalidArgument : eve::DiagnosticCode::StaleHandle,
-            "filterStringAttribute requires a live input and attribute name", "input");
+            "filterStringAttribute requires a live input and attribute name", "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(filterPointStringAttribute(*view, name, value, invert)));
 }
@@ -763,8 +775,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(ProcgenPointSet
                                                                  float multiplier) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "densityCull input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "densityCull input handle is stale", "input", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(densityCullPoints(*view, seed, multiplier)));
 }
 
@@ -773,15 +785,18 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPoint
                                                                     bool keepUnmatched) {
     auto points = resolvePointSet(input);
     if (!points.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "projectToWorld point-set handle is stale", "points");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "projectToWorld point-set handle is stale",
+                                   "points", {}, "procgen.squirrel"));
     if (!std::isfinite(maxY) || !std::isfinite(minY) || maxY < minY)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                               "projectToWorld requires finite maxY >= minY", "maxY");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "projectToWorld requires finite maxY >= minY",
+                                   "maxY", {}, "procgen.squirrel"));
     auto* query = eve::cap::query<eve::IProcgenWorldQuery>();
     if (!query)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
-            eve::DiagnosticCode::Unsupported, "projectToWorld requires an IProcgenWorldQuery provider", "worldQuery");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "projectToWorld requires an IProcgenWorldQuery provider", "worldQuery",
+            {}, "procgen.squirrel"));
 
     PointSet output;
     output.reserve(points->points().size());
@@ -789,8 +804,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPoint
         const auto& source      = points->points()[sourceIndex];
         auto        queryResult = query->projectDown(source.x, source.z, maxY, minY, maskBits);
         if (!queryResult.ok())
-            return procgenBindingFailure<ProcgenPointSetHandleRef>(
-                eve::DiagnosticCode::Failed, "world-query provider failed to execute projection", "worldQuery");
+            return eve::Result<ProcgenPointSetHandleRef>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "world-query provider failed to execute projection",
+                                       "worldQuery", {}, "procgen.squirrel"));
         const auto& hit = queryResult.value();
         if (!hit.hit) {
             if (keepUnmatched)
@@ -815,9 +831,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPoint
 eve::Result<ProcgenPointSetHandleRef> Procgen::poissonDiskHandle(int width, int depth, float radius, uint32_t seed,
                                                                  int maxPoints) {
     if (width < 0 || depth < 0 || radius <= 0.f || maxPoints < 0)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument,
-            "poissonDisk requires non-negative dimensions/count and a positive radius");
+            "poissonDisk requires non-negative dimensions/count and a positive radius", {}, {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points,
                             std::make_unique<PointSet>(poissonDiskPoints(width, depth, radius, seed, maxPoints)));
 }
@@ -882,28 +898,33 @@ eve::Result<void> Procgen::publishInstances(const std::string& batchId, ProcgenP
                                             const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
     if (batchId.empty() || !view.isBound())
-        return procgenBindingFailure<void>(
+        return eve::Result<void>::failure(eve::Diagnostic::error(
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
-            "publishInstances requires a batch id and a live point-set handle");
+            "publishInstances requires a batch id and a live point-set handle", {}, {}, "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink is unavailable");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "publishInstances scene sink is unavailable", {}, {}, "procgen.squirrel"));
 
     auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, false);
     if (!instances.ok()) return eve::Result<void>::failure(instances.status());
     if (!sink->applyBatch(batchId, instances.value()))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "publishInstances scene sink rejected batch");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "publishInstances scene sink rejected batch", {}, {}, "procgen.squirrel"));
     return eve::Result<void>::success();
 }
 
 eve::Result<void> Procgen::removeInstances(const std::string& batchId) {
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (batchId.empty())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "removeInstances requires a batch id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "removeInstances requires a batch id", {}, {}, "procgen.squirrel"));
     if (!sink)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "removeInstances scene sink is unavailable");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "removeInstances scene sink is unavailable", {}, {}, "procgen.squirrel"));
     if (!sink->removeBatch(batchId))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "removeInstances scene sink rejected batch");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "removeInstances scene sink rejected batch", {}, {}, "procgen.squirrel"));
     return eve::Result<void>::success();
 }
 
@@ -911,8 +932,9 @@ eve::Result<void> Procgen::publishCellInstances(const std::string& prefix, const
                                                 ProcgenPointSetHandleRef points, const std::string& assetAttribute,
                                                 const std::string& defaultAsset) {
     if (prefix.empty())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "publishCellInstances requires a prefix");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "publishCellInstances requires a prefix", {}, {},
+                                                                 "procgen.squirrel"));
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
                                 std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
     return publishInstances(batchId, points, assetAttribute, defaultAsset);
@@ -923,14 +945,14 @@ eve::Result<uint64_t> Procgen::publishCellSnapshot(const std::string& prefix, co
                                                    const std::string& assetAttribute, const std::string& defaultAsset) {
     const auto view = resolvePointSet(points);
     if (prefix.empty() || targetRevision == 0 || !view.isBound())
-        return procgenBindingFailure<uint64_t>(
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
             "publishCellSnapshot requires a prefix, live point set, and non-zero target revision",
-            "publishCellSnapshot");
+            "publishCellSnapshot", {}, "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "publishCellSnapshot scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "publishCellSnapshot scene sink is unavailable", {}, {}, "procgen.squirrel"));
     auto instances = sceneInstanceDescs(*view, assetAttribute, defaultAsset, true);
     if (!instances.ok()) return eve::Result<uint64_t>::failure(instances.status());
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
@@ -943,16 +965,19 @@ eve::Result<uint64_t> Procgen::publishCellInstanceDelta(const std::string& prefi
                                                         const std::string& assetAttribute,
                                                         const std::string& defaultAsset) {
     if (prefix.empty())
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                               "publishCellInstanceDelta requires a prefix", "prefix");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "publishCellInstanceDelta requires a prefix",
+                                                                     "prefix", {}, "procgen.squirrel"));
     if (targetRevision < 2)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                               "publishCellInstanceDelta requires a target revision greater than one",
-                                               "targetRevision");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "publishCellInstanceDelta requires a target revision greater than one",
+                                   "targetRevision", {}, "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "publishCellInstanceDelta scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "publishCellInstanceDelta scene sink is unavailable",
+                                   {}, {}, "procgen.squirrel"));
 
     eve::ProcgenInstanceDelta sceneDelta;
     sceneDelta.baseRevision     = targetRevision - 1;
@@ -980,28 +1005,32 @@ eve::Result<uint64_t> Procgen::synchronizeCellInstances(const std::string& prefi
                                                         const std::string&        assetAttribute,
                                                         const std::string&        defaultAsset) {
     if (prefix.empty())
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                               "synchronizeCellInstances requires a prefix", "prefix");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "synchronizeCellInstances requires a prefix",
+                                                                     "prefix", {}, "procgen.squirrel"));
     const int                 level          = request.getLevel();
     const int                 x              = request.getX();
     const int                 z              = request.getZ();
     const uint64_t            targetRevision = runtime.getCellRevision(level, x, z);
     std::unique_ptr<PointSet> snapshot(runtime.getCellOutput(level, x, z));
     if (!snapshot || targetRevision == 0)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
-                                               "synchronizeCellInstances requires an active runtime cell", "cell");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "synchronizeCellInstances requires an active runtime cell", "cell", {},
+            "procgen.squirrel"));
 
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "synchronizeCellInstances scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "synchronizeCellInstances scene sink is unavailable",
+                                   {}, {}, "procgen.squirrel"));
     const std::string batchId =
         prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
     const uint64_t sceneRevision = sink->batchRevision(batchId);
     if (sceneRevision == targetRevision) return eve::Result<uint64_t>::success(targetRevision);
     if (sceneRevision > targetRevision)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
-                                               "Scene cell revision is ahead of RuntimeGeneration", "revision");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "Scene cell revision is ahead of RuntimeGeneration",
+                                   "revision", {}, "procgen.squirrel"));
 
     if (sceneRevision + 1 == targetRevision) {
         std::unique_ptr<PointDelta> delta(runtime.getCellDelta(level, x, z));
@@ -1020,14 +1049,15 @@ eve::Result<uint64_t> Procgen::synchronizeCellInstancesAtomic(const std::string&
                                                               const std::string& assetAttribute,
                                                               const std::string& defaultAsset) {
     if (prefix.empty() || runtimes.empty() || runtimes.size() != requests.size())
-        return procgenBindingFailure<uint64_t>(
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument,
             "synchronizeCellInstancesAtomic requires a prefix and equally sized non-empty runtime/request lists",
-            "cells");
+            "cells", {}, "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "synchronizeCellInstancesAtomic scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "synchronizeCellInstancesAtomic scene sink is unavailable", {}, {},
+            "procgen.squirrel"));
 
     std::vector<eve::ProcgenBatchSnapshot> snapshots;
     snapshots.reserve(requests.size());
@@ -1036,25 +1066,29 @@ eve::Result<uint64_t> Procgen::synchronizeCellInstancesAtomic(const std::string&
         const auto* runtime = runtimes[index];
         const auto* request = requests[index];
         if (!runtime || !request)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                   "synchronizeCellInstancesAtomic contains a null cell", "cells");
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "synchronizeCellInstancesAtomic contains a null cell", "cells",
+                {}, "procgen.squirrel"));
         const int                 level          = request->getLevel();
         const int                 x              = request->getX();
         const int                 z              = request->getZ();
         const uint64_t            targetRevision = runtime->getCellRevision(level, x, z);
         std::unique_ptr<PointSet> output(runtime->getCellOutput(level, x, z));
         if (!output || targetRevision == 0)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::NotFound,
-                                                   "synchronizeCellInstancesAtomic contains an inactive cell", "cells");
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "synchronizeCellInstancesAtomic contains an inactive cell", "cells", {},
+                "procgen.squirrel"));
         const std::string batchId =
             prefix + "/L" + std::to_string(level) + "/" + std::to_string(x) + "/" + std::to_string(z);
         if (!batchIds.insert(batchId).second)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
-                                                   "synchronizeCellInstancesAtomic repeats a cell", "cells");
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "synchronizeCellInstancesAtomic repeats a cell",
+                                       "cells", {}, "procgen.squirrel"));
         const uint64_t sceneRevision = sink->batchRevision(batchId);
         if (sceneRevision > targetRevision)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Conflict,
-                                                   "Scene cell revision is ahead of RuntimeGeneration", "revision");
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "Scene cell revision is ahead of RuntimeGeneration", "revision", {},
+                "procgen.squirrel"));
         if (sceneRevision == targetRevision) continue;
         auto instances = sceneInstanceDescs(*output, assetAttribute, defaultAsset, true);
         if (!instances) return eve::Result<uint64_t>::failure(instances.status());
@@ -1066,8 +1100,8 @@ eve::Result<uint64_t> Procgen::synchronizeCellInstancesAtomic(const std::string&
 
 eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const ProcgenCellRequest& request) {
     if (prefix.empty())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "removeCellInstances requires a prefix");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "removeCellInstances requires a prefix", {}, {}, "procgen.squirrel"));
     const std::string batchId = prefix + "/L" + std::to_string(request.getLevel()) + "/" +
                                 std::to_string(request.getX()) + "/" + std::to_string(request.getZ());
     return removeInstances(batchId);
@@ -1076,19 +1110,21 @@ eve::Result<void> Procgen::removeCellInstances(const std::string& prefix, const 
 eve::Result<uint64_t> Procgen::removeCellInstancesAtomic(const std::string&                            prefix,
                                                          const std::vector<const ProcgenCellRequest*>& requests) {
     if (prefix.empty() || requests.empty())
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                               "removeCellInstancesAtomic requires a prefix and cleanup requests",
-                                               "requests");
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "removeCellInstancesAtomic requires a prefix and cleanup requests",
+            "requests", {}, "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "removeCellInstancesAtomic scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "removeCellInstancesAtomic scene sink is unavailable",
+                                   {}, {}, "procgen.squirrel"));
     std::vector<std::string> batchIds;
     batchIds.reserve(requests.size());
     for (const auto* request : requests) {
         if (!request)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                   "removeCellInstancesAtomic contains a null request", "requests");
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "removeCellInstancesAtomic contains a null request", "requests",
+                {}, "procgen.squirrel"));
         batchIds.push_back(prefix + "/L" + std::to_string(request->getLevel()) + "/" + std::to_string(request->getX()) +
                            "/" + std::to_string(request->getZ()));
     }
@@ -1099,13 +1135,15 @@ eve::Result<uint64_t> Procgen::completeCellCleanupAtomic(const std::string&     
                                                          const std::vector<RuntimeGeneration*>&        runtimes,
                                                          const std::vector<const ProcgenCellRequest*>& requests) {
     if (prefix.empty() || requests.empty() || runtimes.size() != requests.size())
-        return procgenBindingFailure<uint64_t>(
+        return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument,
-            "completeCellCleanupAtomic requires a prefix and equally sized runtime/request arrays", "requests");
+            "completeCellCleanupAtomic requires a prefix and equally sized runtime/request arrays", "requests", {},
+            "procgen.squirrel"));
     auto* sink = eve::cap::query<eve::IProcgenSceneSink>();
     if (!sink)
-        return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::Failed,
-                                               "completeCellCleanupAtomic scene sink is unavailable");
+        return eve::Result<uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "completeCellCleanupAtomic scene sink is unavailable",
+                                   {}, {}, "procgen.squirrel"));
 
     struct RuntimeCleanupGroup {
         RuntimeGeneration*                     runtime = nullptr;
@@ -1119,9 +1157,9 @@ eve::Result<uint64_t> Procgen::completeCellCleanupAtomic(const std::string&     
         auto* runtime = runtimes[index];
         auto* request = requests[index];
         if (!runtime || !request)
-            return procgenBindingFailure<uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                   "completeCellCleanupAtomic contains a null runtime or request",
-                                                   "requests");
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "completeCellCleanupAtomic contains a null runtime or request",
+                "requests", {}, "procgen.squirrel"));
         auto group = std::find_if(groups.begin(), groups.end(),
                                   [runtime](const auto& candidate) { return candidate.runtime == runtime; });
         if (group == groups.end()) {
@@ -1165,8 +1203,8 @@ int Procgen::getPublishedRemovedCount(const std::string& batchId) const {
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::pointDataHandle(ProcgenPointSetHandleRef points) {
     auto view = resolvePointSet(points);
     if (!view.isBound())
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                                  "pointData point-set handle is stale", "points");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "pointData point-set handle is stale", "points", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::fromPoints(*view)));
 }
 
@@ -1177,8 +1215,9 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::boxVolumeHandle(float minX, fl
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::sphereVolumeHandle(float x, float y, float z, float radius) {
     if (radius <= 0.f)
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "sphereVolume radius must be positive", "radius");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "sphereVolume radius must be positive",
+                                   "radius", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::sphere(x, y, z, radius)));
 }
 
@@ -1186,9 +1225,10 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::polygonVolumeHandle(ProcgenPoi
                                                                       float minY, float maxY) {
     auto points = resolvePointSet(controlPoints);
     if (!points.isBound() || points->getCount() < 3 || !std::isfinite(minY) || !std::isfinite(maxY))
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-            eve::DiagnosticCode::InvalidArgument,
-            "polygonVolume requires a live set with at least three points and finite heights", "controlPoints");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "polygonVolume requires a live set with at least three points and finite heights",
+                                   "controlPoints", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::polygon(*points, minY, maxY)));
 }
 
@@ -1196,9 +1236,10 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::splineDataHandle(ProcgenPointS
                                                                    float                    radius) {
     auto view = resolvePointSet(controlPoints);
     if (!view.isBound() || view->getCount() < 2 || radius < 0.f)
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
-            "splineData requires a live set with at least two points and non-negative radius", "controlPoints");
+            "splineData requires a live set with at least two points and non-negative radius", "controlPoints", {},
+            "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::spline(*view, radius)));
 }
 
@@ -1207,9 +1248,10 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::heightfieldDataHandle(ProcgenH
                                                                         float heightScale) {
     auto view = resolveHeightmap(heightmap);
     if (!view.isBound() || view->getWidth() <= 0 || view->getHeight() <= 0 || cellSize <= 0.f)
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
-            "heightfieldData requires a live non-empty heightmap and positive cell size", "heightmap");
+            "heightfieldData requires a live non-empty heightmap and positive cell size", "heightmap", {},
+            "procgen.squirrel"));
     return spatialData_.emplace(
         std::make_unique<SpatialData>(SpatialData::heightfield(*view, originX, originZ, cellSize, heightScale)));
 }
@@ -1219,9 +1261,10 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::textureMaskDataHandle(ProcgenH
                                                                         float maxValue, float minY, float maxY) {
     auto view = resolveHeightmap(values);
     if (!view.isBound() || view->getWidth() <= 0 || view->getHeight() <= 0 || cellSize <= 0.f)
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-            eve::DiagnosticCode::InvalidArgument,
-            "textureMaskData requires a live non-empty scalar map and positive cell size", "values");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "textureMaskData requires a live non-empty scalar map and positive cell size",
+                                   "values", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(
         SpatialData::textureMask(*view, originX, originZ, cellSize, minValue, maxValue, minY, maxY)));
 }
@@ -1230,9 +1273,10 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::meshSurfaceDataHandle(ProcgenM
                                                                         float                     tolerance) {
     auto view = resolveMeshBuild(mesh);
     if (!view.isBound() || view->getVertexCount() < 3 || view->getIndexCount() < 3 || tolerance < 0.f)
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-            eve::DiagnosticCode::InvalidArgument,
-            "meshSurfaceData requires a live triangle mesh and non-negative tolerance", "mesh");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "meshSurfaceData requires a live triangle mesh and non-negative tolerance", "mesh",
+                                   {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::meshSurface(*view, tolerance)));
 }
 
@@ -1241,8 +1285,8 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::unionSpatialHandle(ProcgenSpat
     auto a = resolveSpatialData(left);
     auto b = resolveSpatialData(right);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                                  "unionSpatial input handle is stale", "spatial");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "unionSpatial input handle is stale", "spatial", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::unite(*a, *b)));
 }
 
@@ -1251,8 +1295,9 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::intersectSpatialHandle(Procgen
     auto a = resolveSpatialData(left);
     auto b = resolveSpatialData(right);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                                  "intersectSpatial input handle is stale", "spatial");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "intersectSpatial input handle is stale",
+                                   "spatial", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::intersect(*a, *b)));
 }
 
@@ -1261,8 +1306,9 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::differenceSpatialHandle(Procge
     auto a = resolveSpatialData(left);
     auto b = resolveSpatialData(right);
     if (!a.isBound() || !b.isBound())
-        return procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                                  "differenceSpatial input handle is stale", "spatial");
+        return eve::Result<ProcgenSpatialDataHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "differenceSpatial input handle is stale",
+                                   "spatial", {}, "procgen.squirrel"));
     return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::subtract(*a, *b)));
 }
 
@@ -1270,9 +1316,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSpatialHandle(ProcgenSpatia
                                                                    uint32_t seed, float jitter) {
     auto view = resolveSpatialData(spatial);
     if (!view.isBound() || spacing <= 0.f)
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
-            "sampleSpatial requires live spatial data and positive spacing", "spatial");
+            "sampleSpatial requires live spatial data and positive spacing", "spatial", {}, "procgen.squirrel"));
     return ownership_->points.emplace(std::make_unique<PointSet>(view->sample(spacing, seed, jitter)));
 }
 
@@ -1281,8 +1327,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::filterSpatialHandle(ProcgenPointS
     auto points = resolvePointSet(input);
     auto domain = resolveSpatialData(spatial);
     if (!points.isBound() || !domain.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "filterSpatial input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "filterSpatial input handle is stale", "input", {}, "procgen.squirrel"));
     return ownership_->points.emplace(std::make_unique<PointSet>(domain->filter(*points, invert)));
 }
 
@@ -1291,8 +1337,9 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToSpatialHandle(ProcgenPoi
     auto points = resolvePointSet(input);
     auto domain = resolveSpatialData(spatial);
     if (!points.isBound() || !domain.isBound())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                               "projectToSpatial input handle is stale", "input");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "projectToSpatial input handle is stale", "input",
+                                   {}, "procgen.squirrel"));
     return ownership_->points.emplace(std::make_unique<PointSet>(domain->project(*points)));
 }
 
@@ -1412,8 +1459,8 @@ eve::Result<ProcgenContextHandleRef> Procgen::beginSystemHandle(const std::strin
 
     if (name.empty()) {
         module->lastError_ = "beginSystem: name is empty";
-        return procgenBindingFailure<ProcgenContextHandleRef>(eve::DiagnosticCode::InvalidArgument, module->lastError_,
-                                                              "context");
+        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, module->lastError_, "context", {}, "procgen.squirrel"));
     }
     auto       context  = std::make_unique<ProcgenContext>(name, seed);
     const auto previous = module->systems_.find(name);
@@ -1427,13 +1474,13 @@ eve::Result<ProcgenContextHandleRef> Procgen::beginCachedSystemHandle(const std:
     module->lastError_.clear();
     if (name.empty()) {
         module->lastError_ = "beginCachedSystem: name is empty";
-        return procgenBindingFailure<ProcgenContextHandleRef>(eve::DiagnosticCode::InvalidArgument, module->lastError_,
-                                                              "context");
+        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, module->lastError_, "context", {}, "procgen.squirrel"));
     }
     if (buildKey.empty()) {
         module->lastError_ = "beginCachedSystem: build key is empty";
-        return procgenBindingFailure<ProcgenContextHandleRef>(eve::DiagnosticCode::InvalidArgument, module->lastError_,
-                                                              "buildKey");
+        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, module->lastError_, "buildKey", {}, "procgen.squirrel"));
     }
     const uint32_t normalizedSeed = seed ? seed : 1u;
     const auto     found          = module->systems_.find(name);
@@ -1453,8 +1500,8 @@ eve::script::Borrowed<ProcgenContext> Procgen::resolve(ProcgenContextHandleRef r
 eve::Result<void> Procgen::release(ProcgenContextHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "context", {}, "procgen.squirrel"));
     return module->contexts_.erase(reference);
 }
 
@@ -1467,22 +1514,26 @@ bool Procgen::isStale(ProcgenContextHandleRef reference) noexcept {
 eve::Result<void> Procgen::commitSystem(ProcgenContextHandleRef reference) {
     auto view = Procgen::resolve(reference);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "commitSystem context handle is stale",
-                                           "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "commitSystem context handle is stale", "context", {},
+                                                                 "procgen.squirrel"));
     ProcgenContext* context = view.get();
     if (!context->isActive())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                           "commitSystem: transaction is closed", "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "commitSystem: transaction is closed", "context", {},
+                                                                 "procgen.squirrel"));
     if (context->hasFailed()) {
         const std::string error = context->getError();
         context->close();
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "commitSystem: " + error, "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, "commitSystem: " + error,
+                                                                 "context", {}, "procgen.squirrel"));
     }
     if (!context->openTraces_.empty()) {
         const std::string trace = context->openTraces_.back().name;
         context->close();
-        return procgenBindingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                           "commitSystem: unfinished trace '" + trace + "'", "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "commitSystem: unfinished trace '" + trace + "'",
+                                                                 "context", {}, "procgen.squirrel"));
     }
 
     const auto current = systems_.find(context->name_);
@@ -1506,8 +1557,9 @@ eve::Result<void> Procgen::commitSystem(ProcgenContextHandleRef reference) {
 eve::Result<void> Procgen::abortSystem(ProcgenContextHandleRef reference) {
     auto view = Procgen::resolve(reference);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "abortSystem context handle is stale",
-                                           "context");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "abortSystem context handle is stale", "context", {},
+                                                                 "procgen.squirrel"));
     view->abort();
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -1515,7 +1567,8 @@ eve::Result<void> Procgen::abortSystem(ProcgenContextHandleRef reference) {
 eve::Result<void> Procgen::removeSystem(const std::string& name) {
     previousSystems_.erase(name);
     if (systems_.erase(name) == 0)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::NotFound, "procgen system was not committed", "system");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "procgen system was not committed", "system", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -1562,12 +1615,12 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemOutputHandle(const std::
                                                                      const std::string& outputName) const {
     const auto system = systems_.find(name);
     if (system == systems_.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "procgen system is not committed", "system");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "procgen system is not committed", "system", {}, "procgen.squirrel"));
     const auto output = system->second.outputs.find(outputName);
     if (output == system->second.outputs.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "procgen system output was not found", "output");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "procgen system output was not found", "output", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(output->second));
 }
 
@@ -1575,12 +1628,12 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemDebugStageHandle(const s
                                                                          const std::string& stageName) const {
     const auto system = systems_.find(name);
     if (system == systems_.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "procgen system is not committed", "system");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "procgen system is not committed", "system", {}, "procgen.squirrel"));
     const auto stage = system->second.debugStages.find(stageName);
     if (stage == system->second.debugStages.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "procgen debug stage was not found", "stage");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "procgen debug stage was not found", "stage", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(stage->second));
 }
 
@@ -1588,12 +1641,14 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getPreviousSystemDebugStageHandle
                                                                                  const std::string& stageName) const {
     const auto system = previousSystems_.find(name);
     if (system == previousSystems_.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "procgen system has no previous revision", "system");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "procgen system has no previous revision", "system",
+                                   {}, "procgen.squirrel"));
     const auto stage = system->second.debugStages.find(stageName);
     if (stage == system->second.debugStages.end())
-        return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::NotFound,
-                                                               "previous procgen debug stage was not found", "stage");
+        return eve::Result<ProcgenPointSetHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "previous procgen debug stage was not found", "stage",
+                                   {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->points, std::make_unique<PointSet>(stage->second));
 }
 
@@ -1661,12 +1716,13 @@ eve::Result<ProcgenGridHandleRef> Procgen::generateHandle(const std::string&    
                                                           ProcgenParamsHandleRef params) {
     auto input = Procgen::resolve(params);
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                           "generate parameters handle is stale", "params");
+        return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "generate parameters handle is stale", "params", {}, "procgen.squirrel"));
     auto grid = std::make_unique<Grid2D>();
     if (!runGenerate(algorithmId, *input, *grid))
-        return procgenBindingFailure<ProcgenGridHandleRef>(
-            eve::DiagnosticCode::Failed, lastError_.empty() ? "generate failed" : lastError_, "algorithm");
+        return eve::Result<ProcgenGridHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_.empty() ? "generate failed" : lastError_,
+                                   "algorithm", {}, "procgen.squirrel"));
     return ownProcgenObject(grids_, std::move(grid));
 }
 
@@ -1675,48 +1731,54 @@ eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenPar
     auto paramsView = Procgen::resolve(params);
     auto outputView = resolveOutput(output);
     if (!paramsView.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "generateTo parameter handle is stale",
-                                           "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "generateTo parameter handle is stale", "params", {},
+                                                                 "procgen.squirrel"));
     if (!outputView.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "generateTo output handle is stale",
-                                           "output");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "generateTo output handle is stale", "output", {}, "procgen.squirrel"));
     Grid2D grid;
     if (!runGenerate(algorithmId, *paramsView, grid))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed,
-                                           lastError_.empty() ? "generateTo failed" : lastError_, "algorithm");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                 lastError_.empty() ? "generateTo failed" : lastError_,
+                                                                 "algorithm", {}, "procgen.squirrel"));
 
     const std::string target = outputView->getTarget();
     if (target == "grid") {
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "generateTo: target 'grid' has no sink; use generateHandle()",
-                                           "output.target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "generateTo: target 'grid' has no sink; use generateHandle()",
+            "output.target", {}, "procgen.squirrel"));
     }
     if (target == "tilelayer") {
         auto* layer = outputView->getLayer();
         if (!layer)
-            return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                               "generateTo: tilelayer target has no layer", "output.layer");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "generateTo: tilelayer target has no layer",
+                                                                     "output.layer", {}, "procgen.squirrel"));
         if (!palettes_.applyToLayer(grid, outputView->getPalette(), layer, &lastError_))
-            return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, lastError_, "output");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "output", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     if (target == "json") {
         if (!writeGridJson(grid, outputView->getPath(), &lastError_))
-            return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, lastError_, "output.path");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "output.path", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
-    return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                       "generateTo: unknown target '" + target + "' (use grid|tilelayer|json)",
-                                       "output.target");
+    return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "generateTo: unknown target '" + target + "' (use grid|tilelayer|json)",
+        "output.target", {}, "procgen.squirrel"));
 }
 
 eve::Result<void> Procgen::applyToLayer(ProcgenGridHandleRef grid, const std::string& palette, map::TileLayer& layer) {
     auto view = Procgen::resolve(grid);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "applyToLayer grid handle is stale",
-                                           "grid");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "applyToLayer grid handle is stale", "grid", {}, "procgen.squirrel"));
     if (!palettes_.applyToLayer(*view, palette, &layer, &lastError_))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, lastError_, "palette");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "palette", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -1756,8 +1818,8 @@ bool Procgen::hasAlgorithm(const std::string& algorithmId) const {
 eve::Result<RecipeDescriptor> Procgen::getAlgorithmSchema(const std::string& algorithmId) const {
     const RecipeDescriptor* schema = GeneratorRegistry::instance().descriptor(algorithmId);
     if (!schema)
-        return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound, "algorithm schema was not found",
-                                                       "algorithm");
+        return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "algorithm schema was not found", "algorithm", {}, "procgen.squirrel"));
     return eve::Result<RecipeDescriptor>::success(*schema);
 }
 
@@ -1858,21 +1920,23 @@ std::string Procgen::getAlgorithmParamChoice(const std::string& algorithmId, int
 eve::Result<void> Procgen::applyAlgorithmDefaults(const std::string& algorithmId, ProcgenParamsHandleRef params) const {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                           "algorithm default parameters handle is stale", "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "algorithm default parameters handle is stale",
+                                                                 "params", {}, "procgen.squirrel"));
     if (!GeneratorRegistry::instance().applyDefaults(algorithmId, *view))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::NotFound, "algorithm schema was not found",
-                                           "algorithm");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "algorithm schema was not found", "algorithm", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> Procgen::autotileGrid(ProcgenGridHandleRef grid) {
     auto view = Procgen::resolve(grid);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "autotileGrid grid handle is stale",
-                                           "grid");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "autotileGrid grid handle is stale", "grid", {}, "procgen.squirrel"));
     if (!eve::procgen::autotileGridInPlace(*view))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::Failed, "autotileGrid failed", "grid");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "autotileGrid failed", "grid", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -1881,8 +1945,8 @@ uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
 eve::Result<std::string> Procgen::gridToJson(ProcgenGridHandleRef grid) const {
     auto view = Procgen::resolve(grid);
     if (!view.isBound())
-        return procgenBindingFailure<std::string>(eve::DiagnosticCode::StaleHandle, "gridToJson grid handle is stale",
-                                                  "grid");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "gridToJson grid handle is stale", "grid", {}, "procgen.squirrel"));
     return eve::Result<std::string>::success(eve::procgen::gridToJson(*view));
 }
 
@@ -1890,14 +1954,16 @@ eve::Result<ProcgenImageHandleRef> Procgen::generateImageHandle(const std::strin
                                                                 ProcgenParamsHandleRef params) {
     auto input = Procgen::resolve(params);
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenImageHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                            "generateImage parameters handle is stale", "params");
+        return eve::Result<ProcgenImageHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generateImage parameters handle is stale",
+                                   "params", {}, "procgen.squirrel"));
     lastError_.clear();
     TextureRecipeRegistry::instance().registerBuiltins();
     auto image = TextureRecipeRegistry::instance().generate(recipeId, *input, lastError_);
     if (!image)
-        return procgenBindingFailure<ProcgenImageHandleRef>(
-            eve::DiagnosticCode::Failed, lastError_.empty() ? "generateImage failed" : lastError_, "recipe");
+        return eve::Result<ProcgenImageHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, lastError_.empty() ? "generateImage failed" : lastError_, "recipe", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->images, std::move(image));
 }
 
@@ -1909,8 +1975,8 @@ eve::script::Borrowed<image::ImageData> Procgen::resolve(ProcgenImageHandleRef r
 eve::Result<void> Procgen::release(ProcgenImageHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "image");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "image", {}, "procgen.squirrel"));
     return module->ownership_->images.erase(reference);
 }
 
@@ -1924,18 +1990,20 @@ eve::Result<ProcgenNormalImageHandleRef> Procgen::generateNormalImageHandle(cons
                                                                             ProcgenParamsHandleRef params) {
     auto input = Procgen::resolve(params);
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenNormalImageHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "generateNormalImage parameters handle is stale", "params");
+        return eve::Result<ProcgenNormalImageHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generateNormalImage parameters handle is stale",
+                                   "params", {}, "procgen.squirrel"));
     auto image = generateImageHandle(recipeId, params);
     if (!image)
-        return procgenBindingFailure<ProcgenNormalImageHandleRef>(eve::DiagnosticCode::Failed,
-                                                                  image.status().describe(), "recipe");
+        return eve::Result<ProcgenNormalImageHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, image.status().describe(), "recipe", {}, "procgen.squirrel"));
     const auto imageRef = std::move(image).takeValue();
     auto       albedo   = ownership_->images.resolve(imageRef);
     if (!albedo.isBound()) {
         ownership_->images.erase(imageRef).ignore("release unresolvable temporary albedo image");
-        return procgenBindingFailure<ProcgenNormalImageHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                                  "generated albedo image handle is stale", "image");
+        return eve::Result<ProcgenNormalImageHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generated albedo image handle is stale", "image",
+                                   {}, "procgen.squirrel"));
     }
     const int          w  = albedo->getWidth();
     const int          h  = albedo->getHeight();
@@ -1950,8 +2018,8 @@ eve::Result<ProcgenNormalImageHandleRef> Procgen::generateNormalImageHandle(cons
     auto        normal   = heightToNormalImage(height, w, h, strength, seamless);
     ownership_->images.erase(imageRef).ignore("release temporary albedo image");
     if (!normal)
-        return procgenBindingFailure<ProcgenNormalImageHandleRef>(eve::DiagnosticCode::Failed,
-                                                                  "generateNormalImage failed", "recipe");
+        return eve::Result<ProcgenNormalImageHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "generateNormalImage failed", "recipe", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->normalImages, std::move(normal));
 }
 
@@ -1963,8 +2031,9 @@ eve::script::Borrowed<image::ImageData> Procgen::resolve(ProcgenNormalImageHandl
 eve::Result<void> Procgen::release(ProcgenNormalImageHandleRef reference) {
     Procgen* module = ModuleManager::getInstance<Procgen>("Procgen");
     if (!module)
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                           "normalImage");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "Procgen module is no longer loaded", "normalImage",
+                                                                 {}, "procgen.squirrel"));
     return module->ownership_->normalImages.erase(reference);
 }
 
@@ -2019,8 +2088,8 @@ eve::Result<RecipeDescriptor> Procgen::getTextureRecipeSchema(const std::string&
     TextureRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = TextureRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
-        return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound,
-                                                       "texture recipe schema was not found", "recipe");
+        return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "texture recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<RecipeDescriptor>::success(*schema);
 }
 
@@ -2028,12 +2097,13 @@ eve::Result<void> Procgen::applyTextureRecipeDefaults(const std::string&     rec
                                                       ProcgenParamsHandleRef params) const {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                           "texture default parameters handle is stale", "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "texture default parameters handle is stale", "params",
+                                                                 {}, "procgen.squirrel"));
     TextureRecipeRegistry::instance().registerBuiltins();
     if (!TextureRecipeRegistry::instance().applyDefaults(recipeId, *view))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::NotFound, "texture recipe schema was not found",
-                                           "recipe");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "texture recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -2072,14 +2142,16 @@ bool Procgen::isCloudShadowStale(ProcgenCloudShadowHandleRef reference) const no
 eve::Result<float> Procgen::cloudCoverageAt(ProcgenCloudFieldHandleRef field, float x, float z, float time) {
     auto view = resolveCloudField(field);
     if (!view.isBound())
-        return procgenBindingFailure<float>(eve::DiagnosticCode::StaleHandle, "cloud field handle is stale", "field");
+        return eve::Result<float>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "cloud field handle is stale", "field", {}, "procgen.squirrel"));
     return eve::Result<float>::success(view->coverageAt(x, z, time));
 }
 
 eve::Result<float> Procgen::cloudShadowFactor(ProcgenCloudShadowHandleRef shadow, float x, float z, float time) {
     auto view = resolveCloudShadow(shadow);
     if (!view.isBound())
-        return procgenBindingFailure<float>(eve::DiagnosticCode::StaleHandle, "cloud shadow handle is stale", "shadow");
+        return eve::Result<float>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "cloud shadow handle is stale", "shadow", {}, "procgen.squirrel"));
     return eve::Result<float>::success(view->shadowFactorAt(x, z, time));
 }
 
@@ -2087,10 +2159,12 @@ eve::Result<void> Procgen::sampleCloud(ProcgenCloudFieldHandleRef field, std::sp
                                        float x0, float z0, float extent) {
     auto view = resolveCloudField(field);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "cloud field handle is stale", "field");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "cloud field handle is stale", "field", {}, "procgen.squirrel"));
     if (w <= 0 || h <= 0 || out.size() < static_cast<std::size_t>(w) * static_cast<std::size_t>(h))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "cloud output buffer is smaller than width*height", "out");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "cloud output buffer is smaller than width*height",
+                                                                 "out", {}, "procgen.squirrel"));
     view->sample(out.data(), w, h, time, x0, z0, extent);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -2099,10 +2173,12 @@ eve::Result<void> Procgen::sampleCloudShadow(ProcgenCloudShadowHandleRef shadow,
                                              float time, float x0, float z0, float extent) {
     auto view = resolveCloudShadow(shadow);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "cloud shadow handle is stale", "shadow");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "cloud shadow handle is stale", "shadow", {}, "procgen.squirrel"));
     if (w <= 0 || h <= 0 || out.size() < static_cast<std::size_t>(w) * static_cast<std::size_t>(h))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "cloud output buffer is smaller than width*height", "out");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "cloud output buffer is smaller than width*height",
+                                                                 "out", {}, "procgen.squirrel"));
     view->sampleCoverage(out.data(), w, h, time, x0, z0, extent);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -2111,14 +2187,16 @@ eve::Result<ProcgenPbrMaterialHandleRef> Procgen::generatePbrMaterialHandle(cons
                                                                             ProcgenParamsHandleRef params) {
     auto input = Procgen::resolve(params);
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenPbrMaterialHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "generatePbrMaterial parameters handle is stale", "params");
+        return eve::Result<ProcgenPbrMaterialHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generatePbrMaterial parameters handle is stale",
+                                   "params", {}, "procgen.squirrel"));
     lastError_.clear();
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     auto set = PbrRecipeRegistry::instance().generate(recipeId, *input, lastError_);
     if (!set)
-        return procgenBindingFailure<ProcgenPbrMaterialHandleRef>(
-            eve::DiagnosticCode::Failed, lastError_.empty() ? "generatePbrMaterial failed" : lastError_, "recipe");
+        return eve::Result<ProcgenPbrMaterialHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, lastError_.empty() ? "generatePbrMaterial failed" : lastError_, "recipe", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->pbr, std::move(set));
 }
 
@@ -2158,19 +2236,21 @@ eve::Result<RecipeDescriptor> Procgen::getPbrRecipeSchema(const std::string& rec
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const RecipeDescriptor* schema = PbrRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
-        return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound, "PBR recipe schema was not found",
-                                                       "recipe");
+        return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PBR recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<RecipeDescriptor>::success(*schema);
 }
 
 eve::Result<void> Procgen::applyPbrRecipeDefaults(const std::string& recipeId, ProcgenParamsHandleRef params) const {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "PBR default parameters handle is stale",
-                                           "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "PBR default parameters handle is stale", "params", {},
+                                                                 "procgen.squirrel"));
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     if (!PbrRecipeRegistry::instance().applyDefaults(recipeId, *view))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::NotFound, "PBR recipe schema was not found", "recipe");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PBR recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -2178,8 +2258,8 @@ eve::Result<ProcgenMeshBuildHandleRef> Procgen::buildMeshHandle(const std::strin
                                                                 ProcgenParamsHandleRef params) {
     auto built = buildArtifact(recipeId, params, nextCompatibilityArtifactId());
     if (!built)
-        return procgenBindingFailure<ProcgenMeshBuildHandleRef>(eve::DiagnosticCode::Failed, built.status().describe(),
-                                                                "recipe");
+        return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, built.status().describe(), "recipe", {}, "procgen.squirrel"));
     GeneratedArtifact artifact = std::move(built).takeValue();
     const MeshBuild*  source   = nullptr;
     if (artifact.type == ArtifactType::MeshData) {
@@ -2189,14 +2269,14 @@ eve::Result<ProcgenMeshBuildHandleRef> Procgen::buildMeshHandle(const std::strin
         if (part && part->type == ArtifactType::MeshData) source = &std::get<MeshData>(part->payload);
     }
     if (!source)
-        return procgenBindingFailure<ProcgenMeshBuildHandleRef>(eve::DiagnosticCode::Failed,
-                                                                "generated artifact has no mesh payload", "recipe");
+        return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "generated artifact has no mesh payload", "recipe", {}, "procgen.squirrel"));
     auto              mesh = std::make_unique<MeshBuild>(*source);
     ArtifactPublisher publisher(artifactStore_);
     auto              published = publisher.publish(std::move(artifact), {});
     if (!published)
-        return procgenBindingFailure<ProcgenMeshBuildHandleRef>(eve::DiagnosticCode::Failed,
-                                                                published.status().describe(), "artifact");
+        return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, published.status().describe(), "artifact", {}, "procgen.squirrel"));
     std::move(published).takeValue();
     return ownProcgenObject(ownership_->meshes, std::move(mesh));
 }
@@ -2217,8 +2297,9 @@ eve::Result<GeneratedArtifact> Procgen::buildArtifact(const std::string& recipeI
                                                       ArtifactId id) {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
-        return procgenBindingFailure<GeneratedArtifact>(eve::DiagnosticCode::StaleHandle,
-                                                        "buildArtifact parameters handle is stale", "params");
+        return eve::Result<GeneratedArtifact>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "buildArtifact parameters handle is stale",
+                                   "params", {}, "procgen.squirrel"));
     return generateMeshArtifact(recipeId, *view, id);
 }
 
@@ -2364,19 +2445,21 @@ eve::Result<RecipeDescriptor> Procgen::getMeshRecipeSchema(const std::string& re
     MeshRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = MeshRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
-        return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound,
-                                                       "mesh recipe schema was not found", "recipe");
+        return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<RecipeDescriptor>::success(*schema);
 }
 
 eve::Result<void> Procgen::applyMeshRecipeDefaults(const std::string& recipeId, ProcgenParamsHandleRef params) const {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
-        return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "mesh default parameters handle is stale",
-                                           "params");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "mesh default parameters handle is stale", "params",
+                                                                 {}, "procgen.squirrel"));
     MeshRecipeRegistry::instance().registerBuiltins();
     if (!MeshRecipeRegistry::instance().applyDefaults(recipeId, *view))
-        return procgenBindingFailure<void>(eve::DiagnosticCode::NotFound, "mesh recipe schema was not found", "recipe");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh recipe schema was not found", "recipe", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -2399,15 +2482,17 @@ bool Procgen::isTerrainSamplerStale(ProcgenTerrainSamplerHandleRef reference) co
 
 eve::Result<ProcgenHeightmapHandleRef> Procgen::newHeightmapHandle(int width, int height) {
     if (width <= 0 || height <= 0)
-        return procgenBindingFailure<ProcgenHeightmapHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                "heightmap dimensions must be positive", "heightmap");
+        return eve::Result<ProcgenHeightmapHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "heightmap dimensions must be positive",
+                                   "heightmap", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(width, height));
 }
 
 eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(Heightmap heightmap) {
     if (heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0)
-        return procgenBindingFailure<ProcgenHeightmapHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                "decoded heightmap has no samples", "heightmap");
+        return eve::Result<ProcgenHeightmapHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "decoded heightmap has no samples",
+                                   "heightmap", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(std::move(heightmap)));
 }
 
@@ -2426,8 +2511,9 @@ bool Procgen::isHeightmapStale(ProcgenHeightmapHandleRef reference) const noexce
 eve::Result<ProcgenHeightmapHandleRef> Procgen::generateHeightmapHandle(ProcgenParamsHandleRef params) {
     auto input = Procgen::resolve(params);
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenHeightmapHandleRef>(
-            eve::DiagnosticCode::StaleHandle, "generateHeightmap parameters handle is stale", "params");
+        return eve::Result<ProcgenHeightmapHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generateHeightmap parameters handle is stale",
+                                   "params", {}, "procgen.squirrel"));
     const TerrainSampler sampler = TerrainSampler::fromParams(*input);
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(Heightmap::generate(
                                                         sampler, input->getWidth(), input->getHeight())));
@@ -2438,16 +2524,17 @@ eve::Result<ProcgenGridHandleRef> Procgen::heightmapToGrid(ProcgenHeightmapHandl
     auto map   = resolveHeightmap(heightmap);
     auto input = Procgen::resolve(params);
     if (!map.isBound())
-        return procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                           "heightmap handle is stale", "heightmap");
+        return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "heightmap handle is stale", "heightmap", {}, "procgen.squirrel"));
     if (!input.isBound())
-        return procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::StaleHandle,
-                                                           "heightmap parameters handle is stale", "params");
+        return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "heightmap parameters handle is stale",
+                                                                                 "params", {}, "procgen.squirrel"));
     auto               grid  = std::make_unique<Grid2D>();
     const TerrainBands bands = TerrainBands::fromParams(*input);
     if (!map->toGrid(*grid, bands))
-        return procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::Failed, "heightmap is empty",
-                                                           "heightmap");
+        return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "heightmap is empty", "heightmap", {}, "procgen.squirrel"));
     Procgen* module = Procgen::create();
     return module->grids_.emplace(std::move(grid));
 }
@@ -2847,49 +2934,10 @@ graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
         lastError_ = "createTerrainWaterShader: graphics is required";
         return nullptr;
     }
-    static const char* fragment = R"GLSL(#version 450
-layout(location=0) in vec3 vNormal;
-layout(location=1) in vec2 vUV;
-layout(location=2) in vec4 vTint;
-layout(location=3) in vec3 vWorldPos;
-layout(location=4) in vec3 vCameraPos;
-layout(location=5) in vec3 vViewPos;
-struct Light3D { vec4 posRadius; vec4 color; };
-layout(set=0,binding=0,std140) uniform Frame {
-    mat4 mvp; mat4 model; vec4 lightDirIntensity; vec4 lightColor; vec4 tint;
-    vec4 cameraPos; vec4 ambient; Light3D lights[8]; vec4 texBomb; vec4 parallax;
-    mat4 view; vec4 clipInfo; vec4 cloud; vec4 cloudWind;
-} ubo;
-layout(location=0) out vec4 outColor;
-void main() {
-    vec2 p = vWorldPos.xz;
-    float wx = sin(p.x * 1.7 + p.y * 0.43) + 0.55 * sin(p.x * 4.1 - p.y * 1.3);
-    float wz = cos(p.y * 1.9 - p.x * 0.37) + 0.55 * cos(p.y * 3.7 + p.x * 1.1);
-    vec3 N = normalize(vec3(wx * 0.055, 1.0, wz * 0.055));
-    vec3 V = normalize(vCameraPos - vWorldPos);
-    vec3 L = normalize(ubo.lightDirIntensity.xyz);
-    vec3 H = normalize(V + L);
-    float ndv = max(dot(N, V), 0.0);
-    float ndl = max(dot(N, L), 0.0);
-    float fresnel = 0.035 + 0.50 * pow(1.0 - ndv, 4.0);
-    float glint = pow(max(dot(N, H), 0.0), 150.0) * 1.15;
-    vec3 deep = vec3(0.018, 0.16, 0.205);
-    vec3 shallow = vec3(0.045, 0.36, 0.39);
-    vec3 water = mix(deep, shallow, 0.35 + 0.25 * N.y);
-    water *= mix(vec3(1.0), max(vTint.rgb, vec3(0.12)), 0.18);
-    vec3 sky = ubo.ambient.rgb * mix(vec3(0.55, 0.72, 0.82), vec3(1.0), fresnel);
-    vec3 color = water * (0.72 + 0.58 * ndl) + sky * fresnel +
-                 ubo.lightColor.rgb * glint;
-    color = color / (color + vec3(0.68));
-    float nearZ = max(ubo.clipInfo.x, 1e-4);
-    float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
-    float viewDepth = max(-vViewPos.z, 0.0);
-    float linearDepth = clamp((viewDepth - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outColor = vec4(color, linearDepth);
-}
-)GLSL";
     try {
-        return gfx->newMeshShader(fragment);
+        std::vector<uint32_t> fragment(terrain_water_compat_frag_spv,
+                                       terrain_water_compat_frag_spv + terrain_water_compat_frag_spv_count);
+        return gfx->newMeshShaderFromSpv({}, fragment);
     } catch (const std::exception& e) {
         lastError_ = std::string("createTerrainWaterShader: ") + e.what();
         return nullptr;
@@ -2905,6 +2953,8 @@ void Procgen::expose(ssq::Table& table) {
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
     exposeShapeGrammar(table);
+    exposePcgFrameRateManagerBindings(table);
+    exposePcgTaskQueueBindings(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
         "ProcgenRecipeSchema", std::function<RecipeDescriptor*()>([]() -> RecipeDescriptor* { return nullptr; }), true);
@@ -2978,8 +3028,9 @@ void Procgen::expose(ssq::Table& table) {
         const auto reference = nativeProxyReference<ProcgenGridHandleRef>(value);
         if (!reference)
             return eve::script::projectResult(
-                gridVm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                     "grid value is not an owned procgen proxy", "grid"));
+                gridVm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "grid value is not an owned procgen proxy",
+                                                                          "grid", {}, "procgen.squirrel")));
         return eve::script::projectResult(gridVm, Procgen::release(*reference));
     });
     grid.addFunc("resize", [gridVm](Grid2D* value, int width, int height) {
@@ -3204,54 +3255,103 @@ void Procgen::expose(ssq::Table& table) {
     ownedParams.addFunc("release", [vm](ScriptProcgenParams* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "owned procgen params proxy must not be null", "params"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned procgen params proxy must not be null",
+                                                                      "params", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, Procgen::release(value->reference));
     });
     ownedParams.addFunc("setSeed", [vm](ScriptProcgenParams* value, uint32_t seed) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setSeed(seed);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setSize", [vm](ScriptProcgenParams* value, int width, int height) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setSize(width, height);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setInt", [vm](ScriptProcgenParams* value, const std::string& key, int number) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setInt(key, number);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setFloat", [vm](ScriptProcgenParams* value, const std::string& key, float number) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setFloat(key, number);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setBool", [vm](ScriptProcgenParams* value, const std::string& key, bool flag) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setBool(key, flag);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setString", [vm](ScriptProcgenParams* value, const std::string& key, const std::string& text) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "params" + " handle is stale",
+                        "params", {}, "procgen.squirrel")));
         view->setString(key, text);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
@@ -3307,30 +3407,55 @@ void Procgen::expose(ssq::Table& table) {
     ownedGrid.addFunc("release", [vm](ScriptProcgenGrid* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "owned procgen grid proxy must not be null", "grid"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned procgen grid proxy must not be null",
+                                                                      "grid", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, Procgen::release(value->reference));
     });
     ownedGrid.addFunc("resize", [vm](ScriptProcgenGrid* value, int width, int height) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         view->resize(width, height);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedGrid.addFunc("fill", [vm](ScriptProcgenGrid* value, int semantic) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         view->fill(semantic);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedGrid.addFunc("setCell", [vm](ScriptProcgenGrid* value, int x, int y, int semantic) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         view->setCell(x, y, semantic);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
@@ -3348,9 +3473,17 @@ void Procgen::expose(ssq::Table& table) {
         return view.isBound() ? view->getCell(x, y) : 0;
     });
     ownedGrid.addFunc("setDetail", [vm](ScriptProcgenGrid* value, int x, int y, int detail) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         view->setDetail(x, y, detail);
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
@@ -3407,9 +3540,17 @@ void Procgen::expose(ssq::Table& table) {
         return view.isBound() ? view->getMeta(key, fallback) : fallback;
     });
     ownedGrid.addFunc("setMeta", [vm](ScriptProcgenGrid* value, const std::string& key, const std::string& data) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, std::string("owned procgen ") + "grid" + " handle is stale",
+                        "grid", {}, "procgen.squirrel")));
         view->setMeta(key, data);
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
@@ -3428,8 +3569,9 @@ void Procgen::expose(ssq::Table& table) {
     ownedContext.addFunc("release", [vm](ScriptProcgenContext* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "owned procgen context proxy must not be null", "context"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned procgen context proxy must not be null",
+                                                                      "context", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, Procgen::release(value->reference));
     });
     ownedContext.addFunc("getName", [](ScriptProcgenContext* value) {
@@ -3484,21 +3626,31 @@ void Procgen::expose(ssq::Table& table) {
         if (view.isBound()) view->fail(error);
     });
     ownedContext.addFunc("commit", [vm](ScriptProcgenContext* value) {
-        if (!value) return staleProcgenResult<void>(vm, "context");
+        if (!value)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::StaleHandle,
+                                                      std::string("owned procgen ") + "context" + " handle is stale",
+                                                      "context", {}, "procgen.squirrel")));
         auto* module = ModuleManager::getInstance<Procgen>("Procgen");
         if (!module)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                                "context"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "Procgen module is no longer loaded", "context",
+                                                                      {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, module->commitSystem(value->reference));
     });
     ownedContext.addFunc("abort", [vm](ScriptProcgenContext* value) {
-        if (!value) return staleProcgenResult<void>(vm, "context");
+        if (!value)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::StaleHandle,
+                                                      std::string("owned procgen ") + "context" + " handle is stale",
+                                                      "context", {}, "procgen.squirrel")));
         auto* module = ModuleManager::getInstance<Procgen>("Procgen");
         if (!module)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
-                                                "context"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "Procgen module is no longer loaded", "context",
+                                                                      {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, module->abortSystem(value->reference));
     });
 
@@ -3550,52 +3702,69 @@ void Procgen::expose(ssq::Table& table) {
         if(!object){object.ignore("failed to create split mesh Squirrel instance");return ssq::Object(vm);}
         return std::move(object).takeValue();
     });
-    table.addFunc("splitGtsMesh",[vm](GtsMeshSplitResult* output,const MeshBuild* source,
-                                      int xSplits,int zSplits,int pivot){
-        auto result=output&&source?splitGtsMeshInto(*output,*source,xSplits,zSplits,static_cast<GtsMeshPivot>(pivot))
-            :procgenBindingFailure<void>(DiagnosticCode::InvalidArgument,"GTS split output and source are required","mesh");
-        return eve::script::projectResult(vm,std::move(result));
-    });
+    table.addFunc(
+        "splitGtsMesh", [vm](GtsMeshSplitResult* output, const MeshBuild* source, int xSplits, int zSplits, int pivot) {
+            auto result = output && source
+                              ? splitGtsMeshInto(*output, *source, xSplits, zSplits, static_cast<GtsMeshPivot>(pivot))
+                              : eve::Result<void>::failure(eve::Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument, "GTS split output and source are required", "mesh",
+                                    {}, "procgen.squirrel"));
+            return eve::script::projectResult(vm, std::move(result));
+        });
 
     auto pcgMeshTransform=table.addClass("PcgMeshTransform",ssq::Class::Ctor<PcgMeshTransform()>());
-    pcgMeshTransform.addFunc("setElement",[vm](PcgMeshTransform* self,int row,int column,float value){
-        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh transform is required","mesh"));
+    pcgMeshTransform.addFunc("setElement", [vm](PcgMeshTransform* self, int row, int column, float value) {
+        if (!self)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      DiagnosticCode::InvalidArgument, "Pcg mesh transform is required",
+                                                      "mesh", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->setElement(row,column,value));
     });
     pcgMeshTransform.addFunc("getElement",[](const PcgMeshTransform* self,int row,int column){
         return self?self->getElement(row,column):0.F;
     });
     auto pcgMeshCombinePlan=table.addClass("PcgMeshCombinePlan",ssq::Class::Ctor<PcgMeshCombinePlan()>());
-    pcgMeshCombinePlan.addFunc("appendSource",[vm](PcgMeshCombinePlan* self,const MeshBuild* source,
-                                                       const PcgMeshTransform* transform,
-                                                       const std::string& materialId){
-        if(!self||!source||!transform)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh combine plan, source and transform are required","mesh"));
+    pcgMeshCombinePlan.addFunc("appendSource", [vm](PcgMeshCombinePlan* self, const MeshBuild* source,
+                                                    const PcgMeshTransform* transform, const std::string& materialId) {
+        if (!self || !source || !transform)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "Pcg mesh combine plan, source and transform are required",
+                        "mesh", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->appendSource(*source,*transform,materialId));
     });
     pcgMeshCombinePlan.addFunc("clear",[](PcgMeshCombinePlan* self){if(self)self->clear();});
     pcgMeshCombinePlan.addFunc("getSourceCount",[](const PcgMeshCombinePlan* self){
         return self?self->getSourceCount():0;
     });
-    table.addFunc("combinePcgStaticMeshes",[vm](MeshBuild* output,const PcgMeshCombinePlan* plan){
-        if(!output||!plan)return eve::script::projectResult(vm,procgenBindingFailure<int>(
-            DiagnosticCode::InvalidArgument,!output?"Pcg mesh combine output is required":
-                                                    "Pcg mesh combine plan is required","mesh"),
-            [](int value){return Value(static_cast<std::int64_t>(value));});
+    table.addFunc("combinePcgStaticMeshes", [vm](MeshBuild* output, const PcgMeshCombinePlan* plan) {
+        if (!output || !plan)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    DiagnosticCode::InvalidArgument,
+                    !output ? "Pcg mesh combine output is required" : "Pcg mesh combine plan is required", "mesh", {},
+                    "procgen.squirrel")),
+                [](int value) { return Value(static_cast<std::int64_t>(value)); });
         return eve::script::projectResult(vm,combinePcgStaticMeshesInto(*output,*plan),
                                           [](int value){return Value(static_cast<std::int64_t>(value));});
     });
 
     auto pcgMeshLodBackup=table.addClass("PcgMeshLodBackup",ssq::Class::Ctor<PcgMeshLodBackup()>());
-    pcgMeshLodBackup.addFunc("capture",[vm](PcgMeshLodBackup* self,graphics::Renderable3D* renderable){
-        if(!self||!renderable)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD backup and renderable are required","capture"));
+    pcgMeshLodBackup.addFunc("capture", [vm](PcgMeshLodBackup* self, graphics::Renderable3D* renderable) {
+        if (!self || !renderable)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "Pcg mesh LOD backup and renderable are required",
+                                                                      "capture", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->capture(*renderable));
     });
-    pcgMeshLodBackup.addFunc("restore",[vm](PcgMeshLodBackup* self,graphics::Renderable3D* renderable){
-        if(!self||!renderable)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD backup and renderable are required","restore"));
+    pcgMeshLodBackup.addFunc("restore", [vm](PcgMeshLodBackup* self, graphics::Renderable3D* renderable) {
+        if (!self || !renderable)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "Pcg mesh LOD backup and renderable are required",
+                                                                      "restore", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->restore(*renderable));
     });
     pcgMeshLodBackup.addFunc("discard",[](PcgMeshLodBackup* self){if(self)self->discard();});
@@ -3621,19 +3790,26 @@ void Procgen::expose(ssq::Table& table) {
     pcgMeshLodProfile.addFunc("getQuality",[](const PcgMeshLodProfile* self,int index){
         const auto* level=self?self->levelAt(index):nullptr;return level?level->quality:-1.F;
     });
-    pcgMeshLodProfile.addFunc("setLevelRendererState",[vm](PcgMeshLodProfile* self,int index,int skinQuality,
-        int shadowMode,bool receiveShadows,int motionMode,bool skinnedMotion,int lightProbe,int reflectionProbe){
-        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD profile is required","renderer-state"));
+    pcgMeshLodProfile.addFunc("setLevelRendererState", [vm](PcgMeshLodProfile* self, int index, int skinQuality,
+                                                            int shadowMode, bool receiveShadows, int motionMode,
+                                                            bool skinnedMotion, int lightProbe, int reflectionProbe) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "Pcg mesh LOD profile is required",
+                                                                      "renderer-state", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->setLevelRendererState(index,skinQuality,shadowMode,
             receiveShadows,motionMode,skinnedMotion,lightProbe,reflectionProbe));
     });
     pcgMeshLodProfile.addFunc("getLevelRendererState",[](const PcgMeshLodProfile* self,int index,int field){
         return self?self->getLevelRendererState(index,field):-1;
     });
-    pcgMeshLodProfile.addFunc("setFadePolicy",[vm](PcgMeshLodProfile* self,int mode,bool animate,float duration){
-        if(!self)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD profile is required","fade-policy"));
+    pcgMeshLodProfile.addFunc("setFadePolicy", [vm](PcgMeshLodProfile* self, int mode, bool animate, float duration) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "Pcg mesh LOD profile is required", "fade-policy",
+                                                                      {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,self->setFadePolicy(mode,animate,duration));
     });
     pcgMeshLodProfile.addFunc("getFadeMode",[](const PcgMeshLodProfile* self){return self->getFadeMode();});
@@ -3658,25 +3834,34 @@ void Procgen::expose(ssq::Table& table) {
         if(!object){object.ignore("failed to create Pcg LOD mesh Squirrel instance");return ssq::Object(vm);}
         return std::move(object).takeValue();
     });
-    table.addFunc("buildPcgMeshLods",[vm](PcgMeshLodSet* output,const MeshBuild* source,
-                                            const PcgMeshLodProfile* profile){
-        if(!output||!source||!profile)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD output, source and profile are required","mesh"));
-        return eve::script::projectResult(vm,buildPcgMeshLodsInto(*output,*source,*profile));
-    });
-    table.addFunc("buildPcgCombinedMeshLods",[vm](PcgMeshLodSet* output,const PcgMeshCombinePlan* plan,
-                                                    const PcgMeshLodProfile* profile){
-        if(!output||!plan||!profile)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg combined mesh LOD output, plan and profile are required","mesh"));
+    table.addFunc(
+        "buildPcgMeshLods", [vm](PcgMeshLodSet* output, const MeshBuild* source, const PcgMeshLodProfile* profile) {
+            if (!output || !source || !profile)
+                return eve::script::projectResult(
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                            DiagnosticCode::InvalidArgument, "Pcg mesh LOD output, source and profile are required",
+                            "mesh", {}, "procgen.squirrel")));
+            return eve::script::projectResult(vm, buildPcgMeshLodsInto(*output, *source, *profile));
+        });
+    table.addFunc("buildPcgCombinedMeshLods", [vm](PcgMeshLodSet* output, const PcgMeshCombinePlan* plan,
+                                                   const PcgMeshLodProfile* profile) {
+        if (!output || !plan || !profile)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "Pcg combined mesh LOD output, plan and profile are required",
+                        "mesh", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildPcgCombinedMeshLodsInto(*output,*plan,*profile));
     });
-    table.addFunc("configurePcgMeshLods",[vm](Procgen* self,const PcgMeshLodSet* lods,
-                                                graphics::Renderable3D* renderable,graphics::Graphics* gfx,
-                                                float diameter,float fov){
-        if(!self||!lods||!renderable||!gfx)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"Pcg mesh LOD runtime arguments are required","runtime"));
-        return eve::script::projectResult(vm,self->configurePcgMeshLods(*lods,*renderable,*gfx,diameter,fov));
-    });
+    table.addFunc(
+        "configurePcgMeshLods", [vm](Procgen* self, const PcgMeshLodSet* lods, graphics::Renderable3D* renderable,
+                                     graphics::Graphics* gfx, float diameter, float fov) {
+            if (!self || !lods || !renderable || !gfx)
+                return eve::script::projectResult(
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                          "Pcg mesh LOD runtime arguments are required",
+                                                                          "runtime", {}, "procgen.squirrel")));
+            return eve::script::projectResult(vm, self->configurePcgMeshLods(*lods, *renderable, *gfx, diameter, fov));
+        });
 
     auto terrainMeshSettings=table.addClass("GtsTerrainMeshSettings",ssq::Class::Ctor<GtsTerrainMeshSettings()>());
     terrainMeshSettings.addFunc("getSaveResolution",[](const GtsTerrainMeshSettings* self){return self->getSaveResolution();});
@@ -3722,91 +3907,147 @@ void Procgen::expose(ssq::Table& table) {
         if(!object){object.ignore("failed to create terrain LOD mesh Squirrel instance");return ssq::Object(vm);}
         return std::move(object).takeValue();
     });
-    table.addFunc("buildDefaultGtsTerrainLods",[vm](GtsTerrainLodSet* output,const MeshBuild* source,
-                                                     int xSplits,int zSplits,int pivot){
-        if(!output||!source)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS terrain LOD output and source are required","mesh"));
+    table.addFunc("buildDefaultGtsTerrainLods", [vm](GtsTerrainLodSet* output, const MeshBuild* source, int xSplits,
+                                                     int zSplits, int pivot) {
+        if (!output || !source)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "GTS terrain LOD output and source are required",
+                                                                      "mesh", {}, "procgen.squirrel")));
         auto built=buildGtsTerrainLods(*source,xSplits,zSplits,static_cast<GtsMeshPivot>(pivot),defaultGtsTerrainLodLevels());
         if(!built)return eve::script::projectResult(vm,Result<void>::failure(*built.error()));
         *output=std::move(built).takeValue();
         return eve::script::projectResult(vm,Result<void>::success());
     });
-    table.addFunc("buildGtsTerrainBaseMesh",[vm](MeshBuild* output,const Heightmap* heightmap,
-        int resolution,float sizeX,float sizeY,float sizeZ){
-        if(!output||!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS terrain mesh output and heightmap are required","heightmap"));
+    table.addFunc("buildGtsTerrainBaseMesh", [vm](MeshBuild* output, const Heightmap* heightmap, int resolution,
+                                                  float sizeX, float sizeY, float sizeZ) {
+        if (!output || !heightmap)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "GTS terrain mesh output and heightmap are required",
+                        "heightmap", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildGtsTerrainBaseMesh(*output,*heightmap,
             static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ));
     });
-    table.addFunc("buildDefaultGtsTerrainLodsFromHeightmap",[vm](GtsTerrainLodSet* output,
-        const Heightmap* heightmap,int resolution,float sizeX,float sizeY,float sizeZ,int subTiles,int pivot){
-        if(!output||!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS terrain LOD output and heightmap are required","heightmap"));
+    table.addFunc("buildDefaultGtsTerrainLodsFromHeightmap", [vm](GtsTerrainLodSet* output, const Heightmap* heightmap,
+                                                                  int resolution, float sizeX, float sizeY, float sizeZ,
+                                                                  int subTiles, int pivot) {
+        if (!output || !heightmap)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "GTS terrain LOD output and heightmap are required",
+                        "heightmap", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildDefaultGtsTerrainLodsFromHeightmapInto(*output,*heightmap,
             static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ,subTiles,static_cast<GtsMeshPivot>(pivot)));
     });
-    table.addFunc("buildGtsTerrainLodsFromHeightmap",[vm](GtsTerrainLodSet* output,const Heightmap* heightmap,
-        const GtsTerrainMeshSettings* settings,float sizeX,float sizeY,float sizeZ,int pivot){
-        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS terrain LOD output, heightmap and settings are required","heightmap"));
+    table.addFunc("buildGtsTerrainLodsFromHeightmap", [vm](GtsTerrainLodSet* output, const Heightmap* heightmap,
+                                                           const GtsTerrainMeshSettings* settings, float sizeX,
+                                                           float sizeY, float sizeZ, int pivot) {
+        if (!output || !heightmap || !settings)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "GTS terrain LOD output, heightmap and settings are required",
+                        "heightmap", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildGtsTerrainLodsFromHeightmapInto(*output,*heightmap,*settings,
             sizeX,sizeY,sizeZ,static_cast<GtsMeshPivot>(pivot)));
     });
-    table.addFunc("buildGtsTerrainExportLodsFromHeightmap",[vm](GtsTerrainLodSet* output,const Heightmap* heightmap,
-        const GtsTerrainExportSettings* settings,float sizeX,float sizeY,float sizeZ,int subTiles,int pivot){
-        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS terrain export output, heightmap and settings are required","heightmap"));
+    table.addFunc("buildGtsTerrainExportLodsFromHeightmap", [vm](GtsTerrainLodSet* output, const Heightmap* heightmap,
+                                                                 const GtsTerrainExportSettings* settings, float sizeX,
+                                                                 float sizeY, float sizeZ, int subTiles, int pivot) {
+        if (!output || !heightmap || !settings)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      DiagnosticCode::InvalidArgument,
+                                                      "GTS terrain export output, heightmap and settings are required",
+                                                      "heightmap", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildGtsTerrainExportLodsFromHeightmapInto(*output,*heightmap,*settings,
             sizeX,sizeY,sizeZ,subTiles,static_cast<GtsMeshPivot>(pivot)));
     });
-    table.addFunc("buildGtsTerrainColliderMeshFromHeightmap",[vm](MeshBuild* output,const Heightmap* heightmap,
-        const GtsTerrainExportSettings* settings,float sizeX,float sizeY,float sizeZ){
-        if(!output||!heightmap||!settings)return eve::script::projectResult(vm,procgenBindingFailure<void>(
-            DiagnosticCode::InvalidArgument,"GTS collider output, heightmap and settings are required","heightmap"));
+    table.addFunc("buildGtsTerrainColliderMeshFromHeightmap", [vm](MeshBuild* output, const Heightmap* heightmap,
+                                                                   const GtsTerrainExportSettings* settings,
+                                                                   float sizeX, float sizeY, float sizeZ) {
+        if (!output || !heightmap || !settings)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "GTS collider output, heightmap and settings are required",
+                        "heightmap", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,buildGtsTerrainColliderMeshFromHeightmapInto(
             *output,*heightmap,settings->getWorkflow(),sizeX,sizeY,sizeZ));
     });
-    table.addFunc("encodeGtsTerrainObj",[vm](const Heightmap* heightmap,int resolution,float sizeX,float sizeY,float sizeZ,int faceMode){
-        if(!heightmap)return eve::script::projectResult(vm,procgenBindingFailure<std::string>(
-            DiagnosticCode::InvalidArgument,"GTS OBJ heightmap is required","heightmap"),[](const std::string& value){return value;});
+    table.addFunc("encodeGtsTerrainObj", [vm](const Heightmap* heightmap, int resolution, float sizeX, float sizeY,
+                                              float sizeZ, int faceMode) {
+        if (!heightmap)
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  DiagnosticCode::InvalidArgument, "GTS OBJ heightmap is required",
+                                                  "heightmap", {}, "procgen.squirrel")),
+                                              [](const std::string& value) { return value; });
         return eve::script::projectResult(vm,encodeGtsTerrainObj(*heightmap,static_cast<GtsTerrainSaveResolution>(resolution),
             sizeX,sizeY,sizeZ,static_cast<GtsTerrainObjFaceMode>(faceMode)),[](const std::string& value){return value;});
     });
-    table.addFunc("encodeGtsMaskedTerrainObj",[vm](const Heightmap* heightmap,const Heightmap* maskmap,int resolution,
-        float sizeX,float sizeY,float sizeZ,int faceMode,float threshold,bool invert){
-        if(!heightmap||!maskmap)return eve::script::projectResult(vm,procgenBindingFailure<std::string>(
-            DiagnosticCode::InvalidArgument,"GTS masked OBJ heightmap and maskmap are required","heightmap"),
-            [](const std::string& value){return value;});
+    table.addFunc("encodeGtsMaskedTerrainObj", [vm](const Heightmap* heightmap, const Heightmap* maskmap,
+                                                    int resolution, float sizeX, float sizeY, float sizeZ, int faceMode,
+                                                    float threshold, bool invert) {
+        if (!heightmap || !maskmap)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "GTS masked OBJ heightmap and maskmap are required", "heightmap",
+                    {}, "procgen.squirrel")),
+                [](const std::string& value) { return value; });
         return eve::script::projectResult(vm,encodeGtsMaskedTerrainObj(*heightmap,*maskmap,
             static_cast<GtsTerrainSaveResolution>(resolution),sizeX,sizeY,sizeZ,
             static_cast<GtsTerrainObjFaceMode>(faceMode),threshold,invert),[](const std::string& value){return value;});
     });
-    table.addFunc("bakeGtsTerrainVertexColors",[vm](MeshBuild* output,const MeshBuild* source,
-        const image::ImageData* bakedTexture,int edgeMode,int smoothingIterations,float terrainSizeX,
-        float terrainSizeZ,bool linearize){
-        if(!output||!source||!bakedTexture)return eve::script::projectResult(vm,procgenBindingFailure<int>(
-            DiagnosticCode::InvalidArgument,"GTS vertex-color output, source and texture are required","mesh"),[](int value){return value;});
+    table.addFunc("bakeGtsTerrainVertexColors", [vm](MeshBuild* output, const MeshBuild* source,
+                                                     const image::ImageData* bakedTexture, int edgeMode,
+                                                     int smoothingIterations, float terrainSizeX, float terrainSizeZ,
+                                                     bool linearize) {
+        if (!output || !source || !bakedTexture)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "GTS vertex-color output, source and texture are required", "mesh",
+                    {}, "procgen.squirrel")),
+                [](int value) { return value; });
         return eve::script::projectResult(vm,bakeGtsTerrainVertexColorsInto(*output,*source,*bakedTexture,
             static_cast<GtsTerrainNormalEdgeMode>(edgeMode),smoothingIterations,terrainSizeX,terrainSizeZ,linearize),
             [](int value){return value;});
     });
     auto terrainLodRuntime=table.addClass("GtsTerrainLodRuntime",ssq::Class::Ctor<GtsTerrainLodRuntime()>());
-    terrainLodRuntime.addFunc("replace",[vm](GtsTerrainLodRuntime* self,const GtsTerrainLodSet* lods,Procgen* procgen,
-        graphics::Graphics* gfx,float diameter,float fov,float x,float y,float z){
-        if(!self||!lods||!procgen||!gfx)return eve::script::projectResult(vm,procgenBindingFailure<std::uint64_t>(
-            DiagnosticCode::InvalidArgument,"GTS terrain runtime replace arguments are required","runtime"),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
+    terrainLodRuntime.addFunc("replace", [vm](GtsTerrainLodRuntime* self, const GtsTerrainLodSet* lods,
+                                              Procgen* procgen, graphics::Graphics* gfx, float diameter, float fov,
+                                              float x, float y, float z) {
+        if (!self || !lods || !procgen || !gfx)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "GTS terrain runtime replace arguments are required", "runtime",
+                    {}, "procgen.squirrel")),
+                [](std::uint64_t v) { return static_cast<std::int64_t>(v); });
         return eve::script::projectResult(vm,self->replace(*lods,*procgen,*gfx,diameter,fov,x,y,z),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
     });
-    terrainLodRuntime.addFunc("replaceAndHideSource",[vm](GtsTerrainLodRuntime* self,const GtsTerrainLodSet* lods,
-        Procgen* procgen,graphics::Graphics* gfx,graphics::Renderable3D* source,float diameter,float fov,float x,float y,float z){
-        if(!self||!lods||!procgen||!gfx||!source)return eve::script::projectResult(vm,procgenBindingFailure<std::uint64_t>(
-            DiagnosticCode::InvalidArgument,"GTS terrain runtime source handoff arguments are required","runtime"),[](std::uint64_t v){return static_cast<std::int64_t>(v);});
+    terrainLodRuntime.addFunc("replaceAndHideSource", [vm](GtsTerrainLodRuntime* self, const GtsTerrainLodSet* lods,
+                                                           Procgen* procgen, graphics::Graphics* gfx,
+                                                           graphics::Renderable3D* source, float diameter, float fov,
+                                                           float x, float y, float z) {
+        if (!self || !lods || !procgen || !gfx || !source)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "GTS terrain runtime source handoff arguments are required",
+                    "runtime", {}, "procgen.squirrel")),
+                [](std::uint64_t v) { return static_cast<std::int64_t>(v); });
         return eve::script::projectResult(vm,self->replaceAndHideSource(*lods,*procgen,*gfx,*source,diameter,fov,x,y,z),
             [](std::uint64_t v){return static_cast<std::int64_t>(v);});
     });
     terrainLodRuntime.addFunc("clear",[vm](GtsTerrainLodRuntime* self){return eve::script::projectResult(vm,self->clear(),[](int v){return v;});});
-    terrainLodRuntime.addFunc("applyMaterial",[vm](GtsTerrainLodRuntime* self,graphics::Material* material){
-        if(!self||!material)return eve::script::projectResult(vm,procgenBindingFailure<int>(DiagnosticCode::InvalidArgument,"GTS terrain material is required","material"),[](int v){return v;});
+    terrainLodRuntime.addFunc("applyMaterial", [vm](GtsTerrainLodRuntime* self, graphics::Material* material) {
+        if (!self || !material)
+            return eve::script::projectResult(vm,
+                                              eve::Result<int>::failure(eve::Diagnostic::error(
+                                                  DiagnosticCode::InvalidArgument, "GTS terrain material is required",
+                                                  "material", {}, "procgen.squirrel")),
+                                              [](int v) { return v; });
         return eve::script::projectResult(vm,self->applyMaterial(*material),[](int v){return v;});
     });
     terrainLodRuntime.addFunc("getTileCount",&GtsTerrainLodRuntime::getTileCount);
@@ -3820,8 +4061,13 @@ void Procgen::expose(ssq::Table& table) {
     terrainLodAssets.addFunc("getObjectName",&GtsTerrainLodAssetPlan::getObjectName);
     terrainLodAssets.addFunc("getMeshName",&GtsTerrainLodAssetPlan::getMeshName);
     terrainLodAssets.addFunc("getRelativePath",&GtsTerrainLodAssetPlan::getRelativePath);
-    table.addFunc("planGtsTerrainLodAssets",[vm](GtsTerrainLodAssetPlan* output,const GtsTerrainLodSet* lods,const std::string& name,const std::string& folder){
-        if(!output||!lods)return eve::script::projectResult(vm,procgenBindingFailure<void>(DiagnosticCode::InvalidArgument,"GTS terrain export output and LOD set are required","assets"));
+    table.addFunc("planGtsTerrainLodAssets", [vm](GtsTerrainLodAssetPlan* output, const GtsTerrainLodSet* lods,
+                                                  const std::string& name, const std::string& folder) {
+        if (!output || !lods)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "GTS terrain export output and LOD set are required", "assets",
+                        {}, "procgen.squirrel")));
         return eve::script::projectResult(vm,planGtsTerrainLodAssetsInto(*output,*lods,name,folder));
     });
 
@@ -3984,8 +4230,9 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenOutputHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->releaseOutput(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "output");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "output", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newPointSet", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
@@ -3996,8 +4243,9 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenPointSetHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->releasePointSet(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "pointSet");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "pointSet", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("sampleGrid",
@@ -4009,26 +4257,28 @@ void Procgen::expose(ssq::Class& cls) {
                         [module](ProcgenPointSetHandleRef ref) { return module->resolvePointSet(ref); },
                         [](ProcgenPointSetHandleRef ref) {
                             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
-                            return owner
-                                       ? owner->releasePointSet(ref)
-                                       : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                                     "Procgen module is no longer loaded", "pointSet");
+                            return owner ? owner->releasePointSet(ref)
+                                         : eve::Result<void>::failure(eve::Diagnostic::error(
+                                               eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                               "pointSet", {}, "procgen.squirrel"));
                         });
                 });
     cls.addFunc("filterHeight", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "filterHeight requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "filterHeight requires owned points", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterHeightHandle(*reference, minimum, maximum));
     });
     cls.addFunc("filterDensity", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "filterDensity requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "filterDensity requires owned points", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterDensityHandle(*reference, minimum, maximum));
     });
     cls.addFunc("filterBox", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minX, float minY, float minZ,
@@ -4036,8 +4286,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "filterBox requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "filterBox requires owned points",
+                                               "points", {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm,
                                       value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, false));
     });
@@ -4046,16 +4297,18 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "excludeBox requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "excludeBox requires owned points",
+                                               "points", {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, true));
     });
     cls.addFunc("filterSlope", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "filterSlope requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "filterSlope requires owned points", "points", {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterSlopeHandle(*reference, minimum, maximum));
     });
     cls.addFunc(
@@ -4063,25 +4316,27 @@ void Procgen::expose(ssq::Class& cls) {
             const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
             if (!value || !reference)
                 return makeOwnedPointSetProxy(
-                    vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                            eve::DiagnosticCode::InvalidArgument, "excludeRadius requires owned points", "points"));
+                    vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "excludeRadius requires owned points", "points", {},
+                            "procgen.squirrel")));
             return makeOwnedPointSetProxy(vm, value->excludeRadiusHandle(*reference, x, z, radius));
         });
     cls.addFunc("jitterPoints",
                 [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float amountX, float amountZ) {
                     const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
                     if (!value || !reference)
-                        return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                                              eve::DiagnosticCode::InvalidArgument,
-                                                              "jitterPoints requires owned points", "points"));
+                        return makeOwnedPointSetProxy(
+                            vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "jitterPoints requires owned points",
+                                    "points", {}, "procgen.squirrel")));
                     return makeOwnedPointSetProxy(vm, value->jitterPointsHandle(*reference, seed, amountX, amountZ));
                 });
     cls.addFunc("poissonDisk", [vm = cls.getHandle()](Procgen* value, int width, int depth, float radius, uint32_t seed,
                                                       int maxPoints) {
         if (!value)
-            return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "poissonDisk requires Procgen", "procgen"));
+            return makeOwnedPointSetProxy(vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument, "poissonDisk requires Procgen",
+                                                  "procgen", {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->poissonDiskHandle(width, depth, radius, seed, maxPoints));
     });
     cls.addFunc("mergePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
@@ -4089,8 +4344,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "mergePoints requires owned point sets", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "mergePoints requires owned point sets", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->mergePointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("unionPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
@@ -4098,8 +4354,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "unionPoints requires owned point sets", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "unionPoints requires owned point sets", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->unionPointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("intersectPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
@@ -4107,8 +4364,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "intersectPoints requires owned point sets", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "intersectPoints requires owned point sets", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->intersectPointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("differencePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
@@ -4116,8 +4374,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "differencePoints requires owned point sets", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "differencePoints requires owned point sets", "points",
+                        {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->differencePointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("transformPoints", [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float y, float z,
@@ -4125,8 +4384,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "transformPoints requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "transformPoints requires owned points", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm,
                                       value->transformPointsHandle(*reference, x, y, z, yaw, scaleX, scaleY, scaleZ));
     });
@@ -4136,8 +4396,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "transformPoints3D requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "transformPoints3D requires owned points", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(
             vm, value->transformPoints3DHandle(*reference, x, y, z, pitch, yaw, roll, scaleX, scaleY, scaleZ));
     });
@@ -4147,8 +4408,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto targetRef = nativeProxyReference<ProcgenPointSetHandleRef>(targets);
         if (!value || !sourceRef || !targetRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "copyPoints requires owned point sets", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "copyPoints requires owned point sets", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->copyPointsHandle(*sourceRef, *targetRef, inheritTargetAttributes));
     });
     cls.addFunc("remapDensity", [vm = cls.getHandle()](Procgen* value, PointSet* input, float inputMin, float inputMax,
@@ -4156,8 +4418,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "remapDensity requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "remapDensity requires owned points", "points", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(
             vm, value->remapDensityHandle(*reference, inputMin, inputMax, outputMin, outputMax, clampOutput));
     });
@@ -4167,9 +4430,10 @@ void Procgen::expose(ssq::Class& cls) {
                                                      float operand, float defaultValue) {
             const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
             if (!value || !reference)
-                return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                                      eve::DiagnosticCode::InvalidArgument,
-                                                      "mathFloatAttribute requires owned points", "points"));
+                return makeOwnedPointSetProxy(
+                    vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "mathFloatAttribute requires owned points", "points",
+                            {}, "procgen.squirrel")));
             return makeOwnedPointSetProxy(vm, value->mathFloatAttributeHandle(*reference, attribute, outputAttribute,
                                                                               operation, operand, defaultValue));
         });
@@ -4178,8 +4442,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "filterFloatAttribute requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "filterFloatAttribute requires owned points", "points",
+                        {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm,
                                       value->filterFloatAttributeHandle(*reference, name, minimum, maximum, invert));
     });
@@ -4189,8 +4454,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "filterStringAttribute requires owned points", "points"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "filterStringAttribute requires owned points", "points",
+                        {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->filterStringAttributeHandle(*reference, name, expected, invert));
     });
     cls.addFunc(
@@ -4198,18 +4464,19 @@ void Procgen::expose(ssq::Class& cls) {
             const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
             if (!value || !reference)
                 return makeOwnedPointSetProxy(
-                    vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                        "densityCull requires owned points", "points"));
+                    vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "densityCull requires owned points", "points", {},
+                            "procgen.squirrel")));
             return makeOwnedPointSetProxy(vm, value->densityCullHandle(*reference, seed, multiplier));
         });
     cls.addFunc("projectToWorld", [vm = cls.getHandle()](Procgen* value, PointSet* input, float maxY, float minY,
                                                          std::int64_t maskBits, bool keepUnmatched) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !reference || maskBits < 0)
-            return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument,
-                        "projectToWorld requires owned points and a non-negative mask", "points"));
+            return makeOwnedPointSetProxy(vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "projectToWorld requires owned points and a non-negative mask",
+                                                  "points", {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(
             vm,
             value->projectToWorldHandle(*reference, maxY, minY, static_cast<std::uint64_t>(maskBits), keepUnmatched));
@@ -4222,8 +4489,9 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenTerrainSamplerHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->releaseTerrainSampler(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "sampler");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "sampler", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newHeightmap", [vm = cls.getHandle()](Procgen*, int width, int height) -> ssq::Table {
@@ -4256,8 +4524,9 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenCloudFieldHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->releaseCloudField(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "cloudField");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "cloudField", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newCloudShadow", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
@@ -4268,8 +4537,9 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenCloudShadowHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->releaseCloudShadow(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "cloudShadow");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                   "cloudShadow", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc(
@@ -4278,11 +4548,11 @@ void Procgen::expose(ssq::Class& cls) {
             auto* module = Procgen::create();
             if (!params)
                 return eve::script::projectStatusResult(
-                    vm,
-                    procgenBindingFailure<ProcgenGridHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                "generate params proxy must not be null", "params")
-                        .status(),
-                    false, false);
+                    vm, eve::Result<ProcgenGridHandleRef>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                   "generate params proxy must not be null", "params", {},
+                                                   "procgen.squirrel"))
+                            .status());
             return makeOwnedGridProxy(vm, module->generateHandle(algorithm, params->reference));
         });
     cls.addFunc(
@@ -4291,11 +4561,11 @@ void Procgen::expose(ssq::Class& cls) {
             auto* module = Procgen::create();
             if (!params)
                 return eve::script::projectStatusResult(
-                    vm,
-                    procgenBindingFailure<ProcgenImageHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "generateImage params proxy must not be null", "params")
-                        .status(),
-                    false, false);
+                    vm, eve::Result<ProcgenImageHandleRef>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                   "generateImage params proxy must not be null", "params", {},
+                                                   "procgen.squirrel"))
+                            .status());
             return makeOwnedNativeProxy<image::ImageData>(
                 vm, module->generateImageHandle(recipe, params->reference),
                 [](ProcgenImageHandleRef ref) { return Procgen::resolve(ref); },
@@ -4306,12 +4576,11 @@ void Procgen::expose(ssq::Class& cls) {
                     auto* module = Procgen::create();
                     if (!params)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<ProcgenNormalImageHandleRef>(
-                                eve::DiagnosticCode::InvalidArgument,
-                                "generateNormalImage params proxy must not be null", "params")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<ProcgenNormalImageHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generateNormalImage params proxy must not be null",
+                                                           "params", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<image::ImageData>(
                         vm, module->generateNormalImageHandle(recipe, params->reference),
                         [](ProcgenNormalImageHandleRef ref) { return Procgen::resolve(ref); },
@@ -4322,141 +4591,142 @@ void Procgen::expose(ssq::Class& cls) {
                     auto* module = Procgen::create();
                     if (!params)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<ProcgenPbrMaterialHandleRef>(
-                                eve::DiagnosticCode::InvalidArgument,
-                                "generatePbrMaterial params proxy must not be null", "params")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<ProcgenPbrMaterialHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generatePbrMaterial params proxy must not be null",
+                                                           "params", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<PbrTextureSet>(
                         vm, module->generatePbrMaterialHandle(recipe, params->reference),
                         [module](ProcgenPbrMaterialHandleRef ref) { return module->resolvePbrMaterial(ref); },
                         [](ProcgenPbrMaterialHandleRef ref) {
                             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                             return owner ? owner->ownership_->pbr.erase(ref)
-                                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                                       "Procgen module is no longer loaded", "pbr");
+                                         : eve::Result<void>::failure(eve::Diagnostic::error(
+                                               eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                               "pbr", {}, "procgen.squirrel"));
                         });
                 });
     cls.addFunc("buildMesh",
                 [vm = cls.getHandle()](Procgen*, const std::string& recipe, ScriptProcgenParams* params) -> ssq::Table {
                     auto* module = Procgen::create();
                     if (!params)
-                        return eve::script::projectStatusResult(vm,
-                                                                procgenBindingFailure<ProcgenMeshBuildHandleRef>(
-                                                                    eve::DiagnosticCode::InvalidArgument,
-                                                                    "buildMesh params proxy must not be null", "params")
-                                                                    .status(),
-                                                                false, false);
+                        return eve::script::projectStatusResult(
+                            vm, eve::Result<ProcgenMeshBuildHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "buildMesh params proxy must not be null", "params", {},
+                                                           "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<MeshBuild>(
                         vm, module->buildMeshHandle(recipe, params->reference),
                         [module](ProcgenMeshBuildHandleRef ref) { return module->resolveMeshBuild(ref); },
                         [](ProcgenMeshBuildHandleRef ref) {
                             auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                             return owner ? owner->ownership_->meshes.erase(ref)
-                                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                                       "Procgen module is no longer loaded", "mesh");
+                                         : eve::Result<void>::failure(eve::Diagnostic::error(
+                                               eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                               "mesh", {}, "procgen.squirrel"));
                         });
                 });
     cls.addFunc("generateHeightmap", [vm = cls.getHandle()](Procgen*, ScriptProcgenParams* params) -> ssq::Table {
         auto* module = Procgen::create();
         if (!params)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<ProcgenHeightmapHandleRef>(
-                    eve::DiagnosticCode::InvalidArgument, "generateHeightmap params proxy must not be null", "params")
-                    .status(),
-                false, false);
+                vm, eve::Result<ProcgenHeightmapHandleRef>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "generateHeightmap params proxy must not be null", "params", {},
+                                               "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<Heightmap>(
             vm, module->generateHeightmapHandle(params->reference),
             [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
             [](ProcgenHeightmapHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->ownership_->heightmaps.erase(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "heightmap");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "heightmap", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newRuntimeGeneration", [vm = cls.getHandle()](Procgen* value, uint32_t worldSeed) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                            "runtime generation requires a Procgen module", "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime generation requires a Procgen module",
+                                                                      "procgen", {}, "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<RuntimeGeneration>(
             vm, value->newRuntimeGenerationHandle(worldSeed),
             [value](ProcgenRuntimeGenerationHandleRef ref) { return value->resolveRuntimeGeneration(ref); },
             [](ProcgenRuntimeGenerationHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "runtimeGeneration");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                   "runtimeGeneration", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newPointGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<PointGraph>(
             vm, value->newPointGraphHandle(),
             [value](ProcgenPointGraphHandleRef ref) { return value->resolvePointGraph(ref); },
             [](ProcgenPointGraphHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "pointGraph");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "pointGraph", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshModifierGraph>(
             vm, value->newMeshModifierGraphHandle(),
             [value](ProcgenMeshModifierGraphHandleRef ref) { return value->resolveMeshModifierGraph(ref); },
             [](ProcgenMeshModifierGraphHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "meshModifierGraph");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                   "meshModifierGraph", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newSplinePath", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<SplinePath>(
             vm, value->newSplinePathHandle(),
             [value](ProcgenSplinePathHandleRef ref) { return value->resolveSplinePath(ref); },
             [](ProcgenSplinePathHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "splinePath");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "splinePath", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newMeshDeformationSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshDeformationSession>(
             vm, value->newMeshDeformationSessionHandle(),
             [value](ProcgenMeshDeformationSessionHandleRef ref) {
@@ -4465,18 +4735,18 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenMeshDeformationSessionHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "meshDeformation");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                   "meshDeformation", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newDynamicMeshUvPaintSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<DynamicMeshUvPaintSession>(
             vm, value->newDynamicMeshUvPaintSessionHandle(),
             [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
@@ -4485,62 +4755,63 @@ void Procgen::expose(ssq::Class& cls) {
             [](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "dynamicUvPaint");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                   "dynamicUvPaint", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newGridGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                             "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<GridGraph>(
             vm, value->newGridGraphHandle(),
             [value](ProcgenGridGraphHandleRef ref) { return value->resolveGridGraph(ref); },
             [](ProcgenGridGraphHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "gridGraph");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "gridGraph", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newMeshGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                             "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshGraph>(
             vm, value->newMeshGraphHandle(),
             [value](ProcgenMeshGraphHandleRef ref) { return value->resolveMeshGraph(ref); },
             [](ProcgenMeshGraphHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "meshGraph");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "meshGraph", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
-                                            "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<BiomeRules>(
             vm, value->newBiomeRulesHandle(),
             [value](ProcgenBiomeRulesHandleRef ref) { return value->resolveBiomeRules(ref); },
             [](ProcgenBiomeRulesHandleRef ref) {
                 auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
                 return owner ? owner->release(ref)
-                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                           "Procgen module is no longer loaded", "biomeRules");
+                             : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "Procgen module is no longer loaded",
+                                                                                 "biomeRules", {}, "procgen.squirrel"));
             });
     });
     cls.addFunc("boxVolume",
@@ -4548,43 +4819,44 @@ void Procgen::expose(ssq::Class& cls) {
                                        float maxZ) -> ssq::Table {
                     if (!value)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                        "Procgen module must not be null", "procgen")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "Procgen module must not be null",
+                                                                                  "procgen", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedSpatialProxy(vm, value->boxVolumeHandle(minX, minY, minZ, maxX, maxY, maxZ));
                 });
     cls.addFunc("sphereVolume", [vm = cls.getHandle()](Procgen* value, float x, float y, float z, float radius) {
         if (!value)
-            return makeOwnedSpatialProxy(
-                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                       "sphereVolume requires Procgen", "procgen"));
+            return makeOwnedSpatialProxy(vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                                                 eve::DiagnosticCode::InvalidArgument, "sphereVolume requires Procgen",
+                                                 "procgen", {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->sphereVolumeHandle(x, y, z, radius));
     });
     cls.addFunc("polygonVolume", [vm = cls.getHandle()](Procgen* value, PointSet* points, float minY, float maxY) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
             return makeOwnedSpatialProxy(
-                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "polygonVolume requires owned control points", "points"));
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "polygonVolume requires owned control points", "points",
+                        {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->polygonVolumeHandle(*reference, minY, maxY));
     });
     cls.addFunc("pointData", [vm = cls.getHandle()](Procgen* value, PointSet* points) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
-            return makeOwnedSpatialProxy(
-                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                       "pointData requires owned points", "points"));
+            return makeOwnedSpatialProxy(vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                                                 eve::DiagnosticCode::InvalidArgument,
+                                                 "pointData requires owned points", "points", {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->pointDataHandle(*reference));
     });
     cls.addFunc("heightfieldData", [vm = cls.getHandle()](Procgen* value, Heightmap* heightmap, float originX,
                                                           float originZ, float cellSize, float heightScale) {
         const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(heightmap);
         if (!value || !reference)
-            return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                                 eve::DiagnosticCode::InvalidArgument,
-                                                 "heightfieldData requires an owned heightmap", "heightmap"));
+            return makeOwnedSpatialProxy(
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "heightfieldData requires an owned heightmap",
+                        "heightmap", {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm,
                                      value->heightfieldDataHandle(*reference, originX, originZ, cellSize, heightScale));
     });
@@ -4593,9 +4865,10 @@ void Procgen::expose(ssq::Class& cls) {
                                                           float minY, float maxY) {
         const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(values);
         if (!value || !reference)
-            return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                                 eve::DiagnosticCode::InvalidArgument,
-                                                 "textureMaskData requires an owned scalar map", "values"));
+            return makeOwnedSpatialProxy(
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "textureMaskData requires an owned scalar map", "values",
+                        {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(
             vm, value->textureMaskDataHandle(*reference, originX, originZ, cellSize, minValue, maxValue, minY, maxY));
     });
@@ -4603,8 +4876,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenMeshBuildHandleRef>(mesh);
         if (!value || !reference)
             return makeOwnedSpatialProxy(
-                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "meshSurfaceData requires an owned mesh build", "mesh"));
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "meshSurfaceData requires an owned mesh build", "mesh",
+                        {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->meshSurfaceDataHandle(*reference, tolerance));
     });
     cls.addFunc("unionSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
@@ -4612,26 +4886,29 @@ void Procgen::expose(ssq::Class& cls) {
         const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedSpatialProxy(
-                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "unionSpatial requires owned spatial data", "spatial"));
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "unionSpatial requires owned spatial data", "spatial", {},
+                        "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->unionSpatialHandle(*firstRef, *secondRef));
     });
     cls.addFunc("intersectSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
         const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
         if (!value || !firstRef || !secondRef)
-            return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                                 eve::DiagnosticCode::InvalidArgument,
-                                                 "intersectSpatial requires owned spatial data", "spatial"));
+            return makeOwnedSpatialProxy(
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "intersectSpatial requires owned spatial data", "spatial",
+                        {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->intersectSpatialHandle(*firstRef, *secondRef));
     });
     cls.addFunc("differenceSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
         const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
         if (!value || !firstRef || !secondRef)
-            return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                                 eve::DiagnosticCode::InvalidArgument,
-                                                 "differenceSpatial requires owned spatial data", "spatial"));
+            return makeOwnedSpatialProxy(
+                vm, eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "differenceSpatial requires owned spatial data",
+                        "spatial", {}, "procgen.squirrel")));
         return makeOwnedSpatialProxy(vm, value->differenceSpatialHandle(*firstRef, *secondRef));
     });
     cls.addFunc("sampleSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* spatial, float spacing,
@@ -4639,8 +4916,9 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
         if (!value || !reference)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                        eve::DiagnosticCode::InvalidArgument, "sampleSpatial requires owned spatial data", "spatial"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "sampleSpatial requires owned spatial data", "spatial",
+                        {}, "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->sampleSpatialHandle(*reference, spacing, seed, jitter));
     });
     cls.addFunc(
@@ -4649,8 +4927,9 @@ void Procgen::expose(ssq::Class& cls) {
             const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
             if (!value || !pointsRef || !spatialRef)
                 return makeOwnedPointSetProxy(
-                    vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                            eve::DiagnosticCode::InvalidArgument, "filterSpatial requires owned inputs", "input"));
+                    vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "filterSpatial requires owned inputs", "input", {},
+                            "procgen.squirrel")));
             return makeOwnedPointSetProxy(vm, value->filterSpatialHandle(*pointsRef, *spatialRef, invert));
         });
     cls.addFunc("projectToSpatial", [vm = cls.getHandle()](Procgen* value, PointSet* points, SpatialData* spatial) {
@@ -4658,19 +4937,19 @@ void Procgen::expose(ssq::Class& cls) {
         const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
         if (!value || !pointsRef || !spatialRef)
             return makeOwnedPointSetProxy(
-                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "projectToSpatial requires owned inputs", "input"));
+                vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "projectToSpatial requires owned inputs", "input", {},
+                        "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->projectToSpatialHandle(*pointsRef, *spatialRef));
     });
     cls.addFunc("splineData", [vm = cls.getHandle()](Procgen* value, PointSet* points, float radius) -> ssq::Table {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                            "splineData requires an owned point set", "points")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "splineData requires an owned point set",
+                                                                      "points", {}, "procgen.squirrel"))
+                        .status());
         return makeOwnedSpatialProxy(vm, value->splineDataHandle(*reference, radius));
     });
     cls.addFunc("sampleSpline",
@@ -4679,11 +4958,11 @@ void Procgen::expose(ssq::Class& cls) {
                     const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
                     if (!value || !reference)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                        "sampleSpline requires an owned point set", "points")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "sampleSpline requires an owned point set", "points", {},
+                                                           "procgen.squirrel"))
+                                    .status());
                     return makeOwnedPointSetProxy(vm, value->sampleSplineHandle(*reference, spacing, seed, jitter));
                 });
     cls.addFunc("filterSplineDistance",
@@ -4693,11 +4972,11 @@ void Procgen::expose(ssq::Class& cls) {
                     const auto splineRef = nativeProxyReference<ProcgenPointSetHandleRef>(spline);
                     if (!value || !inputRef || !splineRef)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                        "filterSplineDistance requires owned point sets", "points")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "filterSplineDistance requires owned point sets", "points",
+                                                           {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedPointSetProxy(
                         vm, value->filterSplineDistanceHandle(*inputRef, *splineRef, minDistance, maxDistance));
                 });
@@ -4705,11 +4984,10 @@ void Procgen::expose(ssq::Class& cls) {
         const auto inputRef = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !inputRef)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "selfPrune requires owned points",
-                                            "points")
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "selfPrune requires owned points", "points", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedPointSetProxy(vm, value->selfPruneHandle(*inputRef, radius));
     });
     cls.addFunc(
@@ -4718,10 +4996,10 @@ void Procgen::expose(ssq::Class& cls) {
                                const std::string& assetAttribute, const std::string& defaultAsset) {
             const auto pointsRef = nativeProxyReference<ProcgenPointSetHandleRef>(points);
             if (!value || !request || !pointsRef)
-                return eve::script::projectResult(
-                    vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "publishCellInstances requires request and owned points",
-                                                    "publishCellInstances"));
+                return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                          eve::DiagnosticCode::InvalidArgument,
+                                                          "publishCellInstances requires request and owned points",
+                                                          "publishCellInstances", {}, "procgen.squirrel")));
             return eve::script::projectResult(
                 vm, value->publishCellInstances(prefix, *request, *pointsRef, assetAttribute, defaultAsset));
         });
@@ -4737,10 +5015,10 @@ void Procgen::expose(ssq::Class& cls) {
             end != revisionText.data() + revisionText.size() || targetRevision == 0)
             return eve::script::projectResult(
                 vm,
-                procgenBindingFailure<std::uint64_t>(
+                eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::InvalidArgument,
                     "publishCellSnapshot requires request, owned points, and a non-zero decimal target revision",
-                    "publishCellSnapshot"),
+                    "publishCellSnapshot", {}, "procgen.squirrel")),
                 [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
         return eve::script::projectResult(
             vm, value->publishCellSnapshot(prefix, *request, *pointsRef, targetRevision, assetAttribute, defaultAsset),
@@ -4757,10 +5035,10 @@ void Procgen::expose(ssq::Class& cls) {
             targetRevision < 2)
             return eve::script::projectResult(
                 vm,
-                procgenBindingFailure<std::uint64_t>(
+                eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::InvalidArgument,
                     "publishCellInstanceDelta requires request, delta, and a decimal target revision greater than one",
-                    "publishCellInstanceDelta"),
+                    "publishCellInstanceDelta", {}, "procgen.squirrel")),
                 [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
         return eve::script::projectResult(
             vm, value->publishCellInstanceDelta(prefix, *request, *delta, targetRevision, assetAttribute, defaultAsset),
@@ -4773,9 +5051,10 @@ void Procgen::expose(ssq::Class& cls) {
                     if (!value || !runtime || !request)
                         return eve::script::projectResult(
                             vm,
-                            procgenBindingFailure<std::uint64_t>(
-                                eve::DiagnosticCode::InvalidArgument,
-                                "synchronizeCellInstances requires runtime and request", "synchronizeCellInstances"),
+                            eve::Result<std::uint64_t>::failure(
+                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                       "synchronizeCellInstances requires runtime and request",
+                                                       "synchronizeCellInstances", {}, "procgen.squirrel")),
                             [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
                     return eve::script::projectResult(
                         vm, value->synchronizeCellInstances(prefix, *runtime, *request, assetAttribute, defaultAsset),
@@ -4799,16 +5078,18 @@ void Procgen::expose(ssq::Class& cls) {
         return eve::script::projectResult(
             vm,
             value ? value->synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)
-                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                         "synchronizeCellInstancesAtomic requires Procgen", "procgen"),
+                  : eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "synchronizeCellInstancesAtomic requires Procgen",
+                        "procgen", {}, "procgen.squirrel")),
             [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
     });
     cls.addFunc("removeCellInstances",
                 [vm = cls.getHandle()](Procgen* value, const std::string& prefix, ProcgenCellRequest* request) {
                     if (!value || !request)
                         return eve::script::projectResult(
-                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                            "removeCellInstances requires a request", "request"));
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "removeCellInstances requires a request",
+                                    "request", {}, "procgen.squirrel")));
                     return eve::script::projectResult(vm, value->removeCellInstances(prefix, *request));
                 });
     cls.addFunc("removeCellInstancesAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
@@ -4820,8 +5101,9 @@ void Procgen::expose(ssq::Class& cls) {
         return eve::script::projectResult(
             vm,
             value ? value->removeCellInstancesAtomic(prefix, requests)
-                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                         "removeCellInstancesAtomic requires Procgen", "procgen"),
+                  : eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "removeCellInstancesAtomic requires Procgen", "procgen",
+                        {}, "procgen.squirrel")),
             [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
     });
     cls.addFunc("completeCellCleanupAtomic", [vm = cls.getHandle()](Procgen* value, const std::string& prefix,
@@ -4837,15 +5119,17 @@ void Procgen::expose(ssq::Class& cls) {
         return eve::script::projectResult(
             vm,
             value ? value->completeCellCleanupAtomic(prefix, runtimes, requests)
-                  : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                         "completeCellCleanupAtomic requires Procgen", "procgen"),
+                  : eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "completeCellCleanupAtomic requires Procgen", "procgen",
+                        {}, "procgen.squirrel")),
             [](std::uint64_t removed) { return eve::Value(std::to_string(removed)); });
     });
     cls.addFunc("removeInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId) {
         if (!value)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "removeInstances requires Procgen", "procgen"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "removeInstances requires Procgen", "procgen", {},
+                                                                      "procgen.squirrel")));
         return eve::script::projectResult(vm, value->removeInstances(batchId));
     });
     cls.addFunc(
@@ -4855,10 +5139,10 @@ void Procgen::expose(ssq::Class& cls) {
             if (!value || !params || !gfx)
                 return eve::script::projectStatusResult(
                     vm,
-                    procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "generateTexture requires params and Graphics", "generateTexture")
-                        .status(),
-                    false, false);
+                    eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "generateTexture requires params and Graphics",
+                                                                      "generateTexture", {}, "procgen.squirrel"))
+                        .status());
             return projectBorrowedResult(vm, value->generateTextureBorrowed(recipe, params->reference, gfx), "texture");
         });
     cls.addFunc("generateMesh",
@@ -4866,11 +5150,11 @@ void Procgen::expose(ssq::Class& cls) {
                                        graphics::Graphics* gfx) -> ssq::Table {
                     if (!value || !params || !gfx)
                         return eve::script::projectStatusResult(
-                            vm,
-                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                        "generateMesh requires params and Graphics", "generateMesh")
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generateMesh requires params and Graphics", "generateMesh",
+                                                           {}, "procgen.squirrel"))
+                                    .status());
                     return projectBorrowedResult(vm, value->generateMeshBorrowed(recipe, params->reference, gfx),
                                                  "mesh");
                 });
@@ -4879,19 +5163,22 @@ void Procgen::expose(ssq::Class& cls) {
                     if (!value || !mesh || !gfx)
                         return eve::script::projectStatusResult(
                             vm,
-                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                        "uploadMesh requires a mesh and Graphics", "uploadMesh")
-                                .status(),
-                            false, false);
+                            eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "uploadMesh requires a mesh and Graphics",
+                                                                              "uploadMesh", {}, "procgen.squirrel"))
+                                .status());
                     return projectBorrowedResult(vm, value->uploadMeshBorrowed(*mesh, *gfx), "mesh");
                 });
     cls.addFunc("configureGtsTerrainTileLods",
-                [vm = cls.getHandle()](Procgen* value,const GtsTerrainLodSet* lods,int tileIndex,
-                                       graphics::Renderable3D* renderable,graphics::Graphics* gfx,
-                                       float worldDiameter,float verticalFovDegrees,float originX,float originY,float originZ){
-                    if(!value||!lods||!renderable||!gfx)return eve::script::projectResult(vm,
-                        procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                            "configureGtsTerrainTileLods requires LODs, Renderable3D and Graphics","mesh"));
+                [vm = cls.getHandle()](Procgen* value, const GtsTerrainLodSet* lods, int tileIndex,
+                                       graphics::Renderable3D* renderable, graphics::Graphics* gfx, float worldDiameter,
+                                       float verticalFovDegrees, float originX, float originY, float originZ) {
+                    if (!value || !lods || !renderable || !gfx)
+                        return eve::script::projectResult(
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument,
+                                    "configureGtsTerrainTileLods requires LODs, Renderable3D and Graphics", "mesh", {},
+                                    "procgen.squirrel")));
                     return eve::script::projectResult(vm,value->configureGtsTerrainTileLods(
                         *lods,tileIndex,*renderable,*gfx,worldDiameter,verticalFovDegrees,originX,originY,originZ));
                 });
@@ -4911,46 +5198,52 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("commitSystem", [vm = cls.getHandle()](Procgen* value, ScriptProcgenContext* context) {
         if (!value || !context)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "commitSystem requires a context proxy", "context"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "commitSystem requires a context proxy",
+                                                                      "context", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, value->commitSystem(context->reference));
     });
     cls.addFunc("abortSystem", [vm = cls.getHandle()](Procgen* value, ScriptProcgenContext* context) {
         if (!value || !context)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "abortSystem requires a context proxy", "context"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "abortSystem requires a context proxy", "context",
+                                                                      {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, value->abortSystem(context->reference));
     });
     cls.addFunc("getSystemOutput",
                 [vm = cls.getHandle()](Procgen* value, const std::string& system, const std::string& output) {
                     if (!value)
-                        return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                                              eve::DiagnosticCode::InvalidArgument,
-                                                              "Procgen module must not be null", "procgen"));
+                        return makeOwnedPointSetProxy(
+                            vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null", "procgen",
+                                    {}, "procgen.squirrel")));
                     return makeOwnedPointSetProxy(vm, value->getSystemOutputHandle(system, output));
                 });
     cls.addFunc("getSystemDebugStage",
                 [vm = cls.getHandle()](Procgen* value, const std::string& system, const std::string& stage) {
                     if (!value)
-                        return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                                              eve::DiagnosticCode::InvalidArgument,
-                                                              "Procgen module must not be null", "procgen"));
+                        return makeOwnedPointSetProxy(
+                            vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null", "procgen",
+                                    {}, "procgen.squirrel")));
                     return makeOwnedPointSetProxy(vm, value->getSystemDebugStageHandle(system, stage));
                 });
     cls.addFunc("getPreviousSystemDebugStage",
                 [vm = cls.getHandle()](Procgen* value, const std::string& system, const std::string& stage) {
                     if (!value)
-                        return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                                              eve::DiagnosticCode::InvalidArgument,
-                                                              "Procgen module must not be null", "procgen"));
+                        return makeOwnedPointSetProxy(
+                            vm, eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null", "procgen",
+                                    {}, "procgen.squirrel")));
                     return makeOwnedPointSetProxy(vm, value->getPreviousSystemDebugStageHandle(system, stage));
                 });
     cls.addFunc("removeSystem", [vm = cls.getHandle()](Procgen* value, const std::string& name) {
         if (!value)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "removeSystem requires a Procgen module", "procgen"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "removeSystem requires a Procgen module",
+                                                                      "procgen", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, value->removeSystem(name));
     });
     cls.addFunc("hasSystem", &Procgen::hasSystem);
@@ -4972,11 +5265,11 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getAlgorithmSchema", [vm = cls.getHandle()](Procgen* value, const std::string& algorithm) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                                        "algorithm schema requires a Procgen module", "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<RecipeDescriptor>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "algorithm schema requires a Procgen module", "procgen", {},
+                                               "procgen.squirrel"))
+                        .status());
         return projectRecipeDescriptorResult(vm, value->getAlgorithmSchema(algorithm));
     });
     cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
@@ -5000,8 +5293,9 @@ void Procgen::expose(ssq::Class& cls) {
                 [vm = cls.getHandle()](Procgen* value, const std::string& algorithm, ScriptProcgenParams* params) {
                     if (!value || !params)
                         return eve::script::projectResult(
-                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                            "algorithm defaults require a params proxy", "params"));
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "algorithm defaults require a params proxy",
+                                    "params", {}, "procgen.squirrel")));
                     return eve::script::projectResult(vm, value->applyAlgorithmDefaults(algorithm, params->reference));
                 });
     cls.addFunc("generateTo", [vm = cls.getHandle()](Procgen* value, const std::string& algorithm,
@@ -5009,16 +5303,18 @@ void Procgen::expose(ssq::Class& cls) {
         const auto outputRef = nativeProxyReference<ProcgenOutputHandleRef>(output);
         if (!value || !params || !outputRef)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "generateTo requires params and owned output", "generateTo"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "generateTo requires params and owned output",
+                                                                      "generateTo", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, value->generateTo(algorithm, params->reference, *outputRef));
     });
     cls.addFunc("autotileGrid", [vm = cls.getHandle()](Procgen* value, Grid2D* grid) {
         const auto gridRef = nativeProxyReference<ProcgenGridHandleRef>(grid);
         if (!value || !gridRef)
             return eve::script::projectResult(
-                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "autotileGrid requires an owned grid proxy", "grid"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "autotileGrid requires an owned grid proxy",
+                                                                      "grid", {}, "procgen.squirrel")));
         return eve::script::projectResult(vm, value->autotileGrid(*gridRef));
     });
     cls.addFunc("randomSeed", &Procgen::randomSeed);
@@ -5027,8 +5323,9 @@ void Procgen::expose(ssq::Class& cls) {
         if (!value || !gridRef)
             return eve::script::projectResult(
                 vm,
-                procgenBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                   "gridToJson requires an owned grid proxy", "grid"),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "gridToJson requires an owned grid proxy",
+                                                                         "grid", {}, "procgen.squirrel")),
                 [](std::string&& json) { return eve::Value(std::move(json)); });
         return eve::script::projectResult(vm, value->gridToJson(*gridRef),
                                           [](std::string&& json) { return eve::Value(std::move(json)); });
@@ -5039,19 +5336,20 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getTextureRecipeSchema", [vm = cls.getHandle()](Procgen* value, const std::string& recipe) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                                        "texture schema requires a Procgen module", "procgen")
-                    .status(),
-                false, false);
+                vm, eve::Result<RecipeDescriptor>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "texture schema requires a Procgen module", "procgen", {},
+                                               "procgen.squirrel"))
+                        .status());
         return projectRecipeDescriptorResult(vm, value->getTextureRecipeSchema(recipe));
     });
     cls.addFunc("applyTextureRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {
                     if (!value || !params)
                         return eve::script::projectResult(
-                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                            "texture defaults require a params proxy", "params"));
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "texture defaults require a params proxy",
+                                    "params", {}, "procgen.squirrel")));
                     return eve::script::projectResult(vm, value->applyTextureRecipeDefaults(recipe, params->reference));
                 });
     cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
@@ -5061,18 +5359,19 @@ void Procgen::expose(ssq::Class& cls) {
         if (!value)
             return eve::script::projectStatusResult(
                 vm,
-                procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                                        "PBR schema requires a Procgen module", "procgen")
-                    .status(),
-                false, false);
+                eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "PBR schema requires a Procgen module",
+                                                                              "procgen", {}, "procgen.squirrel"))
+                    .status());
         return projectRecipeDescriptorResult(vm, value->getPbrRecipeSchema(recipe));
     });
     cls.addFunc("applyPbrRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {
                     if (!value || !params)
                         return eve::script::projectResult(
-                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                            "PBR defaults require a params proxy", "params"));
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "PBR defaults require a params proxy",
+                                                                                  "params", {}, "procgen.squirrel")));
                     return eve::script::projectResult(vm, value->applyPbrRecipeDefaults(recipe, params->reference));
                 });
     cls.addFunc(
@@ -5081,22 +5380,24 @@ void Procgen::expose(ssq::Class& cls) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<GeneratedArtifact>(eve::DiagnosticCode::InvalidArgument,
-                                                             "procgen module must not be null", "procgen"),
+                    eve::Result<GeneratedArtifact>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                   "procgen module must not be null",
+                                                                                   "procgen", {}, "procgen.squirrel")),
                     [](GeneratedArtifact&& artifact) { return artifactProjection(std::move(artifact)); });
             const auto parsed = ArtifactId::parse(artifactIdentity);
             if (!parsed || parsed->isNil())
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<GeneratedArtifact>(eve::DiagnosticCode::InvalidArgument,
-                                                             "artifact identity must be a non-nil canonical UUID",
-                                                             "artifactIdentity"),
+                    eve::Result<GeneratedArtifact>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "artifact identity must be a non-nil canonical UUID",
+                        "artifactIdentity", {}, "procgen.squirrel")),
                     [](GeneratedArtifact&& artifact) { return artifactProjection(std::move(artifact)); });
             if (!params)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<GeneratedArtifact>(eve::DiagnosticCode::InvalidArgument,
-                                                             "buildArtifact requires a params proxy", "params"),
+                    eve::Result<GeneratedArtifact>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "buildArtifact requires a params proxy", "params", {},
+                        "procgen.squirrel")),
                     [](GeneratedArtifact&& artifact) { return artifactProjection(std::move(artifact)); });
             return eve::script::projectResult(
                 vm, value->buildArtifact(recipeId, params->reference, *parsed),
@@ -5109,16 +5410,17 @@ void Procgen::expose(ssq::Class& cls) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<ArtifactPublishReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "procgen module must not be null", "procgen"),
+                    eve::Result<ArtifactPublishReceipt>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "procgen module must not be null",
+                                               "procgen", {}, "procgen.squirrel")),
                     [](ArtifactPublishReceipt&& receipt) { return publishReceiptProjection(std::move(receipt)); });
             const auto parsed = ArtifactId::parse(artifactIdentity);
             if (!parsed || parsed->isNil())
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<ArtifactPublishReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "artifact identity must be a non-nil canonical UUID",
-                                                                  "artifactIdentity"),
+                    eve::Result<ArtifactPublishReceipt>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "artifact identity must be a non-nil canonical UUID",
+                        "artifactIdentity", {}, "procgen.squirrel")),
                     [](ArtifactPublishReceipt&& receipt) { return publishReceiptProjection(std::move(receipt)); });
             ArtifactPublishOptions options;
             options.scene    = scene;
@@ -5128,8 +5430,9 @@ void Procgen::expose(ssq::Class& cls) {
             if (!params)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<ArtifactPublishReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "publishArtifact requires a params proxy", "params"),
+                    eve::Result<ArtifactPublishReceipt>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "publishArtifact requires a params proxy", "params", {},
+                        "procgen.squirrel")),
                     [](ArtifactPublishReceipt&& receipt) { return publishReceiptProjection(std::move(receipt)); });
             return eve::script::projectResult(
                 vm, value->publishArtifact(recipeId, params->reference, *parsed, options),
@@ -5164,18 +5467,19 @@ void Procgen::expose(ssq::Class& cls) {
         if (!value)
             return eve::script::projectStatusResult(
                 vm,
-                procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                                        "mesh schema requires a Procgen module", "procgen")
-                    .status(),
-                false, false);
+                eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "mesh schema requires a Procgen module",
+                                                                              "procgen", {}, "procgen.squirrel"))
+                    .status());
         return projectRecipeDescriptorResult(vm, value->getMeshRecipeSchema(recipe));
     });
     cls.addFunc("applyMeshRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {
                     if (!value || !params)
                         return eve::script::projectResult(
-                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                            "mesh defaults require a params proxy", "params"));
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                    eve::DiagnosticCode::InvalidArgument, "mesh defaults require a params proxy",
+                                    "params", {}, "procgen.squirrel")));
                     return eve::script::projectResult(vm, value->applyMeshRecipeDefaults(recipe, params->reference));
                 });
 }

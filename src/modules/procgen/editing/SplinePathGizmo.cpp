@@ -7,11 +7,6 @@
 namespace eve::procgen_editing {
 namespace {
 
-template <class T>
-EditorResult<T> gizmoError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 editing::GizmoSnapshot failedSnapshot(const SplinePathDocument& document, const char* rule, std::string message) {
     editing::GizmoSnapshot result;
     result.target         = document.targetId().value();
@@ -116,13 +111,14 @@ SplinePathDragSession::SplinePathDragSession(SplinePathDocument* document, int s
 
 EditorResult<SplinePathDragPreview> SplinePathDragSession::previewCurrent() const {
     if (!document_ || !dragging_)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-not-active",
-                                                 "Spline drag has not begun");
+        return eve::editing::failed<SplinePathDragPreview>(
+            EditorStatus::Rejected, RuleId("editor.spline.drag-not-active"), "Spline drag has not begun");
     SplinePathDocument candidate = *document_;
     auto               operation = candidate.makeSetPoint(draft_);
     if (!operation.ok() || !candidate.applyDomainOperation(operation.value()).ok())
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-preview-invalid",
-                                                 "Spline draft could not be previewed");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-preview-invalid"),
+                                                           "Spline draft could not be previewed");
     SplinePathDragPreview result;
     result.status = EditorStatus::Applied;
     result.point  = activePoint_;
@@ -138,17 +134,19 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayO
                                                                      double rayDirectionY, double rayDirectionZ) {
     cancelDrag();
     if (!document_)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-target-required",
-                                                 "Spline drag target is unavailable");
+        return eve::editing::failed<SplinePathDragPreview>(
+            EditorStatus::Rejected, RuleId("editor.spline.drag-target-required"), "Spline drag target is unavailable");
     std::array<double, 3> direction;
     if (!normalizeRay(rayDirectionX, rayDirectionY, rayDirectionZ, direction))
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-ray-invalid",
-                                                 "Spline drag requires a finite non-zero pointer ray");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-ray-invalid"),
+                                                           "Spline drag requires a finite non-zero pointer ray");
     const std::array<double, 3> origin{rayOriginX, rayOriginY, rayOriginZ};
     const auto                  gizmo = SplinePathGizmoBuilder().build(*document_, sampleCount_);
     if (gizmo.status != EditorStatus::Applied)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-gizmo-invalid",
-                                                 "Spline gizmo is not available for picking");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-gizmo-invalid"),
+                                                           "Spline gizmo is not available for picking");
     double      closest = std::numeric_limits<double>::infinity();
     std::string pickedId;
     for (const auto& primitive : gizmo.primitives) {
@@ -169,8 +167,8 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayO
         dragPlanePoint_ = primitive.position;
     }
     if (pickedId.empty())
-        return gizmoError<SplinePathDragPreview>(EditorStatus::NotFound, "editor.spline.handle-not-hit",
-                                                 "Pointer ray did not hit a spline handle");
+        return eve::editing::failed<SplinePathDragPreview>(
+            EditorStatus::NotFound, RuleId("editor.spline.handle-not-hit"), "Pointer ray did not hit a spline handle");
     const auto roleEnd = pickedId.find('.', 7);
     activeHandle_      = pickedId.substr(7, roleEnd - 7);
     activePoint_       = StableId(pickedId.substr(roleEnd + 1));
@@ -178,8 +176,8 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::beginDrag(double rayO
     const auto found =
         std::find_if(points.begin(), points.end(), [&](const auto& point) { return point.id == activePoint_; });
     if (found == points.end())
-        return gizmoError<SplinePathDragPreview>(EditorStatus::NotFound, "editor.spline.point-not-found",
-                                                 "Picked spline point no longer exists");
+        return eve::editing::failed<SplinePathDragPreview>(
+            EditorStatus::NotFound, RuleId("editor.spline.point-not-found"), "Picked spline point no longer exists");
     draft_           = *found;
     dragPlaneNormal_ = direction;
     baseRevision_    = document_->revision();
@@ -191,30 +189,33 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::updateDrag(double ray
                                                                       double rayOriginZ, double rayDirectionX,
                                                                       double rayDirectionY, double rayDirectionZ) {
     if (!dragging_ || !document_)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-not-active",
-                                                 "Spline drag has not begun");
+        return eve::editing::failed<SplinePathDragPreview>(
+            EditorStatus::Rejected, RuleId("editor.spline.drag-not-active"), "Spline drag has not begun");
     if (document_->revision() != baseRevision_) {
         cancelDrag();
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Conflict, "editor.spline.drag-stale",
-                                                 "Spline document changed while dragging");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Conflict, RuleId("editor.spline.drag-stale"),
+                                                           "Spline document changed while dragging");
     }
     std::array<double, 3> direction;
     if (!normalizeRay(rayDirectionX, rayDirectionY, rayDirectionZ, direction))
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-ray-invalid",
-                                                 "Spline drag requires a finite non-zero pointer ray");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-ray-invalid"),
+                                                           "Spline drag requires a finite non-zero pointer ray");
     const std::array<double, 3> origin{rayOriginX, rayOriginY, rayOriginZ};
     const double                denominator =
         direction[0] * dragPlaneNormal_[0] + direction[1] * dragPlaneNormal_[1] + direction[2] * dragPlaneNormal_[2];
     if (std::abs(denominator) < 1e-9)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-ray-parallel",
-                                                 "Pointer ray is parallel to the spline drag plane");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-ray-parallel"),
+                                                           "Pointer ray is parallel to the spline drag plane");
     const double distance = ((dragPlanePoint_[0] - origin[0]) * dragPlaneNormal_[0] +
                              (dragPlanePoint_[1] - origin[1]) * dragPlaneNormal_[1] +
                              (dragPlanePoint_[2] - origin[2]) * dragPlaneNormal_[2]) /
                             denominator;
     if (distance < 0.0)
-        return gizmoError<SplinePathDragPreview>(EditorStatus::Rejected, "editor.spline.drag-behind-camera",
-                                                 "Spline drag plane is behind the pointer ray origin");
+        return eve::editing::failed<SplinePathDragPreview>(EditorStatus::Rejected,
+                                                           RuleId("editor.spline.drag-behind-camera"),
+                                                           "Spline drag plane is behind the pointer ray origin");
     const std::array<double, 3> world{origin[0] + direction[0] * distance, origin[1] + direction[1] * distance,
                                       origin[2] + direction[2] * distance};
     if (activeHandle_ == "anchor") {
@@ -235,12 +236,12 @@ EditorResult<SplinePathDragPreview> SplinePathDragSession::updateDrag(double ray
 
 EditorResult<DomainOperation> SplinePathDragSession::finishDrag() {
     if (!dragging_ || !document_)
-        return gizmoError<DomainOperation>(EditorStatus::Rejected, "editor.spline.drag-not-active",
-                                           "Spline drag has not begun");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spline.drag-not-active"),
+                                                     "Spline drag has not begun");
     if (document_->revision() != baseRevision_) {
         cancelDrag();
-        return gizmoError<DomainOperation>(EditorStatus::Conflict, "editor.spline.drag-stale",
-                                           "Spline document changed before drag commit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.spline.drag-stale"),
+                                                     "Spline document changed before drag commit");
     }
     auto operation = document_->makeSetPoint(draft_);
     if (operation.ok()) cancelDrag();

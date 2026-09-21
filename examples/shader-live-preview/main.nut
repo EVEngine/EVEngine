@@ -38,13 +38,15 @@ function buildPreviewScene() {
 }
 
 function reloadPreviewShader() {
+    // Live GLSL recompilation needs glslc on PATH; where it is unavailable
+    // (Windows, no Vulkan SDK) the committed SPIR-V keeps rendering.
     local source = fs.readText("shaders/preview.frag");
     local result = gfx.replaceShaderFromGlsl(previewShader, "", source);
     if (result.ok) {
         reloadMessage = "shader reloaded";
         print("[shader-preview] reload applied\n");
     } else {
-        reloadMessage = "compile failed; showing last good shader";
+        reloadMessage = "GLSL reload needs glslc; showing committed SPIR-V";
         local detail = result.status;
         if (result.diagnostics.len() > 0) detail = result.diagnostics[0].message;
         print("[shader-preview] " + detail + "\n");
@@ -54,7 +56,11 @@ function reloadPreviewShader() {
 eve_init = function() {
     gfx.setBackgroundColor(0.025, 0.03, 0.055, 1.0);
     if (previewShader == null) {
-        previewShader = gfx.newMeshShader(fs.readText("shaders/preview.frag"));
+        // The fragment stage ships as committed SPIR-V: regenerate it with
+        //   glslc -o shaders/preview.frag.spv shaders/preview.frag
+        local loaded = gfx.loadMeshShaderSpv("", "shaders/preview.frag.spv");
+        if (!loaded.ok) throw "shader-live-preview: shader unavailable: " + loaded.status.summary;
+        previewShader = loaded.value;
         previewShader.declareFloat("time");
     }
     if (previewModels.len() == 0) buildPreviewScene();

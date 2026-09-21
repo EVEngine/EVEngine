@@ -205,12 +205,6 @@ Result<void> graphFailure(DiagnosticCode code, std::string message, std::string 
         Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshModifierGraph"));
 }
 
-template <class T>
-Result<T> graphFailureValue(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshModifierGraph"));
-}
-
 float parameter(const auto& node, std::string_view key, float fallback) {
     const auto found = node.floats.find(std::string(key));
     return found == node.floats.end() ? fallback : found->second;
@@ -634,8 +628,9 @@ Result<MeshBuild> splineTubeMesh(const auto& node) {
             auto mesh            = splineTubeMesh(chunkNode);
             if (!mesh.ok()) return mesh;
             if (!output.appendTransformed(&mesh.value(), 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f))
-                return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                    "failed to compose spline tube chunks");
+                return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                    "failed to compose spline tube chunks", {}, {},
+                                                                    "procgen.meshModifierGraph"));
         }
         output.setMeta("generator", "mesh.splineTube");
         output.setMeta("chunks", std::to_string(node.splinePath.chunkCount()));
@@ -744,8 +739,9 @@ Result<MeshBuild> splineRibbonMesh(const auto& node) {
             auto mesh            = splineRibbonMesh(chunkNode);
             if (!mesh.ok()) return mesh;
             if (!output.appendTransformed(&mesh.value(), 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f))
-                return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                    "failed to compose spline ribbon chunks");
+                return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                    "failed to compose spline ribbon chunks", {}, {},
+                                                                    "procgen.meshModifierGraph"));
         }
         output.setMeta("generator", "mesh.splineRibbon");
         output.setMeta("chunks", std::to_string(node.splinePath.chunkCount()));
@@ -898,9 +894,9 @@ Result<std::vector<std::uint32_t>> triangulateProfile(const SplineProfile& profi
             break;
         }
         if (!clipped)
-            return graphFailureValue<std::vector<std::uint32_t>>(
+            return Result<std::vector<std::uint32_t>>::failure(Diagnostic::error(
                 DiagnosticCode::InvalidArgument, "closed spline profile must be a simple non-degenerate polygon",
-                "profile");
+                "profile", {}, "procgen.meshModifierGraph"));
     }
     triangles.insert(triangles.end(), {polygon[0], polygon[1], polygon[2]});
     return Result<std::vector<std::uint32_t>>::success(std::move(triangles));
@@ -917,8 +913,9 @@ Result<MeshBuild> splineExtrudeMesh(const auto& node) {
             auto mesh            = splineExtrudeMesh(chunkNode);
             if (!mesh.ok()) return mesh;
             if (!output.appendTransformed(&mesh.value(), 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f))
-                return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                    "failed to compose spline extrusion chunks");
+                return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                    "failed to compose spline extrusion chunks", {}, {},
+                                                                    "procgen.meshModifierGraph"));
         }
         output.setMeta("generator", "mesh.splineExtrude");
         output.setMeta("chunks", std::to_string(node.splinePath.chunkCount()));
@@ -1120,8 +1117,9 @@ Result<MeshBuild> ffdMesh(const MeshBuild& input, const auto& node) {
 
 Result<MeshBuild> morphMesh(const MeshBuild& first, const MeshBuild& second, float weight) {
     if (first.getVertexCount() != second.getVertexCount() || first.indices() != second.indices())
-        return graphFailureValue<MeshBuild>(DiagnosticCode::TypeMismatch,
-                                            "deform.morph inputs must have identical topology", "deform.morph");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch,
+                                                            "deform.morph inputs must have identical topology",
+                                                            "deform.morph", {}, "procgen.meshModifierGraph"));
     MeshBuild output = first;
     weight           = std::clamp(weight, 0.f, 1.f);
     for (std::size_t i = 0; i < output.positions().size(); ++i)
@@ -1198,8 +1196,9 @@ Result<MeshBuild> cutPlaneMesh(const MeshBuild& input, const auto& node) {
     Vec3 normal{parameter(node, "normalX", 0.f), parameter(node, "normalY", 1.f), parameter(node, "normalZ", 0.f)};
     const float length = std::sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
     if (length < 1e-7f)
-        return graphFailureValue<MeshBuild>(DiagnosticCode::InvalidArgument, "mesh.cutPlane requires a non-zero normal",
-                                            "normal");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "mesh.cutPlane requires a non-zero normal", "normal", {},
+                                                            "procgen.meshModifierGraph"));
     normal                     = {normal.x / length, normal.y / length, normal.z / length};
     const float distance       = parameter(node, "distance", 0.f);
     const float sign           = intParameter(node, "keepPositive", 1) != 0 ? 1.f : -1.f;
@@ -1345,8 +1344,9 @@ struct WeldKeyHash {
 
 Result<MeshBuild> weldMesh(const MeshBuild& input, float tolerance) {
     if (!std::isfinite(tolerance) || tolerance <= 0.f)
-        return graphFailureValue<MeshBuild>(DiagnosticCode::InvalidArgument,
-                                            "mesh.weld tolerance must be finite and positive", "tolerance");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "mesh.weld tolerance must be finite and positive",
+                                                            "tolerance", {}, "procgen.meshModifierGraph"));
     MeshBuild output;
     output.reserve(input.getVertexCount(), input.getIndexCount());
     std::unordered_map<WeldKey, std::uint32_t, WeldKeyHash> vertices;
@@ -1746,7 +1746,9 @@ Result<MeshBuild> MeshModifierGraph::executeFused(const Segment&                
     const Node& first  = nodes_.at(segment.nodes.front());
     const auto  source = outputs.find(first.inputs.front());
     if (source == outputs.end())
-        return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation, "fused mesh input was not evaluated");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                            "fused mesh input was not evaluated", {}, {},
+                                                            "procgen.meshModifierGraph"));
     MeshBuild output    = source->second;
     auto&     positions = output.positions();
     auto&     normals   = output.normals();
@@ -1773,8 +1775,9 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
     if (node.operation == "mesh.splineExtrude") return splineExtrudeMesh(node);
     const auto first = outputs.find(node.inputs.front());
     if (first == outputs.end())
-        return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation, "mesh node input was not evaluated",
-                                            node.id);
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                            "mesh node input was not evaluated", node.id, {},
+                                                            "procgen.meshModifierGraph"));
     if (const auto* spec = findSpec(node.operation); spec && spec->perVertex) {
         MeshBuild output    = first->second;
         auto&     positions = output.positions();
@@ -1801,15 +1804,17 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
     if (node.operation == "deform.morph") {
         const auto second = outputs.find(node.inputs[1]);
         if (second == outputs.end())
-            return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                "deform.morph second input was not evaluated", node.id);
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "deform.morph second input was not evaluated", node.id,
+                                                                {}, "procgen.meshModifierGraph"));
         return morphMesh(first->second, second->second, parameter(node, "weight", 0.5f));
     }
     if (node.operation == "deform.meshFit") {
         const auto second = outputs.find(node.inputs[1]);
         if (second == outputs.end())
-            return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                "deform.meshFit surface input was not evaluated", node.id);
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "deform.meshFit surface input was not evaluated",
+                                                                node.id, {}, "procgen.meshModifierGraph"));
         return meshFitMesh(first->second, second->second, node);
     }
     if (node.operation == "deform.smooth")
@@ -1819,19 +1824,22 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
     if (node.operation == "mesh.append") {
         const auto second = outputs.find(node.inputs[1]);
         if (second == outputs.end())
-            return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation,
-                                                "mesh.append second input was not evaluated", node.id);
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "mesh.append second input was not evaluated", node.id,
+                                                                {}, "procgen.meshModifierGraph"));
         MeshBuild output = first->second;
         if (!output.appendTransformed(&second->second, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f))
-            return graphFailureValue<MeshBuild>(DiagnosticCode::InvalidArgument,
-                                                "mesh.append rejected an empty or invalid input", node.id);
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "mesh.append rejected an empty or invalid input",
+                                                                node.id, {}, "procgen.meshModifierGraph"));
         return Result<MeshBuild>::success(std::move(output));
     }
     if (node.operation == "mesh.boolean") {
         const auto second = outputs.find(node.inputs[1]);
         if (second == outputs.end())
-            return graphFailureValue<MeshBuild>(DiagnosticCode::PreconditionViolation,
-                                                "mesh.boolean second input was not evaluated", node.id);
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                "mesh.boolean second input was not evaluated", node.id,
+                                                                {}, "procgen.meshModifierGraph"));
         return meshBooleanResult(first->second, second->second,
                                  stringParameter(node, "operation", "difference"));
     }
@@ -1840,15 +1848,17 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
                                    parameter(node, "scale", 1.f), parameter(node, "offsetU", 0.f),
                                    parameter(node, "offsetV", 0.f));
     if (node.operation == "mesh.weld") return weldMesh(first->second, parameter(node, "tolerance", 0.0001f));
-    return graphFailureValue<MeshBuild>(DiagnosticCode::Unsupported,
-                                        "unsupported mesh modifier operation: " + node.operation, node.id);
+    return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                        "unsupported mesh modifier operation: " + node.operation,
+                                                        node.id, {}, "procgen.meshModifierGraph"));
 }
 
 Result<MeshBuild> MeshModifierGraph::executeResult(std::string_view outputId) {
     const auto requested = nodes_.find(std::string(outputId));
     if (requested == nodes_.end())
-        return graphFailureValue<MeshBuild>(
-            DiagnosticCode::NotFound, "unknown mesh modifier output: " + std::string(outputId), std::string(outputId));
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                            "unknown mesh modifier output: " + std::string(outputId),
+                                                            std::string(outputId), {}, "procgen.meshModifierGraph"));
     if (requested->second.cacheValid) {
         metrics_              = {{requested->first, requested->second.cache.getVertexCount(),
                                   requested->second.cache.getIndexCount() / 3, 0.f, true, false}};
@@ -1882,8 +1892,9 @@ Result<MeshBuild> MeshModifierGraph::executeResult(std::string_view outputId) {
     }
     const auto found = outputs.find(std::string(outputId));
     if (found == outputs.end())
-        return graphFailureValue<MeshBuild>(DiagnosticCode::InvariantViolation, "mesh modifier output was not produced",
-                                            std::string(outputId));
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                            "mesh modifier output was not produced",
+                                                            std::string(outputId), {}, "procgen.meshModifierGraph"));
     for (auto& [id, node] : nodes_) {
         const auto output = outputs.find(id);
         if (output != outputs.end()) {

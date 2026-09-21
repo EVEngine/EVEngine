@@ -9,11 +9,6 @@
 namespace eve::profiler_editing {
 namespace {
 
-template <class T>
-EditorResult<T> failure(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 bool finiteNonNegative(double value) { return std::isfinite(value) && value >= 0.0; }
 
 bool contains(const std::string& value, const std::string& filter) {
@@ -28,8 +23,8 @@ EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets)
     if (!finiteNonNegative(budgets.cpuFrameMs) || !finiteNonNegative(budgets.gpuFrameMs) ||
         !finiteNonNegative(budgets.zoneSelfMs) || budgets.historyFrames < 2 ||
         budgets.historyFrames > 36000) {
-        return failure<void>(EditorStatus::Rejected, "editor.profiler.invalid-budgets",
-                             "Profiler budgets or history capacity are invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-budgets"),
+                                          "Profiler budgets or history capacity are invalid");
     }
     budgets_ = budgets;
     while (history_.size() > budgets_.historyFrames) history_.pop_front();
@@ -39,19 +34,19 @@ EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets)
 EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
     if (frame.sequence == 0 || !finiteNonNegative(frame.cpuFrameMs) ||
         !finiteNonNegative(frame.gpuFrameMs) || frame.zones.size() > 100000) {
-        return failure<void>(EditorStatus::Rejected, "editor.profiler.invalid-frame",
-                             "Profiler frame shape or timing is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-frame"),
+                                          "Profiler frame shape or timing is invalid");
     }
     if (!history_.empty() && frame.sequence <= history_.back().sequence) {
-        return failure<void>(EditorStatus::Conflict, "editor.profiler.stale-frame",
-                             "Profiler frame sequence is stale");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.profiler.stale-frame"),
+                                          "Profiler frame sequence is stale");
     }
     for (const auto& zone : frame.zones) {
         if (zone.module.empty() || zone.name.empty() || zone.thread.empty() ||
             !finiteNonNegative(zone.selfMs) || !finiteNonNegative(zone.totalMs) ||
             zone.selfMs > zone.totalMs || zone.count < 1 || zone.depth < 0) {
-            return failure<void>(EditorStatus::Rejected, "editor.profiler.invalid-zone",
-                                 "Profiler zone identity or timing is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-zone"),
+                                              "Profiler zone identity or timing is invalid");
         }
     }
     history_.push_back(std::move(frame));

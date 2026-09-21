@@ -75,17 +75,15 @@ struct CrowdOverlayResult {
 };
 
 /** @brief UI-neutral agent/zone/path document with reversible domain operations. */
-class CrowdDocumentTarget final : public virtual IEditableTarget,
+class CrowdDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging {
 public:
     /** @brief Stable capability id for crowd agent, zone and path editing. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.crowd-structure"); }
     explicit CrowdDocumentTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -122,9 +120,7 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    std::string id_;
-    Revision revision_ = 1;
-    EditRegion dirty_;
+    std::string                          id_;
     std::map<StableId, CrowdAgentRecord> agents_;
     std::map<StableId, CrowdZoneRecord> zones_;
     std::map<StableId, CrowdPathRecord> paths_;

@@ -67,7 +67,7 @@ Result<void> HexMapModule::generateMap(graphics::Graphics* gfx, std::uint32_t se
     auto               reset      = map_.reset(cellCountX, cellCountZ, seed);
     if (!reset) return reset;
     visibility_.reset(map_.cellCount());
-    units_.removeAll(visibility_);
+    units_.removeAll(map_, visibility_);
     syncScratch();
     clearMeshSlots();
 
@@ -80,12 +80,13 @@ Result<void> HexMapModule::generateMap(graphics::Graphics* gfx, std::uint32_t se
 }
 
 Result<void> HexMapModule::adoptGrid(graphics::Graphics* gfx, HexMap&& restored,
-                                     const std::vector<HexUnitState>& units) {    if (!gfx) return invalidArgument("adoptGrid requires a graphics device");
+                                     const std::vector<HexUnitState>& units) {
+    if (!gfx) return invalidArgument("adoptGrid requires a graphics device");
     if (restored.empty()) return invalidArgument("adoptGrid requires a non-empty grid");
     if (!meshes_.empty()) releaseMeshes(gfx);
     map_ = std::move(restored);
     visibility_.reset(map_.cellCount());
-    units_.removeAll(visibility_);
+    units_.removeAll(map_, visibility_);
     syncScratch();
     clearMeshSlots();
     return units_.restore(map_, visibility_, scratch_, units);
@@ -104,14 +105,22 @@ void HexMapModule::releaseMeshes(graphics::Graphics* gfx) {
 Result<void> HexMapModule::newGrid(graphics::Graphics* gfx, std::int32_t cellCountX, std::int32_t cellCountZ,
                                    std::uint32_t seed) {
     if (!gfx) return invalidArgument("newGrid requires a graphics device");
-    if (!meshes_.empty()) releaseMeshes(gfx);
+    if (cellCountX <= 0 || cellCountZ <= 0) return invalidArgument("hex map size must be positive");
+    // Script-supplied sizes reach a raw cell allocation, so bound them here rather than
+    // let std::bad_alloc escape a native binding. The save format caps the same
+    // quantity at kMaxHexGridDimension.
+    if (cellCountX > kMaxHexGridDimension || cellCountZ > kMaxHexGridDimension)
+        return invalidArgument("hex map size exceeds the " + std::to_string(kMaxHexGridDimension) +
+                               " cell per side limit");
+    // Reset before releasing: `HexMap::reset` validates before it mutates, so a
+    // rejected size now leaves the old grid *and* its meshes untouched. Releasing
+    // first detached every GPU mesh while the renderables scripts already hold kept
+    // pointing at them, and the next draw threw on a null mesh.
     auto reset = map_.reset(cellCountX, cellCountZ, seed);
-    if (!reset) {
-        clearMeshSlots();
-        return reset;
-    }
+    if (!reset) return reset;
+    if (!meshes_.empty()) releaseMeshes(gfx);
     visibility_.reset(map_.cellCount());
-    units_.removeAll(visibility_);
+    units_.removeAll(map_, visibility_);
     syncScratch();
     clearMeshSlots();
     return Result<void>::success();
@@ -202,8 +211,14 @@ void HexMapModule::releaseSphereMeshes(graphics::Graphics* gfx) noexcept {
 Result<void> HexMapModule::newSphere(graphics::Graphics* gfx, std::int32_t subdivision, float radius,
                                      std::uint32_t seed) {
     if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
+    // Same ordering rule as `newGrid`: validate through `reset` first, because
+    // `HexSphereMap::reset` rejects its arguments before touching the map. Releasing
+    // the sphere meshes up front left the planet example's renderables pointing at
+    // GPU meshes that had already been destroyed whenever the arguments were bad.
+    auto reset = sphere_.reset(subdivision, radius, seed);
+    if (!reset) return reset;
     releaseSphereMeshes(gfx);
-    return sphere_.reset(subdivision, radius, seed);
+    return Result<void>::success();
 }
 
 Result<void> HexMapModule::generateSphere(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
@@ -506,7 +521,7 @@ void HexMapModule::expose(ssq::Class& cls) {
             vm, self->units().removeUnit(self->map(), self->visibility(), self->scratch(), unitId));
     });
     cls.addFunc("removeAllUnits", [](HexMapModule* self) {
-        if (self) self->units().removeAll(self->visibility());
+        if (self) self->units().removeAll(self->map(), self->visibility());
     });
     cls.addFunc("unitIdAt", [](HexMapModule* self, int x, int z) {
         return self ? self->units().unitIdAt(fromScriptCell(x, z)) : -1;
@@ -600,8 +615,7 @@ void HexMapModule::expose(ssq::Class& cls) {
         auto                      saved = saveHexMap(self->map(), self->units().snapshot(), bytes);
         if (!saved) return script::projectResult(vm, std::move(saved));
         return script::projectStatusResult(
-            vm, saved.status(), true, true,
-            Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
+            vm, saved.status(), Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
     });
     cls.addFunc("loadMap", [vm](HexMapModule* self, graphics::Graphics* gfx, std::string blob) {
         if (!self || !gfx) return script::projectResult(vm, invalidArgument("hex map module is not available"));

@@ -11,16 +11,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <typename T>
-Result<T> failureFrom(const Status& status) {
-    return Result<T>::failure(status);
-}
-
 bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) {
     return left.table == right.table && left.type == right.type && left.id == right.id &&
            left.generation == right.generation;
@@ -61,11 +51,11 @@ void ActionAdapter::clear() noexcept {
 
 Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderRecord& order, const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
-        return failure<ActionExecutionResult>(DiagnosticCode::InvalidArgument,
-                                              "RTS action step delta must be non-negative", "step.delta");
+        return Result<ActionExecutionResult>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS action step delta must be non-negative", "step.delta"));
     if (!impl_)
-        return failure<ActionExecutionResult>(DiagnosticCode::InvariantViolation,
-                                              "RTS action adapter is not initialized", "adapter");
+        return Result<ActionExecutionResult>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "RTS action adapter is not initialized", "adapter"));
 
     const ecs::EntityHandle unitHandle = ecs::handle_of(&unit);
     auto                    pendingForUnit =
@@ -86,8 +76,9 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
     if (pendingForUnit == impl_->pending.end()) {
         const auto logicalId = actionIdFor(order);
         if (!logicalId)
-            return failure<ActionExecutionResult>(
-                DiagnosticCode::InvalidArgument, "RTS order definition is not a valid LogicalId", "order.definitionId");
+            return Result<ActionExecutionResult>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS order definition is not a valid LogicalId",
+                                  "order.definitionId"));
 
         action::ActionDefinition definition;
         definition.id = *logicalId;
@@ -98,7 +89,7 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
         request.requestedTick = step.tick;
 
         auto submitted = impl_->runtime.submit(std::move(definition), std::move(request));
-        if (!submitted) return failureFrom<ActionExecutionResult>(submitted.status());
+        if (!submitted) return Result<ActionExecutionResult>::failure(submitted.status());
         executionId = std::move(submitted).takeValue();
         impl_->pending.push_back({unitHandle, order.id, executionId});
     } else {
@@ -111,7 +102,7 @@ Result<ActionExecutionResult> ActionAdapter::execute(Unit& unit, const OrderReco
             std::remove_if(impl_->pending.begin(), impl_->pending.end(),
                            [&executionId](const Impl::Pending& pending) { return pending.execution == executionId; }),
             impl_->pending.end());
-        return failureFrom<ActionExecutionResult>(advanced.status());
+        return Result<ActionExecutionResult>::failure(advanced.status());
     }
 
     const auto summary   = std::move(advanced).takeValue();

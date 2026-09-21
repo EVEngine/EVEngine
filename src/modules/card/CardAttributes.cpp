@@ -11,24 +11,6 @@
 namespace eve::card {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "card.attributes"));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::Status status, std::string, std::string = {}) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
-template <typename T>
-eve::Result<T> failure(eve::StatusCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
-                                                          std::move(path), {}, "card.attributes")));
-}
-
 eve::Result<void> failureVoid(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<void>::failure(
         eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "card.attributes"));
@@ -92,12 +74,20 @@ eve::Result<void> CardAttributeAdapter::project(CardData& card) {
 
 eve::Result<double> CardAttributeAdapter::read(CardData& card, std::string_view attribute) {
     if (!selected(attribute))
-        return failure<double>(eve::DiagnosticCode::Unsupported,
-                               "card attribute is outside the selective combat projection", "attribute");
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "card attribute is outside the selective combat projection", "attribute",
+            {}, "card.attributes"));
     auto projected = project(card);
-    if (!projected) return failure<double>(projected.code(), "card compatibility projection failed", "stats");
+    if (!projected)
+        return eve::Result<double>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "card compatibility projection failed", "stats", {},
+                                   "card.attributes")));
     auto value = card.attributes()->values.getFinal(attribute);
-    if (!value) return failure<double>(value.code(), "card attribute read failed", "attribute");
+    if (!value)
+        return eve::Result<double>::failure(eve::Status::failure(
+            value.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "card attribute read failed", "attribute",
+                                                 {}, "card.attributes")));
     return eve::Result<double>::success(value.value());
 }
 
@@ -116,26 +106,32 @@ eve::Result<eve::attributes::ModifierId> CardAttributeAdapter::addModifier(
     CardData& card, std::string id, std::string_view attribute, std::string source,
     eve::attributes::AttributeOperation operation, double value, eve::attributes::ModifierPriority priority) {
     if (!selected(attribute) || source.empty())
-        return failure<eve::attributes::ModifierId>(eve::DiagnosticCode::InvalidArgument,
-                                                    "card modifier requires a selected attribute and non-empty source",
-                                                    "modifier");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card modifier requires a selected attribute and non-empty source",
+            "modifier", {}, "card.attributes"));
     auto ready = ensure(card);
     if (!ready)
-        return failure<eve::attributes::ModifierId>(ready.code(), "card attributes are not available", "attributes");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "card attributes are not available",
+                                                 "attributes", {}, "card.attributes")));
     auto added = card.attributes()->values.addModifier(eve::attributes::AttributeModifier(
         std::move(id), std::string(attribute), std::move(source), operation, value, priority));
     if (!added) return added;
     auto projected = project(card);
     if (!projected)
-        return failure<eve::attributes::ModifierId>(projected.code(), "card compatibility projection failed", "stats");
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            projected.code(),
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "card compatibility projection failed", "stats", {},
+                                   "card.attributes")));
     return added;
 }
 
 eve::Result<eve::attributes::AttributeProjectionSnapshot> CardAttributeAdapter::snapshot(CardData& card) {
     auto ready = ensure(card);
     if (!ready)
-        return failure<eve::attributes::AttributeProjectionSnapshot>(ready.code(), "card attributes are not available",
-                                                                     "attributes");
+        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "card attributes are not available",
+                                                 "attributes", {}, "card.attributes")));
     const auto names = selectedAttributes();
     return card.attributes()->values.snapshot(names);
 }

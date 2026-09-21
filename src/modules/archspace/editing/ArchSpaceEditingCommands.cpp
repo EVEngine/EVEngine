@@ -36,11 +36,6 @@ bool readNumber(const editing::Value& value, const char* key, double& output, bo
     return false;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 editing::Result<void> addCommand(editing::IEditingCommandRegistry& registry, const char* id, const char* displayName,
                                  editing::EditingCommandPlanner planner) {
     editing::EditingCommandDescriptor descriptor;
@@ -59,8 +54,9 @@ ArchSpaceDocumentTarget* asArchSpace(editing::IEditableTarget& target) {
 editing::Result<editing::CommandPlan> planFrom(editing::Result<editing::DomainOperation> operation,
                                                editing::Value                            summary) {
     if (!operation.ok())
-        return error<editing::CommandPlan>(operation.code(), "archspace.editing.operation",
-                                           "ArchSpace target rejected the planned edit");
+        return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                          editing::RuleId("archspace.editing.operation"),
+                                                          "ArchSpace target rejected the planned edit");
     editing::CommandPlan plan;
     plan.operations.push_back(std::move(operation).value());
     plan.summary = std::move(summary);
@@ -79,8 +75,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                                      double             height   = 3.0;
                                      if (!doc || !site || site->empty() || !building || building->empty() || !level ||
                                          level->empty() || !readNumber(request.payload, "levelHeight", height, false))
-                                         return error<editing::CommandPlan>(
-                                             editing::Status::Rejected, "archspace.editing.bootstrap",
+                                         return eve::editing::failed<editing::CommandPlan>(
+                                             editing::Status::Rejected, editing::RuleId("archspace.editing.bootstrap"),
                                              "ArchSpace bootstrap requires siteId, buildingId and levelId");
                                      return planFrom(doc->makeBootstrap(*site, *building, *level, height),
                                                      editing::Value::Object{{"levelId", *level}});
@@ -104,8 +100,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 !readNumber(request.payload, "wallHeight", wallHeight, false) ||
                 !readNumber(request.payload, "wallThickness", wallThickness, false) ||
                 !readNumber(request.payload, "slabThickness", slabThickness, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.room",
-                                                   "ArchSpace room create requires levelId, roomId and size");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.room"),
+                    "ArchSpace room create requires levelId, roomId and size");
             return planFrom(doc->makeCreateRectRoom(*level, *room, name ? *name : *room, originX, originZ, sizeX, sizeZ,
                                                     wallHeight, wallThickness, slabThickness),
                             editing::Value::Object{{"roomId", *room}});
@@ -126,8 +123,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 !readNumber(request.payload, "endX", x1, true) || !readNumber(request.payload, "endZ", z1, true) ||
                 !readNumber(request.payload, "height", height, false) ||
                 !readNumber(request.payload, "thickness", thickness, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.wall",
-                                                   "ArchSpace wall create requires levelId, wallId and endpoints");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.wall"),
+                    "ArchSpace wall create requires levelId, wallId and endpoints");
             return planFrom(doc->makeCreateWall(*level, *wall, name ? *name : *wall, archspace::Vec2{x0, z0},
                                                 archspace::Vec2{x1, z1}, height, thickness),
                             editing::Value::Object{{"wallId", *wall}});
@@ -146,12 +144,14 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 !readNumber(request.payload, "t", t, false) || !readNumber(request.payload, "width", width, false) ||
                 !readNumber(request.payload, "height", height, false) ||
                 !readNumber(request.payload, "sill", sill, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.opening",
-                                                   "ArchSpace opening requires wallId, openingId and kind");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.opening"),
+                    "ArchSpace opening requires wallId, openingId and kind");
             auto kind = archspace::parseOpeningKind(*kindText);
             if (!kind.ok())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.opening",
-                                                   "ArchSpace opening requires wallId, openingId and kind");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.opening"),
+                    "ArchSpace opening requires wallId, openingId and kind");
             return planFrom(doc->makeCreateOpening(*wall, *opening, kind.value(), t, width, height, sill),
                             editing::Value::Object{{"openingId", *opening}});
         });
@@ -168,8 +168,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             if (!doc || !level || level->empty() || !item || item->empty() || !catalog || catalog->empty() ||
                 !readNumber(request.payload, "x", x, true) || !readNumber(request.payload, "y", y, false) ||
                 !readNumber(request.payload, "z", z, true) || !readNumber(request.payload, "yawDegrees", yaw, false))
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.item",
-                                                   "ArchSpace item place requires levelId, itemId, catalogId, x, z");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.item"),
+                    "ArchSpace item place requires levelId, itemId, catalogId, x, z");
             return planFrom(doc->makePlaceItem(*level, *item, *catalog, archspace::Vec3{x, y, z}, yaw),
                             editing::Value::Object{{"itemId", *item}});
         });
@@ -183,8 +184,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const std::string* path   = stringField(request.payload, "path");
             const editing::Value* value = field(request.payload, "value");
             if (!doc || !object || object->empty() || !path || path->empty() || !value)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.property",
-                                                   "ArchSpace property set requires objectId, path and value");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("archspace.editing.property"),
+                    "ArchSpace property set requires objectId, path and value");
             editing::SelectionSnapshot selection;
             selection.channel = "archspace";
             selection.items.push_back({editing::SelectionDomain::Asset, doc->targetId(), editing::StableId(*object),
@@ -200,8 +202,9 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                           auto*              doc = asArchSpace(target);
                           const std::string* id  = stringField(request.payload, "id");
                           if (!doc || !id || id->empty())
-                              return error<editing::CommandPlan>(editing::Status::Rejected, "archspace.editing.delete",
-                                                                 "ArchSpace delete requires id");
+                              return eve::editing::failed<editing::CommandPlan>(
+                                  editing::Status::Rejected, editing::RuleId("archspace.editing.delete"),
+                                  "ArchSpace delete requires id");
                           return planFrom(doc->makeDeleteNode(editing::ObjectId(*id)),
                                           editing::Value::Object{{"id", *id}});
                       });

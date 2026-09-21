@@ -5,12 +5,6 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrainDetailCard"));
-}
-
 void appendQuad(TerrainDetailCardGeometry& geometry, float xx, float xz, float normalX, float normalZ) {
     const std::uint32_t base = static_cast<std::uint32_t>(geometry.positions.size() / 3);
     geometry.positions.insert(geometry.positions.end(), {-0.5f * xx, 0.f, -0.5f * xz, 0.5f * xx, 0.f, 0.5f * xz,
@@ -24,14 +18,17 @@ void appendQuad(TerrainDetailCardGeometry& geometry, float xx, float xz, float n
 
 Result<TerrainDetailCardGeometry> buildTerrainDetailCard(const RuntimeInstancePrototype& prototype) {
     if (prototype.prototype.empty())
-        return failure<TerrainDetailCardGeometry>(DiagnosticCode::InvalidArgument,
-                                                  "terrain Detail prototype identity is empty");
+        return Result<TerrainDetailCardGeometry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain Detail prototype identity is empty", {}, {},
+                              "asset.procgen.terrainDetailCard"));
     if (prototype.usePrototypeMesh || prototype.renderMode == "VertexLit")
-        return failure<TerrainDetailCardGeometry>(
-            DiagnosticCode::Unsupported, "mesh-backed terrain Detail requires its authored mesh", prototype.prototype);
+        return Result<TerrainDetailCardGeometry>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "mesh-backed terrain Detail requires its authored mesh",
+                              prototype.prototype, {}, "asset.procgen.terrainDetailCard"));
     if (!prototype.prototype.starts_with("unity-texture-guid:"))
-        return failure<TerrainDetailCardGeometry>(DiagnosticCode::InvalidArgument,
-                                                  "texture terrain Detail identity is invalid", prototype.prototype);
+        return Result<TerrainDetailCardGeometry>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "texture terrain Detail identity is invalid",
+                              prototype.prototype, {}, "asset.procgen.terrainDetailCard"));
     try {
         TerrainDetailCardGeometry geometry;
         if (prototype.renderMode == "GrassBillboard") {
@@ -41,14 +38,15 @@ Result<TerrainDetailCardGeometry> buildTerrainDetailCard(const RuntimeInstancePr
             appendQuad(geometry, 1.f, 0.f, 0.f, 1.f);
             appendQuad(geometry, 0.f, 1.f, 1.f, 0.f);
         } else {
-            return failure<TerrainDetailCardGeometry>(DiagnosticCode::Unsupported,
-                                                      "terrain Detail render mode has no card representation",
-                                                      prototype.renderMode);
+            return Result<TerrainDetailCardGeometry>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "terrain Detail render mode has no card representation",
+                                  prototype.renderMode, {}, "asset.procgen.terrainDetailCard"));
         }
         return Result<TerrainDetailCardGeometry>::success(std::move(geometry));
     } catch (const std::bad_alloc&) {
-        return failure<TerrainDetailCardGeometry>(DiagnosticCode::Failed, "terrain Detail card allocation failed",
-                                                  prototype.prototype);
+        return Result<TerrainDetailCardGeometry>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "terrain Detail card allocation failed", prototype.prototype, {},
+                              "asset.procgen.terrainDetailCard"));
     }
 }
 

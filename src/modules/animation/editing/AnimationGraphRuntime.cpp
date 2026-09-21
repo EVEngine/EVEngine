@@ -10,11 +10,6 @@
 namespace eve::animation_editing {
 namespace {
 
-template <class T>
-EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* runtimeField(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -27,9 +22,9 @@ const EditorValue* runtimeField(const EditorValue& value, const char* key) {
 EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::build(
     const GraphDocumentData& graph, animation::AnimSkeleton* skeleton, const ClipResolver& clips) const {
     if (!skeleton || !clips)
-        return runtimeError<animation::AnimStateMachine*>(EditorStatus::Rejected,
-                                                         "editor.animation.runtime-input",
-                                                         "Animation skeleton and clip resolver are required");
+        return eve::editing::failed<animation::AnimStateMachine*>(EditorStatus::Rejected,
+                                                                  RuleId("editor.animation.runtime-input"),
+                                                                  "Animation skeleton and clip resolver are required");
     AnimationStateGraphDomain domain;
     const AnimationGraphCompileResult compiled = domain.compile(graph);
     if (compiled.status != EditorStatus::Applied)
@@ -58,10 +53,9 @@ EditorResult<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::bu
         const auto* clipAsset = clipAssetValue->getIf<std::string>();
         animation::AnimClip* clip = clips(*clipAsset);
         if (!clip)
-            return runtimeError<animation::AnimStateMachine*>(EditorStatus::NotFound,
-                                                             "editor.animation.clip-not-found",
-                                                             "Animation clip asset could not be resolved: " +
-                                                                 *clipAsset);
+            return eve::editing::failed<animation::AnimStateMachine*>(
+                EditorStatus::NotFound, RuleId("editor.animation.clip-not-found"),
+                "Animation clip asset could not be resolved: " + *clipAsset);
         machine->addState(id.value(), clip);
     }
     const auto* entryValue = runtimeField(graph.parameters, "entry");

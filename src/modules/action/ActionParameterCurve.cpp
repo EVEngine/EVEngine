@@ -8,11 +8,6 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Result<double> number(const Value& value, std::string path) {
     double result = 0.0;
     if (const auto* integer = value.getIf<std::int64_t>())
@@ -20,8 +15,11 @@ Result<double> number(const Value& value, std::string path) {
     else if (const auto* decimal = value.getIf<double>())
         result = *decimal;
     else
-        return invalid<double>("parameter curve field must be numeric", std::move(path));
-    if (!std::isfinite(result)) return invalid<double>("parameter curve field must be finite", std::move(path));
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "parameter curve field must be numeric", std::move(path)));
+    if (!std::isfinite(result))
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "parameter curve field must be finite", std::move(path)));
     return Result<double>::success(result);
 }
 
@@ -68,40 +66,48 @@ Result<ActionParameterCurveBinding> ActionParameterCurveBinding::fromPayload(con
     ActionParameterCurveBinding candidate;
     const auto target = payload.find("target");
     if (target == payload.end() || !target->second.getIf<std::string>())
-        return invalid<ActionParameterCurveBinding>("parameter target must be text", "target");
+        return Result<ActionParameterCurveBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter target must be text", "target"));
     auto parsedTarget = LogicalId::parse(*target->second.getIf<std::string>());
     if (!parsedTarget)
-        return invalid<ActionParameterCurveBinding>("parameter target must be a LogicalId", "target");
+        return Result<ActionParameterCurveBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter target must be a LogicalId", "target"));
     candidate.target = std::move(*parsedTarget);
 
     if (const auto found = payload.find("operation"); found != payload.end()) {
         const auto* text = found->second.getIf<std::string>();
         if (!text || !parseOperation(*text))
-            return invalid<ActionParameterCurveBinding>("parameter operation is unknown", "operation");
+            return Result<ActionParameterCurveBinding>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter operation is unknown", "operation"));
         candidate.operation = *parseOperation(*text);
     }
 
     const auto foundKeys = payload.find("keys");
     const auto* keys = foundKeys == payload.end() ? nullptr : foundKeys->second.getIf<Value::Array>();
     if (!keys || keys->size() < 2 || keys->size() > 1024)
-        return invalid<ActionParameterCurveBinding>("parameter curve requires 2 to 1024 keys", "keys");
+        return Result<ActionParameterCurveBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter curve requires 2 to 1024 keys", "keys"));
     candidate.keys.reserve(keys->size());
     for (std::size_t index = 0; index < keys->size(); ++index) {
         const auto* object = (*keys)[index].getIf<Value::Object>();
         const std::string path = "keys[" + std::to_string(index) + "]";
-        if (!object) return invalid<ActionParameterCurveBinding>("parameter key must be an object", path);
+        if (!object)
+            return Result<ActionParameterCurveBinding>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter key must be an object", path));
         const auto time = object->find("time");
         const auto value = object->find("value");
         if (time == object->end() || value == object->end())
-            return invalid<ActionParameterCurveBinding>("parameter key requires time and value", path);
+            return Result<ActionParameterCurveBinding>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter key requires time and value", path));
         auto parsedTime = number(time->second, path + ".time");
         if (!parsedTime) return Result<ActionParameterCurveBinding>::failure(parsedTime.status());
         auto parsedValue = number(value->second, path + ".value");
         if (!parsedValue) return Result<ActionParameterCurveBinding>::failure(parsedValue.status());
         if (parsedTime.value() < 0.0 || parsedTime.value() > 1.0 ||
             (!candidate.keys.empty() && parsedTime.value() <= candidate.keys.back().time))
-            return invalid<ActionParameterCurveBinding>("parameter key times must be strictly ordered in [0, 1]",
-                                                        path + ".time");
+            return Result<ActionParameterCurveBinding>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "parameter key times must be strictly ordered in [0, 1]", path + ".time"));
         ActionParameterKey key;
         key.time  = parsedTime.value();
         key.value = parsedValue.value();
@@ -118,14 +124,15 @@ Result<ActionParameterCurveBinding> ActionParameterCurveBinding::fromPayload(con
         if (const auto mode = object->find("interpolation"); mode != object->end()) {
             const auto* text = mode->second.getIf<std::string>();
             if (!text || !parseInterpolation(*text))
-                return invalid<ActionParameterCurveBinding>("parameter interpolation is unknown",
-                                                            path + ".interpolation");
+                return Result<ActionParameterCurveBinding>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "parameter interpolation is unknown", path + ".interpolation"));
             key.interpolation = *parseInterpolation(*text);
         }
         candidate.keys.push_back(key);
     }
     if (candidate.keys.front().time != 0.0 || candidate.keys.back().time != 1.0)
-        return invalid<ActionParameterCurveBinding>("parameter curve endpoints must be at 0 and 1", "keys");
+        return Result<ActionParameterCurveBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "parameter curve endpoints must be at 0 and 1", "keys"));
     return Result<ActionParameterCurveBinding>::success(std::move(candidate));
 }
 

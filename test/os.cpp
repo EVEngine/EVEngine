@@ -1,25 +1,25 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "system/System.h"
+#include "os/OS.h"
 #include "timer/Timer.h"
 
 #include <cmath>
 #include <string>
 
-using namespace eve::system;
+using namespace eve::os;
 
-TEST_CASE("system.module.basics") {
-    auto *sys = System::create();
+TEST_CASE("os.module.basics") {
+    auto *sys = OS::create();
     REQUIRE(sys != nullptr);
-    CHECK_EQ(sys->getName(), std::string("System"));
+    CHECK_EQ(sys->getName(), std::string("OS"));
     CHECK(!sys->getEngineVersion().empty());
     CHECK(!sys->getPlatform().empty());
     CHECK(!sys->getOS().empty());
 }
 
-TEST_CASE("system.cpuAndRam") {
-    auto *sys = System::create();
+TEST_CASE("os.cpuAndRam") {
+    auto *sys = OS::create();
     CHECK_GE(sys->getProcessorCount(), 1);
     CHECK_GE(sys->getSystemRAM(), 1);
     // Process RSS may be 0 on some platforms before pages are faulted; allow >= 0.
@@ -27,8 +27,8 @@ TEST_CASE("system.cpuAndRam") {
     CHECK_GE(sys->getCPUCacheLineSize(), 0);
 }
 
-TEST_CASE("system.wallTimeAndSleep") {
-    auto *sys = System::create();
+TEST_CASE("os.wallTimeAndSleep") {
+    auto *sys = OS::create();
     float t0  = sys->getWallTime();
     // float epoch seconds only have ~1s precision; just sanity-check magnitude.
     CHECK_GT(t0, 1.0e9f);
@@ -40,8 +40,8 @@ TEST_CASE("system.wallTimeAndSleep") {
     CHECK_GE(dt, 0.02f);
 }
 
-TEST_CASE("system.power") {
-    auto *sys   = System::create();
+TEST_CASE("os.power") {
+    auto *sys   = OS::create();
     std::string st = sys->getPowerState();
     CHECK((st == "unknown" || st == "on_battery" || st == "no_battery" || st == "charging" ||
            st == "charged"));
@@ -52,9 +52,9 @@ TEST_CASE("system.power") {
     if (pct >= 0) CHECK_LE(pct, 100);
 }
 
-TEST_CASE("system.gpuBeforeInit") {
+TEST_CASE("os.gpuBeforeInit") {
     // Graphics may exist as a module singleton but not be Vulkan-initialized in unit tests.
-    auto *sys = System::create();
+    auto *sys = OS::create();
     // Must not crash; empty/0 is fine.
     (void)sys->getGpuName();
     (void)sys->getGpuVendor();
@@ -62,13 +62,13 @@ TEST_CASE("system.gpuBeforeInit") {
     CHECK_GE(sys->getGpuMemoryTotalMB(), 0);
 }
 
-TEST_CASE("system.clipboardRoundTrip") {
-    auto *sys = System::create();
+TEST_CASE("os.clipboardRoundTrip") {
+    auto *sys = OS::create();
     // Clipboard may fail in headless CI; soft-check.
     try {
-        sys->setClipboardText("eve-system-clipboard-test");
+        sys->setClipboardText("eve-os-clipboard-test");
         std::string got = sys->getClipboardText();
-        CHECK_EQ(got, std::string("eve-system-clipboard-test"));
+        CHECK_EQ(got, std::string("eve-os-clipboard-test"));
     } catch (...) {
         // Accept failure when no clipboard provider is available.
         CHECK(true);

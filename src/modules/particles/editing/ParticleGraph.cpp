@@ -9,11 +9,6 @@
 namespace eve::particles_editing {
 namespace {
 
-template <class T>
-EditorResult<T> particleError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 void error(ParticleGraphCompileResult& result, const char* rule, std::string message) {
     result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
                                                               DiagnosticSeverity::Error, std::move(message)));
@@ -95,8 +90,8 @@ GraphConnectionDecision ParticleGraphDomain::canConnect(const GraphPinRecord& fr
 EditorResult<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& type) const {
     if (id.empty())
-        return particleError<GraphNodeRecord>(EditorStatus::Rejected, "editor.particles.node-id",
-                                              "Particle node id is required");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.particles.node-id"),
+                                                     "Particle node id is required");
     EditorValue::Object properties;
     if (type == "emission") {
         properties["rate"] = 10.0;
@@ -140,8 +135,8 @@ EditorResult<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& i
         properties["overflow"] = "drop";
         return eve::editing::applied<GraphNodeRecord>(node(id, type, std::move(properties), true, false));
     } else {
-        return particleError<GraphNodeRecord>(EditorStatus::Unsupported, "editor.particles.node-type",
-                                              "Unknown particle node type: " + type);
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Unsupported, RuleId("editor.particles.node-type"),
+                                                     "Unknown particle node type: " + type);
     }
     return eve::editing::applied<GraphNodeRecord>(node(id, type, std::move(properties)));
 }

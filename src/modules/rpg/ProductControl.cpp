@@ -15,18 +15,13 @@
 namespace eve::rpg {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 LogicalId gameplayId(std::string_view value) { return LogicalId::parse(value).value(); }
 
 Result<const Value::Object*> parameters(const Value& value) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
-        return failure<const Value::Object*>(DiagnosticCode::InvalidArgument,
-                                             "RPG product parameters must be an object", "parameters");
+        return Result<const Value::Object*>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RPG product parameters must be an object", "parameters"));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -37,9 +32,9 @@ Result<std::string> stringParameter(const Value& value, std::string_view name,
     const auto found = object.value()->find(std::string(name));
     if (found == object.value()->end() && optional) return Result<std::string>::success({});
     if (found == object.value()->end() || !found->second.isString())
-        return failure<std::string>(DiagnosticCode::InvalidArgument,
-                                    "RPG product parameter must be a string",
-                                    "parameters." + std::string(name));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "RPG product parameter must be a string",
+                                                              "parameters." + std::string(name)));
     return Result<std::string>::success(found->second.asString());
 }
 
@@ -50,14 +45,14 @@ Result<int> integerParameter(const Value& value, std::string_view name, int fall
     const auto found = object.value()->find(std::string(name));
     if (found == object.value()->end() && optional) return Result<int>::success(fallback);
     if (found == object.value()->end() || !found->second.isInt64())
-        return failure<int>(DiagnosticCode::InvalidArgument,
-                            "RPG product parameter must be an integer",
-                            "parameters." + std::string(name));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RPG product parameter must be an integer",
+                                                      "parameters." + std::string(name)));
     const auto number = found->second.asInt();
     if (number < std::numeric_limits<int>::min() || number > std::numeric_limits<int>::max())
-        return failure<int>(DiagnosticCode::InvalidArgument,
-                            "RPG product integer parameter is out of range",
-                            "parameters." + std::string(name));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RPG product integer parameter is out of range",
+                                                      "parameters." + std::string(name)));
     return Result<int>::success(static_cast<int>(number));
 }
 
@@ -68,9 +63,9 @@ Result<double> numericParameter(const Value& value, std::string_view name,
     const auto found = object.value()->find(std::string(name));
     if (found == object.value()->end() && optional) return Result<double>::success(fallback);
     if (found == object.value()->end() || !found->second.isNumeric())
-        return failure<double>(DiagnosticCode::InvalidArgument,
-                               "RPG product parameter must be numeric",
-                               "parameters." + std::string(name));
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "RPG product parameter must be numeric",
+                                                         "parameters." + std::string(name)));
     return Result<double>::success(found->second.isInt64()
                                        ? static_cast<double>(found->second.asInt())
                                        : found->second.asDouble());
@@ -100,8 +95,8 @@ bool ProductControl::controls(const GameplaySession& session) const {
 
 Result<Value> ProductControl::stateProjection() const {
     if (!instance_.isValid() || !gameState_ || !tracker_ || !bag_)
-        return failure<Value>(DiagnosticCode::StaleHandle,
-                              "RPG product control participants are invalid", "instance");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RPG product control participants are invalid", "instance"));
     auto gameJson = gameState_->snapshotJson();
     if (!gameJson) return Result<Value>::failure(gameJson.status());
     auto questJson = tracker_->snapshotJson();
@@ -143,11 +138,11 @@ Result<std::uint64_t> ProductControl::refreshRevision() const {
 Result<GameplayObservation> ProductControl::observeGameplay(const GameplaySession& session,
                                                              SubjectRef instance) const {
     if (instance != instance_ || !instance_.isValid())
-        return failure<GameplayObservation>(DiagnosticCode::NotFound,
-                                            "RPG product gameplay instance was not found", "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG product gameplay instance was not found", "instance"));
     if (!controls(session))
-        return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
-                                            "session does not control this RPG product state", "instance");
+        return Result<GameplayObservation>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control this RPG product state", "instance"));
     auto revision = refreshRevision();
     if (!revision) return Result<GameplayObservation>::failure(revision.status());
     auto state = stateProjection();
@@ -168,9 +163,9 @@ Result<std::vector<GameplayActionDescriptor>> ProductControl::availableGameplayA
         return Result<std::vector<GameplayActionDescriptor>>::failure(observed.status());
     std::move(observed).takeValue();
     if (subject != instance_)
-        return failure<std::vector<GameplayActionDescriptor>>(
-            DiagnosticCode::PreconditionViolation,
-            "RPG product actions are owned by the product-state subject", "subject");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "RPG product actions are owned by the product-state subject", "subject"));
     const Value stringType = schema({{"type", Value("string")}});
     const Value integerType = schema({{"type", Value("integer")}});
     const Value numberType = schema({{"type", Value("number")}});
@@ -206,21 +201,21 @@ Result<GameplayCommandReceipt> ProductControl::submitGameplay(const GameplaySess
                                                                SubjectRef instance,
                                                                const GameplayCommand& command) {
     if (instance != instance_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound,
-                                               "RPG product gameplay instance was not found", "instance");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG product gameplay instance was not found", "instance"));
     if (!controls(session) || command.subject != instance_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
-                                               "session does not control this RPG product state",
-                                               "command.subject");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "session does not control this RPG product state",
+                              "command.subject"));
     if (command.id.empty())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument,
-                                               "command id must not be empty", "command.id");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "command id must not be empty", "command.id"));
     auto currentRevision = refreshRevision();
     if (!currentRevision) return Result<GameplayCommandReceipt>::failure(currentRevision.status());
     if (command.observedTick != tick_ || command.expectedRevision != currentRevision.value())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
-                                               "RPG product command was based on a stale observation",
-                                               "command.expectedRevision");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RPG product command was based on a stale observation",
+                              "command.expectedRevision"));
 
     std::optional<Result<int>> applied;
     std::string operation;
@@ -282,8 +277,8 @@ Result<GameplayCommandReceipt> ProductControl::submitGameplay(const GameplaySess
         applied.emplace(WorldInteraction::collectLoot(*gameState_, *tracker_, *bag_, request));
     }
     if (!applied)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
-                                               "unsupported RPG product action", "command.action");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported RPG product action", "command.action"));
     if (!*applied) return Result<GameplayCommandReceipt>::failure(applied->status());
     const int effectCount = std::move(*applied).takeValue();
     stateFingerprint_.clear();
@@ -308,8 +303,8 @@ Result<GameplayObservation> ProductControl::advanceGameplay(const GameplaySessio
                                                              SubjectRef instance,
                                                              const SimulationStep& step) {
     if (step.tick <= tick_)
-        return failure<GameplayObservation>(DiagnosticCode::Conflict,
-                                            "RPG product simulation tick must increase", "step.tick");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RPG product simulation tick must increase", "step.tick"));
     auto observed = observeGameplay(session, instance);
     if (!observed) return Result<GameplayObservation>::failure(observed.status());
     std::move(observed).takeValue();

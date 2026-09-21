@@ -10,11 +10,6 @@ EditorResult<void> previewError(EditorStatus status, std::string rule, std::stri
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
 }
 
-template <typename T>
-EditorResult<T> previewErrorValue(EditorStatus status, std::string rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(std::move(rule)), std::move(message));
-}
-
 std::string diagnosticMessage(const Status& status, std::string fallback) {
     if (!status.diagnostics().empty() && !status.diagnostics().front().message().empty())
         return status.diagnostics().front().message();
@@ -135,19 +130,20 @@ EditorResult<void> ActionPreviewController::jumpToEnd() {
 EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
     auto plan = editor_.planPreview(delta);
     if (!plan.ok())
-        return previewErrorValue<std::size_t>(plan.code(), "editor.action.preview.plan",
-                                              "Could not prepare timeline preview advance");
+        return eve::editing::failed<std::size_t>(plan.code(), RuleId("editor.action.preview.plan"),
+                                                 "Could not prepare timeline preview advance");
     if (plan.code() == EditorStatus::NoOp)
         return EditorResult<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
     auto frame = buildFrame(action::ActionPreviewReason::Advance, plan.value().previous, plan.value().current,
                             plan.value().events);
     if (!frame)
-        return previewErrorValue<std::size_t>(EditorStatus::Rejected, "editor.action.preview.root-motion",
-                                              diagnosticMessage(frame.status(), "Could not sample root motion"));
+        return eve::editing::failed<std::size_t>(EditorStatus::Rejected, RuleId("editor.action.preview.root-motion"),
+                                                 diagnosticMessage(frame.status(), "Could not sample root motion"));
     auto prepared = sink_.prepare(frame.value());
     if (!prepared)
-        return previewErrorValue<std::size_t>(EditorStatus::Rejected, "editor.action.preview.prepare",
-                                              diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
+        return eve::editing::failed<std::size_t>(
+            EditorStatus::Rejected, RuleId("editor.action.preview.prepare"),
+            diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
     auto advanced = editor_.applyPreviewPlan(std::move(plan).takeValue());
     if (!advanced.ok()) {
         sink_.discardPrepared();

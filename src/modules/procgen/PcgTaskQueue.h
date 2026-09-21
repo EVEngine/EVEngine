@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 namespace ssq { class Table; }
-namespace eve::system {
+namespace eve::procgen {
 /** @brief Observable state of Pcg's delayed task processor. */
 enum class PcgTaskQueueStatus { Idle = 0, Waiting = 1, Ready = 2 };
 /**
@@ -36,4 +36,4 @@ private:
 };
 /** @brief Register PcgTaskQueue Squirrel bindings. */
 void exposePcgTaskQueueBindings(ssq::Table& table);
-}  // namespace eve::system
+}  // namespace eve::procgen

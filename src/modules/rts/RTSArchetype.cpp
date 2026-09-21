@@ -11,12 +11,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message),
-                                                 std::move(path), {}, "rts.archetype"));
-}
-
 const Value* field(const Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -25,7 +19,9 @@ const Value* field(const Value::Object& object, std::string_view name) {
 Result<Value::Object> definitionObject(definitions::DefinitionRegistry& registry, std::string_view type,
                                        const LogicalId& id) {
     if (!id.isValid() || id.name().empty())
-        return invalid<Value::Object>("RTS root requires a logical definition", std::string(type) + ".definition");
+        return Result<Value::Object>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS root requires a logical definition",
+                              std::string(type) + ".definition", {}, "rts.archetype"));
     auto resolved = registry.resolve(std::string(type), std::string(id.name()));
     if (!resolved) return Result<Value::Object>::failure(resolved.status());
     auto parsed = Value::fromJson(resolved.value().get().json);
@@ -33,7 +29,9 @@ Result<Value::Object> definitionObject(definitions::DefinitionRegistry& registry
     auto value = std::move(parsed).takeValue();
     const auto* object = value.getIf<Value::Object>();
     if (object == nullptr)
-        return invalid<Value::Object>("RTS definition must be a JSON object", std::string(type) + ".json");
+        return Result<Value::Object>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "RTS definition must be a JSON object",
+                                                                std::string(type) + ".json", {}, "rts.archetype"));
     return Result<Value::Object>::success(*object);
 }
 
@@ -44,10 +42,15 @@ Result<float> number(const Value::Object& object, std::string_view name, float f
     if (source != nullptr) {
         if (const auto* real = source->getIf<double>()) value = *real;
         else if (const auto* integer = source->getIf<std::int64_t>()) value = static_cast<double>(*integer);
-        else return invalid<float>("RTS archetype numeric field must be a number", std::string(name));
+        else
+            return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "RTS archetype numeric field must be a number",
+                                                            std::string(name), {}, "rts.archetype"));
     }
     if (!std::isfinite(value) || value < minimum || value > std::numeric_limits<float>::max())
-        return invalid<float>("RTS archetype numeric field is outside its valid range", std::string(name));
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                        "RTS archetype numeric field is outside its valid range",
+                                                        std::string(name), {}, "rts.archetype"));
     return Result<float>::success(static_cast<float>(value));
 }
 
@@ -56,10 +59,15 @@ Result<int> integer(const Value::Object& object, std::string_view name, int fall
     std::int64_t value = fallback;
     if (source != nullptr) {
         if (const auto* exact = source->getIf<std::int64_t>()) value = *exact;
-        else return invalid<int>("RTS archetype integer field must be an integer", std::string(name));
+        else
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                          "RTS archetype integer field must be an integer",
+                                                          std::string(name), {}, "rts.archetype"));
     }
     if (value < minimum || value > std::numeric_limits<int>::max())
-        return invalid<int>("RTS archetype integer field is outside its valid range", std::string(name));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS archetype integer field is outside its valid range",
+                                                      std::string(name), {}, "rts.archetype"));
     return Result<int>::success(static_cast<int>(value));
 }
 
@@ -67,7 +75,10 @@ Result<bool> boolean(const Value::Object& object, std::string_view name, bool fa
     const Value* source = field(object, name);
     if (source == nullptr) return Result<bool>::success(fallback);
     const auto* value = source->getIf<bool>();
-    if (value == nullptr) return invalid<bool>("RTS archetype boolean field must be boolean", std::string(name));
+    if (value == nullptr)
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS archetype boolean field must be boolean", std::string(name),
+                                                       {}, "rts.archetype"));
     return Result<bool>::success(*value);
 }
 
@@ -75,7 +86,10 @@ Result<std::string> text(const Value::Object& object, std::string_view name, std
     const Value* source = field(object, name);
     if (source == nullptr) return Result<std::string>::success(std::move(fallback));
     const auto* value = source->getIf<std::string>();
-    if (value == nullptr) return invalid<std::string>("RTS archetype text field must be a string", std::string(name));
+    if (value == nullptr)
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "RTS archetype text field must be a string",
+                                                              std::string(name), {}, "rts.archetype"));
     return Result<std::string>::success(*value);
 }
 
@@ -84,12 +98,16 @@ Result<TagSet> tags(const Value::Object& object, std::string_view name) {
     const Value* source = field(object, name);
     if (source == nullptr) return Result<TagSet>::success(std::move(result));
     const auto* array = source->getIf<Value::Array>();
-    if (array == nullptr) return invalid<TagSet>("RTS archetype tags must be an array", std::string(name));
+    if (array == nullptr)
+        return Result<TagSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "RTS archetype tags must be an array", std::string(name), {},
+                                                         "rts.archetype"));
     for (std::size_t index = 0; index < array->size(); ++index) {
         const auto* value = (*array)[index].getIf<std::string>();
         if (value == nullptr)
-            return invalid<TagSet>("RTS archetype tag must be a string",
-                                   std::string(name) + "[" + std::to_string(index) + "]");
+            return Result<TagSet>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS archetype tag must be a string",
+                                  std::string(name) + "[" + std::to_string(index) + "]", {}, "rts.archetype"));
         auto added = result.add(*value);
         if (!added) return Result<TagSet>::failure(added.status());
     }
@@ -117,7 +135,9 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     auto targetTags = tags(object, "targetTags");
     if (!health || !speed || !radius || !sight || !detection || !radar || !jamming || !range || !role ||
         !weaponType || !targetTags)
-        return invalid<void>("RTS unit definition contains an invalid core field", "unit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS unit definition contains an invalid core field", "unit", {},
+                                                       "rts.archetype"));
 
     auto capacity = number(object, "cargoCapacity", role.value() == "worker" ? 10.0f : 0.0f, 0.0f);
     auto gather = number(object, "gatherRate", role.value() == "worker" ? 5.0f : 0.0f, 0.0f);
@@ -175,12 +195,16 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
         !relayUplink || !outOfCommandSpeed || !outOfCommandDamage || !ammoCapacity || !ammoRange ||
         !ammoRate || !ammoRelay || !autoResupply || !autoThreshold || !reserveAmmo || !supplyPriority ||
         !firingTurnRate || !firingArc || !firingHeight || !targetHeight)
-        return invalid<void>("RTS unit definition contains an invalid capability field", "unit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS unit definition contains an invalid capability field",
+                                                       "unit", {}, "rts.archetype"));
 
     weapon::WeaponEntity* weapon = nullptr;
     if (!weaponType.value().empty()) {
         if (!weaponFactory)
-            return invalid<void>("RTS unit definition requires a weapon factory", "unit.weaponType");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "RTS unit definition requires a weapon factory",
+                                                           "unit.weaponType", {}, "rts.archetype"));
         auto created = weaponFactory(weaponType.value(), unit.identity()->subject.persistentId());
         if (!created) return Result<void>::failure(created.status());
         weapon = std::move(created).takeValue();
@@ -301,12 +325,16 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
         !ammoCapacity || !ammoRange || !ammoRate || !ammoResource || !ammoCost || !ammoProduction ||
         !commandRange || !commandCapacity || !commandJamming || !turretTurn || !firingArc ||
         !firingHeight || !targetHeight)
-        return invalid<void>("RTS building definition contains an invalid field", "building");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS building definition contains an invalid field", "building",
+                                                       {}, "rts.archetype"));
 
     weapon::WeaponEntity* weapon = nullptr;
     if (!weaponType.value().empty()) {
         if (!weaponFactory)
-            return invalid<void>("RTS building definition requires a weapon factory", "building.weaponType");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "RTS building definition requires a weapon factory",
+                                                           "building.weaponType", {}, "rts.archetype"));
         auto created = weaponFactory(weaponType.value(), building.identity()->subject.persistentId());
         if (!created) return Result<void>::failure(created.status());
         weapon = std::move(created).takeValue();

@@ -3,11 +3,6 @@
 namespace eve::material_editing {
 namespace {
 
-template <class T>
-EditorResult<T> publishingError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 }  // namespace
 
 MaterialPublishingTarget::MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink)
@@ -42,13 +37,12 @@ EditorResult<void> MaterialPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)
-        return publishingError<void>(EditorStatus::Conflict,
-                                     "editor.material.publishing-candidate-mismatch",
-                                     "Material candidate belongs to another live target");
+        return eve::editing::failed<void>(EditorStatus::Conflict,
+                                          RuleId("editor.material.publishing-candidate-mismatch"),
+                                          "Material candidate belongs to another live target");
     if (!sink_)
-        return publishingError<void>(EditorStatus::Rejected,
-                                     "editor.material.publishing-sink-missing",
-                                     "Material publishing target requires a live runtime sink");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.publishing-sink-missing"),
+                                          "Material publishing target requires a live runtime sink");
     EditorResult<void> published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;

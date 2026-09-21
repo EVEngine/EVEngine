@@ -16,12 +16,6 @@ constexpr std::size_t kMaximumReplayEntries = 1'000'000;
 constexpr std::size_t kMaximumReplayCheckpoints = 100'000;
 constexpr std::size_t kMaximumReplayChunkDigests = 1'000'000;
 
-template <class T>
-eve::Result<T> fail(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                           "pixelworld.replay"));
-}
-
 eve::LogicalId replaySchema() {
     const auto parsed = eve::LogicalId::parse("pixelworld:replay-log");
     if (!parsed) std::terminate();
@@ -32,29 +26,35 @@ eve::Result<const eve::Value::Object*> object(const eve::Value& value, std::stri
                                                std::initializer_list<std::string_view> fields) {
     const auto* result = value.getIf<eve::Value::Object>();
     if (!result || result->size() != fields.size())
-        return fail<const eve::Value::Object*>(eve::DiagnosticCode::ParseError,
-                                               "replay object has unknown or missing fields", std::move(path));
+        return eve::Result<const eve::Value::Object*>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "replay object has unknown or missing fields",
+                                   std::move(path), {}, "pixelworld.replay"));
     for (const auto field : fields)
         if (!result->contains(std::string(field)))
-            return fail<const eve::Value::Object*>(eve::DiagnosticCode::ParseError,
-                                                   "replay object has unknown or missing fields", std::move(path));
+            return eve::Result<const eve::Value::Object*>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "replay object has unknown or missing fields",
+                                       std::move(path), {}, "pixelworld.replay"));
     return eve::Result<const eve::Value::Object*>::success(result);
 }
 
 eve::Result<std::uint64_t> decimal(const eve::Value& value, std::string path) {
     const auto* text = value.getIf<std::string>();
-    if (!text) return fail<std::uint64_t>(eve::DiagnosticCode::ParseError, "expected decimal string", path);
+    if (!text)
+        return eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "expected decimal string", path, {}, "pixelworld.replay"));
     std::uint64_t result = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
-        return fail<std::uint64_t>(eve::DiagnosticCode::ParseError, "invalid decimal string", std::move(path));
+        return eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "invalid decimal string", std::move(path), {}, "pixelworld.replay"));
     return eve::Result<std::uint64_t>::success(result);
 }
 
 eve::Result<int> integer(const eve::Value& value, std::string path) {
     const auto* number = value.getIf<std::int64_t>();
     if (!number || *number < std::numeric_limits<int>::min() || *number > std::numeric_limits<int>::max())
-        return fail<int>(eve::DiagnosticCode::ParseError, "expected in-range integer", std::move(path));
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "expected in-range integer", std::move(path), {}, "pixelworld.replay"));
     return eve::Result<int>::success(static_cast<int>(*number));
 }
 
@@ -85,14 +85,15 @@ eve::Result<eve::pixelworld::PixelEditCommand> parseCommand(const eve::Value& va
     auto strength = integer(record.value()->at("strength"), path + ".strength");
     auto temperature = integer(record.value()->at("temperatureDelta"), path + ".temperatureDelta");
     if (!centerX || !centerY || !kind || !material || !radius || !sequence || !strength || !temperature)
-        return fail<eve::pixelworld::PixelEditCommand>(eve::DiagnosticCode::ParseError,
-                                                       "invalid replay command", path);
+        return eve::Result<eve::pixelworld::PixelEditCommand>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "invalid replay command", path, {}, "pixelworld.replay"));
     if (kind.value() < 0 || kind.value() > static_cast<int>(eve::pixelworld::PixelEditKind::Explosion) ||
         material.value() < 0 || material.value() > std::numeric_limits<std::uint16_t>::max() ||
         temperature.value() < std::numeric_limits<std::int16_t>::min() ||
         temperature.value() > std::numeric_limits<std::int16_t>::max())
-        return fail<eve::pixelworld::PixelEditCommand>(eve::DiagnosticCode::ParseError,
-                                                       "replay command enum or scalar is out of range", path);
+        return eve::Result<eve::pixelworld::PixelEditCommand>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "replay command enum or scalar is out of range",
+                                   path, {}, "pixelworld.replay"));
     command.sequence = sequence.value();
     command.kind = static_cast<eve::pixelworld::PixelEditKind>(kind.value());
     command.centerX = centerX.value();
@@ -293,11 +294,13 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
     auto verified = eve::verifySnapshotEnvelope(snapshot, hashProvider);
     if (!verified) return verified;
     if (snapshot.type != kReplayType || snapshot.schema != replaySchema())
-        return fail<void>(eve::DiagnosticCode::InvalidArgument, "replay snapshot type or schema does not match",
-                          "schema");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "replay snapshot type or schema does not match",
+                                                                 "schema", {}, "pixelworld.replay"));
     if (snapshot.schemaVersion.value() < 1 || snapshot.schemaVersion.value() > kReplaySchemaVersion)
-        return fail<void>(eve::DiagnosticCode::UnknownVersion, "unsupported replay snapshot schema version",
-                          "schemaVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
+                                                                 "unsupported replay snapshot schema version",
+                                                                 "schemaVersion", {}, "pixelworld.replay"));
 
     auto root = object(snapshot.payload, "payload", {"checkpoints", "entries"});
     if (!root) return eve::Result<void>::failure(root.status());
@@ -305,8 +308,9 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
     const auto* encodedCheckpoints = root.value()->at("checkpoints").getIf<eve::Value::Array>();
     if (!encodedEntries || !encodedCheckpoints || encodedEntries->size() > kMaximumReplayEntries ||
         encodedCheckpoints->size() > kMaximumReplayCheckpoints)
-        return fail<void>(eve::DiagnosticCode::ParseError, "replay arrays are invalid or exceed decode budget",
-                          "payload");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "replay arrays are invalid or exceed decode budget",
+                                                                 "payload", {}, "pixelworld.replay"));
 
     PixelReplayLog candidate;
     for (std::size_t index = 0; index < encodedEntries->size(); ++index) {
@@ -316,7 +320,8 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
         auto tick = decimal(record.value()->at("tick"), path + ".tick");
         auto command = parseCommand(record.value()->at("command"), path + ".command");
         if (!tick || !command)
-            return fail<void>(eve::DiagnosticCode::ParseError, "invalid replay entry", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid replay entry", path, {}, "pixelworld.replay"));
         auto appended = candidate.append({eve::SimulationTick(tick.value()), std::move(command).value()});
         if (!appended) return appended;
     }
@@ -335,7 +340,8 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
         auto revision = decimal(record.value()->at("revision"), path + ".revision");
         auto worldDigest = decimal(record.value()->at("worldDigest"), path + ".worldDigest");
         if (!tick || !revision || !worldDigest || tick.value() == 0 || tick.value() <= previousCheckpointTick)
-            return fail<void>(eve::DiagnosticCode::ParseError, "invalid replay checkpoint", path);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid replay checkpoint", path, {}, "pixelworld.replay"));
         PixelReplayCheckpoint checkpoint;
         checkpoint.tick = eve::SimulationTick(tick.value());
         checkpoint.revision = revision.value();
@@ -344,8 +350,9 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
         if (!versionOne) {
             const auto* chunks = record.value()->at("chunks").getIf<eve::Value::Array>();
             if (!chunks || chunks->size() > kMaximumReplayChunkDigests - totalChunks)
-                return fail<void>(eve::DiagnosticCode::ParseError,
-                                  "replay Chunk digests exceed decode budget", path + ".chunks");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                         "replay Chunk digests exceed decode budget",
+                                                                         path + ".chunks", {}, "pixelworld.replay"));
             totalChunks += chunks->size();
             for (std::size_t chunkIndex = 0; chunkIndex < chunks->size(); ++chunkIndex) {
                 const std::string chunkPath = path + ".chunks[" + std::to_string(chunkIndex) + "]";
@@ -355,13 +362,16 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
                 auto y = integer(chunk.value()->at("y"), chunkPath + ".y");
                 auto digest = decimal(chunk.value()->at("digest"), chunkPath + ".digest");
                 if (!x || !y || !digest)
-                    return fail<void>(eve::DiagnosticCode::ParseError, "invalid replay Chunk digest", chunkPath);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                             "invalid replay Chunk digest", chunkPath,
+                                                                             {}, "pixelworld.replay"));
                 PixelChunkDigest decoded{x.value(), y.value(), digest.value()};
                 if (!checkpoint.chunks.empty()) {
                     const auto& prior = checkpoint.chunks.back();
                     if (decoded.y < prior.y || (decoded.y == prior.y && decoded.x <= prior.x))
-                        return fail<void>(eve::DiagnosticCode::ParseError,
-                                          "replay Chunk digests must be unique canonical order", chunkPath);
+                        return eve::Result<void>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::ParseError, "replay Chunk digests must be unique canonical order",
+                            chunkPath, {}, "pixelworld.replay"));
                 }
                 checkpoint.chunks.push_back(decoded);
             }
@@ -376,8 +386,9 @@ eve::Result<void> PixelReplayLog::restoreSnapshot(
                                              : candidate.checkpoints_.back().tick.value();
     if (snapshot.revision.value() != candidate.entries_.size() + candidate.checkpoints_.size() ||
         snapshot.tick.value() != std::max(entryTick, checkpointTick))
-        return fail<void>(eve::DiagnosticCode::Conflict,
-                          "replay payload count or Tick disagrees with envelope metadata", "payload");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "replay payload count or Tick disagrees with envelope metadata", "payload",
+            {}, "pixelworld.replay"));
 
     entries_ = std::move(candidate.entries_);
     checkpoints_ = std::move(candidate.checkpoints_);

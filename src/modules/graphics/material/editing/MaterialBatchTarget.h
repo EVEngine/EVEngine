@@ -21,7 +21,8 @@ public:
 /** @brief One editor transaction target for mixed-value, multi-material property editing.
  * Owns all authoring documents and publishes a complete candidate set through one atomic sink call.
  */
-class MaterialBatchTarget final : public virtual IEditableTarget,
+class MaterialBatchTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider,
@@ -34,9 +35,6 @@ public:
                         IMaterialBatchRuntimeSink* sink = nullptr);
 
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query property or snapshot capabilities.
      * @return Borrowed pointer owned by this target, or null.
@@ -68,9 +66,7 @@ private:
 
     std::string                         id_;
     std::vector<MaterialDocumentTarget> materials_;
-    IMaterialBatchRuntimeSink*          sink_     = nullptr;
-    editing::Revision                   revision_ = 1;
-    EditRegion                          dirty_;
+    IMaterialBatchRuntimeSink*          sink_ = nullptr;
 };
 
 }  // namespace eve::material_editing

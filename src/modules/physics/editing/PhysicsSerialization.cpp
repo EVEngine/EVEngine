@@ -5,11 +5,6 @@
 namespace eve::physics_editing {
 namespace {
 
-template <class T>
-EditorResult<T> snapshotError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -37,22 +32,22 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
     const auto*        dimensions      = dimensionsValue ? dimensionsValue->getIf<int64_t>() : nullptr;
     const auto*        properties      = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
     if (!version || *version != 1 || !dimensions || *dimensions != dimensions_ || !properties)
-        return snapshotError<void>(EditorStatus::Rejected, "editor.physics.snapshot-format",
-                                   "Collider snapshot version or dimensionality is incompatible");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.snapshot-format"),
+                                          "Collider snapshot version or dimensionality is incompatible");
     auto                 candidate   = defaults();
     const PropertySchema schemaValue = colliderSchema();
     for (const auto& [path, value] : *properties) {
         auto descriptor = schemaValue.find(PropertyPath(path));
         if (!descriptor)
-            return snapshotError<void>(EditorStatus::Unsupported, "editor.physics.snapshot-property",
-                                       "Collider snapshot contains unknown property: " + path);
+            return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.physics.snapshot-property"),
+                                              "Collider snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
         if (!valid.ok()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 
