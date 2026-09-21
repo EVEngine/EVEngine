@@ -29,7 +29,11 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("needs: [consumer-win32, consumer-linux, consumer-macosx]", block)
         self.assertIn("pattern: android-apk-*", block)
         self.assertIn("merge-multiple: true", block)
+        self.assertIn("arch: arm64-v8a", block)
+        self.assertIn("emulator-boot-timeout: 1200", block)
+        self.assertIn("-accel off", block)
         self.assertIn("for apk_file in apk/*.apk", block)
+        self.assertIn("EVE_CI_GAME_OK", block)
         self.assertIn('if [ "$found" -ne 3 ]', block)
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
 
