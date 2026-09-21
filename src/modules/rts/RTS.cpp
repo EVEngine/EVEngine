@@ -1666,7 +1666,7 @@ Result<effects::EffectHandle> RTS::applyStatusEffect(
 Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& action,
                                    resource::IResourceAccount& account, resource::CostSpec cost, std::string product,
                                    Duration duration, std::string productionKind, int priority,
-                                   std::string transactionId) {
+                                   std::string transactionId, definition::DefinitionHandle definition) {
     if (!owns(buildings_, building))
         return Result<RTSBuildReceipt>::failure(
             Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
@@ -1681,7 +1681,7 @@ Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& ac
     }
     return RTSProductionActionAdapter::build(building, action, account, std::move(cost), std::move(product),
                                              std::move(duration), std::move(productionKind), priority,
-                                             std::move(transactionId), std::move(reserves));
+                                             std::move(transactionId), std::move(reserves), std::move(definition));
 }
 
 Result<void> RTS::setProductionResourceReserve(
@@ -2688,16 +2688,24 @@ Result<RTSBuildReceipt> RTS::queueScriptResearch(Building& producer, std::string
     if (std::binary_search(faction->technology()->unlocked.begin(), faction->technology()->unlocked.end(), upgrade))
         return Result<RTSBuildReceipt>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "RTS upgrade is already unlocked", "upgrade"));
-    for (int index = 0; index < static_cast<int>(producer.production()->values.taskCount()); ++index) {
-        auto task = producer.production()->values.taskAt(index);
-        if (task && task->get().kind == "research" && task->get().product == upgrade &&
-            task->get().state != production::TaskState::Cancelled &&
-            task->get().state != production::TaskState::Failed)
-            return Result<RTSBuildReceipt>::failure(
-                Diagnostic::error(DiagnosticCode::Conflict, "RTS upgrade is already queued", "upgrade"));
+    auto researchBuildings = ecs::View<Building, Building::Faction, Building::Production>();
+    for (auto it = researchBuildings.begin(); it != researchBuildings.end(); ++it) {
+        auto [candidateFaction, candidateProduction] = *it;
+        if (candidateFaction->link.resolve() != faction) continue;
+        for (int index = 0; index < static_cast<int>(candidateProduction->values.taskCount()); ++index) {
+            auto task = candidateProduction->values.taskAt(index);
+            if (task && task->get().kind == "research" && task->get().product == upgrade &&
+                task->get().state != production::TaskState::Cancelled &&
+                task->get().state != production::TaskState::Failed &&
+                task->get().state != production::TaskState::Completed)
+                return Result<RTSBuildReceipt>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "RTS upgrade is already queued by this faction", "upgrade"));
+        }
     }
     auto resolved = definitions_->resolve("upgrade", upgrade);
     if (!resolved) return Result<RTSBuildReceipt>::failure(resolved.status());
+    auto definitionHandle = definitions_->handle("upgrade", upgrade);
+    if (!definitionHandle) return Result<RTSBuildReceipt>::failure(definitionHandle.status());
     auto parsed = Value::fromJson(resolved.value().get().json);
     if (!parsed) return Result<RTSBuildReceipt>::failure(parsed.status());
     const auto* object = parsed.value().getIf<Value::Object>();
@@ -2746,7 +2754,8 @@ Result<RTSBuildReceipt> RTS::queueScriptResearch(Building& producer, std::string
     const resource::CostSpec paidCost = cost.value();
     const std::string product = upgrade;
     auto receipt = build(producer, scriptRuntime_->actions, economy->second->account, std::move(cost).takeValue(),
-                         std::move(upgrade), std::move(duration).takeValue(), "research", priority);
+                         std::move(upgrade), std::move(duration).takeValue(), "research", priority, {},
+                         std::move(definitionHandle).takeValue());
     if (receipt) scriptRuntime_->paidProduction.push_back({producer.identity()->subject, {}, "research", product,
         receipt.value().productionTaskId, receipt.value().orderId, paidCost});
     return receipt;
