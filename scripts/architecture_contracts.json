@@ -484,6 +484,112 @@
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
     },
     {
+      "id": "math-smooth-max-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/math/*Smooth*",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "reason": "Declare the changed scalar-math and mountain-stamp surfaces, ownership, cost and trim evidence explicitly.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/SmoothMax.h",
+        "src/modules/math/MathSmooth.cpp",
+        "docs/usr/modules/math.md"
+      ],
+      "tests": [
+        "test/math_smooth_max.cpp"
+      ],
+      "thread_affinity": "Pure scalar calculation on any thread; no module registration or RNG access.",
+      "reentrancy": "Reentrant; no callbacks or retained state.",
+      "ownership_contract": "Scalar values in and out; no owned or borrowed resources.",
+      "lifetime": "No references survive a call.",
+      "lock_callback_policy": "No locks or callbacks.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        {
+          "script_class": "Math",
+          "methods": [
+            "smoothMax"
+          ]
+        }
+      ],
+      "hot_path": [
+        "src/engine/common/SmoothMax.h"
+      ],
+      "trim": {
+        "claim": "No new module trim claim; the scalar header and adapter compile independently of graphics."
+      },
+      "cost_notes": [
+        {
+          "api": "smoothMax",
+          "shape": "scalar-value",
+          "why": "Constant arithmetic per height sample, no allocations."
+        }
+      ]
+    },
+    {
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "expiry": "2027-12-31",
+      "id": "procgen-mountain-stamp-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/heightmap/Terrain*Stamp*",
+      "reason": "Declare the changed scalar-math and mountain-stamp surfaces, ownership, cost and trim evidence explicitly.",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainMeshStamp.h",
+        "src/modules/procgen/heightmap/TerrainStamp.h"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp.cpp",
+        "test/terrain_smooth_stamp_script.cpp"
+      ],
+      "thread_affinity": "Caller owns output rasters; source mutations serialized; read-only builder bakes may use distinct outputs concurrently.",
+      "reentrancy": "No callbacks or script calls during native work.",
+      "ownership_contract": "Builder owns copied positions/indices; outputs are borrowed only for the synchronous call.",
+      "lifetime": "No retained source/output references; source destruction does not invalidate builder.",
+      "lock_callback_policy": "No locks or callbacks.",
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "protocol": [],
+      "binds": [
+        {
+          "script_class": "TerrainMeshStampBuilder",
+          "methods": [
+            "setSource",
+            "bake"
+          ]
+        },
+        {
+          "script_class": "ProcgenHeightmap",
+          "methods": [
+            "applyStamp"
+          ]
+        }
+      ],
+      "hot_path": [
+        "src/modules/procgen/heightmap/TerrainStamp.cpp",
+        "src/modules/procgen/heightmap/TerrainMeshStamp.cpp"
+      ],
+      "trim": {
+        "layer": "L1",
+        "evidence": "procgen-core-only EVProcgenCoreCheck compiles both native translation units; standalone native tests additionally link/run without graphics."
+      },
+      "cost_notes": [
+        {
+          "api": "TerrainMeshStampBuilder.bake",
+          "shape": "builder",
+          "why": "Bounded triangle projection; bake once and reuse rasters."
+        }
+      ]
+    },
+    {
       "id": "persistence-contract-policy",
       "rule": "persistence",
       "scope": "src/**",
@@ -506,6 +612,48 @@
       "migration": "known older versions migrate into a local candidate before validation and commit.",
       "unknown_fields": "unknown fields follow the schema's explicit reject, preserve or ignore policy.",
       "restore_atomicity": "parse, validate and migrate locally; publish once; failure leaves the observable owner unchanged."
+    },
+    {
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "expiry": "2027-12-31",
+      "id": "smooth-mountain-terraingenerationsession-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainGenerationSession.cpp",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-generation-session",
+      "version": "2",
+      "migration": "Read v1 with zero smoothWidth/edgeFade; reject new operation 6 in old records.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
+    },
+    {
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-INTERFACE-CONTRACTS",
+      "expiry": "2027-12-31",
+      "id": "smooth-mountain-terrainspawnplancodec-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp",
+      "reason": "Persist smooth stamp parameters without reinterpreting older binary records.",
+      "evidence": [
+        "docs/dev/superpowers/specs/2026-09-22-smooth-mountain-stamping.md",
+        "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+      ],
+      "tests": [
+        "test/terrain_smooth_stamp_persistence.cpp"
+      ],
+      "schema": "eve.procgen.terrain-spawn-plan",
+      "version": "4",
+      "migration": "Read versions 0-3 with zero smoothWidth/edgeFade; preserve prior enabled migration.",
+      "unknown_fields": "Reject unknown root fields, unsupported versions, missing/trailing payload; fixed little-endian positional payload.",
+      "restore_atomicity": "Parse into private owned candidate; session validates and replays before swapping; plan publishes only after full decode."
     },
     {
       "id": "tactics-persistence-contract",

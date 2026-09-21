@@ -1699,7 +1699,7 @@ local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点
 
 `ProcgenHeightmap.applyStamp(stamp, settings, operation, localMask, globalMask)`
 返回标准 Result，`value` 为变化的采样数。`operation` 为 0 Raise、1 Lower、
-2 Blend、3 Set、4 Add、5 Subtract。Raise/Lower 取高度包络；Blend 使用
+2 Blend、3 Set、4 Add、5 Subtract、6 SmoothRaise。Raise/Lower 取高度包络；Blend 使用
 `blendStrength`；Add/Subtract 对已有高度加减印章高度。
 
 印章和两个蒙版使用同一旋转矩形内的 UV，分别双线性采样，分辨率可不同。
@@ -1729,6 +1729,55 @@ assert(applied.ok);
 拒绝整个操作，不留下部分写入。内存分配失败按 C++ 分配异常处理。
 该接口使用原生地形高度单位，不模拟 Unity packed height、自适应基底或
 MixHeight；本接口自身不创建编辑器撤销记录，事务历史由拥有式 workspace/session 提供。
+
+### 平滑山体印章与 CPU 网格烘焙
+
+`TerrainStampSettings.smoothWidth` 和 `TerrainStampSettings.edgeFade` 默认都为 0。
+操作 6 SmoothRaise 对原高度和变换后的印章高度取平滑最大值，再应用 globalMask 和边缘淡出。
+`smoothWidth` 使用高度单位，0 恢复普通 max；相等高度最多抬升 smoothWidth/4。
+`edgeFade` 使用目标世界 X/Z 距离，从矩形各边向内 cubic smoothstep，两个轴权重相乘。
+它与旋转/缩放后的印章一致，矩形边界的变化量和变化斜率为零。旧 0..5 操作不使用这两个字段。
+
+```squirrel
+local settings = eve.TerrainStampSettings();
+settings.setGrid(0.0, 0.0, 0.5, 0.5);
+settings.setCenter(16.0, 16.0);
+settings.setSize(28.0, 28.0);
+settings.smoothWidth = 4.0;
+settings.edgeFade = 3.0;
+local result = terrain.applyStamp(stamp, settings, 6, one, coverage);
+if (!result.ok) throw "mountain stamp failed";
+```
+
+对于三维模型，`eve.TerrainMeshStampBuilder()` 提供两步操作：
+
+- `setSource(mesh)`：接收现有 ProcgenMeshBuild，验证并复制位置和索引，Result.value 为三角形数。
+  输入为 Y 向上，需预先应用模型变换；模型可来自 CPU recipe 或调用方的模型导入适配器。
+  不直接接收文件路径、GPU Mesh 或 Renderable3D，也不新增 OBJ/FBX 解码器。
+- `bake(heights, coverage, minX, minZ, width, depth, feather)`：两个输出应预分配、至少 2×2、
+  同尺寸且为不同对象。坐标覆盖源模型 X/Z 的指定矩形，按三角形俯视投影取最高 Y，
+  忽略竖直/退化三角形；无命中为高度 0、覆盖 0。Result.value 为淡出前命中样本数。
+  `feather` 是源模型坐标下到未覆盖样本/矩形边界的向内淡出距离（栅格 Manhattan 距离）；
+  0 禁用。烘焙矩形映射到印章的 `setCenter/setSize`，高度再由 amplitude/baseHeight 调整。
+
+```squirrel
+local builder = eve.TerrainMeshStampBuilder();
+local accepted = builder.setSource(cpuMesh);
+if (!accepted.ok) throw "invalid mountain mesh";
+local baked = builder.bake(stamp, coverage, -0.5, -0.5, 1.0, 1.0, 0.07);
+if (!baked.ok) throw "mountain bake failed";
+// 将 coverage 传给 applyStamp 的 globalMask，localMask 使用常量 one。
+```
+
+烘焙结果可复用；不要逐帧重新烘焙。上限为 1M 顶点/三角形、4M 输出样本和 128M
+投影包围盒采样测试；超限返回 InvalidArgument，两个输出都保持原样。
+setSource 同样原子替换自有副本，源模型释放/修改不会影响 builder。
+调用同步执行，无时钟、RNG、回调或图形依赖；每次 bake 独占输出，同一 builder 不可同时修改。
+
+此转换只保留最高高度，不能保留悬挑、洞穴、模型材质或 UV。高度图与覆盖图的分辨率
+决定可保留的细节，双线性重采样不保证离散网格达到解析曲面的 C1 连续性。
+融合后重新生成受影响网格、法线及碰撞；本 API 仅发布高度，不自动更新场景。
+可运行对比示例：[terrain-smooth-mountain](../../../examples/terrain-smooth-mountain/README.md)。
 
 ### 蒙版生成与曲线纹理
 
@@ -2294,8 +2343,8 @@ index 只是会话内索引，不是跨重置/分支的稳定 ID。撤销后成�
 保证浮点重算一致性，不依赖隐式时钟/RNG。不承诺跨平台逐位一致。
 这不是现有分块点集 RuntimeGeneration 调度器的替代，也不包含后台线程或其他操作种类。
 
-`snapshotJson()` 写出严格的 `eve.procgen.terrain-generation-session` schema version 1，拥有 baseline、
-全部命令输入与设置、enabled 标志、已应用 cursor 和访问策略。`restoreJson(json)` 拒绝未知根字段、
+`snapshotJson()` 写出严格的 `eve.procgen.terrain-generation-session` schema version 2，拥有 baseline、
+全部命令输入与设置、enabled 标志、已应用 cursor 和访问策略。版本 1 仍可读取，smoothWidth/edgeFade 迁移为 0。`restoreJson(json)` 拒绝未知根字段、
 版本、非法枚举、非有限数值、尺寸/数量越界、截断或尾随 payload；它先以全部命令启用验证完整历史，
 再按保存的 enabled/cursor 重建最终地形、泥沙和七个水通道，成功后一次交换。Pending 会话和 Locked
 目标拒绝恢复；快照不会保存临时 replay 候选，恢复后的调度状态为 Idle。
@@ -2732,18 +2781,18 @@ tree PointSet 与 object PointSet。`create` 原子建立零高度世界；`stam
 返回规则总数。
 
 `addModifierStamp(ruleId,stamp,settings,operation,localMask,globalMask)` 加入 Pcg TerrainModifierStamp 资源，
-其中 operation 使用与 `applyStamp` 相同的 0..5 枚举。
+其中 operation 使用与 `applyStamp` 相同的 0..6 枚举。
 印章及局部/全局蒙版均在加入时深拷贝，并与其他资源规则按同一顺序事务执行。
 
 `TerrainWorldWorkspace.spawn(plan)` 按顺序执行全部启用规则，但只复制一次完整世界并只发布一次；任意
 后续规则失败会丢弃此前规则的候选结果，历史中只出现一个混合生成操作。空计划或全部禁用的计划会
 返回结构化失败，不制造无意义历史。执行仍使用各领域的跨 tile 映射、稳定资源 namespace 和显式 RNG。
 
-`snapshotJson()` 输出确定性的 `eve.procgen.terrain-spawn-plan` schema version 3 JSON。根对象严格只允许
+`snapshotJson()` 输出确定性的 `eve.procgen.terrain-spawn-plan` schema version 4 JSON。根对象严格只允许
 `schema`、`version`、`payload`；payload 是完整规则、raster、设置、顺序与启用状态的固定小端二进制
 十六进制表示。`restoreJson(json)` 拒绝未知根字段、未知版本、非有限数值、非法枚举、重复规则 ID、
 尺寸/数量上限、截断或尾随 payload，并在完整候选通过后一次交换。Version 0 作为旧格式迁移入口，
-其规则没有 enabled 字节，恢复时统一迁移为启用；version 0/1/2 均可恢复，再次保存会写为 version 3。
+其规则没有 enabled 字节，恢复时统一迁移为启用；version 0/1/2/3 均可恢复，旧记录的 smoothWidth/edgeFade 迁移为 0，再次保存写为 version 4。
 
 ### Probe 资源点
 

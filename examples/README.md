@@ -158,6 +158,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
 | [terrain-stamping](terrain-stamping/README.md) | 地形盖章：旋转印章、距离遮罩、对比度、阶地、平滑与热力核，含 Pcg GTS 雪 / 雨 albedo 分支 |
+| [terrain-smooth-mountain](terrain-smooth-mountain/README.md) | 山体融合：普通 max 与 SmoothRaise 对比，手工高度图和 CPU 模型烘焙 |
 
 ## 渲染与效果
 

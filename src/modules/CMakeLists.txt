@@ -564,6 +564,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/AttributeTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMeshStamp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailPlacement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp

@@ -9,7 +9,7 @@ class Heightmap;
 enum class TerrainMaskBlend { Multiply, Maximum, Minimum, Add, Subtract };
 
 /** @brief Native height operations, in terrain height units (not Unity packed heights). */
-enum class TerrainStampOperation { Raise, Lower, Blend, Set, Add, Subtract };
+enum class TerrainStampOperation { Raise, Lower, Blend, Set, Add, Subtract, SmoothRaise };
 
 /**
  * @brief Value configuration for a rectangular stamp in world X/Z coordinates.
@@ -26,6 +26,10 @@ struct TerrainStampSettings {
     double                width = 1, depth = 1, rotation = 0;
     float                 amplitude = 1, baseHeight = 0;
     float                 blendStrength = 0.5F;
+    /** @brief SmoothRaise height-difference band in height units; zero is hard max. */
+    float smoothWidth = 0;
+    /** @brief SmoothRaise fade distance inward from each rectangle edge, in world X/Z units; zero disables fade. */
+    float                 edgeFade      = 0;
     TerrainStampOperation operation     = TerrainStampOperation::Raise;
 };
 
@@ -56,6 +60,12 @@ struct TerrainStampSettings {
  * Outside the rotated stamp rectangle, target is unchanged. Raise/Lower take
  * max/min with baseHeight+amplitude*stamp*localMask; Set uses that level; Blend
  * interpolates to it by blendStrength; Add/Subtract add/subtract that level.
+ * SmoothRaise uses polynomial smooth max with smoothWidth, then multiplies globalMask
+ * by a cubic smoothstep fade from each edge over edgeFade world units. Both widths
+ * must be finite/nonnegative. Defaults preserve the six existing operations.
+ * SmoothRaise never lowers terrain. Rebuild meshes, normals and collision after publication.
+ * @cost Linear in target and input raster samples with one target-sized candidate allocation;
+ * apply during generation/editing and amortize by rebuilding only affected chunks.
  * Mask arithmetic is native scalar arithmetic: Unity adaptive-base, packed-height
  * clamping, curve textures and MixHeight are not implemented by this API.
  * @return Changed sample count, or InvalidArgument without modifying target.
