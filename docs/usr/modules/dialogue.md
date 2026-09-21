@@ -243,6 +243,15 @@ node end end
   expression 复用 `setExpressionEvaluatorChecked`，因此可以读取人物性格、关系、疲劳或剧情状态，
   对渲染后的文本加前后缀或做词语替换。多个命中规则依次叠加，
   `clearToneRules()` 可在场景或角色配置切换时清空。
+- 发布给 MCP / 玩法协议：`publishGameplay(instanceId, ownerId)` 把本运行器交给共享玩法协议
+  （`eve_gameplay` 工具的 `observe/actions/submit/advance/events`），返回 `{ ok, message }`。
+  `instanceId` / `ownerId` 必须是规范持久 id（UUID 文本）。运行器一次只跑一个对话，
+  所以重复发布返回 `conflict` 并报出已占用它的实例；`unpublishGameplay(instanceId)` 取消发布，
+  `clearGameplayControls()` 一次清空，`getGameplayControlCount()` 读取当前发布数量（0 或 1）。
+  发布后的动作词表就是本模块自己的操作：`dialogue:start{conversation}`、
+  `dialogue:advance`、`dialogue:select{route}`；观察结果给出当前节点、说话人、文本与
+  **路由词表**（`routes`），agent 据此挑 route id 而不必猜。自动化启动没有 Squirrel 调用帧，
+  因此以空绑定表开始（观察结果里 `bindings` 为 `empty`），读取 bindings 的条件按"缺失"求值。
 
 Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
 `captureStateChecked/restoreStateChecked` 保存资产版本、node ID、bindings、locals 和子对话调用栈。

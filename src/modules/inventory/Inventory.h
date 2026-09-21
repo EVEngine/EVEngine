@@ -6,19 +6,24 @@
  */
 
 #include "common/Module.h"
+#include "common/Result.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace eve::inventory {
+
+class InventoryControl;
 
 /** @brief 背包模块（eve.Inventory）。 */
 class Inventory : public Module {
 public:
     Module_REG(Inventory);
     Inventory() = default;
-    ~Inventory() override = default;
+    ~Inventory() override;
 
     /** @brief 从 JSON 注册物品定义；返回成功注册数量。 */
     int registerItemsFromJson(const std::string &json);
@@ -63,6 +68,38 @@ public:
     int getChangeEventOtherSlot(int index) const;
     std::string getChangeEventEquipSlot(int index) const;
 
+    /**
+     * @brief 把一个玩家背包实例发布到共享玩法协议（`eve_gameplay` / MCP）。
+     *
+     * 领域动作词表就是本模块自己的操作（add/remove/split/equip/unequip），
+     * 因此 Agent 与玩家走同一条权威写入路径，而不是另开一条调试旁路。
+     * 一个模块只注册一个领域适配器（共享路由器要求每个领域唯一），该适配器
+     * 服务全部已发布实例；同一 instanceId 重复发布返回 Conflict。
+     * @param instanceId 实例稳定标识，必须是规范持久 id（UUID 文本，如
+     *        `00000000-0000-7000-8000-000000000701`），与 `eve_gameplay` 的
+     *        `request.instance` 逐字一致。
+     * @param ownerId 控制该实例的玩家/角色稳定标识，同为规范持久 id
+     *        （`session.controlledSubjects` 校验用）。
+     * @param bag 借用容器，必须比本次发布存活更久。
+     * @param equipment 借用装备栏，可为 null（则实例没有装备动作）。
+     * @return 成功时返回空结果；实例 id 非法、重复或 bag 为空时返回诊断。
+     * @ownership 适配器由本模块持有并随模块销毁；bag / equipment 所有权不变。
+     * @thread 所有者模拟线程。
+     */
+    [[nodiscard]] eve::Result<void> publishGameplay(const std::string &instanceId, const std::string &ownerId, Bag *bag,
+                                                    EquipmentSet *equipment = nullptr);
+    /** @brief 取消发布一个实例；该实例未发布（或 id 非法）时返回诊断。 */
+    [[nodiscard]] eve::Result<void> unpublishGameplay(const std::string &instanceId);
+    /** @brief 取消发布本模块持有的全部玩法实例。 */
+    void clearGameplayControls();
+    /** @brief 已发布的玩法实例数量。 */
+    [[nodiscard]] int gameplayControlCount() const;
+    /** @brief 已发布的玩法实例标识（发布顺序）。 */
+    [[nodiscard]] std::vector<std::string> gameplayInstances() const;
+
+private:
+    /** 惰性创建的领域适配器；模块析构时随之注销。 */
+    std::unique_ptr<InventoryControl> gameplay_;
 };
 
 }  // namespace eve::inventory

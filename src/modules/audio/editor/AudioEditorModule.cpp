@@ -11,14 +11,14 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <stdexcept>
+#include <string_view>
+#include <vector>
 
 namespace eve::audio_editor {
 
 class AudioEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override {
-        return type == "audio-source" || type == "audio-mixer" || type == "audio-effects";
-    }
+    std::vector<std::string_view> types() const override { return {"audio-source", "audio-mixer", "audio-effects"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,

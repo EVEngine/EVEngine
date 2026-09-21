@@ -6,6 +6,7 @@
  */
 
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 
 namespace eve::inventory {
 class Bag;
@@ -23,7 +24,7 @@ class Tracker;
  * caller-owned adapter retains only borrowed pointers, an optimistic observation
  * fingerprint and owning event projections. Destroy it before any participant.
  */
-class ProductControl final : public IGameplayControlProvider {
+class ProductControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /** @brief Construct over borrowed product-loop authorities and a stable instance identity. */
     ProductControl(SubjectRef instance, GameState& gameState, Tracker& tracker,
@@ -36,6 +37,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

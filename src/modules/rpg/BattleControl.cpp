@@ -31,9 +31,13 @@ Result<std::string> stringParameter(const Value& parameters, std::string_view na
 BattleControl::BattleControl(Battle& battle, SubjectRef instance)
     : battle_(battle), instance_(instance) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
-BattleControl::~BattleControl() { cap::removeListener<IGameplayControlProvider>(this); }
+BattleControl::~BattleControl() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
+    cap::removeListener<IGameplayControlProvider>(this);
+}
 
 Result<void> BattleControl::bindParticipant(SubjectRef subject, RPGActor* actor) {
     if (!instance_.isValid() || !subject.isValid() || !actor)
@@ -58,6 +62,13 @@ Result<void> BattleControl::bindParticipant(SubjectRef subject, RPGActor* actor)
 }
 
 std::string_view BattleControl::gameplayDomain() const noexcept { return "rpg.battle"; }
+
+std::vector<SubjectRef> BattleControl::gameplayInstances() const {
+    // This adapter serves exactly one instance: the identity it was constructed
+    // with is the only one it can answer for.
+    if (!instance_.isValid()) return {};
+    return {instance_};
+}
 
 bool BattleControl::controls(const GameplaySession& session, SubjectRef subject) const {
     return session.access != GameplayAccess::PlayerEquivalent ||

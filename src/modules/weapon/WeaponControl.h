@@ -6,6 +6,7 @@
  */
 
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "weapon/WeaponTypes.h"
 
 namespace eve::resource {
@@ -24,7 +25,7 @@ namespace eve::weapon {
  * participant remain authoritative borrowed collaborators and must outlive this
  * owner-thread-affine adapter. Firing is delegated to WeaponActionAdapter.
  */
-class WeaponControl final : public IGameplayControlProvider {
+class WeaponControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /**
      * @brief Construct a control adapter for one copied definition and borrowed effect authorities.
@@ -45,6 +46,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
