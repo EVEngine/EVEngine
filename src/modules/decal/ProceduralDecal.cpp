@@ -60,6 +60,8 @@ std::optional<std::array<float, 3>> color3(std::string_view text) {
         if (channel + 1 < color.size()) {
             if (comma == std::string_view::npos) return std::nullopt;
             text.remove_prefix(comma + 1);
+        } else if (comma != std::string_view::npos) {
+            return std::nullopt;
         }
     }
     return color;
@@ -254,6 +256,23 @@ bool finiteLayer(const ProceduralDecalLayer& layer) {
     return std::all_of(std::begin(values), std::end(values), [](float value) { return std::isfinite(value); });
 }
 
+bool validLayer(const ProceduralDecalLayer& layer) {
+    const auto inRange = [](float value, float minimum, float maximum) {
+        return value >= minimum && value <= maximum;
+    };
+    return finiteLayer(layer) && inRange(layer.amount, 0.f, 1.f) &&
+           inRange(layer.scale, 0.001f, 4096.f) && std::abs(layer.rotation) <= 1000000.f &&
+           inRange(layer.blur, 0.f, 1.f) && inRange(layer.contrast, 0.f, 64.f) &&
+           std::all_of(layer.color.begin(), layer.color.end(),
+                       [&](float value) { return inRange(value, 0.f, 1.f); }) &&
+           inRange(layer.colorVariation, 0.f, 1.f) && inRange(layer.hueVariation, 0.f, 1.f) &&
+           inRange(layer.roughness, 0.f, 1.f) && inRange(layer.roughnessVariation, 0.f, 1.f) &&
+           inRange(layer.metallic, 0.f, 1.f) && inRange(layer.emissive, 0.f, 1.f) &&
+           inRange(layer.normalStrength, 0.f, 64.f) && inRange(layer.normalSoftness, 0.005f, 1.f) &&
+           inRange(layer.normalTrim, 0.f, 1.f) && inRange(layer.normalThickness, 0.1f, 16.f) &&
+           layer.normalStyle >= 0 && layer.normalStyle <= 16 && inRange(layer.height, 0.f, 1.f);
+}
+
 ProceduralDecalLayer layer(DecalPattern pattern, std::array<float, 3> color, float roughness, float metallic,
                          float height, std::uint32_t seed) {
     ProceduralDecalLayer value;
@@ -331,13 +350,20 @@ Result<ProceduralDecalRecipe> importProceduralDecalSbsprs(std::string_view xml) 
     if (inputs.empty()) return recipeFailure("Substance preset contains no inputs");
 
     ProceduralDecalRecipe recipe;
+    bool malformedKnownInput = false;
     const auto readFloat = [&](std::string_view name) -> std::optional<float> {
         const auto found = inputs.find(std::string(name));
-        return found == inputs.end() ? std::nullopt : number(found->second);
+        if (found == inputs.end()) return std::nullopt;
+        auto value = number(found->second);
+        malformedKnownInput = malformedKnownInput || !value.has_value();
+        return value;
     };
     const auto readInt = [&](std::string_view name) -> std::optional<int> {
         const auto found = inputs.find(std::string(name));
-        return found == inputs.end() ? std::nullopt : integer(found->second);
+        if (found == inputs.end()) return std::nullopt;
+        auto value = integer(found->second);
+        malformedKnownInput = malformedKnownInput || !value.has_value();
+        return value;
     };
     const auto applyLayer = [&](std::string_view prefix, ProceduralDecalLayer& target) -> bool {
         const std::string key(prefix);
@@ -395,6 +421,8 @@ Result<ProceduralDecalRecipe> importProceduralDecalSbsprs(std::string_view xml) 
         recipe.layerHeightBlend = clamp01((*value + 1.f) * 0.5f);
     if (const auto value = readFloat("ab_balance")) recipe.layerBalance = clamp01(*value);
     if (const auto value = readInt("ab_blendmode")) recipe.layerBlendMode = *value;
+    if (malformedKnownInput)
+        return recipeFailure("Substance preset contains a malformed recognized numeric value");
     recipe.layerA.seed = recipe.seed ^ 0x9e3779b9u;
     recipe.layerB.seed = recipe.seed ^ 0x85ebca6bu;
     return Result<ProceduralDecalRecipe>::success(std::move(recipe));
@@ -405,13 +433,13 @@ Result<ProceduralDecalBake> bakeProceduralDecal(const ProceduralDecalRecipe& rec
         return bakeFailure("Unsupported procedural decal recipe schema version");
     if (recipe.width <= 0 || recipe.height <= 0 || recipe.width > 4096 || recipe.height > 4096)
         return bakeFailure("Procedural decal dimensions must be in [1, 4096]");
-    if (!finiteLayer(recipe.layerA) || !finiteLayer(recipe.layerB) || !std::isfinite(recipe.layerHeightBlend) ||
-        !std::isfinite(recipe.layerBalance) || recipe.layerBalance < 0.f || recipe.layerBalance > 1.f ||
-        !std::isfinite(recipe.opacity) || recipe.opacity < 0.f || recipe.opacity > 1.f)
-        return bakeFailure("Procedural decal recipe contains invalid numeric values");
-    if (recipe.layerA.scale <= 0.f || recipe.layerB.scale <= 0.f || recipe.layerA.blur < 0.f ||
-        recipe.layerB.blur < 0.f)
-        return bakeFailure("Procedural decal scale must be positive and blur non-negative");
+    if (!validLayer(recipe.layerA) || !validLayer(recipe.layerB) ||
+        !std::isfinite(recipe.layerHeightBlend) || recipe.layerHeightBlend < 0.f ||
+        recipe.layerHeightBlend > 1.f || !std::isfinite(recipe.layerBalance) ||
+        recipe.layerBalance < 0.f || recipe.layerBalance > 1.f || recipe.layerBlendMode < 0 ||
+        recipe.layerBlendMode > 2 || !std::isfinite(recipe.opacity) || recipe.opacity < 0.f ||
+        recipe.opacity > 1.f)
+        return bakeFailure("Procedural decal recipe contains values outside supported ranges");
 
     const auto        maskA  = layerMask(recipe, recipe.layerA);
     const auto        maskB  = layerMask(recipe, recipe.layerB);

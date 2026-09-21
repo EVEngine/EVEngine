@@ -79,6 +79,26 @@ TEST_CASE("editor.decal.v2_snapshot_accepts_world_projection_upgrade") {
     REQUIRE(set(restored,"projection.mode","world").ok());
 }
 
+TEST_CASE("editor.decal.v2_and_v3_snapshots_fill_missing_pom_fields") {
+    for (const int64_t version : {int64_t{2}, int64_t{3}}) {
+        DecalDocumentTarget source("legacy-pom");
+        EditorValue snapshot=source.snapshotValue();
+        auto*root=snapshot.getIf<EditorValue::Object>();
+        (*root)["schemaVersion"]=version;
+        auto*values=(*root)["values"].getIf<EditorValue::Object>();
+        values->erase("projection.parallaxScale");
+        values->erase("projection.parallaxMinLayers");
+        values->erase("projection.parallaxMaxLayers");
+        values->erase("projection.edgeFadeWidth");
+        DecalDocumentTarget restored("restored-legacy-pom");
+        REQUIRE(restored.loadSnapshot(snapshot).ok());
+        CHECK_EQ(*restored.value("projection.parallaxScale")->getIf<double>(),0.0);
+        CHECK_EQ(*restored.value("projection.parallaxMinLayers")->getIf<double>(),8.0);
+        CHECK_EQ(*restored.value("projection.parallaxMaxLayers")->getIf<double>(),24.0);
+        CHECK_EQ(*restored.value("projection.edgeFadeWidth")->getIf<double>(),0.06);
+    }
+}
+
 TEST_CASE("editor.decal.runtime_replacement_resolves_assets_before_atomic_generation_swap") {
     auto&manager=eve::decal::DecalManager::inst();manager.clearAll();manager.setLimit("scorch",1);
     DecalDocumentTarget target("scorch");REQUIRE(set(target,"decal.kind","scorch").ok());

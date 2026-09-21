@@ -41,12 +41,18 @@ vec4 sampleAtlas(sampler2D tex, vec2 localUV) {
     return texture(tex, atl);
 }
 
-float sampleHeight(vec2 localUV) {
-    vec2 atl = vUV.xy + clamp(localUV, 0.0, 1.0) * vUV.zw;
+vec2 projectionUV(vec2 localUV, int wrapMode) {
+    if (wrapMode == 2) return fract(localUV);
+    if (wrapMode == 1) return vec2(fract(localUV.x), clamp(localUV.y, 0.0, 1.0));
+    return clamp(localUV, 0.0, 1.0);
+}
+
+float sampleHeight(vec2 localUV, int wrapMode) {
+    vec2 atl = vUV.xy + projectionUV(localUV, wrapMode) * vUV.zw;
     return textureLod(decalParams, atl, 0.0).a;
 }
 
-vec2 parallaxUV(vec2 baseUV, vec3 viewTS) {
+vec2 parallaxUV(vec2 baseUV, vec3 viewTS, int wrapMode) {
     float scale = decal.surfaceParams.x;
     if (scale <= 0.0) return baseUV;
     float minLayers = clamp(decal.surfaceParams.y, 1.0, 64.0);
@@ -57,12 +63,33 @@ vec2 parallaxUV(vec2 baseUV, vec3 viewTS) {
     vec2 currentUV = baseUV;
     float currentDepth = 0.0;
     for (int index = 0; index < 64; ++index) {
-        float surfaceDepth = 1.0 - sampleHeight(currentUV);
+        float surfaceDepth = 1.0 - sampleHeight(currentUV, wrapMode);
         if (currentDepth >= surfaceDepth || float(index) >= layers) break;
         currentUV -= delta;
         currentDepth += layerDepth;
     }
     return currentUV;
+}
+
+vec3 worldNormalFromLocalBasis(vec4 packed, vec3 tangentLocal, vec3 bitangentLocal,
+                               vec3 normalLocal) {
+    mat3 model3 = mat3(decal.model);
+    vec3 normalWorld = normalize(model3 * normalLocal);
+    vec3 tangentWorld = normalize(model3 * tangentLocal);
+    tangentWorld = normalize(tangentWorld - normalWorld * dot(normalWorld, tangentWorld));
+    vec3 bitangentWorld = normalize(model3 * bitangentLocal);
+    if (dot(cross(tangentWorld, bitangentWorld), normalWorld) < 0.0)
+        bitangentWorld = -bitangentWorld;
+    vec3 tangentNormal = packed.xyz * 2.0 - 1.0;
+    return normalize(tangentWorld * tangentNormal.x + bitangentWorld * tangentNormal.y +
+                     normalWorld * tangentNormal.z);
+}
+
+vec3 worldNormalFromWorldBasis(vec4 packed, vec3 tangentWorld, vec3 bitangentWorld,
+                               vec3 normalWorld) {
+    vec3 tangentNormal = packed.xyz * 2.0 - 1.0;
+    return normalize(tangentWorld * tangentNormal.x + bitangentWorld * tangentNormal.y +
+                     normalWorld * tangentNormal.z);
 }
 
 float edgeMask(vec2 coordinates) {
@@ -121,10 +148,13 @@ void main() {
     vec3 viewLocal = normalize(mat3(invModel) * viewWorld);
 
     if (!useTriplanar && !useSpherical && !useWorld) {
-        vec2 decalUV = parallaxUV(local.xy + 0.5, viewLocal);
+        vec2 decalUV = parallaxUV(local.xy + 0.5, viewLocal, 0);
         if (any(lessThan(decalUV, vec2(0.0))) || any(greaterThan(decalUV, vec2(1.0)))) discard;
         alb = sampleAtlas(decalAlbedo, decalUV);
-        nrm = sampleAtlas(decalNormal, decalUV);
+        vec4 sampledNormal = sampleAtlas(decalNormal, decalUV);
+        vec3 normalWorld = worldNormalFromLocalBasis(sampledNormal, vec3(1.0, 0.0, 0.0),
+                                                     vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, 1.0));
+        nrm = vec4(normalWorld * 0.5 + 0.5, sampledNormal.a);
         prm = sampleAtlas(decalParams, decalUV);
         edgeFade = edgeMask(decalUV);
     } else if (useTriplanar) {
@@ -136,16 +166,25 @@ void main() {
         w /= max(w.x + w.y + w.z, 1e-5);
 
         // Axis projections inside the unit box → [0,1] UVs.
-        vec2 uvYZ = parallaxUV(local.yz + 0.5, vec3(viewLocal.yz, viewLocal.x));
-        vec2 uvXZ = parallaxUV(local.xz + 0.5, vec3(viewLocal.xz, viewLocal.y));
-        vec2 uvXY = parallaxUV(local.xy + 0.5, viewLocal);
+        vec2 uvYZ = parallaxUV(local.yz + 0.5, vec3(viewLocal.yz, viewLocal.x), 0);
+        vec2 uvXZ = parallaxUV(local.xz + 0.5, vec3(viewLocal.xz, viewLocal.y), 0);
+        vec2 uvXY = parallaxUV(local.xy + 0.5, viewLocal, 0);
 
         alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
               sampleAtlas(decalAlbedo, uvXZ) * w.y +
               sampleAtlas(decalAlbedo, uvXY) * w.z;
-        nrm = sampleAtlas(decalNormal, uvYZ) * w.x +
-              sampleAtlas(decalNormal, uvXZ) * w.y +
-              sampleAtlas(decalNormal, uvXY) * w.z;
+        vec4 nrmX = sampleAtlas(decalNormal, uvYZ);
+        vec4 nrmY = sampleAtlas(decalNormal, uvXZ);
+        vec4 nrmZ = sampleAtlas(decalNormal, uvXY);
+        float sx = nLocal.x < 0.0 ? -1.0 : 1.0;
+        float sy = nLocal.y < 0.0 ? -1.0 : 1.0;
+        float sz = nLocal.z < 0.0 ? -1.0 : 1.0;
+        vec3 blendedNormal =
+            worldNormalFromLocalBasis(nrmX, vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, sx), vec3(sx, 0.0, 0.0)) * w.x +
+            worldNormalFromLocalBasis(nrmY, vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -sy), vec3(0.0, sy, 0.0)) * w.y +
+            worldNormalFromLocalBasis(nrmZ, vec3(1.0, 0.0, 0.0), vec3(0.0, sz, 0.0), vec3(0.0, 0.0, sz)) * w.z;
+        nrm = vec4(normalize(blendedNormal) * 0.5 + 0.5,
+                   nrmX.a * w.x + nrmY.a * w.y + nrmZ.a * w.z);
         prm = sampleAtlas(decalParams, uvYZ) * w.x +
               sampleAtlas(decalParams, uvXZ) * w.y +
               sampleAtlas(decalParams, uvXY) * w.z;
@@ -157,15 +196,24 @@ void main() {
         vec3 w = pow(abs(normalize(surfaceN)), vec3(sharpness));
         w /= max(w.x + w.y + w.z, 1e-5);
         const float worldScale = 1.0;
-        vec2 uvYZ = fract(parallaxUV(fract(worldPos.yz * worldScale), vec3(viewWorld.yz, viewWorld.x)));
-        vec2 uvXZ = fract(parallaxUV(fract(worldPos.xz * worldScale), vec3(viewWorld.xz, viewWorld.y)));
-        vec2 uvXY = fract(parallaxUV(fract(worldPos.xy * worldScale), viewWorld));
+        vec2 uvYZ = fract(parallaxUV(fract(worldPos.yz * worldScale), vec3(viewWorld.yz, viewWorld.x), 2));
+        vec2 uvXZ = fract(parallaxUV(fract(worldPos.xz * worldScale), vec3(viewWorld.xz, viewWorld.y), 2));
+        vec2 uvXY = fract(parallaxUV(fract(worldPos.xy * worldScale), viewWorld, 2));
         alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
               sampleAtlas(decalAlbedo, uvXZ) * w.y +
               sampleAtlas(decalAlbedo, uvXY) * w.z;
-        nrm = sampleAtlas(decalNormal, uvYZ) * w.x +
-              sampleAtlas(decalNormal, uvXZ) * w.y +
-              sampleAtlas(decalNormal, uvXY) * w.z;
+        vec4 nrmX = sampleAtlas(decalNormal, uvYZ);
+        vec4 nrmY = sampleAtlas(decalNormal, uvXZ);
+        vec4 nrmZ = sampleAtlas(decalNormal, uvXY);
+        float sx = surfaceN.x < 0.0 ? -1.0 : 1.0;
+        float sy = surfaceN.y < 0.0 ? -1.0 : 1.0;
+        float sz = surfaceN.z < 0.0 ? -1.0 : 1.0;
+        vec3 blendedNormal =
+            worldNormalFromWorldBasis(nrmX, vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, sx), vec3(sx, 0.0, 0.0)) * w.x +
+            worldNormalFromWorldBasis(nrmY, vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, -sy), vec3(0.0, sy, 0.0)) * w.y +
+            worldNormalFromWorldBasis(nrmZ, vec3(1.0, 0.0, 0.0), vec3(0.0, sz, 0.0), vec3(0.0, 0.0, sz)) * w.z;
+        nrm = vec4(normalize(blendedNormal) * 0.5 + 0.5,
+                   nrmX.a * w.x + nrmY.a * w.y + nrmZ.a * w.z);
         prm = sampleAtlas(decalParams, uvYZ) * w.x +
               sampleAtlas(decalParams, uvXZ) * w.y +
               sampleAtlas(decalParams, uvXY) * w.z;
@@ -180,11 +228,13 @@ void main() {
         vec3 bitangent = normalize(cross(direction, tangent));
         vec3 sphericalView = vec3(dot(viewLocal, tangent), dot(viewLocal, bitangent),
                                   dot(viewLocal, direction));
-        decalUV = parallaxUV(decalUV, sphericalView);
+        decalUV = parallaxUV(decalUV, sphericalView, 1);
         decalUV.x = fract(decalUV.x);
         if (decalUV.y < 0.0 || decalUV.y > 1.0) discard;
         alb = sampleAtlas(decalAlbedo, decalUV);
-        nrm = sampleAtlas(decalNormal, decalUV);
+        vec4 sampledNormal = sampleAtlas(decalNormal, decalUV);
+        vec3 normalWorld = worldNormalFromLocalBasis(sampledNormal, tangent, bitangent, direction);
+        nrm = vec4(normalWorld * 0.5 + 0.5, sampledNormal.a);
         prm = sampleAtlas(decalParams, decalUV);
         vec3 t = local + 0.5;
         edgeFade = edgeMask(t);

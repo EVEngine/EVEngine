@@ -28,6 +28,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -149,6 +150,14 @@ TEST_CASE("decal.proceduralImportsReferenceSubstanceMaterialPresets") {
 
     auto malformed = importProceduralDecalSbsprs("<sbspresets><sbspreset><presetinput identifier=\"a_color\"");
     CHECK(!malformed.ok());
+    const auto document = [](const std::string& identifier, const std::string& value) {
+        return "<sbspresets><sbspreset><presetinput identifier=\"" + identifier +
+               "\" value=\"" + value + "\"/></sbspreset></sbspresets>";
+    };
+    CHECK(!importProceduralDecalSbsprs(document("a_amount", "not-a-number")).ok());
+    CHECK(!importProceduralDecalSbsprs(document("$randomseed", "1.5")).ok());
+    CHECK(!importProceduralDecalSbsprs(document("$outputsize", "8,bad")).ok());
+    CHECK(!importProceduralDecalSbsprs(document("a_color", "0.1,0.2,0.3,0.4")).ok());
     std::string oversized(1024u * 1024u + 1u, 'x');
     CHECK(!importProceduralDecalSbsprs(oversized).ok());
 }
@@ -337,6 +346,20 @@ TEST_CASE("decal.proceduralRejectsInvalidRecipeWithoutOutput") {
     recipe.layerA.scale = 0.f;
     auto invalidScale = bakeProceduralDecal(recipe);
     CHECK(!invalidScale.ok());
+    recipe.layerA.scale = 4097.f;
+    CHECK(!bakeProceduralDecal(recipe).ok());
+    recipe.layerA.scale = 1.f;
+    recipe.layerA.blur = 2.f;
+    CHECK(!bakeProceduralDecal(recipe).ok());
+    recipe.layerA.blur = 0.f;
+    recipe.layerA.normalSoftness = 0.f;
+    CHECK(!bakeProceduralDecal(recipe).ok());
+    recipe.layerA.normalSoftness = 0.08f;
+    recipe.layerA.normalThickness = -1.f;
+    CHECK(!bakeProceduralDecal(recipe).ok());
+    recipe.layerA.normalThickness = 1.f;
+    recipe.layerA.contrast = std::numeric_limits<float>::max();
+    CHECK(!bakeProceduralDecal(recipe).ok());
 }
 
 TEST_CASE("decal.proceduralFacadeUploadsAllRuntimeChannels") {

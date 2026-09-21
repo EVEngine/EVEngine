@@ -11,9 +11,31 @@
 
 namespace eve::decal {
 
+struct Decal::ProceduralBakeCache {
+    std::string            source;
+    std::uint32_t          seed       = 0;
+    int                    resolution = 0;
+    ProceduralDecalBake    bake;
+};
+
+namespace {
+const std::vector<std::uint8_t> &bakeChannel(const ProceduralDecalBake &bake,
+                                              const std::string &channel) {
+    if (channel == "albedo") return bake.albedo;
+    if (channel == "normal") return bake.normal;
+    if (channel == "params") return bake.params;
+    throw eve::Exception("Decal procedural channel must be albedo, normal, or params");
+}
+
+void requireBakeChannel(const std::string &channel) {
+    if (channel != "albedo" && channel != "normal" && channel != "params")
+        throw eve::Exception("Decal procedural channel must be albedo, normal, or params");
+}
+}  // namespace
+
 Module_IMPL(Decal, new Decal());
 
-Decal::Decal() {
+Decal::Decal() : proceduralBakeCache_(std::make_unique<ProceduralBakeCache>()) {
     registerDecalCapabilities();
     graphics::RenderSystem3D::addDecalExtraDrawer(
         [](graphics::Graphics &gfx, const graphics::Camera3D::Data &cam,
@@ -21,6 +43,8 @@ Decal::Decal() {
             DecalManager::inst().drawAll(gfx, cam.eyeX, cam.eyeY, cam.eyeZ, viewProj, aspect);
         });
 }
+
+Decal::~Decal() = default;
 
 int Decal::project(float x, float y, float z, float nx, float ny, float nz,
                    graphics::Texture *albedo, const std::string &kind, float size, float depth,
@@ -90,22 +114,23 @@ graphics::Texture *Decal::bakePresetTexture(graphics::Graphics *gfx, const std::
                                             std::uint32_t seed, int resolution,
                                             const std::string &channel) {
     if (!gfx) throw eve::Exception("Decal.bakePresetTexture: null gfx");
-    auto recipe = proceduralDecalPreset(preset, seed);
-    if (!recipe.ok()) throw eve::Exception("%s", recipe.status().describe().c_str());
-    recipe.value().width = resolution;
-    recipe.value().height = resolution;
-    auto baked = bakeProceduralDecal(recipe.value());
-    if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
-    const std::vector<std::uint8_t> *bytes = nullptr;
-    if (channel == "albedo")
-        bytes = &baked.value().albedo;
-    else if (channel == "normal")
-        bytes = &baked.value().normal;
-    else if (channel == "params")
-        bytes = &baked.value().params;
-    else
-        throw eve::Exception("Decal.bakePresetTexture: channel must be albedo, normal, or params");
-    auto *texture = gfx->newTexture(resolution, resolution, bytes->data());
+    requireBakeChannel(channel);
+    const std::string source = "preset:" + preset;
+    if (proceduralBakeCache_->source != source || proceduralBakeCache_->seed != seed ||
+        proceduralBakeCache_->resolution != resolution) {
+        auto recipe = proceduralDecalPreset(preset, seed);
+        if (!recipe.ok()) throw eve::Exception("%s", recipe.status().describe().c_str());
+        recipe.value().width = resolution;
+        recipe.value().height = resolution;
+        auto baked = bakeProceduralDecal(recipe.value());
+        if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
+        proceduralBakeCache_->source = source;
+        proceduralBakeCache_->seed = seed;
+        proceduralBakeCache_->resolution = resolution;
+        proceduralBakeCache_->bake = std::move(baked.value());
+    }
+    const auto &bytes = bakeChannel(proceduralBakeCache_->bake, channel);
+    auto *texture = gfx->newTexture(resolution, resolution, bytes.data());
     if (!texture) throw eve::Exception("Decal.bakePresetTexture: graphics upload failed");
     return texture;
 }
@@ -113,22 +138,23 @@ graphics::Texture *Decal::bakePresetTexture(graphics::Graphics *gfx, const std::
 graphics::Texture *Decal::bakeSbsprsTexture(graphics::Graphics *gfx, const std::string &xml,
                                             int resolution, const std::string &channel) {
     if (!gfx) throw eve::Exception("Decal.bakeSbsprsTexture: null gfx");
-    auto recipe = importProceduralDecalSbsprs(xml);
-    if (!recipe.ok()) throw eve::Exception("%s", recipe.status().describe().c_str());
-    recipe.value().width = resolution;
-    recipe.value().height = resolution;
-    auto baked = bakeProceduralDecal(recipe.value());
-    if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
-    const std::vector<std::uint8_t> *bytes = nullptr;
-    if (channel == "albedo")
-        bytes = &baked.value().albedo;
-    else if (channel == "normal")
-        bytes = &baked.value().normal;
-    else if (channel == "params")
-        bytes = &baked.value().params;
-    else
-        throw eve::Exception("Decal.bakeSbsprsTexture: channel must be albedo, normal, or params");
-    auto *texture = gfx->newTexture(resolution, resolution, bytes->data());
+    requireBakeChannel(channel);
+    const std::string source = "sbsprs:" + xml;
+    if (proceduralBakeCache_->source != source || proceduralBakeCache_->seed != 0 ||
+        proceduralBakeCache_->resolution != resolution) {
+        auto recipe = importProceduralDecalSbsprs(xml);
+        if (!recipe.ok()) throw eve::Exception("%s", recipe.status().describe().c_str());
+        recipe.value().width = resolution;
+        recipe.value().height = resolution;
+        auto baked = bakeProceduralDecal(recipe.value());
+        if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
+        proceduralBakeCache_->source = source;
+        proceduralBakeCache_->seed = 0;
+        proceduralBakeCache_->resolution = resolution;
+        proceduralBakeCache_->bake = std::move(baked.value());
+    }
+    const auto &bytes = bakeChannel(proceduralBakeCache_->bake, channel);
+    auto *texture = gfx->newTexture(resolution, resolution, bytes.data());
     if (!texture) throw eve::Exception("Decal.bakeSbsprsTexture: graphics upload failed");
     return texture;
 }

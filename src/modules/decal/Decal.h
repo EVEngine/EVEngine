@@ -4,6 +4,7 @@
 #include "decal/DecalManager.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace eve::graphics {
@@ -28,7 +29,7 @@ class Decal : public Module {
 public:
     Module_REG(Decal);
     Decal();
-    ~Decal() override = default;
+    ~Decal() override;
 
     /** @brief Spawn a decal at (x,y,z) facing along (nx,ny,nz); returns id. */
     int project(float x, float y, float z, float nx, float ny, float nz,
@@ -79,7 +80,8 @@ public:
      * @param resolution Square output size in the inclusive range 1..4096.
      * @param channel One of "albedo", "normal", or "params".
      * @return Borrowed texture owned by gfx; it remains valid according to the graphics resource lifetime.
-     * @cost Linear in pixel count and blur radius; bake during load or authoring, never per frame.
+     * @cost The first unique preset/seed/resolution request is linear in pixel count and blur radius;
+     * adjacent channel requests reuse one bounded CPU bake result. Bake during load or authoring.
      * @throws eve::Exception when arguments or the recipe are invalid.
      * @thread Must run on the graphics service's resource-creation thread.
      * @reentrancy Does not invoke scripts or callbacks.
@@ -96,7 +98,8 @@ public:
      * @param resolution Square output size in the inclusive range 1..4096.
      * @param channel One of "albedo", "normal", or "params".
      * @return Borrowed texture owned by gfx.
-     * @cost Linear in XML size, pixel count, and blur radius; admission/loading only.
+     * @cost The first unique document/resolution request is linear in XML size, pixel count, and blur
+     * radius; adjacent channel requests reuse one bounded CPU bake result. Admission/loading only.
      * @throws eve::Exception when import, bake, channel selection, or upload fails.
      * @thread Must run on the graphics service's resource-creation thread.
      * @reentrancy Does not invoke scripts or callbacks.
@@ -104,6 +107,10 @@ public:
     [[nodiscard]] graphics::Texture *bakeSbsprsTexture(graphics::Graphics *gfx,
                                                        const std::string &xml, int resolution,
                                                        const std::string &channel);
+
+private:
+    struct ProceduralBakeCache;
+    std::unique_ptr<ProceduralBakeCache> proceduralBakeCache_;
 };
 
 /** @brief Register the IDecalQuery capability (implemented in DecalCapabilities.cpp). */

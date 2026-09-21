@@ -34,6 +34,10 @@ eve_update <- function(dt) {
 }
 ```
 
+相邻的同源、同 seed、同分辨率通道请求共享一个有界的单项 CPU 烘焙缓存：上面的三次调用只执行一次
+procedural 求值，再分别上传三个 GPU 通道。切换预设、seed、分辨率或导入文档时缓存会被替换；缓存不跨
+`Decal` 实例共享，也不改变纹理由 `gfx` 持有的生命周期。
+
 纹理引用应保存在 `persist` 状态中，并至少比使用它们的贴花存活更久。三次调用必须
 使用相同的 preset、seed 和 resolution。烘焙会分配纹理，不能放在 `eve_render` 或
 每帧更新中。
