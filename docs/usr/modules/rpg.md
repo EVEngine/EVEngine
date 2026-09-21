@@ -120,6 +120,16 @@ rpg.registerSkillDamage("mana_drain", "mana", "a.attack", "", 0.0, 100); // 打�
 local battle = rpg.newBattle();
 battle.addActor(hero, 0); battle.addActor(slime, 1);   // 阵营是任意整数 id
 battle.setPlayerSide(0);                                // 玩家侧（默认 0）
+// 原子替换本场战斗使用的通用 Settlement 规则；失败时保留旧规则。
+local configured = battle.configureSettlementRulesJson(@"{
+  ""schema"":""settlement.rules"",""version"":1,
+  ""rules"":[{
+    ""id"":""fire_guard"",""source"":""status:guard"",
+    ""stage"":""target_mitigation"",""operation"":""resist_percent"",
+    ""value"":0.25,""kinds"": [""damage""],""requiredTags"": [""element:fire""]
+  }]
+}");
+if (!configured.ok) throw configured.status.summary;
 battle.setAction(hero, "fireball", slime);
 battle.autoEnemyActions();
 battle.startRound();
