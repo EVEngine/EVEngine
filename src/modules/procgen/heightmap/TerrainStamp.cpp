@@ -1,4 +1,5 @@
 #include "procgen/heightmap/TerrainStamp.h"
+#include "common/SmoothMax.h"
 
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainRasterInternal.h"
@@ -43,11 +44,12 @@ Result<int> applyTerrainStamp(Heightmap& target, const Heightmap& stamp, const T
     if (!validRaster(target) || !validRaster(stamp) || !validRaster(localMask) || !validRaster(globalMask))
         return invalid("terrain.stamp: finite nonempty rasters required");
     for (double v : {s.originX, s.originZ, s.spacingX, s.spacingZ, s.centerX, s.centerZ, s.width, s.depth, s.rotation,
-                     double(s.amplitude), double(s.baseHeight), double(s.blendStrength)})
+                     double(s.amplitude), double(s.baseHeight), double(s.blendStrength), double(s.smoothWidth),
+                     double(s.edgeFade)})
         if (!std::isfinite(v)) return invalid("terrain.stamp: settings must be finite");
     if (s.spacingX <= 0 || s.spacingZ <= 0 || s.width <= 0 || s.depth <= 0 || s.blendStrength < 0 ||
         s.blendStrength > 1 || s.operation < TerrainStampOperation::Raise ||
-        s.operation > TerrainStampOperation::Subtract)
+        s.operation > TerrainStampOperation::SmoothRaise || s.smoothWidth < 0 || s.edgeFade < 0)
         return invalid("terrain.stamp: invalid operation, extent, spacing or blend strength");
 
     std::vector<float> candidate = target.data();
@@ -65,7 +67,15 @@ Result<int> applyTerrainStamp(Heightmap& target, const Heightmap& stamp, const T
             if (u < -edgeTolerance || u > 1 + edgeTolerance || v < -edgeTolerance || v > 1 + edgeTolerance) continue;
             u                   = std::clamp(u, 0.0, 1.0);
             v                   = std::clamp(v, 0.0, 1.0);
-            const double weight = std::clamp(sample(globalMask, u, v), 0.0, 1.0);
+            double weight       = std::clamp(sample(globalMask, u, v), 0.0, 1.0);
+            if (s.operation == TerrainStampOperation::SmoothRaise && s.edgeFade > 0) {
+                const auto fade = [](double distance, double width) {
+                    const double t = std::clamp(distance / width, 0.0, 1.0);
+                    return t * t * (3.0 - 2.0 * t);
+                };
+                weight *=
+                    fade(std::min(u, 1.0 - u) * s.width, s.edgeFade) * fade(std::min(v, 1.0 - v) * s.depth, s.edgeFade);
+            }
             if (weight == 0) continue;
             const double old   = target.height(x, y);
             const double level = s.baseHeight + s.amplitude * sample(stamp, u, v) * sample(localMask, u, v);
@@ -77,6 +87,15 @@ Result<int> applyTerrainStamp(Heightmap& target, const Heightmap& stamp, const T
                 case TerrainStampOperation::Blend: next = std::lerp(old, level, double(s.blendStrength)); break;
                 case TerrainStampOperation::Add: next = old + level; break;
                 case TerrainStampOperation::Subtract: next = old - level; break;
+                case TerrainStampOperation::SmoothRaise:
+                    if (s.smoothWidth == 0 || std::abs(old - level) >= s.smoothWidth) {
+                        next = std::max(old, level);
+                        break;
+                    }
+                    if (!isRepresentable(level))
+                        return invalid("terrain.stamp: stamp level exceeds finite height range");
+                    next = eve::math::smoothMax(float(old), float(level), s.smoothWidth);
+                    break;
             }
             next = std::lerp(old, next, weight);
             if (!isRepresentable(next)) return invalid("terrain.stamp: result exceeds finite height range");
