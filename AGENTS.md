@@ -117,7 +117,7 @@ checkout is on that commit.
   `make build/win32`
 - **Module linkage policy**: `EVENGINE_MODULE_LINKAGE=SHARED` (one DLL per link
   group) is the default, and the full suite is green under it on Windows and
-  Linux (5546 cases on Windows), so iterating on a domain test relinks a test
+  Linux (5561 cases on Windows), so iterating on a domain test relinks a test
   executable instead of the whole engine. Anything that ships an artifact must
   pass `OBJECT` explicitly (the release Makefile config `WIN32_CMAKE_ARGS` pins
   it, so `make build/win32` and `make sdk/win32`), because the shipped artifact
@@ -132,6 +132,13 @@ checkout is on that commit.
   one owner; the per-family inventory, the third-party/submodule patches and the
   traps are in
   `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Run the full suite in CI, not locally.** Locally, verify the *link* (build
+  both routes plus `make check`) and let CI run every platform's cases. A local
+  full `ctest` starts thousands of test executables, so one group library that
+  failed to link turns into thousands of modal loader dialogs ("找不到
+  EVWorld.dll") that take over the desktop, and it is the same suite CI runs
+  anyway on a clean merge ref. Use `make test/<platform> DOMAIN=<domain>` when a
+  single domain really needs running locally. Details: §7.30 of the same spec.
 - **Test suite shape**: `EVENGINE_TEST_DOMAIN_SPLIT` decides whether the suite is
   one executable per domain (`unit_test_<domain>`, ctest label of the same name)
   or a single `unit_test`. It defaults to the linkage: `ON` for SHARED, where each

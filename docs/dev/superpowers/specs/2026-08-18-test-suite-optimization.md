@@ -857,3 +857,23 @@ LNK2001: 无法解析的外部符号 eve::script::detail::RuntimeSlotStore::~Run
 **读数（推送头 `2a845b488`，格式化提交之后）**：Windows SHARED **5561 / 0 失败**（415 s）、Windows OBJECT 单体 **5561 / 0 失败**（441 s，`-E "^bundle/"` 口径与 SHARED 一致，单体共 6389 条 CTest 条目）；WSL Linux SHARED 七个域 **978/978**（scripts 68、platform 27、physics 277、scene 58、building 96、combat 151、rpg 301）；WSL Linux OBJECT 单体 **5563 / 0 失败**（222 s），`unit_test` 1.61 GB，`ldd` 无 `libEV*` / `box*` / `SDL*`。格式化提交只改空白与 include 顺序（token 多重集不变），但仍按推送头重编重跑，读数取推送头这一份。
 
 **两条"看似回归、实则口径"的读数**，记录以免下次重新踩：**(a)** OBJECT 单体默认不过滤 `bundle/*` 时会报 13 条失败（10 Failed + 3 SEGFAULT）——bundle 是把整个测试文件的用例塞进一个进程的 opt-in 形态，`make test` 与 CI 一律 `-E "^bundle/"` 排除，共享进程串扰是它的已知代价；**(b)** 只构建 `--target unit_test` 而不建 `native_test_plugin` 时，`plugins.load.nativeLibraryAndInstantiateCppModule` 会以 `dlopen ... native_test_plugin.so: No such file or directory` 失败（缺的是构建产物，不是代码）；另外 `ctest -j 6` 下 `network.UdpSendTo` 偶发 SEGFAULT（多个用例同时绑同一 UDP 端口），单跑 100% 通过。
+
+### 7.30 第四次合并 dev：新代码的跨组导出缺口 + 验证口径改为"本地只做链接级"（2026-09-21）
+
+dev 从 `d74a1538b` 前进到 `434ae72e4`（16 个提交 / 56 个文件：Squirrel root 生命周期、运行期 GLSL 进程内编译、本地 debug 默认开 `/WX`、agent repair routing、SILPOM smoke lane）。冲突只有两个文件（`Makefile` 取并集：我们的 release/SDK `OBJECT` 钉 + dev 的 `DEBUG_STRICT_WARNINGS_FLAG` 与配置戳；`AGENTS.md` 保留 dev 重写的 Building 段 + 我们的 linkage 策略段），其余自动合并。
+
+**缺陷 1：dev 新增的跨组出口没有导出宏（这次直接导致"找不到 EVWorld.dll"）。** dev 的"运行期 GLSL 进程内编译"把 `eve::graphics::compileGlslToSpirv()` 作为**唯一所有者**，实现在 `src/modules/graphics/vulkan/GlslCompiler.cpp`（= **EVBackends** 组），而调用方 `src/modules/gpgpu/vulkan/VulkanUtil.cpp`（= **EVWorld** 组）只 include 头文件。头里两个函数都没有导出宏：
+
+```
+FAILED: EVWorld.dll EVWorld.lib
+VulkanUtil.cpp.obj : error LNK2019 无法解析的外部符号 compileGlslToSpirv(...)
+EVWorld.dll : fatal error LNK1120
+```
+
+后果比一般链接失败更容易误判：**同一目录里其余 7 个组 DLL 都在，唯独 `EVWorld.dll` 不存在**，于是任何放在该目录旁的测试 exe / `eve.exe` 启动时都由加载器弹出模态框"找不到 EVWorld.dll"（一次 ctest 会把它放大成几十上百次弹窗）。修法与同目录既有写法一致：`GlslCompiler.h` 加 `#include "common/Export.h"` + 两个函数标 `EVENGINE_API_BACKENDS`（参照 `ShaderResourceReload.h`、`Graphics.h`）。复验：`Get-ChildItem build\win32-debug\EV*.dll` 出现 `EVWorld.dll`（61 MB），SHARED `ninja` exit 0。
+
+**缺陷 2：dev 新增的测试文件没有域归属。** `test/rpg_script.cpp`（只 include zeroerr + `common/Module.h` + simplesquirrel，没有任何模块包根）会让 configure 直接硬失败：`test domain partition failed ... rpg_script.cpp: no include names a module root and no basename rule matches`。按既有回退表补 `"rpg_script;rpg"` 到 `EVE_TEST_PREFIX_DOMAIN`。
+
+**验证口径（用户指令，2026-09-21 起）**：**本地不再跑全量用例，全量交给 CI**。本地只做"链接级"验证——Windows SHARED 全量 `ninja`（7 组库 + 30 个域 exe）+ OBJECT `eve` 目标，外加源码门禁与 `scripts/tests`。理由有两条硬的：**(a)** 本地全量 ctest 要反复启动数千个测试 exe，一旦某个组库没链出来，每个 exe 都会弹一个模态加载失败框，把使用者桌面占住（本轮就是这么踩的）；**(b)** CI 的 runner 是干净的 merge ref（branch + 当前 dev），本来就比本地树更接近评审口径。
+
+**读数（推送头 `9cace2839`，第四次合并之后）**：Windows SHARED `ninja -k 0` **exit 0**（`EVWorld.dll` 回归，8 个组 DLL 齐备）；Windows OBJECT `ninja eve` **exit 0**；`git clang-format --diff origin/dev` **0 字节**；全量用例由 CI 的 Windows / Linux / macOS / Android / iOS / WebGPU 作业给出。
