@@ -1,5 +1,7 @@
 #include "rpg/Settlement.h"
 
+#include "settlement/Settlement.h"
+
 #include <algorithm>
 
 namespace eve::rpg {
@@ -38,6 +40,36 @@ std::unordered_map<std::string, std::vector<StageEntry>> &pipelines() {
 std::vector<StageEntry> *findPipeline(const std::string &pipeline) {
     auto it = pipelines().find(pipeline);
     return it == pipelines().end() ? nullptr : &it->second;
+}
+
+class CompatibilitySettlementPolicy final : public settlement::ISettlementPolicy {
+public:
+    eve::Result<void> validate(settlement::SettlementContext&) override { return eve::Result<void>::success(); }
+    eve::Result<void> sourceModifiers(settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> targetMitigation(settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> armorShield(settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> clamp(settlement::SettlementContext& context) override {
+        return context.setClampMax(context.magnitude());
+    }
+    eve::Result<settlement::PreparedApply> prepareApply(const settlement::SettlementContext&) override {
+        return eve::Result<settlement::PreparedApply>::success(
+            settlement::PreparedApply([] { return eve::Result<void>::success(); }, [] {}));
+    }
+};
+
+SubjectRef compatibilityTarget() {
+    PersistentId::Bytes bytes{};
+    bytes[0]  = 0x52;
+    bytes[1]  = 0x50;
+    bytes[2]  = 0x47;
+    bytes[15] = 1;
+    return SubjectRef::fromPersistentId(PersistentId(bytes));
 }
 
 StageEntry *findStage(std::vector<StageEntry> &stages, const std::string &name) {
@@ -112,17 +144,37 @@ void SettlementPipeline::run(const std::string &pipeline, SettlementContext &ctx
     auto *stages = findPipeline(pipeline);
     if (!stages) return;
 
-    std::vector<StageEntry *> ordered;
-    ordered.reserve(stages->size());
-    for (auto &s : *stages)
-        if (s.enabled) ordered.push_back(&s);
-    std::stable_sort(ordered.begin(), ordered.end(),
-                      [](const StageEntry *a, const StageEntry *b) { return a->priority < b->priority; });
-
-    for (StageEntry *s : ordered) {
-        if (ctx.cancelled) break;
-        if (s->fn) s->fn(ctx);
+    settlement::SettlementPipeline canonical;
+    auto installed = canonical.addStage(
+        settlement::StageKind::SourceModifiers, "rpg.compatibility", 0,
+        [stages, &ctx](settlement::SettlementContext&) {
+            std::vector<StageEntry *> ordered;
+            ordered.reserve(stages->size());
+            for (auto &stage : *stages)
+                if (stage.enabled) ordered.push_back(&stage);
+            std::stable_sort(ordered.begin(), ordered.end(),
+                             [](const StageEntry *left, const StageEntry *right) {
+                                 return left->priority < right->priority;
+                             });
+            for (StageEntry *stage : ordered) {
+                if (ctx.cancelled) break;
+                if (stage->fn) stage->fn(ctx);
+            }
+            return eve::Result<void>::success();
+        });
+    if (!installed) {
+        installed.ignore("RPG compatibility settlement stage installation");
+        return;
     }
+
+    settlement::SettlementRequest request;
+    request.target    = compatibilityTarget();
+    request.kind      = ctx.kind.empty() ? "rpg.compatibility" : ctx.kind;
+    request.resource  = "legacy.values";
+    request.magnitude = 0.0;
+    CompatibilitySettlementPolicy policy;
+    auto settled = canonical.settle(request, policy);
+    settled.ignore("RPG compatibility settlement execution");
 }
 
 }  // namespace eve::rpg

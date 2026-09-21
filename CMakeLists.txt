@@ -653,6 +653,10 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # DTL is header-only and includes itself through the DTL/... prefix.
+        # Its prebuilt install is flat, so keep the pinned source include root
+        # authoritative in both source and prebuilt dependency modes.
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
         # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
@@ -670,16 +674,14 @@ function(set_include)
         )
     endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
+        # Raw source-checkout headers for medialoader/assimp. In prebuilt
         # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the
-        # install tree (include/medialoader, include/assimp, flat DTL headers);
+        # install tree (include/medialoader and include/assimp);
         # mixing source headers with prebuilt libraries silently produces
         # ABI/behavior drift when the two are not the same commit.
         target_include_directories(eve_engine_includes INTERFACE
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
-            # Dungeon Template Library (header-only)
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
         # Hostless/core profiles still compile selected domain translation units
         # without building the aggregate third-party project. Expose the pinned
         # source headers for those compile-only targets; normal host builds still

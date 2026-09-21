@@ -3,56 +3,163 @@
 #include "rpg/AttributeSystem.h"
 #include "rpg/BattleSystem.h"
 #include "rpg/RPGActor.h"
-#include "rpg/StatusSystem.h"
+#include "rpg/SettlementAdapter.h"
 #include "rpg/SkillSystem.h"
+#include "rpg/StatusSystem.h"
 #include "rpg/TraitSystem.h"
 #include "rpg/VitalsSystem.h"
 
 #include <algorithm>
+#include <array>
 
 namespace eve::rpg {
 
-void Battle::addActor(RPGActor *actor, int side) {
+void Battle::addActor(RPGActor* actor, int side) {
     if (!actor) return;
-    participants_.push_back(Participant{actor, side});
+    std::array<std::uint8_t, 16> bytes{0x52, 0x50, 0x47, 0x42, 0x41, 0x54, 0x54, 0x4c,
+                                       0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    const auto                   sequence = nextSettlementSubject_++;
+    for (std::size_t index = 0; index < sizeof(sequence); ++index)
+        bytes[15 - index] = static_cast<std::uint8_t>((sequence >> (index * 8u)) & 0xffu);
+    participants_.push_back(Participant{actor, side, SubjectRef::fromPersistentId(PersistentId(bytes))});
 }
 
-bool Battle::isDead(const Participant &p) const {
-    return !p.actor || VitalsSystem::isDead(p.actor, "hp");
+eve::Result<void> Battle::configureSettlementRules(const settlement::SettlementRuleSet& rules) {
+    settlement::SettlementPipeline candidate;
+    auto                           installed = rules.install(candidate);
+    if (!installed) return installed;
+    settlement_ = std::move(candidate);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool Battle::isActorAlive(RPGActor *actor) const {
-    return actor && !VitalsSystem::isDead(actor, "hp");
+eve::Result<std::vector<settlement::SettlementBatchItemResult>> Battle::settleRequest(
+    const settlement::SettlementRequest& request) {
+    const std::string rootResource = request.resource;
+    const auto actorForSubject = [&](const SubjectRef& subject) -> RPGActor* {
+        const auto found = std::find_if(participants_.begin(), participants_.end(),
+                                        [&](const Participant& value) { return value.settlementSubject == subject; });
+        return found == participants_.end() ? nullptr : found->actor;
+    };
+    settlement::SettlementPipeline::RequestExecutor executeSettlement =
+        [&](const settlement::SettlementRequest& chainRequest)
+        -> eve::Result<settlement::SettlementResult> {
+        RPGActor* chainTarget = actorForSubject(chainRequest.target);
+        RPGActor* chainSource = actorForSubject(chainRequest.source);
+        if (chainTarget == nullptr)
+            return eve::Result<settlement::SettlementResult>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "RPG settlement chain target is not a battle participant", "target"));
+
+        auto normalized = chainRequest;
+        RPGSettlementAdapter::Config chainConfig;
+        chainConfig.healthAttribute    = normalized.resource.empty() ? rootResource : normalized.resource;
+        chainConfig.maxHealthAttribute = chainConfig.healthAttribute;
+        chainConfig.emitLifeTransitions = chainConfig.healthAttribute == "hp";
+        Value::Object chainContext;
+        if (const auto* supplied = normalized.context.getIf<Value::Object>()) chainContext = *supplied;
+        chainContext.try_emplace("source_multiplier", 1.0);
+        chainContext.try_emplace("critical", false);
+        chainContext.try_emplace("element", std::string("damage"));
+        const double chainTargetMaximum = VitalsSystem::getMax(chainTarget, chainConfig.healthAttribute);
+        chainContext["target_hp_ratio"] =
+            chainTargetMaximum > 0.0
+                ? VitalsSystem::getCurrent(chainTarget, chainConfig.healthAttribute) / chainTargetMaximum
+                : 0.0;
+        const double chainSourceMaximum =
+            chainSource == nullptr ? 0.0 : VitalsSystem::getMax(chainSource, chainConfig.healthAttribute);
+        chainContext["source_hp_ratio"] =
+            chainSourceMaximum > 0.0
+                ? VitalsSystem::getCurrent(chainSource, chainConfig.healthAttribute) / chainSourceMaximum
+                : 0.0;
+        normalized.context = Value(std::move(chainContext));
+        RPGSettlementAdapter chainAdapter(*chainTarget, normalized.target, chainSource, normalized.source,
+                                          std::move(chainConfig));
+        auto chainPipeline = settlement_;
+        if (chainSource != nullptr) {
+            auto sourceRules = settlement::projectEffectRules(chainSource->statuses()->container, "rpg.source");
+            if (!sourceRules) return eve::Result<settlement::SettlementResult>::failure(sourceRules.status());
+            auto installed = sourceRules.value().install(chainPipeline);
+            if (!installed) return eve::Result<settlement::SettlementResult>::failure(installed.status());
+        }
+        auto targetRules = settlement::projectEffectRules(chainTarget->statuses()->container, "rpg.target");
+        if (!targetRules) return eve::Result<settlement::SettlementResult>::failure(targetRules.status());
+        auto installed = targetRules.value().install(chainPipeline);
+        if (!installed) return eve::Result<settlement::SettlementResult>::failure(installed.status());
+        return chainPipeline.settle(normalized, chainAdapter);
+    };
+    return settlement_.settleChain(request, executeSettlement, 8, 64);
 }
 
-std::vector<RPGActor *> Battle::livingOnSide(int side) const {
-    std::vector<RPGActor *> out;
-    for (const auto &p : participants_) {
+eve::Result<std::vector<settlement::SettlementBatchItemResult>> Battle::settleStatusTick(
+    const StatusTickEvent& tick, SubjectRef source, SimulationTick simulationTick) {
+    const SubjectRef target = settlementSubjectOf(tick.actor);
+    auto request = makeStatusTickSettlementRequest(tick, std::move(source), target, simulationTick);
+    if (!request) return eve::Result<std::vector<settlement::SettlementBatchItemResult>>::failure(request.status());
+    auto settled = settleRequest(request.value());
+    if (!settled) return settled;
+    for (const auto& outcome : settled.value()) {
+        if (!outcome.result) {
+            events_.push_back(BattleEvent{"settlementFailed", tick.effectId, nullptr, tick.actor, 0.0, false});
+            break;
+        }
+        RPGActor* eventTarget = nullptr;
+        RPGActor* eventSource = nullptr;
+        for (const auto& participant : participants_) {
+            if (participant.settlementSubject == outcome.request.target) eventTarget = participant.actor;
+            if (participant.settlementSubject == outcome.request.source) eventSource = participant.actor;
+        }
+        if (eventTarget == nullptr) continue;
+        if (outcome.request.kind == "trigger") {
+            events_.push_back(BattleEvent{outcome.request.trigger, tick.effectId, eventSource, eventTarget, 0.0, false});
+            continue;
+        }
+        const bool healing = outcome.request.kind == "heal" || outcome.request.kind == "healing";
+        const char* action = healing ? "heal" : "damage";
+        VitalsSystem::publishSettledChange(eventTarget, outcome.request.resource, action, outcome.result->applied,
+                                           tick.effectId);
+        events_.push_back(BattleEvent{action, tick.effectId, eventSource, eventTarget, outcome.result->applied,
+                                      !healing && outcome.result->critical});
+    }
+    return settled;
+}
+
+bool Battle::isDead(const Participant& p) const { return !p.actor || VitalsSystem::isDead(p.actor, "hp"); }
+
+bool Battle::isActorAlive(RPGActor* actor) const { return actor && !VitalsSystem::isDead(actor, "hp"); }
+
+std::vector<RPGActor*> Battle::livingOnSide(int side) const {
+    std::vector<RPGActor*> out;
+    for (const auto& p : participants_) {
         if (p.side == side && !isDead(p)) out.push_back(p.actor);
     }
     return out;
 }
 
-RPGActor *Battle::randomOpponent(int mySide) {
-    std::vector<RPGActor *> opps;
-    for (const auto &p : participants_) {
+RPGActor* Battle::randomOpponent(int mySide) {
+    std::vector<RPGActor*> opps;
+    for (const auto& p : participants_) {
         if (p.side != mySide && !isDead(p)) opps.push_back(p.actor);
     }
     if (opps.empty()) return nullptr;
     return opps[size_t((seedCounter_++) % opps.size())];
 }
 
-int Battle::sideOf(RPGActor *actor) const {
-    for (const auto &p : participants_) {
+int Battle::sideOf(RPGActor* actor) const {
+    for (const auto& p : participants_) {
         if (p.actor == actor) return p.side;
     }
     return playerSide_;
 }
 
+SubjectRef Battle::settlementSubjectOf(RPGActor* actor) const noexcept {
+    const auto found = std::find_if(participants_.begin(), participants_.end(),
+                                    [actor](const Participant& value) { return value.actor == actor; });
+    return found == participants_.end() ? SubjectRef::nil() : found->settlementSubject;
+}
+
 int Battle::computeWinnerSide() const {
-    int aliveSide = -1;
-    bool anyAlive = false;
-    for (const auto &p : participants_) {
+    int  aliveSide = -1;
+    bool anyAlive  = false;
+    for (const auto& p : participants_) {
         if (isDead(p)) continue;
         anyAlive = true;
         if (aliveSide == -1) {
@@ -65,110 +172,98 @@ int Battle::computeWinnerSide() const {
 }
 
 void Battle::setPlayerSide(int side) { playerSide_ = side; }
-int Battle::getPlayerSide() const { return playerSide_; }
+int  Battle::getPlayerSide() const { return playerSide_; }
 
 bool Battle::isFinished() const { return finished_; }
 bool Battle::isVictory() const { return finished_ && winner_ == playerSide_; }
 bool Battle::isDefeat() const { return finished_ && winner_ != -1 && winner_ != playerSide_; }
-int Battle::getWinnerSide() const { return winner_; }
-int Battle::getTurn() const { return turn_; }
+int  Battle::getWinnerSide() const { return winner_; }
+int  Battle::getTurn() const { return turn_; }
 
-void Battle::setAction(RPGActor *actor, const std::string &skillId, RPGActor *target) {
+void Battle::setAction(RPGActor* actor, const std::string& skillId, RPGActor* target) {
     setActionChecked(actor, skillId, target).ignore();
 }
 
-RPGActor *Battle::lowestHealthTarget(int side, bool sameSide) const {
-    RPGActor *selected = nullptr;
-    double selectedRatio = 0.0;
-    for (const auto &participant : participants_) {
+RPGActor* Battle::lowestHealthTarget(int side, bool sameSide) const {
+    RPGActor* selected      = nullptr;
+    double    selectedRatio = 0.0;
+    for (const auto& participant : participants_) {
         if (isDead(participant) || ((participant.side == side) != sameSide)) continue;
         const double maximum = VitalsSystem::getMax(participant.actor, "hp");
         if (maximum <= 0.0) continue;
         const double ratio = VitalsSystem::getCurrent(participant.actor, "hp") / maximum;
         if (!selected || ratio < selectedRatio) {
-            selected = participant.actor;
+            selected      = participant.actor;
             selectedRatio = ratio;
         }
     }
     return selected;
 }
 
-eve::Result<void> Battle::setActionChecked(RPGActor *actor, const std::string &skillId,
-                                           RPGActor *target) {
+eve::Result<void> Battle::setActionChecked(RPGActor* actor, const std::string& skillId, RPGActor* target) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<void>::failure(
             eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.battle.action"));
     };
     if (!actor) return reject(eve::DiagnosticCode::InvalidArgument, "actor must not be null", "actor");
     if (finished_ || started_)
-        return reject(eve::DiagnosticCode::Conflict,
-                      "actions can only be queued before a non-finished round", "battle");
+        return reject(eve::DiagnosticCode::Conflict, "actions can only be queued before a non-finished round",
+                      "battle");
     const auto participant = std::find_if(participants_.begin(), participants_.end(),
-                                          [actor](const Participant &value) {
-                                              return value.actor == actor;
-                                          });
+                                          [actor](const Participant& value) { return value.actor == actor; });
     if (participant == participants_.end())
         return reject(eve::DiagnosticCode::NotFound, "actor is not a battle participant", "actor");
-    if (isDead(*participant))
-        return reject(eve::DiagnosticCode::Conflict, "dead actors cannot queue actions", "actor");
-    if (std::any_of(roundActions_.begin(), roundActions_.end(), [actor](const PendingAction &value) {
-            return value.actor == actor;
-        }))
-        return reject(eve::DiagnosticCode::Conflict,
-                      "actor already has an action queued for this round", "actor");
+    if (isDead(*participant)) return reject(eve::DiagnosticCode::Conflict, "dead actors cannot queue actions", "actor");
+    if (std::any_of(roundActions_.begin(), roundActions_.end(),
+                    [actor](const PendingAction& value) { return value.actor == actor; }))
+        return reject(eve::DiagnosticCode::Conflict, "actor already has an action queued for this round", "actor");
     if (!skillId.empty() && !actor->knowsSkill(skillId))
         return reject(eve::DiagnosticCode::NotFound, "actor does not know the requested skill", "skillId");
     if (target) {
-        const auto targetParticipant = std::find_if(
-            participants_.begin(), participants_.end(), [target](const Participant &value) {
-                return value.actor == target;
-            });
+        const auto targetParticipant =
+            std::find_if(participants_.begin(), participants_.end(),
+                         [target](const Participant& value) { return value.actor == target; });
         if (targetParticipant == participants_.end())
-            return reject(eve::DiagnosticCode::NotFound,
-                          "target is not a battle participant", "target");
-        if (isDead(*targetParticipant))
-            return reject(eve::DiagnosticCode::Conflict, "target is not alive", "target");
-        const std::string targetType = skillId.empty() ? "enemySingle"
-                                                       : SkillSystem::getTargetType(actor, skillId);
+            return reject(eve::DiagnosticCode::NotFound, "target is not a battle participant", "target");
+        if (isDead(*targetParticipant)) return reject(eve::DiagnosticCode::Conflict, "target is not alive", "target");
+        const std::string targetType = skillId.empty() ? "enemySingle" : SkillSystem::getTargetType(actor, skillId);
         if (targetType == "self" && target != actor)
-            return reject(eve::DiagnosticCode::InvalidArgument,
-                          "self-target skill must target its caster", "target");
+            return reject(eve::DiagnosticCode::InvalidArgument, "self-target skill must target its caster", "target");
         if (targetType == "allySingle" && targetParticipant->side != participant->side)
-            return reject(eve::DiagnosticCode::InvalidArgument,
-                          "ally-target action must target the caster side", "target");
-        if (targetType != "self" && targetType != "allySingle" &&
-            targetParticipant->side == participant->side)
-            return reject(eve::DiagnosticCode::InvalidArgument,
-                          "enemy-target action must target another side", "target");
+            return reject(eve::DiagnosticCode::InvalidArgument, "ally-target action must target the caster side",
+                          "target");
+        if (targetType != "self" && targetType != "allySingle" && targetParticipant->side == participant->side)
+            return reject(eve::DiagnosticCode::InvalidArgument, "enemy-target action must target another side",
+                          "target");
     }
     roundActions_.push_back(PendingAction{actor, skillId, target, 0.0});
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> Battle::setActionByPolicyChecked(RPGActor *actor,
-                                                    const std::string &skillId,
-                                                    BattleTargetPolicy policy) {
+eve::Result<void> Battle::setActionByPolicyChecked(RPGActor* actor, const std::string& skillId,
+                                                   BattleTargetPolicy policy) {
     if (policy == BattleTargetPolicy::Auto) return setActionChecked(actor, skillId, nullptr);
-    const int side = sideOf(actor);
-    RPGActor *target = nullptr;
-    if (policy == BattleTargetPolicy::Self) target = actor;
+    const int side   = sideOf(actor);
+    RPGActor* target = nullptr;
+    if (policy == BattleTargetPolicy::Self)
+        target = actor;
     else if (policy == BattleTargetPolicy::LowestHealthAlly)
         target = lowestHealthTarget(side, true);
     else if (policy == BattleTargetPolicy::LowestHealthEnemy)
         target = lowestHealthTarget(side, false);
     if (!target)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "target policy found no living participant", "policy", {},
-            "rpg.battle.action-policy"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "target policy found no living participant", "policy",
+                                                                 {}, "rpg.battle.action-policy"));
     return setActionChecked(actor, skillId, target);
 }
 
 void Battle::autoEnemyActions() {
     if (finished_) return;
-    for (const auto &p : participants_) {
+    for (const auto& p : participants_) {
         if (p.side == playerSide_ || isDead(p)) continue;
         bool already = false;
-        for (const auto &ra : roundActions_) {
+        for (const auto& ra : roundActions_) {
             if (ra.actor == p.actor) {
                 already = true;
                 break;
@@ -177,7 +272,7 @@ void Battle::autoEnemyActions() {
         if (already) continue;
         // 随机已学技能，否则普攻（skillId 空 = 普攻）
         std::vector<std::string> known;
-        for (const auto &[id, unused] : p.actor->skills()->known) {
+        for (const auto& [id, unused] : p.actor->skills()->known) {
             (void)unused;
             known.push_back(id);
         }
@@ -193,16 +288,14 @@ void Battle::startRound() {
     if (finished_) return;
     ++turn_;
     // 计算先攻：speed 属性 + 技能攻击速度修正。
-    for (auto &pa : roundActions_) {
+    for (auto& pa : roundActions_) {
         double speed = AttributeSystem::getFinal(pa.actor, "speed");
         if (speed <= 0.0) speed = AttributeSystem::getFinal(pa.actor, "agi");
         if (speed <= 0.0) speed = 0.0;
         pa.initiative = speed + TraitSystem::getAttackSpeed(pa.actor);
     }
     std::stable_sort(roundActions_.begin(), roundActions_.end(),
-                     [](const PendingAction &x, const PendingAction &y) {
-                         return x.initiative > y.initiative;
-                     });
+                     [](const PendingAction& x, const PendingAction& y) { return x.initiative > y.initiative; });
     queue_ = std::move(roundActions_);
     roundActions_.clear();
     started_ = true;
@@ -224,7 +317,7 @@ bool Battle::executeNextAction() {
     }
 
     // 解析目标：未指定则按 targetType / 默认对手。
-    RPGActor *target = pa.target;
+    RPGActor* target = pa.target;
     if (!target) {
         if (pa.skillId.empty()) {
             target = randomOpponent(sideOf(pa.actor));
@@ -243,12 +336,11 @@ bool Battle::executeNextAction() {
     const int w = computeWinnerSide();
     if (w != -1) {
         finished_ = true;
-        winner_ = w;
-        events_.push_back(BattleEvent{winner_ == playerSide_ ? "victory" : "defeat", "", nullptr,
-                                      nullptr, 0.0, false});
+        winner_   = w;
+        events_.push_back(BattleEvent{winner_ == playerSide_ ? "victory" : "defeat", "", nullptr, nullptr, 0.0, false});
     } else {
         bool anyAlive = false;
-        for (const auto &p : participants_) {
+        for (const auto& p : participants_) {
             if (!isDead(p)) {
                 anyAlive = true;
                 break;
@@ -256,18 +348,18 @@ bool Battle::executeNextAction() {
         }
         if (!anyAlive) {
             finished_ = true;
-            winner_ = -1;
+            winner_   = -1;
             events_.push_back(BattleEvent{"defeat", "", nullptr, nullptr, 0.0, false});
         }
     }
     return true;
 }
 
-void Battle::execute(PendingAction &pa, unsigned &seedCounter) {
+void Battle::execute(PendingAction& pa, unsigned& seedCounter) {
     const std::string skillId = pa.skillId;
-    const std::string targetType = skillId.empty() ? std::string("enemySingle")
-                                                   : SkillSystem::getTargetType(pa.actor, skillId);
-    RPGActor *target = pa.target;
+    const std::string targetType =
+        skillId.empty() ? std::string("enemySingle") : SkillSystem::getTargetType(pa.actor, skillId);
+    RPGActor* target = pa.target;
     if (!target) {
         if (targetType == "self") {
             target = pa.actor;
@@ -283,12 +375,12 @@ void Battle::execute(PendingAction &pa, unsigned &seedCounter) {
 
     // 目标已死：换一个存活对手
     if (targetType != "self" && VitalsSystem::isDead(target, "hp")) {
-        target = targetType == "allySingle" ? lowestHealthTarget(sideOf(pa.actor), true)
-                                             : randomOpponent(sideOf(pa.actor));
+        target =
+            targetType == "allySingle" ? lowestHealthTarget(sideOf(pa.actor), true) : randomOpponent(sideOf(pa.actor));
         if (!target) return;
     }
 
-    const SkillDamageSpec *spec = skillId.empty() ? nullptr : BattleSystem::findSkillDamage(skillId);
+    const SkillDamageSpec* spec = skillId.empty() ? nullptr : BattleSystem::findSkillDamage(skillId);
     if (!spec && !skillId.empty()) {
         // 无伤害规格：走技能授予效果（治疗/状态等，无公式伤害）。
         SkillSystem::beginCast(pa.actor, skillId, target);
@@ -308,23 +400,70 @@ void Battle::execute(PendingAction &pa, unsigned &seedCounter) {
 
     // 目标资源名任意：damageType 即资源名，"XHeal" 后缀表示治疗。
     std::string resource = spec->damageType;
-    bool heal = false;
+    bool        heal     = false;
     if (resource.size() >= 4 && resource.compare(resource.size() - 4, 4, "Heal") == 0) {
         resource = resource.substr(0, resource.size() - 4);
-        heal = true;
+        heal     = true;
     }
-    if (heal) {
-        double healed = VitalsSystem::heal(target, resource, result.amount);
-        events_.push_back(BattleEvent{"heal", skillId, pa.actor, target, healed, false});
-    } else {
-        double dealt = VitalsSystem::takeDamage(target, resource, result.amount,
-                                                skillId.empty() ? "attack" : skillId);
-        events_.push_back(BattleEvent{"damage", skillId, pa.actor, target, dealt, result.crit});
+    const SubjectRef sourceRef = settlementSubjectOf(pa.actor);
+    const SubjectRef targetRef = settlementSubjectOf(target);
+    settlement::SettlementRequest request;
+    request.source    = sourceRef;
+    request.target    = targetRef;
+    request.kind      = heal ? "healing" : "damage";
+    request.resource  = resource;
+    request.magnitude = result.amount;
+    request.tags      = {heal ? "rpg:healing" : "rpg:damage", "element:" + spec->element};
+    request.tick      = SimulationTick(static_cast<std::uint64_t>(turn_));
+    Value::Object context;
+    context["source_multiplier"] = 1.0;
+    context["critical"]          = false;
+    context["element"]           = spec->element.empty() ? std::string("damage") : spec->element;
+    const double sourceMaximum = VitalsSystem::getMax(pa.actor, resource);
+    const double targetMaximum = VitalsSystem::getMax(target, resource);
+    context["source_hp_ratio"] = sourceMaximum > 0.0 ? VitalsSystem::getCurrent(pa.actor, resource) / sourceMaximum
+                                                     : 0.0;
+    context["target_hp_ratio"] = targetMaximum > 0.0 ? VitalsSystem::getCurrent(target, resource) / targetMaximum
+                                                     : 0.0;
+    request.context              = Value(std::move(context));
+    auto settled = settleRequest(request);
+    if (!settled || settled.value().empty() || !settled.value().front().result) {
+        events_.push_back(BattleEvent{"settlementFailed", skillId, pa.actor, target, 0.0, false});
+        return;
+    }
+    auto outcomes = std::move(settled).takeValue();
+    for (const auto& outcome : outcomes) {
+        if (!outcome.result) {
+            events_.push_back(BattleEvent{"settlementFailed", outcome.request.trigger, pa.actor, target, 0.0, false});
+            break;
+        }
+        RPGActor* eventTarget = nullptr;
+        RPGActor* eventSource = nullptr;
+        for (const auto& participant : participants_) {
+            if (participant.settlementSubject == outcome.request.target) eventTarget = participant.actor;
+            if (participant.settlementSubject == outcome.request.source) eventSource = participant.actor;
+        }
+        if (eventTarget == nullptr) continue;
+        if (outcome.request.kind == "trigger") {
+            events_.push_back(BattleEvent{outcome.request.trigger, outcome.request.trigger, eventSource, eventTarget,
+                                          0.0, false});
+            continue;
+        }
+        const bool        outcomeHeal = outcome.request.kind == "heal" || outcome.request.kind == "healing";
+        const std::string action      = outcomeHeal ? "heal" : "damage";
+        const std::string cause       = outcome.request.trigger.empty()
+                                            ? (outcomeHeal || skillId.empty() ? std::string{} : skillId)
+                                            : outcome.request.trigger;
+        VitalsSystem::publishSettledChange(eventTarget, outcome.request.resource, action, outcome.result->applied,
+                                           cause);
+        events_.push_back(BattleEvent{action, outcome.request.trigger.empty() ? skillId : outcome.request.trigger,
+                                      eventSource, eventTarget, outcome.result->applied,
+                                      !outcomeHeal && outcome.result->critical});
     }
 }
 
-int Battle::getActorCount() const { return int(participants_.size()); }
-RPGActor *Battle::getActor(int index) const {
+int       Battle::getActorCount() const { return int(participants_.size()); }
+RPGActor* Battle::getActor(int index) const {
     if (index < 0 || size_t(index) >= participants_.size()) return nullptr;
     return participants_[size_t(index)].actor;
 }
@@ -333,7 +472,7 @@ int Battle::getSide(int index) const {
     return participants_[size_t(index)].side;
 }
 
-int Battle::getEventCount() const { return int(polled_.size()); }
+int         Battle::getEventCount() const { return int(polled_.size()); }
 BattleEvent Battle::getEvent(int index) const {
     if (index < 0 || size_t(index) >= polled_.size()) return BattleEvent{};
     return polled_[size_t(index)];
@@ -351,11 +490,11 @@ std::string Battle::getEventSkillId(int index) const {
     if (index < 0 || size_t(index) >= polled_.size()) return {};
     return polled_[size_t(index)].skillId;
 }
-RPGActor *Battle::getEventCaster(int index) const {
+RPGActor* Battle::getEventCaster(int index) const {
     if (index < 0 || size_t(index) >= polled_.size()) return nullptr;
     return polled_[size_t(index)].caster;
 }
-RPGActor *Battle::getEventTarget(int index) const {
+RPGActor* Battle::getEventTarget(int index) const {
     if (index < 0 || size_t(index) >= polled_.size()) return nullptr;
     return polled_[size_t(index)].target;
 }

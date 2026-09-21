@@ -50,6 +50,20 @@ public:
                              const std::string &source = "");
     /** @brief 治疗：current += amount，上限 max。返回实际治疗量。 */
     static double heal(RPGActor *actor, const std::string &resource, double amount);
+    /**
+     * @brief Publish resource events for a state change already committed by Settlement.
+     * @param actor Actor whose authoritative Vitals state has already changed.
+     * @param resource Resource that changed.
+     * @param action Either `damage` or `heal`.
+     * @param amount Applied non-negative magnitude.
+     * @param source Optional damage source identifier.
+     * @remarks This does not mutate resource state. Call only after the settlement transaction succeeds.
+     * @thread Call on the actor's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    static void publishSettledChange(RPGActor *actor, const std::string &resource,
+                                     const std::string &action, double amount,
+                                     const std::string &source = "");
     /** @brief 复活：把资源设为 amount（默认当前上限），并清掉死亡状态。 */
     static void revive(RPGActor *actor, const std::string &resource, double amount = -1.0);
     /** @brief 是否死亡：max > 0 且 current <= 0。 */

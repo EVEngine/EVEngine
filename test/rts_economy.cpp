@@ -149,7 +149,8 @@ TEST_CASE("rts.constructionRepairAndCaptureUseTypedBuildingTargets") {
         debited += cost.items().front().amount.value();
         return eve::Result<eve::resource::Receipt>::success(eve::resource::Receipt{});
     };
-    auto repaired = eve::rts::RepairSystem::step(oneSecond, debit);
+    eve::combat::DamageRuntime settlement;
+    auto repaired = eve::rts::RepairSystem::step(oneSecond, settlement, debit);
     REQUIRE(repaired.ok());
     CHECK(std::abs(building->integrity()->state.health - 10.0) < 1e-5);
     CHECK_EQ(debited, 1);

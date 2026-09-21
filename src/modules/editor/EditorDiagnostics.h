@@ -22,6 +22,9 @@ class EditorValidationService {
 public:
     using Rule = std::function<std::vector<EditorDiagnostic>(const ValidationRequest&)>;
 
+    /** @brief Construct with built-in validation for canonical settlement rule documents. */
+    EditorValidationService();
+
     /** @brief Register or replace a stable rule owned by an extension. */
     EditorResult<void> registerRule(std::string owner, RuleId id, Rule rule);
     /** @brief Remove every rule owned by an unloading extension. */

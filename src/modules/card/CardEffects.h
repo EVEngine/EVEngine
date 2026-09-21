@@ -13,6 +13,8 @@
 #include "common/SubjectRef.h"
 #include "common/Time.h"
 #include "effects/EffectContainer.h"
+#include "settlement/Settlement.h"
+#include "settlement/SettlementRules.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -43,6 +45,8 @@ struct CardEffectDefinition {
     CardEffectKind           kind         = CardEffectKind::Damage;
     bool                     deathTrigger = true;
     std::vector<std::string> tags;
+    /** @brief Optional common effect payload, including a `settlement.rule` object. */
+    effects::EffectPayload payload;
 };
 
 /** @brief Result of one card effect lifecycle step and its domain settlement. */
@@ -51,6 +55,8 @@ struct CardEffectUpdate {
     std::uint32_t                settled        = 0;
     std::uint32_t                absorbed       = 0;
     bool                         deathTriggered = false;
+    /** @brief Owning canonical audits for periodic settlements in lifecycle order. */
+    std::vector<settlement::SettlementBatchItemResult> settlements;
 };
 
 /** @brief Serializable in-memory card effect snapshot. */
@@ -62,18 +68,32 @@ struct CardEffectSnapshot {
 /** @brief Card executor: interprets card policy without owning effect instances. */
 class CardEffectExecutor {
 public:
+    /** @brief Replace declarative rules used by subsequent periodic settlements transactionally. */
+    [[nodiscard]] eve::Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
     /** @brief Apply immediate shield semantics to a staged target. */
-    [[nodiscard]] eve::Result<void> applyImmediate(CardEffectTarget&              target,
-                                                   const effects::EffectInstance& effect) const;
+    [[nodiscard]] eve::Result<void> applyImmediate(CardEffectTarget&               target,
+                                                   const effects::EffectInstance&  effect,
+                                                   const effects::EffectContainer& activeEffects) const;
 
     /** @brief Settle all common periodic triggers using card shield/death rules. */
-    [[nodiscard]] eve::Result<CardEffectUpdate> settle(CardEffectTarget&            target,
-                                                       effects::EffectUpdateSummary lifecycle) const;
+    [[nodiscard]] eve::Result<CardEffectUpdate> settle(CardEffectTarget&               target,
+                                                       effects::EffectUpdateSummary    lifecycle,
+                                                       const effects::EffectContainer& activeEffects) const;
+
+private:
+    settlement::SettlementPipeline settlement_;
 };
 
 /** @brief Card adapter composing the common lifecycle container with CardEffectExecutor. */
 class CardEffectAdapter {
 public:
+    /**
+     * @brief Replace declarative rules used by subsequent card effect settlements.
+     * @return Applied, or a structured failure while retaining the previous rule set.
+     * @thread Call on the adapter's owning simulation thread outside advance.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
     /**
      * @brief Seed the domain target before the first effect is applied.
      * @param target Initial current/max health and barrier state owned by the card.
