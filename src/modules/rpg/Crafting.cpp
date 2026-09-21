@@ -293,12 +293,14 @@ eve::Result<CraftingReceipt> Crafting::begin(CraftingRequest request) {
                                         "recipe");
     std::int64_t totalOutput = 0;
     for (const auto& output : request.recipe.outputs) {
-        if (output.itemId.empty() || output.quantity <= 0 ||
-            output.quantity > std::numeric_limits<int>::max() / request.batchSize)
+        const auto quantity = static_cast<std::int64_t>(output.quantity);
+        const auto batchSize = static_cast<std::int64_t>(request.batchSize);
+        if (output.itemId.empty() || quantity <= 0 ||
+            quantity > static_cast<std::int64_t>(std::numeric_limits<int>::max()) / batchSize)
             return failure<CraftingReceipt>(eve::DiagnosticCode::InvalidArgument,
                                             "crafting outputs require item ids and positive quantities",
                                             "recipe.outputs");
-        const auto scaled = static_cast<std::int64_t>(output.quantity) * request.batchSize;
+        const auto scaled = quantity * batchSize;
         if (totalOutput > std::numeric_limits<int>::max() - scaled)
             return failure<CraftingReceipt>(eve::DiagnosticCode::InvalidArgument,
                                             "crafting batch output total exceeds inventory limits",
