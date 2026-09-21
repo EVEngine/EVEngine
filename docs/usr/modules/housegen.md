@@ -64,12 +64,15 @@ if (generation.ok) {
 
 - `setSeed(int)`、`setPlot(w, d)`、`setFloors(int)`、`setModuleSize(float)`、
   `setFloorHeight(float)`、`setStyle(string)`、
-  `setFootprint(string)`、`setRoof(string)`、`setEntrance(string)`。
+  `setFootprint(string)`、`setRoof(string)`、`setEntrance(string)`、
+  `setRequiredRooms(csv)`、`setPerimeter(csv)`。
 
 ### `HouseLayout`
 
 - `toJson()`、`fromJson(json)` → structured Result、`getInstanceCount()`、
-  `getDiagnosticCount()`。
+  `getInstanceComponentId(index)`、`getInstanceX(index)`、`getInstanceY(index)`、
+  `getInstanceZ(index)`、`getInstanceRotationDeg(index)`、`getFloorHeight()`、
+  `getFootprintStyle()`、`getRoofStyle()`、`getRoomCount()`、`getDiagnosticCount()`。
 - `writeFootprintGrid(grid)` → `Grid2D`；`writeComponentPoints(points)` → `PointSet`。
 
 ## 生命周期

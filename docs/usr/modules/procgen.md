@@ -3092,9 +3092,11 @@ TileWorldCreator 4 运行时核心能力的逐项对应和边界见
 `loadComponentsFromJson`、`loadComponentsFromFile`、`clearComponents`、
 `getComponentCount`、`newRequest` 与 `newLayout`；请求可通过 `setPlot`、
 `setFloors`、`setModuleSize`、`setFloorHeight`、`setStyle`、`setFootprint`、
-`setRoof`、`setEntrance` 配置。
-布局提供 `toJson`、`fromJson`、`getInstanceCount`、`getDiagnosticCount`、
-`writeFootprintGrid` 与 `writeComponentPoints`。
+`setRoof`、`setEntrance`、`setRequiredRooms` 与 `setPerimeter` 配置。
+布局提供 `toJson`、`fromJson`、`getInstanceCount`、`getInstanceComponentId`、
+`getInstanceX`、`getInstanceY`、`getInstanceZ`、`getInstanceRotationDeg`、
+`getFloorHeight`、`getFootprintStyle`、`getRoofStyle`、`getRoomCount`、
+`getDiagnosticCount`、`writeFootprintGrid` 与 `writeComponentPoints`。
 
 房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
 `writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
