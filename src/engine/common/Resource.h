@@ -52,6 +52,22 @@ class Resource {
 public:
     virtual ~Resource() {}
 
+    /**
+     * @brief Resources own keep-alive pins, so they are not copyable.
+     *
+     * The pins in `dependencies` are move-only, which already deletes both
+     * special members implicitly; declaring that intent is not cosmetic. Under
+     * the SHARED linkage the resource subclasses are dllexport, and MSVC then
+     * tries to emit every special member it would export -- including the
+     * implicitly deleted copy assignment -- which turns a silent deletion into
+     * a hard C2280 in every translation unit that merely includes the subclass
+     * (image/sound/font/graphics resource loaders). A user-declared `= delete`
+     * is not emitted, so the exported subclass stays well-formed, exactly like
+     * the in-module out-of-line special members the OBJECT route already needs.
+     */
+    Resource(const Resource&)            = delete;
+    Resource& operator=(const Resource&) = delete;
+
     std::string getUri() const { return uri; }
 
     /**
