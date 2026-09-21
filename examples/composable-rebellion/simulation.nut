@@ -12,7 +12,7 @@ demoAuthority <- eve.Authority();
 demoProduction <- eve.Production();
 demoPolicyRegistry <- eve.PolicyRegistryModule();
 demoSensing <- eve.Sensing();
-demoSteering <- eve.Steering();
+demoMath <- eve.Math();
 demoDecision <- eve.Decision();
 
 demoState <- {};
@@ -127,7 +127,7 @@ run_ai_preview <- function() {
     demoState.aiTarget <- target.getId();
     demoState.aiAction <- demoState.decisions.choose(
         "attack=0.9:2,0.8:1;retreat=0.2:2,0.4:1");
-    demoState.aiVelocity <- demoSteering.arrive(
+    demoState.aiVelocity <- demoMath.steeringArrive2(
         0.0, 0.0, target.getX(), target.getY(), 6.0, 20.0, 2.0);
     demoState.aiThreat <- demoState.decisions.sample("threat", 35.0, 5.0, 0.0);
     return true;

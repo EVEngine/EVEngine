@@ -182,8 +182,6 @@ eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
 eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
                    DEPS transaction
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME steering LAYER 0 SCRIPT Steering SLOT steering
-                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME tags LAYER 0 SCRIPT Tags SLOT tags
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME transaction LAYER 0 SCRIPT Transaction SLOT transaction
