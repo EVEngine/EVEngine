@@ -105,13 +105,16 @@ std::string findGlslc() {
     FILE *pipe = _popen("where glslc 2>nul", "r");
     if (pipe) {
         char        buffer[512];
-        std::string found;
-        while (fgets(buffer, sizeof(buffer), pipe)) found += buffer;
-        const int status = _pclose(pipe);
-        if (status == 0 && !found.empty()) {
-            while (!found.empty() && (found.back() == '\r' || found.back() == '\n')) found.pop_back();
-            return found;
+        std::string first;
+        // `where` lists every match on its own line and only the first path is usable as
+        // an application name, so stop at the first non-empty line instead of
+        // concatenating the remaining matches into a value with embedded newlines.
+        while (first.empty() && fgets(buffer, sizeof(buffer), pipe)) {
+            first = buffer;
+            while (!first.empty() && (first.back() == '\r' || first.back() == '\n')) first.pop_back();
         }
+        const int status = _pclose(pipe);
+        if (status == 0 && !first.empty()) return first;
     }
     return {};
 }
@@ -152,8 +155,13 @@ std::vector<std::uint32_t> compileWithExternalGlslc(const std::string &source, G
     {
         FILE *file = nullptr;
         if (fopen_s(&file, inputPath, "wb") != 0 || !file) throw compileFailure("failed to write temp GLSL");
-        fwrite(source.data(), 1, source.size(), file);
-        fclose(file);
+        // A short write (disk full, for instance) must not reach the compiler as a
+        // truncated shader; the POSIX branch fails on the same condition.
+        const size_t written = fwrite(source.data(), 1, source.size(), file);
+        const bool   flushed = fflush(file) == 0;
+        const bool   closed  = fclose(file) == 0;
+        if (written != source.size() || !flushed || !closed)
+            throw compileFailure("failed to write the complete temp GLSL");
     }
 
     std::string command = "\"" + glslc + "\" -fshader-stage=" + stageArgument(stage) + " \"" + inputPath +
