@@ -80,7 +80,7 @@ public:
      * @thread Same thread as the owning ResourceManager.
      * @reentrancy Side-effect free.
      */
-    [[nodiscard]] std::vector<Resource*> getDependencies() const;
+    [[nodiscard]] EVENGINE_API_FOUNDATION std::vector<Resource*> getDependencies() const;
 
     /**
      * @brief Keeps @p dependency alive for as long as this instance lives.
@@ -92,7 +92,7 @@ public:
      * @thread Same thread as the owning ResourceManager.
      * @reentrancy Registers a pin only; it never invokes callbacks.
      */
-    [[nodiscard]] eve::Result<void> addDependency(Resource& dependency);
+    [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<void> addDependency(Resource& dependency);
 
     /**
      * @brief Replace this instance's contents with `replacement`'s.
