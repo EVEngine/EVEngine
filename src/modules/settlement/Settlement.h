@@ -67,10 +67,10 @@ enum class SettlementTraceLevel : std::uint8_t { Off, Summary, Full };
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] const char* settlementDispositionName(SettlementDisposition disposition) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* settlementDispositionName(SettlementDisposition disposition) noexcept;
 
 /** @brief Caller-owned deterministic random decision recorded for replay and verification. */
-struct SettlementRandomDecision {
+struct EVENGINE_API_FOUNDATION SettlementRandomDecision {
     LogicalId     stream;
     std::uint64_t sequence  = 0;
     double        sample    = 0.0;
@@ -79,7 +79,7 @@ struct SettlementRandomDecision {
 };
 
 /** @brief Bounded trigger-chain metadata carried by an owning settlement request. */
-struct SettlementChainContext {
+struct EVENGINE_API_FOUNDATION SettlementChainContext {
     std::uint32_t           depth        = 0;
     std::uint32_t           emittedCount = 0;
     std::vector<std::string> triggerPath;
@@ -93,7 +93,7 @@ struct SettlementChainContext {
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] const char* stageKindName(StageKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* stageKindName(StageKind kind) noexcept;
 
 /**
  * @brief Domain-neutral input to one settlement operation.
@@ -104,7 +104,7 @@ struct SettlementChainContext {
  * wall-clock time.  Causation and correlation are optional canonical event
  * metadata and are copied to the result event.
  */
-struct SettlementRequest {
+struct EVENGINE_API_FOUNDATION SettlementRequest {
     SubjectRef source;
     SubjectRef target;
     std::string kind;
@@ -133,7 +133,7 @@ struct SettlementRequest {
  * @reentrancy Does not invoke callbacks.
  * @cost Linear in recorded decisions and trigger-path length.
  */
-[[nodiscard]] eve::Result<void> validateSettlementRequest(const SettlementRequest& request);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<void> validateSettlementRequest(const SettlementRequest& request);
 
 /**
  * @brief Explanation emitted for one executed stage.
@@ -142,7 +142,7 @@ struct SettlementRequest {
  * is an owning canonical object so UI, logs and replay tools do not need to
  * understand a policy-specific pointer or callback.
  */
-struct SettlementStageResult {
+struct EVENGINE_API_FOUNDATION SettlementStageResult {
     StageKind       kind = StageKind::Validate;
     std::string     name;
     eve::StatusCode status  = eve::StatusCode::Ok;
@@ -160,7 +160,7 @@ struct SettlementStageResult {
  * original request even when a critical source modifier increases the
  * effective amount.
  */
-struct SettlementResult {
+struct EVENGINE_API_FOUNDATION SettlementResult {
     double                               requested = 0.0;
     double                               applied   = 0.0;
     double                               absorbed  = 0.0;
@@ -208,7 +208,8 @@ struct SettlementResult {
  * @remarks Stream-assigned event identity and sequence are intentionally excluded.
  * @cost Linear in the result trace, event payload, and derived request count.
  */
-[[nodiscard]] eve::Result<std::string> settlementResultCanonicalJson(const SettlementResult& result);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> settlementResultCanonicalJson(
+    const SettlementResult& result);
 
 /**
  * @brief Hash the canonical semantic representation of a settlement result.
@@ -217,16 +218,16 @@ struct SettlementResult {
  * @return Content identity, or a structured failure when serialization or hashing fails.
  * @cost Linear serialization plus the injected provider's hashing cost.
  */
-[[nodiscard]] eve::Result<eve::ContentId> settlementResultDigest(const SettlementResult&           result,
-                                                                 const eve::SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<eve::ContentId> settlementResultDigest(
+    const SettlementResult& result, const eve::SnapshotHashProvider& hashProvider);
 
 /**
  * @brief Compare two settlement results and report stable field paths that differ.
  * @return Owning deterministic list of differing field paths; empty means equivalent.
  * @cost Linear in both result traces, events, and derived request lists.
  */
-[[nodiscard]] eve::Result<std::vector<std::string>> verifySettlementResult(const SettlementResult& expected,
-                                                                            const SettlementResult& actual);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::vector<std::string>> verifySettlementResult(
+    const SettlementResult& expected, const SettlementResult& actual);
 
 /**
  * @brief Serialize one replayable request with its rule and expected-result identities.
@@ -237,7 +238,7 @@ struct SettlementResult {
  * @return Strict versioned replay-record JSON, or a structured failure.
  * @cost Linear in request, trace, event payload, and derived request count plus hashing.
  */
-[[nodiscard]] eve::Result<std::string> createSettlementReplayRecord(
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> createSettlementReplayRecord(
     const SettlementRequest& request, eve::ContentId ruleDigest, const SettlementResult& result,
     const eve::SnapshotHashProvider& hashProvider);
 
@@ -247,7 +248,8 @@ struct SettlementResult {
  * @remarks Unknown fields are rejected; no gameplay state is mutated.
  * @cost Linear in replay-record size.
  */
-[[nodiscard]] eve::Result<SettlementRequest> settlementReplayRequest(std::string_view recordJson);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<SettlementRequest> settlementReplayRequest(
+    std::string_view recordJson);
 
 /**
  * @brief Verify current rules and outcome against a strict replay record.
@@ -255,12 +257,12 @@ struct SettlementResult {
  * @remarks The record's stored result digest is checked before comparison.
  * @cost Linear parse, canonicalization, recursive comparison, and hashing cost.
  */
-[[nodiscard]] eve::Result<std::vector<std::string>> verifySettlementReplayRecord(
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::vector<std::string>> verifySettlementReplayRecord(
     std::string_view recordJson, eve::ContentId ruleDigest, const SettlementResult& actual,
     const eve::SnapshotHashProvider& hashProvider);
 
 /** @brief Indexed owning outcome for one independently committed settlement item. */
-struct SettlementBatchItemResult {
+struct EVENGINE_API_FOUNDATION SettlementBatchItemResult {
     std::size_t                     index = 0;
     SettlementRequest               request;
     eve::Status                     status;
@@ -532,7 +534,7 @@ public:
  * custom stages in their phase. Other custom-stage ordering is phase, priority,
  * name, then registration sequence.
  */
-class SettlementPipeline {
+class EVENGINE_API_FOUNDATION SettlementPipeline {
 public:
     using StageFunction = std::function<eve::Result<void>(SettlementContext&)>;
     /** @brief Executes one owning chain request using its request-specific policy and rule snapshot. */

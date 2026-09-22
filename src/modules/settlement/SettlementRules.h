@@ -38,7 +38,7 @@ enum class RuleOperation : std::uint8_t {
  * Empty `kinds` and tag lists are wildcards. All required tags must be present
  * and no excluded tag may be present. Matching is exact and case-sensitive.
  */
-struct RuleFilter {
+struct EVENGINE_API_FOUNDATION RuleFilter {
     std::vector<std::string> kinds;
     std::vector<std::string> requiredTags;
     std::vector<std::string> excludedTags;
@@ -51,7 +51,7 @@ struct RuleFilter {
  * source effect remains authoritative for lifecycle and stacking; this value
  * is a per-settlement snapshot and never retains an EffectInstance pointer.
  */
-struct SettlementRule {
+struct EVENGINE_API_FOUNDATION SettlementRule {
     std::string   id;
     std::string   source;
     StageKind     stage              = StageKind::SourceModifiers;
@@ -74,7 +74,7 @@ struct SettlementRule {
  * The collection is simulation-thread confined; installed callbacks are
  * synchronous and do not retain request or policy references.
  */
-class SettlementRuleSet {
+class EVENGINE_API_FOUNDATION SettlementRuleSet {
 public:
     /** @brief Stable schema version used by canonical rule-set identity. */
     [[nodiscard]] static constexpr std::uint32_t schemaVersion() noexcept { return 1; }
@@ -141,7 +141,7 @@ private:
  * @reentrancy No callbacks are invoked.
  * @cost Linear in active effect count and projected condition source length.
  */
-[[nodiscard]] eve::Result<SettlementRuleSet> projectEffectRules(const effects::EffectContainer& effects,
-                                                                std::string_view                scope);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<SettlementRuleSet> projectEffectRules(
+    const effects::EffectContainer& effects, std::string_view scope);
 
 }  // namespace eve::settlement
