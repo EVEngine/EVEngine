@@ -43,7 +43,7 @@ struct SkillConditionQueries {
  * AttributeSet. Tags include both skill-definition tags and active RPG status
  * tags.
  */
-class SkillConditionContext final : public decision::EvaluationContext {
+class EVENGINE_API_PLATFORM SkillConditionContext final : public decision::EvaluationContext {
 public:
     /**
      * @brief Bind a read-only actor/skill pair for one synchronous evaluation.

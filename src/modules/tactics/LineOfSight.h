@@ -116,7 +116,7 @@ public:
  * makes `visible(a, b)` and `visible(b, a)` agree **by construction** rather than by two
  * implementations happening to match.
  */
-class GridLineOfSightPolicy final : public ILineOfSightPolicy {
+class EVENGINE_API_DOMAINS GridLineOfSightPolicy final : public ILineOfSightPolicy {
 public:
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_line_of_sight"; }
 
@@ -131,7 +131,7 @@ public:
  * `None` otherwise. The distinction matters because the two outcomes are different gameplay:
  * "the shot is absorbed" versus "the target is harder to hit".
  */
-class GridCoverPolicy final : public ICoverPolicy {
+class EVENGINE_API_DOMAINS GridCoverPolicy final : public ICoverPolicy {
 public:
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_cover"; }
 

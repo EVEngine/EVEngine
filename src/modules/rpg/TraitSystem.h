@@ -21,7 +21,7 @@ class RPGActor;
  * @brief 特征系统。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class TraitSystem {
+class EVENGINE_API_PLATFORM TraitSystem {
 public:
     /**
      * @brief 施加一个特征。

@@ -36,7 +36,7 @@ struct EquipmentStat {
  * @brief 装备加成系统。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class EquipmentSystem {
+class EVENGINE_API_PLATFORM EquipmentSystem {
 public:
     /** @brief 为某物品 id 注册一条属性加成。 */
     static void registerItemStat(const std::string &itemId, const EquipmentStat &stat);

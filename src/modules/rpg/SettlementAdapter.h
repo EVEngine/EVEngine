@@ -32,7 +32,7 @@ namespace eve::rpg {
  * @reentrancy Does not invoke callbacks or mutate StatusSystem, the actor, or the registry.
  * @cost Linear in JSON and tag/context size; call once per emitted tick, outside Settlement's hot stages.
  */
-[[nodiscard]] eve::Result<settlement::SettlementRequest> makeStatusTickSettlementRequest(
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Result<settlement::SettlementRequest> makeStatusTickSettlementRequest(
     const StatusTickEvent& tick, SubjectRef source, SubjectRef target, SimulationTick simulationTick);
 
 /**
@@ -42,7 +42,7 @@ namespace eve::rpg {
  * call.  `targetRef` and `sourceRef` are caller-owned stable identities; they
  * are checked against the request and are never resolved by the pipeline.
  */
-class RPGSettlementAdapter final : public settlement::ISettlementPolicy {
+class EVENGINE_API_PLATFORM RPGSettlementAdapter final : public settlement::ISettlementPolicy {
 public:
     /** @brief Attribute names used by the RPG policy. */
     struct Config {

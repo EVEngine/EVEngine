@@ -34,7 +34,7 @@ namespace eve::tactics {
  *         owner-thread-affine.
  * @reentrancy `query` reads the board and its sight policy synchronously and invokes no callbacks.
  */
-class TacticsLineOfSightAdapter final : public sensing::ILineOfSightQuery {
+class EVENGINE_API_DOMAINS TacticsLineOfSightAdapter final : public sensing::ILineOfSightQuery {
 public:
     /**
      * @brief Bind the battle this adapter answers for.
