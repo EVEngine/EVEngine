@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Committed tactical movement and remaining resource state. */

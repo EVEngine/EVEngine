@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;

@@ -8,6 +8,8 @@
 
 #include <span>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Owning values required to settle one previously declared tactical ability. */

@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;

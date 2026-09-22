@@ -31,6 +31,8 @@
 #include <string_view>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Cell tag that makes a cell block line of sight. */

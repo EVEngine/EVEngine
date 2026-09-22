@@ -25,6 +25,8 @@
 #include "common/Result.h"
 #include "sensing/Targeting.h"
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /**

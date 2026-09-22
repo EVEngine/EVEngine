@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::inventory {
 class Bag;
 }

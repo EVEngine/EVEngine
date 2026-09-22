@@ -17,6 +17,8 @@
 #include <string>
 #include <string_view>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 /**

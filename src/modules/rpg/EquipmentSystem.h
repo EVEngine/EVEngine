@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::inventory {
 class EquipmentSet;
 }
