@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <functional>
 #include <memory>
@@ -16,7 +18,7 @@ namespace eve::rx {
  * binds a Value-typed specialization so scripts can push nil/int/float/bool/
  * string/ptr.
  */
-class Value {
+class EVENGINE_API_PLATFORM Value {
 public:
     enum class Type { Nil, Int, Float, Bool, String, Ptr };
 

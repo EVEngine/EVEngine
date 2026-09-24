@@ -38,7 +38,7 @@ struct MapArtifactRecord {
  * renderer can consume the same record later; semantic cells are never
  * reconstructed from rendered resources.
  */
-class MapArtifactProvider final : public eve::artifact::IMapArtifactAdapter {
+class EVENGINE_API_WORLD MapArtifactProvider final : public eve::artifact::IMapArtifactAdapter {
 public:
     /** @brief Stage a topology grid and copy its cells before commit. */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepare(
@@ -81,8 +81,8 @@ private:
 };
 
 /** @brief Return the process-owned map artifact provider singleton. */
-[[nodiscard]] MapArtifactProvider& mapArtifactProvider() noexcept;
+[[nodiscard]] EVENGINE_API_WORLD MapArtifactProvider& mapArtifactProvider() noexcept;
 /** @brief Register the map provider in the common capability registry. */
-void registerMapArtifactProvider();
+EVENGINE_API_WORLD void registerMapArtifactProvider();
 
 }  // namespace eve::map

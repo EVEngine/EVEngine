@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "NetTypes.h"
 
@@ -25,11 +27,17 @@ class Network;
  * @brief TCP socket backed by Poco::Net; supports both client (connect) and
  * server (listen/accept) roles. Data arrives via Network::pump as NetCompletion.
  */
-class TcpSocket {
+class EVENGINE_API_PLATFORM TcpSocket {
 public:
     /** @brief Creates an unconnected socket owned by the given module. */
     explicit TcpSocket(Network* net);
     ~TcpSocket();
+    // Class-level dllexport instantiates every member; `accepted_` is a container
+    // of unique_ptr, so the implicit copy assignment would be a hard C2280.
+    TcpSocket(const TcpSocket&)            = delete;
+    TcpSocket& operator=(const TcpSocket&) = delete;
+    TcpSocket(TcpSocket&&)                 = default;
+    TcpSocket& operator=(TcpSocket&&)      = default;
 
     /** @brief Connects to host:port; true on success. */
     bool connect(std::string host, uint16_t port);

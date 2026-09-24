@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionCameraBlock.h @brief Typed camera-cue action block contract. */
 
@@ -9,7 +11,7 @@
 namespace eve::action {
 
 /** @brief Owning validated camera impulse shared by action runtime and camera targets. */
-struct ActionCameraCueBinding {
+struct EVENGINE_API_PLATFORM ActionCameraCueBinding {
     /** @brief Stable project-defined cue identity used for target selection. */
     LogicalId cue;
     /** @brief Positional shake amplitude in world units. */

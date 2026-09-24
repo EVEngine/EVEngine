@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Snapshot.h"
@@ -60,7 +62,7 @@ struct Event {
 };
 
 /** @brief Generic, deterministic capability authority store. */
-class Store {
+class EVENGINE_API_FOUNDATION Store {
 public:
     /**
      * @brief Creates an authority store with an optional persistent identity.
@@ -168,7 +170,7 @@ private:
 /** @brief Returns the stable lowercase name of a rule effect. */
 std::string effectName(RuleEffect effect);
 /** @brief Returns the stable lowercase name of an event kind. */
-std::string eventKindName(EventKind kind);
+EVENGINE_API_FOUNDATION std::string eventKindName(EventKind kind);
 
 /** @brief Script module factory for generic authority stores. */
 class Authority : public Module {

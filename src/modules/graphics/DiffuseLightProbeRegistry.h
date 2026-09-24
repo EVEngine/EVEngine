@@ -24,7 +24,7 @@ struct DiffuseLightProbeVolumeSample {
 };
 
 /** @brief Owns generated diffuse probes and samples their baked L0 irradiance. */
-class DiffuseLightProbeRegistry {
+class EVENGINE_API_BACKENDS DiffuseLightProbeRegistry {
 public:
     /** @brief Return the process-wide graphics-owned registry. */
     static DiffuseLightProbeRegistry& instance();

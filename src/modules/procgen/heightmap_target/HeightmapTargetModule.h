@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -23,7 +25,7 @@ class HeightmapTarget;
 namespace eve::heightmap_target {
 
 /** @brief Script-facing composition module for live heightmap editing targets. */
-class HeightmapTargetModule final : public Module {
+class EVENGINE_API_EDITORS HeightmapTargetModule final : public Module {
 public:
     Module_REG(HeightmapTargetModule);
 

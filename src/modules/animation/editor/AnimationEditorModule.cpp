@@ -10,7 +10,9 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <stdexcept>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::animation_editor {
 namespace {
@@ -24,9 +26,7 @@ const editor::EditorValue* field(const editor::EditorValue::Object& request, con
 
 class AnimationEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override {
-        return type == "animation-clip" || type == "animation-clip-document";
-    }
+    std::vector<std::string_view> types() const override { return {"animation-clip", "animation-clip-document"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object& request) override {

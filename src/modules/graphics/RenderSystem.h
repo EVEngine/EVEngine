@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
@@ -15,7 +17,7 @@ namespace eve::graphics {
 class Canvas;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
-class Camera2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
 public:
     ENTITY(Camera2D, ecs::Entity)
 
@@ -63,7 +65,7 @@ public:
 };
 
 /** @brief Default renderable entity for declarative 2D sprites / solid quads. */
-class Renderable2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Renderable2D : public ecs::Entity {
 public:
     ENTITY(Renderable2D, ecs::Entity)
 
@@ -171,7 +173,7 @@ public:
 class Graphics;
 
 /** @brief Walks ECS Renderable2D views and draws via Graphics batch path. */
-class RenderSystem {
+class EVENGINE_API_BACKENDS RenderSystem {
 public:
     /** @brief Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);

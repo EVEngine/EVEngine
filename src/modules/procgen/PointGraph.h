@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "procgen/PointSet.h"
@@ -60,7 +62,7 @@ struct PointGraphInspectReport {
     int                             sampleCount = 0;
 };
 
-class PointGraph {
+class EVENGINE_API_DOMAINS PointGraph {
 public:
     PointGraph();
     /** @brief Add a node using one of the operations returned by operationAt(). */

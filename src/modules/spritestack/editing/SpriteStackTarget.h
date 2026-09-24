@@ -66,11 +66,11 @@ struct SpriteStackAssetValue {
 };
 
 /** @brief Revisioned SpriteStack bake preset with reusable Inspector metadata. */
-class SpriteStackDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                        public virtual IEditableTarget,
-                                        public IDomainOperationTarget,
-                                        public IDomainOperationTargetStaging,
-                                        public IPropertyProvider {
+class EVENGINE_API_DOMAINS SpriteStackDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public IPropertyProvider {
 public:
     explicit SpriteStackDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -118,10 +118,17 @@ public:
 };
 
 /** @brief Candidate-first CPU baker and optional live SpriteStack2D publisher. */
-class SpriteStackBakeRuntime {
+class EVENGINE_API_DOMAINS SpriteStackBakeRuntime {
 public:
     SpriteStackBakeRuntime();
     ~SpriteStackBakeRuntime();
+    // Class-level dllexport instantiates every member, including the implicitly
+    // declared copy assignment, whose body instantiates
+    // `std::vector<std::unique_ptr<image::ImageData>>::operator=` and fails on the
+    // non-copyable element (C2280). The member was already non-copyable in
+    // practice; make that explicit instead of relying on the implicit definition.
+    SpriteStackBakeRuntime(const SpriteStackBakeRuntime&)            = delete;
+    SpriteStackBakeRuntime& operator=(const SpriteStackBakeRuntime&) = delete;
     /** @brief Bake all layers in temporary ownership before replacing the generation. */
     EditorResult<std::vector<SpriteStackLayerArtifact>> bake(const SpriteStackDocumentTarget& document,
                                                              const ISpriteStackModelResolver* resolver = nullptr);

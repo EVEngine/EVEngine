@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file MotionBuilder.h
@@ -22,7 +23,7 @@ class MotionSequence;
  *       while the motion is active. Prefer a stack/test-owned sink or a
  *       module-owned one.
  */
-class MotionBuilder {
+class EVENGINE_API_WORLD MotionBuilder {
 public:
     MotionBuilder(MotionRuntime &runtime, float from, float to, float duration);
 
@@ -73,7 +74,7 @@ private:
 };
 
 /** @brief Vec2 fluent builder. */
-class MotionVec2Builder {
+class EVENGINE_API_WORLD MotionVec2Builder {
 public:
     MotionVec2Builder(MotionRuntime &runtime, MotionVec2 from, MotionVec2 to, float duration);
 
@@ -150,7 +151,7 @@ private:
 
 
 /** @brief Color fluent builder (Tween / lerp only). */
-class MotionColorBuilder {
+class EVENGINE_API_WORLD MotionColorBuilder {
 public:
     MotionColorBuilder(MotionRuntime &runtime, MotionColor from, MotionColor to, float duration);
 
@@ -177,7 +178,7 @@ private:
 };
 
 /** @brief Quaternion fluent builder (Tween / slerp only). */
-class MotionQuatBuilder {
+class EVENGINE_API_WORLD MotionQuatBuilder {
 public:
     MotionQuatBuilder(MotionRuntime &runtime, MotionQuat from, MotionQuat to, float duration);
 

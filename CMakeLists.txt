@@ -108,6 +108,71 @@ option(EVENGINE_BUILD_RENDER_BENCHMARK
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 option(EVENGINE_VULKAN_USE_VMA
     "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
+# Per-module shared libraries. Modules are OBJECT libraries by default, so every
+# consumer (eve, each unit_test_<domain>) absorbs all engine objects and pays the
+# engine's debug information again: a per-domain test PDB measured 1.2 GB of
+# which only ~0.8 MB per test file is the test code. As SHARED, the engine debug
+# info stays in one PDB per module and consumers link import libraries.
+#
+# A single whole-engine DLL is not an option: it would need
+# WINDOWS_EXPORT_ALL_SYMBOLS, which the engine already exceeds (MSVC LNK1189,
+# 65535 exports; see src/engine/CMakeLists.txt). Per module the export surface is
+# only that module's own symbols, well inside the limit.
+#
+# Policy: development builds take the dynamic route (SHARED) so that iterating on
+# a domain test relinks a test executable instead of the whole engine; release and
+# SDK builds pass OBJECT explicitly (Makefile WIN32_CMAKE_ARGS) so the shipped
+# artifact is one exe with no engine DLLs beside it. All 30 test domains link and
+# run under SHARED (see
+# docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md sections
+# 7.7-7.19), so SHARED is the default here and OBJECT is the opt-in: anything that
+# ships an artifact must pass -DEVENGINE_MODULE_LINKAGE=OBJECT.
+#
+# The dynamic route is a desktop development convenience -- one library per link
+# group so iterating on a domain test relinks a test executable instead of the
+# whole engine. Mobile and WebAssembly artifacts ship as a single module or app
+# bundle and cannot be told where to find seven group libraries, so those
+# platforms keep the archive-only route whatever the default is.
+#
+# macOS is in that list for a concrete reason, not by policy: its platform support
+# library (platform/macosx -> EVPlatformMacOSX) is linked into the host only, so
+# libEVFoundation.dylib cannot resolve eve::macosx::getExecutablePath(), which
+# eve::filesystem::Filesystem::getExecutablePath() calls. The dynamic route there
+# needs that library linked into the group that consumes it (or the symbol moved
+# behind an interface); until then macOS builds the archive route and is
+# unaffected by the desktop default. Windows and Linux are the verified dynamic
+# platforms (see the spec section 7.25 readings).
+if(ANDROID OR IOS OR EMSCRIPTEN
+   OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+   OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
+   OR BUILD_PLATFORM STREQUAL "android"
+   OR BUILD_PLATFORM STREQUAL "ios"
+   OR BUILD_PLATFORM STREQUAL "macosx"
+   OR BUILD_PLATFORM STREQUAL "webgpu")
+    set(_eve_module_linkage_default "OBJECT")
+else()
+    set(_eve_module_linkage_default "SHARED")
+endif()
+set(EVENGINE_MODULE_LINKAGE "${_eve_module_linkage_default}" CACHE STRING
+    "How each manifest module is built: SHARED (desktop default; one library per link group) or OBJECT (release/SDK/mobile/WASM: one self-contained artifact)")
+set_property(CACHE EVENGINE_MODULE_LINKAGE PROPERTY STRINGS OBJECT SHARED)
+if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
+    message(FATAL_ERROR
+        "EVENGINE_MODULE_LINKAGE must be OBJECT or SHARED (got: ${EVENGINE_MODULE_LINKAGE})")
+endif()
+
+# In the dynamic configuration the executables link with -z nocopyreloc
+# (cmake/link_groups.cmake) so that external data references stay GOT-based and read
+# the live value in the library that owns it. That requires every object to be
+# *-fPIC*, not merely *-fPIE*: with -fPIE the compiler still emits PC32 relocations
+# for data it expects the linker to copy into the executable, and once the linker is
+# told not to copy, the ELF loader rejects those relocations at startup ("Symbol
+# '_ZSt4cerr' causes overflow in R_X86_64_PC32 relocation"). The group libraries
+# already set POSITION_INDEPENDENT_CODE; this covers the executables and the
+# in-tree archives they link. MSVC ignores the flag.
+if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED" AND NOT MSVC)
+    add_compile_options(-fPIC)
+endif()
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
@@ -148,7 +213,10 @@ option(EVENGINE_ENABLE_STRICT_WARNINGS
      missing-field-initializers are suppressed until the legacy callback API
      and Vulkan aggregate-init debt are cleaned up).
      MSVC: /W4 /WX.
-     Third-party targets are not affected."
+     Third-party targets are not affected.
+     Default OFF in CMake; the Makefile turns it ON for win32-debug and
+     linux-debug so local builds match CI (debug SDK aliases reuse those
+     trees). Release, macOS debug, Android, and iOS stay OFF."
     OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build native host: " ${EVENGINE_BUILD_HOST})
@@ -255,8 +323,9 @@ function(main)
     # Strict-warnings gate. Applied through the shared INTERFACE target so every
     # engine module, platform library and test runner inherits it while
     # third-party (ExternalProject / add_subdirectory deps) stays untouched.
-    # Enabled by CI via -DEVENGINE_ENABLE_STRICT_WARNINGS=ON; local opt-in:
-    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+    # Enabled by CI and by local `make build/win32-debug` / `make build/linux-debug`
+    # (see DEBUG_STRICT_WARNINGS_FLAG in the root Makefile). Opt out with:
+    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
     if(EVENGINE_ENABLE_STRICT_WARNINGS)
         target_compile_options(eve_engine_includes INTERFACE
             $<$<CXX_COMPILER_ID:MSVC>:/W4>
@@ -464,8 +533,41 @@ function(main)
     if(NOT EVENGINE_TP_DESC)
         set(EVENGINE_TP_DESC "unknown")
     endif()
+
+    # external/ECS.hpp is patched the same way third-party is, and for the same
+    # reason: `ecs::default_table()` is an inline function whose function-local
+    # static is duplicated by every image once the engine is split into link-group
+    # DLLs, so a domain module and its caller would address different default
+    # Tables. The patch forwards to an exported owner compiled into the foundation
+    # link unit (src/engine/common/EcsDefaultTable.cpp); the OBJECT / static route
+    # and the release SDK are unaffected.
+    #
+    # It runs at configure time because the header is compiled by module
+    # translation units and nothing orders a patch step in front of them. Skipped
+    # when the submodule is absent (profiles and tools that do not use ECS), and
+    # skipped without touching anything when the checkout already carries it.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND}
+                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ecs-shared-default-table.patch
+                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+            RESULT_VARIABLE _eve_ecs_patch_result)
+        if(NOT _eve_ecs_patch_result EQUAL 0)
+            message(FATAL_ERROR
+                "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
+                "The vendored submodule moved away from the pinned commit; "
+                "update cmake/patches/ecs-shared-default-table.patch.")
+        endif()
+    endif()
+
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
+
+# Group the module OBJECT libraries into the link units consumers use
+# (EVENGINE_MODULE_LINKAGE=SHARED). Must come after src/modules so every module
+# target exists, and before anything that links EVE_LINK_TARGETS.
+include(${CMAKE_SOURCE_DIR}/cmake/link_groups.cmake)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
     endif()
@@ -599,6 +701,48 @@ macro(create_module libname folder)
     else()
         add_library(${libname} OBJECT ${module_src})
     endif()
+    # In SHARED mode these objects are aggregated into a link-group shared
+    # library (cmake/link_groups.cmake), so they must be position independent on
+    # ELF/Mach-O. The module stays an OBJECT library: the manifest, profiles,
+    # per-module compile settings and the source scan are unchanged, and the
+    # grouping lives entirely in EVE_LINK_GROUP_TABLE.
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        set_target_properties(${libname} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        # These objects are the defining side of the module DLL boundary, so the
+        # EVENGINE_API-annotated declarations compile to dllexport (see
+        # src/engine/common/Export.h). Checked before EVENGINE_MODULE_DLL, which
+        # eve_engine_includes hands to every target including these.
+        target_compile_definitions(${libname} PRIVATE EVENGINE_ENGINE_EXPORTS)
+        # ...but only for THIS module's own link group. The group DLL exports
+        # what its own modules declare and imports everything the lower groups
+        # declare -- re-exporting a lower group's declaration would reference
+        # the plain symbol instead of __imp_<symbol>, which nothing defines for
+        # data (see the EVENGINE_API_<GROUP> block in
+        # src/engine/common/Export.h). Exactly one define, never the other six.
+        # EVE_MODULE_<name>_LINK_GROUP is resolved by eve_resolve_modules()
+        # (cmake/modules.cmake), which main() runs before src/engine and
+        # src/modules are added.
+        set(_eve_module_group "${EVE_MODULE_${folder}_LINK_GROUP}")
+        if(NOT _eve_module_group)
+            message(FATAL_ERROR
+                "Module '${folder}' has no EVE_MODULE_${folder}_LINK_GROUP; "
+                "eve_resolve_modules() must run before create_module()")
+        endif()
+        string(REGEX REPLACE "^EV" "" _eve_module_group "${_eve_module_group}")
+        string(TOUPPER "${_eve_module_group}" _eve_module_group)
+        target_compile_definitions(${libname} PRIVATE
+            "EVENGINE_EXPORTS_${_eve_module_group}")
+        # The vulkan-hpp default dispatcher is a data symbol defined by exactly
+        # one TU (src/modules/graphics/vulkan/Graphics.cpp, via VKB_IMPL) and
+        # referenced by every group that calls vulkan-hpp enhanced-mode
+        # overloads. Its owning group declares it dllexport here while every
+        # other consumer gets dllimport from VULKAN_HPP_STORAGE_SHARED
+        # (cmake/link_groups.cmake): vulkan-hpp offers exactly this pair of
+        # hooks, and data symbols cannot cross a DLL boundary without it.
+        if(_eve_module_group STREQUAL "BACKENDS")
+            target_compile_definitions(${libname} PRIVATE VULKAN_HPP_STORAGE_SHARED_EXPORT)
+        endif()
+    endif()
     # Opt the module into the shared engine include set (was global
     # include_directories before; see eve_engine_includes in main()).
     target_link_libraries(${libname} PUBLIC eve_engine_includes)
@@ -649,6 +793,10 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # DTL is header-only and includes itself through the DTL/... prefix.
+        # Its prebuilt install is flat, so keep the pinned source include root
+        # authoritative in both source and prebuilt dependency modes.
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
         # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
         # globally (like the old third-party flattened install) so any module that
         # pulls in Graphics.h can resolve <vkbuilder.hpp>.
@@ -666,16 +814,14 @@ function(set_include)
         )
     endif()
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Raw source-checkout headers for medialoader/assimp/DTL. In prebuilt
+        # Raw source-checkout headers for medialoader/assimp. In prebuilt
         # mode (EVENGINE_THIRD_PARTY_BINARY_DIR) these headers come from the
-        # install tree (include/medialoader, include/assimp, flat DTL headers);
+        # install tree (include/medialoader and include/assimp);
         # mixing source headers with prebuilt libraries silently produces
         # ABI/behavior drift when the two are not the same commit.
         target_include_directories(eve_engine_includes INTERFACE
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
-            # Dungeon Template Library (header-only)
-            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
         # Hostless/core profiles still compile selected domain translation units
         # without building the aggregate third-party project. Expose the pinned
         # source headers for those compile-only targets; normal host builds still

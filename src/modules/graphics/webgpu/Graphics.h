@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
@@ -183,7 +185,7 @@ struct GpuShader {
     std::string wgslFrag;
 };
 
-class Graphics final : public eve::graphics::Graphics {
+class EVENGINE_API_BACKENDS Graphics final : public eve::graphics::Graphics {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.

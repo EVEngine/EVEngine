@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProperty.h"
 #include "editing/EditingTargetOperations.h"
@@ -45,11 +47,11 @@ using EditorDiagnostic = editing::Diagnostic;
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
-class PhysicsColliderTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IDomainOperationTargetStaging,
-                                    public IPropertyProvider {
+class EVENGINE_API_DOMAINS PhysicsColliderTarget final : public ::eve::editing::EditableTargetState,
+                                                         public virtual IEditableTarget,
+                                                         public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging,
+                                                         public IPropertyProvider {
 public:
     explicit PhysicsColliderTarget(std::string id, int dimensions = 3);
 
@@ -97,7 +99,8 @@ public:
 };
 
 /** @brief Candidate-first collider target whose commit/undo publishes to a live sink. */
-class PhysicsColliderPublishingTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS PhysicsColliderPublishingTarget final : public IDomainOperationTarget,
+                                                                   public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned collider document bound to a non-owning runtime sink. */
     PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink* sink);
@@ -120,11 +123,11 @@ private:
 };
 
 /** @brief Serializable joint authoring target using stable body references. */
-class PhysicsJointTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+class EVENGINE_API_DOMAINS PhysicsJointTarget final : public ::eve::editing::EditableTargetState,
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider {
 public:
     explicit PhysicsJointTarget(std::string id);
 
@@ -184,7 +187,7 @@ public:
 };
 
 /** @brief Candidate-first Shape3D replacement sink for one borrowed live body. */
-class PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /**
      * @brief Bind a body, optional current shape, and optional complex-asset resolver.
@@ -206,7 +209,7 @@ private:
 };
 
 /** @brief Candidate-first Fixture replacement sink for one borrowed live 2D body. */
-class PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /** @brief Bind a body, optional current fixture, and optional polygon/chain resolver. */
     PhysicsCollider2DRuntimeSink(physics::Body* body, physics::Fixture* current = nullptr,

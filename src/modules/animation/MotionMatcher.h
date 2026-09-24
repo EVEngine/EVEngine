@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimPose.h"
 #include "common/Time.h"
@@ -61,7 +63,7 @@ struct MotionLocomotionSample {
  * desired trajectory, searches MotionDatabase, inertializes into the moving best match.
  * Script type: `MotionMatcher`.
  */
-class MotionMatcher {
+class EVENGINE_API_WORLD MotionMatcher {
 public:
     MotionMatcher(AnimSkeleton* skeleton, MotionDatabase* database);
     ~MotionMatcher();

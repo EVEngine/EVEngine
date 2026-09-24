@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "map/MapObject.h"
@@ -18,7 +20,7 @@ namespace eve::map {
  * @thread Thread-safe when the borrowed objects are not concurrently mutated.
  * @reentrancy No callbacks are invoked and no engine state is mutated.
  */
-[[nodiscard]] eve::Result<void> validateMapObjects(std::span<const MapObject> objects,
-                                                   std::string_view contractJson);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> validateMapObjects(std::span<const MapObject> objects,
+                                                                      std::string_view           contractJson);
 
 }  // namespace eve::map

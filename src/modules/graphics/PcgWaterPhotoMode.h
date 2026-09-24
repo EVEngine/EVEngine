@@ -5,7 +5,7 @@
 namespace ssq { class Table; }
 namespace eve::graphics {
 /** @brief Explicit, caller-owned authority for Pcg photo-mode water reflection and underwater fog values. */
-class PcgWaterPhotoModeAuthority final:public IPhotoModeFieldSink {
+class EVENGINE_API_BACKENDS PcgWaterPhotoModeAuthority final : public IPhotoModeFieldSink {
 public:
  PcgWaterPhotoModeAuthority()=default;
  ~PcgWaterPhotoModeAuthority()override;

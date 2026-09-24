@@ -49,7 +49,7 @@ struct VegetationSceneElementPublication {
  * Imported Elements remain immutable. Dynamic slots use generation-qualified handles and stable slot order.
  * The registry and GPU runtime are graphics-thread affine; no callback is invoked while state is changing.
  */
-class VegetationSceneLiveElements final {
+class EVENGINE_API_WORLD VegetationSceneLiveElements final {
 public:
     /**
      * @brief Create a registry from one validated imported scene.

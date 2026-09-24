@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/FluidSurfaceBinding.h"
 
@@ -23,7 +25,7 @@ struct SurfaceWetnessParams {
  * The values follow the topology while the bound mesh moves or deforms. Deposits
  * are barycentrically distributed, then diffused over vertex edges and evaporated.
  */
-class SurfaceWetnessField {
+class EVENGINE_API_DOMAINS SurfaceWetnessField {
 public:
     /** @brief Initialize the field from a surface topology. */
     bool build(const FluidSurfaceBinding& binding);

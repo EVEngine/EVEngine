@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/editor/EditorSurfaceFluidTarget.h"
 #include "graphics/editor/EditorOffscreenPreview.h"
@@ -58,7 +60,7 @@ struct SurfaceFluidPreviewSnapshot {
 };
 
 /** @brief Rebuilds an isolated surface simulation for deterministic forward/backward scrub. */
-class SurfaceFluidPreviewService {
+class EVENGINE_API_EDITORS SurfaceFluidPreviewService {
 public:
     /** @brief Validate, replay and capture a renderer-neutral surface-fluid frame. */
     SurfaceFluidPreviewSnapshot build(const SurfaceFluidTarget&         target,
@@ -74,7 +76,7 @@ public:
 };
 
 /** @brief Builds and rasterizes surface-fluid scrub frames through shared Canvas readback. */
-class SurfaceFluidOffscreenPreviewService {
+class EVENGINE_API_EDITORS SurfaceFluidOffscreenPreviewService {
 public:
     SurfaceFluidOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
                                         ISurfaceFluidPreviewRenderer*    renderer)

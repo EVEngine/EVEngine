@@ -24,7 +24,7 @@ namespace eve::asset_graphics {
  * Immutable after construction. CPU evaluation permits concurrent readers; GPU calls
  * require the graphics owner thread. No callbacks or external pointers are retained.
  */
-class VegetationAsset {
+class EVENGINE_API_WORLD VegetationAsset {
 public:
     ~VegetationAsset();
     VegetationAsset(const VegetationAsset&)            = delete;

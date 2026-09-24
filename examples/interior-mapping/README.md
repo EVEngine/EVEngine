@@ -35,10 +35,10 @@ cd examples/interior-mapping && ../../build/linux-debug/src/engine/eve run
 ## 文件
 
 - `shaders/interior_mapping.frag` — Mesh3D 自定义片元着色器；**以提交的
-  `shaders/interior_mapping.frag.spv` 加载**（运行期 GLSL 编译需要 `glslc`，Windows 上不可用）。
+  `shaders/interior_mapping.frag.spv` 加载**（不需要运行期编译器，各平台结果一致）。
   改完 `.frag` 后重新生成：
   `glslc -o shaders/interior_mapping.frag.spv shaders/interior_mapping.frag`
-- `main.nut` — 场景、参数绑定；热重载仍会尝试实时编译 GLSL，缺 `glslc` 时保留已提交的 SPIR-V
+- `main.nut` — 场景、参数绑定；热重载走引擎自带编译器，编译失败时保留已提交的 SPIR-V
 - `assets/room_atlas.png` — 预投影房间图集（4×4）
 - `scripts/gen_room_atlas.py` — 重新生成图集
 - `config.nut` — 窗口配置

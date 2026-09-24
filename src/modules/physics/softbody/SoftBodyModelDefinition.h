@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -14,7 +16,7 @@ enum class SoftBodySurfaceSampling { None, Vertices, Voxels };
 enum class SoftBodyVolumeSampling { None, Voxels };
 
 /** @brief Versioned authoring recipe used to cook a mesh-backed SoftBodyModel. */
-struct SoftBodyModelDefinition {
+struct EVENGINE_API_BACKENDS SoftBodyModelDefinition {
     static constexpr std::string_view SchemaId      = "physics:softbody-model";
     static constexpr std::uint32_t    SchemaVersion = 1;
 

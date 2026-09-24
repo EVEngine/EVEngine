@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionPreviewController.h @brief Atomic action-preview transport and presentation orchestration. */
 
@@ -16,7 +18,7 @@ namespace eve::editor {
  * The controller borrows services that must outlive it. It invokes no preview
  * host callback while holding a lock and remains owner-thread-only.
  */
-class ActionPreviewController {
+class EVENGINE_API_EDITORS ActionPreviewController {
 public:
     /** @brief Construct with a required presentation sink and optional root-motion provider. */
     ActionPreviewController(ActionTimelineEditor& editor, action::IActionPreviewSink& sink,

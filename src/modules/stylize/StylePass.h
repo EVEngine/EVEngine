@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/PostEffect.h"
 
@@ -21,7 +23,7 @@ namespace eve::stylize {
  * Future GBuffer-aware styles may read extra textures via Graphics bindings;
  * this class stays the single entry for "run one NPR post step".
  */
-class StylePass {
+class EVENGINE_API_WORLD StylePass {
 public:
     StylePass(const std::string &style, graphics::Shader *shader);
     ~StylePass() = default;

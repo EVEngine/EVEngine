@@ -31,6 +31,8 @@
 #include <string_view>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Cell tag that makes a cell block line of sight. */
@@ -47,7 +49,7 @@ enum class CoverLevel : std::uint8_t {
 };
 
 /** @brief Stable protocol spelling of a cover level. */
-[[nodiscard]] std::string_view coverLevelName(CoverLevel level) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view coverLevelName(CoverLevel level) noexcept;
 
 /**
  * @brief Answers "can @p from see @p to" for one board.
@@ -116,7 +118,7 @@ public:
  * makes `visible(a, b)` and `visible(b, a)` agree **by construction** rather than by two
  * implementations happening to match.
  */
-class GridLineOfSightPolicy final : public ILineOfSightPolicy {
+class EVENGINE_API_DOMAINS GridLineOfSightPolicy final : public ILineOfSightPolicy {
 public:
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_line_of_sight"; }
 
@@ -131,7 +133,7 @@ public:
  * `None` otherwise. The distinction matters because the two outcomes are different gameplay:
  * "the shot is absorbed" versus "the target is harder to hit".
  */
-class GridCoverPolicy final : public ICoverPolicy {
+class EVENGINE_API_DOMAINS GridCoverPolicy final : public ICoverPolicy {
 public:
     [[nodiscard]] std::string_view id() const noexcept override { return "grid_cover"; }
 
@@ -145,9 +147,9 @@ public:
  *         non-const because that is what `eve::cap::provide` registers, and every method on
  *         the interface is `const`, so the handle grants no way to change behaviour.
  */
-[[nodiscard]] std::shared_ptr<ILineOfSightPolicy> gridLineOfSightPolicy();
+[[nodiscard]] EVENGINE_API_DOMAINS std::shared_ptr<ILineOfSightPolicy> gridLineOfSightPolicy();
 /** @brief The process-wide built-in cover policy (same ownership remarks as above). */
-[[nodiscard]] std::shared_ptr<ICoverPolicy> gridCoverPolicy();
+[[nodiscard]] EVENGINE_API_DOMAINS std::shared_ptr<ICoverPolicy> gridCoverPolicy();
 
 /**
  * @brief Cells within a metric range of @p origin that @p policy can actually see.
@@ -167,8 +169,9 @@ public:
  *       the result is a projection of the current board and must be recomputed after any
  *       change to it.
  */
-[[nodiscard]] Result<std::vector<Cell>> visibleCellsInRange(const BoardState& board,
-                                                           const ILineOfSightPolicy& policy, Cell origin,
-                                                           int minimum, int maximum, CellRangeMetric metric);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<Cell>> visibleCellsInRange(const BoardState&         board,
+                                                                                 const ILineOfSightPolicy& policy,
+                                                                                 Cell origin, int minimum, int maximum,
+                                                                                 CellRangeMetric metric);
 
 }  // namespace eve::tactics

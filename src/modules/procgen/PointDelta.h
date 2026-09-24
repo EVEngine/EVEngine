@@ -29,10 +29,10 @@ struct PointDelta {
 };
 
 /** @brief Compute an exact deterministic fingerprint, rejecting missing or duplicate ids. */
-[[nodiscard]] Result<std::uint64_t> fingerprintPointSet(const PointSet& points);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::uint64_t> fingerprintPointSet(const PointSet& points);
 /** @brief Compute an identity-based delta without mutating either snapshot. */
-[[nodiscard]] Result<PointDelta> diffPointSets(const PointSet& before, const PointSet& after);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<PointDelta> diffPointSets(const PointSet& before, const PointSet& after);
 /** @brief Apply a delta atomically, rejecting stale or internally inconsistent input. */
-[[nodiscard]] Result<PointSet> applyPointDelta(const PointSet& base, const PointDelta& delta);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<PointSet> applyPointDelta(const PointSet& base, const PointDelta& delta);
 
 }  // namespace eve::procgen

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingGraph.h"
 #include "editing/EditingTaskService.h"
@@ -56,7 +58,7 @@ struct MaterialCompileResult {
 };
 
 /** @brief Minimal material domain with typed pin validation and deterministic compile artifacts. */
-class MaterialGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_BACKENDS MaterialGraphDomain final : public IGraphDomainProvider {
 public:
     std::string             domain() const override { return "material"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from, const GraphPinRecord& to) const override;
@@ -70,7 +72,7 @@ public:
  * Both synchronous compatibility and real background compilation share the
  * same result/publication contract.
  */
-class MaterialEditorService {
+class EVENGINE_API_BACKENDS MaterialEditorService {
 public:
     /** @brief Compile and cache a task result. */
     EditorResult<TaskId> compile(const DocumentId& document, const GraphDocumentData& graph,

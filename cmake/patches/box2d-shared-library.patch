@@ -1,0 +1,133 @@
+diff --git a/Box2D/Common/b2Math.cpp b/Box2D/Common/b2Math.cpp
+index d6027be..16fa96f 100644
+--- a/Box2D/Common/b2Math.cpp
++++ b/Box2D/Common/b2Math.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include <Box2D/Common/b2Math.h>
+ 
+-const b2Vec2 b2Vec2_zero(0.0f, 0.0f);
++B2_DATA_API const b2Vec2 b2Vec2_zero(0.0f, 0.0f);
+ 
+ /// Solve A * x = b, where b is a column vector. This is more efficient
+ /// than computing the inverse in one-shot cases.
+diff --git a/Box2D/Common/b2Math.h b/Box2D/Common/b2Math.h
+index 755c519..735c90b 100644
+--- a/Box2D/Common/b2Math.h
++++ b/Box2D/Common/b2Math.h
+@@ -400,7 +400,7 @@ struct b2Sweep
+ };
+ 
+ /// Useful constant
+-extern const b2Vec2 b2Vec2_zero;
++extern B2_DATA_API const b2Vec2 b2Vec2_zero;
+ 
+ /// Perform the dot product on two vectors.
+ inline float32 b2Dot(const b2Vec2& a, const b2Vec2& b)
+diff --git a/Box2D/Common/b2Settings.cpp b/Box2D/Common/b2Settings.cpp
+index a84544d..c786824 100644
+--- a/Box2D/Common/b2Settings.cpp
++++ b/Box2D/Common/b2Settings.cpp
+@@ -23,7 +23,7 @@
+ #include <stdexcept>
+ #include <string>
+ 
+-b2Version b2_version = {2, 3, 2};
++B2_DATA_API b2Version b2_version = {2, 3, 2};
+ 
+ // Memory allocators. Modify these to use your own allocator.
+ void* b2Alloc(int32 size)
+diff --git a/Box2D/Common/b2Settings.h b/Box2D/Common/b2Settings.h
+index beaa1d4..a15d93c 100644
+--- a/Box2D/Common/b2Settings.h
++++ b/Box2D/Common/b2Settings.h
+@@ -23,6 +23,24 @@
+ #include <assert.h>
+ #include <float.h>
+ 
++// EVEngine: when Box2D is built as a shared library for the dynamic engine
++// configuration, its public data symbols (b2_version, b2Vec2_zero) need the
++// same export/import split as its functions. CMake defines Box2D_EXPORTS for
++// the shared target's own translation units; every consumer defines
++// BOX2D_DLL (cmake/link_groups.cmake). Neither is defined for the archive
++// route, so the macro expands to nothing there and the release SDK stays a
++// single self-contained executable. MSVC's all-symbols .def generation used
++// for Box2D's functions cannot export data, hence the explicit annotation.
++#if defined(_WIN32) && (defined(Box2D_EXPORTS) || defined(BOX2D_DLL))
++#  if defined(Box2D_EXPORTS)
++#    define B2_DATA_API __declspec(dllexport)
++#  else
++#    define B2_DATA_API __declspec(dllimport)
++#  endif
++#else
++#  define B2_DATA_API
++#endif
++
+ void loveAssert(bool test, const char *teststr);
+ 
+ #define B2_NOT_USED(x) ((void)(x))
+@@ -149,6 +167,6 @@ struct b2Version
+ };
+ 
+ /// Current version.
+-extern b2Version b2_version;
++extern B2_DATA_API b2Version b2_version;
+ 
+ #endif
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a9711f3..fefe7eb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -274,6 +274,34 @@ file(GLOB_RECURSE box2d_src ${CMAKE_CURRENT_SOURCE_DIR}/Box2D/**/*.cpp)
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/)
+ add_library(Box2D ${box2d_src})
+ 
++# EVEngine: dynamic twin for the engine's shared link-group route. The engine
++# wraps rigid bodies from two link groups (EVWorld and the EVDomains physics
++# satellites) and Box2D keeps its contact registry (b2Contact's s_registers /
++# s_initialized) in file scope, so a copy per group means a contact created
++# through one group is unknown to the other (Box2D assertion
++# s_initialized == true, spec section 7.25). This desktop-only twin is built
++# next to the archive, which stays the canonical target, so the OBJECT /
++# release SDK route always links a static Box2D and remains one self-contained
++# executable no matter which configuration built this tree last. Box2D
++# carries no export macros of its own, so the twin relies on
++# CMake's all-symbols .def generation for functions and on B2_DATA_API
++# (Box2D/Common/b2Settings.h) for the two public data symbols the .def cannot
++# cover. DEFINE_SYMBOL reproduces the <target>_EXPORTS macro that annotation
++# keys on, and the configuration postfixes are cleared so the import library
++# has one predictable name.
++if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
++   AND NOT EMSCRIPTEN)
++  add_library(Box2D_dynamic SHARED ${box2d_src})
++  set_target_properties(Box2D_dynamic PROPERTIES
++    DEFINE_SYMBOL Box2D_EXPORTS
++    WINDOWS_EXPORT_ALL_SYMBOLS ON
++    OUTPUT_NAME Box2D-dynamic
++    DEBUG_POSTFIX ""
++    RELEASE_POSTFIX ""
++    MINSIZEREL_POSTFIX ""
++    RELWITHDEBINFO_POSTFIX "")
++endif()
++
+ # for Physfs
+ file(GLOB_RECURSE physfs_header ${CMAKE_CURRENT_SOURCE_DIR}/physfs/*.h )
+ file(GLOB_RECURSE physfs_src ${CMAKE_CURRENT_SOURCE_DIR}/physfs/*.c ${CMAKE_CURRENT_SOURCE_DIR}/physfs/*.cpp)
+@@ -355,6 +383,17 @@ endif()
+ install(TARGETS physfs Box2D xxHash lz4 imgui ${_eve_backward_target}
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development)
+ 
++if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
++   AND NOT EMSCRIPTEN)
++  # EVEngine: the dynamic twin's import library stays with the other archives,
++  # while its runtime image goes to bin/ like every other shared dependency (the
++  # engine deploys and searches bin/ beside the executables).
++  install(TARGETS Box2D_dynamic
++          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development
++          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/ COMPONENT Development
++          RUNTIME DESTINATION bin COMPONENT Runtime)
++endif()
++
+ if(NOT EVENGINE_WEBGPU_TRIM)
+   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/zlib/ ${CMAKE_CURRENT_BINARY_DIR}/zlib/)
+   # Assimp (via medialoader) sets ASSIMP_BUILD_ZLIB=OFF to avoid a duplicate zlib target,

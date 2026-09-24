@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAuthority.h"
 #include "editing/EditableTarget.h"
@@ -20,10 +22,10 @@ struct PluginPermissionGrant {
 };
 
 /** @brief Revisioned plugin permission policy with reversible, auditable grants. */
-class PluginPermissionTarget final : public ::eve::editing::EditableTargetState,
-                                     public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging {
+class EVENGINE_API_ORCHESTRATION PluginPermissionTarget final : public ::eve::editing::EditableTargetState,
+                                                                public virtual IEditableTarget,
+                                                                public IDomainOperationTarget,
+                                                                public IDomainOperationTargetStaging {
 public:
     explicit PluginPermissionTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

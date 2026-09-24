@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstddef>
 #include <vector>
@@ -32,7 +34,7 @@ struct VolumetricLight {
 };
 
 /** @brief Camera-frustum volume used by the volumetric fog passes and CPU references. */
-class AtmosphereVolume {
+class EVENGINE_API_BACKENDS AtmosphereVolume {
 public:
     /** @brief Resize the froxel grid and clear all media. */
     void resize(int width, int height, int depth);

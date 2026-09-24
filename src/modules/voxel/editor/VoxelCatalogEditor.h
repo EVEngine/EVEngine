@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VoxelCatalogEditor.h
@@ -30,7 +32,7 @@ enum class VoxelSculptTool { Attach, Erase };
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class VoxelCatalogEditor {
+class EVENGINE_API_EDITORS VoxelCatalogEditor {
 public:
     /** @brief Construct a seeded solid cube and a sculpted bed. */
     explicit VoxelCatalogEditor(std::string targetId);

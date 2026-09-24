@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "dialogue/ConversationCompiler.h"
 
@@ -15,7 +16,7 @@ struct ConversationLocalizationEntry {
 };
 
 /** @brief CSV-backed translation and voice recording catalog with default-locale resolution. */
-class ConversationLocalizationCatalog {
+class EVENGINE_API_ORCHESTRATION ConversationLocalizationCatalog {
 public:
     int         importCsv(const std::string& csv, const std::string& defaultLocale,
                           std::vector<ConversationDiagnostic>& diagnostics);

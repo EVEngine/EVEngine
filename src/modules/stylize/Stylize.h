@@ -49,7 +49,7 @@ class StyleRecipe;
  *
  * Script: `stylize <- eve.Stylize();`
  */
-class Stylize : public Module {
+class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
     Stylize() = default;

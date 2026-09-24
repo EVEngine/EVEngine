@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ContainerAdapters.h
@@ -29,7 +31,7 @@ struct InventoryContainerObject final : eve::container::ContainerObjectPayload {
  * EquipmentSet first, then binds a fresh adapter. The adapter never retains
  * temporary pointers in a snapshot and never deletes inventory items.
  */
-class InventoryContainerAdapter final : public eve::container::IContainer {
+class EVENGINE_API_FOUNDATION InventoryContainerAdapter final : public eve::container::IContainer {
 public:
     /**
      * @brief Bind a borrowed bag.

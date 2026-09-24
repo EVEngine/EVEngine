@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -37,7 +39,7 @@ struct VehicleSeatContainerObject final : eve::container::ContainerObjectPayload
  * seats, and the seat component's revision is the sole optimistic-concurrency
  * revision. VehicleSystem's legacy enter/exit facade delegates to this class.
  */
-class VehicleSeatContainerAdapter final : public eve::container::IContainer {
+class EVENGINE_API_DOMAINS VehicleSeatContainerAdapter final : public eve::container::IContainer {
 public:
     /**
      * @brief Binds an adapter to a live ECS vehicle.

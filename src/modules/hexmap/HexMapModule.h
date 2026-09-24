@@ -40,7 +40,7 @@ namespace eve::hexmap {
  * Thread affinity: main/render thread only; no callbacks are invoked and no
  * lock is held across an external call.
  */
-class HexMapModule : public Module {
+class EVENGINE_API_WORLD HexMapModule : public Module {
 public:
     Module_REG(HexMapModule);
 

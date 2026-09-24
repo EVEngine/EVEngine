@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -49,10 +51,10 @@ using TargetId                 = editing::TargetId;
 using editing::validatePropertyValue;
 
 /** @brief Shared property-document implementation for light and environment targets. */
-class LightingPropertyTargetBase : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION LightingPropertyTargetBase : public ::eve::editing::EditableTargetState,
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IPropertyProvider {
 public:
     TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
@@ -88,7 +90,7 @@ private:
 };
 
 /** @brief Serializable property target matching graphics::Light3D. */
-class Light3DDocumentTarget final : public LightingPropertyTargetBase {
+class EVENGINE_API_ORCHESTRATION Light3DDocumentTarget final : public LightingPropertyTargetBase {
 public:
     explicit Light3DDocumentTarget(std::string id);
     /** @brief Validate direction, shadow and point/directional cross-field rules. */
@@ -96,7 +98,7 @@ public:
 };
 
 /** @brief Serializable shared environment target for static, DayNight and Weather modes. */
-class EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
+class EVENGINE_API_ORCHESTRATION EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
 public:
     explicit EnvironmentDocumentTarget(std::string id);
     /** @brief Validate mode-dependent atmosphere and weather settings. */
@@ -104,13 +106,13 @@ public:
 };
 
 /** @brief Optional bridge applying a light document to graphics::Light3D. */
-class Light3DRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION Light3DRuntimeApplier {
 public:
     EditorResult<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
 };
 
 /** @brief Optional bridge applying environment properties to DayNight or Weather. */
-class EnvironmentRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION EnvironmentRuntimeApplier {
 public:
     EditorResult<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
     EditorResult<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;

@@ -81,5 +81,6 @@ protected:
  * work; create a new session for a new device.
  * @thread Graphics thread only, no concurrent calls, reentrancy or device destruction during runGpu.
  */
-[[nodiscard]] Result<std::unique_ptr<OnnxCompute>> createOnnxGpuCompute(uint32_t compilerWorkers = 4);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::unique_ptr<OnnxCompute>> createOnnxGpuCompute(
+    uint32_t compilerWorkers = 4);
 }  // namespace eve::tensor

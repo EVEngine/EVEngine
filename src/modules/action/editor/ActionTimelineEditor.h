@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ActionTimelineEditor.h
@@ -76,10 +78,10 @@ private:
  * document persistence, undo and runtime loading cannot drift into separate
  * field mappings.
  */
-class ActionTimelineTarget final : public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider,
-                                   public eve::editing::IEditingSnapshotProvider {
+class EVENGINE_API_EDITORS ActionTimelineTarget final : public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider,
+                                                        public eve::editing::IEditingSnapshotProvider {
 public:
     /**
      * @brief Construct an empty, valid seed timeline for automation and inspectors.
@@ -150,7 +152,7 @@ private:
  * and commits through the same authority/transaction path as other editors.
  * All methods are owner-thread-only and invoke no external callbacks.
  */
-class ActionTimelineEditor {
+class EVENGINE_API_EDITORS ActionTimelineEditor {
 public:
     /** @brief Construct a self-contained editor for one canonical timeline. */
     ActionTimelineEditor(std::string targetId, action::ActionTimeline timeline);
@@ -343,10 +345,16 @@ struct ActionTimelineTabSnapshot {
  * must outlive the workspace. Each save publishes the editor's canonical target
  * snapshot to DocumentService before requesting its revision-qualified CAS save.
  */
-class ActionTimelineDocumentWorkspace {
+class EVENGINE_API_EDITORS ActionTimelineDocumentWorkspace {
 public:
     /** @brief Bind a non-owning document service that outlives this workspace. */
     explicit ActionTimelineDocumentWorkspace(DocumentService& documents);
+
+    /** @brief Tab editors are uniquely owned; the workspace is move-only. */
+    ActionTimelineDocumentWorkspace(const ActionTimelineDocumentWorkspace&)            = delete;
+    ActionTimelineDocumentWorkspace& operator=(const ActionTimelineDocumentWorkspace&) = delete;
+    ActionTimelineDocumentWorkspace(ActionTimelineDocumentWorkspace&&)                 = default;
+    ActionTimelineDocumentWorkspace& operator=(ActionTimelineDocumentWorkspace&&)      = default;
 
     /**
      * @brief Open or activate one Montage asset document.

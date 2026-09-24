@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "map/level/editing/TileBuffer.h"
 
@@ -11,7 +13,7 @@ namespace eve::level_editing {
  * @brief Unity GridBrushBase-inspired tile brush.
  * Operates on TileBuffer; exposes preview + change list for UI / undo.
  */
-class Brush {
+class EVENGINE_API_DOMAINS Brush {
 public:
     Brush();
 

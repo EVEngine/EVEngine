@@ -23,7 +23,7 @@ namespace eve::caps {
  * Workers must not touch the Squirrel VM, Vulkan device, or Resource::adopt.
  * They may call `IAssetReloader::load()` and insert into ResourceManager.
  */
-class EVENGINE_API IAsyncWorkExecutor {
+class EVENGINE_API_FOUNDATION_INLINE IAsyncWorkExecutor {
 public:
     static constexpr const char *capabilityName = "IAsyncWorkExecutor";
     virtual ~IAsyncWorkExecutor() = default;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -25,7 +27,7 @@ class Texture;
  * RenderSystem3D also runs it automatically when `ssr` or `reflectionChain`
  * is enabled in RenderControl.
  */
-class ScreenSpaceReflection {
+class EVENGINE_API_BACKENDS ScreenSpaceReflection {
 public:
     explicit ScreenSpaceReflection(Graphics *gfx);
     ~ScreenSpaceReflection();

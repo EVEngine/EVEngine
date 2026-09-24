@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "pixelworld/PixelWorld.h"
 
@@ -15,7 +17,7 @@ namespace eve::pixelworld_thread {
  * `parallelFor` joins every submitted job before returning. Worker failure falls
  * back to a deterministic serial overwrite of all index-owned result slots.
  */
-class JobSystemPixelScheduler final : public eve::pixelworld::PixelWorkScheduler {
+class EVENGINE_API_PLATFORM JobSystemPixelScheduler final : public eve::pixelworld::PixelWorkScheduler {
 public:
     /**
      * @brief Borrow a running scheduler.

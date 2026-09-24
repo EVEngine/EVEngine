@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "definitions/editing/DefinitionTarget.h"
 #include "editing/EditingProperty.h"
@@ -17,7 +19,7 @@ template <class T>
 using EditorResult = eve::editing::Result<T>;
 
 /** @brief Schema-driven property adapter for one definition document. */
-class DefinitionSchemaFormTarget final : public IPropertyProvider {
+class EVENGINE_API_BACKENDS DefinitionSchemaFormTarget final : public IPropertyProvider {
 public:
     /** @brief Bind a document and exact immutable schema; both must outlive this adapter. */
     DefinitionSchemaFormTarget(DefinitionDocument* document,

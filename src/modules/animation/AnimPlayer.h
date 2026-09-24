@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimPose.h"
 #include "animation/AnimPoseSource.h"
@@ -23,7 +25,7 @@ class AnimSkeleton;
  * @brief Single-clip (or cross-fading) 3D animation player.
  * Script type: `AnimPlayer`.
  */
-class AnimPlayer : public IAnimPoseSource {
+class EVENGINE_API_WORLD AnimPlayer : public IAnimPoseSource {
 public:
     explicit AnimPlayer(AnimSkeleton* skeleton);
     ~AnimPlayer() override = default;

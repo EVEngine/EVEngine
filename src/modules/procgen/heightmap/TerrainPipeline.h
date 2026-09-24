@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/Heightmap.h"
 
@@ -48,7 +50,7 @@ struct ClimateMap {
 };
 
 /** @brief Per-cell diagnostic outputs produced by an erosion stage. */
-struct TerrainErosionMap {
+struct EVENGINE_API_DOMAINS TerrainErosionMap {
     int width = 0, height = 0;
     std::vector<float> wear;       ///< Gross material removed, in heightmap units.
     std::vector<float> deposition; ///< Material deposited after transport, in heightmap units.
@@ -66,7 +68,7 @@ struct TerrainErosionMap {
 };
 
 /** @brief Script-friendly ownership wrapper for baked hydrology and climate layers. */
-class TerrainLayers {
+class EVENGINE_API_DOMAINS TerrainLayers {
 public:
     TerrainLayers() = default;
     TerrainLayers(HydrologyMap hydrology, ClimateMap climate);
@@ -102,7 +104,7 @@ private:
 };
 
 /** @brief Deterministic CPU terrain baking stages shared by editors and runtime tools. */
-class TerrainPipeline {
+class EVENGINE_API_DOMAINS TerrainPipeline {
 public:
     /** @brief Relax slopes exceeding the configured talus angle while conserving mass. */
     static void erodeThermal(Heightmap &heightmap, const ThermalErosionSettings &settings = {});

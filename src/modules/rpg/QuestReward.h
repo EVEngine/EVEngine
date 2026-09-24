@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file QuestReward.h
@@ -19,7 +21,7 @@ class GameState;
 class Tracker;
 
 /** @brief Product-level transaction boundary for quest completion and rewards. */
-class QuestReward {
+class EVENGINE_API_PLATFORM QuestReward {
 public:
     /**
      * @brief Validate and atomically claim every reward declared by one ready quest.

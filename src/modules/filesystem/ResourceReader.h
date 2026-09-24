@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ResourceReader.h
@@ -25,7 +26,7 @@ namespace eve::filesystem {
  * IFileSystem must outlive this reader; reads are synchronous and execute with
  * the provider's thread-affinity contract.
  */
-class EVENGINE_API ResourceReader {
+class EVENGINE_API_FOUNDATION ResourceReader {
 public:
     /**
      * @brief Borrow a filesystem capability for synchronous resource reads.

@@ -1,6 +1,25 @@
 #include "editor/EditorDiagnostics.h"
 
+#include "settlement/SettlementRules.h"
+
 namespace eve::editor {
+
+EditorValidationService::EditorValidationService() {
+    rules_.emplace(RuleId("settlement.rules.document"),
+                   RegisteredRule{"settlement", [](const ValidationRequest& request) {
+                                      if (request.subject != "settlement.rules")
+                                          return std::vector<EditorDiagnostic>{};
+                                      const auto* json = request.value.getIf<std::string>();
+                                      if (json == nullptr)
+                                          return std::vector<EditorDiagnostic>{eve::editing::ruleDiagnostic(
+                                              eve::DiagnosticCode::TypeMismatch,
+                                              RuleId("settlement.rules.document"), DiagnosticSeverity::Error,
+                                              "Settlement rule document must be supplied as JSON text")};
+                                      auto inspected = settlement::SettlementRuleSet::fromJson(*json);
+                                      if (inspected) return std::vector<EditorDiagnostic>{};
+                                      return inspected.status().diagnostics();
+                                  }});
+}
 
 EditorResult<void> EditorValidationService::registerRule(std::string owner, RuleId id, Rule rule) {
     if (owner.empty() || id.empty() || !rule)

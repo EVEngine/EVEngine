@@ -83,18 +83,18 @@ public:
  * @return Owning response object, or structured parse/routing/runtime diagnostics.
  * @remarks Unknown root fields are rejected. Nested `batch` is rejected.
  */
-[[nodiscard]] EVENGINE_API Result<Value> executePlayRequest(const Value& request, IPlayHostRuntime& runtime);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> executePlayRequest(const Value& request, IPlayHostRuntime& runtime);
 
 /**
  * @brief Execute one Play request against the live engine runtime.
  * @param request Object with schema id `evengine.play-request` and version 1.
  */
-[[nodiscard]] EVENGINE_API Result<Value> executePlayRequest(const Value& request);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> executePlayRequest(const Value& request);
 
 /**
  * @brief Parse, execute and serialize one Play JSON request against the live engine.
  * @param requestJson Strict UTF-8 JSON request.
  */
-[[nodiscard]] EVENGINE_API Result<std::string> executePlayJson(std::string_view requestJson);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> executePlayJson(std::string_view requestJson);
 
 }  // namespace eve::dev

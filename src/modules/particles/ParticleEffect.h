@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Time.h"
@@ -17,7 +19,7 @@ class ParticleEmitter;
  * The instance owns every emitter created by the asset. Its transform, playback,
  * visibility, layer, and exposed parameters are applied to the group as a unit.
  */
-class ParticleEffect {
+class EVENGINE_API_DOMAINS ParticleEffect {
 public:
     /** @brief Destroy the group and every emitter it owns. */
     ~ParticleEffect();

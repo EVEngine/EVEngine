@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -59,11 +61,11 @@ struct StylizePassValue {
 };
 
 /** @brief Serializable ordered style recipe with dynamic parameter Inspector. */
-class StylizeRecipeTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider {
+class EVENGINE_API_DOMAINS StylizeRecipeTarget final : public ::eve::editing::EditableTargetState,
+                                                       public virtual IEditableTarget,
+                                                       public IDomainOperationTarget,
+                                                       public IDomainOperationTargetStaging,
+                                                       public IPropertyProvider {
 public:
     explicit StylizeRecipeTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -106,7 +108,7 @@ private:
 };
 
 /** @brief Compiled, owned StyleRecipe generation used for live and offscreen preview. */
-class StylizeRecipeRuntime {
+class EVENGINE_API_DOMAINS StylizeRecipeRuntime {
 public:
     StylizeRecipeRuntime();
     ~StylizeRecipeRuntime();

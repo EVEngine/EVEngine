@@ -1,6 +1,6 @@
 #pragma once
+#include "common/Export.h"
 
-#include "common/Object.h"
 
 #include <memory>
 #include <vector>
@@ -19,11 +19,11 @@ namespace sound {
  * share immutable encoded storage and own independent playback positions.
  * Each decoder is thread-affine; calls on one instance must be serialized.
  */
-class Decoder : public Object {
+class EVENGINE_API_PLATFORM Decoder {
 public:
     /** @brief Wraps a medialoader decoder and the encoded bytes it needs. */
     Decoder(std::unique_ptr<medialoader::Decoder> impl, std::vector<char> ownedData);
-    ~Decoder() override;
+    ~Decoder();
 
     /**
      * @brief Creates a caller-owned decoder positioned at the start of the stream.

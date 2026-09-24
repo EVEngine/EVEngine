@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -20,7 +22,7 @@ enum class PcgPhotoModeWidgetKind {
 enum class PcgPhotoModeInputStatus { Ignored = 0, Applied = 1 };
 
 /** @brief Backend-neutral state of one Pcg PhotoModeUIHelper prefab instance. */
-class PcgPhotoModeRuntimeUI {
+class EVENGINE_API_WORLD PcgPhotoModeRuntimeUI {
 public:
     /** @brief Configure one widget family and publish its initial callback revision. */
     [[nodiscard]] Result<void> configure(int kind, const std::string &name, const std::string &value,

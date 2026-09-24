@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <squirrel.h>
 
 namespace eve::ui {
 namespace {
@@ -51,6 +52,10 @@ DatabasePanel::~DatabasePanel() {
     // The ECS host outlives this panel; drop its tree so the stored widget
     // callbacks (which capture `this`) are released while we are still alive.
     if (auto host = UIHost::resolve(host_)) host->get().setTree(window("", {}));
+    if (!ModuleManager::runtime()) {
+        for (auto& entry : entries_) sq_resetobject(&entry.object.getRaw());
+    }
+    entries_.clear();
 }
 
 void DatabasePanel::open() {

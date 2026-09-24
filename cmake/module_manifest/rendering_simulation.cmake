@@ -136,6 +136,6 @@ eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT 
                    DEPS data
                    GROUP 3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
-                   DEPS attributes decision definitions effects graphics transaction)
+                   DEPS attributes decision definitions effects graphics settlement transaction)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
                    DEPS graphics sound)

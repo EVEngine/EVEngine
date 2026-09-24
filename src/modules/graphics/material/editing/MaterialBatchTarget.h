@@ -21,12 +21,12 @@ public:
 /** @brief One editor transaction target for mixed-value, multi-material property editing.
  * Owns all authoring documents and publishes a complete candidate set through one atomic sink call.
  */
-class MaterialBatchTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider,
-                                  public editing::IEditingSnapshotProvider {
+class EVENGINE_API_BACKENDS MaterialBatchTarget final : public ::eve::editing::EditableTargetState,
+                                                        public virtual IEditableTarget,
+                                                        public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider,
+                                                        public editing::IEditingSnapshotProvider {
 public:
     /** @brief Construct a batch from uniquely identified owning documents.
      * @param sink Borrowed optional runtime sink that must outlive this target.

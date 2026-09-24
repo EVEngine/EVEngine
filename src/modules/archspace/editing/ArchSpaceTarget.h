@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "archspace/ArchSpaceDocument.h"
 #include "editing/EditableTarget.h"
@@ -51,12 +53,12 @@ using editing::validatePropertyValue;
  * operations. High-level helpers (bootstrap/room/opening/item) plan those
  * replacements without bypassing validation.
  */
-class ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                      public virtual IEditableTarget,
-                                      public IDomainOperationTarget,
-                                      public IDomainOperationTargetStaging,
-                                      public IPropertyProvider,
-                                      public IEditingSnapshotProvider {
+class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public IPropertyProvider,
+                                                           public IEditingSnapshotProvider {
 public:
     explicit ArchSpaceDocumentTarget(std::string id);
 

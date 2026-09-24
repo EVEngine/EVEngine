@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionTimelinePayloadEditor.h @brief Validated partial editing for action-block payloads. */
 
@@ -15,7 +17,7 @@ namespace eve::editor {
  * The adapter borrows an editor and registry that must outlive it. Calls are owner-thread-only.
  * Existing and unknown payload fields are preserved; the merged payload is validated before publication.
  */
-class ActionTimelinePayloadEditor {
+class EVENGINE_API_EDITORS ActionTimelinePayloadEditor {
 public:
     /** @brief Construct a transient payload editor over borrowed authoritative services. */
     ActionTimelinePayloadEditor(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)

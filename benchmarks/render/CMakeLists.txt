@@ -2,7 +2,7 @@ add_executable(render_benchmark main.cpp)
 
 eve_append_system_libraries(_render_bench_sys)
 eve_thirdparty_libs(_render_bench_tp ${EVE_THIRDPARTY_GROUPS})
-set(_render_bench_libs EVScripts ${EVE_MODULE_LIBS})
+set(_render_bench_libs EVScripts ${EVE_LINK_TARGETS})
 if(TARGET eve_imgui)
     list(APPEND _render_bench_libs eve_imgui)
 endif()

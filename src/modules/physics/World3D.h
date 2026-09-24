@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Snapshot.h"
 #include "common/Result.h"
@@ -56,7 +58,7 @@ enum class ClothProbeStatus { Miss, Hit };
  * @brief Box3D rigid-body world. Script coordinates are meters (Box3D native),
  * unlike 2D World which uses pixels + Physics.setMeter.
  */
-class World3D {
+class EVENGINE_API_WORLD World3D {
 public:
     /** @brief Stable snapshot describing one side of a 3D collision event. */
     struct EventShape {

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -21,7 +23,7 @@ class Texture;
  *
  * Textures are owned by the Graphics backend for the active frame size.
  */
-class GBuffer {
+class EVENGINE_API_BACKENDS GBuffer {
 public:
     GBuffer() = default;
     ~GBuffer() = default;

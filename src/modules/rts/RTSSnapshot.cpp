@@ -608,6 +608,9 @@ Result<std::string> RTS::canonicalStateJson() const {
         for (const auto& [resource, reserve] : value.productionPolicy.resourceReserves)
             productionReserves.emplace(resource, Value(Value::Object{
                 {"amount", reserve.amount}, {"minimumPriority", reserve.minimumPriority}}));
+        Value::Object unlockedDefinitions;
+        for (const auto& [upgrade, definition] : value.technology.unlockedDefinitions)
+            unlockedDefinitions.emplace(upgrade, Value(definition));
         factions.emplace_back(Value::Object{
             {"buildings", refsValue(value.buildings)}, {"contacts", Value(std::move(contacts))},
             {"displayName", value.displayName}, {"intelEnabled", value.intel.enabled},
@@ -619,6 +622,7 @@ Result<std::string> RTS::canonicalStateJson() const {
                 {"workerDefinition", value.strategy.workerDefinition.format()},
                 {"workers", value.strategy.desiredWorkers}})}, {"subject", value.subject.format()},
             {"technology", Value(Value::Object{{"consumed", stringsValue(value.technology.consumedTasks)},
+                                                {"definitions", Value(std::move(unlockedDefinitions))},
                                                 {"unlocked", stringsValue(value.technology.unlocked)}})},
             {"productionPolicy", Value(Value::Object{{"resourceReserves", Value(std::move(productionReserves))}})},
             {"units", refsValue(value.units)},

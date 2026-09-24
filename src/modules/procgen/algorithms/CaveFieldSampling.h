@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
@@ -17,11 +19,13 @@ struct CaveResampledField {
     int                nz = 0;
 };
 
-float          sampleCaveDensity(const std::vector<float>& density, int nx, int ny, int nz, CaveFieldPoint point);
-CaveFieldPoint sampleCaveDensityGradient(const std::vector<float>& density, int nx, int ny, int nz,
-                                         CaveFieldPoint point);
+EVENGINE_API_DOMAINS float          sampleCaveDensity(const std::vector<float>& density, int nx, int ny, int nz,
+                                                      CaveFieldPoint point);
+EVENGINE_API_DOMAINS CaveFieldPoint sampleCaveDensityGradient(const std::vector<float>& density, int nx, int ny, int nz,
+                                                              CaveFieldPoint point);
 CaveFieldPoint projectToCaveDensitySurface(CaveFieldPoint meshPoint, const std::vector<float>& density, int nx, int ny,
                                            int nz);
-CaveResampledField resampleCaveDensity(const std::vector<float>& density, int nx, int ny, int nz, int factor);
+EVENGINE_API_DOMAINS CaveResampledField resampleCaveDensity(const std::vector<float>& density, int nx, int ny, int nz,
+                                                            int factor);
 
 }  // namespace eve::procgen

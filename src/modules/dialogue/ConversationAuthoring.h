@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "dialogue/ConversationCompiler.h"
 
@@ -8,7 +10,7 @@
 namespace eve::dialogue {
 
 /** @brief Mutable, UI-neutral conversation document for custom editor composition. */
-class ConversationDocument {
+class EVENGINE_API_ORCHESTRATION ConversationDocument {
 public:
     /** @brief Create an empty document with one end node. */
     explicit ConversationDocument(std::string id = {});

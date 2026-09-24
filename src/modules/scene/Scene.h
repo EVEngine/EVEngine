@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -46,7 +48,7 @@ class SceneObject;
  * mount / remountReconcile / beginBuild. TransformSystem propagates world matrices
  * and syncs linked Renderable2D/3D transforms.
  */
-class Scene : public Module {
+class EVENGINE_API_PLATFORM Scene : public Module {
 public:
     Module_REG(Scene);
     Scene();

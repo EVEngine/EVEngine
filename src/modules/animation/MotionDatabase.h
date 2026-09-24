@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/AnimPose.h"
 #include "common/Result.h"
@@ -35,7 +36,7 @@ struct MotionNormalizationRange {
  * see setLocomotionFeatures(). Existing databases retain the basic layout.
  * Script type: `MotionDatabase`.
  */
-class MotionDatabase {
+class EVENGINE_API_WORLD MotionDatabase {
 public:
     explicit MotionDatabase(AnimSkeleton* skeleton);
     ~MotionDatabase();

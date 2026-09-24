@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 #include "joystick/Pad.h"
 
@@ -10,7 +11,7 @@ namespace eve::joystick {
 /**
  * @brief Joystick / gamepad manager. Tracks connected pads and gamecontroller mappings.
  */
-class Joystick : public Module {
+class EVENGINE_API_PLATFORM Joystick : public Module {
 public:
     Module_REG(Joystick);
 

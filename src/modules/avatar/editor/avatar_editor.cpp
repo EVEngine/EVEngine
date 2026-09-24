@@ -12,7 +12,9 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::avatar_editor {
 namespace {
@@ -35,7 +37,7 @@ editor::EditorResult<void> apply(avatar_editing::AvatarDocumentTarget& target,
 
 class AvatarEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "avatar"; }
+    std::vector<std::string_view> types() const override { return {"avatar"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) override {

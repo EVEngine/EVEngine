@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSEffects.h
@@ -72,7 +74,7 @@ public:
 };
 
 /** @brief RTS adapter that keeps the common container as the sole instance owner. */
-class RTSEffectAdapter {
+class EVENGINE_API_DOMAINS RTSEffectAdapter {
 public:
     /** @brief Apply one typed effect to a stable subject. */
     [[nodiscard]] eve::Result<effects::EffectHandle> apply(const RTSEffectDefinition& definition,
@@ -113,7 +115,7 @@ private:
  * by the RTS facade when the entity is created; systems advance this component
  * with the same injected SimulationStep used by the rest of the RTS world.
  */
-class RTSEffectComponent final {
+class EVENGINE_API_DOMAINS RTSEffectComponent final {
 public:
     /** @brief Bind the owning entity subject before applying effects. */
     [[nodiscard]] eve::Result<void> bindSubject(eve::SubjectRef subject);

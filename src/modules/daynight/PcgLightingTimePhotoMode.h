@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/PcgPhotoModeApply.h"
 
@@ -11,7 +13,7 @@ class DayNight;
  * @lifetime The borrowed DayNight target must outlive this authority or be detached before destruction.
  * @thread Game thread only; no callbacks or scripts are invoked.
  */
-class PcgLightingTimePhotoMode final : public IPhotoModeFieldSink {
+class EVENGINE_API_WORLD PcgLightingTimePhotoMode final : public IPhotoModeFieldSink {
 public:
     ~PcgLightingTimePhotoMode() override;
     /** @brief Attach a borrowed DayNight target. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -16,7 +18,7 @@ namespace eve::audio_editor {
  * @threadaffinity Owner/composition thread only.
  * @reentrancy Do not construct or destroy while a command planner is running.
  */
-class AudioEditorModule final : public Module {
+class EVENGINE_API_EDITORS AudioEditorModule final : public Module {
 public:
     Module_REG(AudioEditorModule);
     AudioEditorModule();

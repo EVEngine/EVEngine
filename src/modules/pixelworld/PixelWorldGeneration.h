@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "pixelworld/PixelWorld.h"
 
@@ -65,9 +67,8 @@ struct PixelWorldGenerationOutput {
  * The caller may transactionally admit `output.batch` through `PixelWorld::applyChunkBatch`.
  * Unknown schema versions are rejected and no world state is observed or changed.
  */
-[[nodiscard]] eve::Result<PixelWorldGenerationOutput> generatePixelWorld(
-    const PixelWorldGenerationRequest& request, const MaterialCatalog& catalog,
-    std::uint64_t sourceRevision, eve::SimulationTick sourceTick = eve::SimulationTick::zero(),
-    std::uint64_t sourceLastEditSequence = 0);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<PixelWorldGenerationOutput> generatePixelWorld(
+    const PixelWorldGenerationRequest& request, const MaterialCatalog& catalog, std::uint64_t sourceRevision,
+    eve::SimulationTick sourceTick = eve::SimulationTick::zero(), std::uint64_t sourceLastEditSequence = 0);
 
 }  // namespace eve::pixelworld

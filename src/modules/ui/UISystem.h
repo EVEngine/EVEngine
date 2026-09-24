@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "ui/UIHost.h"
@@ -88,7 +90,7 @@ struct ViewportState {
     float wheel = 0.f;
 };
 
-class UISystem {
+class EVENGINE_API_WORLD UISystem {
 public:
     /** @brief Sets the borrowed backend used for the current UI/render lifetime. */
     static void setBackend(UIBackend &backend);

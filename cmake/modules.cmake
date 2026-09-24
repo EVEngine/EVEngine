@@ -394,6 +394,62 @@ function(eve_resolve_modules)
     set(EVE_MODULE_LIBS "${_libs}" CACHE INTERNAL "Module OBJECT libraries to link")
     set(EVE_THIRDPARTY_GROUPS "${_tp_sorted}" CACHE INTERNAL "Third-party groups to link")
 
+    # --- 5. link groups -------------------------------------------------------
+    # Map every enabled module onto its link group (EVE_LINK_GROUP_TABLE). The
+    # link targets consumers use are the module libraries in OBJECT mode -- so an
+    # existing build is byte-for-byte unaffected -- and the group DLLs in SHARED
+    # mode. EVE_MODULE_<name>_LINK_GROUP records the assignment so
+    # cmake/link_groups.cmake can aggregate without re-reading the table.
+    set(_eve_group_order "")
+    foreach(_eve_row IN LISTS EVE_LINK_GROUP_TABLE)
+        string(REPLACE "|" ";" _eve_row_parts "${_eve_row}")
+        list(LENGTH _eve_row_parts _eve_row_len)
+        if(NOT _eve_row_len EQUAL 2)
+            message(FATAL_ERROR
+                "EVE_LINK_GROUP_TABLE row '${_eve_row}' must be \"<dll name>|<layers>\"")
+        endif()
+        list(GET _eve_row_parts 0 _eve_group)
+        list(GET _eve_row_parts 1 _eve_group_layers)
+        # The row separates layers with spaces (a ';' cannot appear inside a
+        # CMake list element), but `foreach(... IN LISTS ...)` splits on ';', so
+        # turn them into a real list before iterating.
+        string(REPLACE " " ";" _eve_group_layers "${_eve_group_layers}")
+        list(APPEND _eve_group_order "${_eve_group}")
+        foreach(_eve_group_layer IN LISTS _eve_group_layers)
+            set(_eve_layer_group_${_eve_group_layer} "${_eve_group}")
+        endforeach()
+    endforeach()
+
+    foreach(m IN LISTS _enabled)
+        set(_eve_layer "${EVE_MODULE_${m}_LAYER}")
+        if(_eve_layer STREQUAL "")
+            message(FATAL_ERROR
+                "Module '${m}' declares no LAYER, so it cannot be assigned to a link group")
+        endif()
+        if(NOT DEFINED _eve_layer_group_${_eve_layer})
+            message(FATAL_ERROR
+                "Module '${m}' is at LAYER ${_eve_layer}, which no EVE_LINK_GROUP_TABLE row covers")
+        endif()
+        set(EVE_MODULE_${m}_LINK_GROUP "${_eve_layer_group_${_eve_layer}}" CACHE INTERNAL "")
+    endforeach()
+
+    # Groups present in this profile, in table order (== DLL import order).
+    set(_eve_groups_present "")
+    foreach(_eve_group IN LISTS _eve_group_order)
+        foreach(m IN LISTS _enabled)
+            if(EVE_MODULE_${m}_LINK_GROUP STREQUAL _eve_group)
+                list(APPEND _eve_groups_present "${_eve_group}")
+                break()
+            endif()
+        endforeach()
+    endforeach()
+    set(EVE_LINK_GROUP_NAMES "${_eve_groups_present}" CACHE INTERNAL "Link groups in this profile")
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        set(EVE_LINK_TARGETS "${_eve_groups_present}" CACHE INTERNAL "Link targets for consumers")
+    else()
+        set(EVE_LINK_TARGETS "${_libs}" CACHE INTERNAL "Link targets for consumers")
+    endif()
+
     list(LENGTH EVE_ALL_MODULES _total)
     list(LENGTH _enabled _count)
     message(STATUS "Modules enabled: ${_count}/${_total}")

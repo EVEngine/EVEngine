@@ -34,6 +34,7 @@
 #include <random>
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 namespace eve::rpg {
 
@@ -553,6 +554,41 @@ void RPG::clearSettlementPipeline(const std::string &pipeline) {
     SettlementPipeline::clearPipeline(pipeline);
 }
 
+namespace {
+
+void bindNative(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
+
+SQInteger sqActorBeginCastSkill(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 2 || n > 3)
+        return sq_throwerror(vm, "RPGActor.beginCastSkill expects (skillId [, target])");
+    RPGActor *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self)
+        return sq_throwerror(vm, "invalid RPGActor");
+    const SQChar *skillId = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &skillId)))
+        return sq_throwerror(vm, "RPGActor.beginCastSkill skillId must be a string");
+    RPGActor *target = nullptr;
+    if (n >= 3 && sq_gettype(vm, 3) != OT_NULL) {
+        if (sq_gettype(vm, 3) != OT_INSTANCE ||
+            SQ_FAILED(sq_getinstanceup(vm, 3, reinterpret_cast<SQUserPointer *>(&target), nullptr)))
+            return sq_throwerror(vm, "RPGActor.beginCastSkill target must be RPGActor or null");
+    }
+    sq_pushbool(vm, self->beginCastSkill(skillId ? skillId : "", target) ? SQTrue : SQFalse);
+    return 1;
+}
+
+}  // namespace
+
 void RPG::expose(ssq::Table &table) {
     const HSQUIRRELVM vm = table.getHandle();
     auto cls = table.addClass(name, RPG::create, false);
@@ -630,7 +666,9 @@ void RPG::expose(ssq::Table &table) {
     actor.addFunc("setSkillCooldown", &RPGActor::setSkillCooldown);
     actor.addFunc("canCastSkill", &RPGActor::canCastSkill);
     actor.addFunc("canCastSkillReason", &RPGActor::canCastSkillReason);
-    actor.addFunc("beginCastSkill", &RPGActor::beginCastSkill);
+    // SimpleSquirrel 把 RPGActor* 当成必填 INSTANCE；脚本传 null（无目标 buff）
+    // 会抛 "bad cast expected INSTANCE got NULLPTR"。C++ 侧 target 本就可空。
+    bindNative(actor, "beginCastSkill", sqActorBeginCastSkill, 2, _SC("xs."));
     actor.addFunc("cancelCastSkill", &RPGActor::cancelCastSkill);
     actor.addFunc("isCastingSkill", &RPGActor::isCastingSkill);
     actor.addFunc("getCastingSkillId", &RPGActor::getCastingSkillId);
@@ -782,6 +820,17 @@ void RPG::expose(ssq::Table &table) {
     auto battle = table.addClass<Battle>(
         "Battle", std::function<Battle *()>([]() { return new Battle(); }), true);
     battle.addFunc("addActor", &Battle::addActor);
+    battle.addFunc("configureSettlementRulesJson", [vm](Battle* value, const std::string& json) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Battle receiver must not be null", "battle", {},
+                        "rpg.squirrel")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(rules.status()));
+        return eve::script::projectResult(vm, value->configureSettlementRules(rules.value()));
+    });
     battle.addFunc("setAction", &Battle::setAction);
     battle.addFunc("setActionChecked",
                    [vm](Battle *value, RPGActor *actor, const std::string &skillId,

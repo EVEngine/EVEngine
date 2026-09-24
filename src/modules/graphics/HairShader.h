@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -14,11 +16,11 @@ namespace hair {
 Shader *createShader(Graphics *gfx);
 
 /** @brief Bind default push-constant knobs on an existing hair shader. */
-void bindDefaults(Shader *shader);
+EVENGINE_API_BACKENDS void bindDefaults(Shader *shader);
 
 /** @brief Push-constant parameter names (same order as mesh3d_hair.frag). */
-int paramCount();
-std::string paramName(int index);
+EVENGINE_API_BACKENDS int paramCount();
+EVENGINE_API_BACKENDS std::string paramName(int index);
 
 }  // namespace hair
 

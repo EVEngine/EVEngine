@@ -35,7 +35,7 @@ class UIHost;
  * Inherited members are grouped under their owning (base) class header, so
  * parent properties are editable side-by-side (see docs/dev/界面设计.md).
  */
-class EVENGINE_API Inspector {
+class EVENGINE_API_WORLD Inspector {
 public:
     Inspector() = default;
     ~Inspector();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file SequenceAsset.h @brief Domain-neutral compiled sequence graph for `.dnut` sources. */
 
@@ -41,7 +43,7 @@ struct SequenceNode {
 };
 
 /** @brief Immutable, parameterized and versioned compiled sequence. */
-struct SequenceAsset {
+struct EVENGINE_API_PLATFORM SequenceAsset {
     std::string              id;
     int                      version    = 1;
     bool                     repeatable = false;

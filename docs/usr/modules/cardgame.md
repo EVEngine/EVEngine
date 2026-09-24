@@ -43,6 +43,21 @@ card.render(gfx);            // 画落牌区 + 所有手牌
 card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 ```
 
+单张 `CardData` 可安装与 RPG、RTS 相同 schema 的通用结算规则。替换是原子的，解析或校验失败时旧规则继续生效：
+
+```squirrel
+local unit = card.newCard("flame");
+local configured = unit.configureSettlementRulesJson(@"{
+  ""schema"":""settlement.rules"",""version"":1,
+  ""rules"":[{
+    ""id"":""card_barrier"",""source"":""card:barrier"",
+    ""stage"":""armor_shield"",""operation"":""absorb_flat"",
+    ""value"":5.0,""kinds"":[""damage""]
+  }]
+}");
+if (!configured.ok) throw configured.status.summary;
+```
+
 ## 对象关系与调用时机
 
 `eve.Card()` 是单例模块，持有全部状态：卡牌类型定义表（`registerCardsFromJson`）、一份牌库（`newDeck`）、若干手牌（`newHand`）、若干落牌区（`newZone`）、若干布局配置（`newConfig`）。`new*` 返回的脚本对象是**非拥有句柄**——底层 C++ 对象由模块持有，脚本持有引用即可跨帧使用（不要手动释放）。
@@ -73,6 +88,12 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 
 把 `LayoutConfig` 的 getter/setter 接到 ImGui 面板：`ui.slider` + `ui.consumeChange` + `ui.getValue`，每帧用 `ui.setValue` 同步。可调：`spacing`、`arcHeight`、`rotationAngle`、`hoverRotation`、`hoverScale`、`hoverLift`、`hoverSpeed`、`motionSpeed`、`disabledAlpha`、`handY`。
 
+### 把一手牌交给 MCP / 玩法协议
+
+`publishGameplay(instanceId, ownerId, hand)` 把手牌发布到共享玩法协议（`eve_gameplay` 工具的 `observe/actions/submit/advance/events`），返回 `{ ok, message }`；`instanceId` / `ownerId` 必须是规范持久 id（UUID 文本）。`unpublishGameplay(instanceId)` 取消发布，`clearGameplayControls()` 一次清空，`getGameplayControlCount()` 读取已发布数量（可同时发布多手牌，各自独立）。
+
+动作词表就是本模块自己的操作：`card:draw` 走牌库到手牌的抽取，`card:play{card}` 走 `Card::play`（条件 + 容器 + 支付事务），`card:set-attribute{card, attribute, value}` 会改写权威战斗属性，因此只对 test-driver / developer-cheat 档位开放。观察结果包含手牌（实例 id、定义、名称、种类、费用/攻击/生命、状态、是否禁用）、牌库剩余数与支付绑定情况：出牌需要游戏自己的权威账户，发布时可绑定一个借用的 `IResourceAccount`；未绑定时 `payment` 为 `unbound`，零费卡照常出牌、收费卡会得到"没有绑定支付账户"的明确诊断，而不是动作消失。
+
 ## 常见问题
 
 - 卡牌文字：C++ 模块会使用 Graphics 当前字体绘制文字；未设置字体时静默跳过文字，只画色块/宝石。字体资源由宿主渲染初始化流程管理。
@@ -89,10 +110,11 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 - `eve.Card()` 状态：`setConfig`/`getConfig`、`handCount`/`getHand`/`findHand`、`zoneCount`/`getZone`、`getDeck`、`drawCard(handOwner)`
 - `eve.Card()` 每帧：`update(dt, mx, my, down)`、`render(gfx)`、`renderDeck(gfx)`、`set/getBuiltInVisuals`
 - `eve.Card()` 表现快照：`capturePresentation`、`getPresentationCount`、`getPresentation(index)`
+- `eve.Card()` 玩法协议发布：`publishGameplay(instanceId, ownerId, hand)`、`unpublishGameplay(instanceId)`、`clearGameplayControls`、`getGameplayControlCount`
 - `eve.Card()` 事件：`clearEvents`、`getEventCount`、`getEventType`、`getEventHand`、`getEventZone`、`getEventCardId`、`getEventReason`
 - `eve.Card()` 目标选择：`beginTargeting`、`updateTargeting`、`cancelTargeting`、`renderTargeting`、`isTargeting`、`isTargetValid`、`getTargetSource`、`getTargetId`
 - `LayoutConfig`：`get/setCardW`、`get/setCardH`、`get/setSpacing`、`get/setHandX`、`get/setHandY`、`get/setArcHeight`、`get/setRotationAngle`、`get/setHoverRotation`、`get/setHoverScale`、`get/setHoverLift`、`get/setHoverSpeed`、`get/setMotionSpeed`、`get/setDisabledAlpha`、`get/setShowZones`、`get/setDeckX`、`get/setDeckY`、`get/setDragThreshold`
-- `CardData`：`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
+- `CardData`：`configureSettlementRulesJson(json)`、`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
 - `CardPresentationSnapshot`：`getInstanceId/getDefinitionId/getState`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging/isDisabled/isFaceUp`
 - `Deck`：`push`、`draw`、`peek`、`count`、`isEmpty`、`clear`、`shuffle`、`getCard`
 - `Zone`：`getId/setId`、`getLabel/setLabel`、`getX/getY/getW/getH`、`setRect`、`getColorR/G/B`、`setColor(r, g, b)`、`getAlpha/setAlpha`、`isEnabled/setEnabled`、`addAcceptKind`、`clearAcceptKinds`、`accepts`、`contains`、`render`

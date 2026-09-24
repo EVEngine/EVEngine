@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackImageLoader.h @brief Transactional EVIMG runtime texture loading. */
 
@@ -21,7 +23,7 @@ struct LoadedGraphicsImage {
 };
 
 /** @brief Result-based adapter over the engine's established graphics resource factory. */
-class GraphicsImageFactoryAdapter final : public graphics::IImageResourceFactory {
+class EVENGINE_API_WORLD GraphicsImageFactoryAdapter final : public graphics::IImageResourceFactory {
 public:
     /** @brief Bind a borrowed graphics factory that must outlive this adapter. */
     explicit GraphicsImageFactoryAdapter(graphics::IResourceFactory& factory) noexcept
@@ -55,7 +57,7 @@ private:
 };
 
 /** @brief Capability-aware adapter from admitted EVIMG assets to backend textures. */
-class EvpackImageLoader {
+class EVENGINE_API_WORLD EvpackImageLoader {
 public:
     /** @brief Bind borrowed reader and image factory; both must outlive this loader. */
     EvpackImageLoader(const asset::EvpackResourceReader& reader,
@@ -91,7 +93,7 @@ struct LoadedGraphicsVolumeTexture {
 };
 
 /** @brief Capability-aware loader for canonical volume-texture/1 assets. */
-class EvpackVolumeTextureLoader {
+class EVENGINE_API_WORLD EvpackVolumeTextureLoader {
 public:
     /** @brief Bind borrowed reader and image factory; both must outlive this loader. */
     EvpackVolumeTextureLoader(const asset::EvpackResourceReader& reader,

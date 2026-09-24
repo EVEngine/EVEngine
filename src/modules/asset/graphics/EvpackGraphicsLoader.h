@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackGraphicsLoader.h @brief Transactional graphics consumers for canonical runtime assets. */
 
@@ -37,7 +39,7 @@ struct GraphicsAssetLoadLimits {
 };
 
 /** @brief Result-based adapter over the engine's established graphics resource factory. */
-class GraphicsMeshFactoryAdapter final : public graphics::IMeshResourceFactory {
+class EVENGINE_API_WORLD GraphicsMeshFactoryAdapter final : public graphics::IMeshResourceFactory {
 public:
     /** @brief Bind a borrowed graphics factory that must outlive this adapter. */
     explicit GraphicsMeshFactoryAdapter(graphics::IResourceFactory& factory) noexcept
@@ -75,7 +77,7 @@ private:
 };
 
 /** @brief Capability-aware adapter from admitted `.evpack` assets to graphics resources. */
-class EvpackGraphicsLoader {
+class EVENGINE_API_WORLD EvpackGraphicsLoader {
 public:
     /** @brief Bind a reader and backend factory; both must outlive this adapter. */
     EvpackGraphicsLoader(const asset::EvpackResourceReader& reader,

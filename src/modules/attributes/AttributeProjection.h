@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AttributeProjection.h
@@ -50,7 +52,7 @@ struct AttributeProjectionSnapshot {
  * ECS changes. `restore` first builds a candidate set and publishes it only
  * after all validation and modifier insertion succeeds.
  */
-class AttributeProjection {
+class EVENGINE_API_FOUNDATION AttributeProjection {
 public:
     /** @brief Construct an empty projection with an optional stable subject id. */
     AttributeProjection(std::string subject = {});

@@ -107,9 +107,47 @@ checkout is on that commit.
 
 ### Building
 - Debug (Ninja + MSVC `cl`, fastest local iteration):
-  `make build/win32-debug`
+  `make build/win32-debug`. This matches the CI windows debug job, including
+  `-DEVENGINE_ENABLE_STRICT_WARNINGS=ON` (MSVC `/W4 /WX`). Opt out with
+  `CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF`.
+- Before opening a PR, run the same source-only job CI runs:
+  `make check` (needs `python3`, `ruff`, `pillow`, clang-format 18 / `git clang-format`).
+  Then `make test/win32-debug` (or `FILTER=<prefix>`) for the host test lane.
 - Release (Visual Studio generator):
   `make build/win32`
+- **Module linkage policy**: `EVENGINE_MODULE_LINKAGE=SHARED` (one DLL per link
+  group) is the default, and the full suite is green under it on Windows and
+  Linux (5561 cases on Windows), so iterating on a domain test relinks a test
+  executable instead of the whole engine. Anything that ships an artifact must
+  pass `OBJECT` explicitly (the release Makefile config `WIN32_CMAKE_ARGS` pins
+  it, so `make build/win32` and `make sdk/win32`), because the shipped artifact
+  must be a single exe with no engine DLLs beside it; the debug SDK intentionally
+  follows the development configuration and therefore ships the link-group DLLs.
+  macOS, iOS, Android and WebAssembly keep the archive route: a mobile app bundle
+  cannot be told where to find seven group libraries, and macOS additionally needs
+  its platform support library (`EVPlatformMacOSX`) linked into the group that
+  calls it before the dynamic route can work there. Every piece of process-level
+  state that used to be duplicated per link unit (SDL video, box2d/box3d world
+  registries, ImGui's context, the header-only ECS default table) now has exactly
+  one owner; the per-family inventory, the third-party/submodule patches and the
+  traps are in
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Run the full suite in CI, not locally.** Locally, verify the *link* (build
+  both routes plus `make check`) and let CI run every platform's cases. A local
+  full `ctest` starts thousands of test executables, so one group library that
+  failed to link turns into thousands of modal loader dialogs ("找不到
+  EVWorld.dll") that take over the desktop, and it is the same suite CI runs
+  anyway on a clean merge ref. Use `make test/<platform> DOMAIN=<domain>` when a
+  single domain really needs running locally. Details: §7.30 of the same spec.
+- **Test suite shape**: `EVENGINE_TEST_DOMAIN_SPLIT` decides whether the suite is
+  one executable per domain (`unit_test_<domain>`, ctest label of the same name)
+  or a single `unit_test`. It defaults to the linkage: `ON` for SHARED, where each
+  executable is a thin consumer of the group libraries, and `OFF` for OBJECT,
+  where every executable would statically contain the whole engine -- 30 of those
+  plus their incremental-link state measured 93 GB on Windows, against 0.4 GB exe
+  + 0.4 GB pdb for the monolithic binary. Pass the option explicitly to force
+  either shape; `make test/<platform> DOMAIN=<domain>` and
+  `make unit-test/<platform> DOMAIN=<domain>` only apply to the split shape.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached
@@ -267,10 +305,10 @@ model behind them.
   single-agent-at-a-time file. Split it along existing section comments into
   multiple TUs (pure moves, no behavior change) instead of appending more
   methods.
-- **Formatting is enforced on changed lines of existing files.** CI runs
-  `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`) with
-  `git clang-format`; pre-existing debt in untouched regions does not block a
-  PR, and brand-new files are skipped with a warning. Before committing, run
+- **Formatting is enforced on changed lines of existing files.** `make check`
+  (and CI) run `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`)
+  with `git clang-format`; pre-existing debt in untouched regions does not block
+  a PR, and brand-new files are skipped with a warning. Before committing, run
   `git clang-format` (formats only your changed lines) and format new files by
   hand; never reformat whole files unrelated to your change.
 - **Tests stay per-module.** New tests go into their own file under `test/`
@@ -304,7 +342,9 @@ model behind them.
     -p "test_*.py"` is the local equivalent.
 - **PR granularity.** An interface change ships as one PR that updates the
   interface, every backend and every consumer — no intermediate commits that
-  break CI. Use `codex/` branch prefixes for agent work.
+  break CI. Use `codex/` branch prefixes for agent work. Run `make check`
+  before pushing; it is the Source quality job. Host compile/test (`make
+  build/<plat>-debug` and `make test`) is the other half of a typical PR.
 
 ## Mandatory architecture rules for refactoring agents
 
@@ -368,15 +408,17 @@ must not silently waive these requirements.
 
 ### Mandatory top-level architecture gate
 
-Before handing off a refactor, run the source-only contract gate and its fixtures:
+Before handing off a refactor, run the source-only gate CI uses:
 
 ```sh
-ARCHITECTURE_BASE=HEAD make check/architecture-contracts
+make check
 ```
 
-CI supplies the pull-request base SHA. `scripts/architecture_contracts.json` is the
-single catalogue for contract evidence; do not silence a finding with a new baseline,
-allowlist, or broad scope. A compatibility facade may retain a legacy shape only when
-the public documentation states that it is compatibility-only and the canonical
+That includes architecture contracts against `CI_BASE` (default `origin/dev`).
+Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
+`scripts/architecture_contracts.json` is the single catalogue for contract
+evidence; do not silence a finding with a new baseline, allowlist, or broad
+scope. A compatibility facade may retain a legacy shape only when the public
+documentation states that it is compatibility-only and the canonical
 Result/status API is the inward implementation. New debt markers still require the
 owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

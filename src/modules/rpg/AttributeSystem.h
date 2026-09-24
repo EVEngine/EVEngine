@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AttributeSystem.h
@@ -24,7 +26,7 @@ class RPGActor;
  * The string overloads are retained for existing scripts and effects. New C++
  * code should use the Result overloads and AttributeOperation enum.
  */
-class AttributeSystem {
+class EVENGINE_API_PLATFORM AttributeSystem {
 public:
     /** @brief Process-wide custom policy registry used only for Custom modifiers. */
     static AttributeOpTable& customOps();

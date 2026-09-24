@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -9,11 +11,13 @@
 
 #include "effects/EffectTypes.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace eve::effects {
 
@@ -28,7 +32,7 @@ class EffectExecutor;
  * container.  All methods are simulation-thread confined unless the caller
  * provides external synchronization; callbacks are not invoked by this type.
  */
-class EffectContainer {
+class EVENGINE_API_FOUNDATION EffectContainer {
 public:
     /**
      * @brief Construct an empty effect container.
@@ -139,6 +143,26 @@ public:
 
     /** @brief Removes one active instance by UUID-backed identity. */
     [[nodiscard]] eve::Result<void> remove(eve::EffectId id, const std::string& reason = "removed");
+
+    /**
+     * @brief Atomically remove matching dispellable effects in deterministic priority order.
+     * @param subject Subject whose effects may be removed.
+     * @param categoryTag Required category tag, for example `dispel:magic`.
+     * @param strength Removes effects whose priority is no greater than this strength.
+     * @param maxCount Maximum removals; zero is an explicit no-op.
+     * @param reason Owning lifecycle-event reason copied into every removal event.
+     * @return Removed instance ids in descending priority and creation order.
+     * @remarks Effects tagged `effect:undispellable` are never removed. The operation
+     *          stages through the existing snapshot/remove/restore path, so failure
+     *          leaves this container unchanged and invalidates handles only on commit.
+     * @thread Call on the container's owning simulation thread.
+     * @reentrancy No callbacks are invoked.
+     * @cost Linear scan and sort plus one deep container snapshot and restore.
+     */
+    [[nodiscard]] eve::Result<std::vector<std::string>> dispel(const std::string& subject,
+                                                               const std::string& categoryTag, int strength,
+                                                               std::size_t maxCount,
+                                                               const std::string& reason = "dispelled");
 
     /**
      * @brief Advances finite instances through the lifecycle executor.
@@ -276,7 +300,7 @@ private:
  * This executor only decrements durations and emits expiry events.  It does
  * not interpret magnitude, payload, tags, or perform any domain settlement.
  */
-class EffectExecutor {
+class EVENGINE_API_FOUNDATION EffectExecutor {
 public:
     /**
      * @brief Advances one container by a legacy seconds delta.

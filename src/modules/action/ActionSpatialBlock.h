@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionSpatialBlock.h @brief Typed spatial payload shared by presentation action blocks. */
 
@@ -41,7 +43,7 @@ struct ActionSpatialVector3 {
  * audio and VFX adapters resolve entity handles and bone names synchronously;
  * this value never stores a scene node, component pointer or bone pointer.
  */
-struct ActionSpatialBinding {
+struct EVENGINE_API_PLATFORM ActionSpatialBinding {
     ActionSpatialAttachmentMode mode = ActionSpatialAttachmentMode::FollowTarget;
     ActionSpatialTarget         target = ActionSpatialTarget::Source;
     std::size_t                 targetIndex = 0;

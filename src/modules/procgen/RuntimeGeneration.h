@@ -14,7 +14,7 @@
 namespace eve::procgen {
 
 /** @brief One immutable runtime-generation cell request returned to script. */
-class ProcgenCellRequest {
+class EVENGINE_API_DOMAINS ProcgenCellRequest {
 public:
     int      getLevel() const;
     int      getX() const;
@@ -44,7 +44,7 @@ private:
  * Workers own copies of this value and never access scheduler state. The ticket
  * is validated only when a completion returns to the scheduler-owning thread.
  */
-class ProcgenGenerationJob {
+class EVENGINE_API_DOMAINS ProcgenGenerationJob {
 public:
     /** @brief Return the hierarchical grid level captured at issue time. */
     int getLevel() const;
@@ -77,7 +77,7 @@ private:
 };
 
 /** @brief Owning worker result returned to a RuntimeGeneration scheduler. */
-class ProcgenGenerationCompletion {
+class EVENGINE_API_DOMAINS ProcgenGenerationCompletion {
 public:
     /**
      * @brief Package a job and generated points without touching scheduler state.
@@ -104,7 +104,7 @@ private:
  * Destroying the scheduler does not invalidate owning worker data, but its jobs
  * cannot be committed to a replacement scheduler. No callbacks are invoked.
  */
-class RuntimeGeneration {
+class EVENGINE_API_DOMAINS RuntimeGeneration {
 public:
     /** @brief Create a scheduler with a stable world seed. */
     explicit RuntimeGeneration(uint32_t worldSeed = 1);

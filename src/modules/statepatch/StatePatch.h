@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -78,7 +80,7 @@ struct ChangeEvent {
 };
 
 /** @brief Ordered collection of set and remove operations committed atomically. */
-class PatchBatch {
+class EVENGINE_API_FOUNDATION PatchBatch {
 public:
     /** @brief Appends an unconditional set operation. */
     bool set(const std::string& subject, const std::string& key, const std::string& jsonValue);
@@ -111,7 +113,7 @@ private:
 };
 
 /** @brief Deterministic subject-and-key JSON value store with atomic patching. */
-class Store {
+class EVENGINE_API_FOUNDATION Store {
 public:
     /** @brief Creates an empty store with an optional persistent identity. */
     explicit Store(eve::PersistentId instanceId = {});
@@ -222,7 +224,7 @@ private:
  * This class is synchronous and not thread-safe. It must be used on the same
  * thread as its Store, and must not be retained for a later frame or task.
  */
-class StoreTransactionParticipant final : public transaction::ITransactionParticipant {
+class EVENGINE_API_FOUNDATION StoreTransactionParticipant final : public transaction::ITransactionParticipant {
 public:
     /**
      * @brief Bind one patch batch to a Store transaction.

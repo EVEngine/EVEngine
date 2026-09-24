@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -34,11 +36,17 @@ struct UIEvent;
  *
  * ECS: named UIHost panels. Builder + Component.build (C++/script) + list/when/theme.
  */
-class UI : public Module {
+class EVENGINE_API_WORLD UI : public Module {
 public:
     Module_REG(UI);
     UI();
     ~UI() override;
+
+    /**
+     * @brief Drops database-panel Squirrel roots while the Runtime VM is alive.
+     * @remarks Invoked from Runtime shutdown via ISquirrelRootReleaser.
+     */
+    void releaseSquirrelRoots() noexcept;
 
     /** @brief Creates the platform UI backend (ImGui); true on success. */
     bool initBackend();

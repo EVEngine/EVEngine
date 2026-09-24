@@ -11,7 +11,7 @@ class GtsTerrainLodSet;
 class Procgen;
 
 /** @brief Transactional runtime owner for one row-major batch of GTS terrain tile renderables. */
-class GtsTerrainLodRuntime {
+class EVENGINE_API_DOMAINS GtsTerrainLodRuntime {
 public:
     GtsTerrainLodRuntime();
     ~GtsTerrainLodRuntime();

@@ -14,7 +14,7 @@ namespace eve::procgen_editor {
  * The controller owns only stable target ids and observed revisions. Graph, spline, mesh, and image
  * documents remain authoritative in their respective sessions. Owner-thread only; no callbacks.
  */
-class MeshModifierEditor {
+class EVENGINE_API_EDITORS MeshModifierEditor {
 public:
     /** @brief Construct a controller for one mesh document. */
     explicit MeshModifierEditor(std::string targetId);

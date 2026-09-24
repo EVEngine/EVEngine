@@ -64,6 +64,21 @@ Result<Value::Object> upgrade(definitions::DefinitionRegistry& registry, std::st
     return Result<Value::Object>::success(*object);
 }
 
+Result<Value::Object> upgrade(definitions::DefinitionRegistry& registry,
+                              const production::ProductionTask& task) {
+    if (!task.definition.isValid()) return upgrade(registry, task.product);
+    auto resolved = registry.resolveHandle(task.definition);
+    if (!resolved) return Result<Value::Object>::failure(resolved.status());
+    auto parsed = Value::fromJson(resolved.value().get().json);
+    if (!parsed) return Result<Value::Object>::failure(parsed.status());
+    auto value = std::move(parsed).takeValue();
+    const auto* object = value.getIf<Value::Object>();
+    if (object == nullptr)
+        return Result<Value::Object>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS pinned upgrade definition must be an object", task.product));
+    return Result<Value::Object>::success(*object);
+}
+
 Result<void> applyUnit(Unit& unit, std::string_view upgradeId, const Value::Object& definition) {
     const std::string target = text(definition, "targetUnit");
     if (!target.empty() && unit.definition()->id.name() != target)
@@ -137,22 +152,28 @@ Result<void> applyBuilding(Building& building, std::string_view upgradeId, const
 
 Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& registry) {
     std::size_t processed = 0;
+    std::vector<std::pair<ecs::EntityHandle, std::string>> settlements;
     auto buildings = ecs::View<Building, Building::Identity, Building::Faction, Building::Production>();
     for (auto it = buildings.begin(); it != buildings.end(); ++it) {
         auto [identity, factionLink, production] = *it;
         auto* faction = dynamic_cast<Faction*>(factionLink->link.resolve());
         if (faction == nullptr) continue;
-        for (const auto& task : production->values.completed("research")) {
-            if (contains(faction->technology()->consumedTasks, task.id)) continue;
-            auto definition = upgrade(registry, task.product);
+        for (const auto& task : production->values.readyToSettle("research")) {
+            if (contains(faction->technology()->consumedTasks, task.id)) {
+                settlements.emplace_back(identity->self, task.id);
+                continue;
+            }
+            auto definition = upgrade(registry, task);
             if (!definition) return Result<std::size_t>::failure(definition.status());
             const std::string prerequisite = text(definition.value(), "prerequisiteUpgrade");
             if (!prerequisite.empty() && !contains(faction->technology()->unlocked, prerequisite))
                 return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                                       "completed RTS research lacks its prerequisite",
                                                                       task.product, {}, "rts.tech"));
+            faction->technology()->unlockedDefinitions.insert_or_assign(task.product, definition.value());
             insert(faction->technology()->unlocked, task.product);
             insert(faction->technology()->consumedTasks, task.id);
+            settlements.emplace_back(identity->self, task.id);
             ++processed;
         }
     }
@@ -162,7 +183,12 @@ Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& regi
         auto* faction = dynamic_cast<Faction*>(ecs::try_get(identity->self));
         if (faction == nullptr) continue;
         for (const auto& upgradeId : technology->unlocked) {
-            auto definition = upgrade(registry, upgradeId);
+            Result<Value::Object> definition = [&]() {
+                const auto pinned = technology->unlockedDefinitions.find(upgradeId);
+                if (pinned != technology->unlockedDefinitions.end())
+                    return Result<Value::Object>::success(pinned->second);
+                return upgrade(registry, upgradeId);
+            }();
             if (!definition) return Result<std::size_t>::failure(definition.status());
             auto allUnits = ecs::View<Unit, Unit::Identity, Unit::Faction>();
             for (auto it = allUnits.begin(); it != allUnits.end(); ++it) {
@@ -182,6 +208,16 @@ Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& regi
                 }
             }
         }
+    }
+    for (const auto& [buildingHandle, taskId] : settlements) {
+        auto* building = dynamic_cast<Building*>(ecs::try_get(buildingHandle));
+        if (building == nullptr)
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::StaleHandle, "RTS research producer disappeared during settlement", taskId));
+        production::ProductionSettlementReceipt receipt;
+        receipt.settlementId = "rts.research:" + taskId;
+        auto settled = building->production()->values.settle(taskId, std::move(receipt));
+        if (!settled) return Result<std::size_t>::failure(settled.status());
     }
     return Result<std::size_t>::success(processed,
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));

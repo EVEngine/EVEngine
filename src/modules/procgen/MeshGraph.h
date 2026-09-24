@@ -18,7 +18,7 @@ namespace eve::procgen {
 using MeshGraphValue = std::variant<Grid2D, PointSet, MeshBuild>;
 
 /** @brief Typed procedural mesh graph composing grid, point and topology domains. */
-class MeshGraph {
+class EVENGINE_API_DOMAINS MeshGraph {
 public:
     [[nodiscard]] Result<void> addNode(std::string id, std::string operation);
     [[nodiscard]] Result<void> connect(std::string_view fromId, std::string_view toId, int inputIndex = 0);

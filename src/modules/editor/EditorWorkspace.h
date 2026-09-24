@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorDock.h"
 #include "editor/EditorSelection.h"
@@ -38,7 +40,7 @@ struct WorkspacePanelDescriptor {
  * command/property providers, so a custom editor and an in-game builder can share
  * their model without sharing a pixel layout.
  */
-class EditorWorkspace {
+class EVENGINE_API_ORCHESTRATION EditorWorkspace {
 public:
     /** @brief Create a workspace with stable identity and display title. */
     EditorWorkspace(std::string id, std::string title);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexMapGenerator.h @brief Deterministic procedural map generation for the hex grid. */
 
@@ -98,6 +100,6 @@ struct HexMapGeneratorSettings {
  * @note Every cell is left *explorable but unexplored* and the whole map is
  *       marked dirty, so the caller rebuilds every chunk afterwards.
  */
-[[nodiscard]] Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings);
 
 }  // namespace eve::hexmap

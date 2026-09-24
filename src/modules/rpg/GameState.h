@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file GameState.h
@@ -20,7 +22,7 @@ namespace eve::rpg {
 class RPGSaveSession;
 
 /** @brief 一份游戏状态（开关/变量/独立变量）。 */
-class GameState {
+class EVENGINE_API_PLATFORM GameState {
 public:
     GameState() = default;
 

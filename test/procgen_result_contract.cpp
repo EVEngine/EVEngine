@@ -169,6 +169,9 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         local points = procgen.sampleGrid(1, 1, 1.0, 18, 0.0).value;
         assert(graph.addNode("source", "input"));
         assert(graph.setNodePoints("source", points));
+        assert(graph.addNode("prune", "self.prune"));
+        assert(graph.connect("source", "prune"));
+        assert(graph.connect("source", "prune", 0));
         assert(graph.validateResult().ok);
         local result = graph.executeResult("source");
         assert(result.ok && result.hasValue && result.value.getCount() == 1);

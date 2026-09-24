@@ -88,6 +88,6 @@ struct FoliageClusterDesc {
  * @param desc Cluster description; out-of-range fields are clamped, never rejected.
  * @return Number of leaves appended (0 when the description degenerates).
  */
-int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc);
+EVENGINE_API_DOMAINS int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc);
 
 }  // namespace eve::procgen

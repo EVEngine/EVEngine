@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/editing/AnimationEditingTypes.h"
 #include "editing/EditingGraph.h"
@@ -40,7 +41,7 @@ struct AnimationGraphCompileResult {
  * metadata and one optional float/bool/trigger condition. Runtime pointers are
  * deliberately resolved only by the animation host after compilation.
  */
-class AnimationStateGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_DOMAINS AnimationStateGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "animation.state"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
@@ -55,7 +56,7 @@ public:
 };
 
 /** @brief Optional bridge constructing the real animation runtime from a validated graph. */
-class AnimationStateGraphRuntimeBuilder {
+class EVENGINE_API_DOMAINS AnimationStateGraphRuntimeBuilder {
 public:
     using ClipResolver = std::function<animation::AnimClip*(const std::string& asset)>;
     /**

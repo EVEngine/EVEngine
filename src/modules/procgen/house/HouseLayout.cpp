@@ -98,9 +98,36 @@ graphics::Texture *assimpTexture(graphics::Graphics *gfx, const aiScene *scene,
     return textureFromFile(gfx, modelPath, path);
 }
 
-eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::string &path) {
-    if (!std::filesystem::is_regular_file(std::filesystem::path(path)))
-        return models->newModelDataFromFile(path);  // cache-owned resource
+/**
+ * @brief One layout model: either a detached decode or a pinned cache entry.
+ * @ownership `owned` is the only owner when the model was decoded here; `pinned`
+ *            keeps a cache-owned model alive while this layout references it.
+ * @lifetime The handle must not outlive the resource cache that produced `pinned`.
+ */
+struct ModelHandle {
+    eve::script::Owned<model3d::ModelData> owned;
+    eve::ResourcePin                       pinned;
+
+    /** @brief Borrows the held model, or null when nothing was loaded. */
+    [[nodiscard]] model3d::ModelData *get() const noexcept {
+        // The cache registry stores Resource, so a pinned entry needs the same explicit
+        // downcast the cache's own loaders use.
+        return owned ? owned.get() : static_cast<model3d::ModelData *>(pinned.get());
+    }
+};
+
+ModelHandle loadModel(model3d::Model3D *models, const std::string &path) {
+    if (!std::filesystem::is_regular_file(std::filesystem::path(path))) {
+        // The module hands back the cache-owned resource, so pin it: this layout keeps
+        // using the model after the cache entry may have been unloaded.
+        model3d::ModelData *cached = models->newModelDataFromFile(path);
+        if (cached == nullptr) return {};
+        auto pinned = eve::ResourceManager::getInstance().pin(cached);
+        if (!pinned.ok()) return {};
+        ModelHandle handle;
+        handle.pinned = std::move(pinned).takeValue();
+        return handle;
+    }
     std::ifstream input(path, std::ios::binary | std::ios::ate);
     if (!input) throw std::runtime_error("cannot open model: " + path);
     const std::streamsize size = input.tellg();
@@ -110,7 +137,9 @@ eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::stri
     if (!input.read(reinterpret_cast<char *>(bytes.data()), size))
         throw std::runtime_error("cannot read model: " + path);
     data::ByteData source(bytes.data(), bytes.size());
-    return models->newModelData(&source, std::filesystem::path(path).extension().string());
+    ModelHandle    handle;
+    handle.owned.reset(models->newModelData(&source, std::filesystem::path(path).extension().string()));
+    return handle;
 }
 }  // namespace
 
@@ -416,7 +445,7 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
         }
         entities.clear();
     };
-    std::unordered_map<std::string, eve::ref<model3d::ModelData>> data;
+    std::unordered_map<std::string, ModelHandle> data;
     struct CachedPart {
         graphics::Mesh *mesh = nullptr;
         graphics::Texture *texture = nullptr;
@@ -438,7 +467,7 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
                                            "componentId", {}, "housegen.layout"));
             }
             const HouseComponent &c = component->get();
-            // eve::ref cannot represent null, so look up before default-inserting.
+            // Loads once per path: the handle either owns the decode or pins the cache entry.
             auto modelIt = data.find(c.modelPath);
             if (modelIt == data.end()) modelIt = data.emplace(c.modelPath, loadModel(&models, c.modelPath)).first;
             model3d::ModelData *model = modelIt->second.get();

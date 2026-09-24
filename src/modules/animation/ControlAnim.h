@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/AnimControlMath.h"
 #include "common/Time.h"
@@ -21,7 +22,7 @@ namespace eve::animation {
  * - "spring"      — closed-form damped spring about set-point (f, ζ; r ignored)
  * - "pd"          — τ/m = Kp(x − y) + Kd(ẋ − ẏ) with Kp=ω², Kd=2ζω
  */
-class ControlAnim {
+class EVENGINE_API_WORLD ControlAnim {
 public:
     ControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f, float response = 1.f);
     ~ControlAnim() = default;

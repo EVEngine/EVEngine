@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTransactionConsumer.h"
 
@@ -42,7 +44,7 @@ public:
 };
 
 /** @brief Local transaction coordinator backed by an injected edit authority. */
-class LocalTransactionBackend final : public IEditorTransactionBackend {
+class EVENGINE_API_ORCHESTRATION LocalTransactionBackend final : public IEditorTransactionBackend {
 public:
     /** @brief Bind a non-owning authority that outlives this backend. */
     explicit LocalTransactionBackend(IEditAuthority* authority = nullptr) : consumer_(authority) {}

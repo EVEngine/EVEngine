@@ -1,11 +1,13 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 
 namespace eve::editing {
 
 /** @brief Integer axis-aligned volume invalidated by a 3D edit. */
-struct EditVolume {
+struct EVENGINE_API_PLATFORM EditVolume {
     int minX = 0, minY = 0, minZ = 0;
     int maxX = -1, maxY = -1, maxZ = -1;
     bool empty() const { return maxX < minX || maxY < minY || maxZ < minZ; }

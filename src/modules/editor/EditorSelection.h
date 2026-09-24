@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingSelection.h"
 #include "editor/EditorIds.h"
@@ -26,7 +28,7 @@ using SelectionSnapshot = eve::editing::SelectionSnapshot;
 using EditorFocusSnapshot = eve::editing::FocusSnapshot;
 
 /** @brief Channelled selection/focus state shared by editor and in-game presentations. */
-class EditorSelectionService {
+class EVENGINE_API_ORCHESTRATION EditorSelectionService {
 public:
     using Listener = std::function<void(const SelectionSnapshot&)>;
 
@@ -49,7 +51,7 @@ private:
 };
 
 /** @brief Shared semantic focus service for docked editor and game HUD surfaces. */
-class EditorFocusService {
+class EVENGINE_API_ORCHESTRATION EditorFocusService {
 public:
     /** @brief Set the focused surface/item for one channel. */
     EditorResult<EditorFocusSnapshot> focus(std::string channel, StableId surface, StableId item = {});

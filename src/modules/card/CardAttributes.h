@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardAttributes.h
@@ -21,7 +23,7 @@ class CardData;
  * Card cost remains a resource/payment value, while layout, phase and card
  * membership remain Card-owned state.
  */
-class CardAttributeAdapter final {
+class EVENGINE_API_WORLD CardAttributeAdapter final {
 public:
     static constexpr std::string_view attackAttribute = "attack";
     static constexpr std::string_view healthAttribute = "health";

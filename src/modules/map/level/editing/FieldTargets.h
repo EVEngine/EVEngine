@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 
@@ -16,9 +18,9 @@ using editing::Revision;
 using editing::TargetId;
 
 /** @brief Non-owning IIntFieldTarget adapter for TileBuffer. */
-class TileBufferTarget final : public ::eve::editing::EditableTargetState,
-                               public virtual IEditableTarget,
-                               public IIntFieldTarget {
+class EVENGINE_API_DOMAINS TileBufferTarget final : public ::eve::editing::EditableTargetState,
+                                                    public virtual IEditableTarget,
+                                                    public IIntFieldTarget {
 public:
     /** @brief Adapt a borrowed buffer that must outlive this target. @thread Owner-thread only. */
     TileBufferTarget(std::string id, TileBuffer *buffer);

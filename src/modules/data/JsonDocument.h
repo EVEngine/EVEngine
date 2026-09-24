@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
@@ -8,7 +10,7 @@ namespace eve {
 namespace data {
 
 /** @brief Thin RAII wrapper over a Poco JSON value (object/array/scalar). */
-class JsonDocument {
+class EVENGINE_API_FOUNDATION JsonDocument {
 public:
     /** @brief Creates an empty document. */
     JsonDocument();

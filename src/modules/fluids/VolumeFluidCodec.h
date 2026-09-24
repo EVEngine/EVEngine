@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Value.h"
 #include "fluids/FluidSurfaceRenderer.h"
 #include "fluids/VolumeFluid.h"
@@ -8,48 +10,56 @@
 
 namespace eve::fluids {
 /** @brief Projects one complete Fluid3D-renderer settings value. */
-[[nodiscard]] Value encodeFluidRendererSettings(const FluidRendererSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeFluidRendererSettings(const FluidRendererSettings& settings);
 /** @brief Strictly decodes one complete owning Fluid3D-renderer settings value. */
-[[nodiscard]] Result<FluidRendererSettings> decodeFluidRendererSettings(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<FluidRendererSettings> decodeFluidRendererSettings(const Value& value);
 /** @brief Projects default or caller-prepared Fluid3D-emitter blueprint values. */
-[[nodiscard]] Value encodeVolumeFluidEmitterBlueprint3D(const VolumeFluidEmitterBlueprint3D& blueprint);
+[[nodiscard]] EVENGINE_API_DOMAINS Value
+encodeVolumeFluidEmitterBlueprint3D(const VolumeFluidEmitterBlueprint3D& blueprint);
 /** @brief Strictly decodes one owning Fluid3D-emitter blueprint value. */
-[[nodiscard]] Result<VolumeFluidEmitterBlueprint3D> decodeVolumeFluidEmitterBlueprint3D(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterBlueprint3D> decodeVolumeFluidEmitterBlueprint3D(
+    const Value& value);
 /** @brief Projects default or caller-prepared Fluid3D granular-emitter blueprint values. */
-[[nodiscard]] Value encodeVolumeGranularEmitterBlueprint3D(const VolumeGranularEmitterBlueprint3D& blueprint);
+[[nodiscard]] EVENGINE_API_DOMAINS Value
+encodeVolumeGranularEmitterBlueprint3D(const VolumeGranularEmitterBlueprint3D& blueprint);
 /** @brief Strictly decodes one owning Fluid3D granular-emitter blueprint value. */
-[[nodiscard]] Result<VolumeGranularEmitterBlueprint3D> decodeVolumeGranularEmitterBlueprint3D(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeGranularEmitterBlueprint3D> decodeVolumeGranularEmitterBlueprint3D(
+    const Value& value);
 /** @brief Projects the complete native solver/emission setup produced from a blueprint. */
 [[nodiscard]] Value encodeVolumeFluidEmitterBlueprintApplication3D(
     const VolumeFluidEmitterBlueprintApplication3D& application);
 /** @brief Projects owning schema-1 foam settings, credit text and RNG state. */
-[[nodiscard]] Value encodeVolumeFluidFoam(const VolumeFluidFoamSnapshot& snapshot);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidFoam(const VolumeFluidFoamSnapshot& snapshot);
 /** @brief Strict decode with atomic-controller validation; rejects unknown fields and versions. */
-[[nodiscard]] Result<VolumeFluidFoamSnapshot> decodeVolumeFluidFoam(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidFoamSnapshot> decodeVolumeFluidFoam(const Value& value);
 /** @brief Projects the owning version-1 secondary particle pool state. */
-[[nodiscard]] Value encodeVolumeFluidDiffuse(const VolumeFluidDiffuseSnapshot& snapshot);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidDiffuse(const VolumeFluidDiffuseSnapshot& snapshot);
 /** @brief Strict bounded decode; validates the entire pool before returning owning state. */
-[[nodiscard]] Result<VolumeFluidDiffuseSnapshot> decodeVolumeFluidDiffuse(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidDiffuseSnapshot> decodeVolumeFluidDiffuse(const Value& value);
 /** @brief Strict transient batch decode of at most 65536 particles; emit validates domains. */
-[[nodiscard]] Result<std::vector<VolumeFluidDiffuseParticle>> decodeVolumeFluidDiffuseParticles(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidDiffuseParticle>> decodeVolumeFluidDiffuseParticles(
+    const Value& value);
 /** @brief Canonical schema-17 value projection, shared by JSON, scripts and authoring. */
-[[nodiscard]] Value encodeVolumeFluid(const VolumeFluidSnapshot& snapshot);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluid(const VolumeFluidSnapshot& snapshot);
 /** @brief Strict owning decode; unknown/missing fields, unsupported versions and invalid state are rejected. */
-[[nodiscard]] Result<VolumeFluidSnapshot> decodeVolumeFluid(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidSnapshot> decodeVolumeFluid(const Value& value);
 /** @brief Encodes a version-9 emission description including precomputed points and particle state. */
-[[nodiscard]] Value encodeVolumeFluidEmission(const VolumeFluidEmission& emission);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidEmission(const VolumeFluidEmission& emission);
 /** @brief Strict structural decode; nozzle/material domain validation occurs atomically at emission. */
-[[nodiscard]] Result<VolumeFluidEmission> decodeVolumeFluidEmission(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmission> decodeVolumeFluidEmission(const Value& value);
 /** @brief Decodes an owning emission batch without serializing the live solver; admission validates domains. */
-[[nodiscard]] Result<std::vector<VolumeFluidParticle>> decodeVolumeFluidParticles(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidParticle>> decodeVolumeFluidParticles(
+    const Value& value);
 /** @brief Encodes controller state without converting phase text to VM floating point. */
-[[nodiscard]] Value encodeVolumeFluidEmitterState(const VolumeFluidEmitterSnapshot& state);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidEmitterState(const VolumeFluidEmitterSnapshot& state);
 /** @brief Strict version-1 controller-state decode; unsupported fields, kinds and phase values fail. */
-[[nodiscard]] Result<VolumeFluidEmitterSnapshot> decodeVolumeFluidEmitterState(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterSnapshot> decodeVolumeFluidEmitterState(const Value& value);
 /** @brief Encodes one version-1 solver/emission/controller checkpoint. */
-[[nodiscard]] Value encodeVolumeFluidEmitterCheckpoint(const VolumeFluidEmitterCheckpoint& checkpoint);
+[[nodiscard]] EVENGINE_API_DOMAINS Value
+encodeVolumeFluidEmitterCheckpoint(const VolumeFluidEmitterCheckpoint& checkpoint);
 /** @brief Strictly decodes and validates all owning checkpoint members without publishing state. */
-[[nodiscard]] Result<VolumeFluidEmitterCheckpoint> decodeVolumeFluidEmitterCheckpoint(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<VolumeFluidEmitterCheckpoint> decodeVolumeFluidEmitterCheckpoint(
+    const Value& value);
 /** @brief Strict transient pose-argument decode; advanceMoving validates the unit quaternion. */
 [[nodiscard]] Result<VolumeFluidNozzlePose> decodeVolumeFluidNozzlePose(const Value& value);
 /** @brief Strict transient collider batch decode; setColliders validates geometry atomically. */
@@ -66,9 +76,10 @@ namespace eve::fluids {
 /** @brief Projects one complete owning regular height field. */
 [[nodiscard]] Value encodeVolumeFluidHeightFieldCollider(const VolumeFluidHeightFieldCollider& collider);
 /** @brief Strict transient decode of at most 16 SDF transform-only updates. */
-[[nodiscard]] Result<std::vector<VolumeFluidSdfPose>> decodeVolumeFluidSdfPoses(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidSdfPose>> decodeVolumeFluidSdfPoses(
+    const Value& value);
 /** @brief Projects one transform-only SDF update for script construction. */
-[[nodiscard]] Value encodeVolumeFluidSdfPose(const VolumeFluidSdfPose& pose);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidSdfPose(const VolumeFluidSdfPose& pose);
 /** @brief Projects last-step contacts, including world-space point and opposite impulse. */
 [[nodiscard]] Value encodeVolumeFluidContacts(const std::vector<VolumeFluidContact>& contacts);
 /** @brief Projects owning Enter/Stay/Exit contact lifecycle events. */
@@ -84,15 +95,17 @@ namespace eve::fluids {
 /** @brief Owning default-rule projection for script construction. */
 [[nodiscard]] Value encodeVolumeFluidThermalRule(const VolumeFluidThermalRule& rule);
 /** @brief Strict owning decode of at most 32 transient viscosity color keys; application validates domains. */
-[[nodiscard]] Result<std::vector<VolumeFluidViscosityColorKey>> decodeVolumeFluidViscosityColors(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidViscosityColorKey>> decodeVolumeFluidViscosityColors(
+    const Value& value);
 /** @brief Strict owning decode of a 2..32-key normalized linear RGBA gradient. */
 [[nodiscard]] Result<std::vector<VolumeFluidColorKey>> decodeVolumeFluidColorGradient(const Value& value);
 /** @brief Strict owning decode of up to 65536 transient world-space field query positions. */
 [[nodiscard]] Result<std::vector<glm::vec3>> decodeVolumeFluidFieldPositions(const Value& value);
 /** @brief Strict owning decode of at most 64 transient Fluid3D-style wind zones. */
-[[nodiscard]] Result<std::vector<VolumeFluidWindZone>> decodeVolumeFluidWindZones(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidWindZone>> decodeVolumeFluidWindZones(
+    const Value& value);
 /** @brief Projects one complete wind-zone description for script construction. */
-[[nodiscard]] Value encodeVolumeFluidWindZone(const VolumeFluidWindZone& zone);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeVolumeFluidWindZone(const VolumeFluidWindZone& zone);
 /** @brief Projects owning field samples, preserving query order. */
 [[nodiscard]] Value encodeVolumeFluidFieldSamples(const std::vector<VolumeFluidFieldSample>& samples);
 /** @brief Projects owning ray hits including captured particle values. */
@@ -100,9 +113,10 @@ namespace eve::fluids {
 /** @brief Projects owning signed-distance hits including captured particle values. */
 [[nodiscard]] Value encodeVolumeFluidDistanceHits(const std::vector<VolumeFluidDistanceHit>& hits);
 /** @brief Strict owning decode of at most 256 transient mixed query descriptions. */
-[[nodiscard]] Result<std::vector<VolumeFluidQueryShape>> decodeVolumeFluidQueries(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<VolumeFluidQueryShape>> decodeVolumeFluidQueries(
+    const Value& value);
 /** @brief Strict owning decode of at most 256 transient linear RGBA colors. */
-[[nodiscard]] Result<std::vector<glm::vec4>> decodeVolumeFluidColors(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<glm::vec4>> decodeVolumeFluidColors(const Value& value);
 /** @brief Projects owning mixed-query hits with their source query indices. */
 [[nodiscard]] Value encodeVolumeFluidQueryHits(const std::vector<VolumeFluidQueryHit>& hits);
 /** @brief Strict owning decode of at most 65536 point, edge or triangle topology entries. */

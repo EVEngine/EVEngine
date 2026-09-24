@@ -10,7 +10,7 @@
 
 namespace eve::dev {
 
-struct EVENGINE_API AiLogEntry {
+struct EVENGINE_API_FOUNDATION_INLINE AiLogEntry {
     std::string timestamp;  // ISO-ish local time
     std::string kind;       // tool | note | system | error
     std::string title;
@@ -24,7 +24,7 @@ struct EVENGINE_API AiLogEntry {
  * script API) and agents (MCP resource `eve://ai-session`) share one log.
  * Drawing is optional — `drawImGui()` is a no-op when imgui is unavailable.
  */
-class EVENGINE_API AiPanel {
+class EVENGINE_API_FOUNDATION AiPanel {
 public:
     static AiPanel& instance();
 

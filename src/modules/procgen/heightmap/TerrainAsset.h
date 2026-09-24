@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "common/Result.h"
@@ -72,7 +74,7 @@ struct TerrainChunkEntry {
  * direction, river and biome layers remain exact bytes. A corrupt chunk cannot
  * silently enter the world.
  */
-class TerrainAsset {
+class EVENGINE_API_DOMAINS TerrainAsset {
 public:
     /** @brief Compatibility operation that bakes all terrain layers into EVTR. */
     static bool bake(const Heightmap &heightmap, const HydrologyMap &hydrology,

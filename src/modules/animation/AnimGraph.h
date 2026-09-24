@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimPose.h"
 #include "animation/AnimPoseSource.h"
@@ -21,7 +23,7 @@ class AnimSkeleton;
  * or clips; those must outlive the graph. Call advance(step) once per frame and read
  * getPose(). Graph evaluation is memoized so shared subgraphs sample only once.
  */
-class AnimGraph : public IAnimPoseSource {
+class EVENGINE_API_WORLD AnimGraph : public IAnimPoseSource {
 public:
     explicit AnimGraph(AnimSkeleton* skeleton);
     ~AnimGraph() override = default;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/GBuffer.h"
 
@@ -52,7 +54,7 @@ class Graphics;
  * compile() is idempotent; enable/disable mark the control dirty until the
  * next compile(). RenderSystem3D auto-compiles when dirty.
  */
-class RenderControl {
+class EVENGINE_API_BACKENDS RenderControl {
 public:
     RenderControl();
     ~RenderControl() = default;

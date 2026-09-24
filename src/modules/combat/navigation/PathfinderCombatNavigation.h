@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file PathfinderCombatNavigation.h @brief Map Pathfinder steering adapter for combat locomotion. */
 
@@ -33,7 +35,7 @@ struct PathfinderCombatNavigationConfig {
  * locomotion first (or clear the provider), then this adapter, then Pathfinder.
  * Calls are simulation-thread-affine and must not race Pathfinder mutation.
  */
-class PathfinderCombatNavigationProvider final : public ICombatNavigationProvider {
+class EVENGINE_API_DOMAINS PathfinderCombatNavigationProvider final : public ICombatNavigationProvider {
 public:
     /**
      * @brief Validate configuration and create an owning adapter.

@@ -113,7 +113,7 @@ TileLayer::Tileset::Visual rpgMakerVisual(int gid) {
 
 TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId) { return rpgMakerVisual(tileId); }
 
-eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath, const std::string &tilesetsPath,
+EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath, const std::string &tilesetsPath,
                                                      const std::string &sourceEngine) {
     auto fail = [](const std::string &code, const std::string &message, const std::string &path) {
         return eve::Result<RpgMakerImportReceipt>::failure(eve::Diagnostic::error(

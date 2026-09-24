@@ -61,7 +61,7 @@ struct SemanticToken {
 };
 
 /** @brief Cross-file semantic index for EveScript source modules. */
-class EVENGINE_API WorkspaceIndex {
+class EVENGINE_API_FOUNDATION WorkspaceIndex {
 public:
     WorkspaceIndex();
     ~WorkspaceIndex();

@@ -85,3 +85,22 @@ TEST_CASE("editor.v2.validation_and_diagnostics_are_extension_owned") {
     CHECK_EQ(validation.unregisterOwner("park.plugin"), static_cast<std::size_t>(1));
     CHECK(validation.validate({"", EditorValue()}).empty());
 }
+
+TEST_CASE("editor.v2.settlementRuleValidationUsesCanonicalDecoder") {
+    EditorValidationService validation;
+    const std::string valid =
+        R"({"schema":"settlement.rules","version":1,"conditionLanguageVersion":1,"rules":[]})";
+    CHECK(validation.validate({"settlement.rules", EditorValue(valid)}).empty());
+
+    const std::string unknownVersion =
+        R"({"schema":"settlement.rules","version":2,"conditionLanguageVersion":1,"rules":[]})";
+    const auto diagnostics = validation.validate({"settlement.rules", EditorValue(unknownVersion)});
+    REQUIRE_EQ(diagnostics.size(), std::size_t{1});
+    CHECK_EQ(diagnostics.front().code(), eve::DiagnosticCode::UnknownVersion);
+    CHECK_EQ(diagnostics.front().path(), std::string("document.version"));
+
+    CHECK(validation.validate({"another.document", EditorValue(unknownVersion)}).empty());
+    const auto wrongType = validation.validate({"settlement.rules", EditorValue(std::int64_t{1})});
+    REQUIRE_EQ(wrongType.size(), std::size_t{1});
+    CHECK_EQ(wrongType.front().code(), eve::DiagnosticCode::TypeMismatch);
+}

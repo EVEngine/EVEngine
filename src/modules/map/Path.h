@@ -1,11 +1,13 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
 namespace eve::map {
 
 /** @brief Ordered tile-index waypoints from start to goal (inclusive). */
-class Path {
+class EVENGINE_API_WORLD Path {
 public:
     /** @brief Clears all waypoints and cost. */
     void clear();

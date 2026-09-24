@@ -8,13 +8,15 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::procgen_editor {
 
 class ProcgenEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "procgen-script"; }
+    std::vector<std::string_view> types() const override { return {"procgen-script"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object&) override {

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "building/PlacementSystem.h"
 #include "common/Result.h"
@@ -11,7 +13,7 @@
 namespace eve::building {
 
 /** @brief Immutable world-space triangle mesh accelerated for placement-surface projection. */
-class StaticMeshSurface final {
+class EVENGINE_API_WORLD StaticMeshSurface final {
 public:
     /** @brief Deterministic policy for multiple triangles under one plane coordinate. */
     enum class HitSelection { Highest, Lowest, ClosestToReference };

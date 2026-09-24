@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorResult.h"
 #include "editor/EditorValue.h"
@@ -18,9 +20,12 @@ struct ValidationRequest {
 };
 
 /** @brief Registry of composable validation rules owned by extensions. */
-class EditorValidationService {
+class EVENGINE_API_ORCHESTRATION EditorValidationService {
 public:
     using Rule = std::function<std::vector<EditorDiagnostic>(const ValidationRequest&)>;
+
+    /** @brief Construct with built-in validation for canonical settlement rule documents. */
+    EditorValidationService();
 
     /** @brief Register or replace a stable rule owned by an extension. */
     EditorResult<void> registerRule(std::string owner, RuleId id, Rule rule);
@@ -38,7 +43,7 @@ private:
 };
 
 /** @brief Thread-safe diagnostic channels consumed uniformly by UI, scripts and MCP. */
-class EditorDiagnosticService {
+class EVENGINE_API_ORCHESTRATION EditorDiagnosticService {
 public:
     /** @brief Replace one producer's current diagnostics atomically. */
     void publish(std::string source, std::vector<EditorDiagnostic> diagnostics);

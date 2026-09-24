@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/RuntimeHandle.h"
@@ -191,7 +193,7 @@ public:
  * are process-local and become stale after destruction. The world owns task
  * services and must be used only on its simulation thread.
  */
-class NpcAiWorld {
+class EVENGINE_API_PLATFORM NpcAiWorld {
 public:
     explicit NpcAiWorld(NpcAiWorldConfig config = {});
     NpcAiWorld(const NpcAiWorld&)            = delete;

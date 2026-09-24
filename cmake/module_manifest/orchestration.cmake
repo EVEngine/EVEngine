@@ -7,9 +7,10 @@ eve_declare_module(NAME asset_stylize DIR asset/stylize LAYER 5
                    GROUP 3d)
 
 # Renderables, bodies and audio sources attach through registered link kinds
-# (scene/SceneLink.h), so scene no longer depends on those modules. The two
-# picking entry points that take a Camera3D are implemented in the graphics
-# module (graphics/ScenePicking.cpp, excluded when scene is off).
+# (scene/SceneLink.h), so scene no longer depends on those modules. The picking
+# entry points that take a Camera3D stay in scene and ask for the camera
+# projection through the ISceneCameraProjection capability, which graphics
+# provides (graphics/ScenePicking.cpp, excluded when scene is off).
 # L1 -- scene graph protocol
 eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
                    DEPS spatial
@@ -69,7 +70,7 @@ eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
 # providers are introduced by adapters as their implementation slices land;
 # the phase-one board/turn core depends only on common engine contracts.
 eve_declare_module(NAME tactics LAYER 5 SCRIPT Tactics SLOT tactics
-                   DEPS action sensing
+                   DEPS action sensing settlement
                    GROUP 2d 3d web)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics inventory model3d scene

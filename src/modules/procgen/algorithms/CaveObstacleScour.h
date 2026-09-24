@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveBreakdown.h"
 #include "procgen/algorithms/CaveHydrology.h"
@@ -40,7 +42,7 @@ struct CaveObstacleScourSample {
  * @param wallRoughness Normalized multi-scale bed roughness that disrupts coherent horseshoe vortices.
  * @return Deterministic scour sites; blocks outside the active passage footprint are ignored.
  */
-[[nodiscard]] std::vector<CaveObstacleScourSite> createCaveObstacleScourSites(
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CaveObstacleScourSite> createCaveObstacleScourSites(
     const CaveBreakdownSet& breakdown, const std::vector<CaveHydrologyPoint>& trunk,
     const std::vector<float>& hydraulicWeights, float sedimentLoad, float wallRoughness);
 
@@ -50,7 +52,7 @@ struct CaveObstacleScourSample {
  * @param sites Sites derived by createCaveObstacleScourSites.
  * @return Maximum bounded obstacle-scour response.
  */
-[[nodiscard]] CaveObstacleScourSample sampleCaveObstacleScour(CaveHydrologyVec3                         point,
-                                                              const std::vector<CaveObstacleScourSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveObstacleScourSample
+sampleCaveObstacleScour(CaveHydrologyVec3 point, const std::vector<CaveObstacleScourSite>& sites);
 
 }  // namespace eve::procgen

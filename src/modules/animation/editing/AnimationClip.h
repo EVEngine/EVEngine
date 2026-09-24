@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/editing/AnimationEditingTypes.h"
 
@@ -95,12 +97,12 @@ public:
 };
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
-class AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                          public virtual IEditableTarget,
-                                          public IDomainOperationTarget,
-                                          public IDomainOperationTargetStaging,
-                                          public eve::editing::IEditingSnapshotProvider,
-                                          public IAnimationClipEditTarget {
+class EVENGINE_API_DOMAINS AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IDomainOperationTargetStaging,
+                                                               public eve::editing::IEditingSnapshotProvider,
+                                                               public IAnimationClipEditTarget {
 public:
     explicit AnimationClipDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -161,7 +163,7 @@ private:
 [[nodiscard]] EditorResult<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value);
 
 /** @brief Optional bridge producing a real runtime AnimClip from an editor document. */
-class AnimationClipRuntimeBuilder {
+class EVENGINE_API_DOMAINS AnimationClipRuntimeBuilder {
 public:
     /** @brief Build a new runtime clip; caller owns the result. */
     EditorResult<animation::AnimClip*> build(const AnimationClipDocumentTarget& document,

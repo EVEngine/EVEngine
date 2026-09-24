@@ -139,6 +139,12 @@ if (!result.ok) {
 阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是
 WebGPU 开发路径；当前后端不支持对应源码格式时会返回 `Unsupported` 和诊断信息。
 
+运行期 GLSL→SPIR-V 由引擎自带编译器完成（`graphics/vulkan/GlslCompiler.cpp`，唯一实现）：
+Windows 构建在配置时能找到 `VULKAN_SDK` 就链接 shaderc 静态库，发布出去的包不需要外部
+`glslc.exe`；没有链接 shaderc 的构建才回退到 PATH 上的 `glslc`。C++ 侧用
+`Graphics::supportsRuntimeGlslCompilation()` 查询该能力（WebGPU 固定为 false）；希望完全不依赖
+运行期编译时，改用随包提交的 SPIR-V：`gfx.newShaderFromSpvFile` / `gfx.loadMeshShaderSpv`。
+
 自定义网格着色器可用 `Shader.setMeshTexture(slot, texture)` 绑定 0..3 四个可移植纹理槽；
 传入 `null` 清除对应槽，越界会抛出脚本异常。纹理由调用方持有，必须存活到解除绑定且
 相关绘制结束；该接口只能在 Graphics 所属的渲染线程调用。

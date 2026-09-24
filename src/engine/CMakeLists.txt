@@ -122,7 +122,9 @@ message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
 
 # Module link list, derived from the module manifest; EVCommon, EVCmdLine and
 # EVDevTools are declared there too, so only the embedded scripts are added here.
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+# EVE_LINK_TARGETS is the module libraries in OBJECT mode and the link-group
+# shared libraries in SHARED mode (see cmake/link_groups.cmake).
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 if(_has_devtools)
     # DevTools ImGui host panels (AI + console) compile into the host binary --
     # not EVDevTools, which avoids imgui.h to protect MSVC export limits.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorDocumentService.h"
 
@@ -15,7 +17,7 @@ namespace eve::editor {
  * Paths escaping the configured root are rejected. The store is thread-safe at
  * the file-operation level only; callers serialize writes per resource URI.
  */
-class DiskAtomicDocumentStore final : public IAtomicDocumentStore {
+class EVENGINE_API_ORCHESTRATION DiskAtomicDocumentStore final : public IAtomicDocumentStore {
 public:
     /** @brief Create a store rooted at a project directory. @param projectRoot Project root containing Content/. */
     explicit DiskAtomicDocumentStore(std::filesystem::path projectRoot);
@@ -53,7 +55,7 @@ struct AutosaveDraft {
 };
 
 /** @brief Autosave coordinator that never overwrites the formal document URI. */
-class AutosaveService {
+class EVENGINE_API_ORCHESTRATION AutosaveService {
 public:
     /**
      * @brief Create an autosave namespace.

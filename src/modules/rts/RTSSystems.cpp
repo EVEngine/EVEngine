@@ -2353,7 +2353,8 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
 }
 
-Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairDebit& debit) {
+Result<std::size_t> RepairSystem::step(const SimulationStep& step, combat::DamageRuntime& settlement,
+                                       const RepairDebit& debit) {
     if (step.delta.nanoseconds() < 0 || !debit)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS repair requires non-negative time and a debit callback", "repair"));
@@ -2381,17 +2382,26 @@ Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairD
             if (!completed) return Result<std::size_t>::failure(completed.status());
             continue;
         }
-        const float healed = std::min(missing, worker->repairRate * static_cast<float>(step.delta.seconds()));
+        const float requested = std::min(missing, worker->repairRate * static_cast<float>(step.delta.seconds()));
+        const double healthBefore = integrity->state.health;
+        auto restored = settlement.heal(integrity->state, unit->identity()->subject, requested);
+        if (!restored) return Result<std::size_t>::failure(restored.status());
+        const float healed = static_cast<float>(restored.value().applied);
         const float accumulatedCost = integrity->repairCostRemainder + healed * integrity->repairCostPerHealth;
         const auto wholeCost = static_cast<std::int64_t>(std::floor(accumulatedCost));
         if (wholeCost > 0) {
             auto cost = resource::CostSpec::single(integrity->repairResource, wholeCost);
-            if (!cost) return Result<std::size_t>::failure(cost.status());
+            if (!cost) {
+                integrity->state.health = healthBefore;
+                return Result<std::size_t>::failure(cost.status());
+            }
             auto paid = debit(*unit, *building, cost.value());
-            if (!paid) return Result<std::size_t>::failure(paid.status());
+            if (!paid) {
+                integrity->state.health = healthBefore;
+                return Result<std::size_t>::failure(paid.status());
+            }
         }
         integrity->repairCostRemainder = accumulatedCost - static_cast<float>(wholeCost);
-        integrity->state.health += healed;
         ++processed;
     }
     return Result<std::size_t>::success(processed,
@@ -3569,15 +3579,15 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
             request.source = caster.identity()->subject;
             request.target = subject;
             request.damageType = spec.damageType;
-            request.healthDamage = spec.damage * effects->multiplier("incomingDamageMultiplier");
-            if (shield != nullptr && *shield > 0.0f) {
-                const float absorbed = std::min(*shield, static_cast<float>(request.healthDamage));
-                *shield -= absorbed;
-                request.healthDamage -= absorbed;
-                if (shieldCooldown != nullptr) *shieldCooldown = shieldDelay;
-            }
+            request.healthDamage = spec.damage;
+            request.incomingDamageMultiplier = effects->multiplier("incomingDamageMultiplier");
+            request.availableShield = shield != nullptr ? *shield : 0.0;
             auto outcome = damage.apply(*state, request);
             if (!outcome) return Result<void>::failure(outcome.status());
+            if (shield != nullptr && outcome.value().absorbedShieldDamage > 0.0) {
+                *shield -= static_cast<float>(outcome.value().absorbedShieldDamage);
+                if (shieldCooldown != nullptr) *shieldCooldown = shieldDelay;
+            }
             if (damageEvents) damageEvents(request, outcome.value(), tick, DamageChannel::Ability);
             if (outcome.value().reaction == combat::HitReaction::Death) {
                 if (faction != nullptr && hostileTo(caster, *faction)) {
@@ -3589,7 +3599,10 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
                 *alive = false;
             }
         }
-        if (spec.healing > 0.0f) state->health = std::min(state->maxHealth, state->health + spec.healing);
+        if (spec.healing > 0.0f) {
+            auto restored = damage.heal(*state, caster.identity()->subject, spec.healing);
+            if (!restored) return Result<void>::failure(restored.status());
+        }
         if (spec.appliesEffect && effects != nullptr) {
             auto applied = effects->apply(spec.effect);
             if (!applied) return Result<void>::failure(applied.status());
@@ -4394,14 +4407,15 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                 return Result<void>::success(Status::success(StatusCode::NoOp));
             combat::DamageRequest request;
             request.source = payload.source; request.target = subject; request.damageType = payload.damageType;
-            request.healthDamage = payload.damage * scale * effects->multiplier("incomingDamageMultiplier");
-            if (shield != nullptr && *shield > 0.0f) {
-                const float absorbed = std::min(*shield, static_cast<float>(request.healthDamage));
-                *shield -= absorbed; request.healthDamage -= absorbed;
-                if (cooldown != nullptr) *cooldown = delay;
-            }
+            request.healthDamage = payload.damage * scale;
+            request.incomingDamageMultiplier = effects->multiplier("incomingDamageMultiplier");
+            request.availableShield = shield != nullptr ? *shield : 0.0;
             auto outcome = damage.apply(*state, request);
             if (!outcome) return Result<void>::failure(outcome.status());
+            if (shield != nullptr && outcome.value().absorbedShieldDamage > 0.0) {
+                *shield -= static_cast<float>(outcome.value().absorbedShieldDamage);
+                if (cooldown != nullptr) *cooldown = delay;
+            }
             if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Projectile);
             if (outcome.value().reaction == combat::HitReaction::Death) {
                 if (Unit* source = unitBySubject(payload.source);
@@ -4963,15 +4977,14 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                                        policy->upgradeDamageFactor * rangeFactor *
                                                        static_cast<float>(effects->values.multiplier("damageMultiplier"))) *
                                    static_cast<double>(std::max(1, definition.projectile.pelletCount));
-            request.healthDamage *= target->effects->multiplier("incomingDamageMultiplier");
-            if (target->shield != nullptr && *target->shield > 0.0f && request.healthDamage > 0.0) {
-                const float absorbed = std::min(*target->shield, static_cast<float>(request.healthDamage));
-                *target->shield -= absorbed;
-                request.healthDamage -= absorbed;
-                if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
-            }
+            request.incomingDamageMultiplier = target->effects->multiplier("incomingDamageMultiplier");
+            request.availableShield = target->shield != nullptr ? *target->shield : 0.0;
             auto outcome = damage.apply(*target->durability, request);
             if (!outcome) return Result<std::size_t>::failure(outcome.status());
+            if (target->shield != nullptr && outcome.value().absorbedShieldDamage > 0.0) {
+                *target->shield -= static_cast<float>(outcome.value().absorbedShieldDamage);
+                if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
+            }
             if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
             if (target->morale != nullptr && target->morale->capacity > 0.0f && policy->suppressionPerShot > 0.0f) {
                 float auraFactor = 1.0f;
@@ -5182,15 +5195,14 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                            target->position.y - placement->worldY));
             request.healthDamage = static_cast<double>(definition.damage * garrisonFactor * rangeFactor) *
                                    static_cast<double>(std::max(1, definition.projectile.pelletCount));
-            request.healthDamage *= target->effects->multiplier("incomingDamageMultiplier");
-            if (target->shield != nullptr && *target->shield > 0.0f && request.healthDamage > 0.0) {
-                const float absorbed = std::min(*target->shield, static_cast<float>(request.healthDamage));
-                *target->shield -= absorbed;
-                request.healthDamage -= absorbed;
-                if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
-            }
+            request.incomingDamageMultiplier = target->effects->multiplier("incomingDamageMultiplier");
+            request.availableShield = target->shield != nullptr ? *target->shield : 0.0;
             auto outcome = damage.apply(*target->durability, request);
             if (!outcome) return Result<std::size_t>::failure(outcome.status());
+            if (target->shield != nullptr && outcome.value().absorbedShieldDamage > 0.0) {
+                *target->shield -= static_cast<float>(outcome.value().absorbedShieldDamage);
+                if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
+            }
             if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
             if (outcome.value().reaction == combat::HitReaction::Death) {
                 *target->alive = false;
@@ -5279,7 +5291,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
             DiagnosticCode::InvalidArgument, "RTS reinforcement policy delta must be non-negative", "step.delta"));
     struct Demand {
         Building* building = nullptr;
-        production::ProductionTask* task = nullptr;
+        const production::ProductionTask* task = nullptr;
         std::string product;
         int priority = 0;
     };
@@ -5307,7 +5319,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
         if (!integrity->alive || !rally->enabled || rally->combatGroup == 0) continue;
         auto* building = dynamic_cast<Building*>(ecs::try_get(identity->self));
         if (building == nullptr || &*building->identity() != identity) continue;
-        production::ProductionTask* active = nullptr;
+        const production::ProductionTask* active = nullptr;
         for (int index = 0; index < production->values.taskCount(); ++index) {
             auto task = production->values.taskAt(index);
             if (!task || task->get().kind != "unit") continue;
@@ -5409,7 +5421,13 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
         advanced.value();
         ++processed;
         if (!spawn) continue;
-        const auto completed = production->values.completed("unit");
+        std::vector<production::ProductionTask> completed = production->values.readyToSettle("unit");
+        for (int index = 0; index < production->values.taskCount(); ++index) {
+            auto task = production->values.taskAt(index);
+            if (task && task->get().kind == "unit" && task->get().state == production::TaskState::Completed &&
+                !task->get().settlementRequired)
+                completed.push_back(task->get());
+        }
         if (building->rally()->productionSpawnBlocked &&
             std::none_of(completed.begin(), completed.end(), [&](const auto& task) {
                 return task.id == building->rally()->blockedProductionTask;
@@ -5420,8 +5438,6 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 events({LifecycleEventKind::ProductionSpawnCleared, identity->subject, {}, {}, 0.0}, step.tick);
         }
         for (const auto& task : completed) {
-            auto& settled = building->rally()->settledProductionTasks;
-            if (std::find(settled.begin(), settled.end(), task.id) != settled.end()) continue;
             settlements.push_back({identity->self, task});
         }
     }
@@ -5432,7 +5448,15 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                     Diagnostic::error(DiagnosticCode::StaleHandle,
                                       "RTS producer disappeared during production settlement", "production"));
             auto& settled = building->rally()->settledProductionTasks;
-            if (std::find(settled.begin(), settled.end(), settlement.task.id) != settled.end()) continue;
+            if (std::find(settled.begin(), settled.end(), settlement.task.id) != settled.end()) {
+                if (settlement.task.settlementRequired) {
+                    production::ProductionSettlementReceipt receipt;
+                    receipt.settlementId = "rts.unit:" + settlement.task.id;
+                    auto committed = building->production()->values.settle(settlement.task.id, std::move(receipt));
+                    if (!committed) return Result<std::size_t>::failure(committed.status());
+                }
+                continue;
+            }
             std::optional<WorldPosition> spawnPosition;
             if (position) {
                 auto available = position(*building, settlement.task);
@@ -5483,6 +5507,12 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 std::move(queued).takeValue();
             }
             settled.push_back(settlement.task.id);
+            if (settlement.task.settlementRequired) {
+                production::ProductionSettlementReceipt receipt;
+                receipt.settlementId = "rts.unit:" + settlement.task.id;
+                auto committed = building->production()->values.settle(settlement.task.id, std::move(receipt));
+                if (!committed) return Result<std::size_t>::failure(committed.status());
+            }
             if (events)
                 events({LifecycleEventKind::UnitProduced, building->identity()->subject,
                         unit->identity()->subject, settlement.task.product, 1.0}, step.tick);
@@ -5540,7 +5570,8 @@ Result<std::size_t> ReinforcementSystem::step() {
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
 }
 
-Result<std::size_t> EffectSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+Result<std::size_t> EffectSystem::step(const SimulationStep& step, combat::DamageRuntime& settlement,
+                                       const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS effects step delta must be non-negative", "step.delta"));
@@ -5552,9 +5583,10 @@ Result<std::size_t> EffectSystem::step(const SimulationStep& step, const Lifecyc
             Unit* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
             if (unit == nullptr || &*unit->identity() != identity || &*unit->effects() != effects) continue;
             const double healing = effects->values.additive("healingPerSecond") * step.delta.seconds();
-            if (durability->alive && healing > 0.0)
-                durability->state.health = std::min(durability->state.maxHealth,
-                                                     durability->state.health + healing);
+            if (durability->alive && healing > 0.0) {
+                auto restored = settlement.heal(durability->state, {}, healing);
+                if (!restored) return Result<std::size_t>::failure(restored.status());
+            }
             const auto before = effects->values.snapshot();
             auto advanced = advanceEffects(effects->values, step);
             if (!advanced) return Result<std::size_t>::failure(advanced.status());

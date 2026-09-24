@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/AttachmentPoint.h"
@@ -23,7 +25,7 @@ struct MeshVfxFloatKey {
 };
 
 /** @brief Piecewise-linear parameter animation evaluated over one playback cycle. */
-struct MeshVfxFloatCurve {
+struct EVENGINE_API_WORLD MeshVfxFloatCurve {
     std::vector<MeshVfxFloatKey> keys;
 
     /** @brief Evaluate the curve at normalized time, clamped to its first and last keys. */
@@ -68,7 +70,7 @@ struct MeshVfxLayerAsset {
 };
 
 /** @brief Versioned, backend-neutral description of a real-time mesh effect. */
-struct MeshVfxAsset {
+struct EVENGINE_API_WORLD MeshVfxAsset {
     static constexpr std::string_view schemaId = "eve.stylize.mesh-vfx";
     static constexpr std::uint32_t schemaVersion = 1;
 
@@ -101,7 +103,7 @@ struct MeshVfxAsset {
  * @thread Simulation-thread affine. Rendering must consume layers on the render thread.
  * @reentrancy Does not invoke callbacks.
  */
-class MeshVfxAssetInstance {
+class EVENGINE_API_WORLD MeshVfxAssetInstance {
 public:
     /**
      * @brief Build independent runtime state for every asset layer.
@@ -161,7 +163,7 @@ private:
  * A failed reload preserves both the previous asset and revision. Filesystem watching belongs to the caller.
  * @thread Affine to the owning asset/editor thread; no internal synchronization.
  */
-class MeshVfxAssetSlot {
+class EVENGINE_API_WORLD MeshVfxAssetSlot {
 public:
     /** @brief Construct a slot from an already validated asset. */
     explicit MeshVfxAssetSlot(MeshVfxAsset asset);

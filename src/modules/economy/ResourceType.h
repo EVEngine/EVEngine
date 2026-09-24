@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -27,7 +29,7 @@ struct ResourceTypeDef {
 /**
  * @brief 资源类型注册表：注册 / 查询 / 清理。
  */
-class ResourceTypeRegistry {
+class EVENGINE_API_FOUNDATION ResourceTypeRegistry {
 public:
     /** @brief 注册或替换一个资源类型定义。@return false 当 id 为空。 */
     static bool registerType(const ResourceTypeDef& def);
@@ -35,6 +37,14 @@ public:
     static const ResourceTypeDef* find(const std::string& id);
     /** @brief 已注册类型数量。 */
     static int count();
+    /**
+     * @brief 按 id 字典序返回第 index 个类型定义。
+     * @param index 从 0 开始的序号。
+     * @return 借用注册表内的定义，越界返回 nullptr；顺序稳定（便于观察与脚本遍历）。
+     * @lifetime The returned pointer is borrowed from the registry: it stays valid
+     *           until the next `registerType`/`clear` call on that registry.
+     */
+    static const ResourceTypeDef* typeAt(int index);
     /** @brief 清空注册表（测试用）。 */
     static void clear();
 

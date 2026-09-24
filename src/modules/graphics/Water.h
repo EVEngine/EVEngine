@@ -26,7 +26,7 @@ struct WaterMeshSettings {
 };
 
 /** @brief Calculate Pcg PWS_WaterSystem's triangle count without allocating a mesh. */
-[[nodiscard]] Result<int> calculateWaterMeshTriangles(const WaterMeshSettings& settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<int> calculateWaterMeshTriangles(const WaterMeshSettings &settings);
 
 class Graphics;
 class Mesh;
@@ -38,7 +38,7 @@ struct WaterGradientColorStop { float time = 0.0F; glm::vec3 color{0.0F}; };
 struct WaterGradientAlphaStop { float time = 0.0F; float alpha = 1.0F; };
 
 /** @brief Caller-owned color and alpha keys used to bake a water depth-ramp texture. */
-struct WaterDepthGradient {
+struct EVENGINE_API_BACKENDS WaterDepthGradient {
     std::vector<WaterGradientColorStop> colorStops;
     std::vector<WaterGradientAlphaStop> alphaStops;
     /** @brief Add a finite normalized RGB stop, preserving no external reference. */
@@ -65,7 +65,7 @@ struct WaterDepthGradient {
  * Water::bindDefaults for the layout. Caller owns Water*; its Mesh / Shader are
  * owned by Graphics.
  */
-class Water {
+class EVENGINE_API_BACKENDS Water {
 public:
     explicit Water(Graphics *gfx);
     ~Water();

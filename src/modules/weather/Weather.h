@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/PcgPhotoModeApply.h"
@@ -31,7 +33,7 @@ namespace eve::weather {
  *
  * Presets: "clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard".
  */
-class Weather : public Module, public IPhotoModeFieldSink {
+class EVENGINE_API_ORCHESTRATION Weather : public Module, public IPhotoModeFieldSink {
 public:
     Module_REG(Weather);
 

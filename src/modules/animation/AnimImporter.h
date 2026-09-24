@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -21,7 +23,7 @@ class AnimClip;
  * @brief Import AnimSkeleton / AnimClip from an Assimp scene (FBX/glTF/etc),
  * or from compact `*.anim.txt` fixtures derived from those assets.
  */
-class AnimImporter {
+class EVENGINE_API_WORLD AnimImporter {
 public:
     /** @brief Build skeleton from the scene node hierarchy (depth-first). */
     static AnimSkeleton *loadSkeleton(const aiScene *scene);

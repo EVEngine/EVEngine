@@ -1,10 +1,15 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorTarget.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace eve::editor {
 
@@ -17,7 +22,7 @@ class EditorSession;
  * planners through IEditingCommandRegistry; targets remain borrowed.
  * @thread Owner-thread only.
  */
-class EditorTargetCoordinator final : public eve::editing::IEditingCommandRegistry {
+class EVENGINE_API_ORCHESTRATION EditorTargetCoordinator final : public eve::editing::IEditingCommandRegistry {
 public:
     explicit EditorTargetCoordinator(EditorCommandService& commands);
     ~EditorTargetCoordinator();
@@ -36,6 +41,25 @@ public:
     [[nodiscard]] EditorResult<EditorValue> inspect(const TargetId& target) const;
     [[nodiscard]] EditorResult<TransactionReceipt> undo(const TargetId& target);
     [[nodiscard]] EditorResult<TransactionReceipt> redo(const TargetId& target);
+
+    /** @brief Discovery metadata for one registered editable target. */
+    struct TargetSummary {
+        std::string   id;
+        std::string   type;  // IEditableTarget::describe().type, when the target reports one
+        std::uint64_t revision   = 0;
+        std::uint64_t generation = 0;
+    };
+
+    /**
+     * @brief Enumerate every registered target, ordered by id.
+     *
+     * Discovery exists because a project can register targets the automation
+     * host never created (a script binds its own tile layer, height map or voxel
+     * world), and `inspect`/`execute` require the id up front.
+     * @return One summary per registered target; never null entries.
+     * @thread Owner-thread only.
+     */
+    [[nodiscard]] std::vector<TargetSummary> targets() const;
 
 private:
     friend class EditorSession;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingInput.h
@@ -46,7 +48,7 @@ struct ClimbingIntent {
  * Structural mutation: none. Read service: injected SimulationTick only. The system invokes no callbacks and
  * produces bit-exact results for the same command stream.
  */
-class ClimbingInputSystem {
+class EVENGINE_API_DOMAINS ClimbingInputSystem {
 public:
     /** @brief Hard safety bound preventing an untrusted producer from growing intent indefinitely. */
     static constexpr std::size_t MaxBufferedCommands = 16;
@@ -89,7 +91,7 @@ public:
  * Reads intent/body/definitions and synchronously borrowed Physics queries; writes intent and runtime only at commit.
  * It performs no structural mutation and invokes no callbacks or scripts.
  */
-class ClimbingSelectionSystem {
+class EVENGINE_API_DOMAINS ClimbingSelectionSystem {
 public:
     /**
      * @brief Start the best candidate and consume its input edge exactly once.

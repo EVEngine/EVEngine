@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -14,7 +16,7 @@ namespace eve::archspace_editor {
  * @threadaffinity Owner/composition thread only.
  * @reentrancy Do not construct or destroy while a command planner is running.
  */
-class ArchSpaceEditorModule final : public Module {
+class EVENGINE_API_EDITORS ArchSpaceEditorModule final : public Module {
 public:
     Module_REG(ArchSpaceEditorModule);
     ArchSpaceEditorModule();

@@ -1,11 +1,9 @@
 #include "common/ECS.h"
-#include "rpg/Settlement.h"
 #include "tactics/Tactics.h"
+#include "tactics/TacticsSettlement.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-
-#include <algorithm>
 
 namespace {
 
@@ -14,6 +12,41 @@ eve::SubjectRef subject(const char* text) {
     REQUIRE(id.has_value());
     return eve::SubjectRef::fromPersistentId(*id);
 }
+
+class HealthPolicy final : public eve::settlement::ISettlementPolicy {
+public:
+    explicit HealthPolicy(double& health) : health_(health) {}
+
+    eve::Result<void> validate(eve::settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> sourceModifiers(eve::settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> targetMitigation(eve::settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> armorShield(eve::settlement::SettlementContext&) override {
+        return eve::Result<void>::success();
+    }
+    eve::Result<void> clamp(eve::settlement::SettlementContext& context) override {
+        return context.setClampMax(health_);
+    }
+    eve::Result<eve::settlement::PreparedApply> prepareApply(
+        const eve::settlement::SettlementContext& context) override {
+        const double before = health_;
+        const double after  = before - context.magnitude();
+        return eve::Result<eve::settlement::PreparedApply>::success(eve::settlement::PreparedApply(
+            [this, after]() {
+                health_ = after;
+                return eve::Result<void>::success();
+            },
+            [this, before]() { health_ = before; }));
+    }
+
+private:
+    double& health_;
+};
 
 }  // namespace
 
@@ -34,8 +67,8 @@ TEST_CASE("tactics.rpgSettlementOutcomeDefeatsUnitAndCompletesObjective") {
     auto redSide = tactics.newSide(battle, red);
     REQUIRE(blueSide.ok());
     REQUIRE(redSide.ok());
-    REQUIRE(tactics.newUnit(battle, blueSide.value(), attacker, {}, {0, 0, 0}).ok());
-    REQUIRE(tactics.newUnit(battle, redSide.value(), defender, {}, {1, 0, 0}).ok());
+    REQUIRE(tactics.newUnit(battle, blueSide.value(), attacker, {}, {0, 0, 0}, {1, 300, 0, 10}).ok());
+    REQUIRE(tactics.newUnit(battle, redSide.value(), defender, {}, {1, 0, 0}, {1, 300, 0, 5}).ok());
     eve::tactics::ObjectiveSpec objective;
     objective.id = *eve::LogicalId::parse("test:eliminate-after-settlement");
     objective.kind = eve::tactics::ObjectiveKind::EliminateSide;
@@ -43,25 +76,41 @@ TEST_CASE("tactics.rpgSettlementOutcomeDefeatsUnitAndCompletesObjective") {
     objective.targetSide = red;
     REQUIRE(tactics.addObjective(battle, objective).ok());
     REQUIRE(tactics.start(battle, eve::tactics::TurnPolicyKind::Initiative).ok());
+    for (std::uint64_t tick = 1; tick <= 3; ++tick)
+        REQUIRE(tactics.advance(battle, {eve::SimulationTick(tick), eve::Duration::fromNanoseconds(1)}).ok());
 
-    constexpr const char* pipeline = "test.tactics.damage";
-    eve::rpg::SettlementPipeline::clearPipeline(pipeline);
-    eve::rpg::SettlementPipeline::registerStage(pipeline, "armor", 10, [](eve::rpg::SettlementContext& context) {
-        const double damage = std::max(0.0, context.get("attack") - context.get("armor"));
-        context.set("healthAfter", context.get("health") - damage);
-    });
-    eve::rpg::SettlementContext settlement;
-    settlement.kind = "damage";
-    settlement.set("attack", 12.0);
-    settlement.set("armor", 2.0);
-    settlement.set("health", 8.0);
-    eve::rpg::SettlementPipeline::run(pipeline, settlement);
-    REQUIRE(settlement.get("healthAfter") <= 0.0);
+    const auto strike = eve::LogicalId::parse("test:settlement-strike");
+    REQUIRE(strike.has_value());
+    auto declared = tactics.useAbility(battle, attacker, *strike, {1, 0, 0}, defender, "{\"power\":12}");
+    REQUIRE(declared.ok());
 
-    // The game-level adapter translates only the tactical outcome. Tactics
-    // never reads RPG health or retains an RPGActor pointer.
+    eve::settlement::SettlementRule armor;
+    armor.id           = "tactics.integration.armor";
+    armor.source       = "test:defender";
+    armor.stage        = eve::settlement::StageKind::TargetMitigation;
+    armor.operation    = eve::settlement::RuleOperation::ResistFlat;
+    armor.value        = 2.0;
+    armor.filter.kinds = {"damage"};
+    eve::settlement::SettlementRuleSet rules;
+    REQUIRE(rules.configure({armor}).ok());
+    eve::tactics::TacticsSettlementRuntime runtime;
+    REQUIRE(runtime.configureSettlementRules(rules).ok());
+
+    eve::tactics::AbilitySettlementRequest request;
+    request.ability   = declared.value();
+    request.kind      = "damage";
+    request.magnitude = 12.0;
+    request.tick      = eve::SimulationTick(3);
+    double       health = 8.0;
+    HealthPolicy policy(health);
+    auto         settled = runtime.settle(request, policy);
+    REQUIRE(settled.ok());
+    CHECK_EQ(settled.value().applied, 8.0);
+    REQUIRE(health <= 0.0);
+
+    // Tactics consumes only the canonical settlement outcome. It never reads
+    // the health owner's state or retains its policy.
     REQUIRE(tactics.defeatUnit(battle, defender).ok());
-    eve::rpg::SettlementPipeline::clearPipeline(pipeline);
     auto status = tactics.status(battle);
     REQUIRE(status.ok());
     CHECK_EQ(static_cast<int>(status.value()), static_cast<int>(eve::tactics::BattleStatus::Ended));

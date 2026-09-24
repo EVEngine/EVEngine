@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -8,7 +10,7 @@
 namespace eve::plugins {
 
 /** @brief 加载导出 eve_plugin_init 的原生动态库（dll / so / dylib）。 */
-class Plugins : public Module {
+class EVENGINE_API_FOUNDATION Plugins : public Module {
 public:
     Module_REG(Plugins);
     Plugins();

@@ -1,9 +1,11 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned highlighted-color snapshot ported from Pcg ColorPreviewSync. */
-class PcgColorPreviewSync {
+class EVENGINE_API_WORLD PcgColorPreviewSync {
 public:
     /** @brief Synchronize from the source image color exactly as Pcg does on enable. */
     [[nodiscard]] Result<void> sync(float red, float green, float blue, float alpha);

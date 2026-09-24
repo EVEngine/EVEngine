@@ -1,9 +1,11 @@
 #pragma once
-#include "editing/EditingProtocol.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <vector>
+#include "common/Export.h"
+#include "editing/EditingProtocol.h"
 namespace eve::network { class Network; }
 namespace eve::network_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
@@ -16,7 +18,7 @@ struct NetworkTelemetrySample {
     double timeSeconds=0,sendBytesPerSecond=0,receiveBytesPerSecond=0,errorRate=0;
 };
 /** @brief UI-independent bounded history and network health diagnostics. */
-class NetworkTelemetryModel {
+class EVENGINE_API_BACKENDS NetworkTelemetryModel {
 public:
     explicit NetworkTelemetryModel(std::size_t capacity=300);
     EditorResult<void> ingest(NetworkTelemetrySample);

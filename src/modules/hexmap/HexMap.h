@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexMap.h @brief Editable hex cell grid: topology, queries, picking and authoring. */
 
@@ -67,7 +69,7 @@ struct HexSurfaceId {
  * derived from the construction seed and the cell coordinates only. Two maps
  * built with the same size and seed produce identical positions.
  */
-class HexMap {
+class EVENGINE_API_WORLD HexMap {
 public:
     HexMap() = default;
 

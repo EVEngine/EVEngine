@@ -28,7 +28,7 @@ struct EntitySpatialPose {
  * @remarks Providers are owner-thread-only, invoke no callbacks and return NotFound
  * for entity types they do not own. Returned poses own all data.
  */
-class EVENGINE_API IEntitySpatialProvider {
+class EVENGINE_API_FOUNDATION_INLINE IEntitySpatialProvider {
 public:
     static constexpr const char* capabilityName = "eve.entity-spatial-provider";
     virtual ~IEntitySpatialProvider() = default;
@@ -49,7 +49,7 @@ public:
  * @thread Owner thread only; provider registration must be settled before dispatch.
  * @reentrancy Providers must not mutate the capability listener registry.
  */
-[[nodiscard]] EVENGINE_API Result<EntitySpatialPose> resolveEntitySpatialPose(ecs::EntityHandle entity,
-                                                                              std::string_view bone = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EntitySpatialPose> resolveEntitySpatialPose(ecs::EntityHandle entity,
+                                                                                         std::string_view  bone = {});
 
 }  // namespace eve

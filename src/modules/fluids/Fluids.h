@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief Fluids module — interactive surface fluid simulation.
@@ -39,7 +41,7 @@ class Sequence;
 namespace eve::fluids {
 
 /** @brief GPU-backed surface fluid simulator (falls back to the CPU solver). */
-class FluidSimulator : public eve::physics::ISimulationBackend {
+class EVENGINE_API_DOMAINS FluidSimulator : public eve::physics::ISimulationBackend {
 public:
     /**
      * @param maxParticles particle buffer capacity.
@@ -190,11 +192,20 @@ private:
 };
 
 /** @brief Fluids module — factory + script binding. */
-class Fluids : public Module {
+class EVENGINE_API_DOMAINS Fluids : public Module {
 public:
     Module_REG(Fluids);
     Fluids();
     ~Fluids() override;
+
+    // The two `vector<unique_ptr<...>>` members make the implicit copy operations
+    // ill-formed (C2280) the moment a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable or assignable in practice.
+    Fluids(const Fluids&)            = delete;
+    Fluids& operator=(const Fluids&) = delete;
+    Fluids(Fluids&&)                 = default;
+    Fluids& operator=(Fluids&&)      = default;
 
     /**
      * @brief Create a surface fluid simulator.

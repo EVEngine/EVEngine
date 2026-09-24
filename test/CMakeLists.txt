@@ -64,7 +64,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
@@ -74,7 +74,8 @@ endif()
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
 # binary. Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp)
+  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
+                                    shader_reload_vulkan.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()
@@ -122,10 +123,46 @@ if(NOT _eve_test_has_physics)
 endif()
 eve_module_enabled(devtools _eve_test_has_devtools)
 if(NOT _eve_test_has_devtools)
-  foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp play_host.cpp play_trace.cpp)
+  foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp play_host.cpp play_trace.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_lsp_test}$")
   endforeach()
 endif()
+
+# Partition the profile-filtered sources into one link unit per domain. The rule
+# lives in scripts/test_domains.py, which scripts/check_test_manifest.py also
+# uses; CMake consumes the generated partition instead of re-implementing it so
+# the two cannot drift. A source matching no rule, or two rules, fails here with
+# the offending file named. The rule file is a configure dependency: editing the
+# table (or SHARED_SOURCES) has to regenerate the partition, and nothing else in
+# this directory would notice.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_domains.cmake"
+  "${CMAKE_SOURCE_DIR}/scripts/test_domains.py")
+include(${CMAKE_CURRENT_SOURCE_DIR}/test_domains.cmake)
+set(_eve_test_domain_input "${CMAKE_CURRENT_BINARY_DIR}/test_domain_input.txt")
+file(WRITE "${_eve_test_domain_input}" "")
+foreach(_eve_test_cpp IN LISTS all_test_cpp)
+  # demo.cpp is appended by bare name (see the EVENGINE_BUILD_DEMO branch above),
+  # so normalize every entry: the partition rule resolves paths from the list
+  # verbatim and rejects anything that is not absolute.
+  get_filename_component(_eve_test_cpp_abs "${_eve_test_cpp}" ABSOLUTE
+    BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  file(APPEND "${_eve_test_domain_input}" "${_eve_test_cpp_abs}\n")
+endforeach()
+set(_eve_test_domain_partition "${CMAKE_CURRENT_BINARY_DIR}/test_domain_sources.cmake")
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" -X utf8
+          "${CMAKE_SOURCE_DIR}/scripts/test_domains.py"
+          --input "${_eve_test_domain_input}"
+          --output "${_eve_test_domain_partition}"
+  RESULT_VARIABLE _eve_test_domain_status
+  ERROR_VARIABLE _eve_test_domain_error)
+if(NOT _eve_test_domain_status EQUAL 0)
+  message(FATAL_ERROR
+    "test domain partition failed; every test/*.cpp must match exactly one "
+    "domain in test/test_domains.cmake:\n${_eve_test_domain_error}")
+endif()
+include("${_eve_test_domain_partition}")
 
 file(GLOB all_test_scripts
   filesystem.nut
@@ -154,6 +191,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
 # On Android the zeroerr runner is packaged as the app's native entry point
 # (libmain.so loaded by SDLActivity), replacing the engine main.cpp.
 if(EVENGINE_ANDROID_TEST_APP)
+  set(EVE_TEST_TARGETS main)
   add_library(main SHARED
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
@@ -179,12 +217,87 @@ elseif(EVENGINE_IOS_TEST_APP)
   set_source_files_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
   target_link_libraries(eve eve_engine_includes)
 else()
-  add_executable(
-    unit_test
-    ${all_test_cpp}
-    ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
-  )
-  target_link_libraries(unit_test eve_engine_includes)
+  # Desktop. The suite has two shapes, chosen by EVENGINE_TEST_DOMAIN_SPLIT:
+  #
+  # * split (default on the dynamic route): one executable per domain, so an
+  #   agent links only the domain it is testing and no single link unit carries
+  #   all 700+ test translation units. Each executable is a thin consumer of the
+  #   link-group libraries, so the split costs almost nothing in disk.
+  # * monolithic (default on the archive route): the whole suite in one
+  #   executable, as it was before the partition. In the archive route every
+  #   executable statically contains the whole engine, and 30 of them plus their
+  #   debug info measured 93 GB on Windows, needed serial linking to avoid
+  #   exhausting the disk, and still took longer than one binary holding the same
+  #   code once.
+  #
+  # Either way the runner (main.cpp) and the shared helper translation units a
+  # domain needs (EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES, see SHARED_SOURCES in
+  # scripts/test_domains.py) are compiled into the executable that links them:
+  # a test helper another domain defines cannot cross a link unit any other way.
+  set(EVE_TEST_TARGETS "")
+  set(_eve_test_runner "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+  # Compile the generated script fixtures once, in their own target, and link that
+  # archive into every test executable. Listing nut_scripts.cpp as a source of
+  # each target instead would make the Unix Makefiles generator emit one rule for
+  # that output per target; those rules are not deduplicated, so under `make -j`
+  # one target regenerates (and briefly deletes) nut_scripts.cpp while another is
+  # compiling it -- CI's Linux job failed with
+  # "integrate.cmake:8 (configure_file): No such file or directory" and
+  # "*** Deleting file 'test/nut_scripts.cpp'". Ninja deduplicates, which is why
+  # local Ninja builds never showed it.
+  add_library(eve_nut_fixtures STATIC ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
+
+  set(_eve_test_split_default OFF)
+  if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+    set(_eve_test_split_default ON)
+  endif()
+  set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
+      "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
+
+  if(EVENGINE_TEST_DOMAIN_SPLIT)
+    foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
+      if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
+        # Every test of this domain was filtered out by the profile.
+        continue()
+      endif()
+      set(_eve_test_target "unit_test_${_eve_domain}")
+      add_executable(${_eve_test_target}
+        ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
+        ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
+        ${_eve_test_runner}
+      )
+      target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
+      # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
+      # discovery step writes. Seed an empty stub at configure time when it is
+      # absent: otherwise ctest refuses to run at all ("include" error) until every
+      # domain has been built once, which defeats building and running a single
+      # domain. The real file replaces the stub as soon as the target is linked.
+      set(_eve_test_discovery
+        "${CMAKE_CURRENT_BINARY_DIR}/${_eve_test_target}_zeroerr_tests.cmake")
+      if(NOT EXISTS "${_eve_test_discovery}")
+        file(WRITE "${_eve_test_discovery}"
+          "# populated when ${_eve_test_target} is built\n")
+      endif()
+      list(APPEND EVE_TEST_TARGETS ${_eve_test_target})
+    endforeach()
+    list(LENGTH EVE_TEST_TARGETS _eve_test_target_count)
+    if(_eve_test_target_count EQUAL 0)
+      message(FATAL_ERROR
+        "no test domain produced a target; check test/test_domains.cmake")
+    endif()
+    message(STATUS "Test units: ${_eve_test_target_count} domain executables")
+  else()
+    add_executable(unit_test ${all_test_cpp})
+    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures)
+    set(_eve_test_discovery
+      "${CMAKE_CURRENT_BINARY_DIR}/unit_test_zeroerr_tests.cmake")
+    if(NOT EXISTS "${_eve_test_discovery}")
+      file(WRITE "${_eve_test_discovery}"
+        "# populated when unit_test is built\n")
+    endif()
+    list(APPEND EVE_TEST_TARGETS unit_test)
+    message(STATUS "Test units: 1 monolithic executable (EVENGINE_TEST_DOMAIN_SPLIT=OFF)")
+  endif()
 endif()
 
 # zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
@@ -192,7 +305,7 @@ endif()
 # deletes test setup calls written as REQUIRE(initSideEffect()), which made
 # every graphics test fail in Release with "graphics not initialized". Keep
 # test assertions live in the test binary so Release CI actually asserts.
-set(_eve_test_assert_targets unit_test main)
+set(_eve_test_assert_targets ${EVE_TEST_TARGETS} main)
 if(EVENGINE_IOS_TEST_APP)
   list(APPEND _eve_test_assert_targets eve)
 endif()
@@ -211,7 +324,10 @@ if(WIN32)
   if(EVENGINE_ANDROID_TEST_APP)
     target_compile_definitions(main PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
   else()
-    target_compile_definitions(unit_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+      target_compile_definitions(${_eve_test_target} PRIVATE
+        POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    endforeach()
   endif()
 endif()
 
@@ -226,7 +342,7 @@ eve_append_system_libraries(SystemLibraries)
 eve_thirdparty_libs(_eve_test_tp_libs ${EVE_THIRDPARTY_GROUPS})
 set(ThirdParty ${_eve_test_tp_libs} ${SystemLibraries})
 
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 
 if(TARGET eve_imgui)
   list(APPEND EVELIBS eve_imgui)
@@ -262,7 +378,9 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_SOURCE_DIR="."
     EVENGINE_IOS_TEST_APP=1)
 else()
-  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+    target_link_libraries(${_eve_test_target} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  endforeach()
   if(TARGET EVTensor AND NOT EVENGINE_WEBGPU)
     add_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
@@ -308,18 +426,22 @@ else()
     endif()
   endif()
   if(WIN32)
-    # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
-    # symbolized stack trace on unhandled exceptions (see test/main.cpp).
-    target_link_libraries(unit_test EVBacktrace)
+    # Crash-backtrace support (backward-cpp / DbgHelp) so the test binaries print
+    # a symbolized stack trace on unhandled exceptions (see test/main.cpp).
+    foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+      target_link_libraries(${_eve_test_target} EVBacktrace)
+    endforeach()
   endif()
-  target_compile_definitions(unit_test PRIVATE
-    EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
-    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
-    EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
-  if(TARGET EVAsset_graphics)
-    # The full resource suite inventories the graphics UV upload contract too.
-    target_compile_definitions(unit_test PRIVATE EVE_TEST_MESH_UPLOAD=1)
-  endif()
+  foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+    target_compile_definitions(${_eve_test_target} PRIVATE
+      EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+      EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+      EVENGINE_TEST_SHARED_LIBRARY_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    if(TARGET EVAsset_graphics)
+      # The full resource suite inventories the graphics UV upload contract too.
+      target_compile_definitions(${_eve_test_target} PRIVATE EVE_TEST_MESH_UPLOAD=1)
+    endif()
+  endforeach()
 
   # A real shared library exercises native loading and C++ module registration
   # instead of testing only loader failures. It resolves engine symbols from
@@ -329,14 +451,38 @@ else()
   target_compile_definitions(native_test_plugin PRIVATE EVENGINE_PLUGIN=1)
   target_link_libraries(native_test_plugin PRIVATE eve_engine_includes)
   set_target_properties(native_test_plugin PROPERTIES PREFIX "")
-  if(WIN32)
-    set_target_properties(unit_test PROPERTIES ENABLE_EXPORTS ON)
-    target_link_libraries(native_test_plugin PRIVATE "$<TARGET_LINKER_FILE:unit_test>")
+  # test/plugins.cpp links this shared library against the running test host, so
+  # that host must export engine symbols. With one executable per domain the host
+  # is whichever domain owns plugins.cpp (`core`); when the suite is monolithic
+  # the host is unit_test itself. Fail loudly if the partition ever moves
+  # plugins.cpp rather than silently dropping plugin-export coverage.
+  if(EVENGINE_TEST_DOMAIN_SPLIT)
+    set(_eve_plugin_host "unit_test_core")
+    if(NOT TARGET ${_eve_plugin_host})
+      message(FATAL_ERROR
+        "test/plugins.cpp must be classified into ${_eve_plugin_host} so "
+        "native_test_plugin can resolve engine symbols from the test host")
+    endif()
+  else()
+    set(_eve_plugin_host "unit_test")
+  endif()
+  if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+    # SHARED module linkage: the host executable has no export table at all (it
+    # is a thin consumer of the link-group libraries and there is no
+    # unit_test_core.lib), so a plugin cannot resolve engine symbols from it --
+    # the link fails with LNK1104 and the default build breaks. The shipped
+    # model is the same one a real plugin follows: link the engine's import
+    # libraries, here the per-link-group DLLs, and let the loader resolve them
+    # from the group libraries installed beside the host.
+    target_link_libraries(native_test_plugin PRIVATE ${EVE_LINK_TARGETS})
+  elseif(WIN32)
+    set_target_properties(${_eve_plugin_host} PROPERTIES ENABLE_EXPORTS ON)
+    target_link_libraries(native_test_plugin PRIVATE "$<TARGET_LINKER_FILE:${_eve_plugin_host}>")
   elseif(APPLE)
     target_link_options(native_test_plugin PRIVATE "LINKER:-undefined,dynamic_lookup")
-    target_link_options(unit_test PRIVATE "LINKER:-export_dynamic")
+    target_link_options(${_eve_plugin_host} PRIVATE "LINKER:-export_dynamic")
   elseif(UNIX)
-    target_link_options(unit_test PRIVATE "LINKER:--export-dynamic")
+    target_link_options(${_eve_plugin_host} PRIVATE "LINKER:--export-dynamic")
   endif()
 endif()
 
@@ -345,6 +491,27 @@ endif()
 # `download_classic_scenes` before running ClassicScenes.* tests.
 # (Skipped on the mobile test apps: the downloads target the host test tree,
 # not the assets packaged into the APK/.app.)
+# Asset prefetch hooks attach to the domain executable that consumes the asset,
+# not to every test unit: with one executable per domain a hook on each would
+# re-run the same download for all of them. The consuming tests (ClassicScenes,
+# animation_sprite_spine, animation_skinned) are all classified into the
+# `graphics` domain, so that is where the hooks go.
+function(eve_test_prefetch_asset target)
+  if(TARGET ${target})
+    add_custom_command(TARGET ${target} PRE_BUILD ${ARGN})
+  else()
+    message(STATUS "asset prefetch skipped: ${target} is not built in this profile")
+  endif()
+endfunction()
+
+# Prefetch hooks hang off the executable that consumes the asset: the domain
+# executable that owns the tests with the split, the single unit_test without it.
+if(EVENGINE_TEST_DOMAIN_SPLIT)
+  set(_eve_asset_host "unit_test_graphics")
+else()
+  set(_eve_asset_host "unit_test")
+endif()
+
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 option(EVENGINE_DOWNLOAD_CLASSIC_SCENES
   "Download large classic render test scenes (Sponza, DamagedHelmet)" OFF)
@@ -358,7 +525,7 @@ add_custom_target(download_classic_scenes
   COMMENT "Downloading classic graphics test scenes (Sponza, DamagedHelmet)"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_CLASSIC_SCENES)
-  add_custom_command(TARGET unit_test PRE_BUILD
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_CLASSIC_SCENES_DIR=${CMAKE_SOURCE_DIR}/test/assets/classic"
             bash "${_eve_classic_scenes_script}"
@@ -386,7 +553,7 @@ add_custom_target(download_spine_models
   COMMENT "Downloading Spine demo models (spineboy, hero, dragon)"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_SPINE_MODELS)
-  add_custom_command(TARGET unit_test PRE_BUILD
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
             "${EVENGINE_PYTHON}" "${_eve_spine_script}"
@@ -422,7 +589,7 @@ add_custom_target(download_skinned_character
   COMMENT "Downloading skinned character (CesiumMan) for animation tests"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
-  add_custom_command(TARGET unit_test PRE_BUILD
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
             "${_eve_skinned_shell}" -lc "${_eve_skinned_script}"
@@ -434,6 +601,12 @@ endif()  # NOT mobile test app
 
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
-zeroerr_discover_tests(unit_test)
+# Each domain executable discovers its own cases; ZeroErrDiscoverTests writes one
+# <target>_zeroerr_tests.cmake and appends it to TEST_INCLUDE_FILES, so ctest sees
+# the union with per-case isolation unchanged. The label is the target name, which
+# is what `make test/<platform> DOMAIN=<domain>` selects on.
+foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+  zeroerr_discover_tests(${_eve_test_target} LABEL "${_eve_test_target}")
+endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)

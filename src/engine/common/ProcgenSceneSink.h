@@ -11,7 +11,7 @@
 namespace eve {
 
 /** @brief Engine-neutral description of one procedural scene instance. */
-struct EVENGINE_API ProcgenInstanceDesc {
+struct EVENGINE_API_FOUNDATION_INLINE ProcgenInstanceDesc {
     /** @brief Stable source PointId; zero denotes a legacy instance without delta identity. */
     uint64_t    sourcePointId = 0;
     std::string id;
@@ -27,7 +27,7 @@ struct EVENGINE_API ProcgenInstanceDesc {
 };
 
 /** @brief Identity-based, revision-checked mutation of one procedural scene batch. */
-struct EVENGINE_API ProcgenInstanceDelta {
+struct EVENGINE_API_FOUNDATION_INLINE ProcgenInstanceDelta {
     uint64_t                         baseRevision   = 0;
     uint64_t                         targetRevision = 0;
     std::vector<ProcgenInstanceDesc> added;
@@ -43,7 +43,7 @@ struct EVENGINE_API ProcgenInstanceDelta {
 };
 
 /** @brief One complete cell snapshot participating in an atomic multi-batch publication. */
-struct EVENGINE_API ProcgenBatchSnapshot {
+struct EVENGINE_API_FOUNDATION_INLINE ProcgenBatchSnapshot {
     /** @brief Stable target batch identity. */
     std::string batchId;
     /** @brief Non-zero revision newer than the committed batch revision. */
@@ -59,7 +59,7 @@ struct EVENGINE_API ProcgenBatchSnapshot {
  * upward dependency on scene. Scene providers must replace a batch atomically
  * and preserve stable instance ids across rebuilds.
  */
-class EVENGINE_API IProcgenSceneSink {
+class EVENGINE_API_FOUNDATION_INLINE IProcgenSceneSink {
 public:
     static constexpr const char* capabilityName = "IProcgenSceneSink";
 

@@ -37,7 +37,7 @@ namespace hair {
  * @thread Render-thread affine; not safe to share across threads.
  * @reentrancy `draw` must not re-enter Graphics resource creation.
  */
-class GroomInstance {
+class EVENGINE_API_BACKENDS GroomInstance {
 public:
     explicit GroomInstance(Graphics *gfx);
     ~GroomInstance();

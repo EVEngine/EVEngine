@@ -22,7 +22,7 @@ class VirtualGeometryRenderer;
  *   r <- vg.newRenderer()
  *   r.buildIcosphere(4)
  */
-class VirtualGeometry : public Module {
+class EVENGINE_API_DOMAINS VirtualGeometry : public Module {
 public:
     Module_REG(VirtualGeometry);
     VirtualGeometry() = default;

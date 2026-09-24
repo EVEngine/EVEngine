@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
@@ -31,9 +33,19 @@ public:
  * image, infinite and encoded layers are rejected instead of flattened/lost.
  * All operations are synchronous on the document owner thread, without callbacks.
  */
-class LevelFormatRegistry {
+class EVENGINE_API_DOMAINS LevelFormatRegistry {
 public:
     LevelFormatRegistry();
+
+    // std::vector<std::unique_ptr<LevelFormat>> makes the implicit copy operations
+    // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // the registry was never copyable in practice.
+    LevelFormatRegistry(const LevelFormatRegistry&)            = delete;
+    LevelFormatRegistry& operator=(const LevelFormatRegistry&) = delete;
+    LevelFormatRegistry(LevelFormatRegistry&&)                 = default;
+    LevelFormatRegistry& operator=(LevelFormatRegistry&&)      = default;
+
     [[nodiscard]] eve::Result<void> registerFormat(std::unique_ptr<LevelFormat> format);
     int                             getFormatCount() const { return static_cast<int>(formats_.size()); }
     std::string                     getFormatId(int index) const;

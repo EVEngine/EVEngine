@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <array>
 #include <cstdint>
@@ -21,7 +23,7 @@ class Texture;
  * filtered cubemap is a separate backend operation, so capture completion never
  * exposes an unfiltered or partially updated probe to lighting.
  */
-class ReflectionProbeCapture {
+class EVENGINE_API_BACKENDS ReflectionProbeCapture {
 public:
     explicit ReflectionProbeCapture(Graphics *gfx);
     /** @brief Detach this probe from every registry before script-owned destruction. */

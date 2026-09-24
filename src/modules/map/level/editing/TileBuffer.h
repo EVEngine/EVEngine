@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -6,7 +8,7 @@
 namespace eve::level_editing {
 
 /** @brief Independent GID grid for map brushes (no hard dependency on map.TileLayer). */
-class TileBuffer {
+class EVENGINE_API_DOMAINS TileBuffer {
 public:
     TileBuffer(int width, int height);
 

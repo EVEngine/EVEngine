@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 #include "common/StateValue.h"
@@ -49,7 +50,7 @@ struct ConversationRoute {
 using Route = ConversationRoute;
 
 /** @brief Immutable, parameterized conversation definition. */
-struct ConversationAsset {
+struct EVENGINE_API_ORCHESTRATION ConversationAsset {
     /** @brief Typed invocation parameter declared by the content schema. */
     struct Parameter {
         enum class Type { Any, String, Int, Float, Bool };
@@ -103,7 +104,7 @@ struct ConversationAsset {
 };
 
 /** @brief Explicit conversation executor whose suspension points are node IDs. */
-class ConversationRunner {
+class EVENGINE_API_ORCHESTRATION ConversationRunner {
 public:
     static constexpr std::string_view SaveSchema  = "eve.dialogue.runner";
     static constexpr std::int64_t     SaveVersion = 2;

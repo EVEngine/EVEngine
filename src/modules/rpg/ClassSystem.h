@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;
@@ -18,7 +20,7 @@ class RPGActor;
  * @brief 职业系统。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class ClassSystem {
+class EVENGINE_API_PLATFORM ClassSystem {
 public:
     /**
      * @brief 设定职业并施加职业基础特征（compatibility facade (脚本兼容门面)；成功返回 true）。

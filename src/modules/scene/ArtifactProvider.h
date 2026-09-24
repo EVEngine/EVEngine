@@ -41,7 +41,7 @@ struct SceneArtifactRecord {
  * scene ownership boundary: a renderer or ECS SceneHost may later consume the
  * record without changing procgen or the capability contract.
  */
-class SceneArtifactProvider final : public eve::artifact::ISceneArtifactAdapter {
+class EVENGINE_API_PLATFORM SceneArtifactProvider final : public eve::artifact::ISceneArtifactAdapter {
 public:
     /** @brief Stage one artifact and copy all data needed after prepare. */
     [[nodiscard]] eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepare(
@@ -80,8 +80,8 @@ private:
 };
 
 /** @brief Return the process-owned scene artifact provider singleton. */
-[[nodiscard]] SceneArtifactProvider& sceneArtifactProvider() noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM SceneArtifactProvider& sceneArtifactProvider() noexcept;
 /** @brief Register the scene provider in the common capability registry. */
-void registerSceneArtifactProvider();
+EVENGINE_API_PLATFORM void registerSceneArtifactProvider();
 
 }  // namespace eve::scene

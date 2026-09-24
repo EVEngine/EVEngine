@@ -27,7 +27,7 @@ struct BloomFilterSettings {
  * @thread Any thread; pure and
  * reentrant, retaining no references.
  */
-[[nodiscard]] Result<void> validateBloomFilterSettings(const BloomFilterSettings &settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> validateBloomFilterSettings(const BloomFilterSettings &settings);
 
 /**
  * @brief Linear-HDR bloom pyramid with selectable Karis/tent or Gaussian/scatter reconstruction.

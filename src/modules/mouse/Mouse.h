@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 #include "mouse/Cursor.h"
 
@@ -17,8 +18,7 @@ namespace eve::mouse
  * @brief The Mouse class provides an interface for querying and manipulating the mouse cursor.
  * It can also be used to create custom cursors.
  */
-class Mouse : public Module
-{
+class EVENGINE_API_BACKENDS Mouse : public Module {
 public:
     Module_REG(Mouse);
 
@@ -57,7 +57,7 @@ public:
         /** @brief Vertical scroll from the latest platform pump; event-thread read, non-consuming. */
         float getWheelY() const;
 
-}; // Mouse
+};  // Mouse
 
 } // eve::mouse
 

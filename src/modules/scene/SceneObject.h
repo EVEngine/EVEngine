@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Identity.h"
@@ -20,7 +22,7 @@ namespace eve::scene {
  * script eve.SceneEntity instances attached to that node (sq_addref). The
  * scene module owns the whole lifecycle; do not create standalone.
  */
-class SceneObject : public ecs::Entity {
+class EVENGINE_API_PLATFORM SceneObject : public ecs::Entity {
 public:
     ENTITY(SceneObject, ecs::Entity)
 

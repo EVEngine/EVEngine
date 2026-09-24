@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Identity.h"
@@ -84,7 +86,7 @@ using GameObject = SceneNode;
  * @brief ECS mount point for one scene graph (full scene or nested subtree root).
  * Isomorphic to eve::ui::UIHost.
  */
-class SceneHost : public ecs::Entity {
+class EVENGINE_API_PLATFORM SceneHost : public ecs::Entity {
 public:
     ENTITY(SceneHost, ecs::Entity)
 

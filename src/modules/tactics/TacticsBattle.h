@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Committed tactical movement and remaining resource state. */
@@ -44,7 +46,7 @@ struct AbilityReceipt {
  * Battle::Events. Services: none. Phase: owner simulation thread only.
  * Determinism: bit-exact for equal setup, handles, SubjectRefs and steps.
  */
-class BattleSystem final {
+class EVENGINE_API_DOMAINS BattleSystem final {
 public:
     /** @brief Register a side during setup using a generation-checked handle. */
     [[nodiscard]] static Result<void> addSide(Battle& battle, ecs::EntityHandle side);

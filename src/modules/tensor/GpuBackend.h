@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_GPUBACKEND_H
 #define EVE_TENSOR_GPUBACKEND_H
 
@@ -23,7 +25,7 @@ struct OptimizedGraph;
  * available or a group cannot be lowered, in which case the caller falls back
  * to the CPU interpreter.
  */
-class GpuProgram {
+class EVENGINE_API_DOMAINS GpuProgram {
 public:
     ~GpuProgram();
 
@@ -46,7 +48,7 @@ private:
  * op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU)
  * when Vulkan/gpgpu isn't available.
  */
-bool gpuReduce(const float *data, int size, int op, float &outResult);
+EVENGINE_API_DOMAINS bool gpuReduce(const float *data, int size, int op, float &outResult);
 
 }  // namespace eve::tensor
 

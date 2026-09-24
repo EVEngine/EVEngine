@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSphereTopology.h @brief Icosahedral hex topology: twelve pentagons and hexagons on a sphere. */
 
@@ -49,7 +51,7 @@ inline constexpr std::int32_t kMaxHexSphereSubdivision = 7;
  * Determinism: the construction is a pure function of `subdivision`; two builds
  * at the same level produce identical ids, directions, neighbours and corners.
  */
-class HexSphereTopology {
+class EVENGINE_API_WORLD HexSphereTopology {
 public:
     HexSphereTopology() = default;
 

@@ -27,7 +27,7 @@ public:
 };
 
 /** @brief Optional-scene adapter for the UI-neutral spline binding contract. */
-class SceneQuerySplineBindingSource final : public ISplineBindingTransformSource {
+class EVENGINE_API_ORCHESTRATION SceneQuerySplineBindingSource final : public ISplineBindingTransformSource {
 public:
     /** @brief Construct from a borrowed capability; null represents a trimmed scene provider. */
     explicit SceneQuerySplineBindingSource(const ISceneQuery* query) : query_(query) {}
@@ -53,7 +53,7 @@ struct SplinePointBinding {
  * Missing sources produce StaleHandle without changing the document or discarding the link, allowing
  * the same binding snapshot to rebuild after scene reload.
  */
-class SplinePathBinder {
+class EVENGINE_API_ORCHESTRATION SplinePathBinder {
 public:
     /** @brief Construct a binder pinned to one spline document target identity. */
     explicit SplinePathBinder(std::string documentTarget);

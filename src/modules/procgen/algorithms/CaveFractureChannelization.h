@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::procgen {
 
@@ -26,7 +28,7 @@ struct CaveFractureChannelizationSample {
  * @param input Local fracture apertures, masks, hydraulic intensity, and reactant penetration.
  * @return Local channelized erosion plus diagnostic feedback terms.
  */
-[[nodiscard]] CaveFractureChannelizationSample sampleCaveFractureChannelization(
-    const CaveFractureChannelizationInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveFractureChannelizationSample
+sampleCaveFractureChannelization(const CaveFractureChannelizationInput& input);
 
 }  // namespace eve::procgen

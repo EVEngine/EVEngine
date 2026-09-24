@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file MontageCoordinator.h @brief Layered dual-slot montage ownership and stable handles. */
 
@@ -25,7 +27,7 @@ using MontageHandle = RuntimeHandle<MontageHandleTag>;
  * lifetime. Reusing a slot bumps its generation, so old handles resolve as
  * stale instead of targeting a different montage.
  */
-class MontageCoordinator {
+class EVENGINE_API_WORLD MontageCoordinator {
 public:
     /** @brief Construct over a skeleton that must outlive this coordinator. */
     explicit MontageCoordinator(AnimSkeleton& skeleton);

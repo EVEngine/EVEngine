@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "ik/ChainSolver.h"
 #include "ik/Skeleton3D.h"
@@ -8,7 +9,7 @@
 namespace eve::ik {
 
 /** @brief FABRIK solver for Skeleton3D. Script type: `Solver3D`. */
-class Solver3D {
+class EVENGINE_API_FOUNDATION Solver3D {
 public:
     Solver3D() = default;
     ~Solver3D() = default;

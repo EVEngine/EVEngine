@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorProperty.h"
 
@@ -65,7 +67,7 @@ struct AssetPage {
 };
 
 /** @brief Thread-neutral in-memory asset index used by editor hosts and tests. */
-class MemoryAssetDatabase {
+class EVENGINE_API_ORCHESTRATION MemoryAssetDatabase {
 public:
     /** @brief Atomically publish one validated record and its dependencies. */
     EditorResult<AssetRecord> publish(AssetRecord record, std::vector<AssetDependency> dependencies = {});
@@ -109,7 +111,7 @@ struct ImportTicket {
 };
 
 /** @brief Small coordinator that validates importer output before atomic index publication. */
-class ImportCoordinator {
+class EVENGINE_API_ORCHESTRATION ImportCoordinator {
 public:
     explicit ImportCoordinator(MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Validate and publish a completed import product. */

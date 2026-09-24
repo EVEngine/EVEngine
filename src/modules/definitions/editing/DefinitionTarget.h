@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditableTarget.h"
@@ -29,9 +31,9 @@ struct DefinitionReferenceField {
 };
 
 /** @brief UI-neutral versioned definition asset and cross-reference model. */
-class DefinitionDocument : public ::eve::editing::EditableTargetState,
-                           public virtual IEditableTarget,
-                           public IDomainOperationTarget {
+class EVENGINE_API_BACKENDS DefinitionDocument : public ::eve::editing::EditableTargetState,
+                                                 public virtual IEditableTarget,
+                                                 public IDomainOperationTarget {
 public:
     using ReferenceResolver = std::function<bool(const std::string& type, const std::string& id)>;
     using SchemaValidator = std::function<std::vector<EditorDiagnostic>(const std::string& type,
@@ -83,7 +85,7 @@ private:
 };
 
 /** @brief Optional bridge publishing a validated definition to DefinitionRegistry. */
-class DefinitionRuntimePublisher {
+class EVENGINE_API_BACKENDS DefinitionRuntimePublisher {
 public:
     /** @brief Insert or replace one definition after editor-side validation. */
     EditorResult<void> publish(const DefinitionDocument& document,

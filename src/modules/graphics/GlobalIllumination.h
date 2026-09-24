@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <cstdint>
@@ -25,7 +27,7 @@ class Texture;
  *
  * Quality presets ("low" | "medium" | "high") tune sample count and radius.
  */
-class GlobalIllumination {
+class EVENGINE_API_BACKENDS GlobalIllumination {
 public:
     explicit GlobalIllumination(Graphics *gfx);
     ~GlobalIllumination();

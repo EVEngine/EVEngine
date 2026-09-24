@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -74,7 +76,7 @@ struct EditorProfilerBudgets {
  * @reentrancy Does not invoke callbacks.
  * @ownership Owns all retained frame and string data; it does not own the runtime profiler.
  */
-class EditorProfilerModel {
+class EVENGINE_API_BACKENDS EditorProfilerModel {
 public:
     /** @brief Construct with default budgets and a 300-frame history. */
     EditorProfilerModel();

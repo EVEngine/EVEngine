@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VoxelCatalog.h
@@ -105,16 +107,16 @@ struct VoxelPick {
  * @lifetime Valid for the process lifetime.
  * @thread Any.
  */
-[[nodiscard]] const char* voxelSocketKindName(VoxelSocketKind kind);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION const char* voxelSocketKindName(VoxelSocketKind kind);
 
 /** @brief True when two facing sockets may join. */
-[[nodiscard]] bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
 
 /** @brief Opposite FaceDir index in PosX/NegX/PosY/NegY/PosZ/NegZ order. */
 [[nodiscard]] int voxelOppositeFace(int face);
 
 /** @brief Classify a sculpted model as empty, partial, or a solid cube. */
-[[nodiscard]] VoxelCellFill voxelClassifyModelFill(const VoxelModelValue& model);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelCellFill voxelClassifyModelFill(const VoxelModelValue& model);
 
 /** @brief True when @p model contains an occupied cell at (x,y,z). */
 [[nodiscard]] bool isVoxelModelOccupied(const VoxelModelValue& model, int x, int y, int z);
@@ -123,16 +125,17 @@ struct VoxelPick {
  * @brief Raycast occupied cells with MagicaVoxel-style previous-cell attach.
  * @param maxDistance Maximum travel along the normalized ray.
  */
-[[nodiscard]] VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy, float oz, float dx, float dy,
-                                       float dz, float maxDistance);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION VoxelPick pickVoxelModel(const VoxelModelValue& model, float ox, float oy,
+                                                                  float oz, float dx, float dy, float dz,
+                                                                  float maxDistance);
 
 /** @brief Revisioned project of MagicaVoxel-style sculpted models. */
-class VoxelCatalogTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider,
-                                 public IEditingSnapshotProvider {
+class EVENGINE_API_ORCHESTRATION VoxelCatalogTarget final : public ::eve::editing::EditableTargetState,
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider,
+                                                            public IEditingSnapshotProvider {
 public:
     explicit VoxelCatalogTarget(std::string id);
 

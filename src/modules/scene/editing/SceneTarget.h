@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "scene/editing/SceneEditingCommands.h"
@@ -73,13 +75,13 @@ public:
  * Concrete subclasses differ only in host-facing target type. The mutation
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
-class SceneTargetBase : public ::eve::editing::EditableTargetState,
-                        public virtual IEditableTarget,
-                        public IDomainOperationTarget,
-                        public IDomainOperationTargetStaging,
-                        public eve::editing::IEditingSnapshotProvider,
-                        public ISceneHierarchyEditTarget,
-                        public ITransformEditTarget {
+class EVENGINE_API_BACKENDS SceneTargetBase : public ::eve::editing::EditableTargetState,
+                                              public virtual IEditableTarget,
+                                              public IDomainOperationTarget,
+                                              public IDomainOperationTargetStaging,
+                                              public eve::editing::IEditingSnapshotProvider,
+                                              public ISceneHierarchyEditTarget,
+                                              public ITransformEditTarget {
 public:
     SceneTargetBase(std::string id, std::string type);
     ~SceneTargetBase() override = default;
@@ -164,7 +166,7 @@ namespace eve::scene_editing {
  * the complete tree; they
  * must not destroy this target during the callback.
  */
-class SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
+class EVENGINE_API_BACKENDS SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
 public:
     /** @brief Import a host using a generation handle. @param host Borrowed for
      * this call, or null for staging.
@@ -194,14 +196,14 @@ private:
 };
 
 /** @brief Backend-neutral placement logic suitable for a Tool, script or command handler. */
-class ScenePlacementToolLogic {
+class EVENGINE_API_BACKENDS ScenePlacementToolLogic {
 public:
     /** @brief Query hierarchy capability and build a create operation. */
     EditorResult<DomainOperation> plan(IEditableTarget& target, const CreateSceneObjectRequest& request) const;
 };
 
 /** @brief Backend-neutral hierarchy editing logic for outliner-style tools. */
-class SceneHierarchyToolLogic {
+class EVENGINE_API_BACKENDS SceneHierarchyToolLogic {
 public:
     /** @brief Query hierarchy capability and build a leaf deletion operation. */
     EditorResult<DomainOperation> planDelete(IEditableTarget& target, const ObjectId& object) const;
@@ -214,7 +216,7 @@ public:
 };
 
 /** @brief Backend-neutral transform logic suitable for a Tool, script or command handler. */
-class SceneTransformToolLogic {
+class EVENGINE_API_BACKENDS SceneTransformToolLogic {
 public:
     /** @brief Query transform capability and build a transform operation. */
     EditorResult<DomainOperation> plan(IEditableTarget& target, const ObjectId& object,
@@ -222,7 +224,7 @@ public:
 };
 
 /** @brief Property adapter exposing scene TRS to generic inspector presenters. */
-class ScenePropertyProvider final : public IPropertyProvider {
+class EVENGINE_API_BACKENDS ScenePropertyProvider final : public IPropertyProvider {
 public:
     explicit ScenePropertyProvider(const SceneTargetBase* target) : target_(target) {}
 

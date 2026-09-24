@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/Value.h"
@@ -54,9 +56,18 @@ struct LevelLayer {
  * of orthogonal, isometric, staggered or hexagonal. Unknown developer data can
  * be preserved in string properties at document, layer and object scope.
  */
-class LevelDocument {
+class EVENGINE_API_DOMAINS LevelDocument {
 public:
     LevelDocument(int width = 1, int height = 1, float tileWidth = 32.f, float tileHeight = 32.f);
+
+    // std::vector<LevelLayer> holds a unique_ptr member, so the implicit copy
+    // operations were already deleted; a class-level dllexport would nonetheless
+    // instantiate std::vector<LevelLayer>::operator= and hard-error (C2280).
+    // Spell the four out so the export surface stays defined; semantics unchanged.
+    LevelDocument(const LevelDocument&)            = delete;
+    LevelDocument& operator=(const LevelDocument&) = delete;
+    LevelDocument(LevelDocument&&)                 = default;
+    LevelDocument& operator=(LevelDocument&&)      = default;
 
     /** @brief Changes map dimensions and resizes all tile layers. */
     void               resize(int width, int height);

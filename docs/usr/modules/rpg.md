@@ -120,6 +120,16 @@ rpg.registerSkillDamage("mana_drain", "mana", "a.attack", "", 0.0, 100); // 打�
 local battle = rpg.newBattle();
 battle.addActor(hero, 0); battle.addActor(slime, 1);   // 阵营是任意整数 id
 battle.setPlayerSide(0);                                // 玩家侧（默认 0）
+// 原子替换本场战斗使用的通用 Settlement 规则；失败时保留旧规则。
+local configured = battle.configureSettlementRulesJson(@"{
+  ""schema"":""settlement.rules"",""version"":1,
+  ""rules"":[{
+    ""id"":""fire_guard"",""source"":""status:guard"",
+    ""stage"":""target_mitigation"",""operation"":""resist_percent"",
+    ""value"":0.25,""kinds"": [""damage""],""requiredTags"": [""element:fire""]
+  }]
+}");
+if (!configured.ok) throw configured.status.summary;
 battle.setAction(hero, "fireball", slime);
 battle.autoEnemyActions();
 battle.startRound();
@@ -350,6 +360,10 @@ while (session.isActive()) {
 - 掉落物品需先在 `inventory` 模块注册物品定义，否则 `bag.addItem` 拒绝加入。
 
 ## API 快查
+
+`newSettlementContext()`、`runSettlement()` 及 stage 管理方法是兼容旧项目的开放数值袋接口；内部调度已
+委托通用 Settlement，但它不提供正式 Battle 的规则、原子提交、Trace 与回放语义。新玩法应使用
+`newBattle()` 及 Battle 的统一结算配置入口。
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file SequenceRuntime.h @brief Cross-frame interpreter for compiled `.dnut` sequences. */
 
@@ -34,7 +36,7 @@ struct SequenceConditionOutcome {
  * (`branch` / `choice` / `call` / `wait` / `end`) are handled here; every other
  * type is routed through the configured `StepKindRegistry`.
  */
-class SequenceRuntime {
+class EVENGINE_API_PLATFORM SequenceRuntime {
 public:
     /** @brief Resolves a called asset id to a borrowed, externally owned asset. */
     using AssetResolver = std::function<const SequenceAsset*(const std::string&)>;

@@ -303,9 +303,11 @@ struct RTS::GameplayRuntime {
 
 RTS::RTS() : gameplayRuntime_(std::make_unique<GameplayRuntime>()) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
 RTS::~RTS() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
     cap::removeListener<IGameplayControlProvider>(this);
     FogOfWarSystem::clear(fogState_);
     setCrowdProvider(nullptr);
@@ -342,6 +344,13 @@ void RTS::setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRunti
     damage_ = damage;
 }
 
+Result<void> RTS::configureSettlementRules(const settlement::SettlementRuleSet& rules) {
+    if (damage_ == nullptr)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                       "RTS combat damage provider is not attached", "damage"));
+    return damage_->configureSettlementRules(rules);
+}
+
 void RTS::setCrowdProvider(crowd::Crowd* crowd) noexcept {
     if (crowd_ == crowd) return;
     if (crowd_ != nullptr) {
@@ -363,6 +372,19 @@ void RTS::setNavigationProvider(map::Pathfinder* pathfinder, NavigationGrid grid
 }
 
 std::string_view RTS::gameplayDomain() const noexcept { return "rts"; }
+
+std::vector<SubjectRef> RTS::gameplayInstances() const {
+    // One RTS instance is one player; the instance identity is that player's
+    // subject, which is also what `observeGameplay` resolves.
+    std::vector<SubjectRef> result;
+    for (const auto& handle : players_) {
+        auto* player = dynamic_cast<Player*>(ecs::try_get(handle));
+        if (player != nullptr && player->identity()->subject.isValid()) result.push_back(player->identity()->subject);
+    }
+    std::sort(result.begin(), result.end(),
+              [](const SubjectRef& left, const SubjectRef& right) { return left.format() < right.format(); });
+    return result;
+}
 
 Result<GameplayObservation> RTS::observeGameplay(const GameplaySession& session, SubjectRef instance) const {
     Player* player = resolvePlayer(instance);
@@ -1608,8 +1630,11 @@ Result<double> RTS::heal(SubjectRef source, SubjectRef target, double amount) co
             Diagnostic::error(DiagnosticCode::Conflict, "RTS healing target must be alive", "target"));
     auto valid = state->validate();
     if (!valid) return Result<double>::failure(valid.status());
-    const double applied = std::min(amount, state->maxHealth - state->health);
-    state->health += applied;
+    combat::DamageRuntime defaultSettlement;
+    auto& settlement = damage_ != nullptr ? *damage_ : defaultSettlement;
+    auto settled = settlement.heal(*state, source, amount);
+    if (!settled) return Result<double>::failure(settled.status());
+    const double applied = settled.value().applied;
     return Result<double>::success(applied,
         Status::success(applied == 0.0 ? StatusCode::NoOp : StatusCode::Applied));
 }
@@ -1651,7 +1676,7 @@ Result<effects::EffectHandle> RTS::applyStatusEffect(
 Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& action,
                                    resource::IResourceAccount& account, resource::CostSpec cost, std::string product,
                                    Duration duration, std::string productionKind, int priority,
-                                   std::string transactionId) {
+                                   std::string transactionId, definition::DefinitionHandle definition) {
     if (!owns(buildings_, building))
         return Result<RTSBuildReceipt>::failure(
             Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
@@ -1666,7 +1691,7 @@ Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& ac
     }
     return RTSProductionActionAdapter::build(building, action, account, std::move(cost), std::move(product),
                                              std::move(duration), std::move(productionKind), priority,
-                                             std::move(transactionId), std::move(reserves));
+                                             std::move(transactionId), std::move(reserves), std::move(definition));
 }
 
 Result<void> RTS::setProductionResourceReserve(
@@ -1817,8 +1842,10 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     if (!infrastructure) return Result<std::size_t>::failure(infrastructure.status());
     processed += std::move(infrastructure).takeValue();
 
+    combat::DamageRuntime defaultHealthSettlement;
+    auto& healthSettlement = damage_ != nullptr ? *damage_ : defaultHealthSettlement;
     if (repairDebit_) {
-        auto repair = RepairSystem::step(simulationStep, repairDebit_);
+        auto repair = RepairSystem::step(simulationStep, healthSettlement, repairDebit_);
         if (!repair) return Result<std::size_t>::failure(repair.status());
         processed += std::move(repair).takeValue();
     }
@@ -1872,7 +1899,7 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
         processed += std::move(technology).takeValue();
     }
 
-    auto effects = EffectSystem::step(simulationStep, lifecycleEvents);
+    auto effects = EffectSystem::step(simulationStep, healthSettlement, lifecycleEvents);
     if (!effects) return Result<std::size_t>::failure(effects.status());
     processed += std::move(effects).takeValue();
     for (const auto& handle : matches_) {
@@ -2673,16 +2700,24 @@ Result<RTSBuildReceipt> RTS::queueScriptResearch(Building& producer, std::string
     if (std::binary_search(faction->technology()->unlocked.begin(), faction->technology()->unlocked.end(), upgrade))
         return Result<RTSBuildReceipt>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "RTS upgrade is already unlocked", "upgrade"));
-    for (int index = 0; index < static_cast<int>(producer.production()->values.taskCount()); ++index) {
-        auto task = producer.production()->values.taskAt(index);
-        if (task && task->get().kind == "research" && task->get().product == upgrade &&
-            task->get().state != production::TaskState::Cancelled &&
-            task->get().state != production::TaskState::Failed)
-            return Result<RTSBuildReceipt>::failure(
-                Diagnostic::error(DiagnosticCode::Conflict, "RTS upgrade is already queued", "upgrade"));
+    auto researchBuildings = ecs::View<Building, Building::Faction, Building::Production>();
+    for (auto it = researchBuildings.begin(); it != researchBuildings.end(); ++it) {
+        auto [candidateFaction, candidateProduction] = *it;
+        if (candidateFaction->link.resolve() != faction) continue;
+        for (int index = 0; index < static_cast<int>(candidateProduction->values.taskCount()); ++index) {
+            auto task = candidateProduction->values.taskAt(index);
+            if (task && task->get().kind == "research" && task->get().product == upgrade &&
+                task->get().state != production::TaskState::Cancelled &&
+                task->get().state != production::TaskState::Failed &&
+                task->get().state != production::TaskState::Completed)
+                return Result<RTSBuildReceipt>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "RTS upgrade is already queued by this faction", "upgrade"));
+        }
     }
     auto resolved = definitions_->resolve("upgrade", upgrade);
     if (!resolved) return Result<RTSBuildReceipt>::failure(resolved.status());
+    auto definitionHandle = definitions_->handle("upgrade", upgrade);
+    if (!definitionHandle) return Result<RTSBuildReceipt>::failure(definitionHandle.status());
     auto parsed = Value::fromJson(resolved.value().get().json);
     if (!parsed) return Result<RTSBuildReceipt>::failure(parsed.status());
     const auto* object = parsed.value().getIf<Value::Object>();
@@ -2731,7 +2766,8 @@ Result<RTSBuildReceipt> RTS::queueScriptResearch(Building& producer, std::string
     const resource::CostSpec paidCost = cost.value();
     const std::string product = upgrade;
     auto receipt = build(producer, scriptRuntime_->actions, economy->second->account, std::move(cost).takeValue(),
-                         std::move(upgrade), std::move(duration).takeValue(), "research", priority);
+                         std::move(upgrade), std::move(duration).takeValue(), "research", priority, {},
+                         std::move(definitionHandle).takeValue());
     if (receipt) scriptRuntime_->paidProduction.push_back({producer.identity()->subject, {}, "research", product,
         receipt.value().productionTaskId, receipt.value().orderId, paidCost});
     return receipt;
@@ -3667,6 +3703,15 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("matchCount", [](RTS* self) { return self->matchCount(); });
     cls.addFunc("scriptTick", [](RTS* self) { return static_cast<std::int64_t>(self->scriptTick()); });
     const auto vm = cls.getHandle();
+    cls.addFunc("configureSettlementRulesJson", [vm](RTS* self, const std::string& json) -> ssq::Table {
+        if (self == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS receiver must not be null", "rts")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules) return script::projectStatusResult(vm, rules.status());
+        return script::projectResult(vm, self->configureSettlementRules(rules.value()));
+    });
     cls.addFunc("removeSubject", [vm](RTS* self, const std::string& subjectText) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
         if (!subject) return script::projectStatusResult(vm, subject.status());

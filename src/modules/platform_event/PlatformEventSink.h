@@ -27,7 +27,7 @@ namespace eve::platform_event {
 
 class Message;
 
-class EVENGINE_API IPlatformEventSink {
+class EVENGINE_API_FOUNDATION IPlatformEventSink {
 public:
     /** Dispatch order; lower runs first. */
     enum Priority {

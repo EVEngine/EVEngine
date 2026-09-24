@@ -118,8 +118,8 @@ function createShaders(st) {
     if (st.terrainShader != null) return true;
 
     // The engine's built-in Mesh3D vertex stage already produces the varyings both
-    // fragment stages consume, so only the fragment stages ship -- as SPIR-V, because
-    // runtime GLSL compilation is unavailable on Windows.
+    // fragment stages consume, so only the fragment stages are shipped -- as SPIR-V,
+    // which needs no runtime compiler.
     local terrain = gfx.loadMeshShaderSpv("", "shaders/hex_planet_terrain.frag.spv");
     if (!terrain.ok) {
         print("hex planet: terrain shader failed: " + terrain.status.summary + "\n");

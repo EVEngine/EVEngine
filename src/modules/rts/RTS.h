@@ -1,23 +1,26 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTS.h
  * @brief RTS module owner and phase-one composition profile entry point.
  */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/Snapshot.h"
-#include "rts/RTSAttributes.h"
 #include "rts/RTSArchetype.h"
+#include "rts/RTSAttributes.h"
 #include "rts/RTSContent.h"
-#include "rts/RTSTech.h"
-#include "rts/RTSMatch.h"
-#include "rts/RTSReplay.h"
 #include "rts/RTSEffects.h"
+#include "rts/RTSMatch.h"
 #include "rts/RTSProductionAction.h"
-#include "rts/RTSSystems.h"
+#include "rts/RTSReplay.h"
 #include "rts/RTSSnapshot.h"
+#include "rts/RTSSystems.h"
+#include "rts/RTSTech.h"
 
 #include <cstddef>
 #include <memory>
@@ -57,7 +60,7 @@ struct RTSFrameLifecycleEvent {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class RTS : public Module, public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(RTS);
 
@@ -68,6 +71,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
@@ -250,13 +255,15 @@ public:
      * @param productionKind Production queue kind, defaulting to `unit`.
      * @param priority Production queue priority.
      * @param transactionId Optional transaction correlation id.
+     * @param definition Optional pinned definition generation used during settlement.
      * @return Committed build receipt or a checked failure with no partial state.
      */
     [[nodiscard]] Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
                                                 resource::IResourceAccount& account, resource::CostSpec cost,
                                                 std::string product, Duration duration,
                                                 std::string productionKind = "unit", int priority = 0,
-                                                std::string transactionId = {});
+                                                std::string transactionId = {},
+                                                definition::DefinitionHandle definition = {});
 
     /** @brief Configure or clear a faction-wide production resource floor shared by all factories. */
     [[nodiscard]] Result<void> setProductionResourceReserve(
@@ -290,6 +297,13 @@ public:
     void setFogProvider(FogProvider provider) noexcept;
     /** @brief Attach canonical sensing and damage coordinators used by automatic combat. */
     void setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRuntime* damage) noexcept;
+    /**
+     * @brief Replace declarative settlement rules on the active canonical damage provider.
+     * @return Applied, or NotFound when no combat provider is attached; failure retains previous rules.
+     * @thread Call on the RTS owning simulation thread outside update.
+     * @reentrancy Does not invoke gameplay callbacks.
+     */
+    [[nodiscard]] Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
     /** @brief Install the map/game-owned line-of-fire query used by direct weapons. */
     void setFireLineQuery(FireLineQuery query) { fireLineQuery_ = std::move(query); }
     /** @brief Install the map/game-owned absolute projectile launch-height query. */
