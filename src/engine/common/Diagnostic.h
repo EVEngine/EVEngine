@@ -91,7 +91,7 @@ using DiagnosticDetails = std::vector<DiagnosticDetail>;
  * @brief A structured explanation of a failed, degraded, or noteworthy result.
  * @note `message()` is for humans; use `code()` for program decisions.
  */
-class [[nodiscard("Diagnostic should be inspected or passed to a Result")]] EVENGINE_API Diagnostic {
+class [[nodiscard("Diagnostic should be inspected or passed to a Result")]] EVENGINE_API_FOUNDATION Diagnostic {
 public:
     /** @brief Construct an empty informational diagnostic. */
     Diagnostic() = default;

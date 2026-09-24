@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 放置操作静态入口 + 可插拔校验 / 吸附 / 变更钩子。
 //
@@ -25,7 +27,7 @@ class StaticMeshSurface;
 /** @brief Outcome of restoring an exact placement snapshot. */
 enum class PlacementRestoreStatus { Restored, Rejected };
 
-class PlacementSystem {
+class EVENGINE_API_WORLD PlacementSystem {
 public:
     using ValidateFn = std::function<bool(const PlacementWorld &world, const PlacementQuery &q,
                                           std::string *reason)>;

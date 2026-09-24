@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 
@@ -22,7 +24,7 @@ struct DiskAssetScanResult {
  * host-driven so desktop editors, games and MCP hosts can choose their own
  * watcher/event loop without changing indexing semantics.
  */
-class DiskAssetCatalog {
+class EVENGINE_API_ORCHESTRATION DiskAssetCatalog {
 public:
     /**
      * @brief Create a host-driven disk asset catalog.

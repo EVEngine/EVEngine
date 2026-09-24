@@ -62,11 +62,11 @@ struct CameraTimelineKeyValue {
 };
 
 /** @brief Revisioned camera-rig and director-timeline editing document. */
-class CameraDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider {
+class EVENGINE_API_DOMAINS CameraDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                        public virtual IEditableTarget,
+                                                        public IDomainOperationTarget,
+                                                        public IDomainOperationTargetStaging,
+                                                        public IPropertyProvider {
 public:
     explicit CameraDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -113,7 +113,7 @@ private:
 struct CameraPreviewPose { glm::vec3 eye{0.f}; glm::vec3 target{0.f}; float fov = 60.f; ObjectId rig; };
 
 /** @brief Deterministic scrub evaluator and camera/frustum gizmo producer. */
-class CameraPreview {
+class EVENGINE_API_DOMAINS CameraPreview {
 public:
     /** @brief Evaluate the most recent cut and scalar keys at a bounded time. */
     EditorResult<CameraPreviewPose> evaluate(const CameraDocumentTarget& document, float time) const;
@@ -122,7 +122,7 @@ public:
 };
 
 /** @brief Candidate-first bridge from camera assets to CameraController. */
-class CameraDocumentRuntime {
+class EVENGINE_API_DOMAINS CameraDocumentRuntime {
 public:
     CameraDocumentRuntime();
     ~CameraDocumentRuntime();

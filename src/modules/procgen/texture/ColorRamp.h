@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -10,7 +12,7 @@ struct Rgba8 {
 };
 
 /** @brief Piecewise-linear color ramp in t∈[0,1], with optional hard banding. */
-struct ColorRamp {
+struct EVENGINE_API_DOMAINS ColorRamp {
     struct Stop {
         float t = 0.f;
         Rgba8 c;

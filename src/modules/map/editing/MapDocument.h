@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "map/editing/MapEditingTypes.h"
 
@@ -122,11 +124,11 @@ public:
 };
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
-class MapDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IMapStructureEditTarget {
+class EVENGINE_API_WORLD MapDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                   public virtual IEditableTarget,
+                                                   public IDomainOperationTarget,
+                                                   public IDomainOperationTargetStaging,
+                                                   public IMapStructureEditTarget {
 public:
     explicit MapDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -166,7 +168,7 @@ private:
 };
 
 /** @brief Publishes validated road previews while rejecting stale document revisions. */
-class MapRoadMeshPublisher {
+class EVENGINE_API_WORLD MapRoadMeshPublisher {
 public:
     /** @brief Generate and publish one road mesh to the supplied host sink. */
     EditorResult<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
@@ -174,7 +176,7 @@ public:
 };
 
 /** @brief Converts external object records into one atomic placement transaction plan. */
-class MapObjectImporter {
+class EVENGINE_API_WORLD MapObjectImporter {
 public:
     /** @brief Plan stable-id placement creation without mutating the map document. */
     MapObjectImportPlan plan(const MapDocumentTarget& document, const StableId& layer,

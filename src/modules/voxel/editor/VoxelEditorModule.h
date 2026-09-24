@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -14,7 +16,7 @@ namespace eve::voxel_editor {
  * @threadaffinity Owner/composition thread only.
  * @reentrancy Do not construct or destroy while a command planner is running.
  */
-class VoxelEditorModule final : public Module {
+class EVENGINE_API_EDITORS VoxelEditorModule final : public Module {
 public:
     Module_REG(VoxelEditorModule);
     VoxelEditorModule();

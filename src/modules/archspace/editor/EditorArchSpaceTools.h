@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "archspace/ArchSpaceTypes.h"
 #include "archspace/editing/ArchSpaceTarget.h"
@@ -40,7 +42,7 @@ public:
  *
  * Contiguous mode chains the next start to the previous end. Shift constrains to axis-aligned.
  */
-class ArchSpaceWallDrawTool final : public IEditorTool {
+class EVENGINE_API_EDITORS ArchSpaceWallDrawTool final : public IEditorTool {
 public:
     ArchSpaceWallDrawTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 
@@ -89,7 +91,7 @@ private:
 };
 
 /** @brief Click-to-place door/window tool committing `makeCreateOpening` on the nearest wall. */
-class ArchSpaceOpeningPlaceTool final : public IEditorTool {
+class EVENGINE_API_EDITORS ArchSpaceOpeningPlaceTool final : public IEditorTool {
 public:
     ArchSpaceOpeningPlaceTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 
@@ -136,7 +138,7 @@ private:
 };
 
 /** @brief Click-to-place furniture tool committing `makePlaceItem` with catalog id + yaw. */
-class ArchSpaceItemPlaceTool final : public IEditorTool {
+class EVENGINE_API_EDITORS ArchSpaceItemPlaceTool final : public IEditorTool {
 public:
     ArchSpaceItemPlaceTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <limits>
 #include <vector>
@@ -10,7 +12,7 @@ namespace eve::map {
  * nextX/nextY point to the neighboring cell with lower cost (toward goal).
  * At the goal, next points to itself.
  */
-class FlowField {
+class EVENGINE_API_WORLD FlowField {
 public:
     static constexpr float kUnreachable = std::numeric_limits<float>::infinity();
 

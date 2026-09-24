@@ -18,6 +18,7 @@ PATCH_SCRIPT = ROOT / "cmake" / "patch_third_party.cmake"
 PATCHES = ROOT / "cmake" / "patches"
 THIRD_PARTY = ROOT / "third-party"
 MEDIALOADER = THIRD_PARTY / "medialoader"
+ECS_SUBMODULE = ROOT / "external" / "ECS.hpp"
 
 
 def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -31,7 +32,15 @@ def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProces
 
 
 def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) -> None:
-    """Materialize real upstream inputs without copying unrelated files or history."""
+    """Materialize real upstream inputs without copying unrelated files or history.
+
+    Both the inputs and the patch copy used below are written with LF endings.
+    git apply compares bytes, and a patch file's checkout form depends on
+    .gitattributes and core.autocrlf (cmake/patches/ecs-shared-default-table.patch
+    is pinned to CRLF because external/ECS.hpp commits CRLF), so exercising that
+    pairing is the real patch step's job -- this test covers idempotence and drift
+    detection, which must hold on every host.
+    """
     paths = {"CMakeLists.txt"}
     for patch in patches:
         for line in patch.read_text(encoding="utf-8").splitlines():
@@ -45,9 +54,7 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
         ).stdout
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        # Match the platform-native checkout used by the patch file itself.
-        # In particular, Git for Windows materializes both as CRLF.
-        target.write_text(blob, encoding="utf-8")
+        target.write_text(blob.replace("\r\n", "\n"), encoding="utf-8", newline="\n")
     run(["git", "-C", str(destination), "init", "--quiet"])
     run(["git", "-C", str(destination), "add", "."])
     run(["git", "-C", str(destination), "-c", "user.name=Fixture",
@@ -57,9 +64,13 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
 
 
 def apply_twice(patch: Path, patch_dir: Path) -> None:
+    # Apply the same patch content with LF endings, matching the inputs above.
+    staged = patch_dir.parent / f"{patch.name}.lf"
+    staged.write_text(patch.read_text(encoding="utf-8").replace("\r\n", "\n"),
+                      encoding="utf-8", newline="\n")
     command = [
         "cmake",
-        f"-DPATCH={patch}",
+        f"-DPATCH={staged}",
         f"-DPATCH_DIR={patch_dir}",
         "-P",
         str(PATCH_SCRIPT),
@@ -100,6 +111,20 @@ def main() -> int:
         checkout_patch_inputs(MEDIALOADER, clean_medialoader, medialoader_patches)
         for patch in medialoader_patches:
             apply_twice(patch, clean_medialoader)
+
+        # The library-type patches for the dynamic engine configuration apply to
+        # the aggregate and to one of its submodules; both must be idempotent so a
+        # rebuild does not fail on an already-patched checkout.
+        clean_box2d = temporary / "box2d-clean"
+        checkout_patch_inputs(THIRD_PARTY, clean_box2d,
+                              [PATCHES / "box2d-shared-library.patch"])
+        apply_twice(PATCHES / "box2d-shared-library.patch", clean_box2d)
+
+        # external/ECS.hpp uses the same script from the engine's configure step.
+        clean_ecs = temporary / "ecs-clean"
+        checkout_patch_inputs(ECS_SUBMODULE, clean_ecs,
+                              [PATCHES / "ecs-shared-default-table.patch"])
+        apply_twice(PATCHES / "ecs-shared-default-table.patch", clean_ecs)
 
         # A genuine target drift must fail and expose git's diagnostic; it may
         # not be mistaken for an already-applied patch or silently skipped.

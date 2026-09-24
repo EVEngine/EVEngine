@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 具名装备栏：与 Bag 松耦合，穿脱只搬运物品；属性加成由游戏侧 hook/脚本处理。
 
@@ -13,7 +15,7 @@ namespace eve::inventory {
 class Bag;
 class InventorySaveSession;
 
-class EquipmentSet {
+class EVENGINE_API_FOUNDATION EquipmentSet {
 public:
     EquipmentSet() = default;
     ~EquipmentSet() = default;

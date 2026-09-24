@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -11,7 +13,7 @@ class Channel;
  * @brief Named collection of Channels (a "session"). Lookup by name, close all.
  * Does not own the channels; the caller owns them.
  */
-class Session {
+class EVENGINE_API_PLATFORM Session {
 public:
     Session() = default;
     ~Session();

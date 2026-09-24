@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算 / 任务 / 成长 / 生命 的
@@ -51,7 +53,7 @@ class RpgStorySession;
 struct WorldLootRequest;
 
 /** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
-class RPG : public Module {
+class EVENGINE_API_PLATFORM RPG : public Module {
 public:
     Module_REG(RPG);
     RPG() = default;

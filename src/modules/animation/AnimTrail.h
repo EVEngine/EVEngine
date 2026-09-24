@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Time.h"
 
@@ -30,7 +31,7 @@ class AnimPose;
  * Plane strings for 3D→2D projection: "xy" | "xz" | "yz".
  * Draw styles: "line" (connected segments) | "points" (sample dots only).
  */
-class AnimTrail {
+class EVENGINE_API_WORLD AnimTrail {
 public:
     explicit AnimTrail(int capacity = 64);
     ~AnimTrail() = default;

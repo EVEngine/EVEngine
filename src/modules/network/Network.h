@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Capability.h"
 #include "common/Module.h"
@@ -30,7 +32,7 @@ class NetRpc;
  * @brief Network module: TCP/UDP/HTTP factories, background worker, and
  * completion event plumbing. Script: `net <- eve.Network();`
  */
-class Network : public Module, public eve::service::INetwork {
+class EVENGINE_API_PLATFORM Network : public Module, public eve::service::INetwork {
 public:
     Module_REG(Network);
     Network();

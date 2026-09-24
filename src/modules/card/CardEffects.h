@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardEffects.h
@@ -85,7 +87,7 @@ private:
 };
 
 /** @brief Card adapter composing the common lifecycle container with CardEffectExecutor. */
-class CardEffectAdapter {
+class EVENGINE_API_WORLD CardEffectAdapter {
 public:
     /**
      * @brief Replace declarative rules used by subsequent card effect settlements.

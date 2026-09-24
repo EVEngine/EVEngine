@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file UnityImporter.h
@@ -34,6 +36,7 @@ struct UnityProjectImportRequest {
  * @thread Worker-safe while the request remains immutable.
  * @reentrancy No callbacks, Unity execution or filesystem mutation.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityProjectImport(const UnityProjectImportRequest& request);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityProjectImport(
+    const UnityProjectImportRequest& request);
 
 }  // namespace eve::asset_import

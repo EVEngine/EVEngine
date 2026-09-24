@@ -58,11 +58,11 @@ struct VirtualGeometryImportValue {
 };
 
 /** @brief Revisioned VirtualGeometry importer preset. */
-class VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                            public virtual IEditableTarget,
-                                            public IDomainOperationTarget,
-                                            public IDomainOperationTargetStaging,
-                                            public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                                       public virtual IEditableTarget,
+                                                                       public IDomainOperationTarget,
+                                                                       public IDomainOperationTargetStaging,
+                                                                       public IPropertyProvider {
 public:
     explicit VirtualGeometryDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -127,7 +127,7 @@ struct VirtualGeometryBuildArtifact {
 };
 
 /** @brief Candidate-first CPU cluster-DAG builder and LOD preview service. */
-class VirtualGeometryBuildRuntime {
+class EVENGINE_API_ORCHESTRATION VirtualGeometryBuildRuntime {
 public:
     VirtualGeometryBuildRuntime();
     ~VirtualGeometryBuildRuntime();

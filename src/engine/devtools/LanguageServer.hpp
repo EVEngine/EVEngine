@@ -48,7 +48,7 @@ struct LanguageSignatureHelp {
  * and by unit tests. Owns a dedicated Runtime so it can compile without a
  * running game. JSON-RPC is optional; typed methods are the canonical API.
  */
-class EVENGINE_API LanguageServer {
+class EVENGINE_API_FOUNDATION LanguageServer {
 public:
     explicit LanguageServer(std::string projectRoot);
     ~LanguageServer();

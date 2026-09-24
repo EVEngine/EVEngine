@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 背包模块入口：物品定义 / 容器 / 装备栏 / 变更事件的脚本绑定点。
@@ -19,10 +21,15 @@ namespace eve::inventory {
 class InventoryControl;
 
 /** @brief 背包模块（eve.Inventory）。 */
-class Inventory : public Module {
+class EVENGINE_API_FOUNDATION Inventory : public Module {
 public:
     Module_REG(Inventory);
-    Inventory() = default;
+    // Declared out of line, like the destructor below: the class owns a
+    // unique_ptr<InventoryControl> whose type is only forward declared here, and
+    // a defaulted constructor in the class body has to destroy the members it
+    // already built when a later one throws -- which needs the complete type
+    // (C2027 "can't delete an incomplete type" in the Dawn parity lane).
+    Inventory();
     ~Inventory() override;
 
     /** @brief 从 JSON 注册物品定义；返回成功注册数量。 */

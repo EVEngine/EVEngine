@@ -16,7 +16,7 @@ enum class TerrainCollisionMaskType { RadiusTree, RadiusTag, LayerGameObject, La
  * Geometry queries and cache invalidation remain with the caller; every added raster is copied and no scene object,
  * callback, renderer resource, clock or RNG survives a call.
  */
-class TerrainCollisionMaskStack {
+class EVENGINE_API_DOMAINS TerrainCollisionMaskStack {
 public:
     TerrainCollisionMaskStack();
     ~TerrainCollisionMaskStack();

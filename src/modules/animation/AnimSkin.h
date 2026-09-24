@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 #include "common/Result.h"
@@ -42,7 +44,7 @@ struct AnimSkinStreamData {
  *
  * Script type: `AnimSkin`.
  */
-class AnimSkin {
+class EVENGINE_API_WORLD AnimSkin {
 public:
     static constexpr int kMaxInfluences = 4;
 

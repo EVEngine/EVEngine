@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -33,7 +35,7 @@ namespace eve::i18n {
  *
  * Script: `i18n <- eve.I18n();`
  */
-class I18n : public Module {
+class EVENGINE_API_PLATFORM I18n : public Module {
 public:
     Module_REG(I18n);
     I18n()           = default;

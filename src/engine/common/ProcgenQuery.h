@@ -10,7 +10,7 @@
 namespace eve {
 
 /** @brief Procedural generation query surface (provided by the procgen module). */
-class EVENGINE_API IProcgenQuery {
+class EVENGINE_API_FOUNDATION_INLINE IProcgenQuery {
 public:
     static constexpr const char* capabilityName = "IProcgenQuery";
 

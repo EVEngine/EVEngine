@@ -1,15 +1,15 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "network/UdpLink.h"
+
+#include <simplesquirrel/object.hpp>
 
 #include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
-
-namespace ssq {
-class Object;
-}
 
 namespace eve::network {
 
@@ -22,7 +22,7 @@ class NetReader;
  * C++ handlers receive NetReader&; script handlers receive the raw payload as
  * a Squirrel string (build a NetReader with eve.Network().newReader(bytes)).
  */
-class NetRpc {
+class EVENGINE_API_PLATFORM NetRpc {
 public:
     explicit NetRpc(UdpLink* link);
     ~NetRpc();

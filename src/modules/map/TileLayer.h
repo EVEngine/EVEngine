@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -27,7 +29,7 @@ using eve::Color;
  * flags. A negative int is a signed transport of those bits, not an erase code.
  * Use tileGid() to inspect the identity without flags, and 0 to erase.
  */
-class TileLayer : public ecs::Entity {
+class EVENGINE_API_WORLD TileLayer : public ecs::Entity {
 public:
     ENTITY(TileLayer, ecs::Entity)
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 
@@ -26,7 +28,7 @@ struct EnvironmentAssetPage {
 };
 
 /** @brief Queries and validates cubemap/equirectangular assets from the shared AssetDB. */
-class EnvironmentAssetBrowser {
+class EVENGINE_API_ORCHESTRATION EnvironmentAssetBrowser {
 public:
     explicit EnvironmentAssetBrowser(const MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Query deterministic cards; stale index generations return Conflict. */

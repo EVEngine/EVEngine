@@ -1,0 +1,6 @@
+# git apply compares patch and target bytes, and the vendored checkouts are not
+# line-ending uniform: external/ECS.hpp commits CRLF in its blob. A patch that
+# targets such a file must therefore be checked out with CRLF on every host, or
+# the same patch applies on Windows (where the working tree default is CRLF) and
+# fails on Linux. Everything else stays on the repository default (LF).
+cmake/patches/ecs-shared-default-table.patch text eol=crlf

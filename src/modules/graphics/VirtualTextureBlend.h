@@ -76,7 +76,7 @@ struct VirtualTextureResidentSet {
  * @thread Not thread-safe; create, mutate, and request pages on one authoring/render thread.
  * @reentrancy Does not invoke callbacks.
  */
-class VirtualTextureBlend {
+class EVENGINE_API_BACKENDS VirtualTextureBlend {
 public:
     /** @brief Validate configuration and create an empty virtual texture. */
     [[nodiscard]] static eve::Result<std::unique_ptr<VirtualTextureBlend>> create(

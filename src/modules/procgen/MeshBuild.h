@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -14,7 +16,7 @@ namespace eve::procgen {
  * @brief CPU triangle mesh from procedural mesh recipes (e.g. marching cubes).
  * Positions/normals are xyz-packed; uvs are st-packed; indices are triangles.
  */
-class MeshBuild {
+class EVENGINE_API_DOMAINS MeshBuild {
 public:
     void clear();
     void reserve(int vertexCount, int indexCount);

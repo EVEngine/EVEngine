@@ -31,7 +31,7 @@ struct HairCluster {
  * @thread Affine to the caller; not synchronized.
  * @reentrancy Does not invoke callbacks.
  */
-class ClusterGrid {
+class EVENGINE_API_BACKENDS ClusterGrid {
 public:
     /**
      * @brief Build clusters from validated strands.
@@ -68,7 +68,7 @@ private:
  * @brief Copy a subset of curves into a new `StrandsDatas` (preserves point order).
  * @param curveIndices Must be in-range; duplicates are ignored after first keep.
  */
-[[nodiscard]] Result<StrandsDatas> filterStrandsByCurves(const StrandsDatas &src,
-                                                         const std::vector<uint32_t> &curveIndices);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> filterStrandsByCurves(
+    const StrandsDatas &src, const std::vector<uint32_t> &curveIndices);
 
 }  // namespace eve::graphics::hair

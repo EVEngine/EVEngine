@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "zeroerr/assert.h"
@@ -29,7 +31,7 @@ struct Lighting2DUBO {
  * @brief Declarative 2D light. Collected by RenderSystem (max 8 per canvas/frame).
  * type: "point" | "dir" (≤15 chars).
  */
-class Light2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Light2D : public ecs::Entity {
 public:
     ENTITY(Light2D, ecs::Entity)
 
@@ -107,7 +109,7 @@ struct Lighting3DPack {
  * @brief Declarative 3D light. Collected by RenderSystem3D (max 8 per frame).
  * type: "point" | "dir" (≤15 chars).
  */
-class Light3D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Light3D : public ecs::Entity {
 public:
     ENTITY(Light3D, ecs::Entity)
 

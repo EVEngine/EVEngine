@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file MontagePlayer.h @brief Deterministic presentation-only action montage playback. */
 
@@ -94,7 +96,7 @@ struct MontageAdvance {
  * owner-thread-only, reads no wall clock, and invokes the optional receiver
  * without holding a lock.
  */
-class MontagePlayer {
+class EVENGINE_API_WORLD MontagePlayer {
 public:
     /** @brief Borrow a skeleton that must outlive this player. */
     explicit MontagePlayer(AnimSkeleton& skeleton);

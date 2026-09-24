@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "model3d/ModelData.h"
@@ -38,7 +40,7 @@ struct ModelLoadOptions {
  * @brief Resource module for decoding 3D models via medialoader (Assimp).
  * Produces ModelData; GPU upload is graphics' responsibility.
  */
-class Model3D : public Module {
+class EVENGINE_API_WORLD Model3D : public Module {
 public:
     Module_REG(Model3D);
 

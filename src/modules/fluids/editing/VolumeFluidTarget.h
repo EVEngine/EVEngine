@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/editing/FluidTarget.h"
 
@@ -38,10 +40,10 @@ struct VolumeFluidAuthoringPreview {
  * @thread Editor-thread affine.
  * @reentrancy Does not invoke callbacks.
  */
-class VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IPropertyProvider {
 public:
     explicit VolumeFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -76,7 +78,7 @@ private:
 };
 
 /** @brief Atomic bridge from a validated authoring document to a live solver. */
-class VolumeFluidRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION VolumeFluidRuntimeApplier {
 public:
     /**
      * @brief Apply solver settings through the canonical snapshot restore transaction.

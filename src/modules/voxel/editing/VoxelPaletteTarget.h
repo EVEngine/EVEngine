@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -50,11 +52,11 @@ struct VoxelPaletteEntryValue {
 };
 
 /** @brief Revisioned Voxel CubeType palette with face-material Inspector. */
-class VoxelPaletteTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION VoxelPaletteTarget final : public ::eve::editing::EditableTargetState,
+                                                            public virtual IEditableTarget,
+                                                            public IDomainOperationTarget,
+                                                            public IDomainOperationTargetStaging,
+                                                            public IPropertyProvider {
 public:
     explicit VoxelPaletteTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
@@ -100,7 +102,7 @@ struct VoxelPalettePublishedEntry {
 };
 
 /** @brief Candidate-first CubeTypeRegistry publication. */
-class VoxelPaletteRuntime {
+class EVENGINE_API_ORCHESTRATION VoxelPaletteRuntime {
 public:
     VoxelPaletteRuntime();
     ~VoxelPaletteRuntime();

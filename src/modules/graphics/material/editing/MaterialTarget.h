@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -22,12 +24,12 @@ template <class T> using EditorResult = editing::Result<T>;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 
 /** @brief UI-neutral, serializable material authoring target. */
-class MaterialDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                     public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging,
-                                     public eve::editing::IEditingSnapshotProvider,
-                                     public IPropertyProvider {
+class EVENGINE_API_BACKENDS MaterialDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public eve::editing::IEditingSnapshotProvider,
+                                                           public IPropertyProvider {
 public:
     explicit MaterialDocumentTarget(std::string id);
 
@@ -75,8 +77,8 @@ public:
 };
 
 /** @brief Candidate-first material operation target with live commit/undo publication. */
-class MaterialPublishingTarget final : public IDomainOperationTarget,
-                                       public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS MaterialPublishingTarget final : public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned material document bound to a non-owning runtime sink. */
     MaterialPublishingTarget(std::string id, IMaterialRuntimeSink* sink);
@@ -135,7 +137,7 @@ public:
 };
 
 /** @brief Built-in legacy-material publisher for one borrowed Renderable3D. */
-class Renderable3DMaterialRuntimeSink final : public IMaterialRuntimeSink {
+class EVENGINE_API_WORLD Renderable3DMaterialRuntimeSink final : public IMaterialRuntimeSink {
 public:
     /** @brief Bind a live renderable and asset resolver; both must outlive the sink. */
     Renderable3DMaterialRuntimeSink(graphics::Renderable3D* renderable,

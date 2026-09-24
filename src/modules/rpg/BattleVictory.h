@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file BattleVictory.h
@@ -40,7 +42,7 @@ struct BattleVictoryReceipt {
 };
 
 /** @brief Product transaction boundary for post-battle rewards and encounter lifecycle. */
-class BattleVictory {
+class EVENGINE_API_PLATFORM BattleVictory {
 public:
     /**
      * @brief Atomically settle XP, derived class skills, attributes, quest progress, and encounter consumption.

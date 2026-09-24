@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "ui/Icons.h"
 #include "ui/UIHost.h"
@@ -367,122 +368,121 @@ struct WidgetDesc {
 };
 
 /** @brief Top-level window widget with a title bar. */
-WidgetDesc window(std::string title, std::vector<WidgetDesc> children = {}, std::string id = "root");
+EVENGINE_API_WORLD WidgetDesc window(std::string title, std::vector<WidgetDesc> children = {}, std::string id = "root");
 /** @brief Static text label. */
-WidgetDesc text(std::string content, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc text(std::string content, std::string id = "");
 /** @brief Clickable button; fires onClick. */
-WidgetDesc button(std::string label, std::string id = "", std::function<void()> onClick = {});
+EVENGINE_API_WORLD WidgetDesc button(std::string label, std::string id = "", std::function<void()> onClick = {});
 /** @brief Semantic vector icon rendered from the bundled editor icon font. */
-WidgetDesc icon(Icon value, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc icon(Icon value, std::string id = "");
 /** @brief Button containing a semantic icon and optional visible label. */
-WidgetDesc iconButton(Icon value, std::string label = "", std::string id = "",
-                      std::function<void()> onClick = {});
+EVENGINE_API_WORLD WidgetDesc iconButton(Icon value, std::string label = "", std::string id = "",
+                                         std::function<void()> onClick = {});
 /** @brief Plain group container. */
-WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Holds the next widget on the same line as the previous one. */
-WidgetDesc sameLine(std::string id = "");
+EVENGINE_API_WORLD WidgetDesc sameLine(std::string id = "");
 /** @brief Horizontal separator line. */
-WidgetDesc separator(std::string id = "");
+EVENGINE_API_WORLD WidgetDesc separator(std::string id = "");
 /** @brief Checkbox with a label; fires onToggle. */
-WidgetDesc checkbox(std::string label, bool checked = false, std::string id = "",
-                    std::function<void(bool)> onToggle = {});
+EVENGINE_API_WORLD WidgetDesc checkbox(std::string label, bool checked = false, std::string id = "",
+                                       std::function<void(bool)> onToggle = {});
 /** @brief Horizontal slider; fires onValue. */
-WidgetDesc slider(std::string label, float value, float minV, float maxV, std::string id = "",
-                  std::function<void(float)> onValue = {});
+EVENGINE_API_WORLD WidgetDesc slider(std::string label, float value, float minV, float maxV, std::string id = "",
+                                     std::function<void(float)> onValue = {});
 /** @brief Progress bar; fraction is clamped to [0,1]. */
-WidgetDesc progress(float fraction, std::string id = "", std::string overlay = "");
+EVENGINE_API_WORLD WidgetDesc progress(float fraction, std::string id = "", std::string overlay = "");
 /** Dropdown; options joined by '\n', selected index in `selected`. */
-WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
-                 std::string id = "", std::function<void(float)> onValue = {});
+EVENGINE_API_WORLD WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
+                                    std::string id = "", std::function<void(float)> onValue = {});
 /** Colored / textured image. Size defaults to texture size via layout. */
-WidgetDesc image(std::string id = "", float width = 0.f, float height = 0.f,
-                 std::function<void()> onClick = {});
+EVENGINE_API_WORLD WidgetDesc image(std::string id = "", float width = 0.f, float height = 0.f,
+                                    std::function<void()> onClick = {});
 /** @brief Stretchable textured container with asset-defined content padding. */
 WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id = "",
                           uint64_t textureId = 0);
 /** Clickable image (renders via ImGui ImageButton). */
-WidgetDesc imageButton(std::string id, float width, float height, std::function<void()> onClick = {});
+EVENGINE_API_WORLD WidgetDesc imageButton(std::string id, float width, float height,
+                                          std::function<void()> onClick = {});
 /** Embedded render target widget: shows an offscreen Canvas, routes input. */
-WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
+EVENGINE_API_WORLD WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
 /** @brief Editable text field; fires onTextChange. */
-WidgetDesc inputText(std::string label, std::string value, std::string id = "",
-                     std::function<void(const std::string &)> onChange = {});
+EVENGINE_API_WORLD WidgetDesc inputText(std::string label, std::string value, std::string id = "",
+                                        std::function<void(const std::string &)> onChange = {});
 /** @brief Compact search field with placeholder text and a bundled search icon. */
-WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
-                       std::function<void(const std::string &)> onChange = {});
+EVENGINE_API_WORLD WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
+                                          std::function<void(const std::string &)> onChange = {});
 /** @brief Modern boolean toggle; fires onToggle when changed. */
-WidgetDesc toggleSwitch(std::string label, bool checked = false, std::string id = "",
-                        std::function<void(bool)> onToggle = {});
+EVENGINE_API_WORLD WidgetDesc toggleSwitch(std::string label, bool checked = false, std::string id = "",
+                                           std::function<void(bool)> onToggle = {});
 /** @brief Compact status/category pill. Tint controls its background color. */
-WidgetDesc badge(std::string label, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc badge(std::string label, std::string id = "");
 /**
  * @brief Color editor with a swatch grid (调色板).
  * RGBA is stored in tint channels. `valueText` may list extra swatches as
  * `#rrggbb`, `#rrggbbaa`, or `r,g,b[,a]` lines; empty uses the built-in palette.
  * Changes fire the same value events as sliders (`consumeChange` / `onValue`).
  */
-WidgetDesc colorPalette(std::string label, float r, float g, float b, float a = 1.f,
-                        std::string id = "", std::function<void(float)> onValue = {});
+EVENGINE_API_WORLD WidgetDesc colorPalette(std::string label, float r, float g, float b, float a = 1.f,
+                                           std::string id = "", std::function<void(float)> onValue = {});
 /** @brief Bordered surface container with editor-friendly padding. */
-WidgetDesc card(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc card(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Non-collapsible editor section heading with an accent marker. */
-WidgetDesc sectionHeader(std::string label, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc sectionHeader(std::string label, std::string id = "");
 /** @brief Window menu bar container. Must be a direct child of a Window. */
-WidgetDesc menuBar(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc menuBar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Popup menu container used inside a MenuBar or another Menu. */
-WidgetDesc menu(std::string label, std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc menu(std::string label, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Selectable menu command with an optional shortcut hint. */
-WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id = "",
-                    std::function<void()> onClick = {}, bool selected = false);
+EVENGINE_API_WORLD WidgetDesc menuItem(std::string label, std::string shortcut = {}, std::string id = "",
+                                       std::function<void()> onClick = {}, bool selected = false);
 /** @brief Horizontal editor command strip; Spacer children absorb free width. */
-WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc toolbar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Wrapping grid of editor tools with uniform square cells. */
-WidgetDesc toolbox(std::vector<WidgetDesc> children = {}, std::string id = "",
-                   float cellSize = 0.f, int columns = 0);
+EVENGINE_API_WORLD WidgetDesc toolbox(std::vector<WidgetDesc> children = {}, std::string id = "", float cellSize = 0.f,
+                                      int columns = 0);
 /** @brief Vertical editor side panel. Width defaults to 240 logical pixels. */
-WidgetDesc sidebar(std::vector<WidgetDesc> children = {}, std::string id = "",
-                   float width = 0.f);
+EVENGINE_API_WORLD WidgetDesc sidebar(std::vector<WidgetDesc> children = {}, std::string id = "", float width = 0.f);
 /** @brief Compact horizontal status strip; Spacer children absorb free width. */
-WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc statusBar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /**
  * @brief Two resizable panes separated by a drag handle.
  * @param direction Row creates left/right panes; Column creates top/bottom panes.
  * @param ratio Fraction assigned to the first pane, clamped to [0.1, 0.9].
  */
-WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second,
-                     float ratio = 0.25f, std::string id = "",
-                     std::function<void(float)> onResize = {});
+EVENGINE_API_WORLD WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second,
+                                        float ratio = 0.25f, std::string id = "",
+                                        std::function<void(float)> onResize = {});
 /** @brief Collapsible header containing child widgets. */
-WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
-                            std::string id = "", bool defaultOpen = true);
+EVENGINE_API_WORLD WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
+                                               std::string id = "", bool defaultOpen = true);
 /** @brief Scrollable child region with an explicit size. */
-WidgetDesc child(std::string id, std::vector<WidgetDesc> children = {}, float width = 0.f,
-                 float height = 120.f);
+EVENGINE_API_WORLD WidgetDesc child(std::string id, std::vector<WidgetDesc> children = {}, float width = 0.f,
+                                    float height = 120.f);
 /**
  * Virtualized scroll list: only visible rows are drawn each frame. Children are
  * the full item set (rows laid out top-to-bottom at `itemHeight` px). Set a
  * `height` for the viewport; 0 = fill available space.
  */
-WidgetDesc scrollList(std::string id, std::vector<WidgetDesc> children = {}, float height = 0.f,
-                      float itemHeight = 0.f);
+EVENGINE_API_WORLD WidgetDesc scrollList(std::string id, std::vector<WidgetDesc> children = {}, float height = 0.f,
+                                         float itemHeight = 0.f);
 /** One-line convenience: virtualized list of buttons from string items. */
-WidgetDesc virtualList(std::string listId, const std::vector<std::string> &items,
-                       float height = 200.f, float itemHeight = 0.f);
+EVENGINE_API_WORLD WidgetDesc virtualList(std::string listId, const std::vector<std::string> &items,
+                                          float height = 200.f, float itemHeight = 0.f);
 
 /** @brief Elastic layout container (row/column). Prefer `row` / `column` shorthands. */
-WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children = {},
-                std::string id = "");
+EVENGINE_API_WORLD WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Horizontal elastic layout row. */
-WidgetDesc row(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc row(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Vertical elastic layout column. */
-WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Fixed-column grid; children are placed in source order. */
-WidgetDesc grid(int columns, std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc grid(int columns, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
-WidgetDesc spacer(std::string id = "", float grow = 1.f);
+EVENGINE_API_WORLD WidgetDesc spacer(std::string id = "", float grow = 1.f);
 
 /** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
-WidgetDesc when(bool cond, WidgetDesc child);
+EVENGINE_API_WORLD WidgetDesc when(bool cond, WidgetDesc child);
 WidgetDesc whenElse(bool cond, WidgetDesc ifTrue, WidgetDesc ifFalse);
 
 /**
@@ -493,10 +493,10 @@ WidgetDesc list(std::string listId, const std::vector<std::string> &items,
                 const std::function<WidgetDesc(const std::string &, int)> &itemFn);
 
 /** @brief Default list: one Button per item, id = listId + "/" + index. */
-WidgetDesc listButtons(std::string listId, const std::vector<std::string> &items);
+EVENGINE_API_WORLD WidgetDesc listButtons(std::string listId, const std::vector<std::string> &items);
 
 /** @brief Full replace flatten. */
-void applyTree(UIHost *host, WidgetDesc root);
+EVENGINE_API_WORLD void applyTree(UIHost *host, WidgetDesc root);
 
 /**
  * @brief Patch by key/id when structure (type + child keys) matches; otherwise full replace.

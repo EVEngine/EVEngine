@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -24,7 +26,7 @@ class StylePass;
  *
  * Script: `chain <- stylize.newChain(); chain.add(passA); chain.add(passB);`
  */
-class StyleChain {
+class EVENGINE_API_WORLD StyleChain {
 public:
     StyleChain() = default;
     ~StyleChain() = default;

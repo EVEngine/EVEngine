@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -25,6 +27,6 @@ struct CaveRoughnessSample {
  * @param input Normalized position and deterministic seed.
  * @return Bounded combined relief and individual frequency bands.
  */
-[[nodiscard]] CaveRoughnessSample sampleCaveWallRoughness(const CaveRoughnessInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveRoughnessSample sampleCaveWallRoughness(const CaveRoughnessInput& input);
 
 }  // namespace eve::procgen

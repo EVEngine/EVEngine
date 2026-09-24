@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "action/ActionCameraBlock.h"
 #include "common/Module.h"
@@ -61,7 +63,7 @@ struct PcgPhotoModePostFxState {
  * 所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"），
  * 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。
  */
-class CameraController : public action::IActionCameraCueSink, public IPhotoModeFieldSink {
+class EVENGINE_API_WORLD CameraController : public action::IActionCameraCueSink, public IPhotoModeFieldSink {
 public:
     CameraController();
     ~CameraController() override;

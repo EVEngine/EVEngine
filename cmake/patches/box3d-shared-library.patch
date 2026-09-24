@@ -1,0 +1,64 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 95b0d8b..e9e9735 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -107,6 +107,40 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+ 
+ add_library(box3d ${BOX3D_SOURCE_FILES} ${BOX3D_INCLUDE_FILES})
+ 
++# EVEngine: dynamic twin for the engine's shared link-group route. box3d keeps
++# its world registry (b3_worlds) in file scope and the engine links it from
++# several link groups, so each group would own a different set of worlds and a
++# world the test code created would be unknown to the engine's modules (spec
++# section 7.25). This desktop-only twin is built next to the archive, which
++# stays the canonical target, so the OBJECT / release SDK route always links a
++# static box3d and remains one self-contained executable no matter which
++# configuration built this tree last. DEFINE_SYMBOL reproduces the
++# <target>_EXPORTS macro box3d's B3_API keys on, and the configuration
++# postfixes are cleared so the import library has one predictable name.
++if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
++   AND NOT EMSCRIPTEN)
++  add_library(box3d_dynamic SHARED ${BOX3D_SOURCE_FILES} ${BOX3D_INCLUDE_FILES})
++  target_include_directories(box3d_dynamic
++    PRIVATE
++      ${CMAKE_CURRENT_SOURCE_DIR}/../include
++      ${CMAKE_CURRENT_BINARY_DIR}
++      ${CMAKE_CURRENT_SOURCE_DIR}
++  )
++  set_target_properties(box3d_dynamic PROPERTIES
++    DEFINE_SYMBOL box3d_EXPORTS
++    OUTPUT_NAME box3d-dynamic
++    C_STANDARD 17
++    C_STANDARD_REQUIRED YES
++    C_EXTENSIONS YES
++    DEBUG_POSTFIX ""
++    RELEASE_POSTFIX ""
++    MINSIZEREL_POSTFIX ""
++    RELWITHDEBINFO_POSTFIX "")
++  if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
++    target_link_libraries(box3d_dynamic PUBLIC m)
++  endif()
++endif()
++
+ # target_link_libraries(box3d PRIVATE eastl)
+ 
+ target_include_directories(box3d
+@@ -228,6 +262,18 @@ install(
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+ )
+ 
++if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
++   AND NOT EMSCRIPTEN)
++  # EVEngine: the dynamic twin is not part of box3d's package export set; the
++  # engine links it by file name.
++  install(
++    TARGETS box3d_dynamic
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  )
++endif()
++
+ install(
+   EXPORT box3dConfig
+   NAMESPACE box3d::

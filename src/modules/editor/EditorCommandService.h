@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorCommandTypes.h"
 #include "editor/EditorHostProfile.h"
@@ -46,7 +48,7 @@ using EditorCommandPlanExecutor =
  * is synchronous in this first slice; asynchronous work should return a stable
  * task handle as its EditorValue.
  */
-class EditorCommandService {
+class EVENGINE_API_ORCHESTRATION EditorCommandService {
 public:
     /**
      * @brief Register one command.

@@ -40,7 +40,7 @@ struct ParticleOffscreenPreviewRequest {
 };
 
 /** @brief Compiles, budget-checks and rasterizes particle graph previews offscreen. */
-class ParticleOffscreenPreviewService {
+class EVENGINE_API_ORCHESTRATION ParticleOffscreenPreviewService {
 public:
     using DrawCallback = std::function<EditorResult<void>(const ParticleGraphCompileResult&,
         const ParticleGraphPreviewResult&, graphics::Graphics*, graphics::Canvas*)>;
@@ -57,7 +57,7 @@ private:
 };
 
 /** @brief Real ParticleEmitter presenter with deterministic stepping and isolated drawing. */
-class ParticleEmitterOffscreenPresenter final : public IParticleOffscreenPresenter {
+class EVENGINE_API_ORCHESTRATION ParticleEmitterOffscreenPresenter final : public IParticleOffscreenPresenter {
 public:
     using TextureResolver = ParticleGraphRuntimeBuilder::TextureResolver;
     explicit ParticleEmitterOffscreenPresenter(TextureResolver textures = {})

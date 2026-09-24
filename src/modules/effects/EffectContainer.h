@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -30,7 +32,7 @@ class EffectExecutor;
  * container.  All methods are simulation-thread confined unless the caller
  * provides external synchronization; callbacks are not invoked by this type.
  */
-class EffectContainer {
+class EVENGINE_API_FOUNDATION EffectContainer {
 public:
     /**
      * @brief Construct an empty effect container.
@@ -298,7 +300,7 @@ private:
  * This executor only decrements durations and emits expiry events.  It does
  * not interpret magnitude, payload, tags, or perform any domain settlement.
  */
-class EffectExecutor {
+class EVENGINE_API_FOUNDATION EffectExecutor {
 public:
     /**
      * @brief Advances one container by a legacy seconds delta.

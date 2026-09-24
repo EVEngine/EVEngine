@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Trait.h
@@ -27,7 +29,7 @@ struct TraitSpec {
 };
 
 /** @brief 数据驱动的特征模板。 */
-struct TraitDefinition {
+struct EVENGINE_API_PLATFORM TraitDefinition {
     std::string id;
     std::vector<TraitSpec> traits;
     std::vector<std::string> tags;
@@ -38,7 +40,7 @@ struct TraitDefinition {
 };
 
 /** @brief 进程级特征定义注册表。 */
-class TraitRegistry {
+class EVENGINE_API_PLATFORM TraitRegistry {
 public:
     static void registerTrait(const TraitDefinition &def);
     /**

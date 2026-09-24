@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioTarget.h"
 
@@ -19,10 +21,10 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
-                                     public virtual IEditableTarget,
-                                     public IDomainOperationTarget,
-                                     public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging {
 public:
     explicit AudioEffectChainTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -64,7 +66,7 @@ public:
 };
 
 /** @brief Rejects invalid/stale chains before runtime publication. */
-class AudioEffectChainPublisher {
+class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
 public:
     EditorResult<void> publish(const AudioEffectChainTarget& chain,
                                Revision expectedRevision,

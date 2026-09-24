@@ -16,7 +16,7 @@ namespace eve::procgen {
  * instance and those resources must outlive this backup. Capture and restore are main/render-thread only,
  * do not invoke callbacks, and validate the entity id plus generation before publication.
  */
-class PcgMeshLodBackup {
+class EVENGINE_API_DOMAINS PcgMeshLodBackup {
 public:
     PcgMeshLodBackup();
     ~PcgMeshLodBackup();

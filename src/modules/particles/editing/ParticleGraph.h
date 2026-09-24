@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "particles/editing/ParticlesEditingTypes.h"
 
@@ -28,7 +30,7 @@ struct ParticleGraphPreviewResult {
 };
 
 /** @brief `particles.emitter` graph domain reflecting core emitter modules. */
-class ParticleGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION ParticleGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "particles.emitter"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,

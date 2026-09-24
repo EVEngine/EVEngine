@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/Params.h"
 #include "procgen/ParamSchema.h"
@@ -21,7 +23,7 @@ namespace eve::procgen {
 /** @brief Recipe returns a newly owned RGBA8 image, or null on failure. */
 using TextureRecipeFn = std::function<std::unique_ptr<image::ImageData>(const Params &params, std::string &error)>;
 
-class TextureRecipeRegistry {
+class EVENGINE_API_DOMAINS TextureRecipeRegistry {
 public:
     /** @brief Access the process-wide texture recipe registry. @return Registry instance. */
     static TextureRecipeRegistry &instance();

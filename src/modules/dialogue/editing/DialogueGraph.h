@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "dialogue/editing/DialogueEditingTypes.h"
 
@@ -20,7 +22,7 @@ struct DialogueGraphCompileResult {
 };
 
 /** @brief `dialogue.conversation` domain for line, choice, branch and action flow. */
-class DialogueGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION DialogueGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "dialogue.conversation"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
@@ -35,7 +37,7 @@ public:
 };
 
 /** @brief Optional bridge constructing the dialogue module's editable document. */
-class DialogueGraphRuntimeBuilder {
+class EVENGINE_API_ORCHESTRATION DialogueGraphRuntimeBuilder {
 public:
     /** @brief Build a validated ConversationDocument; caller owns the returned document. */
     EditorResult<dialogue::ConversationDocument*> build(const GraphDocumentData& graph) const;

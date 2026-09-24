@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 
@@ -48,7 +50,7 @@ struct AnimSmrIkChain {
  * @brief Bone-attached sensor cloud for skinned-motion-retarget interaction queries.
  * Script type: `AnimSmrSensorCloud`.
  */
-class AnimSmrSensorCloud {
+class EVENGINE_API_WORLD AnimSmrSensorCloud {
 public:
     /**
      * @brief Build sensors for every bone: one at the joint and one mid-segment toward the first child.

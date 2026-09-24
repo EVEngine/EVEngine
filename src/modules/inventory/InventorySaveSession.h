@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file InventorySaveSession.h
@@ -17,13 +19,13 @@ class Bag;
 class EquipmentSet;
 
 /** @brief Coordinates persistent inventory owners without duplicating their live state. */
-class InventorySaveSession {
+class EVENGINE_API_FOUNDATION InventorySaveSession {
 public:
     /**
      * @brief Validated owning inventory state awaiting publication.
      * @remarks Move-only typestate. It has no accessors because callers may only commit or discard it.
      */
-    class PreparedRestore {
+    class EVENGINE_API_FOUNDATION PreparedRestore {
     public:
         ~PreparedRestore();
         PreparedRestore(PreparedRestore &&) noexcept;

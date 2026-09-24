@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Runtime.h"
 #include "property_access/PropertyAccess.h"
@@ -19,7 +20,7 @@ namespace eve::property_access {
  * contract: `PropertyAccess.h` stays free of the script runtime. Include this
  * header only from script-aware hosts such as the Inspector.
  */
-class EVENGINE_API ReflectedPropertyModel final : public IPropertyAccess {
+class EVENGINE_API_FOUNDATION ReflectedPropertyModel final : public IPropertyAccess {
 public:
     ReflectedPropertyModel(Runtime &runtime, ssq::Object instance);
     ~ReflectedPropertyModel() override;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveFractures.h"
 #include "procgen/algorithms/CaveHydrology.h"
@@ -42,11 +44,10 @@ struct CavePotholeSample {
  * @param seed Deterministic recipe seed shared with the fracture field.
  * @return Spaced pothole sites; no site is invented without a crossing-fracture weak zone.
  */
-[[nodiscard]] std::vector<CavePotholeSite> createCavePotholeSites(const std::vector<CaveHydrologyPoint>& trunk,
-                                                                  const std::vector<float>&        hydraulicWeights,
-                                                                  const std::vector<CaveFracture>& fractures,
-                                                                  float apertureVariability, float stressControl,
-                                                                  float sedimentLoad, float gravelSize, uint32_t seed);
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CavePotholeSite> createCavePotholeSites(
+    const std::vector<CaveHydrologyPoint>& trunk, const std::vector<float>& hydraulicWeights,
+    const std::vector<CaveFracture>& fractures, float apertureVariability, float stressControl, float sedimentLoad,
+    float gravelSize, uint32_t seed);
 
 /**
  * @brief Sample gravel-size-dependent pothole abrasion around derived sites.
@@ -54,7 +55,7 @@ struct CavePotholeSample {
  * @param sites Sites derived by createCavePotholeSites.
  * @return Maximum bounded primary or compound-pothole erosion response.
  */
-[[nodiscard]] CavePotholeSample sampleCavePotholeErosion(CaveHydrologyVec3                   point,
-                                                         const std::vector<CavePotholeSite>& sites);
+[[nodiscard]] EVENGINE_API_DOMAINS CavePotholeSample
+sampleCavePotholeErosion(CaveHydrologyVec3 point, const std::vector<CavePotholeSite>& sites);
 
 }  // namespace eve::procgen

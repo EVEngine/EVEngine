@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TacticsTypes.h
@@ -147,7 +149,7 @@ struct TurnResourceSpec {
  * This value is owner-thread-affine. It invokes no callbacks. Every mutation
  * preserves the cell-to-subject and subject-to-cell indexes atomically.
  */
-class BoardState {
+class EVENGINE_API_DOMAINS BoardState {
 public:
     /** @brief Construct an empty board with square-four topology. */
     BoardState() = default;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionTimelineWidget.h @brief Renderer-neutral interactive action timeline widget. */
 
@@ -42,7 +44,7 @@ enum class TimelineItemVisual : std::uint8_t {
  * @param visual Semantic projection kind.
  * @return Static text valid for the lifetime of the process.
  */
-[[nodiscard]] std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept;
+[[nodiscard]] EVENGINE_API_EDITORS std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept;
 
 /** @brief Owning geometry projected for one timeline item. */
 struct TimelineItemGeometry {
@@ -114,7 +116,7 @@ struct TimelineWidgetCommandDescriptor {
  * drags mutate only widget preview state until pointerUp commits exactly one
  * undoable domain transaction. All methods are owner-thread-only.
  */
-class ActionTimelineWidget {
+class EVENGINE_API_EDITORS ActionTimelineWidget {
 public:
     /** @brief Construct a widget over authoritative editor and notify services. */
     ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry);

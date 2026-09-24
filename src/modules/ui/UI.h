@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -34,7 +36,7 @@ struct UIEvent;
  *
  * ECS: named UIHost panels. Builder + Component.build (C++/script) + list/when/theme.
  */
-class UI : public Module {
+class EVENGINE_API_WORLD UI : public Module {
 public:
     Module_REG(UI);
     UI();

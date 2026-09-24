@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "thread/Task.h"
 
@@ -21,7 +23,7 @@ class Channel;
  * @brief Fixed-size worker pool. Owns worker std::threads; tasks run FIFO.
  * Squirrel VM is not thread-safe — do not call into scripts from workers.
  */
-class ThreadPool {
+class EVENGINE_API_FOUNDATION ThreadPool {
 public:
     explicit ThreadPool(int workerCount);
     ~ThreadPool();

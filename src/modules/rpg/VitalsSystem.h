@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;
@@ -33,7 +35,7 @@ struct VitalsEvent {
  * @brief 当前资源系统：读写 RPGActor::Vitals 并发出事件。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class VitalsSystem {
+class EVENGINE_API_PLATFORM VitalsSystem {
 public:
     /** @brief 当前值（无 vitals/资源时 0）。 */
     static double getCurrent(RPGActor *actor, const std::string &resource);

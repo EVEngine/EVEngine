@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditConstraint.h"
 #include "editor/EditorCommandService.h"
@@ -25,7 +27,7 @@ class EditorTargetCoordinator;
  * Tool callbacks may re-enter the session; lifecycle state is detached before
  * cancellation or deactivation callbacks are invoked.
  */
-class EditorSession {
+class EVENGINE_API_ORCHESTRATION EditorSession {
 public:
     EditorSession();
     ~EditorSession() noexcept;

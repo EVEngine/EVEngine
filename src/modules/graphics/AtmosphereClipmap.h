@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/AtmosphereVolume.h"
 
@@ -20,7 +22,7 @@ struct AtmosphereClipmapLevel {
  * Level zero has the finest voxels. Each following level doubles its world extent.
  * Centers snap to whole voxels so sub-voxel camera movement does not resample media.
  */
-class AtmosphereClipmap {
+class EVENGINE_API_BACKENDS AtmosphereClipmap {
 public:
     /** @brief Allocate nested cubic levels and center them at the origin. */
     void configure(int levelCount, int resolution, float firstExtent);

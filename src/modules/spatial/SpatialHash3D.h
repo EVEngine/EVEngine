@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "spatial/Bounds.h"
 #include "spatial/QueryIds.h"
@@ -10,7 +12,7 @@
 namespace eve::spatial {
 
 /** @brief Uniform-grid spatial hash for 3D AABB / sphere queries. */
-class SpatialHash3D {
+class EVENGINE_API_FOUNDATION SpatialHash3D {
 public:
     explicit SpatialHash3D(float cellSize = 64.f);
     ~SpatialHash3D() = default;

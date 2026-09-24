@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。
@@ -27,7 +29,7 @@ namespace eve::building {
 class Ghost;
 
 /** @brief 格子型建筑放置世界（脚本可直接操作）。 */
-class PlacementWorld {
+class EVENGINE_API_WORLD PlacementWorld {
 public:
     using ChannelMap = std::unordered_map<std::string, std::vector<int>>;
     /** @brief 创建 width×height 的格子世界，cellSize 为像素/格。 */

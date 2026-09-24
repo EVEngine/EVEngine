@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -42,7 +44,7 @@ struct OffscreenPreviewArtifact {
 };
 
 /** @brief Concrete Graphics/Canvas preview bridge with revision-safe artifact storage. */
-class GraphicsOffscreenPreviewService {
+class EVENGINE_API_WORLD GraphicsOffscreenPreviewService {
 public:
     using DrawCallback = std::function<EditorResult<void>(graphics::Graphics*, graphics::Canvas*)>;
     /** @brief Bind borrowed draw, allocation and target-control interfaces. */

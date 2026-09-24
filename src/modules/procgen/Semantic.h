@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -21,7 +23,7 @@ constexpr uint32_t Door     = 10;
 constexpr uint32_t Road     = 11;
 }  // namespace Semantic
 
-const char *semanticName(uint32_t id);
-uint32_t    semanticId(const std::string &name);
+EVENGINE_API_DOMAINS const char *semanticName(uint32_t id);
+EVENGINE_API_DOMAINS uint32_t    semanticId(const std::string &name);
 
 }  // namespace eve::procgen

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 放置会话：封装「选择建筑 -> 跟随指针 -> 校验 -> 放置 / 拆除」的交互状态。
 // 纯逻辑、不接输入设备；脚本每帧喂指针坐标 / 表面命中，会话内部驱动 Ghost。
@@ -32,7 +34,7 @@ enum class PatternUpdateStatus { Updated, Rejected };
 /** @brief Outcome of atomically committing a unified placement pattern. */
 enum class PatternExecuteStatus { Placed, Rejected };
 
-class PlacementSession {
+class EVENGINE_API_WORLD PlacementSession {
 public:
     PlacementSession();
     ~PlacementSession() = default;

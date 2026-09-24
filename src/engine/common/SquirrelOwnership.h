@@ -68,7 +68,7 @@ using ScriptValue = eve::Value;
  * Copying this wrapper does not add a VM reference. Use `ownSquirrelObject()`
  * when the object must survive the current call or be stored by a registry.
  */
-class EVENGINE_API BorrowedSquirrelObject {
+class EVENGINE_API_FOUNDATION_INLINE BorrowedSquirrelObject {
 public:
     constexpr BorrowedSquirrelObject() noexcept = default;
     explicit constexpr BorrowedSquirrelObject(const ssq::Object* object) noexcept : object_(object) {}
@@ -122,7 +122,7 @@ public:
  * The underlying `ssq::Object` releases its VM reference in its destructor;
  * it must be destroyed before the VM is destroyed.
  */
-class EVENGINE_API OwnedSquirrelObject {
+class EVENGINE_API_FOUNDATION_INLINE OwnedSquirrelObject {
 public:
     OwnedSquirrelObject() = default;
     explicit OwnedSquirrelObject(ssq::Object object) noexcept : object_(std::move(object)) {}

@@ -19,7 +19,7 @@ enum class PcgInteriorWeatherTransition { Unchanged = 0, Entered = 1, Exited = 2
  * @thread Affine to the caller; configure and sample must not overlap.
  * @reentrancy Does not invoke callbacks.
  */
-class PcgInteriorWeatherVolume {
+class EVENGINE_API_ORCHESTRATION PcgInteriorWeatherVolume {
 public:
     /** @brief Configure an axis-aligned box atomically. Dimensions must be finite and positive. */
     [[nodiscard]] Result<void> configureBox(float centerX, float centerY, float centerZ,

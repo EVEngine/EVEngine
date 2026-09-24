@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -52,7 +54,7 @@ struct LocalizationAnalysis {
 };
 
 /** @brief UI-neutral localization table with deterministic persistence and QA. */
-class LocalizationDocument {
+class EVENGINE_API_ORCHESTRATION LocalizationDocument {
 public:
     /** @brief Insert a unique source key. */
     EditorResult<void> addRow(std::string key, std::string sourceText, std::string context = {});

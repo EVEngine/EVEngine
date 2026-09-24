@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file LineOfSightRouter.h
@@ -33,7 +34,7 @@ namespace eve::sensing {
  *         backends during startup, before queries run.
  * @reentrancy `query` invokes the selected backend synchronously and performs no locking.
  */
-class LineOfSightRouter final : public ILineOfSightQuery {
+class EVENGINE_API_PLATFORM LineOfSightRouter final : public ILineOfSightQuery {
 public:
     LineOfSightRouter() = default;
 
@@ -97,6 +98,6 @@ private:
  * @lifetime Valid for the rest of the process.
  * @thread Call during startup, before queries run.
  */
-[[nodiscard]] Result<LineOfSightRouter*> ensureLineOfSightRouter();
+[[nodiscard]] EVENGINE_API_PLATFORM Result<LineOfSightRouter*> ensureLineOfSightRouter();
 
 }  // namespace eve::sensing

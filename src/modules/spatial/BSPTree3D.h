@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "spatial/Bounds.h"
 #include "spatial/QueryIds.h"
@@ -13,7 +15,7 @@ namespace eve::spatial {
  * @brief Binary space partition tree (kd-style AABB splits) for 3D culling.
  * Alternating X/Y/Z splits at node midplanes.
  */
-class BSPTree3D {
+class EVENGINE_API_FOUNDATION BSPTree3D {
 public:
     BSPTree3D(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
               int maxDepth = 12, int maxPerNode = 8);

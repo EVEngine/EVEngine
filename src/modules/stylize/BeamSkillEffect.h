@@ -22,7 +22,7 @@ enum class BeamSkillPreset : std::uint8_t { Laser, Lightning, ChainLightning };
  * points are copied on assignment. Rendering is synchronous and render-thread
  * affine through MeshEffectRenderer; gameplay callbacks are never retained.
  */
-class BeamSkillEffect {
+class EVENGINE_API_WORLD BeamSkillEffect {
 public:
     /** @brief Construct one recipe and apply preset geometry/style defaults. */
     explicit BeamSkillEffect(BeamSkillPreset preset);

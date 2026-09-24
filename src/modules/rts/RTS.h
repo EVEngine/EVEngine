@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTS.h
@@ -58,7 +60,7 @@ struct RTSFrameLifecycleEvent {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
+class EVENGINE_API_DOMAINS RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(RTS);
 

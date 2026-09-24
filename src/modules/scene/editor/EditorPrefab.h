@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "scene/editor/EditorSceneTarget.h"
 
@@ -52,7 +54,7 @@ struct PrefabDependencyReport {
 };
 
 /** @brief Backend-neutral prefab capture, instantiate and override planning. */
-class ScenePrefabService {
+class EVENGINE_API_EDITORS ScenePrefabService {
 public:
     using PrefabResolver = std::function<EditorResult<PrefabAssetSnapshot>(const AssetGuid&)>;
     /** @brief Capture one scene subtree as a deterministic prefab asset. */

@@ -17,7 +17,7 @@ namespace eve {
  * changes and restore it afterwards. Scalars, arrays and objects map 1:1 to
  * JSON; object members preserve insertion order.
  */
-class EVENGINE_API StateValue {
+class EVENGINE_API_FOUNDATION StateValue {
 public:
     enum class Kind { Null, Int, Float, Bool, String, Array, Object };
 

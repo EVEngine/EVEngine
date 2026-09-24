@@ -40,11 +40,11 @@ using EditorResult = editing::Result<T>;
  * @thread Editor-thread affine and not internally synchronized.
  * @reentrancy Does not invoke callbacks.
  */
-class MeshVfxAssetTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+class EVENGINE_API_DOMAINS MeshVfxAssetTarget final : public ::eve::editing::EditableTargetState,
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider {
 public:
     /** @brief Construct a target containing a valid one-layer default asset. */
     explicit MeshVfxAssetTarget(std::string id);
@@ -85,7 +85,7 @@ private:
  * @brief Candidate-first live preview generation for a MeshVfxAssetTarget.
  * A rejected publication preserves the previous instance and revision.
  */
-class MeshVfxPreviewRuntime {
+class EVENGINE_API_DOMAINS MeshVfxPreviewRuntime {
 public:
     MeshVfxPreviewRuntime();
     ~MeshVfxPreviewRuntime();

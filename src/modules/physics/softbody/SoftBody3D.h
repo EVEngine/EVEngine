@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/backend/SimulationBackend.h"
 #include "physics/softbody/SoftBody3DDefinition.h"
@@ -22,7 +24,7 @@ class World3D;
  * state. A World3D supplied through setCollideWorld() is borrowed and must
  * outlive this object or be cleared before world destruction.
  */
-class SoftBody3D final : public ISimulationBackend {
+class EVENGINE_API_BACKENDS SoftBody3D final : public ISimulationBackend {
 public:
     /**
      * @brief Creates a soft body from the canonical versioned definition.

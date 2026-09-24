@@ -11,7 +11,7 @@ namespace eve::debug {
  * when no tracer is installed they are cheap null checks (Android/iOS keep this
  * unset because EVDevTools is not linked there).
  */
-class EVENGINE_API IRenderTracer {
+class EVENGINE_API_FOUNDATION_INLINE IRenderTracer {
 public:
     virtual ~IRenderTracer() = default;
     virtual void frameBegin() {}
@@ -24,8 +24,8 @@ public:
     virtual void error(const char* message) {}
 };
 
-EVENGINE_API void setRenderTracer(IRenderTracer* tracer);
-EVENGINE_API IRenderTracer* renderTracer();
+EVENGINE_API_FOUNDATION void           setRenderTracer(IRenderTracer* tracer);
+EVENGINE_API_FOUNDATION IRenderTracer* renderTracer();
 
 inline void rtFrameBegin() {
     if (IRenderTracer* t = renderTracer()) t->frameBegin();

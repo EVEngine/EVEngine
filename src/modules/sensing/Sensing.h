@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/Module.h"
@@ -142,7 +144,7 @@ private:
 };
 
 /** @brief Gameplay-facing 2D candidate query service; it never values or selects targets. */
-class SensingWorld {
+class EVENGINE_API_PLATFORM SensingWorld {
 public:
     /** @brief Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys. */
     [[nodiscard]] eve::Result<void> upsert(std::string_view id, float x, float y, std::string_view faction,
@@ -265,7 +267,7 @@ struct SensingWorldHandleTag {};
 using SensingWorldHandleRef = eve::script::RuntimeHandleRef<SensingWorldHandleTag>;
 
 /** @brief Script factory for independent sensing worlds. */
-class Sensing : public Module, public eve::ISensingQuery {
+class EVENGINE_API_PLATFORM Sensing : public Module, public eve::ISensingQuery {
 public:
     Module_REG(Sensing);
     /** @brief Registers the read-only sensing capability for automation hosts. */

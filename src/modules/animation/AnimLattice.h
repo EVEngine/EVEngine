@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <string>
 #include <vector>
@@ -38,7 +39,7 @@ namespace eve::animation {
  * Pipeline with skinning (C++): skinPositionsTo(pose, skinned) then
  * deformPositions(skinned.data(), out.data(), vertexCount).
  */
-class AnimLattice {
+class EVENGINE_API_WORLD AnimLattice {
 public:
     static constexpr int kMinDivisions = 2;
 

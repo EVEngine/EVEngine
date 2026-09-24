@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/config.h"
 
@@ -21,7 +23,7 @@ namespace eve::filesystem {
  * WebGPU (Emscripten): the browser VFS has no native file watching, so this is
  * a no-op stub — add()/remove() return false, poll() returns false.
  */
-class FileWatch {
+class EVENGINE_API_FOUNDATION FileWatch {
 public:
     struct Event {
         std::string kind;  // "added" | "removed" | "modified" | "movedFrom" | "movedTo"

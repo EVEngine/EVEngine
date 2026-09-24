@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ResourceRef.h
@@ -48,7 +49,7 @@ inline std::ostream& operator<<(std::ostream& stream, ResourceRefKind kind) {
  * ResourceUri locator, not an AssetRef, so renaming a project file does not
  * change this identity.
  */
-class EVENGINE_API AssetRef {
+class EVENGINE_API_FOUNDATION AssetRef {
 public:
     /** @brief Parse an `asset://<canonical UUID>` reference. */
     [[nodiscard]] static Result<AssetRef> parse(std::string_view text);
@@ -80,7 +81,7 @@ private:
  * A DefinitionRef names a definition (`namespace:name`); it is not a resource
  * locator and therefore is intentionally not accepted as a ResourceUri.
  */
-class EVENGINE_API DefinitionRef {
+class EVENGINE_API_FOUNDATION DefinitionRef {
 public:
     /** @brief Constructs an invalid reference for optional/component storage. */
     DefinitionRef() = default;
@@ -112,7 +113,7 @@ private:
  * ObjectRef is deliberately distinct from AssetRef even though both use the
  * same underlying UUID representation.  It is not a filesystem URI.
  */
-class EVENGINE_API ObjectRef {
+class EVENGINE_API_FOUNDATION ObjectRef {
 public:
     /** @brief Parse a canonical UUID text as an object reference. */
     [[nodiscard]] static Result<ObjectRef> parse(std::string_view text);
@@ -143,7 +144,7 @@ private:
  * named factories for definition and object references, which intentionally
  * have different textual domains.
  */
-class EVENGINE_API ResourceRef {
+class EVENGINE_API_FOUNDATION ResourceRef {
 public:
     /** @brief Parse a resource URI, specializing `asset://UUID` as AssetRef. */
     [[nodiscard]] static Result<ResourceRef> parse(std::string_view text);

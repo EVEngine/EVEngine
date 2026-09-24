@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AssetDiff.h @brief Deterministic semantic comparison of two `.eva` manifests. */
 
@@ -35,7 +37,7 @@ struct EvaPackageDiff {
 };
 
 /** @brief Compare two admitted manifests without using paths, timestamps or archive order. */
-[[nodiscard]] Result<EvaPackageDiff> diffEvaManifests(const EvaManifest& before,
-                                                      const EvaManifest& after);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaPackageDiff> diffEvaManifests(const EvaManifest& before,
+                                                                              const EvaManifest& after);
 
 }  // namespace eve::asset

@@ -34,7 +34,7 @@ class Document;
  * Handle to one node of a parsed Document. Cheap to copy, but only valid while
  * the owning Document is alive.
  */
-class EVENGINE_API Value {
+class EVENGINE_API_FOUNDATION Value {
 public:
     Value() = default;
 
@@ -104,7 +104,7 @@ private:
 /**
  * Owns a parsed JSON tree. Move-only; every Value handed out points into it.
  */
-class EVENGINE_API Document {
+class EVENGINE_API_FOUNDATION Document {
 public:
     Document();
     ~Document();
@@ -141,7 +141,7 @@ namespace json {
  * @remarks Object keys are emitted in lexicographic order. This is the single
  *          canonical JSON serializer used by owning Value adapters.
  */
-[[nodiscard]] EVENGINE_API Result<std::string> stringify(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> stringify(const eve::Value& value);
 
 }  // namespace json
 }  // namespace eve

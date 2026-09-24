@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 #include "scene/editor/ScenePhysicsPlacement.h"
@@ -19,7 +21,7 @@ namespace eve::scene_editor {
  * @thread Owner thread only. Live targets may notify host observers after publication,
  * without locks. Observers must not destroy or reenter the active session.
  */
-class SceneEditorSession {
+class EVENGINE_API_EDITORS SceneEditorSession {
 public:
     /** @brief Own a document target with a nonempty host-local identity. */
     explicit SceneEditorSession(std::string targetId);

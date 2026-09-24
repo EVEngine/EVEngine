@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -62,7 +64,7 @@ struct Particle {
  * @brief ECS emitter entity. Script configures components; ParticleSimSystem /
  * ParticleRenderSystem drive per-frame update & draw.
  */
-class ParticleEmitter : public ecs::Entity {
+class EVENGINE_API_DOMAINS ParticleEmitter : public ecs::Entity {
 public:
     ENTITY(ParticleEmitter, ecs::Entity)
 
@@ -669,10 +671,11 @@ bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
-float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt);
+EVENGINE_API_DOMAINS float advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Advance with scheduler-provided Duration/Tick; no local playback scaling. */
-[[nodiscard]] eve::Result<void> advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
-                                                  const eve::SimulationStep &step);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> advanceEmitterSim(ParticleEmitter::Config   &cfg,
+                                                                       ParticleEmitter::Sim      &sim,
+                                                                       const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);

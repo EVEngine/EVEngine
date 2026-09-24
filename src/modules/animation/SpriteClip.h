@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -12,7 +14,7 @@ class SpriteSheet;
  * @brief Named 2D frame sequence referencing SpriteSheet frame indices.
  * Script type: `SpriteClip`.
  */
-class SpriteClip {
+class EVENGINE_API_WORLD SpriteClip {
 public:
     explicit SpriteClip(const std::string &name = "");
     ~SpriteClip() = default;

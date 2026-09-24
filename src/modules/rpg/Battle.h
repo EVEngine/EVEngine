@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/SubjectRef.h"
@@ -49,7 +51,7 @@ struct BattleEvent {
  * @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。
  * @thread 在单一模拟线程上驱动整场战斗。
  */
-class Battle {
+class EVENGINE_API_PLATFORM Battle {
 public:
     Battle()  = default;
     ~Battle() = default;

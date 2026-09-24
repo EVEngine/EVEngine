@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -40,7 +42,7 @@ struct SplineFrameSample {
 };
 
 /** @brief Owning uniformly distributed spline samples for instancing. */
-class SplineDistribution {
+class EVENGINE_API_DOMAINS SplineDistribution {
 public:
     /** @brief Construct an owning distribution from validated samples. */
     explicit SplineDistribution(std::vector<SplineFrameSample> frames = {}) : frames_(std::move(frames)) {}
@@ -56,7 +58,7 @@ private:
 };
 
 /** @brief Owning sampled polyline for renderer-neutral runtime visualization adapters. */
-class SplinePolyline {
+class EVENGINE_API_DOMAINS SplinePolyline {
 public:
     /** @brief Construct from an owning sequence of sampled points. */
     explicit SplinePolyline(std::vector<std::vector<SplineSample>> chunks = {}, bool closed = false)
@@ -85,7 +87,7 @@ private:
  * Calls are synchronous and owner-thread only. Mutations invalidate the arc-length cache.
  * Returned samples are values and retain no pointers into the path.
  */
-class SplinePath {
+class EVENGINE_API_DOMAINS SplinePath {
 public:
     /** @brief Select linear, catmullRom, quadraticBezier, or cubic bezier interpolation. */
     [[nodiscard]] Result<void> setKindResult(std::string_view kind);

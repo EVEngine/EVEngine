@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Time.h"
 
@@ -9,7 +10,7 @@ namespace eve::animation {
 class AnimPlayer;
 
 /** @brief Marker-aware synchronization group for locomotion animation players. */
-class AnimSyncGroup {
+class EVENGINE_API_WORLD AnimSyncGroup {
 public:
     void addPlayer(AnimPlayer* player, float phaseOffset = 0.f);
     void clear() { entries_.clear(); leader_ = 0; phase_ = 0.f; usedMarkerSync_ = false; }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <condition_variable>
 #include <functional>
@@ -13,7 +15,7 @@ namespace thread {
  * @brief A job executed by a ThreadPool worker.
  * Status strings (no enums): "pending" | "running" | "done" | "failed".
  */
-class Task {
+class EVENGINE_API_FOUNDATION Task {
 public:
     explicit Task(std::function<void()> fn);
     ~Task();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -9,12 +11,12 @@
 namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class AudioSourceTarget final : public ::eve::editing::EditableTargetState,
-                                public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IPropertyProvider,
-                                public IEditingSnapshotProvider {
+class EVENGINE_API_BACKENDS AudioSourceTarget final : public ::eve::editing::EditableTargetState,
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider,
+                                                      public IEditingSnapshotProvider {
 public:
     /** @brief Stable capability identity for audio-source property editing. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.editor.target.audio-source"); }
@@ -71,8 +73,8 @@ public:
  * complete candidate before replacing its authoring state, so standard
  * transaction undo/redo follows the same live path.
  */
-class AudioSourcePublishingTarget final : public IDomainOperationTarget,
-                                          public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioSourcePublishingTarget final : public IDomainOperationTarget,
+                                                                public IDomainOperationTargetStaging {
 public:
     /** @brief Create an authoring target bound to a non-owning runtime sink. */
     AudioSourcePublishingTarget(std::string id, IAudioSourceRuntimeSink* sink);
@@ -116,10 +118,10 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class AudioMixerTarget final : public ::eve::editing::EditableTargetState,
-                               public virtual IEditableTarget,
-                               public IDomainOperationTarget,
-                               public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS AudioMixerTarget final : public ::eve::editing::EditableTargetState,
+                                                     public virtual IEditableTarget,
+                                                     public IDomainOperationTarget,
+                                                     public IDomainOperationTargetStaging {
 public:
     explicit AudioMixerTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -163,7 +165,7 @@ class Source;
 namespace eve::audio_editing {
 
 /** @brief Optional bridge applying authoring settings to an existing live Source. */
-class AudioSourceRuntimeApplier {
+class EVENGINE_API_BACKENDS AudioSourceRuntimeApplier {
 public:
     EditorResult<void> apply(const AudioSourceTarget& target, audio::Source* source) const;
 };

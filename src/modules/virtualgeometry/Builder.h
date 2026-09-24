@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "virtualgeometry/VirtualGeometryAsset.h"
 
@@ -18,7 +20,7 @@ namespace eve::virtualgeometry {
  *
  * Pure CPU, dependency-free, unit-testable.
  */
-class VirtualGeometryBuilder {
+class EVENGINE_API_DOMAINS VirtualGeometryBuilder {
 public:
     struct MeshInput {
         int vertexCount = 0;

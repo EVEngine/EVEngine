@@ -26,7 +26,7 @@ namespace eve::pixelworld_graphics {
  * The CPU atlas is authoritative only for presentation and is rebuilt after world
  * revision rollback (clear/restore); gameplay continues to read PixelWorld itself.
  */
-class PixelWorldAtlasRenderer {
+class EVENGINE_API_WORLD PixelWorldAtlasRenderer {
 public:
     /** @brief Create a transparent atlas for `[origin, origin + size)`. Throws on invalid size. */
     PixelWorldAtlasRenderer(int originX, int originY, int width, int height);

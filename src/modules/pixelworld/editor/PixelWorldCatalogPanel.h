@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "pixelworld/PixelMaterial.h"
@@ -42,7 +44,7 @@ struct CatalogDraftReceipt {
  * callbacks except callbacks explicitly embedded in a returned WidgetDesc tree. The panel must
  * outlive any mounted tree because those callbacks borrow `this`.
  */
-class PixelWorldCatalogPanel {
+class EVENGINE_API_ORCHESTRATION PixelWorldCatalogPanel {
 public:
     ~PixelWorldCatalogPanel();
     PixelWorldCatalogPanel(const PixelWorldCatalogPanel&) = delete;

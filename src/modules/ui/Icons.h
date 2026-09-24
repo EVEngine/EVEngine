@@ -61,12 +61,12 @@ enum class Icon {
 };
 
 /** @brief Returns the UTF-8 glyph for an icon, or an empty string for None. */
-EVENGINE_API const char *iconGlyph(Icon icon);
+EVENGINE_API_WORLD const char *iconGlyph(Icon icon);
 /** @brief Returns the stable kebab-case semantic name for an icon. */
-EVENGINE_API const char *iconName(Icon icon);
+EVENGINE_API_WORLD const char *iconName(Icon icon);
 /** @brief Resolves a semantic icon name; accepts kebab-case names case-insensitively. */
-EVENGINE_API bool iconFromName(std::string_view name, Icon *out);
+EVENGINE_API_WORLD bool iconFromName(std::string_view name, Icon *out);
 /** @brief Composes an icon with an optional visible label. */
-EVENGINE_API std::string iconText(Icon icon, std::string_view label = {});
+EVENGINE_API_WORLD std::string iconText(Icon icon, std::string_view label = {});
 
 }  // namespace eve::ui

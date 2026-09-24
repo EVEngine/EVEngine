@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VehicleDefinitionRuntime.h
@@ -51,7 +53,7 @@ struct VehicleRuntimeState {
  * writes the mutable ECS components in one candidate swap. Vehicle physics,
  * weapons and orders remain links/components owned by their own domains.
  */
-class VehicleDefinitionRuntime final {
+class EVENGINE_API_DOMAINS VehicleDefinitionRuntime final {
 public:
     /**
      * @brief Create from a common `vehicle:<name>` definition.

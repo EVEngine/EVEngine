@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/SquirrelOwnership.h"
@@ -141,7 +143,7 @@ using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenL
  * Phase C (partial): mesh recipes (Marching Cubes → MeshBuild / Mesh).
  * Script: `procgen <- eve.Procgen();`
  */
-class Procgen : public Module {
+class EVENGINE_API_DOMAINS Procgen : public Module {
 public:
     Module_REG(Procgen);
     Procgen();

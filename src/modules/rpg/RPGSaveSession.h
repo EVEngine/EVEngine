@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RPGSaveSession.h
@@ -43,7 +45,7 @@ enum class RPGSaveIdDomain {
  * canonical snapshot codecs owned by its participants. More participant types
  * can be added in later schema versions without moving their mutable state here.
  */
-class RPGSaveSession {
+class EVENGINE_API_PLATFORM RPGSaveSession {
 public:
     RPGSaveSession() = default;
 

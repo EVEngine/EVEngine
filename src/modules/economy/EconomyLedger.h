@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <map>
@@ -9,7 +11,7 @@ namespace eve::economy {
 /**
  * @brief 单个玩家的资源账本：当前量、上限、收支与浪费统计。
  */
-class EconomyLedger {
+class EVENGINE_API_FOUNDATION EconomyLedger {
 public:
     /** @brief Owning deterministic copy of all balance and accounting counters. */
     struct Snapshot {

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTarget.h"
@@ -53,11 +55,11 @@ public:
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
-class EditorCurveDocument final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public ICurveDocumentEditTarget {
+class EVENGINE_API_ORCHESTRATION EditorCurveDocument final : public ::eve::editing::EditableTargetState,
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public ICurveDocumentEditTarget {
 public:
     explicit EditorCurveDocument(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }

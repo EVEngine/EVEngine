@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/TerrainAsset.h"
 
@@ -44,7 +46,7 @@ struct TerrainStreamingWindow {
  * `maxLoads`, allowing a game to spread decompression across frames. Chunks
  * outside the requested circular radius are evicted before new chunks load.
  */
-class TerrainStreamingCache {
+class EVENGINE_API_DOMAINS TerrainStreamingCache {
 public:
     /** @brief Compatibility operation that opens EVTR and clears decoded chunks. */
     bool open(const uint8_t *data, size_t size, std::string *error = nullptr);

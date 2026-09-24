@@ -1,6 +1,8 @@
 
 
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 #include <cstdint>
@@ -11,8 +13,7 @@ namespace eve
 namespace data
 {
 
-class HashFunction
-{
+class EVENGINE_API_FOUNDATION HashFunction {
 public:
 
 	struct Value
@@ -60,7 +61,7 @@ protected:
 
 	HashFunction() {}
 
-}; // HashFunction
+};  // HashFunction
 
 } // data
 } // eve

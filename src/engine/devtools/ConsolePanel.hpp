@@ -13,7 +13,7 @@ typedef struct SQVM* HSQUIRRELVM;
 
 namespace eve::dev {
 
-struct EVENGINE_API ConsoleLine {
+struct EVENGINE_API_FOUNDATION_INLINE ConsoleLine {
     std::uint64_t seq = 0;    // process-lifetime sequence number; never reused
     std::string   timestamp;  // HH:MM:SS
     std::string   level;      // debug | info | warn | error | print | cmd | result | engine
@@ -29,7 +29,7 @@ struct EVENGINE_API ConsoleLine {
  * retained window has advanced, so a caller can tell "nothing new happened" from
  * "lines were dropped before I read them".
  */
-struct EVENGINE_API ConsoleSlice {
+struct EVENGINE_API_FOUNDATION_INLINE ConsoleSlice {
     std::vector<ConsoleLine> lines;
     std::uint64_t            firstSeq       = 0;  // oldest retained seq (nextSeq when empty)
     std::uint64_t            nextSeq        = 0;  // seq the next appended line will receive
@@ -55,7 +55,7 @@ struct EVENGINE_API ConsoleSlice {
  *
  * Desktop-only (part of EVDevTools); not shipped on Android/iOS trimmed runtimes.
  */
-class EVENGINE_API ConsolePanel {
+class EVENGINE_API_FOUNDATION ConsolePanel {
 public:
     static ConsolePanel& instance();
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingECS.h
@@ -61,7 +63,7 @@ struct ClimbingLinks {
 };
 
 /** @brief Fixed-capacity owning candidate projection written once per PrePhysics probe phase. */
-class ClimbingCandidateBuffer {
+class EVENGINE_API_DOMAINS ClimbingCandidateBuffer {
 public:
     static constexpr std::size_t Capacity = ClimbingCandidateSet::Capacity;
 
@@ -91,7 +93,7 @@ private:
  * The gameplay entity is the source-side owner and must call `releaseRuntime()` before destruction. Copies made
  * by ECS deferred publication only copy the generation handle; release invalidates every copy safely.
  */
-struct ClimbingState {
+struct EVENGINE_API_DOMAINS ClimbingState {
     ClimbingRuntimeHandleRef runtime;
     ClimbingAdvance          lastAdvance;
     eve::SimulationTick      lastAdvanceTick = eve::SimulationTick::zero();
@@ -116,7 +118,7 @@ struct ClimbingPoseProjection {
 };
 
 /** @brief Bounded owning post-simulation event batch safe to dispatch after the ECS View closes. */
-class ClimbingEventBatch {
+class EVENGINE_API_DOMAINS ClimbingEventBatch {
 public:
     static constexpr std::size_t Capacity = ClimbingRuntime::PendingEventCapacity;
 
@@ -149,7 +151,7 @@ struct ClimbingSystemContract {
 };
 
 /** @brief Return immutable process-lifetime contracts for the four climbing ECS phases. */
-[[nodiscard]] std::span<const ClimbingSystemContract> climbingSystemContracts() noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::span<const ClimbingSystemContract> climbingSystemContracts() noexcept;
 
 namespace detail {
 

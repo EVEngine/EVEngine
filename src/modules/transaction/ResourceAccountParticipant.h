@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ResourceAccountParticipant.h
@@ -32,7 +34,7 @@ enum class ResourceDebitState : std::uint8_t {
  * owns no account balance; the referenced account and CostSpec remain
  * caller-owned and must outlive the synchronous Coordinator call.
  */
-class ResourceDebitParticipant final : public ITransactionParticipant {
+class EVENGINE_API_FOUNDATION ResourceDebitParticipant final : public ITransactionParticipant {
 public:
     /**
      * @brief Bind one debit cost to an account.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ResourceAccount.h
@@ -109,7 +111,7 @@ private:
 };
 
 /** @brief One positive resource and quantity pair in a canonical cost. */
-struct ResourceCost {
+struct EVENGINE_API_FOUNDATION ResourceCost {
     ResourceId resource;
     Amount     amount;
 
@@ -137,7 +139,7 @@ struct CostInput {
  * checked arithmetic. Empty costs and zero/negative items are rejected, so a
  * successful CostSpec is safe to use in reserve/debit/credit operations.
  */
-class CostSpec {
+class EVENGINE_API_FOUNDATION CostSpec {
 public:
     /** @brief Construct an invalid empty cost; use create/from/single for input. */
     CostSpec() = default;
@@ -244,7 +246,7 @@ public:
 private:
     explicit constexpr AccountNonce(std::uint64_t value) noexcept : value_(value) {}
 
-    friend eve::Result<AccountNonce> allocateAccountNonce();
+    friend EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
     std::uint64_t value_ = 0;
 };
@@ -258,7 +260,7 @@ using ReceiptId = eve::detail::StrongUint64<eve::detail::ResourceReceiptIdTag>;
  * @remarks The nonce is an opaque value and is not a pointer or persistent
  *          object identity. Each adapter instance must retain its own nonce.
  */
-[[nodiscard]] eve::Result<AccountNonce> allocateAccountNonce();
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
 /**
  * @brief Reservation credential returned by a successful reserve operation.

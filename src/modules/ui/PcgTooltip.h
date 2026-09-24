@@ -1,13 +1,15 @@
 #pragma once
-#include "common/Result.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Stored Pcg tooltip profile row. */ struct PcgTooltipEntry{std::string id,header,text;};
 /** @brief Caller-owned runtime model of Pcg Tooltip, TooltipManager, Profile and Trigger. */
-class PcgTooltipManager {
+class EVENGINE_API_WORLD PcgTooltipManager {
 public:
  /** @brief Configure interaction mode (0 UI, 1 scene, 2 both), theme (0 light, 1 dark), delay and layout. */ [[nodiscard]] Result<void> configure(int interactionMode,int theme,float delay,float bottomOffset,float topOffset,int wrapLimit);
  /** @brief Append a tooltip profile entry. */ [[nodiscard]] Result<void> addTooltip(const std::string&id,const std::string&header,const std::string&text);

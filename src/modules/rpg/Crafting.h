@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::inventory {
 class Bag;
 }
@@ -55,7 +57,7 @@ struct CraftingReceipt {
  * borrowed pointers. Ingredient balances remain owned by the supplied account,
  * queued work by WorkQueue, and outputs by Bag.
  */
-class Crafting final {
+class EVENGINE_API_PLATFORM Crafting final {
 public:
     /** @brief Atomically debit ingredients and enqueue pinned recipe work. */
     [[nodiscard]] static eve::Result<CraftingReceipt> begin(CraftingRequest request);

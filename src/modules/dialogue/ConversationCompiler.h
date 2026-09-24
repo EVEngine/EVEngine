@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "dialogue/Conversation.h"
 #include "dialogue/DnutDocument.h"
@@ -13,7 +14,7 @@ namespace eve::dialogue {
     const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Compile parameterized conversation blocks embedded in .dnut text. */
-[[nodiscard]] eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
     const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Validate references and report unreachable nodes. */
@@ -22,6 +23,6 @@ namespace eve::dialogue {
                                                   std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Export stable line IDs and localization keys as RFC4180 CSV. */
-std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets);
+EVENGINE_API_ORCHESTRATION std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets);
 
 }  // namespace eve::dialogue

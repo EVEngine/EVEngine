@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -31,7 +33,7 @@ struct BuildingGarrisonContainerObject final : eve::container::ContainerObjectPa
  * and the side-effect-free accepted condition are supplied by the caller,
  * because building definitions do not own a universal population policy.
  */
-class BuildingGarrisonContainerAdapter final : public eve::container::IContainer {
+class EVENGINE_API_WORLD BuildingGarrisonContainerAdapter final : public eve::container::IContainer {
 public:
     /**
      * @brief Binds an adapter to a placed building.

@@ -59,7 +59,7 @@ struct PcgGraphPreviewResult {
  * are enabled. It creates typed pins/default properties from runtime operation
  * reflection and compiles the neutral GraphDocument into a versioned asset.
  */
-class PcgPointGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION PcgPointGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "procgen.point"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,

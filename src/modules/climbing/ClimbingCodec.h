@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingCodec.h
@@ -16,21 +18,25 @@ namespace eve::climbing {
 [[nodiscard]] eve::Result<void> validateClimbingProfileDefinition(const ClimbingProfileDefinition& profile);
 
 /** @brief Encode one validated action into canonical schema v4 data. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingActionDefinition(const ClimbingActionDefinition& action);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingActionDefinition(
+    const ClimbingActionDefinition& action);
 
 /**
  * @brief Decode and validate one action without partially mutating a registry.
  * @remarks Unknown root fields are retained in extensionMetadata and re-emitted by the encoder.
  */
-[[nodiscard]] eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingActionDefinition> decodeClimbingActionDefinition(
+    const eve::Value& value);
 
 /** @brief Encode one validated profile and all nested actions into canonical schema v4 data. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingProfileDefinition(const ClimbingProfileDefinition& profile);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingProfileDefinition(
+    const ClimbingProfileDefinition& profile);
 
 /**
  * @brief Decode and validate an owning profile candidate transactionally.
  * @remarks Unknown root and nested action fields are retained for lossless forward-compatible editing.
  */
-[[nodiscard]] eve::Result<ClimbingProfileDefinition> decodeClimbingProfileDefinition(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingProfileDefinition> decodeClimbingProfileDefinition(
+    const eve::Value& value);
 
 }  // namespace eve::climbing

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 
@@ -12,7 +14,7 @@ class AnimSkeleton;
  * @brief Evaluated local (and optional world) pose for an AnimSkeleton.
  * Script type: `AnimPose`.
  */
-class AnimPose {
+class EVENGINE_API_WORLD AnimPose {
 public:
     AnimPose() = default;
     explicit AnimPose(int boneCount);

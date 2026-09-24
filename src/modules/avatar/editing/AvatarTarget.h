@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -71,11 +73,11 @@ struct AvatarExpressionValue {
 };
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
-class AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging,
-                                   public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IDomainOperationTargetStaging,
+                                                              public IPropertyProvider {
 public:
     explicit AvatarDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
@@ -130,7 +132,7 @@ public:
 };
 
 /** @brief Candidate-first live AvatarInstance generation. */
-class AvatarDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION AvatarDocumentRuntime {
 public:
     AvatarDocumentRuntime();
     ~AvatarDocumentRuntime();

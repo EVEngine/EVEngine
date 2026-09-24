@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file StateAccessAdapter.h
@@ -17,7 +19,7 @@ namespace eve::statepatch {
  * the transaction Coordinator. A failed request therefore leaves the Store,
  * revision, dirty set, and change events unchanged.
  */
-class StatePatchStateAdapter final : public eve::IStateQuery, public eve::IStateMutation {
+class EVENGINE_API_FOUNDATION StatePatchStateAdapter final : public eve::IStateQuery, public eve::IStateMutation {
 public:
     /** @brief Bind a borrowed authoritative persistent store. */
     explicit StatePatchStateAdapter(Store& store) noexcept : store_(store) {}

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Snapshot.h"
@@ -61,7 +63,7 @@ struct PixelReplayReceipt {
  * and digests only. APIs are simulation-thread affine, invoke no callbacks, and
  * use bit-exact integer hashes over canonical PixelWorld bytes.
  */
-class PixelReplayLog {
+class EVENGINE_API_PLATFORM PixelReplayLog {
 public:
     /** @brief Append the next sequenced command; Tick order must be nondecreasing. */
     [[nodiscard]] eve::Result<void> append(PixelReplayEntry entry);

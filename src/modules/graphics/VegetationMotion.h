@@ -6,6 +6,7 @@
 #include <optional>
 #include <span>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 #include "graphics/VegetationField.h"
 
@@ -81,7 +82,6 @@ struct VegetationGeometry {
  * no bit-exact transcendental or GPU half-precision equivalence is claimed.
  * @return Owning world-space geometry or InvalidArgument/Failed, never partial output.
  */
-[[nodiscard]] Result<VegetationGeometry> deformVegetation(const VegetationField&            field,
-                                                          std::span<const VegetationVertex> vertices,
-                                                          const VegetationMotion&           motion);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationGeometry> deformVegetation(
+    const VegetationField& field, std::span<const VegetationVertex> vertices, const VegetationMotion& motion);
 }  // namespace eve::graphics

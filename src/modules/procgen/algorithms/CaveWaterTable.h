@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -29,6 +31,6 @@ struct CaveWaterTableSample {
  * @param input Passage-local wall angle, vertical position, staged levels, and seed.
  * @return Local normalized corrosion, sidewall exposure, and dominant stage metadata.
  */
-[[nodiscard]] CaveWaterTableSample sampleCaveWaterTableCorrosion(const CaveWaterTableInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveWaterTableSample sampleCaveWaterTableCorrosion(const CaveWaterTableInput& input);
 
 }  // namespace eve::procgen

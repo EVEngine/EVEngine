@@ -596,12 +596,53 @@ def contract_matches(path: str, rule: str, entries: Iterable[Mapping[str, Any]])
     return [entry for entry in entries if entry.get("rule") == rule and path_matches(path, entry.get("scope", ""))]
 
 
-def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any]) -> list[Finding]:
+_BASE_SOURCE_CACHE: dict[tuple[str, str], str] = {}
+
+
+def _base_source(base: str, path: str) -> str:
+    """Return one file as it is in the base revision ('' when it is absent).
+
+    Cached: the changed-line lint asks once per candidate line and one file
+    usually owns several of them.
+    """
+
+    key = (base, path)
+    if key not in _BASE_SOURCE_CACHE:
+        completed = subprocess.run(
+            ["git", "-C", str(ROOT), "show", f"{base}:{path}"],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        _BASE_SOURCE_CACHE[key] = (
+            completed.stdout.decode("utf-8", errors="replace") if completed.returncode == 0 else ""
+        )
+    return _BASE_SOURCE_CACHE[key]
+
+
+def _declared_surface(text: str) -> str | None:
+    """Return the class/struct name on this line when it names a Link or System."""
+
+    match = re.search(
+        r"\b(?:class|struct)\s+(?:EVENGINE_API\w*\s+)?([A-Za-z_]\w*(?:Link|System))\b", text
+    )
+    return match.group(1) if match else None
+
+
+def lint_contract_coverage(
+    lines: list[SourceLine], metadata: Mapping[str, Any], base: str | None = None
+) -> list[Finding]:
     """Require a catalogue entry for newly introduced contract surfaces.
 
     This is intentionally a high-signal coverage check.  The broad policy
     entries in the catalogue cover established conventions; concrete Link and
     ECS declarations must additionally be represented by a path-scoped entry.
+
+    ``base`` is the revision the changed lines are compared against.  It is used
+    to tell a *new* declaration from an established one whose line only gained
+    the per-link-group export macro: `class EVENGINE_API_WORLD TransformSystem`
+    is not new surface, and demanding a catalogue entry for it would make every
+    annotated declaration a finding.
     """
 
     entries = [entry for entry in metadata.get("entries", []) if isinstance(entry, Mapping)]
@@ -610,9 +651,25 @@ def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any])
     for item in lines:
         text = item.text
         triggers: list[tuple[str, str]] = []
-        if re.search(r"\b(?:struct|class)\s+[A-Za-z_]\w*Link\b|\busing\s+\w*Link\b", text):
+        # The per-link-group export macro (src/engine/common/Export.h) sits
+        # between the class key and the class name, so the token after `class`
+        # is not always the declared name: without this the Link/System rules
+        # silently stop firing on every annotated declaration.
+        macro = r"(?:EVENGINE_API\w*\s+)?"
+        declared = _declared_surface(text)
+        # Established means the baseline *declares* the same name. A bare
+        # word-boundary search over the whole baseline file also matched a name
+        # mentioned in a comment, a string or an unrelated member, which let a
+        # genuinely new Link/System declaration skip catalogue coverage.
+        established = False
+        if declared and base:
+            established = any(
+                _declared_surface(base_line) == declared
+                for base_line in _base_source(base, item.path).splitlines()
+            )
+        if not established and re.search(rf"\b(?:struct|class)\s+{macro}[A-Za-z_]\w*Link\b|\busing\s+\w*Link\b", text):
             triggers.append(("link", "new Link declaration"))
-        if re.search(r"\b(?:class|struct)\s+[A-Za-z_]\w*System\b", text):
+        if not established and re.search(rf"\b(?:class|struct)\s+{macro}[A-Za-z_]\w*System\b", text):
             triggers.append(("ecs-system", "new System declaration"))
         if re.search(r"\b(?:SimulationStep|Rng|RNG|seedFor)\b", text):
             triggers.append(("time-rng", "injected time/RNG surface"))
@@ -668,12 +725,19 @@ def main(argv: list[str] | None = None) -> int:
         return render([], catalogue_errors, args.json)
     if args.all:
         lines = _all_lines()
+        lint_base: str | None = None
     else:
         base = args.base
         if base is None:
             base = os.environ.get("EVENGINE_ARCHITECTURE_BASE")
-        lines = _changed_lines(base or "HEAD")
-    findings = lint_api_shapes(lines) + lint_contract_coverage(lines, metadata)
+        # One effective baseline for both halves of the changed-line lint: the
+        # revision the lines are diffed against is also the revision that decides
+        # whether a declaration is established. Leaving the latter None disabled
+        # that suppression in the default (no --base) mode, so an ordinary
+        # export-only edit looked like newly introduced contract surface.
+        lint_base = base or "HEAD"
+        lines = _changed_lines(lint_base)
+    findings = lint_api_shapes(lines) + lint_contract_coverage(lines, metadata, lint_base)
     return render(findings, catalogue_errors, args.json)
 
 

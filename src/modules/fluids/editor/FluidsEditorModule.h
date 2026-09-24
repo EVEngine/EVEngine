@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "editor/EditorAutomationTargetFactory.h"
@@ -15,7 +17,7 @@ namespace eve::fluids_editor {
  * @thread Editor/composition-thread affine.
  * @reentrancy Does not invoke callbacks or retain request values.
  */
-class FluidsAutomationTargetFactory final : public editor::IEditorAutomationTargetFactory {
+class EVENGINE_API_EDITORS FluidsAutomationTargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
     /** @brief Accepted fluid target type names (simulation, surface, volume). */
     std::vector<std::string_view> types() const override;

@@ -7,7 +7,7 @@ namespace eve::script {
 class BindingContractRegistry;
 
 /** @brief Registers the build-generated contracts for every SimpleSquirrel binding. */
-EVENGINE_API void registerEngineBindingContracts(BindingContractRegistry& registry);
+EVENGINE_API_FOUNDATION void registerEngineBindingContracts(BindingContractRegistry& registry);
 
 /**
  * @brief Process-wide generated Binding Contracts for this linked engine build.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -24,6 +26,6 @@ struct CaveFacetSample {
  * @param input Passage position, wall geometry, normalized intensity, and deterministic seed.
  * @return Bounded outward wall retreat, planar blend weight, and selected facet count.
  */
-CaveFacetSample sampleCaveCondensationFacets(const CaveFacetInput& input);
+EVENGINE_API_DOMAINS CaveFacetSample sampleCaveCondensationFacets(const CaveFacetInput& input);
 
 }  // namespace eve::procgen

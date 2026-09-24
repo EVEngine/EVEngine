@@ -28,7 +28,7 @@ class Resource;
 
 namespace eve::caps {
 
-class EVENGINE_API IAssetReloader {
+class EVENGINE_API_FOUNDATION IAssetReloader {
 public:
     /** Suggested priorities; lower runs first. */
     enum Priority {

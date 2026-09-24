@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Quest.h
@@ -19,7 +21,7 @@
 namespace eve::rpg {
 
 /** @brief 数据驱动的任务模板。 */
-struct QuestDefinition {
+struct EVENGINE_API_PLATFORM QuestDefinition {
     std::string id;
     /** @brief "manual" | "auto"，缺省 "manual"。 */
     std::string startPolicy = "manual";
@@ -37,7 +39,7 @@ struct QuestDefinition {
 };
 
 /** @brief 进程级任务定义注册表。 */
-class QuestRegistry {
+class EVENGINE_API_PLATFORM QuestRegistry {
 public:
     static void registerQuest(const QuestDefinition &def);
     /**

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "MeshVfxRenderBatch.h"
 
@@ -65,7 +67,7 @@ public:
 };
 
 /** @brief Executes a planned render queue against one immediate backend sink. */
-class MeshVfxBatchExecutor {
+class EVENGINE_API_WORLD MeshVfxBatchExecutor {
 public:
     /**
      * @brief Submits all batches in order until completion or device loss.

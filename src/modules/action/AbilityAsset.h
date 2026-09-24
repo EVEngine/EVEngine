@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AbilityAsset.h @brief Versioned persistent codec for ability definitions. */
 
@@ -16,7 +18,7 @@ inline constexpr std::uint64_t    kAbilityAssetSchemaVersion = 2;
  * @return Independently owning Value, or a structured validation/encoding failure.
  * @remarks Owner-thread-only and reentrant; no callbacks, registries, files, or clocks are used.
  */
-[[nodiscard]] Result<Value> encodeAbilityAsset(const AbilityDefinition& definition);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<Value> encodeAbilityAsset(const AbilityDefinition& definition);
 
 /**
  * @brief Decode schema version 2 or migrate version 1 millisecond data to the current definition.
@@ -24,6 +26,6 @@ inline constexpr std::uint64_t    kAbilityAssetSchemaVersion = 2;
  * @return Fully validated owning definition, or a structured parse, migration, or validation failure.
  * @remarks Unknown top-level fields and unknown/future versions are rejected. Failure publishes no runtime state.
  */
-[[nodiscard]] Result<AbilityDefinition> decodeAbilityAsset(const Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityDefinition> decodeAbilityAsset(const Value& value);
 
 }  // namespace eve::action

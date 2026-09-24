@@ -8,6 +8,8 @@
 
 #include <span>
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /** @brief Owning values required to settle one previously declared tactical ability. */
@@ -30,7 +32,8 @@ struct AbilitySettlementRequest {
  * @reentrancy Does not invoke callbacks.
  * @cost Linear in tag and context size due to owning projection.
  */
-[[nodiscard]] Result<settlement::SettlementRequest> makeSettlementRequest(const AbilitySettlementRequest& request);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<settlement::SettlementRequest> makeSettlementRequest(
+    const AbilitySettlementRequest& request);
 
 /**
  * @brief Owner-thread settlement bridge between tactics declarations and game-owned combat state.
@@ -39,7 +42,7 @@ struct AbilitySettlementRequest {
  * status, board-object, or other effect state; this bridge only supplies the common ordered,
  * explainable and transactional settlement protocol.
  */
-class TacticsSettlementRuntime final {
+class EVENGINE_API_DOMAINS TacticsSettlementRuntime final {
 public:
     /**
      * @brief Replace declarative rules used by subsequent tactical ability settlements.

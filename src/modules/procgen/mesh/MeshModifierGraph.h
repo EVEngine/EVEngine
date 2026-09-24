@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/MeshBuild.h"
@@ -42,7 +44,7 @@ struct SplineProfile {
  * reentrant. Consecutive topology-preserving per-vertex nodes are evaluated in one vertex
  * traversal; topology-changing nodes form explicit fusion barriers.
  */
-class MeshModifierGraph {
+class EVENGINE_API_DOMAINS MeshModifierGraph {
 public:
     /** @brief Add a node from the reflected operation catalogue. */
     [[nodiscard]] Result<void> addNode(std::string id, std::string operation);

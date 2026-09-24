@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -40,9 +41,8 @@ struct VegetationDetailRuntime {
  * @return A detached candidate, or InvalidArgument without changing either input.
  * @thread Worker-safe and reentrant; performs no IO, callbacks, clocks or GPU calls.
  */
-[[nodiscard]] Result<VegetationDetailRuntime> configureVegetationDetails(const PbrSurface&               baseSurface,
-                                                                         const VegetationMotion&         baseMotion,
-                                                                         const VegetationDetailSettings& settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationDetailRuntime> configureVegetationDetails(
+    const PbrSurface& baseSurface, const VegetationMotion& baseMotion, const VegetationDetailSettings& settings);
 
 /**
  * @brief Encode one owning Global Details document using `eve.graphics.vegetation-details/1`.
@@ -50,7 +50,7 @@ struct VegetationDetailRuntime {
  * @return Detached document, or InvalidArgument without publishing partial state.
  * @thread Worker-safe and reentrant.
  */
-[[nodiscard]] Result<Value> snapshotVegetationDetails(const VegetationDetailSettings& settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<Value> snapshotVegetationDetails(const VegetationDetailSettings& settings);
 
 /**
  * @brief Decode one exact Global Details document transactionally.
@@ -58,6 +58,6 @@ struct VegetationDetailRuntime {
  * @return Detached validated settings; unknown fields and versions fail.
  * @thread Worker-safe and reentrant.
  */
-[[nodiscard]] Result<VegetationDetailSettings> restoreVegetationDetails(const Value& document);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationDetailSettings> restoreVegetationDetails(const Value& document);
 
 }  // namespace eve::graphics

@@ -28,6 +28,6 @@ bool autotileGridInPlace(Grid2D &grid);
 [[nodiscard]] eve::Result<void> autotileOccupiedGridInPlace(Grid2D &grid);
 
 /** @brief Produce a fresh seed suitable for regenerating a level (never 0). */
-uint32_t randomSeedValue();
+EVENGINE_API_DOMAINS uint32_t randomSeedValue();
 
 }  // namespace eve::procgen

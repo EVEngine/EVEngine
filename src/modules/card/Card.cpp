@@ -147,6 +147,9 @@ void registerCppEntityClassForScript(const ssq::Class &cls) {
 
 Card::Card() = default;
 
+Card::Card(Card &&) noexcept            = default;
+Card &Card::operator=(Card &&) noexcept = default;
+
 Card::~Card() {
     clearGameplayControls();
     destroyHandles(hands_);

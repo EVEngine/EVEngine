@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Snapshot.h"
 #include "physics/PhysicsHandles.h"
@@ -32,7 +34,7 @@ class ContactRelay;
  * @brief Box2D world wrapper (2D physics) with pixel-space coordinates.
  * Handles stepping, gravity, raycasts, AABB queries and contact/impact events.
  */
-class World {
+class EVENGINE_API_WORLD World {
 public:
     struct ContactEvent {
         int bodyAId = 0;

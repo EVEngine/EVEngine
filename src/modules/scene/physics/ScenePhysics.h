@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -11,7 +13,7 @@ class World3D;
 namespace eve::scene_physics {
 
 /** @brief Scene/runtime composition entry point for generated colliders in a shared World3D. */
-class ScenePhysics final : public eve::Module {
+class EVENGINE_API_DOMAINS ScenePhysics final : public eve::Module {
 public:
     Module_REG(ScenePhysics);
 
@@ -27,7 +29,6 @@ public:
     [[nodiscard]] eve::Result<void> unbindGeneratedColliders();
     /** @brief Current bound world identity, or invalid when unbound/stale. */
     [[nodiscard]] eve::physics::PhysicsWorldHandle boundWorld() const noexcept;
-
 };
 
 }  // namespace eve::scene_physics

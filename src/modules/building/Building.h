@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。
@@ -15,7 +17,7 @@
 namespace eve::building {
 
 /** @brief 建筑放置模块（eve.Building）。 */
-class Building : public Module {
+class EVENGINE_API_WORLD Building : public Module {
 public:
     Module_REG(Building);
     Building() = default;

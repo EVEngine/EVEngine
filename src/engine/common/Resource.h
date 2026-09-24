@@ -1,6 +1,7 @@
 #pragma once
 #include "common/AssetReloader.h"
 #include "common/BorrowedRef.h"
+#include "common/Export.h"
 #include "common/Result.h"
 // Cached resources are owned by a RuntimeObjectRegistry and handed out as borrows and
 // keep-alive pins, so this header needs those definitions. RuntimeRegistry.h is
@@ -51,6 +52,22 @@ class Resource {
 public:
     virtual ~Resource() {}
 
+    /**
+     * @brief Resources own keep-alive pins, so they are not copyable.
+     *
+     * The pins in `dependencies` are move-only, which already deletes both
+     * special members implicitly; declaring that intent is not cosmetic. Under
+     * the SHARED linkage the resource subclasses are dllexport, and MSVC then
+     * tries to emit every special member it would export -- including the
+     * implicitly deleted copy assignment -- which turns a silent deletion into
+     * a hard C2280 in every translation unit that merely includes the subclass
+     * (image/sound/font/graphics resource loaders). A user-declared `= delete`
+     * is not emitted, so the exported subclass stays well-formed, exactly like
+     * the in-module out-of-line special members the OBJECT route already needs.
+     */
+    Resource(const Resource&)            = delete;
+    Resource& operator=(const Resource&) = delete;
+
     std::string getUri() const { return uri; }
 
     /**
@@ -63,7 +80,7 @@ public:
      * @thread Same thread as the owning ResourceManager.
      * @reentrancy Side-effect free.
      */
-    [[nodiscard]] std::vector<Resource*> getDependencies() const;
+    [[nodiscard]] EVENGINE_API_FOUNDATION std::vector<Resource*> getDependencies() const;
 
     /**
      * @brief Keeps @p dependency alive for as long as this instance lives.
@@ -75,7 +92,7 @@ public:
      * @thread Same thread as the owning ResourceManager.
      * @reentrancy Registers a pin only; it never invokes callbacks.
      */
-    [[nodiscard]] eve::Result<void> addDependency(Resource& dependency);
+    [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<void> addDependency(Resource& dependency);
 
     /**
      * @brief Replace this instance's contents with `replacement`'s.
@@ -129,7 +146,7 @@ protected:
  * waitFor joins that job. `get()` waits for an in-flight request of the same
  * key so a prefetch cannot race a later synchronous load into a double decode.
  */
-class ResourceManager : public eve::caps::IAssetReloader {
+class EVENGINE_API_FOUNDATION ResourceManager : public eve::caps::IAssetReloader {
 public:
 	static ResourceManager& getInstance();
 

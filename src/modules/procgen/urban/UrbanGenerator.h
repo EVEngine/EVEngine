@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/urban/UrbanTypes.h"
 
@@ -19,7 +21,7 @@ namespace eve::procgen::urban {
  * (I/L-shaped accesses + turn-aware Dijkstra connections, paper Section 4.2).
  * Finally the vertex positions are optimized with the five-term energy of Eq. (3).
  */
-class UrbanGenerator {
+class EVENGINE_API_DOMAINS UrbanGenerator {
 public:
     explicit UrbanGenerator(UrbanOptions opts);
 

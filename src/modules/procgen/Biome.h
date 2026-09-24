@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
@@ -35,7 +37,7 @@ struct BiomeLayerRule {
  * domains, assigned to the highest-priority matching layer, then deterministically
  * select a weighted asset and transform from their independent point seed.
  */
-class BiomeRules {
+class EVENGINE_API_DOMAINS BiomeRules {
 public:
     /** @brief Remove layers and exclusions. */
     void clear();

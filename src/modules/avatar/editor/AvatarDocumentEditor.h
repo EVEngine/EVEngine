@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file AvatarDocumentEditor.h
@@ -28,7 +29,7 @@ namespace eve::avatar_editor {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AvatarDocumentEditor {
+class EVENGINE_API_EDITORS AvatarDocumentEditor {
 public:
     /** @brief Construct a seeded two-layer face with a referenced parameter. */
     explicit AvatarDocumentEditor(std::string targetId);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -89,7 +91,7 @@ struct PcgAmbientLightState {
  *   daynight.update(dt, gfx);
  *   camera.setAmbient(daynight.getAmbientR(), ...);
  */
-class DayNight : public Module {
+class EVENGINE_API_WORLD DayNight : public Module {
 public:
     Module_REG(DayNight);
 

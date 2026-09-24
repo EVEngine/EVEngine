@@ -32,8 +32,8 @@ enum class TerrainTerraceClass { Black = 0, Red = 1, Green = 2, Blue = 3 };
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access; no callbacks, implicit time, or retained references.
  */
-[[nodiscard]] Result<int> analyzeTerrainTerraces(Heightmap& target, const Heightmap& source,
-                                                  const TerrainTerraceRemovalSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> analyzeTerrainTerraces(Heightmap& target, const Heightmap& source,
+                                                                      const TerrainTerraceRemovalSettings& settings);
 
 /**
  * @brief Apply Pcg's adaptive smoothing, gradient noise, 3x3 filter, and fixed 5x5 Gaussian blur.
@@ -45,7 +45,7 @@ enum class TerrainTerraceClass { Black = 0, Red = 1, Green = 2, Blue = 3 };
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access with a named deterministic noise seed and no callbacks.
  */
-[[nodiscard]] Result<int> removeTerrainTerraces(Heightmap& target, const Heightmap& source,
-                                                 const Heightmap& classification,
-                                                 const TerrainTerraceRemovalSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainTerraces(Heightmap& target, const Heightmap& source,
+                                                                     const Heightmap& classification,
+                                                                     const TerrainTerraceRemovalSettings& settings);
 }

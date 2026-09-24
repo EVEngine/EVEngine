@@ -25,6 +25,8 @@
 #include "common/Result.h"
 #include "sensing/Targeting.h"
 
+#include "common/Export.h"
+
 namespace eve::tactics {
 
 /**
@@ -34,7 +36,7 @@ namespace eve::tactics {
  *         owner-thread-affine.
  * @reentrancy `query` reads the board and its sight policy synchronously and invokes no callbacks.
  */
-class TacticsLineOfSightAdapter final : public sensing::ILineOfSightQuery {
+class EVENGINE_API_DOMAINS TacticsLineOfSightAdapter final : public sensing::ILineOfSightQuery {
 public:
     /**
      * @brief Bind the battle this adapter answers for.
@@ -69,7 +71,7 @@ private:
 };
 
 /** @brief The process-wide adapter instance the capability answers with. */
-[[nodiscard]] TacticsLineOfSightAdapter& tacticsLineOfSightAdapter();
+[[nodiscard]] EVENGINE_API_DOMAINS TacticsLineOfSightAdapter& tacticsLineOfSightAdapter();
 
 /**
  * @brief Claim the grid coordinate spaces for the tactics adapter.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -28,7 +30,7 @@ class Texture;
  * Quality presets ("low" | "medium" | "high") tune thresholds / search / kernel radius.
  * Workflow: render scene → Canvas → aa.apply / aa.applyTo → screen or next post.
  */
-class AntiAliasing {
+class EVENGINE_API_BACKENDS AntiAliasing {
 public:
     explicit AntiAliasing(Graphics *gfx);
     ~AntiAliasing();

@@ -22,7 +22,7 @@ struct TerrainBiomeSpawnerEntry {
  * Entries and plans are copied at insertion. Compilation namespaces each rule by its stable entry ID, preserving
  * order while allowing different spawners to use the same local rule ID. No scene pointer or asset object is held.
  */
-class TerrainBiomePreset {
+class EVENGINE_API_DOMAINS TerrainBiomePreset {
 public:
     /** @brief Append an owned nonempty spawner entry with a stable unique entry ID. */
     [[nodiscard]] Result<int> addSpawner(const std::string& entryId, const TerrainSpawnPlan& plan,

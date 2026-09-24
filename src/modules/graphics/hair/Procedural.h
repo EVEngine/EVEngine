@@ -40,7 +40,7 @@ struct ProceduralParams {
  * @brief Grow strands on a Y-up XZ plane centered at the origin.
  * @param sizeX / sizeZ Full plane extents.
  */
-[[nodiscard]] Result<StrandsDatas> generateOnPlane(float sizeX, float sizeZ,
-                                                   const ProceduralParams &params);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> generateOnPlane(float sizeX, float sizeZ,
+                                                                         const ProceduralParams &params);
 
 }  // namespace eve::graphics::hair

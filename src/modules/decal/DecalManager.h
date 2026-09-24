@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/mat4x4.hpp>
 
@@ -61,7 +63,7 @@ enum class DecalProjectionStatus : std::uint8_t {
  * instance it builds the box transform (Z axis = surface normal, optional
  * random yaw) and calls gfx.drawDecal.
  */
-class DecalManager {
+class EVENGINE_API_WORLD DecalManager {
 public:
     static DecalManager &inst();
 

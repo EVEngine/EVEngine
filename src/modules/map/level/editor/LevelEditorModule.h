@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -18,7 +20,7 @@ class TileBufferTarget;
 namespace eve::level_editor {
 
 /** @brief Script composition adapter for tile-oriented level authoring. */
-class LevelEditorModule final : public Module {
+class EVENGINE_API_EDITORS LevelEditorModule final : public Module {
 public:
     Module_REG(LevelEditorModule);
 

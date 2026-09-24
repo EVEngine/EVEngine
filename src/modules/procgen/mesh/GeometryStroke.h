@@ -23,7 +23,7 @@ struct GeometryStrokePoint {
  * Callers own input timing and raycasting. Mutations increment a monotonic revision and
  * failures leave the point sequence unchanged.
  */
-class GeometryStroke {
+class EVENGINE_API_DOMAINS GeometryStroke {
 public:
     /** @brief Select quad, triangularPrism, or cube cross-section generation. */
     [[nodiscard]] Result<void> setShapeResult(std::string_view shape);

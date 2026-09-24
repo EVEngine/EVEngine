@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/GpuDrivenTypes.h"
 
@@ -19,7 +21,7 @@ namespace eve::graphics {
  * bucket is a contiguous range; each command's firstInstance points at the
  * bucket start in that buffer.
  */
-class IndirectBuilder {
+class EVENGINE_API_BACKENDS IndirectBuilder {
 public:
     void reset();
 

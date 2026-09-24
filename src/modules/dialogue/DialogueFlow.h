@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -34,7 +36,7 @@ class I18n;
 namespace eve::dialogue {
 
 /** @brief Script-facing registry and runner for compiled .dnut conversations. */
-class DialogueFlow : public Module {
+class EVENGINE_API_ORCHESTRATION DialogueFlow : public Module {
 public:
     /**
      * @brief Borrowed world and cross-domain callbacks used by all conversations in this facade.

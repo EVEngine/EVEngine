@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditableTarget.h"
@@ -151,15 +153,33 @@ struct BuildingPlacementPreview {
 };
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
-class BuildingPlacementTarget final : public ::eve::editing::EditableTargetState,
-                                      public virtual IEditableTarget,
-                                      public IDomainOperationTarget,
-                                      public editing::IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS BuildingPlacementTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public editing::IDomainOperationTargetStaging {
 public:
     /** @brief Stable capability id for placement preview and mutation. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.building-placement"); }
     /** @brief Bind a borrowed world that must outlive the target. */
     BuildingPlacementTarget(std::string id, building::PlacementWorld* world);
+    /**
+     * @brief Out-of-line special members; `ownedWorld_` holds a *forward-declared*
+     * `building::PlacementWorld`.
+     *
+     * A class-level export macro makes MSVC instantiate every member in every
+     * translation unit that includes this header (OBJECT mode: the macro is a plain
+     * `__declspec(dllexport)`). The implicitly-defined destructor then has to delete
+     * `ownedWorld_`, which needs the complete type and fails with C2027/C2338
+     * ("can't delete an incomplete type") in the TUs that only forward-declare it
+     * (measured: `building/editor/building_editor.cpp`). Declaring them here and
+     * defaulting them in `BuildingTarget.cpp` — where `PlacementWorld.h` is included —
+     * keeps the semantics identical and gives the other TUs something to call.
+     */
+    BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept;
+    BuildingPlacementTarget& operator=(BuildingPlacementTarget&&) noexcept;
+    BuildingPlacementTarget(const BuildingPlacementTarget&)            = delete;
+    BuildingPlacementTarget& operator=(const BuildingPlacementTarget&) = delete;
+    ~BuildingPlacementTarget();
     TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
@@ -255,7 +275,7 @@ struct BuildingEdgeCurveDragPreview {
  * @ownership Borrows the target; the caller must end/cancel before destroying it.
  * @thread Viewport/editor thread only; callbacks are not retained or invoked.
  */
-class BuildingEdgeCurveDragSession {
+class EVENGINE_API_DOMAINS BuildingEdgeCurveDragSession {
 public:
     /** @brief Configure an idle drag session from authoritative editor selection state. */
     BuildingEdgeCurveDragSession(BuildingPlacementTarget* target, std::string buildingId,

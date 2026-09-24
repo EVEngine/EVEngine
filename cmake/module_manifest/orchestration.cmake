@@ -7,9 +7,10 @@ eve_declare_module(NAME asset_stylize DIR asset/stylize LAYER 5
                    GROUP 3d)
 
 # Renderables, bodies and audio sources attach through registered link kinds
-# (scene/SceneLink.h), so scene no longer depends on those modules. The two
-# picking entry points that take a Camera3D are implemented in the graphics
-# module (graphics/ScenePicking.cpp, excluded when scene is off).
+# (scene/SceneLink.h), so scene no longer depends on those modules. The picking
+# entry points that take a Camera3D stay in scene and ask for the camera
+# projection through the ISceneCameraProjection capability, which graphics
+# provides (graphics/ScenePicking.cpp, excluded when scene is off).
 # L1 -- scene graph protocol
 eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
                    DEPS spatial

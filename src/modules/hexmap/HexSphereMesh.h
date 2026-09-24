@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSphereMesh.h @brief Mesh generation for the spherical hex map surface. */
 
@@ -35,7 +37,7 @@ namespace eve::hexmap {
  * @param map Source map. An empty map produces an empty mesh.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildSphereTerrainMesh(const HexSphereMap& map, HexMeshData& out);
+EVENGINE_API_WORLD void buildSphereTerrainMesh(const HexSphereMap& map, HexMeshData& out);
 
 /**
  * @brief Builds the ocean surface of a spherical hex map.
@@ -53,6 +55,6 @@ void buildSphereTerrainMesh(const HexSphereMap& map, HexMeshData& out);
  *            empty mesh.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildSphereWaterMesh(const HexSphereMap& map, HexMeshData& out);
+EVENGINE_API_WORLD void buildSphereWaterMesh(const HexSphereMap& map, HexMeshData& out);
 
 }  // namespace eve::hexmap

@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <vector>
 #include "common/Capability.h"
+#include "common/Export.h"
 #include "common/GpuTimer.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
@@ -301,7 +302,7 @@ struct GpuShader {
     Shader *owner = nullptr;
 };
 
-class Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
+class EVENGINE_API_BACKENDS Graphics final : public eve::graphics::Graphics, public eve::service::IGpuTimer {
 public:
     // Keep the base draw(Drawable*, mat4) overload visible alongside the
     // canvas composite overloads below.

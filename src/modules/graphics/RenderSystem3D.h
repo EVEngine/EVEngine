@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Result.h"
@@ -23,7 +25,7 @@ class Mesh;
 class Shader;
 class Texture;
 
-class Camera3D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Camera3D : public ecs::Entity {
 public:
     ENTITY(Camera3D, ecs::Entity)
 
@@ -193,7 +195,7 @@ public:
     float getScreenRayDirZ();
 };
 
-class Renderable3D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Renderable3D : public ecs::Entity {
 public:
     ENTITY(Renderable3D, ecs::Entity)
 
@@ -475,7 +477,7 @@ public:
     int  getMeshLodLevelAtDistance(float distance);
 };
 
-class RenderSystem3D {
+class EVENGINE_API_BACKENDS RenderSystem3D {
 public:
     static void render(Graphics& gfx);
 

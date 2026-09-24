@@ -33,6 +33,6 @@ class Runtime;
  * @param runtime Runtime whose reflection data the bindings operate on.
  * @param eveTable Root `eve` table to add the `reflect` sub-table to.
  */
-EVENGINE_API void exposeReflection(Runtime& runtime, ssq::Table eveTable);
+EVENGINE_API_FOUNDATION void exposeReflection(Runtime& runtime, ssq::Table eveTable);
 
 }  // namespace eve

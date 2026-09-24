@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace eve::graphics::shaders {
 
 inline constexpr const char *kGrassVertWgsl = R"wgsl(
