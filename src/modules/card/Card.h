@@ -101,8 +101,11 @@ public:
     // a module instance was never copyable or assignable in practice.
     Card(const Card &)            = delete;
     Card &operator=(const Card &) = delete;
-    Card(Card &&)                 = default;
-    Card &operator=(Card &&)      = default;
+    // Out of line for the same reason as the constructor and destructor above: a
+    // defaulted move in the class body instantiates the move of every member,
+    // including the deleter of the incomplete `CardControl`.
+    Card(Card &&) noexcept;
+    Card &operator=(Card &&) noexcept;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
     int registerCardsFromJson(const std::string &json);
