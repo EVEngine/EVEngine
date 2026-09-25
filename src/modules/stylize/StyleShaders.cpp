@@ -17,6 +17,7 @@
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
 #include "stylize/shaders/ysa_mesh_frag_spv.inc"
+#include "stylize/shaders/ysa_mesh_vert_spv.inc"
 #include "stylize/shaders/ysa_mesh_wgsl.inc"
 
 #include <algorithm>
@@ -544,10 +545,14 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
     if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
 
     if (style == "ysa") {
+        // The Vulkan path needs its own vertex shader: mesh3d_toon.vert (shared
+        // with anime/cartoon) has no joint/weight inputs, no skin-palette
+        // transform and no vertex-color multiply, while the WebGPU path runs the
+        // backend's standard mesh vertex shader, which does all three.
         graphics::Shader *shader =
             gfx->getBackendName() == "webgpu"
                 ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kYsaMesh)
-                : gfx->newMeshShaderFromSpv(copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count),
+                : gfx->newMeshShaderFromSpv(copySpv(ysa_mesh_vert_spv, ysa_mesh_vert_spv_count),
                                             copySpv(ysa_mesh_frag_spv, ysa_mesh_frag_spv_count));
         if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create ysa mesh shader");
         bindMeshUniforms(shader, style);

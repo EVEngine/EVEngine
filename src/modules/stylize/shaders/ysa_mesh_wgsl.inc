@@ -41,7 +41,8 @@ fn animeShadow(world:vec3f,normal:vec3f)->f32 {
 fn ramp(midpoint:f32,width:f32,value:f32)->f32 { return smoothstep(midpoint,midpoint+max(width,0.00001),value); }
 fn toLinear(value:vec3f)->vec3f { let color=max(value,vec3f(0)); return select(pow((color+vec3f(0.055))/1.055,vec3f(2.4)),color/12.92,color<=vec3f(0.04045)); }
 @fragment fn fs_main(i:MeshIn)->@location(0) vec4f {
-    var base = textureSample(albedo, meshSamp, i.uv) * i.tint;
+    let albedoColor = textureSample(albedo, meshSamp, i.uv);
+    var base = albedoColor * i.tint;
     if (base.a < mp(20)) { discard; }
     var N = normalize(i.normal);
     var L = normalize(frame.lightDir.xyz);
@@ -56,7 +57,10 @@ fn toLinear(value:vec3f)->vec3f { let color=max(value,vec3f(0)); return select(p
     // EVEngine albedo textures use UNORM sampling; presentation encodes sRGB.
     // Match the reference project's selected lighting space explicitly.
     if (mp(22) > 0.5) {
-        base = vec4f(toLinear(base.rgb), base.a);
+        // Decode the sRGB-encoded albedo sample on its own: the tint it meets is
+        // already linear, so decoding their product would apply one transfer
+        // function to a mixed-space value.
+        base = vec4f(toLinear(albedoColor.rgb) * i.tint.rgb, base.a);
         ambient = toLinear(ambient);
         specularColor = toLinear(specularColor);
         rimColor = toLinear(rimColor);

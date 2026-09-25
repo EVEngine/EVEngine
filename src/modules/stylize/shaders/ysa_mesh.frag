@@ -3,7 +3,10 @@
 #include "anime_shadow.glsl"
 
 // Independent YSA-style main-light material. Parameter order is owned by
-// kYsaParams in StyleShaders.cpp; material color inputs are authored in sRGB.
+// kYsaParams in StyleShaders.cpp; the material parameter colors are authored in
+// sRGB, while the mesh tint is an engine color value and therefore already
+// linear (asset/runtime pack spec: color values are linear floats, color
+// textures declare sRGB).
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
 layout(location = 2) in vec4 vTint;
@@ -26,7 +29,8 @@ vec3 toLinear(vec3 color) {
 }
 
 void main() {
-    vec4 base = texture(albedo, vUV) * vTint;
+    vec4 albedoColor = texture(albedo, vUV);
+    vec4 base = albedoColor * vTint;
     if (base.a < u.data[20]) discard;
     vec3 N = normalize(vNormal);
     vec3 L = normalize(vLightDir);
@@ -41,7 +45,10 @@ void main() {
     // EVEngine albedo textures use UNORM sampling; presentation encodes sRGB.
     // Match the reference project's selected lighting space explicitly.
     if (u.data[22] > 0.5) {
-        base.rgb = toLinear(base.rgb);
+        // Decode the sRGB-encoded albedo sample on its own: the tint it meets is
+        // already linear, so decoding their product would apply one transfer
+        // function to a mixed-space value.
+        base.rgb = toLinear(albedoColor.rgb) * vTint.rgb;
         ambient = toLinear(ambient);
         specularColor = toLinear(specularColor);
         rimColor = toLinear(rimColor);
