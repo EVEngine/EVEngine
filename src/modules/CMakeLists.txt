@@ -175,8 +175,8 @@ if(NOT _has_camera_editor_bridge)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-eve_module_enabled(housegen _has_housegen_editor_bridge)
-if(NOT _has_housegen_editor_bridge)
+eve_module_enabled(procgen _has_procgen_editor_bridge)
+if(NOT _has_procgen_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
       "${EVENGINE_EXCLUDED_MODULE_FILES};HouseGenTarget.cpp;HouseGenRuntime.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")

@@ -1,10 +1,11 @@
 #include "PathBesideSource.h"
-#include "housegen/HouseComponentLibrary.h"
-#include "housegen/HouseGenerator.h"
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseComponentLibrary.h"
+#include "procgen/house/HouseGenerator.h"
+#include "procgen/house/HouseLayout.h"
 
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -499,25 +500,32 @@ TEST_CASE("housegen.materialPreview") {
 
     auto *window = eve::window::Window::create();
     auto *gfx = Graphics::create();
-    auto *models = eve::model3d::Model3D::create();
+    auto* filesystem = eve::filesystem::Filesystem::create();
+    auto* models     = eve::model3d::Model3D::create();
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
+    REQUIRE(filesystem != nullptr);
     REQUIRE(models != nullptr);
+    REQUIRE(filesystem->setIdentity("housegen_material_preview", true));
+    REQUIRE(filesystem->setupWriteDirectory());
     eve::window::WindowSettings settings;
-    settings.width = 960;
-    settings.height = 640;
+    settings.width    = 960;
+    settings.height   = 640;
     settings.centered = true;
     REQUIRE(window->setWindowSettings(settings));
 
     gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColor(Color(0.56f, 0.72f, 0.86f, 1.f));
-    Mesh *cube = previewCube(gfx);
+    Mesh* cube = previewCube(gfx);
     REQUIRE(cube != nullptr);
     box(cube, 2.1f, -0.12f, 0.f, 7.2f, 0.18f, 3.2f, 0.22f, 0.38f, 0.18f);
 
     HouseLayout layout;
-    layout.moduleSize = 1.4f;
-    layout.floorHeight = 2.f;
+    layout.moduleSize     = 1.4f;
+    layout.floorHeight    = 2.f;
+    layout.footprintWidth = 4;
+    layout.footprintDepth = 1;
+    layout.footprintMask.assign(4, 1);
     layout.instances = {
         {"kenney.wall.block", 0, 0, 0, 0},
         {"kenney.wall.window", 1, 0, 0, 0},
@@ -528,7 +536,7 @@ TEST_CASE("housegen.materialPreview") {
     REQUIRE(instantiated.ok());
     auto entities = std::move(instantiated).takeValue();
     REQUIRE(entities.size() >= layout.instances.size());
-    auto *first = static_cast<Renderable3D *>(ecs::try_get(entities.front()));
+    auto* first = static_cast<Renderable3D*>(ecs::try_get(entities.front()));
     REQUIRE(first != nullptr);
     REQUIRE(first->meshRenderer()->texture != nullptr);
     REQUIRE(first->meshRenderer()->normalTexture != nullptr);

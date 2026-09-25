@@ -1,6 +1,6 @@
-#include "housegen/editing/HouseGenTarget.h"
+#include "procgen/editing/HouseGenTarget.h"
 
-#include "housegen/HouseComponentLibrary.h"
+#include "procgen/house/HouseComponentLibrary.h"
 
 #include <algorithm>
 #include <cmath>

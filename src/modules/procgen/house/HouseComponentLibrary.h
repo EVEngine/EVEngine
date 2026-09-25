@@ -4,7 +4,7 @@
 
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
-#include "housegen/HouseGenTypes.h"
+#include "procgen/house/HouseGenTypes.h"
 
 #include <functional>
 #include <string>
@@ -15,7 +15,7 @@
 namespace eve::housegen {
 
 /** @brief 房屋组件注册表（按 id 索引，支持分类/风格查询）。 */
-class EVENGINE_API_WORLD HouseComponentLibrary {
+class EVENGINE_API_DOMAINS HouseComponentLibrary {
 public:
     /** @brief 从 JSON / 文件加载组件。 */
     [[nodiscard]] eve::Result<void> loadFromJson(std::string_view json);
@@ -31,6 +31,15 @@ public:
     /** @brief 按分类（可选风格）查询组件。 */
     [[nodiscard]] std::vector<std::reference_wrapper<const HouseComponent>> byCategory(
         std::string_view category, std::string_view style = {}) const;
+    /**
+     * @brief 报告一个风格是否构成完整组件包。
+     * @param style 风格标签；空表示未指定。
+     * @return 当 foundation/floor/wall/door/roof 五个核心分类在该风格下都有组件时为 true。
+     * @remarks 完整包保证按风格生成时不会退化为与无风格组件混搭（见 byCategory 的回退）。
+     */
+    [[nodiscard]] bool hasCompletePack(std::string_view style) const;
+    /** @brief 所有能构成完整组件包（五个核心分类齐全）的风格标签。 */
+    [[nodiscard]] std::vector<std::string> completePacks() const;
     /** @brief 组件总数。 */
     int count() const;
 

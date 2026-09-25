@@ -132,9 +132,6 @@ eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
                    GROUP 2d)
-eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
-                   DEPS data graphics image model3d
-                   GROUP 3d)
 eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT archspace
                    DEPS data
                    GROUP 3d)

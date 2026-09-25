@@ -3086,3 +3086,18 @@ Point 或 Mesh 输入，必须经过显式转换或输入绑定。图拓扑、�
 
 TileWorldCreator 4 运行时核心能力的逐项对应和边界见
 [`TileWorldCreator4核心移植.md`](../../dev/TileWorldCreator4核心移植.md)。
+# House generation grid and points
+
+房屋生成已归入 procgen，`eve.HouseGen()` 保留为兼容构造器。它提供
+`loadComponentsFromJson`、`loadComponentsFromFile`、`clearComponents`、
+`getComponentCount`、`newRequest` 与 `newLayout`；请求可通过 `setPlot`、
+`setFloors`、`setModuleSize`、`setFloorHeight`、`setStyle`、`setFootprint`、
+`setRoof`、`setEntrance`、`setRequiredRooms` 与 `setPerimeter` 配置。
+布局提供 `toJson`、`fromJson`、`getInstanceCount`、`getInstanceComponentId`、
+`getInstanceX`、`getInstanceY`、`getInstanceZ`、`getInstanceRotationDeg`、
+`getFloorHeight`、`getFootprintStyle`、`getRoofStyle`、`getRoomCount`、
+`getDiagnosticCount`、`writeFootprintGrid` 与 `writeComponentPoints`。
+
+房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
+`writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
+缓存与序列化全部由既有 graph 系统处理。
