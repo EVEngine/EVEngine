@@ -1224,14 +1224,20 @@ public:
      * `metalStrength` / `emissiveStrength` gate the per-channel blend in
      * mesh3d.frag.
      * @param blendMode 0 = premultiplied over, 1 = additive (emissive).
-     * @param projectionMode 0 = planar (local.xy), 1 = triplanar (YZ/XZ/XY blend).
+     * @param projectionMode 0 = planar, 1 = local triplanar, 2 = spherical, 3 = world-aligned triplanar.
      * @param blendSharpness Triplanar normal-weight exponent (ignored when planar).
+     * @param parallaxScale POM depth in normalized decal UV units; zero disables POM.
+     * @param parallaxMinLayers Minimum POM samples at a perpendicular view.
+     * @param parallaxMaxLayers Maximum POM samples at a grazing view.
+     * @param edgeFadeWidth Normalized projection-volume edge feather in [0, 0.49].
      */
     virtual void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
                            Texture *params, const float uvRect[4], float fade,
                            float normalStrength, float roughnessStrength, float metalStrength,
                            float emissiveStrength, int blendMode = 0, int projectionMode = 0,
-                           float blendSharpness = 4.f) = 0;
+                           float blendSharpness = 4.f, float parallaxScale = 0.f,
+                           float parallaxMinLayers = 8.f, float parallaxMaxLayers = 24.f,
+                           float edgeFadeWidth = 0.06f) = 0;
     virtual void endDecalPass() = 0;
 
     /**

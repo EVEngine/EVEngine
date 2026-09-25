@@ -520,7 +520,7 @@ wgpu::BindGroupLayout Graphics::makeGbufferBindGroupLayout() {
 
 wgpu::BindGroupLayout Graphics::makeDecalBindGroupLayout() {
     BindGroupLayoutBuilder b;
-    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 240);
+    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 256);
     for (uint32_t i = 1; i <= 3; ++i) {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float, wgpu::TextureViewDimension::e2D);
     }
@@ -3728,7 +3728,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
                          float emissiveStrength, int blendMode, int projectionMode,
-                         float blendSharpness) {
+                         float blendSharpness, float parallaxScale, float parallaxMinLayers,
+                         float parallaxMaxLayers, float edgeFadeWidth) {
     if (!decalPassActive) return;
     DecalDraw draw;
     draw.model  = model;
@@ -3737,9 +3738,13 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     draw.params = params ? params : decalFlatParams;
     if (uvRect) draw.uvRect = glm::vec4(uvRect[0], uvRect[1], uvRect[2], uvRect[3]);
     draw.fadeParams = glm::vec4(fade, normalStrength, roughnessStrength, metalStrength);
-    draw.extraParams =
-        glm::vec4(emissiveStrength, float(blendMode == 1), float(projectionMode == 1),
-                  blendSharpness > 0.f ? blendSharpness : 4.f);
+    draw.extraParams = glm::vec4(emissiveStrength, float(blendMode == 1),
+                                 float(std::clamp(projectionMode, 0, 3)),
+                                 blendSharpness > 0.f ? blendSharpness : 4.f);
+    const float minLayers = std::clamp(parallaxMinLayers, 1.f, 64.f);
+    draw.surfaceParams = glm::vec4(std::clamp(parallaxScale, 0.f, 1.f), minLayers,
+                                   std::clamp(parallaxMaxLayers, minLayers, 64.f),
+                                   std::clamp(edgeFadeWidth, 0.f, 0.49f));
     decalPassDraws.push_back(draw);
 }
 
@@ -4389,9 +4394,10 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         glm::vec4 uvRect;
         glm::vec4 fadeParams;
         glm::vec4 extraParams;
+        glm::vec4 surfaceParams;
         glm::vec4 texel;
     };
-    static_assert(sizeof(DecalUniforms) == 240);
+    static_assert(sizeof(DecalUniforms) == 256);
     for (const auto& draw : decalPassDraws) {
         DecalUniforms uniforms{};
         uniforms.invViewProj = glm::inverse(decalViewProj);
@@ -4402,6 +4408,7 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         uniforms.uvRect      = draw.uvRect;
         uniforms.fadeParams  = draw.fadeParams;
         uniforms.extraParams = draw.extraParams;
+        uniforms.surfaceParams = draw.surfaceParams;
         uniforms.texel       = glm::vec4(1.f / float(decalWidth), 1.f / float(decalHeight), 0.f, 0.f);
         uint32_t offset      = uboArena.alloc(256, 256);
         queue.WriteBuffer(uboArena.buffer, offset, &uniforms, sizeof(uniforms));

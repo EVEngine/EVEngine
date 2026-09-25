@@ -194,6 +194,10 @@ DecalProjectionStatus DecalManager::setProjection(int id, const std::string &mod
     int projection = 0;
     if (mode == "triplanar")
         projection = 1;
+    else if (mode == "spherical")
+        projection = 2;
+    else if (mode == "world")
+        projection = 3;
     else if (mode != "planar" && !mode.empty())
         return DecalProjectionStatus::InvalidMode;
     if (!std::isfinite(blendSharpness) || blendSharpness <= 0.f)
@@ -207,6 +211,34 @@ DecalProjectionStatus DecalManager::setProjection(int id, const std::string &mod
     return DecalProjectionStatus::UnknownId;
 }
 
+DecalParallaxStatus DecalManager::setParallax(int id, float scale, float minLayers,
+                                              float maxLayers) {
+    if (!std::isfinite(scale) || scale < 0.f || scale > 1.f)
+        return DecalParallaxStatus::InvalidScale;
+    if (!std::isfinite(minLayers) || !std::isfinite(maxLayers) || minLayers < 1.f ||
+        maxLayers < minLayers || maxLayers > 64.f)
+        return DecalParallaxStatus::InvalidLayers;
+    for (auto &d : decals_) {
+        if (d.id != id) continue;
+        d.parallaxScale = scale;
+        d.parallaxMinLayers = minLayers;
+        d.parallaxMaxLayers = maxLayers;
+        return DecalParallaxStatus::Applied;
+    }
+    return DecalParallaxStatus::UnknownId;
+}
+
+DecalEdgeFadeStatus DecalManager::setEdgeFade(int id, float width) {
+    if (!std::isfinite(width) || width < 0.f || width > 0.49f)
+        return DecalEdgeFadeStatus::InvalidWidth;
+    for (auto &d : decals_) {
+        if (d.id != id) continue;
+        d.edgeFadeWidth = width;
+        return DecalEdgeFadeStatus::Applied;
+    }
+    return DecalEdgeFadeStatus::UnknownId;
+}
+
 int DecalManager::replace(int previousId, DecalInstance candidate) {
     const float normalLength2 = candidate.nx * candidate.nx + candidate.ny * candidate.ny +
                                 candidate.nz * candidate.nz;
@@ -214,8 +246,13 @@ int DecalManager::replace(int previousId, DecalInstance candidate) {
         !std::isfinite(candidate.size) || candidate.size <= 0.f ||
         !std::isfinite(candidate.depth) || candidate.depth <= 0.f ||
         candidate.blendMode < 0 || candidate.blendMode > 1 || candidate.projectionMode < 0 ||
-        candidate.projectionMode > 1 || !std::isfinite(candidate.blendSharpness) ||
-        candidate.blendSharpness <= 0.f)
+        candidate.projectionMode > 3 || !std::isfinite(candidate.blendSharpness) ||
+        candidate.blendSharpness <= 0.f || !std::isfinite(candidate.parallaxScale) ||
+        candidate.parallaxScale < 0.f || candidate.parallaxScale > 1.f ||
+        !std::isfinite(candidate.parallaxMinLayers) || !std::isfinite(candidate.parallaxMaxLayers) ||
+        candidate.parallaxMinLayers < 1.f || candidate.parallaxMaxLayers < candidate.parallaxMinLayers ||
+        candidate.parallaxMaxLayers > 64.f || !std::isfinite(candidate.edgeFadeWidth) ||
+        candidate.edgeFadeWidth < 0.f || candidate.edgeFadeWidth > 0.49f)
         return 0;
     std::vector<DecalInstance> next = decals_;
     if (previousId != 0) {
@@ -292,7 +329,8 @@ void DecalManager::drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, floa
         if (fade <= 0.001f) continue;
         gfx.drawDecal(decalModel(d), d.albedo, d.normal, d.params, d.uvRect, fade,
                       d.normalStrength, d.roughnessStrength, d.metalStrength, d.emissiveStrength,
-                      d.blendMode, d.projectionMode, d.blendSharpness);
+                      d.blendMode, d.projectionMode, d.blendSharpness, d.parallaxScale,
+                      d.parallaxMinLayers, d.parallaxMaxLayers, d.edgeFadeWidth);
     }
 }
 

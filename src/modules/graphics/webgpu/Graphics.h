@@ -517,7 +517,9 @@ public:
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
                    float metalStrength, float emissiveStrength, int blendMode = 0,
-                   int projectionMode = 0, float blendSharpness = 4.f) override;
+                   int projectionMode = 0, float blendSharpness = 4.f,
+                   float parallaxScale = 0.f, float parallaxMinLayers = 8.f,
+                   float parallaxMaxLayers = 24.f, float edgeFadeWidth = 0.06f) override;
     void endDecalPass() override;
     image::ImageData *readDecalLayerToImageData(const std::string &attachment) override;
 
@@ -661,6 +663,7 @@ private:
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};
         glm::vec4 extraParams{0.f};
+        glm::vec4 surfaceParams{0.f, 8.f, 24.f, 0.06f};
     };
 
     void configureSurface(int width, int height);

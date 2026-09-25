@@ -1455,6 +1455,7 @@ struct DecalUniforms {
     uvRect: vec4f,
     fadeParams: vec4f,
     extraParams: vec4f,
+    surfaceParams: vec4f,
     texel: vec4f,
 };
 struct DecalOut {
@@ -1475,6 +1476,74 @@ fn sampleAtlas(tex: texture_2d<f32>, localUV: vec2f) -> vec4f {
     return textureSample(tex, mainSamp, atl);
 }
 
+fn projectionUV(localUV: vec2f, wrapMode: i32) -> vec2f {
+    if (wrapMode == 2) { return fract(localUV); }
+    if (wrapMode == 1) { return vec2f(fract(localUV.x), clamp(localUV.y, 0.0, 1.0)); }
+    return clamp(localUV, vec2f(0.0), vec2f(1.0));
+}
+
+fn sampleHeight(localUV: vec2f, wrapMode: i32) -> f32 {
+    let atl = u.uvRect.xy + projectionUV(localUV, wrapMode) * u.uvRect.zw;
+    return textureSampleLevel(decalParams, mainSamp, atl, 0.0).a;
+}
+
+fn parallaxUV(baseUV: vec2f, viewTS: vec3f, wrapMode: i32) -> vec2f {
+    let scale = u.surfaceParams.x;
+    if (scale <= 0.0) { return baseUV; }
+    let minLayers = clamp(u.surfaceParams.y, 1.0, 64.0);
+    let maxLayers = clamp(u.surfaceParams.z, minLayers, 64.0);
+    let layers = mix(maxLayers, minLayers, clamp(abs(viewTS.z), 0.0, 1.0));
+    let layerDepth = 1.0 / layers;
+    let delta = (viewTS.xy / max(abs(viewTS.z), 0.08)) * scale / layers;
+    var currentUV = baseUV;
+    var currentDepth = 0.0;
+    for (var index = 0; index < 64; index = index + 1) {
+        let surfaceDepth = 1.0 - sampleHeight(currentUV, wrapMode);
+        if (currentDepth >= surfaceDepth || f32(index) >= layers) { break; }
+        currentUV = currentUV - delta;
+        currentDepth = currentDepth + layerDepth;
+    }
+    return currentUV;
+}
+
+fn worldNormalFromLocalBasis(packed: vec4f, tangentLocal: vec3f, bitangentLocal: vec3f,
+                             normalLocal: vec3f) -> vec3f {
+    let model3 = mat3x3f(u.modelR0.xyz, u.modelR1.xyz, u.modelR2.xyz);
+    let normalWorld = normalize(model3 * normalLocal);
+    var tangentWorld = normalize(model3 * tangentLocal);
+    tangentWorld = normalize(tangentWorld - normalWorld * dot(normalWorld, tangentWorld));
+    var bitangentWorld = normalize(model3 * bitangentLocal);
+    if (dot(cross(tangentWorld, bitangentWorld), normalWorld) < 0.0) {
+        bitangentWorld = -bitangentWorld;
+    }
+    let tangentNormal = packed.xyz * 2.0 - 1.0;
+    return normalize(tangentWorld * tangentNormal.x + bitangentWorld * tangentNormal.y +
+                     normalWorld * tangentNormal.z);
+}
+
+fn worldNormalFromWorldBasis(packed: vec4f, tangentWorld: vec3f, bitangentWorld: vec3f,
+                             normalWorld: vec3f) -> vec3f {
+    let tangentNormal = packed.xyz * 2.0 - 1.0;
+    return normalize(tangentWorld * tangentNormal.x + bitangentWorld * tangentNormal.y +
+                     normalWorld * tangentNormal.z);
+}
+
+fn edgeMask2(coordinates: vec2f) -> f32 {
+    let width = clamp(u.surfaceParams.w, 0.0, 0.49);
+    if (width <= 0.0) { return 1.0; }
+    let edge = smoothstep(vec2f(0.0), vec2f(width), coordinates) *
+               smoothstep(vec2f(1.0), vec2f(1.0 - width), coordinates);
+    return edge.x * edge.y;
+}
+
+fn edgeMask3(coordinates: vec3f) -> f32 {
+    let width = clamp(u.surfaceParams.w, 0.0, 0.49);
+    if (width <= 0.0) { return 1.0; }
+    let edge = smoothstep(vec3f(0.0), vec3f(width), coordinates) *
+               smoothstep(vec3f(1.0), vec3f(1.0 - width), coordinates);
+    return edge.x * edge.y * edge.z;
+}
+
 @fragment
 fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     let uv = pos.xy * u.texel.xy;
@@ -1492,9 +1561,12 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     let surfaceN = textureLoad(gbNormal, texelPos, 0).xyz * 2.0 - 1.0;
     let decalFwd = normalize(mat3x3f(u.modelR0.xyz, u.modelR1.xyz, u.modelR2.xyz) *
                              vec3f(0.0, 0.0, 1.0));
-    let useTriplanar = u.extraParams.z > 0.5;
+    let projectionMode = i32(u.extraParams.z + 0.5);
+    let useTriplanar = projectionMode == 1;
+    let useSpherical = projectionMode == 2;
+    let useWorld = projectionMode == 3;
     let facing = dot(surfaceN, decalFwd);
-    if (useTriplanar) {
+    if (useSpherical || useTriplanar || useWorld) {
         if (facing < -0.05) { discard; }
     } else if (facing < 0.1) {
         discard;
@@ -1504,39 +1576,100 @@ fn fs_main(@builtin(position) pos: vec4f) -> DecalOut {
     var nrm: vec4f;
     var prm: vec4f;
     var edgeFade: f32;
+    let nearClip = vec4f(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, 0.0, 1.0);
+    let nearWorld = u.invViewProj * nearClip;
+    let nearPos = nearWorld.xyz / max(abs(nearWorld.w), 1e-6);
+    let invR = mat3x3f(u.invModel[0].xyz, u.invModel[1].xyz, u.invModel[2].xyz);
+    let viewWorld = normalize(nearPos - worldPos);
+    let viewLocal = normalize(invR * viewWorld);
 
-    if (!useTriplanar) {
-        let decalUV = clamp(local.xy + 0.5, vec2f(0.0), vec2f(1.0));
+    if (!useTriplanar && !useSpherical && !useWorld) {
+        let decalUV = parallaxUV(local.xy + 0.5, viewLocal, 0);
+        if (any(decalUV < vec2f(0.0)) || any(decalUV > vec2f(1.0))) { discard; }
         alb = sampleAtlas(decalAlbedo, decalUV);
-        nrm = sampleAtlas(decalNormal, decalUV);
+        let sampledNormal = sampleAtlas(decalNormal, decalUV);
+        let normalWorld = worldNormalFromLocalBasis(sampledNormal, vec3f(1.0, 0.0, 0.0),
+                                                    vec3f(0.0, 1.0, 0.0), vec3f(0.0, 0.0, 1.0));
+        nrm = vec4f(normalWorld * 0.5 + 0.5, sampledNormal.a);
         prm = sampleAtlas(decalParams, decalUV);
-        let edge = smoothstep(vec2f(0.0), vec2f(0.06), decalUV) *
-                   smoothstep(vec2f(1.0), vec2f(0.94), decalUV);
-        edgeFade = edge.x * edge.y;
-    } else {
-        let invR = mat3x3f(u.invModel[0].xyz, u.invModel[1].xyz, u.invModel[2].xyz);
+        edgeFade = edgeMask2(decalUV);
+    } else if (useTriplanar) {
         let nLocal = normalize(invR * surfaceN);
         let sharpness = max(u.extraParams.w, 1.0);
         var w = pow(abs(nLocal), vec3f(sharpness));
         w = w / max(w.x + w.y + w.z, 1e-5);
 
-        let uvYZ = local.yz + 0.5;
-        let uvXZ = local.xz + 0.5;
-        let uvXY = local.xy + 0.5;
+        let uvYZ = parallaxUV(local.yz + 0.5, vec3f(viewLocal.yz, viewLocal.x), 0);
+        let uvXZ = parallaxUV(local.xz + 0.5, vec3f(viewLocal.xz, viewLocal.y), 0);
+        let uvXY = parallaxUV(local.xy + 0.5, viewLocal, 0);
         alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
               sampleAtlas(decalAlbedo, uvXZ) * w.y +
               sampleAtlas(decalAlbedo, uvXY) * w.z;
-        nrm = sampleAtlas(decalNormal, uvYZ) * w.x +
-              sampleAtlas(decalNormal, uvXZ) * w.y +
-              sampleAtlas(decalNormal, uvXY) * w.z;
+        let nrmX = sampleAtlas(decalNormal, uvYZ);
+        let nrmY = sampleAtlas(decalNormal, uvXZ);
+        let nrmZ = sampleAtlas(decalNormal, uvXY);
+        let sx = select(1.0, -1.0, nLocal.x < 0.0);
+        let sy = select(1.0, -1.0, nLocal.y < 0.0);
+        let sz = select(1.0, -1.0, nLocal.z < 0.0);
+        let blendedNormal =
+            worldNormalFromLocalBasis(nrmX, vec3f(0.0, 1.0, 0.0), vec3f(0.0, 0.0, sx), vec3f(sx, 0.0, 0.0)) * w.x +
+            worldNormalFromLocalBasis(nrmY, vec3f(1.0, 0.0, 0.0), vec3f(0.0, 0.0, -sy), vec3f(0.0, sy, 0.0)) * w.y +
+            worldNormalFromLocalBasis(nrmZ, vec3f(1.0, 0.0, 0.0), vec3f(0.0, sz, 0.0), vec3f(0.0, 0.0, sz)) * w.z;
+        nrm = vec4f(normalize(blendedNormal) * 0.5 + 0.5,
+                    nrmX.a * w.x + nrmY.a * w.y + nrmZ.a * w.z);
         prm = sampleAtlas(decalParams, uvYZ) * w.x +
               sampleAtlas(decalParams, uvXZ) * w.y +
               sampleAtlas(decalParams, uvXY) * w.z;
 
         let t = local + 0.5;
-        let edge = smoothstep(vec3f(0.0), vec3f(0.06), t) *
-                   smoothstep(vec3f(1.0), vec3f(0.94), t);
-        edgeFade = edge.x * edge.y * edge.z;
+        edgeFade = edgeMask3(t);
+    } else if (useWorld) {
+        let sharpness = max(u.extraParams.w, 1.0);
+        var w = pow(abs(normalize(surfaceN)), vec3f(sharpness));
+        w = w / max(w.x + w.y + w.z, 1e-5);
+        let worldScale = 1.0;
+        let uvYZ = fract(parallaxUV(fract(worldPos.yz * worldScale), vec3f(viewWorld.yz, viewWorld.x), 2));
+        let uvXZ = fract(parallaxUV(fract(worldPos.xz * worldScale), vec3f(viewWorld.xz, viewWorld.y), 2));
+        let uvXY = fract(parallaxUV(fract(worldPos.xy * worldScale), viewWorld, 2));
+        alb = sampleAtlas(decalAlbedo, uvYZ) * w.x +
+              sampleAtlas(decalAlbedo, uvXZ) * w.y +
+              sampleAtlas(decalAlbedo, uvXY) * w.z;
+        let nrmX = sampleAtlas(decalNormal, uvYZ);
+        let nrmY = sampleAtlas(decalNormal, uvXZ);
+        let nrmZ = sampleAtlas(decalNormal, uvXY);
+        let sx = select(1.0, -1.0, surfaceN.x < 0.0);
+        let sy = select(1.0, -1.0, surfaceN.y < 0.0);
+        let sz = select(1.0, -1.0, surfaceN.z < 0.0);
+        let blendedNormal =
+            worldNormalFromWorldBasis(nrmX, vec3f(0.0, 1.0, 0.0), vec3f(0.0, 0.0, sx), vec3f(sx, 0.0, 0.0)) * w.x +
+            worldNormalFromWorldBasis(nrmY, vec3f(1.0, 0.0, 0.0), vec3f(0.0, 0.0, -sy), vec3f(0.0, sy, 0.0)) * w.y +
+            worldNormalFromWorldBasis(nrmZ, vec3f(1.0, 0.0, 0.0), vec3f(0.0, sz, 0.0), vec3f(0.0, 0.0, sz)) * w.z;
+        nrm = vec4f(normalize(blendedNormal) * 0.5 + 0.5,
+                    nrmX.a * w.x + nrmY.a * w.y + nrmZ.a * w.z);
+        prm = sampleAtlas(decalParams, uvYZ) * w.x +
+              sampleAtlas(decalParams, uvXZ) * w.y +
+              sampleAtlas(decalParams, uvXY) * w.z;
+        let t = local + 0.5;
+        edgeFade = edgeMask3(t);
+    } else {
+        let direction = normalize(local + vec3f(1e-7));
+        let invPi = 0.31830988618;
+        var decalUV = vec2f(atan2(direction.x, direction.z) * (0.5 * invPi) + 0.5,
+                            asin(clamp(direction.y, -1.0, 1.0)) * invPi + 0.5);
+        let tangent = normalize(vec3f(direction.z, 0.0, -direction.x) + vec3f(1e-7));
+        let bitangent = normalize(cross(direction, tangent));
+        let sphericalView = vec3f(dot(viewLocal, tangent), dot(viewLocal, bitangent),
+                                  dot(viewLocal, direction));
+        decalUV = parallaxUV(decalUV, sphericalView, 1);
+        decalUV.x = fract(decalUV.x);
+        if (decalUV.y < 0.0 || decalUV.y > 1.0) { discard; }
+        alb = sampleAtlas(decalAlbedo, decalUV);
+        let sampledNormal = sampleAtlas(decalNormal, decalUV);
+        let normalWorld = worldNormalFromLocalBasis(sampledNormal, tangent, bitangent, direction);
+        nrm = vec4f(normalWorld * 0.5 + 0.5, sampledNormal.a);
+        prm = sampleAtlas(decalParams, decalUV);
+        let t = local + 0.5;
+        edgeFade = edgeMask3(t);
     }
 
     var coverage = alb.a * clamp(u.fadeParams.x, 0.0, 1.0) * edgeFade;

@@ -1,0 +1,30 @@
+<sbspresets formatversion="1.0" count="1"><sbspreset pkgurl="pkg://EV_ProceduralDecalV1_Standard" label="" >
+<presetinput identifier="$outputsize" uid="3539185287" type="8" value="11,11" />
+<presetinput identifier="$randomseed" uid="2239871189" type="4" value="17425" />
+<presetinput identifier="quality" uid="3168543074" type="4" value="1" />
+<presetinput identifier="ab_height_masking" uid="3168543080" type="0" value="0.519" />
+<presetinput identifier="a_amount" uid="3168543092" type="0" value="0.48" />
+<presetinput identifier="a_pattern" uid="3168543090" type="4" value="26" />
+<presetinput identifier="a_tweak" uid="3168543088" type="0" value="0.511" />
+<presetinput identifier="a_color" uid="3168543096" type="2" value="0.567708,0.50657,0.454166" />
+<presetinput identifier="a_color_value_variation" uid="3168542982" type="0" value="0.101" />
+<presetinput identifier="a_color_hue_variation" uid="3168542980" type="0" value="0.052" />
+<presetinput identifier="a_color_variation_type" uid="3168542978" type="0" value="0.431" />
+<presetinput identifier="a_roughness" uid="3168542976" type="0" value="0.778" />
+<presetinput identifier="a_rough_variation" uid="3168542990" type="0" value="0.468" />
+<presetinput identifier="a_rough_variation_type" uid="3168542988" type="0" value="0.023" />
+<presetinput identifier="a_normal" uid="3168542986" type="0" value="1.455" />
+<presetinput identifier="b_amount" uid="3168543004" type="0" value="0.805" />
+<presetinput identifier="b_pattern" uid="3168543002" type="4" value="15" />
+<presetinput identifier="b_tweak" uid="3168543000" type="0" value="0.575" />
+<presetinput identifier="b_color" uid="3168543008" type="2" value="0.723958,0.634546,0.539198" />
+<presetinput identifier="b_color_value_variation" uid="3168543018" type="0" value="0.171" />
+<presetinput identifier="b_color_hue_variation" uid="3168543016" type="0" value="0.073" />
+<presetinput identifier="b_color_variation_type" uid="3168543030" type="0" value="0.483" />
+<presetinput identifier="b_roughness" uid="3168543028" type="0" value="0.735" />
+<presetinput identifier="b_rough_variation" uid="3168543026" type="0" value="1" />
+<presetinput identifier="b_rough_variation_type" uid="3168543024" type="0" value="0" />
+<presetinput identifier="b_normal" uid="3168543038" type="0" value="6.236" />
+<presetinput identifier="b_normal_thickness" uid="3168543034" type="0" value="7.92" />
+</sbspreset>
+</sbspresets>
