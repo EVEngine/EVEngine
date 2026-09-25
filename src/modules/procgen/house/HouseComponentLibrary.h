@@ -15,7 +15,7 @@
 namespace eve::housegen {
 
 /** @brief 房屋组件注册表（按 id 索引，支持分类/风格查询）。 */
-class EVENGINE_API_WORLD HouseComponentLibrary {
+class EVENGINE_API_DOMAINS HouseComponentLibrary {
 public:
     /** @brief 从 JSON / 文件加载组件。 */
     [[nodiscard]] eve::Result<void> loadFromJson(std::string_view json);

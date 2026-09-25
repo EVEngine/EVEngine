@@ -57,11 +57,11 @@ struct HouseKitComponentValue {
 };
 
 /** @brief Revisioned component-kit and deterministic generation-request asset. */
-class EVENGINE_API_DOMAINS HouseGenDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                                          public virtual IEditableTarget,
-                                                          public IDomainOperationTarget,
-                                                          public IDomainOperationTargetStaging,
-                                                          public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION HouseGenDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                                public virtual IEditableTarget,
+                                                                public IDomainOperationTarget,
+                                                                public IDomainOperationTargetStaging,
+                                                                public IPropertyProvider {
 public:
     explicit HouseGenDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
@@ -102,7 +102,7 @@ private:
 };
 
 /** @brief Candidate generation containing a validated library and deterministic layout. */
-class EVENGINE_API_DOMAINS HouseGenPreviewRuntime {
+class EVENGINE_API_ORCHESTRATION HouseGenPreviewRuntime {
 public:
     HouseGenPreviewRuntime();
     ~HouseGenPreviewRuntime();

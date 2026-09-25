@@ -12,7 +12,7 @@ namespace eve::housegen {
 class HouseLayout;
 
 /** @brief 布局生成器：把 HouseRequest 解析为 HouseLayout（组件库驱动）。 */
-class EVENGINE_API_WORLD HouseGenerator {
+class EVENGINE_API_DOMAINS HouseGenerator {
 public:
     /** @brief 绑定生成所需的组件库；库的生命周期必须覆盖本生成器。 */
     explicit HouseGenerator(const HouseComponentLibrary &library) : library_(library) {}
