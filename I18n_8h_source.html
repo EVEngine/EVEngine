@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/i18n/I18n.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_808cf41dd20525059940479eaa07809e.html">i18n</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">I18n.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="I18n_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1i18n.html">eve::i18n</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html">   38</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1i18n_1_1I18n.html">I18n</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#a0acd13f265ba6450e58ad841226206e6">   40</a></span>    <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#a0acd13f265ba6450e58ad841226206e6">Module_REG</a>(<a class="code hl_class" href="classeve_1_1i18n_1_1I18n.html">I18n</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#aa6edc0e41864a438bf0c90bbae9ad2d9">   41</a></span>    <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#aa6edc0e41864a438bf0c90bbae9ad2d9">I18n</a>()           = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#ad11e7c8b8a3771dfbd207c0906b91c5c">   42</a></span>    <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#ad11e7c8b8a3771dfbd207c0906b91c5c">~I18n</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> replaceLocaleFromJson(<span class="keyword">const</span> std::string&amp; lang, <span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> replaceLocaleFromFile(<span class="keyword">const</span> std::string&amp; lang, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> loadFromJson(<span class="keyword">const</span> std::string&amp; lang, <span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">bool</span> loadFromFile(<span class="keyword">const</span> std::string&amp; lang, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> replaceBundleFromJson(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> unload(<span class="keyword">const</span> std::string&amp; lang);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> selectLanguage(<span class="keyword">const</span> std::string&amp; lang);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span>        setLanguage(<span class="keyword">const</span> std::string&amp; lang);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#a83ed860f6b96c191994b4bfe0eb54b37">   98</a></span>    std::string <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#a83ed860f6b96c191994b4bfe0eb54b37">getLanguage</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> language_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#aec63a1c471cf3a28f144200e8f01a82f">   99</a></span>    <span class="keywordtype">void</span>        <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#aec63a1c471cf3a28f144200e8f01a82f">setDefaultLanguage</a>(<span class="keyword">const</span> std::string&amp; lang) { defaultLanguage_ = lang; }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#a21d336c9237520de49b1dfbabbe2efd1">  100</a></span>    std::string <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#a21d336c9237520de49b1dfbabbe2efd1">getDefaultLanguage</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> defaultLanguage_; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#afcc04911272a0da576c6f9be5b08b384">  101</a></span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#afcc04911272a0da576c6f9be5b08b384">getLanguageCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(locales_.size()); }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::string getLanguageAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">bool</span>        hasLanguage(<span class="keyword">const</span> std::string&amp; lang) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">bool</span> hasInLanguage(<span class="keyword">const</span> std::string&amp; lang, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> validateKeyCoverage(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">int</span> getKeyCount(<span class="keyword">const</span> std::string&amp; lang) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">bool</span>        has(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    std::string get(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::string getWithParams(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keyword">const</span> std::unordered_map&lt;std::string, std::string&gt;&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::string getPlural(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::string getPluralWithParams(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                    <span class="keyword">const</span> std::unordered_map&lt;std::string, std::string&gt;&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="comment">// ---- hot reload (poll from the game loop) ----</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#a338281a4e84d42c677957654c6f73634">  127</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#a338281a4e84d42c677957654c6f73634">setAutoReload</a>(<span class="keywordtype">bool</span> enable) { autoReload_ = enable; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1i18n_1_1I18n.html#a41d8519dd1116cf1c7e9924ba2ae295c">  128</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1i18n_1_1I18n.html#a41d8519dd1116cf1c7e9924ba2ae295c">isAutoReload</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> autoReload_; }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">int</span> update(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">struct </span>Locale {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        std::unordered_map&lt;std::string, std::string&gt; strings;  <span class="comment">// flat key -&gt; value</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        std::unordered_map&lt;std::string, std::unordered_map&lt;std::string, std::string&gt;&gt;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                    plurals;  <span class="comment">// key -&gt; {form -&gt; value}</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>;     <span class="comment">// empty if loaded from raw json</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        int64_t     modtime = -1;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    };</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    Locale* findLocale(<span class="keyword">const</span> std::string&amp; lang);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keyword">const</span> Locale* findLocale(<span class="keyword">const</span> std::string&amp; lang) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    std::string formatString(<span class="keyword">const</span> std::string&amp; tpl, <span class="keyword">const</span> std::unordered_map&lt;std::string, std::string&gt;&amp; <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    std::string pluralForm(<span class="keyword">const</span> std::string&amp; lang, <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::unordered_map&lt;std::string, Locale&gt; locales_;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    std::string                             language_        = <span class="stringliteral">&quot;en&quot;</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    std::string                             defaultLanguage_ = <span class="stringliteral">&quot;en&quot;</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">bool</span>                                    autoReload_      = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>};</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}  <span class="comment">// namespace eve::i18n</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ae0f3ddf34dc12c944c03445c0bc3fee6"><div class="ttname"><a href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a></div><div class="ttdeci">#define EVENGINE_API_PLATFORM</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00107">Export.h:107</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00140">PlayHost.cpp:140</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html">eve::i18n::I18n</a></div><div class="ttdoc">Game localization (i18n) module.</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00038">I18n.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_a0acd13f265ba6450e58ad841226206e6"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#a0acd13f265ba6450e58ad841226206e6">eve::i18n::I18n::Module_REG</a></div><div class="ttdeci">Module_REG(I18n)</div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_a21d336c9237520de49b1dfbabbe2efd1"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#a21d336c9237520de49b1dfbabbe2efd1">eve::i18n::I18n::getDefaultLanguage</a></div><div class="ttdeci">std::string getDefaultLanguage() const</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00100">I18n.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_a338281a4e84d42c677957654c6f73634"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#a338281a4e84d42c677957654c6f73634">eve::i18n::I18n::setAutoReload</a></div><div class="ttdeci">void setAutoReload(bool enable)</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00127">I18n.h:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_a41d8519dd1116cf1c7e9924ba2ae295c"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#a41d8519dd1116cf1c7e9924ba2ae295c">eve::i18n::I18n::isAutoReload</a></div><div class="ttdeci">bool isAutoReload() const</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00128">I18n.h:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_a83ed860f6b96c191994b4bfe0eb54b37"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#a83ed860f6b96c191994b4bfe0eb54b37">eve::i18n::I18n::getLanguage</a></div><div class="ttdeci">std::string getLanguage() const</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00098">I18n.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_aa6edc0e41864a438bf0c90bbae9ad2d9"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#aa6edc0e41864a438bf0c90bbae9ad2d9">eve::i18n::I18n::I18n</a></div><div class="ttdeci">I18n()=default</div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_ad11e7c8b8a3771dfbd207c0906b91c5c"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#ad11e7c8b8a3771dfbd207c0906b91c5c">eve::i18n::I18n::~I18n</a></div><div class="ttdeci">~I18n() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_aec63a1c471cf3a28f144200e8f01a82f"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#aec63a1c471cf3a28f144200e8f01a82f">eve::i18n::I18n::setDefaultLanguage</a></div><div class="ttdeci">void setDefaultLanguage(const std::string &amp;lang)</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00099">I18n.h:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html_afcc04911272a0da576c6f9be5b08b384"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html#afcc04911272a0da576c6f9be5b08b384">eve::i18n::I18n::getLanguageCount</a></div><div class="ttdeci">int getLanguageCount() const</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00101">I18n.h:101</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_ac59750003266730d7d05c14393c78fbd"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a></div><div class="ttdeci">std::vector&lt; ParamSpec &gt; params</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">MeshModifierGraph.cpp:28</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">MeshModifierGraph.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1i18n_html"><div class="ttname"><a href="namespaceeve_1_1i18n.html">eve::i18n</a></div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00032">DialogueFlow.h:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

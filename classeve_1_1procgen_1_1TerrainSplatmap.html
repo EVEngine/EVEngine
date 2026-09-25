@@ -1,0 +1,845 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainSplatmap类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainSplatmap-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainSplatmap类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning normalized terrain texture-layer weights with atomic mutation. Layers share one finite width/height topology and each texel sums to one within float tolerance.  
+ <a href="classeve_1_1procgen_1_1TerrainSplatmap.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainSplatmap_8h_source.html">TerrainSplatmap.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainSplatmap_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6251550b7d46fb71afb84dc6153d7300" id="r_a6251550b7d46fb71afb84dc6153d7300"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a6251550b7d46fb71afb84dc6153d7300">TerrainSplatmap</a> ()</td></tr>
+<tr class="separator:a6251550b7d46fb71afb84dc6153d7300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c4174773e3816027075fe42ee8cb56d" id="r_a8c4174773e3816027075fe42ee8cb56d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a8c4174773e3816027075fe42ee8cb56d">~TerrainSplatmap</a> ()</td></tr>
+<tr class="separator:a8c4174773e3816027075fe42ee8cb56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c61c581db5c95547909492fd716c084" id="r_a0c61c581db5c95547909492fd716c084"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a0c61c581db5c95547909492fd716c084">TerrainSplatmap</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a0c61c581db5c95547909492fd716c084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab116d00677fa0ace138dd7c8113b05d6" id="r_ab116d00677fa0ace138dd7c8113b05d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ab116d00677fa0ace138dd7c8113b05d6">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:ab116d00677fa0ace138dd7c8113b05d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9aa19476f540cf694c469561289aac5" id="r_ab9aa19476f540cf694c469561289aac5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ab9aa19476f540cf694c469561289aac5">TerrainSplatmap</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;)</td></tr>
+<tr class="separator:ab9aa19476f540cf694c469561289aac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b835aa79a1e83a5732799f4f135c887" id="r_a0b835aa79a1e83a5732799f4f135c887"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a0b835aa79a1e83a5732799f4f135c887">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;)</td></tr>
+<tr class="separator:a0b835aa79a1e83a5732799f4f135c887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de16464bda0215dae3de1d9cc8ded3e" id="r_a9de16464bda0215dae3de1d9cc8ded3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a9de16464bda0215dae3de1d9cc8ded3e">initialize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int layerCount, int defaultLayer=0)</td></tr>
+<tr class="memdesc:a9de16464bda0215dae3de1d9cc8ded3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize topology and assign all weight to defaultLayer.  <br /></td></tr>
+<tr class="separator:a9de16464bda0215dae3de1d9cc8ded3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4b42ec99708e011963ab3e613d0be0a" id="r_ac4b42ec99708e011963ab3e613d0be0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ac4b42ec99708e011963ab3e613d0be0a">sample</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:ac4b42ec99708e011963ab3e613d0be0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one layer weight, or a structured range/precondition failure.  <br /></td></tr>
+<tr class="separator:ac4b42ec99708e011963ab3e613d0be0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b33239b2322fefb6d3a9ea28af95a1" id="r_a59b33239b2322fefb6d3a9ea28af95a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a59b33239b2322fefb6d3a9ea28af95a1">copyLayer</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a59b33239b2322fefb6d3a9ea28af95a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one complete texture layer into a same-sized scalar mask atomically.  <br /></td></tr>
+<tr class="separator:a59b33239b2322fefb6d3a9ea28af95a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3f7b44a01dee2ec22b98b1c2ab7c9f6" id="r_ae3f7b44a01dee2ec22b98b1c2ab7c9f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ae3f7b44a01dee2ec22b98b1c2ab7c9f6">getLastChangedSamples</a> () const noexcept</td></tr>
+<tr class="memdesc:ae3f7b44a01dee2ec22b98b1c2ab7c9f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of texels changed by the last successful paint operation.  <br /></td></tr>
+<tr class="separator:ae3f7b44a01dee2ec22b98b1c2ab7c9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e6f30a3535b539ac2a9b646ce3ce04" id="r_ad4e6f30a3535b539ac2a9b646ce3ce04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ad4e6f30a3535b539ac2a9b646ce3ce04">getWidth</a> () const noexcept</td></tr>
+<tr class="memdesc:ad4e6f30a3535b539ac2a9b646ce3ce04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current splat width, or zero before initialization.  <br /></td></tr>
+<tr class="separator:ad4e6f30a3535b539ac2a9b646ce3ce04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e38da672646f7cfccc4947677b8e64c" id="r_a1e38da672646f7cfccc4947677b8e64c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a1e38da672646f7cfccc4947677b8e64c">getHeight</a> () const noexcept</td></tr>
+<tr class="memdesc:a1e38da672646f7cfccc4947677b8e64c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current splat height, or zero before initialization.  <br /></td></tr>
+<tr class="separator:a1e38da672646f7cfccc4947677b8e64c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a831b4c8549c1d6bece22a6999627c7eb" id="r_a831b4c8549c1d6bece22a6999627c7eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a831b4c8549c1d6bece22a6999627c7eb">getLayerCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a831b4c8549c1d6bece22a6999627c7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current layer count, or zero before initialization.  <br /></td></tr>
+<tr class="separator:a831b4c8549c1d6bece22a6999627c7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:ad3a173308ebd027a61ebe68ef28080b9" id="r_ad3a173308ebd027a61ebe68ef28080b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ad3a173308ebd027a61ebe68ef28080b9">paintTerrainSplatLayer</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;, int)</td></tr>
+<tr class="memdesc:ad3a173308ebd027a61ebe68ef28080b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace one terrain layer with a normalized paint raster and proportionally renormalize all other layers.  <br /></td></tr>
+<tr class="separator:ad3a173308ebd027a61ebe68ef28080b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5de19a3251a23dd92dcfaea14bb366e" id="r_ad5de19a3251a23dd92dcfaea14bb366e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#ad5de19a3251a23dd92dcfaea14bb366e">applyGtsHeightBlend</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;, const <a class="el" href="classeve_1_1procgen_1_1GtsHeightBlendSet.html">GtsHeightBlendSet</a> &amp;, float)</td></tr>
+<tr class="memdesc:ad5de19a3251a23dd92dcfaea14bb366e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recompute all splat weights using the GTS texture-height blending equation.  <br /></td></tr>
+<tr class="separator:ad5de19a3251a23dd92dcfaea14bb366e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298638d5921de60614dfc51f0b07e385" id="r_a298638d5921de60614dfc51f0b07e385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a298638d5921de60614dfc51f0b07e385">alignTerrainSplatTextures</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;, <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;, const <a class="el" href="structeve_1_1procgen_1_1TerrainTextureAlignSettings.html">TerrainTextureAlignSettings</a> &amp;)</td></tr>
+<tr class="memdesc:a298638d5921de60614dfc51f0b07e385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend texture weights on adjacent terrain edges using Pcg's synchronized-noise equation.  <br /></td></tr>
+<tr class="separator:a298638d5921de60614dfc51f0b07e385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dfc428a8bfa8fc005643911ef0e05ee" id="r_a1dfc428a8bfa8fc005643911ef0e05ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html#a1dfc428a8bfa8fc005643911ef0e05ee">paintTerrainSplatLayerMultiTile</a> (const std::vector&lt; struct <a class="el" href="structeve_1_1procgen_1_1TerrainSplatTile.html">TerrainSplatTile</a> &gt; &amp;, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;, int, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;, bool, const std::vector&lt; std::string &gt; &amp;)</td></tr>
+<tr class="separator:a1dfc428a8bfa8fc005643911ef0e05ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning normalized terrain texture-layer weights with atomic mutation. Layers share one finite width/height topology and each texel sums to one within float tolerance. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8h_source.html">TerrainSplatmap.h</a> 第 <a class="el" href="TerrainSplatmap_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6251550b7d46fb71afb84dc6153d7300" name="a6251550b7d46fb71afb84dc6153d7300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6251550b7d46fb71afb84dc6153d7300">&#9670;&#160;</a></span>TerrainSplatmap() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainSplatmap::TerrainSplatmap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c4174773e3816027075fe42ee8cb56d" name="a8c4174773e3816027075fe42ee8cb56d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c4174773e3816027075fe42ee8cb56d">&#9670;&#160;</a></span>~TerrainSplatmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainSplatmap::~TerrainSplatmap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c61c581db5c95547909492fd716c084" name="a0c61c581db5c95547909492fd716c084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c61c581db5c95547909492fd716c084">&#9670;&#160;</a></span>TerrainSplatmap() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainSplatmap::TerrainSplatmap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9aa19476f540cf694c469561289aac5" name="ab9aa19476f540cf694c469561289aac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9aa19476f540cf694c469561289aac5">&#9670;&#160;</a></span>TerrainSplatmap() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainSplatmap::TerrainSplatmap </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a59b33239b2322fefb6d3a9ea28af95a1" name="a59b33239b2322fefb6d3a9ea28af95a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b33239b2322fefb6d3a9ea28af95a1">&#9670;&#160;</a></span>copyLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSplatmap::copyLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one complete texture layer into a same-sized scalar mask atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a1e38da672646f7cfccc4947677b8e64c" name="a1e38da672646f7cfccc4947677b8e64c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e38da672646f7cfccc4947677b8e64c">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSplatmap::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current splat height, or zero before initialization. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3f7b44a01dee2ec22b98b1c2ab7c9f6" name="ae3f7b44a01dee2ec22b98b1c2ab7c9f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3f7b44a01dee2ec22b98b1c2ab7c9f6">&#9670;&#160;</a></span>getLastChangedSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSplatmap::getLastChangedSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of texels changed by the last successful paint operation. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a831b4c8549c1d6bece22a6999627c7eb" name="a831b4c8549c1d6bece22a6999627c7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a831b4c8549c1d6bece22a6999627c7eb">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSplatmap::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current layer count, or zero before initialization. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4e6f30a3535b539ac2a9b646ce3ce04" name="ad4e6f30a3535b539ac2a9b646ce3ce04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e6f30a3535b539ac2a9b646ce3ce04">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSplatmap::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current splat width, or zero before initialization. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9de16464bda0215dae3de1d9cc8ded3e" name="a9de16464bda0215dae3de1d9cc8ded3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de16464bda0215dae3de1d9cc8ded3e">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSplatmap::initialize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>defaultLayer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize topology and assign all weight to defaultLayer. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainWorldWorkspace_8cpp_source.html#l00100">eve::procgen::TerrainWorldWorkspace::create()</a>.</p>
+
+</div>
+</div>
+<a id="a0b835aa79a1e83a5732799f4f135c887" name="a0b835aa79a1e83a5732799f4f135c887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b835aa79a1e83a5732799f4f135c887">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp; eve::procgen::TerrainSplatmap::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab116d00677fa0ace138dd7c8113b05d6" name="ab116d00677fa0ace138dd7c8113b05d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab116d00677fa0ace138dd7c8113b05d6">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp; eve::procgen::TerrainSplatmap::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac4b42ec99708e011963ab3e613d0be0a" name="ac4b42ec99708e011963ab3e613d0be0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4b42ec99708e011963ab3e613d0be0a">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt; eve::procgen::TerrainSplatmap::sample </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one layer weight, or a structured range/precondition failure. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a298638d5921de60614dfc51f0b07e385" name="a298638d5921de60614dfc51f0b07e385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298638d5921de60614dfc51f0b07e385">&#9670;&#160;</a></span>alignTerrainSplatTextures</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; alignTerrainSplatTextures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainTextureAlignSettings.html">TerrainTextureAlignSettings</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Blend texture weights on adjacent terrain edges using Pcg's synchronized-noise equation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">terrainA</td><td>First exclusively borrowed splatmap owner. </td></tr>
+    <tr><td class="paramname">terrainB</td><td>Second exclusively borrowed splatmap owner; must be distinct from terrainA. </td></tr>
+    <tr><td class="paramname">settings</td><td>Finite world geometry and blend controls, borrowed only for this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Total changed texels across both maps, or a structured failure with neither map modified. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5de19a3251a23dd92dcfaea14bb366e" name="ad5de19a3251a23dd92dcfaea14bb366e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5de19a3251a23dd92dcfaea14bb366e">&#9670;&#160;</a></span>applyGtsHeightBlend</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; applyGtsHeightBlend </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1GtsHeightBlendSet.html">GtsHeightBlendSet</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Recompute all splat weights using the GTS texture-height blending equation. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed texel count or InvalidArgument; output remains unchanged on failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3a173308ebd027a61ebe68ef28080b9" name="ad3a173308ebd027a61ebe68ef28080b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3a173308ebd027a61ebe68ef28080b9">&#9670;&#160;</a></span>paintTerrainSplatLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; paintTerrainSplatLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace one terrain layer with a normalized paint raster and proportionally renormalize all other layers. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Exclusively borrowed initialized owner, published only after every texel succeeds. </td></tr>
+    <tr><td class="paramname">paint</td><td>Finite normalized raster matching target topology; point sampling matches Pcg SetSplatmap. </td></tr>
+    <tr><td class="paramname">targetLayer</td><td>Layer index previously gathered by Pcg GetSplatmap. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Changed texel count or structured diagnostic. No references, callbacks, RNG or time survive the call. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a> 第 <a class="el" href="TerrainSplatmap_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1dfc428a8bfa8fc005643911ef0e05ee" name="a1dfc428a8bfa8fc005643911ef0e05ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dfc428a8bfa8fc005643911ef0e05ee">&#9670;&#160;</a></span>paintTerrainSplatLayerMultiTile</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a> &gt; paintTerrainSplatLayerMultiTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; struct <a class="el" href="structeve_1_1procgen_1_1TerrainSplatTile.html">TerrainSplatTile</a> &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSplatmap_8h_source.html">TerrainSplatmap.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSplatmap_8cpp_source.html">TerrainSplatmap.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

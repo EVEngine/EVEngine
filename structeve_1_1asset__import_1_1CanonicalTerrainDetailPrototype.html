@@ -1,0 +1,533 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_import::CanonicalTerrainDetailPrototype结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import.html">asset_import</a></li><li class="navelem"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html">CanonicalTerrainDetailPrototype</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_import::CanonicalTerrainDetailPrototype结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One source vegetation prototype shared by baked terrain instances.  
+ <a href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aacf45b538befceabfc242e12dd1f57f7" id="r_aacf45b538befceabfc242e12dd1f57f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aacf45b538befceabfc242e12dd1f57f7">prototype</a></td></tr>
+<tr class="separator:aacf45b538befceabfc242e12dd1f57f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8f2e6ec1a4f1d543edde1178851e17" id="r_aec8f2e6ec1a4f1d543edde1178851e17"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aec8f2e6ec1a4f1d543edde1178851e17">renderMode</a></td></tr>
+<tr class="separator:aec8f2e6ec1a4f1d543edde1178851e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78b4aaf5aad3adb791f7c41ade8523aa" id="r_a78b4aaf5aad3adb791f7c41ade8523aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a78b4aaf5aad3adb791f7c41ade8523aa">usePrototypeMesh</a> = false</td></tr>
+<tr class="separator:a78b4aaf5aad3adb791f7c41ade8523aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b9bd09a66bffe12687971d0e6fe2a2c" id="r_a1b9bd09a66bffe12687971d0e6fe2a2c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a1b9bd09a66bffe12687971d0e6fe2a2c">useInstancing</a> = false</td></tr>
+<tr class="separator:a1b9bd09a66bffe12687971d0e6fe2a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0d85ca37b6221f35c5e8ca4449611d0" id="r_ae0d85ca37b6221f35c5e8ca4449611d0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#ae0d85ca37b6221f35c5e8ca4449611d0">minWidth</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae0d85ca37b6221f35c5e8ca4449611d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa82e0d3a1d407f32887948da9a63ec4e" id="r_aa82e0d3a1d407f32887948da9a63ec4e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aa82e0d3a1d407f32887948da9a63ec4e">maxWidth</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa82e0d3a1d407f32887948da9a63ec4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91c0df38e81426cd4212b008e7d9bbe8" id="r_a91c0df38e81426cd4212b008e7d9bbe8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a91c0df38e81426cd4212b008e7d9bbe8">minHeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a91c0df38e81426cd4212b008e7d9bbe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac47af5a9c786dc12297f2b8596e1a665" id="r_ac47af5a9c786dc12297f2b8596e1a665"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#ac47af5a9c786dc12297f2b8596e1a665">maxHeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac47af5a9c786dc12297f2b8596e1a665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2caad6ada7a2be227ee2405535bb8c3" id="r_aa2caad6ada7a2be227ee2405535bb8c3"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aa2caad6ada7a2be227ee2405535bb8c3">noiseSeed</a> = 0</td></tr>
+<tr class="separator:aa2caad6ada7a2be227ee2405535bb8c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdad61695d66a21f7c493def4ac6b79c" id="r_abdad61695d66a21f7c493def4ac6b79c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#abdad61695d66a21f7c493def4ac6b79c">noiseSpread</a> = .1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abdad61695d66a21f7c493def4ac6b79c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab2a2776d22222f019cdc6d89f328aff" id="r_aab2a2776d22222f019cdc6d89f328aff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aab2a2776d22222f019cdc6d89f328aff">density</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aab2a2776d22222f019cdc6d89f328aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec419cad66c9c6310f044cbe46debdce" id="r_aec419cad66c9c6310f044cbe46debdce"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#aec419cad66c9c6310f044cbe46debdce">alignToGround</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aec419cad66c9c6310f044cbe46debdce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573ee84844358c4583e09d5580ce4a90" id="r_a573ee84844358c4583e09d5580ce4a90"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a573ee84844358c4583e09d5580ce4a90">positionJitter</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a573ee84844358c4583e09d5580ce4a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68aa6e5cf2c41ff62ea87b6632e726b4" id="r_a68aa6e5cf2c41ff62ea87b6632e726b4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a68aa6e5cf2c41ff62ea87b6632e726b4">resourceAsset</a></td></tr>
+<tr class="separator:a68aa6e5cf2c41ff62ea87b6632e726b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5022325942750880a8ee8743ca58277b" id="r_a5022325942750880a8ee8743ca58277b"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a5022325942750880a8ee8743ca58277b">healthyColor</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a5022325942750880a8ee8743ca58277b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08df5bc75605bf4b1d364eb6733268c" id="r_ae08df5bc75605bf4b1d364eb6733268c"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#ae08df5bc75605bf4b1d364eb6733268c">dryColor</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ae08df5bc75605bf4b1d364eb6733268c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd84d722ecca125f31a461edf0fad95" id="r_a5fd84d722ecca125f31a461edf0fad95"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a5fd84d722ecca125f31a461edf0fad95">bendFactor</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5fd84d722ecca125f31a461edf0fad95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bd5595473e780bd8a45ec10ac96e798" id="r_a5bd5595473e780bd8a45ec10ac96e798"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a5bd5595473e780bd8a45ec10ac96e798">holeEdgePadding</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5bd5595473e780bd8a45ec10ac96e798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b97121d76718cb83caf421d66ace563" id="r_a9b97121d76718cb83caf421d66ace563"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1CanonicalTerrainDetailPrototype.html#a9b97121d76718cb83caf421d66ace563">useDensityScaling</a> = true</td></tr>
+<tr class="separator:a9b97121d76718cb83caf421d66ace563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One source vegetation prototype shared by baked terrain instances. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00055">55</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aec419cad66c9c6310f044cbe46debdce" name="aec419cad66c9c6310f044cbe46debdce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec419cad66c9c6310f044cbe46debdce">&#9670;&#160;</a></span>alignToGround</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::alignToGround = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5fd84d722ecca125f31a461edf0fad95" name="a5fd84d722ecca125f31a461edf0fad95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd84d722ecca125f31a461edf0fad95">&#9670;&#160;</a></span>bendFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::bendFactor = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab2a2776d22222f019cdc6d89f328aff" name="aab2a2776d22222f019cdc6d89f328aff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab2a2776d22222f019cdc6d89f328aff">&#9670;&#160;</a></span>density</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::density = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae08df5bc75605bf4b1d364eb6733268c" name="ae08df5bc75605bf4b1d364eb6733268c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08df5bc75605bf4b1d364eb6733268c">&#9670;&#160;</a></span>dryColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::asset_import::CanonicalTerrainDetailPrototype::dryColor {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5022325942750880a8ee8743ca58277b" name="a5022325942750880a8ee8743ca58277b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5022325942750880a8ee8743ca58277b">&#9670;&#160;</a></span>healthyColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::asset_import::CanonicalTerrainDetailPrototype::healthyColor {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5bd5595473e780bd8a45ec10ac96e798" name="a5bd5595473e780bd8a45ec10ac96e798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bd5595473e780bd8a45ec10ac96e798">&#9670;&#160;</a></span>holeEdgePadding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::holeEdgePadding = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac47af5a9c786dc12297f2b8596e1a665" name="ac47af5a9c786dc12297f2b8596e1a665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac47af5a9c786dc12297f2b8596e1a665">&#9670;&#160;</a></span>maxHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::maxHeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa82e0d3a1d407f32887948da9a63ec4e" name="aa82e0d3a1d407f32887948da9a63ec4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa82e0d3a1d407f32887948da9a63ec4e">&#9670;&#160;</a></span>maxWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::maxWidth = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91c0df38e81426cd4212b008e7d9bbe8" name="a91c0df38e81426cd4212b008e7d9bbe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c0df38e81426cd4212b008e7d9bbe8">&#9670;&#160;</a></span>minHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::minHeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0d85ca37b6221f35c5e8ca4449611d0" name="ae0d85ca37b6221f35c5e8ca4449611d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0d85ca37b6221f35c5e8ca4449611d0">&#9670;&#160;</a></span>minWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::minWidth = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa2caad6ada7a2be227ee2405535bb8c3" name="aa2caad6ada7a2be227ee2405535bb8c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2caad6ada7a2be227ee2405535bb8c3">&#9670;&#160;</a></span>noiseSeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::asset_import::CanonicalTerrainDetailPrototype::noiseSeed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdad61695d66a21f7c493def4ac6b79c" name="abdad61695d66a21f7c493def4ac6b79c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdad61695d66a21f7c493def4ac6b79c">&#9670;&#160;</a></span>noiseSpread</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::noiseSpread = .1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a573ee84844358c4583e09d5580ce4a90" name="a573ee84844358c4583e09d5580ce4a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573ee84844358c4583e09d5580ce4a90">&#9670;&#160;</a></span>positionJitter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::asset_import::CanonicalTerrainDetailPrototype::positionJitter = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacf45b538befceabfc242e12dd1f57f7" name="aacf45b538befceabfc242e12dd1f57f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf45b538befceabfc242e12dd1f57f7">&#9670;&#160;</a></span>prototype</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset_import::CanonicalTerrainDetailPrototype::prototype</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec8f2e6ec1a4f1d543edde1178851e17" name="aec8f2e6ec1a4f1d543edde1178851e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8f2e6ec1a4f1d543edde1178851e17">&#9670;&#160;</a></span>renderMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset_import::CanonicalTerrainDetailPrototype::renderMode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68aa6e5cf2c41ff62ea87b6632e726b4" name="a68aa6e5cf2c41ff62ea87b6632e726b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68aa6e5cf2c41ff62ea87b6632e726b4">&#9670;&#160;</a></span>resourceAsset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset_import::CanonicalTerrainDetailPrototype::resourceAsset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b97121d76718cb83caf421d66ace563" name="a9b97121d76718cb83caf421d66ace563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b97121d76718cb83caf421d66ace563">&#9670;&#160;</a></span>useDensityScaling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_import::CanonicalTerrainDetailPrototype::useDensityScaling = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b9bd09a66bffe12687971d0e6fe2a2c" name="a1b9bd09a66bffe12687971d0e6fe2a2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b9bd09a66bffe12687971d0e6fe2a2c">&#9670;&#160;</a></span>useInstancing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_import::CanonicalTerrainDetailPrototype::useInstancing = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78b4aaf5aad3adb791f7c41ade8523aa" name="a78b4aaf5aad3adb791f7c41ade8523aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78b4aaf5aad3adb791f7c41ade8523aa">&#9670;&#160;</a></span>usePrototypeMesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_import::CanonicalTerrainDetailPrototype::usePrototypeMesh = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a> 第 <a class="el" href="TerrainImporter_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/asset/import/<a class="el" href="TerrainImporter_8h_source.html">TerrainImporter.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

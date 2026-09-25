@@ -1,0 +1,489 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Export.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#define-members">宏定义</a>  </div>
+  <div class="headertitle"><div class="title">Export.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a href="Export_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+宏定义</h2></td></tr>
+<tr class="memitem:ac50a7ef919d1be66f0d2aa5c499b1834" id="r_ac50a7ef919d1be66f0d2aa5c499b1834"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="memdesc:ac50a7ef919d1be66f0d2aa5c499b1834"><td class="mdescLeft">&#160;</td><td class="mdescRight">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。  <br /></td></tr>
+<tr class="separator:ac50a7ef919d1be66f0d2aa5c499b1834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a704bb99555d8684cacf66248b5c3d70c" id="r_a704bb99555d8684cacf66248b5c3d70c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="memdesc:a704bb99555d8684cacf66248b5c3d70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">每个链接组（link group）各自的导出宏。  <br /></td></tr>
+<tr class="separator:a704bb99555d8684cacf66248b5c3d70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f3ddf34dc12c944c03445c0bc3fee6" id="r_ae0f3ddf34dc12c944c03445c0bc3fee6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:ae0f3ddf34dc12c944c03445c0bc3fee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b09fdcf18b26aea79409bf319c562c" id="r_a74b09fdcf18b26aea79409bf319c562c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a74b09fdcf18b26aea79409bf319c562c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb52228b1e5307ee220679412a790429" id="r_afb52228b1e5307ee220679412a790429"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:afb52228b1e5307ee220679412a790429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a390577f2aaf91c645ae452866de8fdbe" id="r_a390577f2aaf91c645ae452866de8fdbe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a390577f2aaf91c645ae452866de8fdbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85ff84ca379cb803d64a467fc5faf5a" id="r_af85ff84ca379cb803d64a467fc5faf5a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:af85ff84ca379cb803d64a467fc5faf5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a817e176557c9bf2fd750d6c9fabd7d18" id="r_a817e176557c9bf2fd750d6c9fabd7d18"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a817e176557c9bf2fd750d6c9fabd7d18">EVENGINE_API_EDITORS</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a817e176557c9bf2fd750d6c9fabd7d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23317abed4c738049e2163d13028dc3a" id="r_a23317abed4c738049e2163d13028dc3a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a23317abed4c738049e2163d13028dc3a">EVENGINE_API_FOUNDATION_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="memdesc:a23317abed4c738049e2163d13028dc3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">仅供"只有内联成员"的类型使用的组宏：拥有者 dllexport，消费方不导入。  <br /></td></tr>
+<tr class="separator:a23317abed4c738049e2163d13028dc3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac82015de5da12f35569fdf193bd3f5a9" id="r_ac82015de5da12f35569fdf193bd3f5a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#ac82015de5da12f35569fdf193bd3f5a9">EVENGINE_API_PLATFORM_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:ac82015de5da12f35569fdf193bd3f5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0374e73c8dc7b74948d99391d3af8e" id="r_a9a0374e73c8dc7b74948d99391d3af8e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a9a0374e73c8dc7b74948d99391d3af8e">EVENGINE_API_BACKENDS_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a9a0374e73c8dc7b74948d99391d3af8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a659a3d94c864e71cac20e210904b2626" id="r_a659a3d94c864e71cac20e210904b2626"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a659a3d94c864e71cac20e210904b2626">EVENGINE_API_WORLD_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a659a3d94c864e71cac20e210904b2626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdfd309111486fb163c541bcc698e0fa" id="r_acdfd309111486fb163c541bcc698e0fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#acdfd309111486fb163c541bcc698e0fa">EVENGINE_API_DOMAINS_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:acdfd309111486fb163c541bcc698e0fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6095f7ddc71f1154ecb49f03e9577aec" id="r_a6095f7ddc71f1154ecb49f03e9577aec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a6095f7ddc71f1154ecb49f03e9577aec">EVENGINE_API_ORCHESTRATION_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a6095f7ddc71f1154ecb49f03e9577aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b92525a845e75eeb8539ea37cd97f86" id="r_a2b92525a845e75eeb8539ea37cd97f86"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a2b92525a845e75eeb8539ea37cd97f86">EVENGINE_API_EDITORS_INLINE</a>&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td></tr>
+<tr class="separator:a2b92525a845e75eeb8539ea37cd97f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ca7f554855258252059789b5ad348d8" id="r_a3ca7f554855258252059789b5ad348d8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Export_8h.html#a3ca7f554855258252059789b5ad348d8">EVE_PLUGIN_EXPORT</a>&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;)))</td></tr>
+<tr class="memdesc:a3ca7f554855258252059789b5ad348d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">eve.plugins.load 要求的 C ABI 入口（成功返回 0）。  <br /></td></tr>
+<tr class="separator:a3ca7f554855258252059789b5ad348d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">宏定义说明</h2>
+<a id="a3ca7f554855258252059789b5ad348d8" name="a3ca7f554855258252059789b5ad348d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ca7f554855258252059789b5ad348d8">&#9670;&#160;</a></span>EVE_PLUGIN_EXPORT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVE_PLUGIN_EXPORT&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;)))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>eve.plugins.load 要求的 C ABI 入口（成功返回 0）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac50a7ef919d1be66f0d2aa5c499b1834" name="ac50a7ef919d1be66f0d2aa5c499b1834"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50a7ef919d1be66f0d2aa5c499b1834">&#9670;&#160;</a></span>EVENGINE_API</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>宿主（eve / libmain）导出宏；插件从进程导入同一批符号。 </p>
+<p>分域 DLL 模式（<code>EVENGINE_MODULE_LINKAGE=SHARED</code>）下，导出面仍然是 <code>EVENGINE_API</code> 标注过的那些符号 —— 不启用 <code>WINDOWS_EXPORT_ALL_SYMBOLS</code> （它会把 Poco/ImGui 的模板实例化也塞进 .def，撞 MSVC LNK1189 的 65535 上限； 实测 EVFoundation 那一组 39 个模块就有 75,885 个导出）。因此需要区分 "在编引擎 DLL" 与 "在消费引擎 DLL"：</p><ul>
+<li><code>EVENGINE_ENGINE_EXPORTS</code>：编进模块对象时定义，标注符号为 dllexport；</li>
+<li><code>EVENGINE_MODULE_DLL</code>：宿主 / 测试 / benchmark / 插件定义，为 dllimport。 两者都未定义时保持原行为（宿主 dllexport、插件 dllimport），OBJECT 模式不受影响。 </li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a74b09fdcf18b26aea79409bf319c562c" name="a74b09fdcf18b26aea79409bf319c562c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b09fdcf18b26aea79409bf319c562c">&#9670;&#160;</a></span>EVENGINE_API_BACKENDS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_BACKENDS&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a0374e73c8dc7b74948d99391d3af8e" name="a9a0374e73c8dc7b74948d99391d3af8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0374e73c8dc7b74948d99391d3af8e">&#9670;&#160;</a></span>EVENGINE_API_BACKENDS_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_BACKENDS_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a390577f2aaf91c645ae452866de8fdbe" name="a390577f2aaf91c645ae452866de8fdbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390577f2aaf91c645ae452866de8fdbe">&#9670;&#160;</a></span>EVENGINE_API_DOMAINS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_DOMAINS&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdfd309111486fb163c541bcc698e0fa" name="acdfd309111486fb163c541bcc698e0fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdfd309111486fb163c541bcc698e0fa">&#9670;&#160;</a></span>EVENGINE_API_DOMAINS_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_DOMAINS_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a817e176557c9bf2fd750d6c9fabd7d18" name="a817e176557c9bf2fd750d6c9fabd7d18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a817e176557c9bf2fd750d6c9fabd7d18">&#9670;&#160;</a></span>EVENGINE_API_EDITORS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_EDITORS&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b92525a845e75eeb8539ea37cd97f86" name="a2b92525a845e75eeb8539ea37cd97f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b92525a845e75eeb8539ea37cd97f86">&#9670;&#160;</a></span>EVENGINE_API_EDITORS_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_EDITORS_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a704bb99555d8684cacf66248b5c3d70c" name="a704bb99555d8684cacf66248b5c3d70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a704bb99555d8684cacf66248b5c3d70c">&#9670;&#160;</a></span>EVENGINE_API_FOUNDATION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_FOUNDATION&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>每个链接组（link group）各自的导出宏。 </p>
+<p>SHARED 模式下一个链接组就是一个 DLL（<code>EVE_LINK_GROUP_TABLE</code>，见 cmake/module_manifest.cmake）：<code>EVFoundation</code> / <code>EVPlatform</code> / <code>EVBackends</code> / <code>EVWorld</code> / <code>EVDomains</code> / <code>EVOrchestration</code> / <code>EVEditors</code>。编进 A 组的模块， 必须把 B 组标注过的符号看成 **导入**，而不是再导出一次 —— 在 A 的目标文件里 声明 dllexport，等于让 A 声称自己定义了实际位于 B.dll 的符号。</p>
+<p>这对函数只是浪费一个跳转（链接器能用 thunk 兜住），对 <b>数据符号</b> 却是致命的： MSVC 的导入库为导入的数据只提供 <code>__imp_?sym</code>，而"再导出"的那一侧引用的是 裸符号 <code>?sym</code>，没有任何一个组定义它，于是链接期报 LNK2001。实测正是 <code><a class="el" href="Module_8h.html">common/Module.h</a></code> 里 <code>Module_REG</code> 声明的三个 <code>static const char* &lt;Module&gt;::name</code> 数据成员（EVPlatform.dll 的跨组依赖）。</p>
+<p>因此每个组一个宏。属于 G 组的翻译单元定义 <code>EVENGINE_EXPORTS_&lt;G&gt;</code> （<code>create_module()</code> 以 PRIVATE 方式加入），G 组自己的声明是 dllexport； 其它组、宿主、测试、benchmark、插件都不定义任何 <code>EVENGINE_EXPORTS_&lt;G&gt;</code>， 看到的是 dllimport。非 SHARED 模式下没有任何目标定义 <code>EVENGINE_MODULE_DLL</code>， 所有组宏退化为 <code>EVENGINE_API</code>，OBJECT 模式的预处理器输出逐字节不变。 </p>
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23317abed4c738049e2163d13028dc3a" name="a23317abed4c738049e2163d13028dc3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23317abed4c738049e2163d13028dc3a">&#9670;&#160;</a></span>EVENGINE_API_FOUNDATION_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_FOUNDATION_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>仅供"只有内联成员"的类型使用的组宏：拥有者 dllexport，消费方不导入。 </p>
+<p>一个标注类型如果在任何 .cpp 里都没有类外成员定义，它在 DLL 边界上就没有可导入 的符号：vtable、隐式特殊成员（构造/析构/拷贝）、<code>static constexpr</code> 成员都由每个 使用它的翻译单元按 vague linkage 就地生成。若消费方把它标成 dllimport，MSVC 会 生成 <code>__imp_</code> 引用，而拥有者那一组因为没有任何翻译单元 ODR-use 这些成员， 根本不会把它们放进导出表 —— 链接期就是 LNK2019。实测：只有 EVPlatform 组的 <code><a class="el" href="SceneCapabilities_8cpp.html">scene/SceneCapabilities.cpp</a></code> 用到的 <code>ProcgenInstanceDesc</code> / <code>IProcgenSceneSink</code> （common/ProcgenSceneSink.h）与 <code>IWindowSurfaceHost</code>（common/WindowSurfaceHost.h） 属于这种情形：它们没有任何 .cpp 定义，EVFoundation 里也没人实例化。</p>
+<p>所以这一族宏在消费方展开为空（不导入，各自保留内联副本），只在拥有者那一组 展开为 dllexport（导出面与今天完全一致）；OBJECT 模式下同样退化为 EVENGINE_API。 判据是"该类有没有类外成员定义"，不是"它是不是接口"：像 <code>Module</code> / <code>ModuleManager</code> 这种有 .cpp 定义的类（vtable 与静态数据成员是数据符号，导入库只提供 <code>__imp_&lt;data&gt;</code>）必须继续用 <code>EVENGINE_API_&lt;GROUP&gt;</code> 走 dllimport。 </p>
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af85ff84ca379cb803d64a467fc5faf5a" name="af85ff84ca379cb803d64a467fc5faf5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85ff84ca379cb803d64a467fc5faf5a">&#9670;&#160;</a></span>EVENGINE_API_ORCHESTRATION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_ORCHESTRATION&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6095f7ddc71f1154ecb49f03e9577aec" name="a6095f7ddc71f1154ecb49f03e9577aec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6095f7ddc71f1154ecb49f03e9577aec">&#9670;&#160;</a></span>EVENGINE_API_ORCHESTRATION_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_ORCHESTRATION_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0f3ddf34dc12c944c03445c0bc3fee6" name="ae0f3ddf34dc12c944c03445c0bc3fee6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f3ddf34dc12c944c03445c0bc3fee6">&#9670;&#160;</a></span>EVENGINE_API_PLATFORM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_PLATFORM&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac82015de5da12f35569fdf193bd3f5a9" name="ac82015de5da12f35569fdf193bd3f5a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac82015de5da12f35569fdf193bd3f5a9">&#9670;&#160;</a></span>EVENGINE_API_PLATFORM_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_PLATFORM_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb52228b1e5307ee220679412a790429" name="afb52228b1e5307ee220679412a790429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb52228b1e5307ee220679412a790429">&#9670;&#160;</a></span>EVENGINE_API_WORLD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_WORLD&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a659a3d94c864e71cac20e210904b2626" name="a659a3d94c864e71cac20e210904b2626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a659a3d94c864e71cac20e210904b2626">&#9670;&#160;</a></span>EVENGINE_API_WORLD_INLINE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EVENGINE_API_WORLD_INLINE&#160;&#160;&#160;<a class="el" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Export_8h_source.html">Export.h</a> 第 <a class="el" href="Export_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

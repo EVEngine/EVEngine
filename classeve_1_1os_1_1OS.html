@@ -1,0 +1,909 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::os::OS类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1os.html">os</a></li><li class="navelem"><a class="el" href="classeve_1_1os_1_1OS.html">OS</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1os_1_1OS-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::os::OS类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> module — host <a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Timer; this is host/environment queries.  
+ <a href="classeve_1_1os_1_1OS.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="OS_8h_source.html">OS.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::os::OS 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1os_1_1OS.png" usemap="#eve::os::OS_map" alt=""/>
+  <map id="eve::os::OS_map" name="eve::os::OS_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,117,24"/>
+<area href="classeve_1_1IFramePacing.html" title="Host-loop frame pacing controlled independently of presentation." alt="eve::IFramePacing" shape="rect" coords="127,0,244,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4bae04c2fea44bc1d1969bae134a2f67" id="r_a4bae04c2fea44bc1d1969bae134a2f67"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a4bae04c2fea44bc1d1969bae134a2f67">Module_REG</a> (<a class="el" href="classeve_1_1os_1_1OS.html">OS</a>)</td></tr>
+<tr class="separator:a4bae04c2fea44bc1d1969bae134a2f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad89cfc11471a2bb41c45bb0688092a2e" id="r_ad89cfc11471a2bb41c45bb0688092a2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ad89cfc11471a2bb41c45bb0688092a2e">OS</a> ()</td></tr>
+<tr class="separator:ad89cfc11471a2bb41c45bb0688092a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae591952c6d5b6e57b940d8f71fba4b27" id="r_ae591952c6d5b6e57b940d8f71fba4b27"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ae591952c6d5b6e57b940d8f71fba4b27">~OS</a> () override</td></tr>
+<tr class="separator:ae591952c6d5b6e57b940d8f71fba4b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e6c1dde3e3ef2d6353afe4e8ef28576" id="r_a0e6c1dde3e3ef2d6353afe4e8ef28576"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a0e6c1dde3e3ef2d6353afe4e8ef28576">setVerticalSyncCount</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) override</td></tr>
+<tr class="memdesc:a0e6c1dde3e3ef2d6353afe4e8ef28576"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record the presentation VSync interval; zero means unsynchronized.  <br /></td></tr>
+<tr class="separator:a0e6c1dde3e3ef2d6353afe4e8ef28576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b96a28f6a3d32bfd06636979da5fc76" id="r_a8b96a28f6a3d32bfd06636979da5fc76"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a8b96a28f6a3d32bfd06636979da5fc76">getVerticalSyncCount</a> () const noexcept override</td></tr>
+<tr class="memdesc:a8b96a28f6a3d32bfd06636979da5fc76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current presentation VSync interval.  <br /></td></tr>
+<tr class="separator:a8b96a28f6a3d32bfd06636979da5fc76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0f7272c6cb8d01f9070288be91a904c" id="r_ad0f7272c6cb8d01f9070288be91a904c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ad0f7272c6cb8d01f9070288be91a904c">setTargetFramesPerSecond</a> (int <a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) override</td></tr>
+<tr class="memdesc:ad0f7272c6cb8d01f9070288be91a904c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the software frame cap; -1 disables it.  <br /></td></tr>
+<tr class="separator:ad0f7272c6cb8d01f9070288be91a904c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e5e41856a79907653f202c328dac58b" id="r_a7e5e41856a79907653f202c328dac58b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a7e5e41856a79907653f202c328dac58b">getTargetFramesPerSecond</a> () const noexcept override</td></tr>
+<tr class="memdesc:a7e5e41856a79907653f202c328dac58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the requested software frame cap, or -1 when disabled.  <br /></td></tr>
+<tr class="separator:a7e5e41856a79907653f202c328dac58b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e94e37b9d51c7733b8d6914c457250" id="r_a24e94e37b9d51c7733b8d6914c457250"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a24e94e37b9d51c7733b8d6914c457250">limitFrame</a> () override</td></tr>
+<tr class="memdesc:a24e94e37b9d51c7733b8d6914c457250"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the configured software frame cap after presentation.  <br /></td></tr>
+<tr class="separator:a24e94e37b9d51c7733b8d6914c457250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8006cb53d36c162249c9327f44a4bf6" id="r_ab8006cb53d36c162249c9327f44a4bf6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ab8006cb53d36c162249c9327f44a4bf6">getEngineVersion</a> () const</td></tr>
+<tr class="memdesc:ab8006cb53d36c162249c9327f44a4bf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Engine version string (e.g. "v0.1.0").  <br /></td></tr>
+<tr class="separator:ab8006cb53d36c162249c9327f44a4bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa211d54097a1f70956fce6a6f0af2d98" id="r_aa211d54097a1f70956fce6a6f0af2d98"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#aa211d54097a1f70956fce6a6f0af2d98">getPlatform</a> () const</td></tr>
+<tr class="memdesc:aa211d54097a1f70956fce6a6f0af2d98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw SDL platform string (e.g. "Mac OS X", "Windows").  <br /></td></tr>
+<tr class="separator:aa211d54097a1f70956fce6a6f0af2d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a063a61ebb953b381b74ed04151c0758f" id="r_a063a61ebb953b381b74ed04151c0758f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a063a61ebb953b381b74ed04151c0758f">getOS</a> () const</td></tr>
+<tr class="memdesc:a063a61ebb953b381b74ed04151c0758f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalized <a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> id for games: "Windows" | "OS X" | "Linux" | "Android" | "iOS" | "Unknown"  <br /></td></tr>
+<tr class="separator:a063a61ebb953b381b74ed04151c0758f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d8418d287be9899eead05867591a3a" id="r_ac1d8418d287be9899eead05867591a3a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ac1d8418d287be9899eead05867591a3a">getProcessorCount</a> () const</td></tr>
+<tr class="separator:ac1d8418d287be9899eead05867591a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59af462fb20b745fc75767d4a6637cdc" id="r_a59af462fb20b745fc75767d4a6637cdc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a59af462fb20b745fc75767d4a6637cdc">getCPUCacheLineSize</a> () const</td></tr>
+<tr class="memdesc:a59af462fb20b745fc75767d4a6637cdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU L1 cache line size in bytes (0 if unknown).  <br /></td></tr>
+<tr class="separator:a59af462fb20b745fc75767d4a6637cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a143cadb0bc12f9a070f351d1365b9c92" id="r_a143cadb0bc12f9a070f351d1365b9c92"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a143cadb0bc12f9a070f351d1365b9c92">getSystemRAM</a> () const</td></tr>
+<tr class="memdesc:a143cadb0bc12f9a070f351d1365b9c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">System RAM in megabytes (0 if unknown).  <br /></td></tr>
+<tr class="separator:a143cadb0bc12f9a070f351d1365b9c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0521caae46afff454c160fb9282d501" id="r_aa0521caae46afff454c160fb9282d501"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#aa0521caae46afff454c160fb9282d501">getProcessMemoryMB</a> () const</td></tr>
+<tr class="memdesc:aa0521caae46afff454c160fb9282d501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current process resident memory in megabytes (0 if unknown).  <br /></td></tr>
+<tr class="separator:aa0521caae46afff454c160fb9282d501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7823e28ddd3859e8db31c2fb91cf29a9" id="r_a7823e28ddd3859e8db31c2fb91cf29a9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a7823e28ddd3859e8db31c2fb91cf29a9">getWallTime</a> () const</td></tr>
+<tr class="memdesc:a7823e28ddd3859e8db31c2fb91cf29a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">UTC wall-clock seconds since Unix epoch (float for script).  <br /></td></tr>
+<tr class="separator:a7823e28ddd3859e8db31c2fb91cf29a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f5e29934ea9ef6574ee593c800fb0f" id="r_a45f5e29934ea9ef6574ee593c800fb0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a45f5e29934ea9ef6574ee593c800fb0f">sleepMilliseconds</a> (int ms)</td></tr>
+<tr class="separator:a45f5e29934ea9ef6574ee593c800fb0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba0919d406379914b38f653e6287cf3" id="r_a0ba0919d406379914b38f653e6287cf3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a0ba0919d406379914b38f653e6287cf3">getPowerState</a> () const</td></tr>
+<tr class="memdesc:a0ba0919d406379914b38f653e6287cf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Power state string: "unknown" | "on_battery" | "no_battery" | "charging" | "charged"  <br /></td></tr>
+<tr class="separator:a0ba0919d406379914b38f653e6287cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8d3bd662d0e5813b5c0d9501f9362d" id="r_a3d8d3bd662d0e5813b5c0d9501f9362d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a3d8d3bd662d0e5813b5c0d9501f9362d">getPowerSecondsLeft</a> () const</td></tr>
+<tr class="memdesc:a3d8d3bd662d0e5813b5c0d9501f9362d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimated seconds of battery left (-1 if unknown).  <br /></td></tr>
+<tr class="separator:a3d8d3bd662d0e5813b5c0d9501f9362d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a13efbc444c88bd8eaa198f1dd4f874" id="r_a1a13efbc444c88bd8eaa198f1dd4f874"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a1a13efbc444c88bd8eaa198f1dd4f874">getPowerPercent</a> () const</td></tr>
+<tr class="memdesc:a1a13efbc444c88bd8eaa198f1dd4f874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battery percent 0–100, or -1 if unknown.  <br /></td></tr>
+<tr class="separator:a1a13efbc444c88bd8eaa198f1dd4f874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6be05aa545221959cba69d823842626" id="r_af6be05aa545221959cba69d823842626"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#af6be05aa545221959cba69d823842626">getClipboardText</a> () const</td></tr>
+<tr class="separator:af6be05aa545221959cba69d823842626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac89be214f5a0f606e33d7d4b6c7f2321" id="r_ac89be214f5a0f606e33d7d4b6c7f2321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ac89be214f5a0f606e33d7d4b6c7f2321">setClipboardText</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="separator:ac89be214f5a0f606e33d7d4b6c7f2321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab461f94fd1bd7719977b8df167813519" id="r_ab461f94fd1bd7719977b8df167813519"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#ab461f94fd1bd7719977b8df167813519">getGpuName</a> () const</td></tr>
+<tr class="memdesc:ab461f94fd1bd7719977b8df167813519"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU queries — empty/0 if Graphics not initialized yet.  <br /></td></tr>
+<tr class="separator:ab461f94fd1bd7719977b8df167813519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f2ad03447997179330e3027512ab1e4" id="r_a7f2ad03447997179330e3027512ab1e4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a7f2ad03447997179330e3027512ab1e4">getGpuVendor</a> () const</td></tr>
+<tr class="separator:a7f2ad03447997179330e3027512ab1e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2767363471c0923b8d9b1778c9751629" id="r_a2767363471c0923b8d9b1778c9751629"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a2767363471c0923b8d9b1778c9751629">getGpuDeviceType</a> () const</td></tr>
+<tr class="memdesc:a2767363471c0923b8d9b1778c9751629"><td class="mdescLeft">&#160;</td><td class="mdescRight">"discrete" | "integrated" | "virtual" | "cpu" | "other" | ""  <br /></td></tr>
+<tr class="separator:a2767363471c0923b8d9b1778c9751629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e61b3298d507147b3d46b78c54851ca" id="r_a0e61b3298d507147b3d46b78c54851ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1os_1_1OS.html#a0e61b3298d507147b3d46b78c54851ca">getGpuMemoryTotalMB</a> () const</td></tr>
+<tr class="memdesc:a0e61b3298d507147b3d46b78c54851ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sum of DEVICE_LOCAL heap sizes in MB (0 if unknown / not ready).  <br /></td></tr>
+<tr class="separator:a0e61b3298d507147b3d46b78c54851ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IFramePacing"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IFramePacing')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IFramePacing.html">eve::IFramePacing</a></td></tr>
+<tr class="memitem:a7278d18ef47e5c90062758f7c2d4145e inherit pub_methods_classeve_1_1IFramePacing" id="r_a7278d18ef47e5c90062758f7c2d4145e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IFramePacing.html#a7278d18ef47e5c90062758f7c2d4145e">~IFramePacing</a> ()=default</td></tr>
+<tr class="separator:a7278d18ef47e5c90062758f7c2d4145e inherit pub_methods_classeve_1_1IFramePacing"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IFramePacing"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IFramePacing')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IFramePacing.html">eve::IFramePacing</a></td></tr>
+<tr class="memitem:a0b82cf8d69a46bf35faccba2671dc337 inherit pub_static_attribs_classeve_1_1IFramePacing" id="r_a0b82cf8d69a46bf35faccba2671dc337"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IFramePacing.html#a0b82cf8d69a46bf35faccba2671dc337">capabilityName</a> = &quot;eve.frame-pacing&quot;</td></tr>
+<tr class="separator:a0b82cf8d69a46bf35faccba2671dc337 inherit pub_static_attribs_classeve_1_1IFramePacing"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> module — host <a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Timer; this is host/environment queries. </p>
+<p>Script: <code>os &lt;- eve.OS();</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8h_source.html">OS.h</a> 第 <a class="el" href="OS_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad89cfc11471a2bb41c45bb0688092a2e" name="ad89cfc11471a2bb41c45bb0688092a2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad89cfc11471a2bb41c45bb0688092a2e">&#9670;&#160;</a></span>OS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::os::OS::OS </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae591952c6d5b6e57b940d8f71fba4b27" name="ae591952c6d5b6e57b940d8f71fba4b27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae591952c6d5b6e57b940d8f71fba4b27">&#9670;&#160;</a></span>~OS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::os::OS::~OS </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af6be05aa545221959cba69d823842626" name="af6be05aa545221959cba69d823842626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6be05aa545221959cba69d823842626">&#9670;&#160;</a></span>getClipboardText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getClipboardText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a59af462fb20b745fc75767d4a6637cdc" name="a59af462fb20b745fc75767d4a6637cdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59af462fb20b745fc75767d4a6637cdc">&#9670;&#160;</a></span>getCPUCacheLineSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getCPUCacheLineSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CPU L1 cache line size in bytes (0 if unknown). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+</div>
+</div>
+<a id="ab8006cb53d36c162249c9327f44a4bf6" name="ab8006cb53d36c162249c9327f44a4bf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8006cb53d36c162249c9327f44a4bf6">&#9670;&#160;</a></span>getEngineVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getEngineVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Engine version string (e.g. "v0.1.0"). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2767363471c0923b8d9b1778c9751629" name="a2767363471c0923b8d9b1778c9751629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2767363471c0923b8d9b1778c9751629">&#9670;&#160;</a></span>getGpuDeviceType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getGpuDeviceType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"discrete" | "integrated" | "virtual" | "cpu" | "other" | "" </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a>.</p>
+
+</div>
+</div>
+<a id="a0e61b3298d507147b3d46b78c54851ca" name="a0e61b3298d507147b3d46b78c54851ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e61b3298d507147b3d46b78c54851ca">&#9670;&#160;</a></span>getGpuMemoryTotalMB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getGpuMemoryTotalMB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sum of DEVICE_LOCAL heap sizes in MB (0 if unknown / not ready). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a>.</p>
+
+</div>
+</div>
+<a id="ab461f94fd1bd7719977b8df167813519" name="ab461f94fd1bd7719977b8df167813519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab461f94fd1bd7719977b8df167813519">&#9670;&#160;</a></span>getGpuName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getGpuName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>GPU queries — empty/0 if Graphics not initialized yet. </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a>.</p>
+
+</div>
+</div>
+<a id="a7f2ad03447997179330e3027512ab1e4" name="a7f2ad03447997179330e3027512ab1e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f2ad03447997179330e3027512ab1e4">&#9670;&#160;</a></span>getGpuVendor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getGpuVendor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a>.</p>
+
+</div>
+</div>
+<a id="a063a61ebb953b381b74ed04151c0758f" name="a063a61ebb953b381b74ed04151c0758f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a063a61ebb953b381b74ed04151c0758f">&#9670;&#160;</a></span>getOS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getOS </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalized <a class="el" href="classeve_1_1os_1_1OS.html" title="OS module — host OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Ti...">OS</a> id for games: "Windows" | "OS X" | "Linux" | "Android" | "iOS" | "Unknown" </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OS_8cpp_source.html#l00093">getPlatform()</a>.</p>
+
+</div>
+</div>
+<a id="aa211d54097a1f70956fce6a6f0af2d98" name="aa211d54097a1f70956fce6a6f0af2d98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa211d54097a1f70956fce6a6f0af2d98">&#9670;&#160;</a></span>getPlatform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getPlatform </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raw SDL platform string (e.g. "Mac OS X", "Windows"). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OS_8cpp_source.html#l00098">getOS()</a>.</p>
+
+</div>
+</div>
+<a id="a1a13efbc444c88bd8eaa198f1dd4f874" name="a1a13efbc444c88bd8eaa198f1dd4f874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a13efbc444c88bd8eaa198f1dd4f874">&#9670;&#160;</a></span>getPowerPercent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getPowerPercent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Battery percent 0–100, or -1 if unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d8d3bd662d0e5813b5c0d9501f9362d" name="a3d8d3bd662d0e5813b5c0d9501f9362d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8d3bd662d0e5813b5c0d9501f9362d">&#9670;&#160;</a></span>getPowerSecondsLeft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getPowerSecondsLeft </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Estimated seconds of battery left (-1 if unknown). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ba0919d406379914b38f653e6287cf3" name="a0ba0919d406379914b38f653e6287cf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ba0919d406379914b38f653e6287cf3">&#9670;&#160;</a></span>getPowerState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::os::OS::getPowerState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Power state string: "unknown" | "on_battery" | "no_battery" | "charging" | "charged" </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0521caae46afff454c160fb9282d501" name="aa0521caae46afff454c160fb9282d501"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0521caae46afff454c160fb9282d501">&#9670;&#160;</a></span>getProcessMemoryMB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getProcessMemoryMB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current process resident memory in megabytes (0 if unknown). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a> , 以及 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>.</p>
+
+</div>
+</div>
+<a id="ac1d8418d287be9899eead05867591a3a" name="ac1d8418d287be9899eead05867591a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1d8418d287be9899eead05867591a3a">&#9670;&#160;</a></span>getProcessorCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getProcessorCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+</div>
+</div>
+<a id="a143cadb0bc12f9a070f351d1365b9c92" name="a143cadb0bc12f9a070f351d1365b9c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a143cadb0bc12f9a070f351d1365b9c92">&#9670;&#160;</a></span>getSystemRAM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getSystemRAM </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>System RAM in megabytes (0 if unknown). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e5e41856a79907653f202c328dac58b" name="a7e5e41856a79907653f202c328dac58b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e5e41856a79907653f202c328dac58b">&#9670;&#160;</a></span>getTargetFramesPerSecond()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getTargetFramesPerSecond </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the requested software frame cap, or -1 when disabled. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IFramePacing.html#a452d7062f20d837f24e9c2895367d35f">eve::IFramePacing</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="OS_8h_source.html">OS.h</a> 第 <a class="el" href="OS_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b96a28f6a3d32bfd06636979da5fc76" name="a8b96a28f6a3d32bfd06636979da5fc76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b96a28f6a3d32bfd06636979da5fc76">&#9670;&#160;</a></span>getVerticalSyncCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::os::OS::getVerticalSyncCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current presentation VSync interval. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IFramePacing.html#a1a15c318ba01852b4991e695b0c02c4a">eve::IFramePacing</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="OS_8h_source.html">OS.h</a> 第 <a class="el" href="OS_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7823e28ddd3859e8db31c2fb91cf29a9" name="a7823e28ddd3859e8db31c2fb91cf29a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7823e28ddd3859e8db31c2fb91cf29a9">&#9670;&#160;</a></span>getWallTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::os::OS::getWallTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>UTC wall-clock seconds since Unix epoch (float for script). </p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24e94e37b9d51c7733b8d6914c457250" name="a24e94e37b9d51c7733b8d6914c457250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e94e37b9d51c7733b8d6914c457250">&#9670;&#160;</a></span>limitFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::os::OS::limitFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the configured software frame cap after presentation. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IFramePacing.html#a9b321ede216664c025e276612568c7cd">eve::IFramePacing</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00019">milliseconds</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00158">target</a>.</p>
+
+</div>
+</div>
+<a id="a4bae04c2fea44bc1d1969bae134a2f67" name="a4bae04c2fea44bc1d1969bae134a2f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bae04c2fea44bc1d1969bae134a2f67">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::os::OS::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1os_1_1OS.html">OS</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac89be214f5a0f606e33d7d4b6c7f2321" name="ac89be214f5a0f606e33d7d4b6c7f2321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac89be214f5a0f606e33d7d4b6c7f2321">&#9670;&#160;</a></span>setClipboardText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::os::OS::setClipboardText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="ad0f7272c6cb8d01f9070288be91a904c" name="ad0f7272c6cb8d01f9070288be91a904c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0f7272c6cb8d01f9070288be91a904c">&#9670;&#160;</a></span>setTargetFramesPerSecond()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::os::OS::setTargetFramesPerSecond </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the software frame cap; -1 disables it. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IFramePacing.html#a79d0de96907753f0eb4105b2e943848a">eve::IFramePacing</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00158">target</a>.</p>
+
+</div>
+</div>
+<a id="a0e6c1dde3e3ef2d6353afe4e8ef28576" name="a0e6c1dde3e3ef2d6353afe4e8ef28576"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e6c1dde3e3ef2d6353afe4e8ef28576">&#9670;&#160;</a></span>setVerticalSyncCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::os::OS::setVerticalSyncCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Record the presentation VSync interval; zero means unsynchronized. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IFramePacing.html#a2c7867e305469ace02cc39194f1bed09">eve::IFramePacing</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a45f5e29934ea9ef6574ee593c800fb0f" name="a45f5e29934ea9ef6574ee593c800fb0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f5e29934ea9ef6574ee593c800fb0f">&#9670;&#160;</a></span>sleepMilliseconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::os::OS::sleepMilliseconds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OS_8cpp_source.html">OS.cpp</a> 第 <a class="el" href="OS_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/os/<a class="el" href="OS_8h_source.html">OS.h</a></li>
+<li>src/modules/os/<a class="el" href="OS_8cpp_source.html">OS.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

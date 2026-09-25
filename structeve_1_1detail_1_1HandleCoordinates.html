@@ -1,0 +1,667 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::detail::HandleCoordinates结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1detail.html">detail</a></li><li class="navelem"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="structeve_1_1detail_1_1HandleCoordinates-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::detail::HandleCoordinates结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Tag-free slot coordinates behind every <code><a class="el" href="classeve_1_1RuntimeHandle.html" title="Process-local slot identity tagged by the registry that owns it.">RuntimeHandle</a>&lt;Tag&gt;</code>.  
+ <a href="structeve_1_1detail_1_1HandleCoordinates.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:af829e485d26b329f26f254cd732a19f0" id="r_af829e485d26b329f26f254cd732a19f0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a> = std::uint32_t</td></tr>
+<tr class="memdesc:af829e485d26b329f26f254cd732a19f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unsigned owner-local slot index type.  <br /></td></tr>
+<tr class="separator:af829e485d26b329f26f254cd732a19f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c53d8e9bf510e1a1a0fef1da5a3a835" id="r_a4c53d8e9bf510e1a1a0fef1da5a3a835"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> = std::uint32_t</td></tr>
+<tr class="memdesc:a4c53d8e9bf510e1a1a0fef1da5a3a835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unsigned owner-local generation type.  <br /></td></tr>
+<tr class="separator:a4c53d8e9bf510e1a1a0fef1da5a3a835"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7cb58f68d26fc7065bf9626c373eb117" id="r_a7cb58f68d26fc7065bf9626c373eb117"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a7cb58f68d26fc7065bf9626c373eb117">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:a7cb58f68d26fc7065bf9626c373eb117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether both coordinates are usable handle values.  <br /></td></tr>
+<tr class="separator:a7cb58f68d26fc7065bf9626c373eb117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25e4b332962d59008e0948b8a65bbc1d" id="r_a25e4b332962d59008e0948b8a65bbc1d"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a25e4b332962d59008e0948b8a65bbc1d">isInvalid</a> () const noexcept</td></tr>
+<tr class="memdesc:a25e4b332962d59008e0948b8a65bbc1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this value is the invalid sentinel.  <br /></td></tr>
+<tr class="separator:a25e4b332962d59008e0948b8a65bbc1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a890c8aed28995236d1cb0714a1af3cca" id="r_a890c8aed28995236d1cb0714a1af3cca"><td class="memItemLeft" align="right" valign="top">constexpr std::optional&lt; <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a890c8aed28995236d1cb0714a1af3cca">bumpedGeneration</a> () const noexcept</td></tr>
+<tr class="memdesc:a890c8aed28995236d1cb0714a1af3cca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this slot's next generation.  <br /></td></tr>
+<tr class="separator:a890c8aed28995236d1cb0714a1af3cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac50af77e56d4277b48f5ec80ed76e0cf" id="r_ac50af77e56d4277b48f5ec80ed76e0cf"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#ac50af77e56d4277b48f5ec80ed76e0cf">packed</a> () const noexcept</td></tr>
+<tr class="memdesc:ac50af77e56d4277b48f5ec80ed76e0cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the two coordinates for a legacy integer boundary.  <br /></td></tr>
+<tr class="separator:ac50af77e56d4277b48f5ec80ed76e0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a9f15b420ebe96beb1931969c6cca8d8e" id="r_a9f15b420ebe96beb1931969c6cca8d8e"><td class="memItemLeft" align="right" valign="top">static constexpr std::optional&lt; <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a9f15b420ebe96beb1931969c6cca8d8e">nextGeneration</a> (<a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> current) noexcept</td></tr>
+<tr class="memdesc:a9f15b420ebe96beb1931969c6cca8d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next generation without unsigned wraparound.  <br /></td></tr>
+<tr class="separator:a9f15b420ebe96beb1931969c6cca8d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e91acee5e099d915a08889c3690bdb9" id="r_a0e91acee5e099d915a08889c3690bdb9"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a0e91acee5e099d915a08889c3690bdb9">fromPacked</a> (std::uint64_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) noexcept</td></tr>
+<tr class="memdesc:a0e91acee5e099d915a08889c3690bdb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstructs coordinates from an explicit packed boundary value.  <br /></td></tr>
+<tr class="separator:a0e91acee5e099d915a08889c3690bdb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a32d982fadbe40c22e57b4f84867654af" id="r_a32d982fadbe40c22e57b4f84867654af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a32d982fadbe40c22e57b4f84867654af">index</a> = <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a06f15a954e56b2e0f73a8c7c308667c0">invalidIndex</a></td></tr>
+<tr class="separator:a32d982fadbe40c22e57b4f84867654af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d908f3207c9c4a37695a7cea09c2c11" id="r_a1d908f3207c9c4a37695a7cea09c2c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a1d908f3207c9c4a37695a7cea09c2c11">generation</a> = <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a39496e802d1fe0b42439d463c0e14603">invalidGeneration</a></td></tr>
+<tr class="separator:a1d908f3207c9c4a37695a7cea09c2c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a06f15a954e56b2e0f73a8c7c308667c0" id="r_a06f15a954e56b2e0f73a8c7c308667c0"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a06f15a954e56b2e0f73a8c7c308667c0">invalidIndex</a> = std::numeric_limits&lt;<a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a>&gt;::max()</td></tr>
+<tr class="memdesc:a06f15a954e56b2e0f73a8c7c308667c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserved index value shared by all invalid handles.  <br /></td></tr>
+<tr class="separator:a06f15a954e56b2e0f73a8c7c308667c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39496e802d1fe0b42439d463c0e14603" id="r_a39496e802d1fe0b42439d463c0e14603"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a39496e802d1fe0b42439d463c0e14603">invalidGeneration</a> = 0</td></tr>
+<tr class="memdesc:a39496e802d1fe0b42439d463c0e14603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserved generation value shared by all invalid handles.  <br /></td></tr>
+<tr class="separator:a39496e802d1fe0b42439d463c0e14603"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:aaf896936e998ffe124f13de7c1bccaad" id="r_aaf896936e998ffe124f13de7c1bccaad"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#aaf896936e998ffe124f13de7c1bccaad">operator==</a> (const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;, const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:aaf896936e998ffe124f13de7c1bccaad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6376452c15a344b871c8840733da8797" id="r_a6376452c15a344b871c8840733da8797"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a6376452c15a344b871c8840733da8797">operator&lt;=&gt;</a> (const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;, const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a6376452c15a344b871c8840733da8797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Tag-free slot coordinates behind every <code><a class="el" href="classeve_1_1RuntimeHandle.html" title="Process-local slot identity tagged by the registry that owns it.">RuntimeHandle</a>&lt;Tag&gt;</code>. </p>
+<p>Validity, generation bumping without unsigned wraparound and the packed projection are identical for every owner tag, so they are defined once here. <code><a class="el" href="classeve_1_1RuntimeHandle.html" title="Process-local slot identity tagged by the registry that owns it.">RuntimeHandle</a>&lt;Tag&gt;</code> keeps the tag purely as a phantom type and inherits nothing, so comparing handles of different tags still does not compile. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a4c53d8e9bf510e1a1a0fef1da5a3a835" name="a4c53d8e9bf510e1a1a0fef1da5a3a835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c53d8e9bf510e1a1a0fef1da5a3a835">&#9670;&#160;</a></span>generation_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">eve::detail::HandleCoordinates::generation_type</a> =  std::uint32_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unsigned owner-local generation type. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af829e485d26b329f26f254cd732a19f0" name="af829e485d26b329f26f254cd732a19f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af829e485d26b329f26f254cd732a19f0">&#9670;&#160;</a></span>index_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">eve::detail::HandleCoordinates::index_type</a> =  std::uint32_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unsigned owner-local slot index type. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a890c8aed28995236d1cb0714a1af3cca" name="a890c8aed28995236d1cb0714a1af3cca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a890c8aed28995236d1cb0714a1af3cca">&#9670;&#160;</a></span>bumpedGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::optional&lt; <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> &gt; eve::detail::HandleCoordinates::bumpedGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns this slot's next generation. </p>
+<dl class="section return"><dt>返回</dt><dd>The bumped generation, or empty for an invalid index or overflow. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00044">generation</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00043">index</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00039">invalidIndex</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00059">nextGeneration()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00166">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a>.</p>
+
+</div>
+</div>
+<a id="a0e91acee5e099d915a08889c3690bdb9" name="a0e91acee5e099d915a08889c3690bdb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e91acee5e099d915a08889c3690bdb9">&#9670;&#160;</a></span>fromPacked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> eve::detail::HandleCoordinates::fromPacked </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reconstructs coordinates from an explicit packed boundary value. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> previously produced by <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#ac50af77e56d4277b48f5ec80ed76e0cf" title="Encodes the two coordinates for a legacy integer boundary.">packed()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The decoded coordinates; invalid coordinate values remain invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00185">eve::RuntimeHandle&lt; Tag &gt;::fromPacked()</a>.</p>
+
+</div>
+</div>
+<a id="a25e4b332962d59008e0948b8a65bbc1d" name="a25e4b332962d59008e0948b8a65bbc1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25e4b332962d59008e0948b8a65bbc1d">&#9670;&#160;</a></span>isInvalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::detail::HandleCoordinates::isInvalid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this value is the invalid sentinel. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00047">isValid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00145">eve::RuntimeHandle&lt; Tag &gt;::isInvalid()</a>.</p>
+
+</div>
+</div>
+<a id="a7cb58f68d26fc7065bf9626c373eb117" name="a7cb58f68d26fc7065bf9626c373eb117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cb58f68d26fc7065bf9626c373eb117">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::detail::HandleCoordinates::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether both coordinates are usable handle values. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00044">generation</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00043">index</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00041">invalidGeneration</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00039">invalidIndex</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00052">isInvalid()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00142">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a9f15b420ebe96beb1931969c6cca8d8e" name="a9f15b420ebe96beb1931969c6cca8d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f15b420ebe96beb1931969c6cca8d8e">&#9670;&#160;</a></span>nextGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr std::optional&lt; <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> &gt; eve::detail::HandleCoordinates::nextGeneration </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a>&#160;</td>
+          <td class="paramname"><em>current</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the next generation without unsigned wraparound. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">current</td><td>The current slot generation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The next generation, or empty when the slot must be retired. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00068">bumpedGeneration()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00158">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a>.</p>
+
+</div>
+</div>
+<a id="ac50af77e56d4277b48f5ec80ed76e0cf" name="ac50af77e56d4277b48f5ec80ed76e0cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50af77e56d4277b48f5ec80ed76e0cf">&#9670;&#160;</a></span>packed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t eve::detail::HandleCoordinates::packed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Encodes the two coordinates for a legacy integer boundary. </p>
+<dl class="section return"><dt>返回</dt><dd>A lossless process-local packed representation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00044">generation</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00043">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00178">eve::RuntimeHandle&lt; Tag &gt;::packed()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a6376452c15a344b871c8840733da8797" name="a6376452c15a344b871c8840733da8797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6376452c15a344b871c8840733da8797">&#9670;&#160;</a></span>operator&lt;=&gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf896936e998ffe124f13de7c1bccaad" name="aaf896936e998ffe124f13de7c1bccaad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf896936e998ffe124f13de7c1bccaad">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html">HandleCoordinates</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a1d908f3207c9c4a37695a7cea09c2c11" name="a1d908f3207c9c4a37695a7cea09c2c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d908f3207c9c4a37695a7cea09c2c11">&#9670;&#160;</a></span>generation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> eve::detail::HandleCoordinates::generation = <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a39496e802d1fe0b42439d463c0e14603">invalidGeneration</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00068">bumpedGeneration()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00151">eve::RuntimeHandle&lt; Tag &gt;::generation()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00047">isValid()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00077">packed()</a>.</p>
+
+</div>
+</div>
+<a id="a32d982fadbe40c22e57b4f84867654af" name="a32d982fadbe40c22e57b4f84867654af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32d982fadbe40c22e57b4f84867654af">&#9670;&#160;</a></span>index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a> eve::detail::HandleCoordinates::index = <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a06f15a954e56b2e0f73a8c7c308667c0">invalidIndex</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00068">bumpedGeneration()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00148">eve::RuntimeHandle&lt; Tag &gt;::index()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00047">isValid()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00166">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00077">packed()</a>.</p>
+
+</div>
+</div>
+<a id="a39496e802d1fe0b42439d463c0e14603" name="a39496e802d1fe0b42439d463c0e14603"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39496e802d1fe0b42439d463c0e14603">&#9670;&#160;</a></span>invalidGeneration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#a4c53d8e9bf510e1a1a0fef1da5a3a835">generation_type</a> eve::detail::HandleCoordinates::invalidGeneration = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserved generation value shared by all invalid handles. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00047">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a06f15a954e56b2e0f73a8c7c308667c0" name="a06f15a954e56b2e0f73a8c7c308667c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06f15a954e56b2e0f73a8c7c308667c0">&#9670;&#160;</a></span>invalidIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a> eve::detail::HandleCoordinates::invalidIndex = std::numeric_limits&lt;<a class="el" href="structeve_1_1detail_1_1HandleCoordinates.html#af829e485d26b329f26f254cd732a19f0">index_type</a>&gt;::max()</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserved index value shared by all invalid handles. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00068">bumpedGeneration()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00047">isValid()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

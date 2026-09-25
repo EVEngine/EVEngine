@@ -1,0 +1,329 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/Interaction.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Interaction.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Interaction_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsTypes_8h.html">tactics/TacticsTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">   29</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a> : std::uint8_t {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1">AwaitSelection</a>,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a">UnitSelected</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563">Targeting</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0">Resolving</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622">Ended</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">   45</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a">SelectUnit</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613">MoveTo</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">UseAbilityOn</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19">Cancel</a>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311">Confirm</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb">EndTurn</a>,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view <a class="code hl_function" href="namespaceeve_1_1tactics.html#a38c48eda6642d0cc7e8beb01002a0ba3">interactionStateName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a> state) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view <a class="code hl_function" href="namespaceeve_1_1tactics.html#ab3bf321af3d656a6567f63067be87329">interactionIntentKindName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionIntent.html">InteractionIntent</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#a19d9760a0dca85803a2558ec515b8347">   75</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#a19d9760a0dca85803a2558ec515b8347">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">InteractionIntentKind::None</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#a932762bed88061e2f2bf589140ea5407">   77</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#a932762bed88061e2f2bf589140ea5407">actor</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">   78</a></span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a>       <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">cell</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#a2b26a01ea53483d54735612e1b9d9c1b">   80</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>  <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#a2b26a01ea53483d54735612e1b9d9c1b">action</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#aa274dccea2839ca452eec927b640a65b">   82</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#aa274dccea2839ca452eec927b640a65b">targetUnit</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionIntent.html#a471dfdf48835e69932e2b0604c13ae29">   84</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a>   <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionIntent.html#a471dfdf48835e69932e2b0604c13ae29">expected</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="};">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html">   98</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#aabd66c31fa52d3acbdb83649b3b84529">   99</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a> <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#aabd66c31fa52d3acbdb83649b3b84529">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">BattleStatus::Setup</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#afd8b5403001776b2016c709620e6ab08">  100</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a>  <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#afd8b5403001776b2016c709620e6ab08">phase</a>  = <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">BattlePhase::Setup</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#a8bea3715de244920dfbca30a27045353">  102</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>   <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#a8bea3715de244920dfbca30a27045353">activeUnit</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#a5c77d15b91ac90a42e123126238c8c05">  104</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>   <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#a5c77d15b91ac90a42e123126238c8c05">controlledUnit</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#ae94bea1432f92826f454854692a5fd14">  106</a></span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a>         <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#ae94bea1432f92826f454854692a5fd14">controlledCell</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#ad03e5011fdb8eefe04f7323eb3825b68">  108</a></span>    std::vector&lt;Cell&gt; <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#ad03e5011fdb8eefe04f7323eb3825b68">reachableCells</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#ada0cef1a87e812baf4eef88db66accf7">  110</a></span>    std::vector&lt;Cell&gt; <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#ada0cef1a87e812baf4eef88db66accf7">targetableCells</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#a350dbb9fd222013a4b95291c0e687ed3">  112</a></span>    std::map&lt;Cell, SubjectRef&gt; <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#a350dbb9fd222013a4b95291c0e687ed3">unitsByCell</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1InteractionContext.html#aa3de9369a8630c1823256a2f923441f8">  114</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a>     <a class="code hl_variable" href="structeve_1_1tactics_1_1InteractionContext.html#aa3de9369a8630c1823256a2f923441f8">revision</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="};">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1InteractionSession.html">  128</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1tactics_1_1InteractionSession.html">InteractionSession</a> final {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1tactics_1_1InteractionSession.html">InteractionSession</a> create(<a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a> <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1InteractionSession.html#a5e4498876b0b150ec70659a276866adf">  145</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a>&amp; <a class="code hl_function" href="classeve_1_1tactics_1_1InteractionSession.html#a5e4498876b0b150ec70659a276866adf">context</a>() const noexcept { <span class="keywordflow">return</span> context_; }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1InteractionSession.html#a9bba9254c33fc6fbd9dbf1c4ad296bc6">  147</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_function" href="classeve_1_1tactics_1_1InteractionSession.html#a9bba9254c33fc6fbd9dbf1c4ad296bc6">armedAction</a>() const noexcept { <span class="keywordflow">return</span> armedAction_; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;InteractionIntent&gt;</a> onCellClicked(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> armAbility(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a>, std::vector&lt;Cell&gt; targetableCells);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;InteractionIntent&gt;</a> onCancel();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;InteractionIntent&gt;</a> onEndTurn();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> markResolving();</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> resolve();</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1tactics_1_1InteractionSession.html">InteractionSession</a>(<a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a> <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    [[nodiscard]] <span class="keywordtype">bool</span> acceptsInput() const noexcept;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    [[nodiscard]] <span class="keywordtype">bool</span> cellInReachable(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    [[nodiscard]] <span class="keywordtype">bool</span> cellInTargetable(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionIntent.html">InteractionIntent</a> makeIntent(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a>      context_;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a>        state_ = <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a>::Blocked;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">bool</span>                    unitSelected_ = false;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>               armedAction_;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&gt;       armedTargets_;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a>   pending_ = <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a>::None;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>};</div>
+</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a057699cf114942bd42087102f39351f4"><div class="ttname"><a href="PlayHost_8cpp.html#a057699cf114942bd42087102f39351f4">action</a></div><div class="ttdeci">std::string action</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00147">PlayHost.cpp:147</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00015">TacticsPath.cpp:15</a></div></div>
+<div class="ttc" id="aTacticsTypes_8h_html"><div class="ttname"><a href="TacticsTypes_8h.html">TacticsTypes.h</a></div><div class="ttdoc">Deterministic board values and short-root ECS entities for tactics.</div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00094">VegetationPreset.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00391">Identity.h:391</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1InteractionSession_html"><div class="ttname"><a href="classeve_1_1tactics_1_1InteractionSession.html">eve::tactics::InteractionSession</a></div><div class="ttdoc">A disposable, non-authoritative interaction session.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00128">Interaction.h:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1InteractionSession_html_a5e4498876b0b150ec70659a276866adf"><div class="ttname"><a href="classeve_1_1tactics_1_1InteractionSession.html#a5e4498876b0b150ec70659a276866adf">eve::tactics::InteractionSession::context</a></div><div class="ttdeci">const InteractionContext &amp; context() const noexcept</div><div class="ttdoc">The context this session was created from.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00145">Interaction.h:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1InteractionSession_html_a9bba9254c33fc6fbd9dbf1c4ad296bc6"><div class="ttname"><a href="classeve_1_1tactics_1_1InteractionSession.html#a9bba9254c33fc6fbd9dbf1c4ad296bc6">eve::tactics::InteractionSession::armedAction</a></div><div class="ttdeci">const LogicalId &amp; armedAction() const noexcept</div><div class="ttdoc">The ability currently armed, or an invalid id when none is.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00147">Interaction.h:147</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00013">Interaction.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a2c8fc99e5215995b92d41e72a10dd5ba"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">eve::tactics::BattleStatus</a></div><div class="ttdeci">BattleStatus</div><div class="ttdoc">Tactical battle lifecycle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00045">TacticsTypes.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">eve::tactics::BattleStatus::Setup</a></div><div class="ttdeci">@ Setup</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a38c48eda6642d0cc7e8beb01002a0ba3"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a38c48eda6642d0cc7e8beb01002a0ba3">eve::tactics::interactionStateName</a></div><div class="ttdeci">std::string_view interactionStateName(InteractionState state) noexcept</div><div class="ttdoc">Human-readable stable spelling of an interaction state (protocol text).</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00026">Interaction.cpp:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564a"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">eve::tactics::InteractionIntentKind</a></div><div class="ttdeci">InteractionIntentKind</div><div class="ttdoc">What the player asked for. A value, not a mutation.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00045">Interaction.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">eve::tactics::InteractionIntentKind::UseAbilityOn</a></div><div class="ttdeci">@ UseAbilityOn</div><div class="ttdoc">Declare InteractionIntent::action against cell and optional unit.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb">eve::tactics::InteractionIntentKind::EndTurn</a></div><div class="ttdeci">@ EndTurn</div><div class="ttdoc">End the controlled unit's activation.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a">eve::tactics::InteractionIntentKind::SelectUnit</a></div><div class="ttdeci">@ SelectUnit</div><div class="ttdoc">Focus the controlled unit.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">eve::tactics::InteractionIntentKind::None</a></div><div class="ttdeci">@ None</div><div class="ttdoc">Nothing to do: the click landed somewhere with no meaning in this state.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311">eve::tactics::InteractionIntentKind::Confirm</a></div><div class="ttdeci">@ Confirm</div><div class="ttdoc">Submit whatever intent is pending.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613">eve::tactics::InteractionIntentKind::MoveTo</a></div><div class="ttdeci">@ MoveTo</div><div class="ttdoc">Move the controlled unit onto InteractionIntent::cell.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19">eve::tactics::InteractionIntentKind::Cancel</a></div><div class="ttdeci">@ Cancel</div><div class="ttdoc">Armed ability/selection should be dropped.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ab3bf321af3d656a6567f63067be87329"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ab3bf321af3d656a6567f63067be87329">eve::tactics::interactionIntentKindName</a></div><div class="ttdeci">std::string_view interactionIntentKindName(InteractionIntentKind kind) noexcept</div><div class="ttdoc">Human-readable stable spelling of an intent kind (protocol text).</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00038">Interaction.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad179be517f946678fdf8b276786a2bde"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">eve::tactics::BattlePhase</a></div><div class="ttdeci">BattlePhase</div><div class="ttdoc">Explicit, externally observable battle phase.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00048">TacticsTypes.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">eve::tactics::BattlePhase::Setup</a></div><div class="ttdeci">@ Setup</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">eve::tactics::InteractionState</a></div><div class="ttdeci">InteractionState</div><div class="ttdoc">Where the interaction machine is, as far as the player is concerned.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00029">Interaction.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622">eve::tactics::InteractionState::Ended</a></div><div class="ttdeci">@ Ended</div><div class="ttdoc">The battle is over; only inspection remains.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::tactics::InteractionState::Blocked</a></div><div class="ttdeci">@ Blocked</div><div class="ttdoc">Not this controller's turn, or the battle is not accepting input at all.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0">eve::tactics::InteractionState::Resolving</a></div><div class="ttdeci">@ Resolving</div><div class="ttdoc">The caller has an uncommitted intent and must commit or cancel it.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563">eve::tactics::InteractionState::Targeting</a></div><div class="ttdeci">@ Targeting</div><div class="ttdoc">An ability is armed; the next click picks its target.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a">eve::tactics::InteractionState::UnitSelected</a></div><div class="ttdeci">@ UnitSelected</div><div class="ttdoc">The controlled unit is selected; the next click acts on a cell.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1">eve::tactics::InteractionState::AwaitSelection</a></div><div class="ttdeci">@ AwaitSelection</div><div class="ttdoc">Nothing selected yet; a click picks a destination or the active unit.</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1Cell_html"><div class="ttname"><a href="structeve_1_1tactics_1_1Cell.html">eve::tactics::Cell</a></div><div class="ttdoc">Logical board coordinate independent of rendering projection.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00030">TacticsTypes.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html">eve::tactics::InteractionContext</a></div><div class="ttdoc">Immutable projection of everything the interaction machine is allowed to know.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00098">Interaction.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_a350dbb9fd222013a4b95291c0e687ed3"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#a350dbb9fd222013a4b95291c0e687ed3">eve::tactics::InteractionContext::unitsByCell</a></div><div class="ttdeci">std::map&lt; Cell, SubjectRef &gt; unitsByCell</div><div class="ttdoc">Unit occupying each cell, for turning a targeted cell into a targeted unit.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00112">Interaction.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_a5c77d15b91ac90a42e123126238c8c05"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#a5c77d15b91ac90a42e123126238c8c05">eve::tactics::InteractionContext::controlledUnit</a></div><div class="ttdeci">SubjectRef controlledUnit</div><div class="ttdoc">The unit this session drives. An invalid subject means &quot;observe only&quot;.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00104">Interaction.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_a8bea3715de244920dfbca30a27045353"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#a8bea3715de244920dfbca30a27045353">eve::tactics::InteractionContext::activeUnit</a></div><div class="ttdeci">SubjectRef activeUnit</div><div class="ttdoc">The unit currently allowed to act, or an invalid subject when none is.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00102">Interaction.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_aa3de9369a8630c1823256a2f923441f8"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#aa3de9369a8630c1823256a2f923441f8">eve::tactics::InteractionContext::revision</a></div><div class="ttdeci">Revision revision</div><div class="ttdoc">The revision the caller observed when it built this context.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00114">Interaction.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_aabd66c31fa52d3acbdb83649b3b84529"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#aabd66c31fa52d3acbdb83649b3b84529">eve::tactics::InteractionContext::status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00099">Interaction.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_ad03e5011fdb8eefe04f7323eb3825b68"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#ad03e5011fdb8eefe04f7323eb3825b68">eve::tactics::InteractionContext::reachableCells</a></div><div class="ttdeci">std::vector&lt; Cell &gt; reachableCells</div><div class="ttdoc">Destinations the controlled unit may legally move to.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00108">Interaction.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_ada0cef1a87e812baf4eef88db66accf7"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#ada0cef1a87e812baf4eef88db66accf7">eve::tactics::InteractionContext::targetableCells</a></div><div class="ttdeci">std::vector&lt; Cell &gt; targetableCells</div><div class="ttdoc">Cells where an armed ability may legally land.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00110">Interaction.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_ae94bea1432f92826f454854692a5fd14"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#ae94bea1432f92826f454854692a5fd14">eve::tactics::InteractionContext::controlledCell</a></div><div class="ttdeci">Cell controlledCell</div><div class="ttdoc">Cell of the controlled unit, used to recognise a click on the unit itself.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00106">Interaction.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionContext_html_afd8b5403001776b2016c709620e6ab08"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionContext.html#afd8b5403001776b2016c709620e6ab08">eve::tactics::InteractionContext::phase</a></div><div class="ttdeci">BattlePhase phase</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00100">Interaction.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html">eve::tactics::InteractionIntent</a></div><div class="ttdoc">One player intention, expressed with stable identities only.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00074">Interaction.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_a19d9760a0dca85803a2558ec515b8347"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#a19d9760a0dca85803a2558ec515b8347">eve::tactics::InteractionIntent::kind</a></div><div class="ttdeci">InteractionIntentKind kind</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00075">Interaction.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_a2b26a01ea53483d54735612e1b9d9c1b"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#a2b26a01ea53483d54735612e1b9d9c1b">eve::tactics::InteractionIntent::action</a></div><div class="ttdeci">LogicalId action</div><div class="ttdoc">Armed ability for InteractionIntentKind::UseAbilityOn.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00080">Interaction.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_a471dfdf48835e69932e2b0604c13ae29"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#a471dfdf48835e69932e2b0604c13ae29">eve::tactics::InteractionIntent::expected</a></div><div class="ttdeci">Revision expected</div><div class="ttdoc">The revision this intent was decided against.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00084">Interaction.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_a932762bed88061e2f2bf589140ea5407"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#a932762bed88061e2f2bf589140ea5407">eve::tactics::InteractionIntent::actor</a></div><div class="ttdeci">SubjectRef actor</div><div class="ttdoc">The unit the intent is about (the controlled unit when one is known).</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00077">Interaction.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_aa274dccea2839ca452eec927b640a65b"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#aa274dccea2839ca452eec927b640a65b">eve::tactics::InteractionIntent::targetUnit</a></div><div class="ttdeci">SubjectRef targetUnit</div><div class="ttdoc">Unit occupying the target cell, when the intent targets a unit.</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00082">Interaction.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1InteractionIntent_html_ac4dc8c25bbfa72bda54b0a7e8e1f4d64"><div class="ttname"><a href="structeve_1_1tactics_1_1InteractionIntent.html#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">eve::tactics::InteractionIntent::cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="Interaction_8h_source.html#l00078">Interaction.h:78</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::ISmrNeuralRetarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html">ISmrNeuralRetarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1animation_1_1ISmrNeuralRetarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::ISmrNeuralRetarget类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Optional MeshRet/SMR neural retarget provider (implemented by animation_tensor).  
+ <a href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimSmrNeural_8h_source.html">AnimSmrNeural.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation::ISmrNeuralRetarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation_1_1ISmrNeuralRetarget.png" usemap="#eve::animation::ISmrNeuralRetarget_map" alt=""/>
+  <map id="eve::animation::ISmrNeuralRetarget_map" name="eve::animation::ISmrNeuralRetarget_map">
+<area href="classeve_1_1animation_1_1SmrNeuralProvider.html" title="Capability provider selecting ONNX MeshRet or builtin tensor MeshRet. @ownership Owned by AnimationTe..." alt="eve::animation::SmrNeuralProvider" shape="rect" coords="0,56,208,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a985aca87a500f3b4601007448be11560" id="r_a985aca87a500f3b4601007448be11560"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#a985aca87a500f3b4601007448be11560">~ISmrNeuralRetarget</a> ()=default</td></tr>
+<tr class="separator:a985aca87a500f3b4601007448be11560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4c69452bbb424b4cce1b739abb3755c" id="r_ac4c69452bbb424b4cce1b739abb3755c"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#ac4c69452bbb424b4cce1b739abb3755c">name</a> () const =0</td></tr>
+<tr class="memdesc:ac4c69452bbb424b4cce1b739abb3755c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable backend label describing the live execution path.  <br /></td></tr>
+<tr class="separator:ac4c69452bbb424b4cce1b739abb3755c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4140702a969cd63e2834dc228317610c" id="r_a4140702a969cd63e2834dc228317610c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#a4140702a969cd63e2834dc228317610c">isReady</a> (const <a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html">AnimRetargetProfile</a> *profile) const =0</td></tr>
+<tr class="memdesc:a4140702a969cd63e2834dc228317610c"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a model is loaded (ONNX path) or the builtin tensor MeshRet graph is usable.  <br /></td></tr>
+<tr class="separator:a4140702a969cd63e2834dc228317610c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4c0d4f0200cabfa5aed0938feb76078" id="r_ac4c0d4f0200cabfa5aed0938feb76078"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1SmrNeuralResult.html">SmrNeuralResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#ac4c0d4f0200cabfa5aed0938feb76078">retarget</a> (const <a class="el" href="structeve_1_1animation_1_1SmrNeuralRequest.html">SmrNeuralRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)=0</td></tr>
+<tr class="memdesc:ac4c0d4f0200cabfa5aed0938feb76078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run MeshRet-style inference and rewrite targetClip local rotations.  <br /></td></tr>
+<tr class="separator:ac4c0d4f0200cabfa5aed0938feb76078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a05214bb23a2d7d96f5201a93e4a21ad7" id="r_a05214bb23a2d7d96f5201a93e4a21ad7"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html#a05214bb23a2d7d96f5201a93e4a21ad7">capabilityName</a> = &quot;animation.ISmrNeuralRetarget&quot;</td></tr>
+<tr class="separator:a05214bb23a2d7d96f5201a93e4a21ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Optional MeshRet/SMR neural retarget provider (implemented by animation_tensor). </p>
+<p><a class="el" href="classeve_1_1animation_1_1Animation.html" title="Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal playback (player / state mac...">Animation</a> stays free of tensor includes; the L6 satellite registers this capability. When absent or not ready, classical two-bone IK SMR remains the active path.</p>
+<p>@ownership Provider is owned by <a class="el" href="classeve_1_1animation_1_1AnimationTensor.html" title="Manager-owned MeshRet neural retarget satellite (animation + tensor). @thread Owner/composition threa...">AnimationTensor</a>; revoked before destruction. @thread Composition/owner thread only. No callbacks, script re-entry, or background work. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimSmrNeural_8h_source.html">AnimSmrNeural.h</a> 第 <a class="el" href="AnimSmrNeural_8h_source.html#l00049">49</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a985aca87a500f3b4601007448be11560" name="a985aca87a500f3b4601007448be11560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a985aca87a500f3b4601007448be11560">&#9670;&#160;</a></span>~ISmrNeuralRetarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::animation::ISmrNeuralRetarget::~ISmrNeuralRetarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4140702a969cd63e2834dc228317610c" name="a4140702a969cd63e2834dc228317610c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4140702a969cd63e2834dc228317610c">&#9670;&#160;</a></span>isReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::animation::ISmrNeuralRetarget::isReady </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html">AnimRetargetProfile</a> *&#160;</td>
+          <td class="paramname"><em>profile</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when a model is loaded (ONNX path) or the builtin tensor MeshRet graph is usable. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">profile</td><td>Borrowed for the call only; nullptr means not ready. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>Does not retain profile; safe to call without a clip. @ownership Does not retain profile. @lifetime profile must outlive this call. @thread Owner thread. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1SmrNeuralProvider.html#ae19a9bb4a434533175b0e7936ab4a6ea">eve::animation::SmrNeuralProvider</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac4c69452bbb424b4cce1b739abb3755c" name="ac4c69452bbb424b4cce1b739abb3755c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4c69452bbb424b4cce1b739abb3755c">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::animation::ISmrNeuralRetarget::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable backend label describing the live execution path. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1SmrNeuralProvider.html#a64d96e465b53be238341a6d067c05cbe">eve::animation::SmrNeuralProvider</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac4c0d4f0200cabfa5aed0938feb76078" name="ac4c0d4f0200cabfa5aed0938feb76078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4c0d4f0200cabfa5aed0938feb76078">&#9670;&#160;</a></span>retarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1SmrNeuralResult.html">SmrNeuralResult</a> &gt; eve::animation::ISmrNeuralRetarget::retarget </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1SmrNeuralRequest.html">SmrNeuralRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run MeshRet-style inference and rewrite targetClip local rotations. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning diagnostics, or structured failure without mutating targetClip. @lifetime See <a class="el" href="structeve_1_1animation_1_1SmrNeuralRequest.html" title="Inputs for neural MeshRet-style skinned motion retarget.">SmrNeuralRequest</a>; pointers borrowed for this call only. @thread Owner thread; not re-entrant on targetClip. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1SmrNeuralProvider.html#ac8cd7dee80a0caa5c81617a9153459d1">eve::animation::SmrNeuralProvider</a> 内被实现.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a05214bb23a2d7d96f5201a93e4a21ad7" name="a05214bb23a2d7d96f5201a93e4a21ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05214bb23a2d7d96f5201a93e4a21ad7">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::animation::ISmrNeuralRetarget::capabilityName = &quot;animation.ISmrNeuralRetarget&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimSmrNeural_8h_source.html">AnimSmrNeural.h</a> 第 <a class="el" href="AnimSmrNeural_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimSmrNeural_8h_source.html">AnimSmrNeural.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

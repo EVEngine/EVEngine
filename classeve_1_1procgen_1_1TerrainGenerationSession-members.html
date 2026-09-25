@@ -1,0 +1,211 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">TerrainGenerationSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::TerrainGenerationSession 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a051ed3b31b40e66a00917d6a5a8b0ae6">beginReplay</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#acdf8162bd1a4091348dee4cbc6602695">cancelReplay</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a5ec61532e405dac0014b2e33b9682d8b">contrast</a>(const Heightmap &amp;mask, float strength, float featureSize)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a31f87a1f7951eba18114111044464326">copySediment</a>(Heightmap &amp;output) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a70054d2d13a16e5e2b8ae8770e8ef4c2">copyTerrain</a>(Heightmap &amp;output) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a3694e8878ff89ffea798649786880846">exportWater</a>(Heightmap &amp;output, TerrainWaterChannel channel) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aab7c2fae4ab695bb0a6065c5d26456a2">getAccess</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#af9426258873f875cd7227524c8a2180a">getAppliedCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ab7c3e5f04562e1c09c997d751c1b134d">getOperationCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a69edb5715ad16a453622a2420c8edfbe">getReplayCompletedOperations</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#af2928a136ad75816f081e7285c3b15e0">getReplayStatus</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a688aceb74766fd925c4bafce4b98366e">heightCurve</a>(const Heightmap &amp;mask, const Heightmap &amp;curve, float minimum, float maximum)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a9d84fd8e274337b5c2b8ad73a1731860">heightMix</a>(const Heightmap &amp;local, const Heightmap &amp;global, const TerrainHeightMixSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a6b90d91108633e53c3e130e8b37e42e8">hydraulic</a>(const TerrainWaterSettings &amp;water, const TerrainSedimentSettings &amp;sediment, const TerrainThermalSettings &amp;thermal, int iterations)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a33dd9c3077a9d27c974d1584a19900c9">operationEnabled</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a686767491c22bc43ff6caaf99d44b157">operator=</a>(TerrainGenerationSession &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aed9377c54c983b2a490cfd611dafb66a">operator=</a>(const TerrainGenerationSession &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a2b37a6e336af1bdbb1c7e7e59a6f6610">power</a>(const Heightmap &amp;mask, float power)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aa1296ed6284d9f3f2f9d2018557b4725">redo</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ae39588252514d8d68183b7a6aaaf8c1d">replay</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ad2de2e9f1995606c0f6d142ef53f08aa">reset</a>(const Heightmap &amp;baseline)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a019e61a1056b1dcb546776ed898e03d9">resetSimulation</a>(float depth=0)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aad03e60e226863be64feaa93cdff1aed">restoreJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a758698fcd9fd7a9fe39b3701278e87f9">ridges</a>(const Heightmap &amp;mask, const TerrainRidgeSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a903e1283dd0186601160d4c31da20d55">setAccess</a>(TerrainSessionAccess access)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a817785bb08fb21c86382e2faa4dffc91">setOperationEnabled</a>(int index, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a9d266a3fcaf32e49168d9983c61117a8">smooth</a>(const Heightmap &amp;mask, const TerrainSmoothSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a0d5574d7de31dfaa8635c96ea4fe066b">snapshotJson</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#abf570e734681f1f6d9a57a60de7ecffe">stamp</a>(const Heightmap &amp;stamp, const TerrainStampSettings &amp;settings, const Heightmap &amp;localMask, const Heightmap &amp;globalMask)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a136adcf8b293310f79caa8c165adeb5e">stepReplay</a>(int maxOperations)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a44f0af98c35d9f6914a5be44a277dfbf">terrace</a>(const Heightmap &amp;mask, const TerrainTerraceSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ab9be5ddc0fc79d64a4d4986aaa59b277">TerrainGenerationSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a59bea6b0ac8b653685ff904916d1eefc">TerrainGenerationSession</a>(TerrainGenerationSession &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#a55c140bb9155ee724fea0cf905c27beb">TerrainGenerationSession</a>(const TerrainGenerationSession &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aecfccbf3248f601219f1f9680c0734db">thermal</a>(const TerrainThermalSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#ad828050341864c0299c27c19f73119c7">undo</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html#aff68734495754bb7458c9a31fbdccbe9">~TerrainGenerationSession</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainGenerationSession.html">eve::procgen::TerrainGenerationSession</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

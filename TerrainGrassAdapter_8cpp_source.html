@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainGrassAdapter.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainGrassAdapter.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainGrassAdapter_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainGrassAdapter_8h.html">procgen/heightmap/TerrainGrassAdapter.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Grass_8h.html">graphics/Grass.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>Result&lt;int&gt; bake(graphics::GrassField&amp; field, <span class="keyword">const</span> PointSet&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, <span class="keyword">const</span> std::string&amp; asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>,</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>                 <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> image::ImageData* image) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">if</span> (asset.empty())</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;terrain.grass: asset selector required&quot;</span>));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    std::vector&lt;graphics::grass::Point&gt; roots;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.getCount(); ++i) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.getStringAttribute(i, <span class="stringliteral">&quot;asset&quot;</span>, <span class="stringliteral">&quot;&quot;</span>) != asset) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a> = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.points()[size_t(i)];</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id == 0 || <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX != <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleZ || <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX &lt;= 0.001F)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                <span class="stringliteral">&quot;terrain.grass: stable ID and equal positive horizontal X/Z scales above 0.001 required&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        graphics::grass::Point <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.position   = {<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.x, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.y, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.z};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.scale      = <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleY;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.widthScale = <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.id         = uint32_t((<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id ^ (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id &gt;&gt; 32)) &amp; 0xffffffu);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.tint       = {<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorR, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorG, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorB};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        roots.push_back(<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a> ? field.bakeTexturedPoints(roots, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, *image) : field.bakePoints(roots, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a9e8075f0f229507d6dae2f1c08ae32c3">   32</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a9e8075f0f229507d6dae2f1c08ae32c3">bakeTerrainGrass</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">graphics::GrassField</a>&amp; field, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, <span class="keyword">const</span> std::string&amp; asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                             <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> bake(field, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, asset, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a76bb8e3365cb2b184f287af993bf366d">   36</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a76bb8e3365cb2b184f287af993bf366d">bakeTerrainGrassImage</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">graphics::GrassField</a>&amp; field, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, <span class="keyword">const</span> std::string&amp; asset,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                  <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; image) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> bake(field, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, asset, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, &amp;<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#aa72d57e4e5439e3abe4f8774a69e8bc7">   40</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#aa72d57e4e5439e3abe4f8774a69e8bc7">bakeTerrainGrassFoliage</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">graphics::GrassField</a>&amp; field, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, <span class="keyword">const</span> std::string&amp; asset,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                    <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1grass_1_1GrassFoliageSettings.html">graphics::grass::GrassFoliageSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (asset.empty())</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                       <span class="stringliteral">&quot;terrain.grass: asset selector required&quot;</span>));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;graphics::grass::Point&gt; roots;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.getCount(); ++i) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.getStringAttribute(i, <span class="stringliteral">&quot;asset&quot;</span>, <span class="stringliteral">&quot;&quot;</span>) != asset) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a> = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.points()[size_t(i)];</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id == 0 || <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX != <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleZ || <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX &lt;= 0.001F)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="stringliteral">&quot;terrain.grass: stable ID and equal positive horizontal X/Z scales above 0.001 required&quot;</span>));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1grass_1_1Point.html">graphics::grass::Point</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1grass_1_1Point.html#afb127cb5039182d6fcf26d69f019fcd0">position</a> = {<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.x, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.y, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.z}; <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.scale = <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleY; <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.widthScale = <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.scaleX;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.id = uint32_t((<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id ^ (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.id &gt;&gt; 32)) &amp; 0xffffffu);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.tint = {<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorR, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorG, <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.colorB}; roots.push_back(<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> field.<a class="code hl_function" href="classeve_1_1graphics_1_1GrassField.html#a139fc0872da33aad3930f1f9fd4e0a66">bakeFoliagePoints</a>(roots, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a45ae80ec3f8ddf5e19c6a36802076450">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a45ae80ec3f8ddf5e19c6a36802076450">exposeTerrainGrassAdapter</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    table.addFunc(<span class="stringliteral">&quot;bakeTerrainGrassFoliage&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">graphics::GrassField</a>* field,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>* <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, std::string asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>* <a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>* <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>* <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1grass_1_1GrassFoliageSettings.html">graphics::grass::GrassFoliageSettings</a>* <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        auto result = field &amp;&amp; points &amp;&amp; albedo &amp;&amp; normal &amp;&amp; mask &amp;&amp; settings</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            ? bakeTerrainGrassFoliage(*field, *points, asset, width, height, *albedo, *normal, *mask, *settings)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            : Result&lt;int&gt;::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                     <span class="stringliteral">&quot;terrain.grass: field, points, maps and settings required&quot;</span>));</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    });</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    table.addFunc(<span class="stringliteral">&quot;bakeTerrainGrassImage&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">graphics::GrassField</a>* field, <span class="keyword">const</span> PointSet* <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                                                    std::string asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                                                    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>* <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">auto</span> result = field &amp;&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a> &amp;&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                          ? <a class="code hl_function" href="namespaceeve_1_1procgen.html#a76bb8e3365cb2b184f287af993bf366d">bakeTerrainGrassImage</a>(*field, *<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, asset, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, *image)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                          : <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;int&gt;::failure(<a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a>::<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>::<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">InvalidArgument</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                                                   <span class="stringliteral">&quot;terrain.grass: field, points and image required&quot;</span>));</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(result), [](<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>); });</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    });</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>.addFunc(<span class="stringliteral">&quot;bakeTerrainGrass&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>.getHandle()](graphics::GrassField* field, <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">PointSet</a>* <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                               std::string asset, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">auto</span> result = field &amp;&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                          ? <a class="code hl_function" href="namespaceeve_1_1procgen.html#a9e8075f0f229507d6dae2f1c08ae32c3">bakeTerrainGrass</a>(*field, *<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, asset, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                          : <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt;int&gt;::failure(<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a>::<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>::<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">InvalidArgument</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                                                   <span class="stringliteral">&quot;terrain.grass: field and points required&quot;</span>));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(result), [](<span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>); });</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    });</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac97fcc7b295c4be16e43a17090bc02db"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div><div class="ttdeci">vk::UniqueImage image</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00014">GraphicsShaderResources.cpp:14</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aGrass_8h_html"><div class="ttname"><a href="Grass_8h.html">Grass.h</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00118">ModelRenderer.cpp:118</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_ab7584fa1f0ea319cb0ecfaf835116c72"><div class="ttname"><a href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a></div><div class="ttdeci">Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00117">ModelRenderer.cpp:117</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a294aae2204c93b7ba3628b25f45967cd"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; glm::vec2 &gt; &gt; points</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00076">PrimitiveDrawList.cpp:76</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aTerrainGrassAdapter_8h_html"><div class="ttname"><a href="TerrainGrassAdapter_8h.html">TerrainGrassAdapter.h</a></div></div>
+<div class="ttc" id="aVolumeFluidSimplexQuery_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">VolumeFluidSimplexQuery.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GrassField_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GrassField.html">eve::graphics::GrassField</a></div><div class="ttdoc">Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*; GPU Mesh / Shader / Texture are o...</div><div class="ttdef"><b>Definition</b> <a href="Grass_8h_source.html#l00178">Grass.h:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GrassField_html_a139fc0872da33aad3930f1f9fd4e0a66"><div class="ttname"><a href="classeve_1_1graphics_1_1GrassField.html#a139fc0872da33aad3930f1f9fd4e0a66">eve::graphics::GrassField::bakeFoliagePoints</a></div><div class="ttdeci">Result&lt; int &gt; bakeFoliagePoints(const std::vector&lt; grass::Point &gt; &amp;points, float width, float height, const image::ImageData &amp;albedo, const image::ImageData &amp;normal, const image::ImageData &amp;mask, const grass::GrassFoliageSettings &amp;settings)</div><div class="ttdoc">Upload static foliage albedo, tangent normal and metallic/occlusion/thickness/smoothness masks....</div><div class="ttdef"><b>Definition</b> <a href="GrassPoints_8cpp_source.html#l00015">GrassPoints.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00038">ImageData.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00059">PointSet.h:59</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">eve::artifact::PartKind::PointSet</a></div><div class="ttdeci">@ PointSet</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a941124259061002fa1f7ca0b17cb6026"><div class="ttname"><a href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a></div><div class="ttdeci">eve::Result&lt; T &gt; Result</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00019">EditingResult.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a45ae80ec3f8ddf5e19c6a36802076450"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a45ae80ec3f8ddf5e19c6a36802076450">eve::procgen::exposeTerrainGrassAdapter</a></div><div class="ttdeci">void exposeTerrainGrassAdapter(ssq::Table &amp;table)</div><div class="ttdoc">Register full-host grass adapter; VM-thread only, no retained table reference.</div><div class="ttdef"><b>Definition</b> <a href="TerrainGrassAdapter_8cpp_source.html#l00062">TerrainGrassAdapter.cpp:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a76bb8e3365cb2b184f287af993bf366d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a76bb8e3365cb2b184f287af993bf366d">eve::procgen::bakeTerrainGrassImage</a></div><div class="ttdeci">Result&lt; int &gt; bakeTerrainGrassImage(graphics::GrassField &amp;field, const PointSet &amp;points, const std::string &amp;asset, float width, float height, const image::ImageData &amp;image)</div><div class="ttdoc">Upload an asset group using one original static RGBA8 texture instead of the built-in atlas....</div><div class="ttdef"><b>Definition</b> <a href="TerrainGrassAdapter_8cpp_source.html#l00036">TerrainGrassAdapter.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a9e8075f0f229507d6dae2f1c08ae32c3"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a9e8075f0f229507d6dae2f1c08ae32c3">eve::procgen::bakeTerrainGrass</a></div><div class="ttdeci">Result&lt; int &gt; bakeTerrainGrass(graphics::GrassField &amp;field, const PointSet &amp;points, const std::string &amp;asset, float width, float height)</div><div class="ttdoc">Upload one asset group from generated points into a grass field using its built-in atlas....</div><div class="ttdef"><b>Definition</b> <a href="TerrainGrassAdapter_8cpp_source.html#l00032">TerrainGrassAdapter.cpp:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa72d57e4e5439e3abe4f8774a69e8bc7"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa72d57e4e5439e3abe4f8774a69e8bc7">eve::procgen::bakeTerrainGrassFoliage</a></div><div class="ttdeci">Result&lt; int &gt; bakeTerrainGrassFoliage(graphics::GrassField &amp;field, const PointSet &amp;points, const std::string &amp;asset, float width, float height, const image::ImageData &amp;albedo, const image::ImageData &amp;normal, const image::ImageData &amp;mask, const graphics::grass::GrassFoliageSettings &amp;settings)</div><div class="ttdoc">Upload a Pcg-style static foliage surface with albedo, normal and packed mask maps.</div><div class="ttdef"><b>Definition</b> <a href="TerrainGrassAdapter_8cpp_source.html#l00040">TerrainGrassAdapter.cpp:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae33307d84fd0b94d2d0ef89255b4405b"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">eve::rpg::table</a></div><div class="ttdeci">std::unordered_map&lt; std::string, SkillDefinition &gt; &amp; table()</div><div class="ttdef"><b>Definition</b> <a href="Skill_8cpp_source.html#l00065">Skill.cpp:65</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00470">SquirrelBinding.cpp:470</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1grass_1_1GrassFoliageSettings_html"><div class="ttname"><a href="structeve_1_1graphics_1_1grass_1_1GrassFoliageSettings.html">eve::graphics::grass::GrassFoliageSettings</a></div><div class="ttdoc">Pcg-style static foliage surface controls packed into the grass shader profile. Values are copied dur...</div><div class="ttdef"><b>Definition</b> <a href="Grass_8h_source.html#l00040">Grass.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1grass_1_1Point_html"><div class="ttname"><a href="structeve_1_1graphics_1_1grass_1_1Point.html">eve::graphics::grass::Point</a></div><div class="ttdef"><b>Definition</b> <a href="Grass_8h_source.html#l00073">Grass.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1grass_1_1Point_html_afb127cb5039182d6fcf26d69f019fcd0"><div class="ttname"><a href="structeve_1_1graphics_1_1grass_1_1Point.html#afb127cb5039182d6fcf26d69f019fcd0">eve::graphics::grass::Point::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition</b> <a href="Grass_8h_source.html#l00074">Grass.h:74</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

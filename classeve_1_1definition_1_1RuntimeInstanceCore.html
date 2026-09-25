@@ -1,0 +1,812 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::definition::RuntimeInstanceCore类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1definition.html">definition</a></li><li class="navelem"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1definition_1_1RuntimeInstanceCore-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::definition::RuntimeInstanceCore类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Type-erased bookkeeping shared by every <code><a class="el" href="classeve_1_1definition_1_1RuntimeInstance.html" title="Owns one strongly typed runtime state and its definition identity.">RuntimeInstance</a>&lt;State&gt;</code>.  
+ <a href="classeve_1_1definition_1_1RuntimeInstanceCore.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:af3a672e0f4083169397a41497d23f680" id="r_af3a672e0f4083169397a41497d23f680"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#af3a672e0f4083169397a41497d23f680">CloneFunction</a> = void *(*)(const void *)</td></tr>
+<tr class="memdesc:af3a672e0f4083169397a41497d23f680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep-copies one payload for the copy constructor and copy assignment.  <br /></td></tr>
+<tr class="separator:af3a672e0f4083169397a41497d23f680"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3150fa3119a6f4a74e05bba9e173c0d0" id="r_a3150fa3119a6f4a74e05bba9e173c0d0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a3150fa3119a6f4a74e05bba9e173c0d0">AssignFunction</a> = void(*)(void *destination, const void *<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a3150fa3119a6f4a74e05bba9e173c0d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns one payload from another payload of the same state type.  <br /></td></tr>
+<tr class="separator:a3150fa3119a6f4a74e05bba9e173c0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad848bfbd15ad1344e0411f64a0e31b56" id="r_ad848bfbd15ad1344e0411f64a0e31b56"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ad848bfbd15ad1344e0411f64a0e31b56">DestroyFunction</a> = void(*)(void *) noexcept</td></tr>
+<tr class="memdesc:ad848bfbd15ad1344e0411f64a0e31b56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys one payload; must not throw.  <br /></td></tr>
+<tr class="separator:ad848bfbd15ad1344e0411f64a0e31b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17726e1ea7811637d8486584107c7f53" id="r_a17726e1ea7811637d8486584107c7f53"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a17726e1ea7811637d8486584107c7f53">RebuildFunction</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void * &gt;(const void *, const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> &amp;, const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a17726e1ea7811637d8486584107c7f53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type-erased rebuild policy callback.  <br /></td></tr>
+<tr class="separator:a17726e1ea7811637d8486584107c7f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac0fef174f2beb922241e0f713f0839dd" id="r_ac0fef174f2beb922241e0f713f0839dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ac0fef174f2beb922241e0f713f0839dd">RuntimeInstanceCore</a> (<a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ae25e6c46f367eab76dec298086fed26d">identity</a>, void *<a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a73c775097087b091b0f8b5d2e252b38a">state</a>, <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#af3a672e0f4083169397a41497d23f680">CloneFunction</a> clone, <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a3150fa3119a6f4a74e05bba9e173c0d0">AssignFunction</a> assign, <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ad848bfbd15ad1344e0411f64a0e31b56">DestroyFunction</a> <a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a>, bool <a class="el" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a>) noexcept</td></tr>
+<tr class="memdesc:ac0fef174f2beb922241e0f713f0839dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adopt an already-allocated payload.  <br /></td></tr>
+<tr class="separator:ac0fef174f2beb922241e0f713f0839dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01cbb99f2fb8c7f8f13420fbe446c49b" id="r_a01cbb99f2fb8c7f8f13420fbe446c49b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a01cbb99f2fb8c7f8f13420fbe446c49b">~RuntimeInstanceCore</a> ()</td></tr>
+<tr class="memdesc:a01cbb99f2fb8c7f8f13420fbe446c49b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the adopted payload.  <br /></td></tr>
+<tr class="separator:a01cbb99f2fb8c7f8f13420fbe446c49b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86e584713a84c168a97d48333c6fba99" id="r_a86e584713a84c168a97d48333c6fba99"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a86e584713a84c168a97d48333c6fba99">RuntimeInstanceCore</a> (const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;other)</td></tr>
+<tr class="memdesc:a86e584713a84c168a97d48333c6fba99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep-copy the payload and the bookkeeping.  <br /></td></tr>
+<tr class="separator:a86e584713a84c168a97d48333c6fba99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaa685b0ef5b3e7cc9765448c1079a75" id="r_abaa685b0ef5b3e7cc9765448c1079a75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#abaa685b0ef5b3e7cc9765448c1079a75">operator=</a> (const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;other)</td></tr>
+<tr class="memdesc:abaa685b0ef5b3e7cc9765448c1079a75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy-assign; the copy is made before any mutation, so a throw leaves <code>*this</code> intact.  <br /></td></tr>
+<tr class="separator:abaa685b0ef5b3e7cc9765448c1079a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3650bd8d63a4efb013ca9f62140f99d5" id="r_a3650bd8d63a4efb013ca9f62140f99d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a3650bd8d63a4efb013ca9f62140f99d5">RuntimeInstanceCore</a> (<a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="memdesc:a3650bd8d63a4efb013ca9f62140f99d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the payload and the bookkeeping.  <br /></td></tr>
+<tr class="separator:a3650bd8d63a4efb013ca9f62140f99d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad54faf4c4e792ca7495095aa94ac444e" id="r_ad54faf4c4e792ca7495095aa94ac444e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ad54faf4c4e792ca7495095aa94ac444e">operator=</a> (<a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="memdesc:ad54faf4c4e792ca7495095aa94ac444e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-assign, destroying the current payload.  <br /></td></tr>
+<tr class="separator:ad54faf4c4e792ca7495095aa94ac444e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae25e6c46f367eab76dec298086fed26d" id="r_ae25e6c46f367eab76dec298086fed26d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ae25e6c46f367eab76dec298086fed26d">identity</a> () const noexcept</td></tr>
+<tr class="memdesc:ae25e6c46f367eab76dec298086fed26d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the complete immutable identity.  <br /></td></tr>
+<tr class="separator:ae25e6c46f367eab76dec298086fed26d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c775097087b091b0f8b5d2e252b38a" id="r_a73c775097087b091b0f8b5d2e252b38a"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a73c775097087b091b0f8b5d2e252b38a">state</a> () noexcept</td></tr>
+<tr class="memdesc:a73c775097087b091b0f8b5d2e252b38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the payload; null only after a move.  <br /></td></tr>
+<tr class="separator:a73c775097087b091b0f8b5d2e252b38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83f213279692fe39da0c3f10d3ae0f16" id="r_a83f213279692fe39da0c3f10d3ae0f16"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a83f213279692fe39da0c3f10d3ae0f16">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a83f213279692fe39da0c3f10d3ae0f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the payload; null only after a move.  <br /></td></tr>
+<tr class="separator:a83f213279692fe39da0c3f10d3ae0f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3f1ba638656803202b0efe963c1801c" id="r_ae3f1ba638656803202b0efe963c1801c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ae3f1ba638656803202b0efe963c1801c">isActive</a> () const noexcept</td></tr>
+<tr class="memdesc:ae3f1ba638656803202b0efe963c1801c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the instance participates in active simulation.  <br /></td></tr>
+<tr class="separator:ae3f1ba638656803202b0efe963c1801c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f1816b25224a167b91c3c22e2190bf6" id="r_a4f1816b25224a167b91c3c22e2190bf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a4f1816b25224a167b91c3c22e2190bf6">setActive</a> (bool <a class="el" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a>) noexcept</td></tr>
+<tr class="memdesc:a4f1816b25224a167b91c3c22e2190bf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set active state; this does not reload or rebuild the instance.  <br /></td></tr>
+<tr class="separator:a4f1816b25224a167b91c3c22e2190bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6819883fd3ac3efddf2bf9ed0fec860a" id="r_a6819883fd3ac3efddf2bf9ed0fec860a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a6819883fd3ac3efddf2bf9ed0fec860a">checkDefinition</a> (const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a> &amp;<a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a6819883fd3ac3efddf2bf9ed0fec860a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify that a caller's definition handle is the exact current incarnation.  <br /></td></tr>
+<tr class="separator:a6819883fd3ac3efddf2bf9ed0fec860a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33fb290271c97b4b86d8ab05cf5b6d30" id="r_a33fb290271c97b4b86d8ab05cf5b6d30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">ReloadOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a33fb290271c97b4b86d8ab05cf5b6d30">reload</a> (const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a> &amp;next, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">ReloadPolicy</a> policy, const void *defaults, const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a17726e1ea7811637d8486584107c7f53">RebuildFunction</a> &amp;rebuild)</td></tr>
+<tr class="memdesc:a33fb290271c97b4b86d8ab05cf5b6d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a definition replacement with an atomic payload policy.  <br /></td></tr>
+<tr class="separator:a33fb290271c97b4b86d8ab05cf5b6d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc2613da72495df8432783a7a5a6191" id="r_a7bc2613da72495df8432783a7a5a6191"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a7bc2613da72495df8432783a7a5a6191">restoreExact</a> (const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> &amp;<a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ae25e6c46f367eab76dec298086fed26d">identity</a>, void *<a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a73c775097087b091b0f8b5d2e252b38a">state</a>, bool <a class="el" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a>)</td></tr>
+<tr class="memdesc:a7bc2613da72495df8432783a7a5a6191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap in an already validated payload of this exact instance.  <br /></td></tr>
+<tr class="separator:a7bc2613da72495df8432783a7a5a6191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Type-erased bookkeeping shared by every <code><a class="el" href="classeve_1_1definition_1_1RuntimeInstance.html" title="Owns one strongly typed runtime state and its definition identity.">RuntimeInstance</a>&lt;State&gt;</code>. </p>
+<p>Identity validation, the active flag, the reload policy machine and the error construction are identical for every domain state, so they live in one non-template core compiled once in <code>DefinitionRuntime.cpp</code> instead of being instantiated once per state type.</p>
+<p>The payload stays strongly typed at the public API: this core only carries it as an owning pointer plus the per-state clone/assign/destroy operations. It is never turned into a dynamic field map.</p>
+<p>Thread affinity matches <code><a class="el" href="classeve_1_1definition_1_1RuntimeInstance.html" title="Owns one strongly typed runtime state and its definition identity.">RuntimeInstance</a></code>: the owning domain thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00160">160</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a3150fa3119a6f4a74e05bba9e173c0d0" name="a3150fa3119a6f4a74e05bba9e173c0d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3150fa3119a6f4a74e05bba9e173c0d0">&#9670;&#160;</a></span>AssignFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a3150fa3119a6f4a74e05bba9e173c0d0">eve::definition::RuntimeInstanceCore::AssignFunction</a> =  void (*)(void* destination, const void* <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assigns one payload from another payload of the same state type. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3a672e0f4083169397a41497d23f680" name="af3a672e0f4083169397a41497d23f680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3a672e0f4083169397a41497d23f680">&#9670;&#160;</a></span>CloneFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#af3a672e0f4083169397a41497d23f680">eve::definition::RuntimeInstanceCore::CloneFunction</a> =  void* (*)(const void*)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deep-copies one payload for the copy constructor and copy assignment. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad848bfbd15ad1344e0411f64a0e31b56" name="ad848bfbd15ad1344e0411f64a0e31b56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad848bfbd15ad1344e0411f64a0e31b56">&#9670;&#160;</a></span>DestroyFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ad848bfbd15ad1344e0411f64a0e31b56">eve::definition::RuntimeInstanceCore::DestroyFunction</a> =  void (*)(void*) noexcept</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys one payload; must not throw. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17726e1ea7811637d8486584107c7f53" name="a17726e1ea7811637d8486584107c7f53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17726e1ea7811637d8486584107c7f53">&#9670;&#160;</a></span>RebuildFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a17726e1ea7811637d8486584107c7f53">eve::definition::RuntimeInstanceCore::RebuildFunction</a> =  std::function&lt;<a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt;void*&gt;(const void*, const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a>&amp;, const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type-erased rebuild policy callback. </p>
+<dl class="section return"><dt>返回</dt><dd>A newly allocated payload whose ownership transfers to the core, or a failure that leaves the core unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac0fef174f2beb922241e0f713f0839dd" name="ac0fef174f2beb922241e0f713f0839dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0fef174f2beb922241e0f713f0839dd">&#9670;&#160;</a></span>RuntimeInstanceCore() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::definition::RuntimeInstanceCore::RuntimeInstanceCore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a>&#160;</td>
+          <td class="paramname"><em>identity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#af3a672e0f4083169397a41497d23f680">CloneFunction</a>&#160;</td>
+          <td class="paramname"><em>clone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a3150fa3119a6f4a74e05bba9e173c0d0">AssignFunction</a>&#160;</td>
+          <td class="paramname"><em>assign</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#ad848bfbd15ad1344e0411f64a0e31b56">DestroyFunction</a>&#160;</td>
+          <td class="paramname"><em>destroy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Adopt an already-allocated payload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>Payload this core now owns and destroys with <code>destroy</code>. @ownership Takes ownership of <code>state</code>; all four function pointers must stay valid for the lifetime of the core. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01cbb99f2fb8c7f8f13420fbe446c49b" name="a01cbb99f2fb8c7f8f13420fbe446c49b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01cbb99f2fb8c7f8f13420fbe446c49b">&#9670;&#160;</a></span>~RuntimeInstanceCore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::definition::RuntimeInstanceCore::~RuntimeInstanceCore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroy the adopted payload. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86e584713a84c168a97d48333c6fba99" name="a86e584713a84c168a97d48333c6fba99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86e584713a84c168a97d48333c6fba99">&#9670;&#160;</a></span>RuntimeInstanceCore() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::definition::RuntimeInstanceCore::RuntimeInstanceCore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deep-copy the payload and the bookkeeping. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3650bd8d63a4efb013ca9f62140f99d5" name="a3650bd8d63a4efb013ca9f62140f99d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3650bd8d63a4efb013ca9f62140f99d5">&#9670;&#160;</a></span>RuntimeInstanceCore() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::definition::RuntimeInstanceCore::RuntimeInstanceCore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move the payload and the bookkeeping. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6819883fd3ac3efddf2bf9ed0fec860a" name="a6819883fd3ac3efddf2bf9ed0fec860a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6819883fd3ac3efddf2bf9ed0fec860a">&#9670;&#160;</a></span>checkDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::definition::RuntimeInstanceCore::checkDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify that a caller's definition handle is the exact current incarnation. </p>
+<dl class="section return"><dt>返回</dt><dd>Success for an exact match, or StaleHandle/invalid-argument otherwise. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00113">eve::definition::InstanceIdentity::definitionHandle()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionRuntime_8h_source.html#l00335">eve::definition::RuntimeInstance&lt; State &gt;::checkDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="ae25e6c46f367eab76dec298086fed26d" name="ae25e6c46f367eab76dec298086fed26d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae25e6c46f367eab76dec298086fed26d">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> &amp; eve::definition::RuntimeInstanceCore::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the complete immutable identity. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionRuntime_8h_source.html#l00321">eve::definition::RuntimeInstance&lt; State &gt;::identity()</a> , 以及 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00192">restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="ae3f1ba638656803202b0efe963c1801c" name="ae3f1ba638656803202b0efe963c1801c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3f1ba638656803202b0efe963c1801c">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::definition::RuntimeInstanceCore::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the instance participates in active simulation. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionRuntime_8h_source.html#l00327">eve::definition::RuntimeInstance&lt; State &gt;::isActive()</a>.</p>
+
+</div>
+</div>
+<a id="abaa685b0ef5b3e7cc9765448c1079a75" name="abaa685b0ef5b3e7cc9765448c1079a75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaa685b0ef5b3e7cc9765448c1079a75">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp; eve::definition::RuntimeInstanceCore::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy-assign; the copy is made before any mutation, so a throw leaves <code>*this</code> intact. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad54faf4c4e792ca7495095aa94ac444e" name="ad54faf4c4e792ca7495095aa94ac444e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad54faf4c4e792ca7495095aa94ac444e">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp; eve::definition::RuntimeInstanceCore::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html">RuntimeInstanceCore</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move-assign, destroying the current payload. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33fb290271c97b4b86d8ab05cf5b6d30" name="a33fb290271c97b4b86d8ab05cf5b6d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33fb290271c97b4b86d8ab05cf5b6d30">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">ReloadOutcome</a> &gt; eve::definition::RuntimeInstanceCore::reload </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">DefinitionHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>next</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>defaults</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1definition_1_1RuntimeInstanceCore.html#a17726e1ea7811637d8486584107c7f53">RebuildFunction</a> &amp;&#160;</td>
+          <td class="paramname"><em>rebuild</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a definition replacement with an atomic payload policy. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">next</td><td>Exact current handle returned by the DefinitionRegistry. </td></tr>
+    <tr><td class="paramname">policy</td><td>Policy to execute for this instance. </td></tr>
+    <tr><td class="paramname">defaults</td><td>Payload used only by ReapplyDefaults; required by that policy. </td></tr>
+    <tr><td class="paramname">rebuild</td><td>Callback used only by RebuildInstance. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Reload transition, or a failure leaving payload and identity intact. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd><code>RejectWhileActive</code> rejects active instances. When inactive it intentionally keeps values and only advances the generation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1definition.html#a6f24a715f58289fd9a1e1d35a1b8bd2ead04d3fd90f1f431ddb3ccae165ad21bc">eve::definition::DefaultsReapplied</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00089">eve::definition::InstanceIdentity::definition</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00090">eve::definition::InstanceIdentity::definitionGeneration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00088">eve::definition::InstanceIdentity::instanceId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1definition.html#a6f24a715f58289fd9a1e1d35a1b8bd2eab2286379a1def1d4a2c82bc18a70743e">eve::definition::Kept</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a5fcc3caba6ed1bb64efd68dd4de4d299">eve::definition::ReapplyDefaults</a>, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::RebuildInstance</a>, <a class="el" href="namespaceeve_1_1definition.html#a6f24a715f58289fd9a1e1d35a1b8bd2eae930ab3bcf3c21299aa68d51621b1215">eve::definition::Rebuilt</a>, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a36f7361b4d50e038b0504413fac5e7d9">eve::definition::RejectWhileActive</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1definition.html#a6f24a715f58289fd9a1e1d35a1b8bd2ea5ff3c6978f87d96febfdc8ed3899a97e">eve::definition::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a7bc2613da72495df8432783a7a5a6191" name="a7bc2613da72495df8432783a7a5a6191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc2613da72495df8432783a7a5a6191">&#9670;&#160;</a></span>restoreExact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::definition::RuntimeInstanceCore::restoreExact </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">InstanceIdentity</a> &amp;&#160;</td>
+          <td class="paramname"><em>identity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Swap in an already validated payload of this exact instance. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>Newly allocated payload; the core adopts it and destroys it when validation fails. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or Conflict/StaleHandle when the snapshot belongs to a different instance or definition incarnation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a> 第 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00017">active</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00089">eve::definition::InstanceIdentity::definition</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00090">eve::definition::InstanceIdentity::definitionGeneration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00197">identity()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00088">eve::definition::InstanceIdentity::instanceId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00118">eve::definition::InstanceIdentity::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00199">state()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionRuntime_8h_source.html#l00376">eve::definition::RuntimeInstance&lt; State &gt;::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="a4f1816b25224a167b91c3c22e2190bf6" name="a4f1816b25224a167b91c3c22e2190bf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f1816b25224a167b91c3c22e2190bf6">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::definition::RuntimeInstanceCore::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set active state; this does not reload or rebuild the instance. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00017">active</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DefinitionRuntime_8h_source.html#l00329">eve::definition::RuntimeInstance&lt; State &gt;::setActive()</a>.</p>
+
+</div>
+</div>
+<a id="a83f213279692fe39da0c3f10d3ae0f16" name="a83f213279692fe39da0c3f10d3ae0f16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83f213279692fe39da0c3f10d3ae0f16">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const void * eve::definition::RuntimeInstanceCore::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the payload; null only after a move. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00201">201</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73c775097087b091b0f8b5d2e252b38a" name="a73c775097087b091b0f8b5d2e252b38a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c775097087b091b0f8b5d2e252b38a">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::definition::RuntimeInstanceCore::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the payload; null only after a move. </p>
+
+<p class="definition">在文件 <a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a> 第 <a class="el" href="DefinitionRuntime_8h_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html#l00192">restoreExact()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00323">eve::definition::RuntimeInstance&lt; State &gt;::state()</a> , 以及 <a class="el" href="DefinitionRuntime_8h_source.html#l00325">eve::definition::RuntimeInstance&lt; State &gt;::state()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/definitions/<a class="el" href="DefinitionRuntime_8h_source.html">DefinitionRuntime.h</a></li>
+<li>src/engine/common/definitions/<a class="el" href="engine_2common_2definitions_2DefinitionRuntime_8cpp_source.html">DefinitionRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

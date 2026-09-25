@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/graphics/VegetationSceneInstance.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_18cf729940a50382a445224e4045f343.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VegetationSceneInstance.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VegetationSceneInstance_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="VegetationSceneLiveElements_8h.html">asset/graphics/VegetationSceneLiveElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackSceneTemplateLoader_8h.html">asset/scene/EvpackSceneTemplateLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html">VegetationSceneAssociation</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ad58242e80867467157a4c364945b7d40">   12</a></span>    <a class="code hl_struct" href="structeve_1_1asset__scene_1_1LoadedSceneTemplate.html">asset_scene::LoadedSceneTemplate</a> <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ad58242e80867467157a4c364945b7d40">scene</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#a4881273162ddf9cd8d6b66968e4cf017">   13</a></span>    <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#a4881273162ddf9cd8d6b66968e4cf017">manager</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ae47b0a7cee779aa3b8fa90797c489dd3">   14</a></span>    std::map&lt;std::string, graphics::VegetationMask&gt; <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ae47b0a7cee779aa3b8fa90797c489dd3">masks</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>};</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html">   18</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html">VegetationSceneAssociationLoader</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html#ab69ede0744df1b8382c12a9bb3d77a27">   21</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html#ab69ede0744df1b8382c12a9bb3d77a27">VegetationSceneAssociationLoader</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader) noexcept : reader_(reader) {}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;VegetationSceneAssociation&gt;</a> load(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp; sceneTemplate, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a>&amp; capabilities) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader_;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html">   41</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html">VegetationSceneInstance</a> final {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;VegetationSceneInstance&gt;</a>&gt; create(</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader, <a class="code hl_class" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a>&amp; factory,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp; sceneTemplate, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a>&amp; capabilities,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a> baseSurface, <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationMotion.html">graphics::VegetationMotion</a> baseMotion,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html">VegetationSceneGpuBuild</a>&amp; build, std::uint64_t owner);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#af43c7b7dfb1c3bdee6da85ace979eb30">   63</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__scene_1_1LoadedSceneTemplate.html">asset_scene::LoadedSceneTemplate</a>&amp; <a class="code hl_function" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#af43c7b7dfb1c3bdee6da85ace979eb30">scene</a>() const noexcept { <span class="keywordflow">return</span> association_.scene; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#ae29d6672dc90d3373e8e79ad27039c2a">   65</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a>&amp; <a class="code hl_function" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#ae29d6672dc90d3373e8e79ad27039c2a">surface</a>() const noexcept { <span class="keywordflow">return</span> runtime_-&gt;surface(); }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#abe5b67608b0ffd1f2af455fe88b87622">   67</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset__graphics_1_1VegetationSceneLiveElements.html">VegetationSceneLiveElements</a>&amp; <a class="code hl_function" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#abe5b67608b0ffd1f2af455fe88b87622">liveElements</a>() const noexcept { <span class="keywordflow">return</span> *liveElements_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;VegetationSceneElementPublication&gt;</a> registerElement(</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        std::uint64_t expectedRevision, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html">VegetationSceneElement</a>&amp; element,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html">VegetationSceneGpuBuild</a>&amp; build);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;VegetationSceneElementPublication&gt;</a> withdrawElement(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::uint64_t expectedRevision, <a class="code hl_class" href="classeve_1_1asset__graphics_1_1VegetationSceneElementHandle.html">VegetationSceneElementHandle</a> <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html">VegetationSceneGpuBuild</a>&amp; build);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#a5178f4f793ff4a930ef9f7168dd209ba">   78</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#a5178f4f793ff4a930ef9f7168dd209ba">release</a>() { <span class="keywordflow">return</span> runtime_-&gt;release(); }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_class" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html">VegetationSceneInstance</a>(<a class="code hl_struct" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html">VegetationSceneAssociation</a> association, <a class="code hl_struct" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a> baseSurface,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                            <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationMotion.html">graphics::VegetationMotion</a> baseMotion,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                            std::unique_ptr&lt;VegetationSceneGpuRuntime&gt; runtime,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                            std::unique_ptr&lt;VegetationSceneLiveElements&gt; liveElements) noexcept</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        : association_(std::move(association)), baseSurface_(std::move(baseSurface)),</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          baseMotion_(std::move(baseMotion)), runtime_(std::move(runtime)),</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          liveElements_(std::move(liveElements)) {}</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    VegetationSceneAssociation association_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a> baseSurface_;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationMotion.html">graphics::VegetationMotion</a> baseMotion_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::unique_ptr&lt;VegetationSceneGpuRuntime&gt; runtime_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::unique_ptr&lt;VegetationSceneLiveElements&gt; liveElements_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::asset_graphics</span></div>
+<div class="ttc" id="aEvpackSceneTemplateLoader_8h_html"><div class="ttname"><a href="EvpackSceneTemplateLoader_8h.html">EvpackSceneTemplateLoader.h</a></div><div class="ttdoc">Runtime decoding of canonical scene templates.</div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aPrimitiveScriptBindings_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveScriptBindings_8cpp_source.html#l00021">PrimitiveScriptBindings.cpp:21</a></div></div>
+<div class="ttc" id="aVegetationSceneLiveElements_8h_html"><div class="ttname"><a href="VegetationSceneLiveElements_8h.html">VegetationSceneLiveElements.h</a></div><div class="ttdoc">Transactional runtime registration of TVE Element volumes.</div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00052">ResourceRef.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackResourceReader_html"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackResourceReader.html">eve::asset::EvpackResourceReader</a></div><div class="ttdoc">Immutable reader retaining an admitted pack by shared ownership.</div><div class="ttdef"><b>Definition</b> <a href="EvpackResourceReader_8h_source.html#l00029">EvpackResourceReader.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneAssociationLoader_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html">eve::asset_graphics::VegetationSceneAssociationLoader</a></div><div class="ttdoc">Resolve a Scene Template to exactly one manager asset in the same admitted EVPACK.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00018">VegetationSceneInstance.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneAssociationLoader_html_ab69ede0744df1b8382c12a9bb3d77a27"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html#ab69ede0744df1b8382c12a9bb3d77a27">eve::asset_graphics::VegetationSceneAssociationLoader::VegetationSceneAssociationLoader</a></div><div class="ttdeci">VegetationSceneAssociationLoader(const asset::EvpackResourceReader &amp;reader) noexcept</div><div class="ttdoc">Bind a borrowed immutable reader which must outlive this loader.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00021">VegetationSceneInstance.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneElementHandle_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneElementHandle.html">eve::asset_graphics::VegetationSceneElementHandle</a></div><div class="ttdoc">Instance-qualified handle for one dynamically registered TVE Element volume.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneLiveElements_8h_source.html#l00018">VegetationSceneLiveElements.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneInstance_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html">eve::asset_graphics::VegetationSceneInstance</a></div><div class="ttdoc">Owning executable instance coupling one Scene Template, its manager fields and live Element registry....</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00041">VegetationSceneInstance.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneInstance_html_a5178f4f793ff4a930ef9f7168dd209ba"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#a5178f4f793ff4a930ef9f7168dd209ba">eve::asset_graphics::VegetationSceneInstance::release</a></div><div class="ttdeci">Result&lt; void &gt; release()</div><div class="ttdoc">Invalidate surface borrows and release manager GPU resources.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00078">VegetationSceneInstance.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneInstance_html_abe5b67608b0ffd1f2af455fe88b87622"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#abe5b67608b0ffd1f2af455fe88b87622">eve::asset_graphics::VegetationSceneInstance::liveElements</a></div><div class="ttdeci">const VegetationSceneLiveElements &amp; liveElements() const noexcept</div><div class="ttdoc">Borrow the dynamic Element registry.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00067">VegetationSceneInstance.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneInstance_html_ae29d6672dc90d3373e8e79ad27039c2a"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#ae29d6672dc90d3373e8e79ad27039c2a">eve::asset_graphics::VegetationSceneInstance::surface</a></div><div class="ttdeci">const graphics::PbrSurface &amp; surface() const noexcept</div><div class="ttdoc">Borrow the currently bound manager material snapshot.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00065">VegetationSceneInstance.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneInstance_html_af43c7b7dfb1c3bdee6da85ace979eb30"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#af43c7b7dfb1c3bdee6da85ace979eb30">eve::asset_graphics::VegetationSceneInstance::scene</a></div><div class="ttdeci">const asset_scene::LoadedSceneTemplate &amp; scene() const noexcept</div><div class="ttdoc">Borrow the associated declarative scene for this instance lifetime.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00063">VegetationSceneInstance.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1VegetationSceneLiveElements_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1VegetationSceneLiveElements.html">eve::asset_graphics::VegetationSceneLiveElements</a></div><div class="ttdoc">Owning registry that atomically couples dynamic Element state to a scene GPU runtime....</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneLiveElements_8h_source.html#l00052">VegetationSceneLiveElements.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></div><div class="ttdoc">Texture / mesh / shader / canvas creation and release.</div><div class="ttdef"><b>Definition</b> <a href="IResourceFactory_8h_source.html#l00037">IResourceFactory.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__graphics_html"><div class="ttname"><a href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a></div><div class="ttdef"><b>Definition</b> <a href="CookedMaterial_8cpp_source.html#l00005">CookedMaterial.cpp:5</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackCapabilities_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackCapabilities.html">eve::asset::EvpackCapabilities</a></div><div class="ttdoc">Actual runtime device capabilities used for variant selection.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00090">Evpack.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1LoadedVegetationScene_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">eve::asset_graphics::LoadedVegetationScene</a></div><div class="ttdoc">Fully validated, detached scene-manager candidate with no archive or GPU borrows.</div><div class="ttdef"><b>Definition</b> <a href="EvpackVegetationScene_8h_source.html#l00103">EvpackVegetationScene.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneAssociation_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html">eve::asset_graphics::VegetationSceneAssociation</a></div><div class="ttdoc">Owning decoded result of one unique source-GUID scene-manager association.</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00011">VegetationSceneInstance.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneAssociation_html_a4881273162ddf9cd8d6b66968e4cf017"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#a4881273162ddf9cd8d6b66968e4cf017">eve::asset_graphics::VegetationSceneAssociation::manager</a></div><div class="ttdeci">LoadedVegetationScene manager</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00013">VegetationSceneInstance.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneAssociation_html_ad58242e80867467157a4c364945b7d40"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ad58242e80867467157a4c364945b7d40">eve::asset_graphics::VegetationSceneAssociation::scene</a></div><div class="ttdeci">asset_scene::LoadedSceneTemplate scene</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00012">VegetationSceneInstance.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneAssociation_html_ae47b0a7cee779aa3b8fa90797c489dd3"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#ae47b0a7cee779aa3b8fa90797c489dd3">eve::asset_graphics::VegetationSceneAssociation::masks</a></div><div class="ttdeci">std::map&lt; std::string, graphics::VegetationMask &gt; masks</div><div class="ttdef"><b>Definition</b> <a href="VegetationSceneInstance_8h_source.html#l00014">VegetationSceneInstance.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneElement_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html">eve::asset_graphics::VegetationSceneElement</a></div><div class="ttdoc">One normalized Unity TVEElement definition awaiting texture realization.</div><div class="ttdef"><b>Definition</b> <a href="EvpackVegetationScene_8h_source.html#l00060">EvpackVegetationScene.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1VegetationSceneGpuBuild_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html">eve::asset_graphics::VegetationSceneGpuBuild</a></div><div class="ttdoc">Explicit detached inputs for publishing all nine TVE scene-manager field layers.</div><div class="ttdef"><b>Definition</b> <a href="EvpackVegetationScene_8h_source.html#l00233">EvpackVegetationScene.h:233</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__scene_1_1LoadedSceneTemplate_html"><div class="ttname"><a href="structeve_1_1asset__scene_1_1LoadedSceneTemplate.html">eve::asset_scene::LoadedSceneTemplate</a></div><div class="ttdoc">Owning declarative scene tree and render bindings; neither mutates a Scene or retains GPU objects.</div><div class="ttdef"><b>Definition</b> <a href="EvpackSceneTemplateLoader_8h_source.html#l00029">EvpackSceneTemplateLoader.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PbrSurface_html"><div class="ttname"><a href="structeve_1_1graphics_1_1PbrSurface.html">eve::graphics::PbrSurface</a></div><div class="ttdoc">Owning material parameter snapshot; texture pointers remain borrowed. Base color/metallic/roughness c...</div><div class="ttdef"><b>Definition</b> <a href="PbrSurface_8h_source.html#l00218">PbrSurface.h:218</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationMotion_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationMotion.html">eve::graphics::VegetationMotion</a></div><div class="ttdoc">Source-equivalent plant motion parameters with explicit time and texture inputs. All data is owned....</div><div class="ttdef"><b>Definition</b> <a href="VegetationMotion_8h_source.html#l00038">VegetationMotion.h:38</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

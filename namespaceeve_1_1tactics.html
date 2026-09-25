@@ -1,0 +1,1972 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tactics 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::tactics 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1AbilityReceipt.html">AbilityReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One declared ability activation and the resource state it left behind.  <a href="structeve_1_1tactics_1_1AbilityReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning values required to settle one previously declared tactical ability.  <a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a> short-root and authoritative owner of board and turn state.  <a href="classeve_1_1tactics_1_1Battle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BattleCommand.html">BattleCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One accepted replay command using only persistent identities and values.  <a href="structeve_1_1tactics_1_1BattleCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BattleEvent.html">BattleEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deterministic battle lifecycle event owned by <a class="el" href="classeve_1_1tactics_1_1Battle.html" title="Battle short-root and authoritative owner of board and turn state.">Battle</a>.  <a href="structeve_1_1tactics_1_1BattleEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleReplay.html">BattleReplay</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replays accepted commands against an identity-compatible starting battle.  <a href="classeve_1_1tactics_1_1BattleReplay.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BattleSystem.html">BattleSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stateless systems over the tactics short-root ECS family.  <a href="classeve_1_1tactics_1_1BattleSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BoardCellRecord.html">BoardCellRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning persistent board record used by snapshots and replay inspection.  <a href="structeve_1_1tactics_1_1BoardCellRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1BoardEdgeRecord.html">BoardEdgeRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning persistent edge record used by snapshots and replay inspection.  <a href="structeve_1_1tactics_1_1BoardEdgeRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative board facts and occupancy indexes for one battle.  <a href="classeve_1_1tactics_1_1BoardState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical board coordinate independent of rendering projection.  <a href="structeve_1_1tactics_1_1Cell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1CellState.html">CellState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One authoritative board cell fact.  <a href="structeve_1_1tactics_1_1CellState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ChargeModel.html">ChargeModel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The charge rule a policy declares for round scheduling.  <a href="structeve_1_1tactics_1_1ChargeModel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1EdgeState.html">EdgeState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One authoritative <b>directed</b> edge fact between two adjacent cells.  <a href="structeve_1_1tactics_1_1EdgeState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1GridCoverPolicy.html">GridCoverPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The built-in cover policy: blockers adjacent to the target, prioritising the line.  <a href="classeve_1_1tactics_1_1GridCoverPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html">GridLineOfSightPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The built-in grid policy: a straight-line trace over the board's own topology.  <a href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answers "how much cover does @p target have against @p attacker".  <a href="classeve_1_1tactics_1_1ICoverPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answers "can @p from see @p to" for one board.  <a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionContext.html">InteractionContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable projection of everything the interaction machine is allowed to know.  <a href="structeve_1_1tactics_1_1InteractionContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html">InteractionIntent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One player intention, expressed with stable identities only.  <a href="structeve_1_1tactics_1_1InteractionIntent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1InteractionSession.html">InteractionSession</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A disposable, non-authoritative interaction session.  <a href="classeve_1_1tactics_1_1InteractionSession.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1ITurnPolicy.html">ITurnPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deterministic unit-activation ordering strategy.  <a href="classeve_1_1tactics_1_1ITurnPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1MoveReceipt.html">MoveReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed tactical movement and remaining resource state.  <a href="structeve_1_1tactics_1_1MoveReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ObjectiveSpec.html">ObjectiveSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistent objective definition using stable side identities.  <a href="structeve_1_1tactics_1_1ObjectiveSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ObjectiveState.html">ObjectiveState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable objective projection and completion revision.  <a href="structeve_1_1tactics_1_1ObjectiveState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1PathQuery.html">PathQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure deterministic board path algorithms.  <a href="classeve_1_1tactics_1_1PathQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1PresentationCommand.html">PresentationCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One intent together with the way to take it back.  <a href="structeve_1_1tactics_1_1PresentationCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1PresentationFrame.html">PresentationFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the projector knows about the battle beyond the event itself.  <a href="structeve_1_1tactics_1_1PresentationFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One presentation instruction: what to show, where, and until when.  <a href="structeve_1_1tactics_1_1PresentationIntent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1PresentationProjector.html">PresentationProjector</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects authoritative events into bounded, revertible presentation intents.  <a href="classeve_1_1tactics_1_1PresentationProjector.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1PresentationRevert.html">PresentationRevert</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The explicit undo contract for one intent.  <a href="structeve_1_1tactics_1_1PresentationRevert.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1Reachability.html">Reachability</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of one deterministic reachability query.  <a href="classeve_1_1tactics_1_1Reachability.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReachableCell.html">ReachableCell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One reachable cell and its minimum fixed-point movement cost.  <a href="structeve_1_1tactics_1_1ReachableCell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionCandidate.html">ReactionCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One eligible deterministic reaction choice.  <a href="structeve_1_1tactics_1_1ReactionCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionReceipt.html">ReactionReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted reaction identity and remaining resource snapshot.  <a href="structeve_1_1tactics_1_1ReactionReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1ReactionWindow.html">ReactionWindow</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One open reaction window on the battle-owned LIFO stack.  <a href="structeve_1_1tactics_1_1ReactionWindow.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticalSide.html">TacticalSide</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical side short-root entity.  <a href="classeve_1_1tactics_1_1TacticalSide.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticalUnit.html">TacticalUnit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical unit short-root entity.  <a href="classeve_1_1tactics_1_1TacticalUnit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">Tactics</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owns tactics short-root entities and coordinates checked battle setup.  <a href="classeve_1_1tactics_1_1Tactics.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticsActionExecutor.html">TacticsActionExecutor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active-effect provider that commits move, face and wait through ActionRuntime.  <a href="classeve_1_1tactics_1_1TacticsActionExecutor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticsBattleSession.html">TacticsBattleSession</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Module-owned script session referencing one battle aggregate.  <a href="structeve_1_1tactics_1_1TacticsBattleSession.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TacticsBattleSessionTag.html">TacticsBattleSessionTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner tag for script-visible battle-session handles.  <a href="structeve_1_1tactics_1_1TacticsBattleSessionTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answers grid line-of-sight queries from the bound tactics battle.  <a href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticsPersistence.html">TacticsPersistence</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stateless codec for the authoritative state of one battle.  <a href="classeve_1_1tactics_1_1TacticsPersistence.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html">TacticsSettlementRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread settlement bridge between tactics declarations and game-owned combat state.  <a href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TurnPolicyKind.html">TurnPolicyKind</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed spelling of the built-in turn-policy ids.  <a href="structeve_1_1tactics_1_1TurnPolicyKind.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1TurnPolicyRegistry.html">TurnPolicyRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registry of turn policies keyed by stable id.  <a href="classeve_1_1tactics_1_1TurnPolicyRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1TurnResourceSpec.html">TurnResourceSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial and per-round tactical resource values for one unit.  <a href="structeve_1_1tactics_1_1TurnResourceSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1UnitOrder.html">UnitOrder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The scheduling projection a policy is allowed to compare.  <a href="structeve_1_1tactics_1_1UnitOrder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ac35bd7f6e84ea1375a93c1b75ad8f67b" id="r_ac35bd7f6e84ea1375a93c1b75ad8f67b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ac35bd7f6e84ea1375a93c1b75ad8f67b">TacticsBattleSessionRef</a> = <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">script::RuntimeHandleRef</a>&lt; <a class="el" href="structeve_1_1tactics_1_1TacticsBattleSessionTag.html">TacticsBattleSessionTag</a> &gt;</td></tr>
+<tr class="memdesc:ac35bd7f6e84ea1375a93c1b75ad8f67b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation- and module-epoch-qualified battle-session reference.  <br /></td></tr>
+<tr class="separator:ac35bd7f6e84ea1375a93c1b75ad8f67b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b2a4d28045395f0d570a4c65d67e8e" id="r_af4b2a4d28045395f0d570a4c65d67e8e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#af4b2a4d28045395f0d570a4c65d67e8e">MoveActionExecutor</a> = <a class="el" href="classeve_1_1tactics_1_1TacticsActionExecutor.html">TacticsActionExecutor</a></td></tr>
+<tr class="memdesc:af4b2a4d28045395f0d570a4c65d67e8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling retained for the original movement-only adapter name.  <br /></td></tr>
+<tr class="separator:af4b2a4d28045395f0d570a4c65d67e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ad3dd08cd17b2aef9f307dba7bf1d42c4" id="r_ad3dd08cd17b2aef9f307dba7bf1d42c4"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1">AwaitSelection</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a">UnitSelected</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563">Targeting</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0">Resolving</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622">Ended</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ad3dd08cd17b2aef9f307dba7bf1d42c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where the interaction machine is, as far as the player is concerned.  <a href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">更多...</a><br /></td></tr>
+<tr class="separator:ad3dd08cd17b2aef9f307dba7bf1d42c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a614dac5cdfadcc587d56aa478fb9564a" id="r_a614dac5cdfadcc587d56aa478fb9564a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a">SelectUnit</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613">MoveTo</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">UseAbilityOn</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19">Cancel</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311">Confirm</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb">EndTurn</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a614dac5cdfadcc587d56aa478fb9564a"><td class="mdescLeft">&#160;</td><td class="mdescRight">What the player asked for. A value, not a mutation.  <a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">更多...</a><br /></td></tr>
+<tr class="separator:a614dac5cdfadcc587d56aa478fb9564a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1918f1a4d961c1bbec50e48449554d8" id="r_af1918f1a4d961c1bbec50e48449554d8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85">Half</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75">Full</a>
+ }</td></tr>
+<tr class="memdesc:af1918f1a4d961c1bbec50e48449554d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">How much protection a cell gives against an attacker.  <a href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">更多...</a><br /></td></tr>
+<tr class="separator:af1918f1a4d961c1bbec50e48449554d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7caee7bd83cc0384e2f35a10b4ce18d3" id="r_a7caee7bd83cc0384e2f35a10b4ce18d3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c">Idle</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df">Friendly</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">Selected</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">Finished</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c">Targetable</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">Attacking</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051">Defending</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">Moving</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">Destroyed</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a7caee7bd83cc0384e2f35a10b4ce18d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">How a consumer should draw one unit.  <a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">更多...</a><br /></td></tr>
+<tr class="separator:a7caee7bd83cc0384e2f35a10b4ce18d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fff92b0e855225a00aa6e66bbf51e3d" id="r_a3fff92b0e855225a00aa6e66bbf51e3d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">PresentationRevertTrigger</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c">Never</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">OnExpiry</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">OnNextTurn</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">OnRoundStart</a>
+ }</td></tr>
+<tr class="memdesc:a3fff92b0e855225a00aa6e66bbf51e3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">What makes a presentation intent stop being true.  <a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">更多...</a><br /></td></tr>
+<tr class="separator:a3fff92b0e855225a00aa6e66bbf51e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5126ccf84ac156a65549f81f996ef84" id="r_aa5126ccf84ac156a65549f81f996ef84"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7">Manhattan</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648">Chebyshev</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a">Hex</a>
+ }</td></tr>
+<tr class="memdesc:aa5126ccf84ac156a65549f81f996ef84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic logical distance used by cellsInRange.  <a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">更多...</a><br /></td></tr>
+<tr class="separator:aa5126ccf84ac156a65549f81f996ef84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8e04afd6bc8becda95f117c43dedb3" id="r_aec8e04afd6bc8becda95f117c43dedb3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3">BoardTopology</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a476e503adaf90e2fd77cd47ca9be49cd">Square4</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3a92fdb36c7b7fc64f1a3871f1948b4f43">Square8</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3af63ee21e1e9cd84a1d964c14dc42eb46">HexAxial</a>
+ }</td></tr>
+<tr class="memdesc:aec8e04afd6bc8becda95f117c43dedb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported deterministic board-neighbour topologies.  <a href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3">更多...</a><br /></td></tr>
+<tr class="separator:aec8e04afd6bc8becda95f117c43dedb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8fc99e5215995b92d41e72a10dd5ba" id="r_a2c8fc99e5215995b92d41e72a10dd5ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">Setup</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">Running</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622">Ended</a>
+ }</td></tr>
+<tr class="memdesc:a2c8fc99e5215995b92d41e72a10dd5ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tactical battle lifecycle.  <a href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">更多...</a><br /></td></tr>
+<tr class="separator:a2c8fc99e5215995b92d41e72a10dd5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad179be517f946678fdf8b276786a2bde" id="r_ad179be517f946678fdf8b276786a2bde"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">Setup</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98">BattleStart</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeae279ccaa0940305fd66b36348b823963">RoundStart</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeab0a8a1979409102f824db0a1a8484802">TurnStart</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">Acting</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4">Reaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f">TurnEnd</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea85f2151e51ce5218e9eccdf9e421a824">RoundEnd</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44">BattleEnd</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ad179be517f946678fdf8b276786a2bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit, externally observable battle phase.  <a href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">更多...</a><br /></td></tr>
+<tr class="separator:ad179be517f946678fdf8b276786a2bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68a416c4caa9901c69f15df7de0e3a9e" id="r_a68a416c4caa9901c69f15df7de0e3a9e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">BattleCommandKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37">Start</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee">Advance</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">Move</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f">Face</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652">Wait</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb">EndTurn</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061">Finish</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f">OpenReaction</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a">AcceptReaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e">DeclineReaction</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7">DefeatUnit</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea">RollRandom</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5">UseAbility</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a68a416c4caa9901c69f15df7de0e3a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted deterministic command kinds recorded for replay.  <a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">更多...</a><br /></td></tr>
+<tr class="separator:a68a416c4caa9901c69f15df7de0e3a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a804b262365352869cc4608967bce2cc7" id="r_a804b262365352869cc4608967bce2cc7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7">ObjectiveKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7abe7c35d305151e63f67bb1c800fa4bb1">EliminateSide</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7ab7f3298e431ec4ed12e16e8ab7cd8da0">SurviveRounds</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7aaa14823cfa57fcc9ede8b95213cdf1e9">OccupyCells</a>
+ }</td></tr>
+<tr class="memdesc:a804b262365352869cc4608967bce2cc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in deterministic objective rules.  <a href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7">更多...</a><br /></td></tr>
+<tr class="separator:a804b262365352869cc4608967bce2cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a108e9195df2270a1008cc86c8ab4be42" id="r_a108e9195df2270a1008cc86c8ab4be42"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42">ObjectiveStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42a2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42a07ca5050e697392c9ed47e6453f1453f">Completed</a>
+ }</td></tr>
+<tr class="memdesc:a108e9195df2270a1008cc86c8ab4be42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Objective lifecycle owned by its battle.  <a href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42">更多...</a><br /></td></tr>
+<tr class="separator:a108e9195df2270a1008cc86c8ab4be42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b0002f176e1c38d286bfad13aeb72f" id="r_aa0b0002f176e1c38d286bfad13aeb72f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72f">TurnOrder</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72fac01692273d914301975489fc76dd8d29">LeftFirst</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72fa99410db507db13316b9cda30d0c0f5e5">RightFirst</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72faafd102579f64c98e96d92a7424130605">Equivalent</a>
+ }</td></tr>
+<tr class="memdesc:aa0b0002f176e1c38d286bfad13aeb72f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total order a policy reports for one pair of units.  <a href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72f">更多...</a><br /></td></tr>
+<tr class="separator:aa0b0002f176e1c38d286bfad13aeb72f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a38c48eda6642d0cc7e8beb01002a0ba3" id="r_a38c48eda6642d0cc7e8beb01002a0ba3"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a38c48eda6642d0cc7e8beb01002a0ba3">interactionStateName</a> (<a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a> state) noexcept</td></tr>
+<tr class="memdesc:a38c48eda6642d0cc7e8beb01002a0ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable stable spelling of an interaction state (protocol text).  <br /></td></tr>
+<tr class="separator:a38c48eda6642d0cc7e8beb01002a0ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3bf321af3d656a6567f63067be87329" id="r_ab3bf321af3d656a6567f63067be87329"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ab3bf321af3d656a6567f63067be87329">interactionIntentKindName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:ab3bf321af3d656a6567f63067be87329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable stable spelling of an intent kind (protocol text).  <br /></td></tr>
+<tr class="separator:ab3bf321af3d656a6567f63067be87329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c323ea9cdac9a673ff1474e86d0fd7" id="r_a14c323ea9cdac9a673ff1474e86d0fd7"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a14c323ea9cdac9a673ff1474e86d0fd7">coverLevelName</a> (<a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a> level) noexcept</td></tr>
+<tr class="memdesc:a14c323ea9cdac9a673ff1474e86d0fd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable protocol spelling of a cover level.  <br /></td></tr>
+<tr class="separator:a14c323ea9cdac9a673ff1474e86d0fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b390cc88bf047721fcf5d16492b3222" id="r_a9b390cc88bf047721fcf5d16492b3222"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">gridLineOfSightPolicy</a> ()</td></tr>
+<tr class="memdesc:a9b390cc88bf047721fcf5d16492b3222"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide built-in line-of-sight policy.  <br /></td></tr>
+<tr class="separator:a9b390cc88bf047721fcf5d16492b3222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde99d4ffa1be62ce6d904f614d06520" id="r_afde99d4ffa1be62ce6d904f614d06520"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#afde99d4ffa1be62ce6d904f614d06520">gridCoverPolicy</a> ()</td></tr>
+<tr class="memdesc:afde99d4ffa1be62ce6d904f614d06520"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide built-in cover policy (same ownership remarks as above).  <br /></td></tr>
+<tr class="separator:afde99d4ffa1be62ce6d904f614d06520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa05447001ddc8124fc62cb398659a9" id="r_a1fa05447001ddc8124fc62cb398659a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a1fa05447001ddc8124fc62cb398659a9">visibleCellsInRange</a> (const <a class="el" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, const <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &amp;policy, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> origin, int <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, int <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> metric)</td></tr>
+<tr class="memdesc:a1fa05447001ddc8124fc62cb398659a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cells within a metric range of <code>origin</code> that <code>policy</code> can actually see.  <br /></td></tr>
+<tr class="separator:a1fa05447001ddc8124fc62cb398659a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d424d91ef68337e30447f97d394a7f8" id="r_a4d424d91ef68337e30447f97d394a7f8"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a4d424d91ef68337e30447f97d394a7f8">unitVisualStateName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> state) noexcept</td></tr>
+<tr class="memdesc:a4d424d91ef68337e30447f97d394a7f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable stable spelling of a visual state (protocol text).  <br /></td></tr>
+<tr class="separator:a4d424d91ef68337e30447f97d394a7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4105467e7d24591a1d109e1ad03efcfc" id="r_a4105467e7d24591a1d109e1ad03efcfc"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a4105467e7d24591a1d109e1ad03efcfc">presentationRevertTriggerName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">PresentationRevertTrigger</a> trigger) noexcept</td></tr>
+<tr class="memdesc:a4105467e7d24591a1d109e1ad03efcfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable stable spelling of a revert trigger (protocol text).  <br /></td></tr>
+<tr class="separator:a4105467e7d24591a1d109e1ad03efcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab58518a674553d6f7e0a34dedefebff1" id="r_ab58518a674553d6f7e0a34dedefebff1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ab58518a674553d6f7e0a34dedefebff1">Module_IMPL</a> (<a class="el" href="classeve_1_1tactics_1_1Tactics.html">Tactics</a>, new <a class="el" href="classeve_1_1tactics_1_1Tactics.html">Tactics</a>())</td></tr>
+<tr class="separator:ab58518a674553d6f7e0a34dedefebff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa492357959663766a41bd06b86929f7f" id="r_aa492357959663766a41bd06b86929f7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa492357959663766a41bd06b86929f7f">moveActionDefinition</a> ()</td></tr>
+<tr class="memdesc:aa492357959663766a41bd06b86929f7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the canonical zero-duration tactics move action definition.  <br /></td></tr>
+<tr class="separator:aa492357959663766a41bd06b86929f7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f5c16dcf803fd2bfed9920d4f742196" id="r_a6f5c16dcf803fd2bfed9920d4f742196"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a6f5c16dcf803fd2bfed9920d4f742196">faceActionDefinition</a> ()</td></tr>
+<tr class="memdesc:a6f5c16dcf803fd2bfed9920d4f742196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the canonical zero-duration tactics facing action definition.  <br /></td></tr>
+<tr class="separator:a6f5c16dcf803fd2bfed9920d4f742196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63ebf8abe9ab5a288878fd636345484" id="r_aa63ebf8abe9ab5a288878fd636345484"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa63ebf8abe9ab5a288878fd636345484">waitActionDefinition</a> ()</td></tr>
+<tr class="memdesc:aa63ebf8abe9ab5a288878fd636345484"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the canonical zero-duration tactics wait action definition.  <br /></td></tr>
+<tr class="separator:aa63ebf8abe9ab5a288878fd636345484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412c268a39efbb9587bdad9d2d0e7256" id="r_a412c268a39efbb9587bdad9d2d0e7256"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a412c268a39efbb9587bdad9d2d0e7256">makeMoveRequest</a> (ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> destination, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a412c268a39efbb9587bdad9d2d0e7256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a checked move request using canonical integer cell parameters.  <br /></td></tr>
+<tr class="separator:a412c268a39efbb9587bdad9d2d0e7256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa84a12007b58f7f4fb16e019accfedd8" id="r_aa84a12007b58f7f4fb16e019accfedd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa84a12007b58f7f4fb16e019accfedd8">makeFaceRequest</a> (ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, int <a class="el" href="TacticsPersistence_8cpp.html#a0649f2bc6181d3fe471c7a9d9ab7b8a4">facing</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:aa84a12007b58f7f4fb16e019accfedd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a checked facing request with optimistic battle revision.  <br /></td></tr>
+<tr class="separator:aa84a12007b58f7f4fb16e019accfedd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72bf2af023e49ede3c6cba26b58c1d36" id="r_a72bf2af023e49ede3c6cba26b58c1d36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a72bf2af023e49ede3c6cba26b58c1d36">makeWaitRequest</a> (ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a72bf2af023e49ede3c6cba26b58c1d36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a checked wait request with optimistic battle revision.  <br /></td></tr>
+<tr class="separator:a72bf2af023e49ede3c6cba26b58c1d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f175ebf354b110b12580dbaabfb9417" id="r_a1f175ebf354b110b12580dbaabfb9417"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1AbilityReceipt.html">AbilityReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a1f175ebf354b110b12580dbaabfb9417">validateAbility</a> (<a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;battle, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> actor, const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;action, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> targetCell, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> targetUnit, std::string_view <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:a1f175ebf354b110b12580dbaabfb9417"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate one ability declaration without mutating anything.  <br /></td></tr>
+<tr class="separator:a1f175ebf354b110b12580dbaabfb9417"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af41bdf4fd6f42a1148b6ea1a85cdecd8" id="r_af41bdf4fd6f42a1148b6ea1a85cdecd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#af41bdf4fd6f42a1148b6ea1a85cdecd8">tacticsLineOfSightAdapter</a> ()</td></tr>
+<tr class="memdesc:af41bdf4fd6f42a1148b6ea1a85cdecd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide adapter instance the capability answers with.  <br /></td></tr>
+<tr class="separator:af41bdf4fd6f42a1148b6ea1a85cdecd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4357136cec6e632b94c416112a63e18" id="r_ab4357136cec6e632b94c416112a63e18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ab4357136cec6e632b94c416112a63e18">registerTacticsLineOfSightProvider</a> ()</td></tr>
+<tr class="memdesc:ab4357136cec6e632b94c416112a63e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Claim the grid coordinate spaces for the tactics adapter.  <br /></td></tr>
+<tr class="separator:ab4357136cec6e632b94c416112a63e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5dace6f142ffa77937ada0dfd707e2" id="r_a5b5dace6f142ffa77937ada0dfd707e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">settlement::SettlementRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a5b5dace6f142ffa77937ada0dfd707e2">makeSettlementRequest</a> (const <a class="el" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a5b5dace6f142ffa77937ada0dfd707e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and project a committed tactical ability into the canonical settlement request.  <br /></td></tr>
+<tr class="separator:a5b5dace6f142ffa77937ada0dfd707e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeab04c627d64fc0b85fdc8fcda28a73f" id="r_aeab04c627d64fc0b85fdc8fcda28a73f"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aeab04c627d64fc0b85fdc8fcda28a73f">phaseName</a> (<a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> <a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>) noexcept</td></tr>
+<tr class="memdesc:aeab04c627d64fc0b85fdc8fcda28a73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable protocol spelling of a battle phase.  <br /></td></tr>
+<tr class="separator:aeab04c627d64fc0b85fdc8fcda28a73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d79210b8666201065a6be2a27d9e2c2" id="r_a2d79210b8666201065a6be2a27d9e2c2"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2d79210b8666201065a6be2a27d9e2c2">statusName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a> <a class="el" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) noexcept</td></tr>
+<tr class="memdesc:a2d79210b8666201065a6be2a27d9e2c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable protocol spelling of a battle status.  <br /></td></tr>
+<tr class="separator:a2d79210b8666201065a6be2a27d9e2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2a4bd5716b2a8717f6db0f72ae22a2f" id="r_aa2a4bd5716b2a8717f6db0f72ae22a2f"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#aa2a4bd5716b2a8717f6db0f72ae22a2f">commandKindName</a> (<a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">BattleCommandKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:aa2a4bd5716b2a8717f6db0f72ae22a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable protocol spelling of an accepted command kind.  <br /></td></tr>
+<tr class="separator:aa2a4bd5716b2a8717f6db0f72ae22a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:adc314cc3edba9374fdcea00968b5a696" id="r_adc314cc3edba9374fdcea00968b5a696"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#adc314cc3edba9374fdcea00968b5a696">kSightBlockerTag</a> = &quot;sight_blocker&quot;</td></tr>
+<tr class="memdesc:adc314cc3edba9374fdcea00968b5a696"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1tactics_1_1Cell.html" title="Logical board coordinate independent of rendering projection.">Cell</a> tag that makes a cell block line of sight.  <br /></td></tr>
+<tr class="separator:adc314cc3edba9374fdcea00968b5a696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a223143b354c709cc14759f0e070ba9df" id="r_a223143b354c709cc14759f0e070ba9df"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a223143b354c709cc14759f0e070ba9df">kSideAlternatingPolicyId</a> = &quot;side_alternating&quot;</td></tr>
+<tr class="memdesc:a223143b354c709cc14759f0e070ba9df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable id of the built-in side-alternating turn policy.  <br /></td></tr>
+<tr class="separator:a223143b354c709cc14759f0e070ba9df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07e86f14fad06b3aa07eb0a9141f57e2" id="r_a07e86f14fad06b3aa07eb0a9141f57e2"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a07e86f14fad06b3aa07eb0a9141f57e2">kInitiativePolicyId</a> = &quot;initiative&quot;</td></tr>
+<tr class="memdesc:a07e86f14fad06b3aa07eb0a9141f57e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable id of the built-in per-unit initiative turn policy.  <br /></td></tr>
+<tr class="separator:a07e86f14fad06b3aa07eb0a9141f57e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c0b86f49e6b5c7d5a1aa65775f7eba0" id="r_a2c0b86f49e6b5c7d5a1aa65775f7eba0"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2c0b86f49e6b5c7d5a1aa65775f7eba0">kChargeTimeBattlePolicyId</a> = &quot;charge_time_battle&quot;</td></tr>
+<tr class="memdesc:a2c0b86f49e6b5c7d5a1aa65775f7eba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable id of the built-in charge-time (CTB/ATB) turn policy.  <br /></td></tr>
+<tr class="separator:a2c0b86f49e6b5c7d5a1aa65775f7eba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e1b411c186c12e7ead3ae3d978e6c9b" id="r_a2e1b411c186c12e7ead3ae3d978e6c9b"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a2e1b411c186c12e7ead3ae3d978e6c9b">kChargeTimeBattleThreshold</a> = 100</td></tr>
+<tr class="memdesc:a2e1b411c186c12e7ead3ae3d978e6c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Charge a unit must accumulate before it may activate under CTB scheduling.  <br /></td></tr>
+<tr class="separator:a2e1b411c186c12e7ead3ae3d978e6c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4888a42d4164ac2ac9511bfdb4648ec" id="r_ae4888a42d4164ac2ac9511bfdb4648ec"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#ae4888a42d4164ac2ac9511bfdb4648ec">kMaxAbilityPayloadBytes</a> = 4096</td></tr>
+<tr class="memdesc:ae4888a42d4164ac2ac9511bfdb4648ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound on the opaque ability payload a declaration may carry.  <br /></td></tr>
+<tr class="separator:ae4888a42d4164ac2ac9511bfdb4648ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="af4b2a4d28045395f0d570a4c65d67e8e" name="af4b2a4d28045395f0d570a4c65d67e8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b2a4d28045395f0d570a4c65d67e8e">&#9670;&#160;</a></span>MoveActionExecutor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1tactics.html#af4b2a4d28045395f0d570a4c65d67e8e">eve::tactics::MoveActionExecutor</a> = typedef <a class="el" href="classeve_1_1tactics_1_1TacticsActionExecutor.html">TacticsActionExecutor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility spelling retained for the original movement-only adapter name. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8h_source.html">TacticsAction.h</a> 第 <a class="el" href="TacticsAction_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac35bd7f6e84ea1375a93c1b75ad8f67b" name="ac35bd7f6e84ea1375a93c1b75ad8f67b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac35bd7f6e84ea1375a93c1b75ad8f67b">&#9670;&#160;</a></span>TacticsBattleSessionRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1tactics.html#ac35bd7f6e84ea1375a93c1b75ad8f67b">eve::tactics::TacticsBattleSessionRef</a> = typedef <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">script::RuntimeHandleRef</a>&lt;<a class="el" href="structeve_1_1tactics_1_1TacticsBattleSessionTag.html">TacticsBattleSessionTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation- and module-epoch-qualified battle-session reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Tactics_8h_source.html">Tactics.h</a> 第 <a class="el" href="Tactics_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a68a416c4caa9901c69f15df7de0e3a9e" name="a68a416c4caa9901c69f15df7de0e3a9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68a416c4caa9901c69f15df7de0e3a9e">&#9670;&#160;</a></span>BattleCommandKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">eve::tactics::BattleCommandKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accepted deterministic command kinds recorded for replay. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37" name="a68a416c4caa9901c69f15df7de0e3a9eaa6122a65eaa676f700ae68d393054a37"></a>Start&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee" name="a68a416c4caa9901c69f15df7de0e3a9ea0a86dddc699c7e6fe7f1e43153a5cbee"></a>Advance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5" name="a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5"></a>Move&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f" name="a68a416c4caa9901c69f15df7de0e3a9ea8af5861002f3c157f9ba842bba10aa3f"></a>Face&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652" name="a68a416c4caa9901c69f15df7de0e3a9ea0f68101772bd5397ef8eb1b632798652"></a>Wait&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb" name="a68a416c4caa9901c69f15df7de0e3a9ea0f5830c168fdb5396f4c2eff1fc48aeb"></a>EndTurn&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061" name="a68a416c4caa9901c69f15df7de0e3a9eaa20ddccbb6f808ec42cd66323e6c6061"></a>Finish&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f" name="a68a416c4caa9901c69f15df7de0e3a9ead133693307b1351e1636c16bfbae9f0f"></a>OpenReaction&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a" name="a68a416c4caa9901c69f15df7de0e3a9ea7c9922c1f2bfcc3169528240e78ad04a"></a>AcceptReaction&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e" name="a68a416c4caa9901c69f15df7de0e3a9ea895cced04a627f9ff2eb33be7ac27f1e"></a>DeclineReaction&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7" name="a68a416c4caa9901c69f15df7de0e3a9eaed8ebbed936acd73dc142f48e24498f7"></a>DefeatUnit&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea" name="a68a416c4caa9901c69f15df7de0e3a9ea0d7c2b6268beb343a27b65ab7a9c92ea"></a>RollRandom&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5" name="a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5"></a>UseAbility&#160;</td><td class="fielddoc"><p>Declare a unit ability activation against a target cell. </p>
+<p>Appended last on purpose: the numeric value is persisted in the command log, so inserting a kind anywhere else would renumber every later kind and silently reinterpret existing payloads. Its legal range is version-gated (schema v4), not widened unconditionally. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00350">350</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad179be517f946678fdf8b276786a2bde" name="ad179be517f946678fdf8b276786a2bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad179be517f946678fdf8b276786a2bde">&#9670;&#160;</a></span>BattlePhase</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">eve::tactics::BattlePhase</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit, externally observable battle phase. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b" name="ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b"></a>Setup&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98" name="ad179be517f946678fdf8b276786a2bdea5805f5641fb7cdc6e12163b7849cba98"></a>BattleStart&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeae279ccaa0940305fd66b36348b823963" name="ad179be517f946678fdf8b276786a2bdeae279ccaa0940305fd66b36348b823963"></a>RoundStart&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeab0a8a1979409102f824db0a1a8484802" name="ad179be517f946678fdf8b276786a2bdeab0a8a1979409102f824db0a1a8484802"></a>TurnStart&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7" name="ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7"></a>Acting&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4" name="ad179be517f946678fdf8b276786a2bdeaa87198fb6a6b4fe0b70c03fc2a43a8f4"></a>Reaction&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f" name="ad179be517f946678fdf8b276786a2bdeadd2a059ce5c2b0e39ede932ecb5af42f"></a>TurnEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdea85f2151e51ce5218e9eccdf9e421a824" name="ad179be517f946678fdf8b276786a2bdea85f2151e51ce5218e9eccdf9e421a824"></a>RoundEnd&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44" name="ad179be517f946678fdf8b276786a2bdeafb85dbb9e4619d0b7dcafd8829814a44"></a>BattleEnd&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c8fc99e5215995b92d41e72a10dd5ba" name="a2c8fc99e5215995b92d41e72a10dd5ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8fc99e5215995b92d41e72a10dd5ba">&#9670;&#160;</a></span>BattleStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">eve::tactics::BattleStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tactical battle lifecycle. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b" name="a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b"></a>Setup&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09" name="a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09"></a>Running&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622" name="a2c8fc99e5215995b92d41e72a10dd5baa0157fbb99be9622bdaa6e544270c0622"></a>Ended&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec8e04afd6bc8becda95f117c43dedb3" name="aec8e04afd6bc8becda95f117c43dedb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8e04afd6bc8becda95f117c43dedb3">&#9670;&#160;</a></span>BoardTopology</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#aec8e04afd6bc8becda95f117c43dedb3">eve::tactics::BoardTopology</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Supported deterministic board-neighbour topologies. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aec8e04afd6bc8becda95f117c43dedb3a476e503adaf90e2fd77cd47ca9be49cd" name="aec8e04afd6bc8becda95f117c43dedb3a476e503adaf90e2fd77cd47ca9be49cd"></a>Square4&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aec8e04afd6bc8becda95f117c43dedb3a92fdb36c7b7fc64f1a3871f1948b4f43" name="aec8e04afd6bc8becda95f117c43dedb3a92fdb36c7b7fc64f1a3871f1948b4f43"></a>Square8&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aec8e04afd6bc8becda95f117c43dedb3af63ee21e1e9cd84a1d964c14dc42eb46" name="aec8e04afd6bc8becda95f117c43dedb3af63ee21e1e9cd84a1d964c14dc42eb46"></a>HexAxial&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa5126ccf84ac156a65549f81f996ef84" name="aa5126ccf84ac156a65549f81f996ef84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5126ccf84ac156a65549f81f996ef84">&#9670;&#160;</a></span>CellRangeMetric</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">eve::tactics::CellRangeMetric</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deterministic logical distance used by cellsInRange. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7" name="aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7"></a>Manhattan&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648" name="aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648"></a>Chebyshev&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a" name="aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a"></a>Hex&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsPath_8h_source.html">TacticsPath.h</a> 第 <a class="el" href="TacticsPath_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1918f1a4d961c1bbec50e48449554d8" name="af1918f1a4d961c1bbec50e48449554d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1918f1a4d961c1bbec50e48449554d8">&#9670;&#160;</a></span>CoverLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">eve::tactics::CoverLevel</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How much protection a cell gives against an attacker. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="af1918f1a4d961c1bbec50e48449554d8a6adf97f83acf6453d4a6a4b1070f3754" name="af1918f1a4d961c1bbec50e48449554d8a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>No protection. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85" name="af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85"></a>Half&#160;</td><td class="fielddoc"><p>Partial protection: an adjacent blocker, but not on the incoming line. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75" name="af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75"></a>Full&#160;</td><td class="fielddoc"><p>Full protection: a blocker sits between the attacker and the target. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8h_source.html">LineOfSight.h</a> 第 <a class="el" href="LineOfSight_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a614dac5cdfadcc587d56aa478fb9564a" name="a614dac5cdfadcc587d56aa478fb9564a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a614dac5cdfadcc587d56aa478fb9564a">&#9670;&#160;</a></span>InteractionIntentKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">eve::tactics::InteractionIntentKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What the player asked for. A value, not a mutation. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754" name="a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Nothing to do: the click landed somewhere with no meaning in this state. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a" name="a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a"></a>SelectUnit&#160;</td><td class="fielddoc"><p>Focus the controlled unit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613" name="a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613"></a>MoveTo&#160;</td><td class="fielddoc"><p>Move the controlled unit onto <a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">InteractionIntent::cell</a>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee" name="a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee"></a>UseAbilityOn&#160;</td><td class="fielddoc"><p>Declare <a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#a2b26a01ea53483d54735612e1b9d9c1b">InteractionIntent::action</a> against cell and optional unit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19" name="a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19"></a>Cancel&#160;</td><td class="fielddoc"><p>Armed ability/selection should be dropped. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311" name="a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311"></a>Confirm&#160;</td><td class="fielddoc"><p>Submit whatever intent is pending. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb" name="a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb"></a>EndTurn&#160;</td><td class="fielddoc"><p>End the controlled unit's activation. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3dd08cd17b2aef9f307dba7bf1d42c4" name="ad3dd08cd17b2aef9f307dba7bf1d42c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3dd08cd17b2aef9f307dba7bf1d42c4">&#9670;&#160;</a></span>InteractionState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">eve::tactics::InteractionState</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Where the interaction machine is, as far as the player is concerned. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2" name="ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2"></a>Blocked&#160;</td><td class="fielddoc"><p>Not this controller's turn, or the battle is not accepting input at all. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1" name="ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1"></a>AwaitSelection&#160;</td><td class="fielddoc"><p>Nothing selected yet; a click picks a destination or the active unit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a" name="ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a"></a>UnitSelected&#160;</td><td class="fielddoc"><p>The controlled unit is selected; the next click acts on a cell. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563" name="ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563"></a>Targeting&#160;</td><td class="fielddoc"><p>An ability is armed; the next click picks its target. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0" name="ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0"></a>Resolving&#160;</td><td class="fielddoc"><p>The caller has an uncommitted intent and must commit or cancel it. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622" name="ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622"></a>Ended&#160;</td><td class="fielddoc"><p>The battle is over; only inspection remains. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a804b262365352869cc4608967bce2cc7" name="a804b262365352869cc4608967bce2cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a804b262365352869cc4608967bce2cc7">&#9670;&#160;</a></span>ObjectiveKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a804b262365352869cc4608967bce2cc7">eve::tactics::ObjectiveKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in deterministic objective rules. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a804b262365352869cc4608967bce2cc7abe7c35d305151e63f67bb1c800fa4bb1" name="a804b262365352869cc4608967bce2cc7abe7c35d305151e63f67bb1c800fa4bb1"></a>EliminateSide&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a804b262365352869cc4608967bce2cc7ab7f3298e431ec4ed12e16e8ab7cd8da0" name="a804b262365352869cc4608967bce2cc7ab7f3298e431ec4ed12e16e8ab7cd8da0"></a>SurviveRounds&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a804b262365352869cc4608967bce2cc7aaa14823cfa57fcc9ede8b95213cdf1e9" name="a804b262365352869cc4608967bce2cc7aaa14823cfa57fcc9ede8b95213cdf1e9"></a>OccupyCells&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00414">414</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a108e9195df2270a1008cc86c8ab4be42" name="a108e9195df2270a1008cc86c8ab4be42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108e9195df2270a1008cc86c8ab4be42">&#9670;&#160;</a></span>ObjectiveStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a108e9195df2270a1008cc86c8ab4be42">eve::tactics::ObjectiveStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Objective lifecycle owned by its battle. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a108e9195df2270a1008cc86c8ab4be42a2d13df6f8b5e4c5af9f87e0dc39df69d" name="a108e9195df2270a1008cc86c8ab4be42a2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a108e9195df2270a1008cc86c8ab4be42a07ca5050e697392c9ed47e6453f1453f" name="a108e9195df2270a1008cc86c8ab4be42a07ca5050e697392c9ed47e6453f1453f"></a>Completed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00417">417</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3fff92b0e855225a00aa6e66bbf51e3d" name="a3fff92b0e855225a00aa6e66bbf51e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fff92b0e855225a00aa6e66bbf51e3d">&#9670;&#160;</a></span>PresentationRevertTrigger</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">eve::tactics::PresentationRevertTrigger</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What makes a presentation intent stop being true. </p>
+<p>This is the part a view-object API cannot express, and the reason stale highlights exist. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c" name="a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c"></a>Never&#160;</td><td class="fielddoc"><p>Durable state (defeat, end of round): never taken back. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3" name="a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3"></a>OnExpiry&#160;</td><td class="fielddoc"><p>Clear when <code>expiresAtTick</code> has passed. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f" name="a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f"></a>OnNextTurn&#160;</td><td class="fielddoc"><p>Clear when any unit's next turn starts. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad" name="a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad"></a>OnRoundStart&#160;</td><td class="fielddoc"><p>Clear at the next round boundary. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8h_source.html">Presentation.h</a> 第 <a class="el" href="Presentation_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0b0002f176e1c38d286bfad13aeb72f" name="aa0b0002f176e1c38d286bfad13aeb72f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b0002f176e1c38d286bfad13aeb72f">&#9670;&#160;</a></span>TurnOrder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#aa0b0002f176e1c38d286bfad13aeb72f">eve::tactics::TurnOrder</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The total order a policy reports for one pair of units. </p>
+<p>This is a named three-valued result rather than a bool on purpose: "equivalent" is a real outcome with real meaning (the caller then applies the canonical subject tie-break), and a bool cannot express it without an out-of-band convention that every reader has to know. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa0b0002f176e1c38d286bfad13aeb72fac01692273d914301975489fc76dd8d29" name="aa0b0002f176e1c38d286bfad13aeb72fac01692273d914301975489fc76dd8d29"></a>LeftFirst&#160;</td><td class="fielddoc"><p>The left unit acts first. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa0b0002f176e1c38d286bfad13aeb72fa99410db507db13316b9cda30d0c0f5e5" name="aa0b0002f176e1c38d286bfad13aeb72fa99410db507db13316b9cda30d0c0f5e5"></a>RightFirst&#160;</td><td class="fielddoc"><p>The right unit acts first. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa0b0002f176e1c38d286bfad13aeb72faafd102579f64c98e96d92a7424130605" name="aa0b0002f176e1c38d286bfad13aeb72faafd102579f64c98e96d92a7424130605"></a>Equivalent&#160;</td><td class="fielddoc"><p>Both compare equal; the caller decides by canonical order. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TurnPolicy_8h_source.html">TurnPolicy.h</a> 第 <a class="el" href="TurnPolicy_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7caee7bd83cc0384e2f35a10b4ce18d3" name="a7caee7bd83cc0384e2f35a10b4ce18d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7caee7bd83cc0384e2f35a10b4ce18d3">&#9670;&#160;</a></span>UnitVisualState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">eve::tactics::UnitVisualState</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How a consumer should draw one unit. </p>
+<p>The set is deliberately small and player-facing: it is the vocabulary a UI needs, not a description of the model. <code>Idle</code> is the resting state every transient state returns to. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c" name="a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c"></a>Idle&#160;</td><td class="fielddoc"><p>Resting, nothing special. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df" name="a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df"></a>Friendly&#160;</td><td class="fielddoc"><p>Controlled by the viewing session. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053" name="a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053"></a>Selected&#160;</td><td class="fielddoc"><p>Currently selected or acting. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b" name="a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b"></a>Finished&#160;</td><td class="fielddoc"><p>Already finished this round. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c" name="a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c"></a>Targetable&#160;</td><td class="fielddoc"><p>A legal target for the armed ability. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b" name="a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b"></a>Attacking&#160;</td><td class="fielddoc"><p>Currently declaring an ability. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051" name="a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051"></a>Defending&#160;</td><td class="fielddoc"><p>Reacting to an incoming effect. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7" name="a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7"></a>Moving&#160;</td><td class="fielddoc"><p>In transit between cells. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b" name="a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b"></a>Destroyed&#160;</td><td class="fielddoc"><p>Defeated; terminal. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8h_source.html">Presentation.h</a> 第 <a class="el" href="Presentation_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aa2a4bd5716b2a8717f6db0f72ae22a2f" name="aa2a4bd5716b2a8717f6db0f72ae22a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2a4bd5716b2a8717f6db0f72ae22a2f">&#9670;&#160;</a></span>commandKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::tactics::commandKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9e">BattleCommandKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable protocol spelling of an accepted command kind. </p>
+<p>The command log is persisted and replayed, so its kind spelling is protocol: scripts, diagnostics and tests branch on these strings, never on the numeric enum value, which is free to change with the schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8cpp_source.html">TacticsTypes.cpp</a> 第 <a class="el" href="TacticsTypes_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsTypes_8cpp_source.html#l00229">commandKindName()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsTypes_8cpp_source.html#l00229">commandKindName()</a>.</p>
+
+</div>
+</div>
+<a id="a14c323ea9cdac9a673ff1474e86d0fd7" name="a14c323ea9cdac9a673ff1474e86d0fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c323ea9cdac9a673ff1474e86d0fd7">&#9670;&#160;</a></span>coverLevelName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view eve::tactics::coverLevelName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a>&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable protocol spelling of a cover level. </p>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8cpp_source.html">LineOfSight.cpp</a> 第 <a class="el" href="LineOfSight_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75">Full</a>, <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85">Half</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8a6adf97f83acf6453d4a6a4b1070f3754">None</a>.</p>
+
+</div>
+</div>
+<a id="a6f5c16dcf803fd2bfed9920d4f742196" name="a6f5c16dcf803fd2bfed9920d4f742196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f5c16dcf803fd2bfed9920d4f742196">&#9670;&#160;</a></span>faceActionDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> eve::tactics::faceActionDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the canonical zero-duration tactics facing action definition. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>.</p>
+
+</div>
+</div>
+<a id="afde99d4ffa1be62ce6d904f614d06520" name="afde99d4ffa1be62ce6d904f614d06520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afde99d4ffa1be62ce6d904f614d06520">&#9670;&#160;</a></span>gridCoverPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a> &gt; eve::tactics::gridCoverPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The process-wide built-in cover policy (same ownership remarks as above). </p>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8cpp_source.html">LineOfSight.cpp</a> 第 <a class="el" href="LineOfSight_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b390cc88bf047721fcf5d16492b3222" name="a9b390cc88bf047721fcf5d16492b3222"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b390cc88bf047721fcf5d16492b3222">&#9670;&#160;</a></span>gridLineOfSightPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &gt; eve::tactics::gridLineOfSightPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The process-wide built-in line-of-sight policy. </p>
+<dl class="section return"><dt>返回</dt><dd>A shared handle to an immutable object. The pointer type is deliberately non-const because that is what <code><a class="el" href="namespaceeve_1_1cap.html#a577610c6e7a6517f439b8216bf009f79">eve::cap::provide</a></code> registers, and every method on the interface is <code>const</code>, so the handle grants no way to change behaviour. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8cpp_source.html">LineOfSight.cpp</a> 第 <a class="el" href="LineOfSight_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l01220">eve::tactics::Tactics::lineOfSightAlgorithm()</a>, <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00087">eve::tactics::TacticsLineOfSightAdapter::query()</a> , 以及 <a class="el" href="Tactics_8cpp_source.html#l01170">eve::tactics::Tactics::visibleCellsInRange()</a>.</p>
+
+</div>
+</div>
+<a id="ab3bf321af3d656a6567f63067be87329" name="ab3bf321af3d656a6567f63067be87329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3bf321af3d656a6567f63067be87329">&#9670;&#160;</a></span>interactionIntentKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view eve::tactics::interactionIntentKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable stable spelling of an intent kind (protocol text). </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8cpp_source.html">Interaction.cpp</a> 第 <a class="el" href="Interaction_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aaea4788705e6873b424c65e91c2846b19">Cancel</a>, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa70d9be9b139893aa6c69b5e77e614311">Confirm</a>, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa0f5830c168fdb5396f4c2eff1fc48aeb">EndTurn</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aad9046d3b1ebf3889943b3be3ca477613">MoveTo</a>, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa3798a248407a7067d8cc14435818009a">SelectUnit</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">UseAbilityOn</a>.</p>
+
+</div>
+</div>
+<a id="a38c48eda6642d0cc7e8beb01002a0ba3" name="a38c48eda6642d0cc7e8beb01002a0ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38c48eda6642d0cc7e8beb01002a0ba3">&#9670;&#160;</a></span>interactionStateName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view eve::tactics::interactionStateName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4">InteractionState</a>&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable stable spelling of an interaction state (protocol text). </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8cpp_source.html">Interaction.cpp</a> 第 <a class="el" href="Interaction_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4abfa99d09ef1dd03c7bdcd3fe718ad2e1">AwaitSelection</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a0157fbb99be9622bdaa6e544270c0622">Ended</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a5e68f988c05f86ea9c4f038995c3dcd0">Resolving</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a78781cc1291aa54a9008720982b04563">Targeting</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#ad3dd08cd17b2aef9f307dba7bf1d42c4a95ac9bd7a5556ad6f5f7c997484ce24a">UnitSelected</a>.</p>
+
+</div>
+</div>
+<a id="aa84a12007b58f7f4fb16e019accfedd8" name="aa84a12007b58f7f4fb16e019accfedd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa84a12007b58f7f4fb16e019accfedd8">&#9670;&#160;</a></span>makeFaceRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt; eve::tactics::makeFaceRequest </td>
+          <td>(</td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>facing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a checked facing request with optimistic battle revision. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00147">facing</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>.</p>
+
+</div>
+</div>
+<a id="a412c268a39efbb9587bdad9d2d0e7256" name="a412c268a39efbb9587bdad9d2d0e7256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412c268a39efbb9587bdad9d2d0e7256">&#9670;&#160;</a></span>makeMoveRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt; eve::tactics::makeMoveRequest </td>
+          <td>(</td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a checked move request using canonical integer cell parameters. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unit</td><td>Generation-checked tactical unit source. </td></tr>
+    <tr><td class="paramname">destination</td><td>Logical target cell. </td></tr>
+    <tr><td class="paramname">tick</td><td>Deterministic request tick. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00033">eve::tactics::Cell::layer</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>, <a class="el" href="TacticsTypes_8h_source.html#l00031">eve::tactics::Cell::x</a> , 以及 <a class="el" href="TacticsTypes_8h_source.html#l00032">eve::tactics::Cell::y</a>.</p>
+
+</div>
+</div>
+<a id="a5b5dace6f142ffa77937ada0dfd707e2" name="a5b5dace6f142ffa77937ada0dfd707e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5dace6f142ffa77937ada0dfd707e2">&#9670;&#160;</a></span>makeSettlementRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">settlement::SettlementRequest</a> &gt; eve::tactics::makeSettlementRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and project a committed tactical ability into the canonical settlement request. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Owning tactical receipt and settlement values. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The exact request consumed by <a class="el" href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html" title="Owner-thread settlement bridge between tactics declarations and game-owned combat state.">TacticsSettlementRuntime</a>, or a located validation failure. @thread Thread-safe for independent request values; reads no module state. @reentrancy Does not invoke callbacks. @cost Linear in tag and context size due to owning projection. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsSettlement_8cpp_source.html">TacticsSettlement.cpp</a> 第 <a class="el" href="TacticsSettlement_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="settlement_2Settlement_8h_source.html#l00122">eve::settlement::SettlementRequest::context</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00110">eve::settlement::SettlementRequest::kind</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00115">eve::settlement::SettlementRequest::magnitude</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00108">eve::settlement::SettlementRequest::source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00116">eve::settlement::SettlementRequest::tags</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00158">target</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00109">eve::settlement::SettlementRequest::target</a> , 以及 <a class="el" href="settlement_2Settlement_8h_source.html#l00123">eve::settlement::SettlementRequest::tick</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsSettlement_8cpp_source.html#l00040">eve::tactics::TacticsSettlementRuntime::settle()</a> , 以及 <a class="el" href="TacticsSettlement_8cpp_source.html#l00048">eve::tactics::TacticsSettlementRuntime::settleAtomic()</a>.</p>
+
+</div>
+</div>
+<a id="a72bf2af023e49ede3c6cba26b58c1d36" name="a72bf2af023e49ede3c6cba26b58c1d36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72bf2af023e49ede3c6cba26b58c1d36">&#9670;&#160;</a></span>makeWaitRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt; eve::tactics::makeWaitRequest </td>
+          <td>(</td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a checked wait request with optimistic battle revision. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>.</p>
+
+</div>
+</div>
+<a id="ab58518a674553d6f7e0a34dedefebff1" name="ab58518a674553d6f7e0a34dedefebff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab58518a674553d6f7e0a34dedefebff1">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tactics::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">Tactics</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Tactics</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa492357959663766a41bd06b86929f7f" name="aa492357959663766a41bd06b86929f7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa492357959663766a41bd06b86929f7f">&#9670;&#160;</a></span>moveActionDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> eve::tactics::moveActionDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the canonical zero-duration tactics move action definition. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>.</p>
+
+</div>
+</div>
+<a id="aeab04c627d64fc0b85fdc8fcda28a73f" name="aeab04c627d64fc0b85fdc8fcda28a73f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab04c627d64fc0b85fdc8fcda28a73f">&#9670;&#160;</a></span>phaseName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::tactics::phaseName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a>&#160;</td>
+          <td class="paramname"><em>phase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable protocol spelling of a battle phase. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8cpp_source.html">TacticsTypes.cpp</a> 第 <a class="el" href="TacticsTypes_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a> , 以及 <a class="el" href="TacticsTypes_8cpp_source.html#l00205">phaseName()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00701">eve::tactics::Tactics::gameplayEvents()</a>, <a class="el" href="Tactics_8cpp_source.html#l00515">eve::tactics::Tactics::observeGameplay()</a> , 以及 <a class="el" href="TacticsTypes_8cpp_source.html#l00205">phaseName()</a>.</p>
+
+</div>
+</div>
+<a id="a4105467e7d24591a1d109e1ad03efcfc" name="a4105467e7d24591a1d109e1ad03efcfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4105467e7d24591a1d109e1ad03efcfc">&#9670;&#160;</a></span>presentationRevertTriggerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view eve::tactics::presentationRevertTriggerName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">PresentationRevertTrigger</a>&#160;</td>
+          <td class="paramname"><em>trigger</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable stable spelling of a revert trigger (protocol text). </p>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8cpp_source.html">Presentation.cpp</a> 第 <a class="el" href="Presentation_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c">Never</a>, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">OnExpiry</a>, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">OnNextTurn</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">OnRoundStart</a>.</p>
+
+</div>
+</div>
+<a id="ab4357136cec6e632b94c416112a63e18" name="ab4357136cec6e632b94c416112a63e18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4357136cec6e632b94c416112a63e18">&#9670;&#160;</a></span>registerTacticsLineOfSightProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::tactics::registerTacticsLineOfSightProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Claim the grid coordinate spaces for the tactics adapter. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied when this call claimed the spaces, NoOp when they were already claimed by this adapter, or the router's own refusal (Conflict for a foreign provider, Unsupported when no router is available). </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Called from the module constructor, so importing <code>tactics</code> is what makes grid line of sight available to the targeting pipeline. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html">TacticsLineOfSightAdapter.cpp</a> 第 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StandardAbilities_8cpp_source.html#l00018">adapter</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="LineOfSightRouter_8cpp_source.html#l00033">eve::sensing::ensureLineOfSightRouter()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">eve::sensing::Grid2D</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">eve::sensing::Grid3D</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00059">tacticsLineOfSightAdapter()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00474">eve::tactics::Tactics::Tactics()</a>.</p>
+
+</div>
+</div>
+<a id="a2d79210b8666201065a6be2a27d9e2c2" name="a2d79210b8666201065a6be2a27d9e2c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d79210b8666201065a6be2a27d9e2c2">&#9670;&#160;</a></span>statusName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::tactics::statusName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a>&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable protocol spelling of a battle status. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8cpp_source.html">TacticsTypes.cpp</a> 第 <a class="el" href="TacticsTypes_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a> , 以及 <a class="el" href="TacticsTypes_8cpp_source.html#l00220">statusName()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l00515">eve::tactics::Tactics::observeGameplay()</a> , 以及 <a class="el" href="TacticsTypes_8cpp_source.html#l00220">statusName()</a>.</p>
+
+</div>
+</div>
+<a id="af41bdf4fd6f42a1148b6ea1a85cdecd8" name="af41bdf4fd6f42a1148b6ea1a85cdecd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af41bdf4fd6f42a1148b6ea1a85cdecd8">&#9670;&#160;</a></span>tacticsLineOfSightAdapter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a> &amp; eve::tactics::tacticsLineOfSightAdapter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The process-wide adapter instance the capability answers with. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html">TacticsLineOfSightAdapter.cpp</a> 第 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StandardAbilities_8cpp_source.html#l00018">adapter</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l01225">eve::tactics::Tactics::attachLineOfSightBoard()</a>, <a class="el" href="Tactics_8cpp_source.html#l01231">eve::tactics::Tactics::detachLineOfSightBoard()</a> , 以及 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00113">registerTacticsLineOfSightProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a4d424d91ef68337e30447f97d394a7f8" name="a4d424d91ef68337e30447f97d394a7f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d424d91ef68337e30447f97d394a7f8">&#9670;&#160;</a></span>unitVisualStateName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view eve::tactics::unitVisualStateName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a>&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable stable spelling of a visual state (protocol text). </p>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8cpp_source.html">Presentation.cpp</a> 第 <a class="el" href="Presentation_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">Attacking</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051">Defending</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">Destroyed</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">Finished</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df">Friendly</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c">Idle</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">Moving</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">Selected</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c">Targetable</a>.</p>
+
+</div>
+</div>
+<a id="a1f175ebf354b110b12580dbaabfb9417" name="a1f175ebf354b110b12580dbaabfb9417"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f175ebf354b110b12580dbaabfb9417">&#9670;&#160;</a></span>validateAbility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1AbilityReceipt.html">AbilityReceipt</a> &gt; eve::tactics::validateAbility </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>targetCell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>targetUnit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate one ability declaration without mutating anything. </p>
+<p>The commit path and the preview path both run exactly this function, so a caller can show "legal, costs one point" and then commit it without a second rule set that could disagree. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsBattle_8cpp_source.html">TacticsBattle.cpp</a> 第 <a class="el" href="TacticsBattle_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdea8753f70d7deb979607ef691619fe4bf7">Acting</a>, <a class="el" href="PlayHost_8cpp_source.html#l00147">action</a>, <a class="el" href="TacticsBattle_8h_source.html#l00031">eve::tactics::AbilityReceipt::action</a>, <a class="el" href="TacticsBattle_8h_source.html#l00030">eve::tactics::AbilityReceipt::actor</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="TacticsTypes_8h_source.html#l00347">kMaxAbilityPayloadBytes</a>, <a class="el" href="TacticsTypes_8h_source.html#l00033">eve::tactics::Cell::layer</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">payload</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="TacticsBattle_8h_source.html#l00036">eve::tactics::AbilityReceipt::remainingActionPoints</a>, <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baa5bda814c4aedb126839228f1a3d92f09">Running</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsBattle_8h_source.html#l00034">eve::tactics::AbilityReceipt::targetCell</a>, <a class="el" href="TacticsBattle_8h_source.html#l00033">eve::tactics::AbilityReceipt::targetUnit</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00149">turn</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00402">eve::tactics::BattleSystem::previewAbility()</a> , 以及 <a class="el" href="TacticsBattle_8cpp_source.html#l00408">eve::tactics::BattleSystem::useAbility()</a>.</p>
+
+</div>
+</div>
+<a id="a1fa05447001ddc8124fc62cb398659a9" name="a1fa05447001ddc8124fc62cb398659a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa05447001ddc8124fc62cb398659a9">&#9670;&#160;</a></span>visibleCellsInRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> &gt; &gt; eve::tactics::visibleCellsInRange </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a> &amp;&#160;</td>
+          <td class="paramname"><em>board</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &amp;&#160;</td>
+          <td class="paramname"><em>policy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maximum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cells within a metric range of <code>origin</code> that <code>policy</code> can actually see. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">board</td><td>Authoritative board facts. </td></tr>
+    <tr><td class="paramname">policy</td><td>Sight rule to apply; a caller may pass a project implementation. </td></tr>
+    <tr><td class="paramname">origin</td><td><a class="el" href="classeve_1_1Observer.html" title="Thread-affine callback registry with mutation-safe dispatch.">Observer</a> cell. </td></tr>
+    <tr><td class="paramname">minimum</td><td>Inclusive lower bound of the range, in <code>metric</code> units. </td></tr>
+    <tr><td class="paramname">maximum</td><td>Inclusive upper bound of the range. </td></tr>
+    <tr><td class="paramname">metric</td><td>Logical distance the caller wants the range measured in. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The visible cells in the board's deterministic cell order, or a structured refusal when the origin is unknown or the range bounds are invalid. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This is the query a UI needs to fill <code><a class="el" href="structeve_1_1tactics_1_1InteractionContext.html#ada0cef1a87e812baf4eef88db66accf7" title="Cells where an armed ability may legally land.">InteractionContext::targetableCells</a></code>, and it deliberately composes the existing range query with the sight policy instead of re-deriving either: range and sight stay separate rules with one owner each. @cost Linear in the number of cells the range query returns, times the trace length of each; the result is a projection of the current board and must be recomputed after any change to it. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8cpp_source.html">LineOfSight.cpp</a> 第 <a class="el" href="LineOfSight_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00153">board</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00178">eve::tactics::PathQuery::cellsInRange()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00027">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a> , 以及 <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a15afbe8e016cb31429d2814c9daf20ca">eve::tactics::ILineOfSightPolicy::visible()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l01170">eve::tactics::Tactics::visibleCellsInRange()</a>.</p>
+
+</div>
+</div>
+<a id="aa63ebf8abe9ab5a288878fd636345484" name="aa63ebf8abe9ab5a288878fd636345484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa63ebf8abe9ab5a288878fd636345484">&#9670;&#160;</a></span>waitActionDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> eve::tactics::waitActionDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the canonical zero-duration tactics wait action definition. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsAction_8cpp_source.html">TacticsAction.cpp</a> 第 <a class="el" href="TacticsAction_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a2c0b86f49e6b5c7d5a1aa65775f7eba0" name="a2c0b86f49e6b5c7d5a1aa65775f7eba0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c0b86f49e6b5c7d5a1aa65775f7eba0">&#9670;&#160;</a></span>kChargeTimeBattlePolicyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::tactics::kChargeTimeBattlePolicyId = &quot;charge_time_battle&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable id of the built-in charge-time (CTB/ATB) turn policy. </p>
+<p>This policy schedules by accumulated charge instead of "one activation per unit
+per round", so a unit with higher initiative really does act more often. See <code>ChargeTimeBattlePolicy</code> for the exact gain/ready/consume rule. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e1b411c186c12e7ead3ae3d978e6c9b" name="a2e1b411c186c12e7ead3ae3d978e6c9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e1b411c186c12e7ead3ae3d978e6c9b">&#9670;&#160;</a></span>kChargeTimeBattleThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::tactics::kChargeTimeBattleThreshold = 100</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Charge a unit must accumulate before it may activate under CTB scheduling. </p>
+<p>Part of the policy's behaviour rather than of persisted data, but it is a named constant because the charge values stored in a snapshot are only meaningful relative to it. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07e86f14fad06b3aa07eb0a9141f57e2" name="a07e86f14fad06b3aa07eb0a9141f57e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07e86f14fad06b3aa07eb0a9141f57e2">&#9670;&#160;</a></span>kInitiativePolicyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::tactics::kInitiativePolicyId = &quot;initiative&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable id of the built-in per-unit initiative turn policy. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4888a42d4164ac2ac9511bfdb4648ec" name="ae4888a42d4164ac2ac9511bfdb4648ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4888a42d4164ac2ac9511bfdb4648ec">&#9670;&#160;</a></span>kMaxAbilityPayloadBytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t eve::tactics::kMaxAbilityPayloadBytes = 4096</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Upper bound on the opaque ability payload a declaration may carry. </p>
+<p>The payload is caller-owned effect data that tactics stores and replays verbatim, so the only rule tactics can enforce without reading it is a bound: a persisted snapshot must not grow without limit. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00351">validateAbility()</a>.</p>
+
+</div>
+</div>
+<a id="a223143b354c709cc14759f0e070ba9df" name="a223143b354c709cc14759f0e070ba9df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a223143b354c709cc14759f0e070ba9df">&#9670;&#160;</a></span>kSideAlternatingPolicyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::tactics::kSideAlternatingPolicyId = &quot;side_alternating&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable id of the built-in side-alternating turn policy. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc314cc3edba9374fdcea00968b5a696" name="adc314cc3edba9374fdcea00968b5a696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc314cc3edba9374fdcea00968b5a696">&#9670;&#160;</a></span>kSightBlockerTag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::tactics::kSightBlockerTag = &quot;sight_blocker&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structeve_1_1tactics_1_1Cell.html" title="Logical board coordinate independent of rendering projection.">Cell</a> tag that makes a cell block line of sight. </p>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8h_source.html">LineOfSight.h</a> 第 <a class="el" href="LineOfSight_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

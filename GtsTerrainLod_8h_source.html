@@ -1,0 +1,361 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/GtsTerrainLod.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GtsTerrainLod.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GtsTerrainLod_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="GtsMeshSimplifier_8h.html">procgen/GtsMeshSimplifier.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="GtsMeshSplitter_8h.html">procgen/GtsMeshSplitter.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>GtsTerrainLodSet;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>Heightmap;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> : <span class="keywordtype">int</span> { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587abbd47109890259c0127154db1af26c75">Full</a>=0,<a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ac48615a1bc4197056d522af276aa5a85">Half</a>=1,<a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ab25cde1e74f3d27f678c2e309e06102e">Quarter</a>=2,<a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587a454165bf233bafb701ab35d62383576e">Eighth</a>=3,<a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ad4aee104a2ab6ef75c6a60883d7aad53">Sixteenth</a>=4 };</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a2ecf3ec8c64dc25c0a973cc052d812da">buildGtsTerrainBaseMesh</a>(MeshBuild&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keyword">const</span> Heightmap&amp; heightmap,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                                                        <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> resolution,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                                                        <span class="keywordtype">float</span> sizeX, <span class="keywordtype">float</span> sizeY, <span class="keywordtype">float</span> sizeZ);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">GtsTerrainLodLevelSettings</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a038a180ac8eb000e21240eca41bc05e0">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a038a180ac8eb000e21240eca41bc05e0">quality</a> = 1.0f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#acd53256a1b25b376712c29de2570bb9c">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#acd53256a1b25b376712c29de2570bb9c">screenRelativeTransitionHeight</a> = 0.95f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a5200532d06f51fd5ab90a4e405102135">   38</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1GtsMeshSimplificationOptions.html">GtsMeshSimplificationOptions</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a5200532d06f51fd5ab90a4e405102135">simplification</a>{};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html">   42</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html">GtsTerrainMeshSettings</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a935ef9b376fa6a714ca6cc7a9cb6c36b">   45</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a935ef9b376fa6a714ca6cc7a9cb6c36b">getSaveResolution</a>() const noexcept { <span class="keywordflow">return</span> saveResolution_; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setSaveResolution(<span class="keywordtype">int</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a4b4975e7be14fb62d7259a4000ff3692">   49</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a4b4975e7be14fb62d7259a4000ff3692">getLodCount</a>() const noexcept { <span class="keywordflow">return</span> lodCount_; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLodCount(<span class="keywordtype">int</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a39d9fd95dbd51fe34931625fa93acc0e">   53</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a39d9fd95dbd51fe34931625fa93acc0e">getSubTiles</a>() const noexcept { <span class="keywordflow">return</span> subTiles_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setSubTiles(<span class="keywordtype">int</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] <span class="keywordtype">float</span> getLodQuality(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLodQuality(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>,<span class="keywordtype">float</span> percent);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <span class="keywordtype">float</span> getLodTransitionHeight(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> snapshotJson() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> restoreJson(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;GtsTerrainLodLevelSettings&gt;</a>&gt; compileLevels() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span> saveResolution_=0,lodCount_=4,subTiles_=3;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">float</span> lodQuality_[4]{100.f,50.f,25.f,12.5f};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html">GtsTerrainLodTile</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a878e93a5c6572f52124b5d055ee806a9">   75</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a878e93a5c6572f52124b5d055ee806a9">offsetX</a> = 0.0f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a0c24fdea1e7a15b7c9f3d1757b60b152">   76</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a0c24fdea1e7a15b7c9f3d1757b60b152">offsetZ</a> = 0.0f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a5cc98d4b1532700318a8311ad33dc1b3">   77</a></span>    std::vector&lt;MeshBuild&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a5cc98d4b1532700318a8311ad33dc1b3">levels</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="};">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html">   81</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html">GtsTerrainLodAssetEntry</a> {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a0cb2cadb53fc8e33688342931ff20b18">   82</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a0cb2cadb53fc8e33688342931ff20b18">tileIndex</a>=0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a23f62e57b37679f07a159f35c83095f4">   83</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a23f62e57b37679f07a159f35c83095f4">levelIndex</a>=0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a40353ad19053f8e7b2ee7a89b5baf20b">   84</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a40353ad19053f8e7b2ee7a89b5baf20b">objectName</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af048b459cf88ecd16e5f185529e4629f">   85</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af048b459cf88ecd16e5f185529e4629f">meshName</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af95172aa40eb456a74f7ea19ddbbcbae">   86</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af95172aa40eb456a74f7ea19ddbbcbae">relativePath</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodAssetPlan.html">   90</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainLodAssetPlan.html">GtsTerrainLodAssetPlan</a> {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <span class="keywordtype">int</span> getEntryCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <span class="keywordtype">int</span> getTileIndex(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <span class="keywordtype">int</span> getLevelIndex(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] std::string getObjectName(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] std::string getMeshName(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] std::string getRelativePath(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">friend</span> <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a82a797003ad555e8ee1e203be3f9e39b">planGtsTerrainLodAssetsInto</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainLodAssetPlan.html">GtsTerrainLodAssetPlan</a>&amp;,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                                                         <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">GtsTerrainLodSet</a>&amp;, <span class="keyword">const</span> std::string&amp;,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                                                         <span class="keyword">const</span> std::string&amp;);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::vector&lt;GtsTerrainLodAssetEntry&gt;entries_;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>};</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00112" data-start="{" data-end="};">
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">  112</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">GtsTerrainLodSet</a> {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#ab239c20f02f09a5335572e6da681e949">  115</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#ab239c20f02f09a5335572e6da681e949">getColumnCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> columns_; }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a2c48e3a7b3359a08494ab29ea9660f08">  117</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a2c48e3a7b3359a08494ab29ea9660f08">getRowCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rows_; }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a8bfb67f7717d5c51169f230abc899f12">  119</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a8bfb67f7717d5c51169f230abc899f12">getTileCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tiles_.size()); }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#afb5057ca78e5e86878446d66d2d6811c">  121</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#afb5057ca78e5e86878446d66d2d6811c">getLevelCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(settings_.size()); }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html">GtsTerrainLodTile</a>* tileAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">GtsTerrainLodLevelSettings</a>* levelAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <span class="keywordtype">int</span> selectLevel(<span class="keywordtype">float</span> relativeHeight) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] <span class="keywordtype">float</span> getLevelSwitchDistance(<span class="keywordtype">int</span> level, <span class="keywordtype">float</span> worldDiameter, <span class="keywordtype">float</span> verticalFovDegrees) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    [[nodiscard]] <span class="keywordtype">int</span> selectLevelForCamera(<span class="keywordtype">float</span> distance, <span class="keywordtype">float</span> worldDiameter, <span class="keywordtype">float</span> verticalFovDegrees) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> snapshotJson() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> restoreJson(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">friend</span> <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;GtsTerrainLodSet&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#acd3693a5a35a18d28a70122fe8231d19">buildGtsTerrainLods</a>(</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>&amp;, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a>, <span class="keyword">const</span> std::vector&lt;GtsTerrainLodLevelSettings&gt;&amp;);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">int</span> columns_ = 0;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">int</span> rows_ = 0;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::vector&lt;GtsTerrainLodLevelSettings&gt; settings_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    std::vector&lt;GtsTerrainLodTile&gt; tiles_;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>};</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;GtsTerrainLodSet&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#acd3693a5a35a18d28a70122fe8231d19">buildGtsTerrainLods</a>(</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">const</span> MeshBuild&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keywordtype">int</span> xSplits, <span class="keywordtype">int</span> zSplits, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a> pivot,</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">const</span> std::vector&lt;GtsTerrainLodLevelSettings&gt;&amp; levels);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;GtsTerrainLodSet&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a4ff32554ae173e6692d2dd4bcbb29feb">buildGtsTerrainLodsFromHeightmap</a>(<span class="keyword">const</span> Heightmap&amp; heightmap,</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> resolution,<span class="keywordtype">float</span> sizeX,<span class="keywordtype">float</span> sizeY,<span class="keywordtype">float</span> sizeZ,<span class="keywordtype">int</span> subTileSplits,</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a> pivot,<span class="keyword">const</span> std::vector&lt;GtsTerrainLodLevelSettings&gt;&amp; levels);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a13c30e69d1e2c811c93d7b4d4df480a0">buildDefaultGtsTerrainLodsFromHeightmapInto</a>(</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    GtsTerrainLodSet&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keyword">const</span> Heightmap&amp; heightmap, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> resolution, <span class="keywordtype">float</span> sizeX, <span class="keywordtype">float</span> sizeY,</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">float</span> sizeZ, <span class="keywordtype">int</span> subTileSplits, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a> pivot = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688a6adf97f83acf6453d4a6a4b1070f3754">GtsMeshPivot::None</a>);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#abdfcd50beed6392683c1dd7f6b48ef7c">buildGtsTerrainLodsFromHeightmapInto</a>(</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    GtsTerrainLodSet&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keyword">const</span> Heightmap&amp; heightmap, <span class="keyword">const</span> GtsTerrainMeshSettings&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <span class="keywordtype">float</span> sizeX,</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">float</span> sizeY, <span class="keywordtype">float</span> sizeZ, <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">GtsMeshPivot</a> pivot = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688a6adf97f83acf6453d4a6a4b1070f3754">GtsMeshPivot::None</a>);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::vector&lt;GtsTerrainLodLevelSettings&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#ad50777f8f8a72c07bb50700fc5ffab14">defaultGtsTerrainLodLevels</a>();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;GtsTerrainLodAssetEntry&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#aceaf72daa405e223c2140826163bf7da">planGtsTerrainLodAssets</a>(</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">const</span> GtsTerrainLodSet&amp; lods, <span class="keyword">const</span> std::string&amp; terrainName, <span class="keyword">const</span> std::string&amp; meshFolder = <span class="stringliteral">&quot;Meshes&quot;</span>);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a82a797003ad555e8ee1e203be3f9e39b">planGtsTerrainLodAssetsInto</a>(GtsTerrainLodAssetPlan&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                                                                            <span class="keyword">const</span> GtsTerrainLodSet&amp; lods,</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                                                                            <span class="keyword">const</span> std::string&amp;      terrainName,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                                                                            <span class="keyword">const</span> std::string&amp; meshFolder = <span class="stringliteral">&quot;Meshes&quot;</span>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}</div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00161">AssetCommand.cpp:161</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8h_html"><div class="ttname"><a href="GtsMeshSimplifier_8h.html">GtsMeshSimplifier.h</a></div></div>
+<div class="ttc" id="aGtsMeshSplitter_8h_html"><div class="ttname"><a href="GtsMeshSplitter_8h.html">GtsMeshSplitter.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodAssetPlan_html"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodAssetPlan.html">eve::procgen::GtsTerrainLodAssetPlan</a></div><div class="ttdoc">Owned script-friendly GTS terrain LOD export manifest.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00090">GtsTerrainLod.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">eve::procgen::GtsTerrainLodSet</a></div><div class="ttdoc">Owned result of the GTS split-and-sequential-simplify pipeline.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00112">GtsTerrainLod.h:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_a2c48e3a7b3359a08494ab29ea9660f08"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a2c48e3a7b3359a08494ab29ea9660f08">eve::procgen::GtsTerrainLodSet::getRowCount</a></div><div class="ttdeci">int getRowCount() const</div><div class="ttdoc">Return the number of tile rows.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00117">GtsTerrainLod.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_a8bfb67f7717d5c51169f230abc899f12"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a8bfb67f7717d5c51169f230abc899f12">eve::procgen::GtsTerrainLodSet::getTileCount</a></div><div class="ttdeci">int getTileCount() const</div><div class="ttdoc">Return the number of tiles, including empty source cells.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00119">GtsTerrainLod.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_ab239c20f02f09a5335572e6da681e949"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#ab239c20f02f09a5335572e6da681e949">eve::procgen::GtsTerrainLodSet::getColumnCount</a></div><div class="ttdeci">int getColumnCount() const</div><div class="ttdoc">Return the number of tile columns.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00115">GtsTerrainLod.h:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_afb5057ca78e5e86878446d66d2d6811c"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#afb5057ca78e5e86878446d66d2d6811c">eve::procgen::GtsTerrainLodSet::getLevelCount</a></div><div class="ttdeci">int getLevelCount() const</div><div class="ttdoc">Return the common number of LOD levels per tile.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00121">GtsTerrainLod.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainMeshSettings_html"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html">eve::procgen::GtsTerrainMeshSettings</a></div><div class="ttdoc">Schema-versioned native counterpart of GTSMeshSettings.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00042">GtsTerrainLod.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainMeshSettings_html_a39d9fd95dbd51fe34931625fa93acc0e"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a39d9fd95dbd51fe34931625fa93acc0e">eve::procgen::GtsTerrainMeshSettings::getSubTiles</a></div><div class="ttdeci">int getSubTiles() const noexcept</div><div class="ttdoc">Return the equal X/Z split-plane count in the range 0 through 5.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00053">GtsTerrainLod.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainMeshSettings_html_a4b4975e7be14fb62d7259a4000ff3692"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a4b4975e7be14fb62d7259a4000ff3692">eve::procgen::GtsTerrainMeshSettings::getLodCount</a></div><div class="ttdeci">int getLodCount() const noexcept</div><div class="ttdoc">Return the active LOD count in the Pcg editor range 1 through 4.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00049">GtsTerrainLod.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainMeshSettings_html_a935ef9b376fa6a714ca6cc7a9cb6c36b"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainMeshSettings.html#a935ef9b376fa6a714ca6cc7a9cb6c36b">eve::procgen::GtsTerrainMeshSettings::getSaveResolution</a></div><div class="ttdeci">int getSaveResolution() const noexcept</div><div class="ttdoc">Return the SaveResolution enum value in the range 0 through 4.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00045">GtsTerrainLod.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00019">MeshBuild.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a13c30e69d1e2c811c93d7b4d4df480a0"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a13c30e69d1e2c811c93d7b4d4df480a0">eve::procgen::buildDefaultGtsTerrainLodsFromHeightmapInto</a></div><div class="ttdeci">Result&lt; void &gt; buildDefaultGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet &amp;output, const Heightmap &amp;heightmap, GtsTerrainSaveResolution resolution, float sizeX, float sizeY, float sizeZ, int subTileSplits, GtsMeshPivot pivot)</div><div class="ttdoc">Atomically replace output with the complete default four-level GTS terrain conversion.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00312">GtsTerrainLod.cpp:312</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">eve::procgen::GtsTerrainSaveResolution</a></div><div class="ttdeci">GtsTerrainSaveResolution</div><div class="ttdoc">Pcg/GTS power-of-two sampling reduction used before terrain mesh export.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00018">GtsTerrainLod.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587a454165bf233bafb701ab35d62383576e"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587a454165bf233bafb701ab35d62383576e">eve::procgen::GtsTerrainSaveResolution::Eighth</a></div><div class="ttdeci">@ Eighth</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587ab25cde1e74f3d27f678c2e309e06102e"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ab25cde1e74f3d27f678c2e309e06102e">eve::procgen::GtsTerrainSaveResolution::Quarter</a></div><div class="ttdeci">@ Quarter</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587abbd47109890259c0127154db1af26c75"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587abbd47109890259c0127154db1af26c75">eve::procgen::GtsTerrainSaveResolution::Full</a></div><div class="ttdeci">@ Full</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587ac48615a1bc4197056d522af276aa5a85"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ac48615a1bc4197056d522af276aa5a85">eve::procgen::GtsTerrainSaveResolution::Half</a></div><div class="ttdeci">@ Half</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a275fc5463d5fe3a0992fae3e8447c587ad4aee104a2ab6ef75c6a60883d7aad53"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ad4aee104a2ab6ef75c6a60883d7aad53">eve::procgen::GtsTerrainSaveResolution::Sixteenth</a></div><div class="ttdeci">@ Sixteenth</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a2ecf3ec8c64dc25c0a973cc052d812da"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a2ecf3ec8c64dc25c0a973cc052d812da">eve::procgen::buildGtsTerrainBaseMesh</a></div><div class="ttdeci">Result&lt; void &gt; buildGtsTerrainBaseMesh(MeshBuild &amp;output, const Heightmap &amp;heightmap, GtsTerrainSaveResolution resolution, float sizeX, float sizeY, float sizeZ)</div><div class="ttdoc">Build the local-space base mesh consumed by the GTS split and LOD pipeline.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00012">GtsTerrainLod.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a4387252bdb02bc041d78222cffcd7688"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688">eve::procgen::GtsMeshPivot</a></div><div class="ttdeci">GtsMeshPivot</div><div class="ttdoc">Pivot translation applied independently to each GTS split mesh.</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSplitter_8h_source.html#l00011">GtsMeshSplitter.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a4387252bdb02bc041d78222cffcd7688a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a4387252bdb02bc041d78222cffcd7688a6adf97f83acf6453d4a6a4b1070f3754">eve::procgen::GtsMeshPivot::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a4ff32554ae173e6692d2dd4bcbb29feb"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a4ff32554ae173e6692d2dd4bcbb29feb">eve::procgen::buildGtsTerrainLodsFromHeightmap</a></div><div class="ttdeci">Result&lt; GtsTerrainLodSet &gt; buildGtsTerrainLodsFromHeightmap(const Heightmap &amp;heightmap, GtsTerrainSaveResolution resolution, float sizeX, float sizeY, float sizeZ, int subTileSplits, GtsMeshPivot pivot, const std::vector&lt; GtsTerrainLodLevelSettings &gt; &amp;levels)</div><div class="ttdoc">Execute the complete GTS heightmap-to-split-LOD conversion as one atomic operation.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00298">GtsTerrainLod.cpp:298</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a82a797003ad555e8ee1e203be3f9e39b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a82a797003ad555e8ee1e203be3f9e39b">eve::procgen::planGtsTerrainLodAssetsInto</a></div><div class="ttdeci">Result&lt; void &gt; planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan &amp;output, const GtsTerrainLodSet &amp;lods, const std::string &amp;name, const std::string &amp;folder)</div><div class="ttdoc">Atomically replace a script-friendly export plan.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00240">GtsTerrainLod.cpp:240</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_abdfcd50beed6392683c1dd7f6b48ef7c"><div class="ttname"><a href="namespaceeve_1_1procgen.html#abdfcd50beed6392683c1dd7f6b48ef7c">eve::procgen::buildGtsTerrainLodsFromHeightmapInto</a></div><div class="ttdeci">Result&lt; void &gt; buildGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet &amp;output, const Heightmap &amp;heightmap, const GtsTerrainMeshSettings &amp;settings, float sizeX, float sizeY, float sizeZ, GtsMeshPivot pivot)</div><div class="ttdoc">Atomically build a complete heightmap conversion using persisted GTS mesh settings.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00322">GtsTerrainLod.cpp:322</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_acd3693a5a35a18d28a70122fe8231d19"><div class="ttname"><a href="namespaceeve_1_1procgen.html#acd3693a5a35a18d28a70122fe8231d19">eve::procgen::buildGtsTerrainLods</a></div><div class="ttdeci">Result&lt; GtsTerrainLodSet &gt; buildGtsTerrainLods(const MeshBuild &amp;source, int xSplits, int zSplits, GtsMeshPivot pivot, const std::vector&lt; GtsTerrainLodLevelSettings &gt; &amp;levels)</div><div class="ttdoc">Split a terrain mesh and generate each tile's sequential GTS LOD chain.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00250">GtsTerrainLod.cpp:250</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aceaf72daa405e223c2140826163bf7da"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aceaf72daa405e223c2140826163bf7da">eve::procgen::planGtsTerrainLodAssets</a></div><div class="ttdeci">Result&lt; std::vector&lt; GtsTerrainLodAssetEntry &gt; &gt; planGtsTerrainLodAssets(const GtsTerrainLodSet &amp;lods, const std::string &amp;terrainName, const std::string &amp;meshFolder)</div><div class="ttdoc">Build the deterministic object and mesh naming plan used by GTS terrain export.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00194">GtsTerrainLod.cpp:194</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ad50777f8f8a72c07bb50700fc5ffab14"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ad50777f8f8a72c07bb50700fc5ffab14">eve::procgen::defaultGtsTerrainLodLevels</a></div><div class="ttdeci">std::vector&lt; GtsTerrainLodLevelSettings &gt; defaultGtsTerrainLodLevels()</div><div class="ttdoc">Return the four-level quality and transition profile used by GTSMeshSettings.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00181">GtsTerrainLod.cpp:181</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsMeshSimplificationOptions_html"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsMeshSimplificationOptions.html">eve::procgen::GtsMeshSimplificationOptions</a></div><div class="ttdoc">GTS mesh simplification controls supported by MeshBuild streams.</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8h_source.html#l00006">GtsMeshSimplifier.h:6</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html">eve::procgen::GtsTerrainLodAssetEntry</a></div><div class="ttdoc">Deterministic native export identity for one GTS tile LOD mesh.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00081">GtsTerrainLod.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html_a0cb2cadb53fc8e33688342931ff20b18"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a0cb2cadb53fc8e33688342931ff20b18">eve::procgen::GtsTerrainLodAssetEntry::tileIndex</a></div><div class="ttdeci">int tileIndex</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00082">GtsTerrainLod.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html_a23f62e57b37679f07a159f35c83095f4"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a23f62e57b37679f07a159f35c83095f4">eve::procgen::GtsTerrainLodAssetEntry::levelIndex</a></div><div class="ttdeci">int levelIndex</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00083">GtsTerrainLod.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html_a40353ad19053f8e7b2ee7a89b5baf20b"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#a40353ad19053f8e7b2ee7a89b5baf20b">eve::procgen::GtsTerrainLodAssetEntry::objectName</a></div><div class="ttdeci">std::string objectName</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00084">GtsTerrainLod.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html_af048b459cf88ecd16e5f185529e4629f"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af048b459cf88ecd16e5f185529e4629f">eve::procgen::GtsTerrainLodAssetEntry::meshName</a></div><div class="ttdeci">std::string meshName</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00085">GtsTerrainLod.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodAssetEntry_html_af95172aa40eb456a74f7ea19ddbbcbae"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodAssetEntry.html#af95172aa40eb456a74f7ea19ddbbcbae">eve::procgen::GtsTerrainLodAssetEntry::relativePath</a></div><div class="ttdeci">std::string relativePath</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00086">GtsTerrainLod.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodLevelSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">eve::procgen::GtsTerrainLodLevelSettings</a></div><div class="ttdoc">Configuration for one sequential GTS terrain mesh LOD.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00035">GtsTerrainLod.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodLevelSettings_html_a038a180ac8eb000e21240eca41bc05e0"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a038a180ac8eb000e21240eca41bc05e0">eve::procgen::GtsTerrainLodLevelSettings::quality</a></div><div class="ttdeci">float quality</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00036">GtsTerrainLod.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodLevelSettings_html_a5200532d06f51fd5ab90a4e405102135"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#a5200532d06f51fd5ab90a4e405102135">eve::procgen::GtsTerrainLodLevelSettings::simplification</a></div><div class="ttdeci">GtsMeshSimplificationOptions simplification</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00038">GtsTerrainLod.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodLevelSettings_html_acd53256a1b25b376712c29de2570bb9c"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html#acd53256a1b25b376712c29de2570bb9c">eve::procgen::GtsTerrainLodLevelSettings::screenRelativeTransitionHeight</a></div><div class="ttdeci">float screenRelativeTransitionHeight</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00037">GtsTerrainLod.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodTile_html"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodTile.html">eve::procgen::GtsTerrainLodTile</a></div><div class="ttdoc">One split terrain tile and all of its local-space LOD meshes.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00074">GtsTerrainLod.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodTile_html_a0c24fdea1e7a15b7c9f3d1757b60b152"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a0c24fdea1e7a15b7c9f3d1757b60b152">eve::procgen::GtsTerrainLodTile::offsetZ</a></div><div class="ttdeci">float offsetZ</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00076">GtsTerrainLod.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodTile_html_a5cc98d4b1532700318a8311ad33dc1b3"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a5cc98d4b1532700318a8311ad33dc1b3">eve::procgen::GtsTerrainLodTile::levels</a></div><div class="ttdeci">std::vector&lt; MeshBuild &gt; levels</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00077">GtsTerrainLod.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodTile_html_a878e93a5c6572f52124b5d055ee806a9"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a878e93a5c6572f52124b5d055ee806a9">eve::procgen::GtsTerrainLodTile::offsetX</a></div><div class="ttdeci">float offsetX</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00075">GtsTerrainLod.h:75</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,828 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexCoordinates结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1hexmap_1_1HexCoordinates-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexCoordinates结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Axial coordinates of one hex cell.  
+ <a href="structeve_1_1hexmap_1_1HexCoordinates.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af0a455dac578ecba55b5856cabfaecf9" id="r_af0a455dac578ecba55b5856cabfaecf9"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#af0a455dac578ecba55b5856cabfaecf9">HexCoordinates</a> () noexcept=default</td></tr>
+<tr class="separator:af0a455dac578ecba55b5856cabfaecf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a798a50a8d3a7ec4be8b93da0dbfce245" id="r_a798a50a8d3a7ec4be8b93da0dbfce245"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a798a50a8d3a7ec4be8b93da0dbfce245">HexCoordinates</a> (std::int32_t xValue, std::int32_t zValue) noexcept</td></tr>
+<tr class="separator:a798a50a8d3a7ec4be8b93da0dbfce245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7b521890b8fe4568df380a5a7dcbf01" id="r_ac7b521890b8fe4568df380a5a7dcbf01"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ac7b521890b8fe4568df380a5a7dcbf01">y</a> () const noexcept</td></tr>
+<tr class="memdesc:ac7b521890b8fe4568df380a5a7dcbf01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cube Y component (<code>-x - z</code>).  <br /></td></tr>
+<tr class="separator:ac7b521890b8fe4568df380a5a7dcbf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac32fd8f2e15ef71f292c9b8f2ac19548" id="r_ac32fd8f2e15ef71f292c9b8f2ac19548"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ac32fd8f2e15ef71f292c9b8f2ac19548">operator==</a> (const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;other) const noexcept</td></tr>
+<tr class="separator:ac32fd8f2e15ef71f292c9b8f2ac19548"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f12c26e072c780cd8220292054de957" id="r_a6f12c26e072c780cd8220292054de957"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a6f12c26e072c780cd8220292054de957">operator!=</a> (const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;other) const noexcept</td></tr>
+<tr class="separator:a6f12c26e072c780cd8220292054de957"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad07cf5f6921f107b1f4a3fc3a9cc2eac" id="r_ad07cf5f6921f107b1f4a3fc3a9cc2eac"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ad07cf5f6921f107b1f4a3fc3a9cc2eac">step</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> direction, std::int32_t distance=1) const noexcept</td></tr>
+<tr class="memdesc:ad07cf5f6921f107b1f4a3fc3a9cc2eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the neighbouring coordinates one step in <code>direction</code>.  <br /></td></tr>
+<tr class="separator:ad07cf5f6921f107b1f4a3fc3a9cc2eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99654e62074a4dbbd8884489e0388d4d" id="r_a99654e62074a4dbbd8884489e0388d4d"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a99654e62074a4dbbd8884489e0388d4d">distanceTo</a> (const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;other) const noexcept</td></tr>
+<tr class="memdesc:a99654e62074a4dbbd8884489e0388d4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cube distance to another cell (wrapping is not supported).  <br /></td></tr>
+<tr class="separator:a99654e62074a4dbbd8884489e0388d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48859f816618c6d1805caf0d9c98477" id="r_ab48859f816618c6d1805caf0d9c98477"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ab48859f816618c6d1805caf0d9c98477">hexX</a> () const noexcept</td></tr>
+<tr class="memdesc:ab48859f816618c6d1805caf0d9c98477"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hex-space X: east-west neighbour spacing is 1.  <br /></td></tr>
+<tr class="separator:ab48859f816618c6d1805caf0d9c98477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae43a6134fcc4d4d7af6a41bf7191784d" id="r_ae43a6134fcc4d4d7af6a41bf7191784d"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ae43a6134fcc4d4d7af6a41bf7191784d">hexZ</a> () const noexcept</td></tr>
+<tr class="memdesc:ae43a6134fcc4d4d7af6a41bf7191784d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hex-space Z: row spacing is <code>outerToInner</code>.  <br /></td></tr>
+<tr class="separator:ae43a6134fcc4d4d7af6a41bf7191784d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8cd480bc1445e22971d7909f1316808" id="r_af8cd480bc1445e22971d7909f1316808"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#af8cd480bc1445e22971d7909f1316808">chunkColumn</a> () const noexcept</td></tr>
+<tr class="memdesc:af8cd480bc1445e22971d7909f1316808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk column this cell belongs to.  <br /></td></tr>
+<tr class="separator:af8cd480bc1445e22971d7909f1316808"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60ccc355293cfd410b81533418c1d6ad" id="r_a60ccc355293cfd410b81533418c1d6ad"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a60ccc355293cfd410b81533418c1d6ad">chunkRow</a> () const noexcept</td></tr>
+<tr class="memdesc:a60ccc355293cfd410b81533418c1d6ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk row this cell belongs to.  <br /></td></tr>
+<tr class="separator:a60ccc355293cfd410b81533418c1d6ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcdff2f87f65a88f3ced761de743025f" id="r_abcdff2f87f65a88f3ced761de743025f"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#abcdff2f87f65a88f3ced761de743025f">offsetX</a> () const noexcept</td></tr>
+<tr class="memdesc:abcdff2f87f65a88f3ced761de743025f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset X of this cell inside the rectangular grid.  <br /></td></tr>
+<tr class="separator:abcdff2f87f65a88f3ced761de743025f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8769a0fade8fa69d59efbfb2ba7a800d" id="r_a8769a0fade8fa69d59efbfb2ba7a800d"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a8769a0fade8fa69d59efbfb2ba7a800d">offsetZ</a> () const noexcept</td></tr>
+<tr class="memdesc:a8769a0fade8fa69d59efbfb2ba7a800d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset Z (row) of this cell inside the rectangular grid.  <br /></td></tr>
+<tr class="separator:a8769a0fade8fa69d59efbfb2ba7a800d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a74487d0eb5ca8fec80f00cd6cb5b981f" id="r_a74487d0eb5ca8fec80f00cd6cb5b981f"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a74487d0eb5ca8fec80f00cd6cb5b981f">fromOffset</a> (std::int32_t <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#abcdff2f87f65a88f3ced761de743025f">offsetX</a>, std::int32_t <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a8769a0fade8fa69d59efbfb2ba7a800d">offsetZ</a>) noexcept</td></tr>
+<tr class="memdesc:a74487d0eb5ca8fec80f00cd6cb5b981f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an odd-row offset pair into axial coordinates.  <br /></td></tr>
+<tr class="separator:a74487d0eb5ca8fec80f00cd6cb5b981f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09d85fef9e6c12eb6942294c5513f246" id="r_a09d85fef9e6c12eb6942294c5513f246"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a09d85fef9e6c12eb6942294c5513f246">toWorldPosition</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) noexcept</td></tr>
+<tr class="memdesc:a09d85fef9e6c12eb6942294c5513f246"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space centre of a cell before elevation and perturbation.  <br /></td></tr>
+<tr class="separator:a09d85fef9e6c12eb6942294c5513f246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae828d79d093c588e5655b657700c97ea" id="r_ae828d79d093c588e5655b657700c97ea"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#ae828d79d093c588e5655b657700c97ea">fromWorldPosition</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) noexcept</td></tr>
+<tr class="memdesc:ae828d79d093c588e5655b657700c97ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a world-space XZ position back to cell coordinates.  <br /></td></tr>
+<tr class="separator:ae828d79d093c588e5655b657700c97ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a029a88d59e651207477b2fc926e0403a" id="r_a029a88d59e651207477b2fc926e0403a"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a029a88d59e651207477b2fc926e0403a">x</a> = 0</td></tr>
+<tr class="separator:a029a88d59e651207477b2fc926e0403a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fe1f291e3f5ae0627020dfbcff2a784" id="r_a6fe1f291e3f5ae0627020dfbcff2a784"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html#a6fe1f291e3f5ae0627020dfbcff2a784">z</a> = 0</td></tr>
+<tr class="separator:a6fe1f291e3f5ae0627020dfbcff2a784"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Axial coordinates of one hex cell. </p>
+<p>The third cube component is derived: <code>y = -x - z</code>. The map uses the odd-row-offset-right layout of the reference hex-map project, so the axial pair is directly the <code>(column, row)</code> pair with even rows starting at column 0 and odd rows shifted half a cell to the right. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af0a455dac578ecba55b5856cabfaecf9" name="af0a455dac578ecba55b5856cabfaecf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a455dac578ecba55b5856cabfaecf9">&#9670;&#160;</a></span>HexCoordinates() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::hexmap::HexCoordinates::HexCoordinates </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a798a50a8d3a7ec4be8b93da0dbfce245" name="a798a50a8d3a7ec4be8b93da0dbfce245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a798a50a8d3a7ec4be8b93da0dbfce245">&#9670;&#160;</a></span>HexCoordinates() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::hexmap::HexCoordinates::HexCoordinates </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>xValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>zValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af8cd480bc1445e22971d7909f1316808" name="af8cd480bc1445e22971d7909f1316808"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8cd480bc1445e22971d7909f1316808">&#9670;&#160;</a></span>chunkColumn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::chunkColumn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk column this cell belongs to. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a60ccc355293cfd410b81533418c1d6ad" name="a60ccc355293cfd410b81533418c1d6ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60ccc355293cfd410b81533418c1d6ad">&#9670;&#160;</a></span>chunkRow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::chunkRow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk row this cell belongs to. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a99654e62074a4dbbd8884489e0388d4d" name="a99654e62074a4dbbd8884489e0388d4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99654e62074a4dbbd8884489e0388d4d">&#9670;&#160;</a></span>distanceTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::distanceTo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cube distance to another cell (wrapping is not supported). </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00219">eve::hexmap::HexUnitRegistry::beginTravel()</a>.</p>
+
+</div>
+</div>
+<a id="a74487d0eb5ca8fec80f00cd6cb5b981f" name="a74487d0eb5ca8fec80f00cd6cb5b981f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74487d0eb5ca8fec80f00cd6cb5b981f">&#9670;&#160;</a></span>fromOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> eve::hexmap::HexCoordinates::fromOffset </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>offsetZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts an odd-row offset pair into axial coordinates. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00118">eve::hexmap::HexMap::chunkCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">eve::hexmap::HexMap::collectBrush()</a>, <a class="el" href="HexMap_8cpp_source.html#l00072">eve::hexmap::HexMap::coordinatesAt()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>.</p>
+
+</div>
+</div>
+<a id="ae828d79d093c588e5655b657700c97ea" name="ae828d79d093c588e5655b657700c97ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae828d79d093c588e5655b657700c97ea">&#9670;&#160;</a></span>fromWorldPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> eve::hexmap::HexCoordinates::fromWorldPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>position</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts a world-space XZ position back to cell coordinates. </p>
+<p>Uses the cube-rounding correction so the result is the hex containing the sample point rather than its nearest centre.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>World position; only X and Z are read. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The containing cell coordinates (may be outside the grid bounds). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8cpp_source.html">HexCoordinates.cpp</a> 第 <a class="el" href="HexCoordinates_8cpp_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ay</a>, <a class="el" href="HexMetrics_8h_source.html#l00173">eve::hexmap::HexMetrics::innerDiameter()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="HexMetrics_8h_source.html#l00169">eve::hexmap::HexMetrics::outerRadius()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="HexCoordinates_8h_source.html#l00023">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>.</p>
+
+</div>
+</div>
+<a id="ab48859f816618c6d1805caf0d9c98477" name="ab48859f816618c6d1805caf0d9c98477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48859f816618c6d1805caf0d9c98477">&#9670;&#160;</a></span>hexX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexCoordinates::hexX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hex-space X: east-west neighbour spacing is 1. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="ae43a6134fcc4d4d7af6a41bf7191784d" name="ae43a6134fcc4d4d7af6a41bf7191784d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae43a6134fcc4d4d7af6a41bf7191784d">&#9670;&#160;</a></span>hexZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexCoordinates::hexZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hex-space Z: row spacing is <code>outerToInner</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="abcdff2f87f65a88f3ced761de743025f" name="abcdff2f87f65a88f3ced761de743025f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcdff2f87f65a88f3ced761de743025f">&#9670;&#160;</a></span>offsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::offsetX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Offset X of this cell inside the rectangular grid. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a8769a0fade8fa69d59efbfb2ba7a800d" name="a8769a0fade8fa69d59efbfb2ba7a800d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8769a0fade8fa69d59efbfb2ba7a800d">&#9670;&#160;</a></span>offsetZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::offsetZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Offset Z (row) of this cell inside the rectangular grid. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a6f12c26e072c780cd8220292054de957" name="a6f12c26e072c780cd8220292054de957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f12c26e072c780cd8220292054de957">&#9670;&#160;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::hexmap::HexCoordinates::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac32fd8f2e15ef71f292c9b8f2ac19548" name="ac32fd8f2e15ef71f292c9b8f2ac19548"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac32fd8f2e15ef71f292c9b8f2ac19548">&#9670;&#160;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::hexmap::HexCoordinates::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="ad07cf5f6921f107b1f4a3fc3a9cc2eac" name="ad07cf5f6921f107b1f4a3fc3a9cc2eac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad07cf5f6921f107b1f4a3fc3a9cc2eac">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> eve::hexmap::HexCoordinates::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>distance</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the neighbouring coordinates one step in <code>direction</code>. </p>
+<dl class="section note"><dt>注解</dt><dd>The row offset is implicit in the axial pair, so stepping is a pure integer offset and never needs the odd-row correction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00090">eve::hexmap::HexMap::getNeighbor()</a>.</p>
+
+</div>
+</div>
+<a id="a09d85fef9e6c12eb6942294c5513f246" name="a09d85fef9e6c12eb6942294c5513f246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09d85fef9e6c12eb6942294c5513f246">&#9670;&#160;</a></span>toWorldPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexCoordinates::toWorldPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space centre of a cell before elevation and perturbation. </p>
+<p>The odd-row offset of an axial pair is <code>x + z/2</code>, so the reference layout <code>(offsetX + (z odd ? 0.5 : 0)) * innerDiameter</code> collapses to <code>(x + 0.5 * z) * innerDiameter</code> and the result is the exact inverse of <code>fromWorldPosition</code>.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">coordinates</td><td>Cell coordinates. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Centre position on the XZ plane; Y is always 0. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00173">eve::hexmap::HexMap::cellPosition()</a>.</p>
+
+</div>
+</div>
+<a id="ac7b521890b8fe4568df380a5a7dcbf01" name="ac7b521890b8fe4568df380a5a7dcbf01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b521890b8fe4568df380a5a7dcbf01">&#9670;&#160;</a></span>y()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexCoordinates::y </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cube Y component (<code>-x - z</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a029a88d59e651207477b2fc926e0403a" name="a029a88d59e651207477b2fc926e0403a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a029a88d59e651207477b2fc926e0403a">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexCoordinates::x = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexCoordinates_8cpp_source.html#l00005">fromWorldPosition()</a>.</p>
+
+</div>
+</div>
+<a id="a6fe1f291e3f5ae0627020dfbcff2a784" name="a6fe1f291e3f5ae0627020dfbcff2a784"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fe1f291e3f5ae0627020dfbcff2a784">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexCoordinates::z = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a> 第 <a class="el" href="HexCoordinates_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexCoordinates_8h_source.html">HexCoordinates.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexCoordinates_8cpp_source.html">HexCoordinates.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

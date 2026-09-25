@@ -1,0 +1,1671 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::MeshDeformationSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html">MeshDeformationSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1MeshDeformationSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::MeshDeformationSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stateful CPU sculpting session with explicit bake, restore, and undo semantics.  
+ <a href="classeve_1_1procgen_1_1MeshDeformationSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0b79f275c3583ad0216b3926e99f6c11" id="r_a0b79f275c3583ad0216b3926e99f6c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a0b79f275c3583ad0216b3926e99f6c11">initializeResult</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>)</td></tr>
+<tr class="memdesc:a0b79f275c3583ad0216b3926e99f6c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the session with an owning copy of a valid source mesh.  <br /></td></tr>
+<tr class="separator:a0b79f275c3583ad0216b3926e99f6c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5baef5d65f0a7d13b530f240fdf4c9c" id="r_af5baef5d65f0a7d13b530f240fdf4c9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#af5baef5d65f0a7d13b530f240fdf4c9c">applyBrushResult</a> (std::string_view mode, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, float falloff, float directionX=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float directionY=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float directionZ=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:af5baef5d65f0a7d13b530f240fdf4c9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a localized brush to the current mesh.  <br /></td></tr>
+<tr class="separator:af5baef5d65f0a7d13b530f240fdf4c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c41e08ac62660013d3b6045414778a" id="r_a65c41e08ac62660013d3b6045414778a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a65c41e08ac62660013d3b6045414778a">applyBrushGpuResult</a> (std::string_view mode, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, float falloff, float directionX=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float directionY=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float directionZ=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a65c41e08ac62660013d3b6045414778a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a sculpt brush through the registered GPU provider; absence returns Unsupported.  <br /></td></tr>
+<tr class="separator:a65c41e08ac62660013d3b6045414778a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c669595f06a4c3fa87a6728b2d7f1da" id="r_a6c669595f06a4c3fa87a6728b2d7f1da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a6c669595f06a4c3fa87a6728b2d7f1da">applyImpactResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float impulseX, float impulseY, float impulseZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float plasticity, float hardness, float maxDisplacement)</td></tr>
+<tr class="memdesc:a6c669595f06a4c3fa87a6728b2d7f1da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one collision-neutral plastic impact to the current mesh.  <br /></td></tr>
+<tr class="separator:a6c669595f06a4c3fa87a6728b2d7f1da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a251b1312fb4d36683c54631061e17087" id="r_a251b1312fb4d36683c54631061e17087"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a251b1312fb4d36683c54631061e17087">applyImpactGpuResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float impulseX, float impulseY, float impulseZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float plasticity, float hardness, float maxDisplacement)</td></tr>
+<tr class="memdesc:a251b1312fb4d36683c54631061e17087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply plastic damage through the registered GPU provider; absence returns Unsupported.  <br /></td></tr>
+<tr class="separator:a251b1312fb4d36683c54631061e17087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a490ec9c41d41924daa8304b8e8af4aa2" id="r_a490ec9c41d41924daa8304b8e8af4aa2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a490ec9c41d41924daa8304b8e8af4aa2">prepareImpactVertexBlocksResult</a> (int divisionsPerAxis)</td></tr>
+<tr class="memdesc:a490ec9c41d41924daa8304b8e8af4aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a bounded uniform vertex-block index for repeated high-density impact queries.  <br /></td></tr>
+<tr class="separator:a490ec9c41d41924daa8304b8e8af4aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa3299147045669d158c5d07c8d81bee" id="r_afa3299147045669d158c5d07c8d81bee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#afa3299147045669d158c5d07c8d81bee">impactVertexBlockCount</a> () const noexcept</td></tr>
+<tr class="memdesc:afa3299147045669d158c5d07c8d81bee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of non-empty prepared impact blocks.  <br /></td></tr>
+<tr class="separator:afa3299147045669d158c5d07c8d81bee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81d2637e17649a235efc597cce3b3b70" id="r_a81d2637e17649a235efc597cce3b3b70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a81d2637e17649a235efc597cce3b3b70">hasImpactVertexBlocks</a> () const noexcept</td></tr>
+<tr class="memdesc:a81d2637e17649a235efc597cce3b3b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether impact queries currently use a prepared vertex-block index.  <br /></td></tr>
+<tr class="separator:a81d2637e17649a235efc597cce3b3b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7338de7178cb01c262eec88e7cdaf87" id="r_aa7338de7178cb01c262eec88e7cdaf87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#aa7338de7178cb01c262eec88e7cdaf87">applySurfaceContactResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float normalX, float normalY, float normalZ, float velocityX, float velocityY, float velocityZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, float drag, float falloff, float plasticity=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa7338de7178cb01c262eec88e7cdaf87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one Interactive Surface contact using caller-supplied local-space values.  <br /></td></tr>
+<tr class="separator:aa7338de7178cb01c262eec88e7cdaf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd26db8e127b18c7e2cddf642f254deb" id="r_afd26db8e127b18c7e2cddf642f254deb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#afd26db8e127b18c7e2cddf642f254deb">recoverSurfaceResult</a> (float dt, float recoveryRate)</td></tr>
+<tr class="memdesc:afd26db8e127b18c7e2cddf642f254deb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance elastic recovery using explicit simulation time.  <br /></td></tr>
+<tr class="separator:afd26db8e127b18c7e2cddf642f254deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc774250729f08e398b01616922baad" id="r_acdc774250729f08e398b01616922baad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#acdc774250729f08e398b01616922baad">applySlimeImpulseResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float impulseX, float impulseY, float impulseZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float falloff)</td></tr>
+<tr class="memdesc:acdc774250729f08e398b01616922baad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject one localized velocity impulse into the Mesh Slime simulation state.  <br /></td></tr>
+<tr class="separator:acdc774250729f08e398b01616922baad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a74f47d2a90f188b666eecd61bb132" id="r_a49a74f47d2a90f188b666eecd61bb132"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a49a74f47d2a90f188b666eecd61bb132">stepSlimeResult</a> (float dt, float stiffness, float damping, float maxSpeed)</td></tr>
+<tr class="memdesc:a49a74f47d2a90f188b666eecd61bb132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance deterministic spring-damper Mesh Slime dynamics using injected time.  <br /></td></tr>
+<tr class="separator:a49a74f47d2a90f188b666eecd61bb132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0e08947b2ea3f8ed11c39e80a93c145" id="r_ab0e08947b2ea3f8ed11c39e80a93c145"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#ab0e08947b2ea3f8ed11c39e80a93c145">configureColliderRefreshResult</a> (std::string_view mode, float intervalSeconds, float <a class="el" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float offsetZ=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ab0e08947b2ea3f8ed11c39e80a93c145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure collider refresh scheduling and local position offset.  <br /></td></tr>
+<tr class="separator:ab0e08947b2ea3f8ed11c39e80a93c145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a945a38278595783843ee7ce3ec19cb8f" id="r_a945a38278595783843ee7ce3ec19cb8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a945a38278595783843ee7ce3ec19cb8f">requestColliderRefreshResult</a> ()</td></tr>
+<tr class="memdesc:a945a38278595783843ee7ce3ec19cb8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a manual or once collider refresh as pending.  <br /></td></tr>
+<tr class="separator:a945a38278595783843ee7ce3ec19cb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e71c8da5d4973eec52b5d89af77fe27" id="r_a5e71c8da5d4973eec52b5d89af77fe27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a5e71c8da5d4973eec52b5d89af77fe27">updateColliderRefreshResult</a> (float dt)</td></tr>
+<tr class="memdesc:a5e71c8da5d4973eec52b5d89af77fe27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the refresh scheduler and consume at most one pending refresh.  <br /></td></tr>
+<tr class="separator:a5e71c8da5d4973eec52b5d89af77fe27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af90c6213202e8144abed74a6c32ab487" id="r_af90c6213202e8144abed74a6c32ab487"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#af90c6213202e8144abed74a6c32ab487">colliderMeshResult</a> () const</td></tr>
+<tr class="memdesc:af90c6213202e8144abed74a6c32ab487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning current triangle-mesh collider snapshot with configured offset applied.  <br /></td></tr>
+<tr class="separator:af90c6213202e8144abed74a6c32ab487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198469299a05509ff48c2062c81f0528" id="r_a198469299a05509ff48c2062c81f0528"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a198469299a05509ff48c2062c81f0528">selectVerticesSphereResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, bool replace=true)</td></tr>
+<tr class="memdesc:a198469299a05509ff48c2062c81f0528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace or extend vertex selection using a world/local-space sphere.  <br /></td></tr>
+<tr class="separator:a198469299a05509ff48c2062c81f0528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6040926d800b7259ceafbf3a6c300510" id="r_a6040926d800b7259ceafbf3a6c300510"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a6040926d800b7259ceafbf3a6c300510">selectVerticesBoxResult</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool replace=true)</td></tr>
+<tr class="memdesc:a6040926d800b7259ceafbf3a6c300510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace or extend vertex selection using an axis-aligned world/local-space box.  <br /></td></tr>
+<tr class="separator:a6040926d800b7259ceafbf3a6c300510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f8fa148712f2f0d60db55696b94649f" id="r_a3f8fa148712f2f0d60db55696b94649f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a3f8fa148712f2f0d60db55696b94649f">clearVertexSelection</a> () noexcept</td></tr>
+<tr class="memdesc:a3f8fa148712f2f0d60db55696b94649f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear runtime vertex selection.  <br /></td></tr>
+<tr class="separator:a3f8fa148712f2f0d60db55696b94649f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07d20c966a03f799a8a33370adbcdf8c" id="r_a07d20c966a03f799a8a33370adbcdf8c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a07d20c966a03f799a8a33370adbcdf8c">selectedVertexCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a07d20c966a03f799a8a33370adbcdf8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return selected vertex count.  <br /></td></tr>
+<tr class="separator:a07d20c966a03f799a8a33370adbcdf8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b23ecb8385c345392c9f042a2342a8f" id="r_a9b23ecb8385c345392c9f042a2342a8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">MeshVertexSelectionCenter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a9b23ecb8385c345392c9f042a2342a8f">selectedVertexCenterResult</a> () const</td></tr>
+<tr class="memdesc:a9b23ecb8385c345392c9f042a2342a8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the arithmetic center of selected vertices for gizmo adapters.  <br /></td></tr>
+<tr class="separator:a9b23ecb8385c345392c9f042a2342a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a257d17971d743d6d2099c91f5debcbad" id="r_a257d17971d743d6d2099c91f5debcbad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a257d17971d743d6d2099c91f5debcbad">moveSelectedVerticesResult</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a257d17971d743d6d2099c91f5debcbad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translate selected vertices by a finite axis-gizmo delta as one undoable edit.  <br /></td></tr>
+<tr class="separator:a257d17971d743d6d2099c91f5debcbad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a920f9665e03272b17ee0e3ee6885844a" id="r_a920f9665e03272b17ee0e3ee6885844a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a920f9665e03272b17ee0e3ee6885844a">manipulateSelectedVerticesResult</a> (std::string_view mode, float originX, float originY, float originZ, float directionX, float directionY, float directionZ, float distance)</td></tr>
+<tr class="memdesc:a920f9665e03272b17ee0e3ee6885844a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply pull, push, or grab to selected vertices as one undoable edit.  <br /></td></tr>
+<tr class="separator:a920f9665e03272b17ee0e3ee6885844a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec7d6887e7f7654765a9bf072c27f8a" id="r_abec7d6887e7f7654765a9bf072c27f8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#abec7d6887e7f7654765a9bf072c27f8a">restoreResult</a> ()</td></tr>
+<tr class="memdesc:abec7d6887e7f7654765a9bf072c27f8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the initial mesh and clear undo history.  <br /></td></tr>
+<tr class="separator:abec7d6887e7f7654765a9bf072c27f8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7619d9c2373223ad3752c31f1869cd9c" id="r_a7619d9c2373223ad3752c31f1869cd9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a7619d9c2373223ad3752c31f1869cd9c">bakeResult</a> ()</td></tr>
+<tr class="memdesc:a7619d9c2373223ad3752c31f1869cd9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make the current mesh the new restore point and clear undo history.  <br /></td></tr>
+<tr class="separator:a7619d9c2373223ad3752c31f1869cd9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eeb63bbd624b3e36b3360f2c6af1867" id="r_a2eeb63bbd624b3e36b3360f2c6af1867"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a2eeb63bbd624b3e36b3360f2c6af1867">undoResult</a> ()</td></tr>
+<tr class="memdesc:a2eeb63bbd624b3e36b3360f2c6af1867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the most recent pre-edit snapshot.  <br /></td></tr>
+<tr class="separator:a2eeb63bbd624b3e36b3360f2c6af1867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4df9b92175dac44e7b9a4f5ad49ce88" id="r_ac4df9b92175dac44e7b9a4f5ad49ce88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#ac4df9b92175dac44e7b9a4f5ad49ce88">currentMeshResult</a> () const</td></tr>
+<tr class="memdesc:ac4df9b92175dac44e7b9a4f5ad49ce88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an independent owning snapshot of the current mesh.  <br /></td></tr>
+<tr class="separator:ac4df9b92175dac44e7b9a4f5ad49ce88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480f3e20399df459b8e16bbfb5edd4ef" id="r_a480f3e20399df459b8e16bbfb5edd4ef"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a480f3e20399df459b8e16bbfb5edd4ef">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:a480f3e20399df459b8e16bbfb5edd4ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the monotonic state revision.  <br /></td></tr>
+<tr class="separator:a480f3e20399df459b8e16bbfb5edd4ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848ed99ffdc7054f77b6d9c656e7ec9a" id="r_a848ed99ffdc7054f77b6d9c656e7ec9a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a848ed99ffdc7054f77b6d9c656e7ec9a">undoCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a848ed99ffdc7054f77b6d9c656e7ec9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of available undo snapshots.  <br /></td></tr>
+<tr class="separator:a848ed99ffdc7054f77b6d9c656e7ec9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54406e8377501fbee2acd3449c578e8" id="r_aa54406e8377501fbee2acd3449c578e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html#aa54406e8377501fbee2acd3449c578e8">isInitialized</a> () const noexcept</td></tr>
+<tr class="memdesc:aa54406e8377501fbee2acd3449c578e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether the session has been initialized.  <br /></td></tr>
+<tr class="separator:aa54406e8377501fbee2acd3449c578e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stateful CPU sculpting session with explicit bake, restore, and undo semantics. </p>
+<p>The session owns original, current, and bounded undo mesh snapshots. Calls are synchronous, graph-owning-thread only, and never retain caller memory. Failed edits preserve current state. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a> 第 <a class="el" href="MeshDeformationSession_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a65c41e08ac62660013d3b6045414778a" name="a65c41e08ac62660013d3b6045414778a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c41e08ac62660013d3b6045414778a">&#9670;&#160;</a></span>applyBrushGpuResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applyBrushGpuResult </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionY</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionZ</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a sculpt brush through the registered GPU provider; absence returns Unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2ba1e6b6bee897669371aace9d2c81fad3a">eve::Dent</a>, <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2bab04a8341537fac392bfd17776491d03c">eve::Directional</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2ba4adae1c15e93fd1abd85fcdd8b948e10">eve::Flatten</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="MeshBuild_8h_source.html#l00107">eve::procgen::MeshBuild::indices()</a>, <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2baaa28e87f8e185039a4c490510c53605e">eve::Inflate</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="MeshBuild_8h_source.html#l00104">eve::procgen::MeshBuild::normals()</a>, <a class="el" href="MeshDeformationCompute_8h_source.html#l00021">eve::MeshDeformationComputeRequest::positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2bae510cdf33cd497134b47b9316314d4b4">eve::Smooth</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="af5baef5d65f0a7d13b530f240fdf4c9c" name="af5baef5d65f0a7d13b530f240fdf4c9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5baef5d65f0a7d13b530f240fdf4c9c">&#9670;&#160;</a></span>applyBrushResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applyBrushResult </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionY</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionZ</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply a localized brush to the current mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>inflate, dent, flatten, smooth, or directional. </td></tr>
+    <tr><td class="paramname">x</td><td>Brush center X.</td></tr>
+    <tr><td class="paramname">y</td><td>Brush center Y.</td></tr>
+    <tr><td class="paramname">z</td><td>Brush center Z. </td></tr>
+    <tr><td class="paramname">radius</td><td>Positive world-space radius. </td></tr>
+    <tr><td class="paramname">strength</td><td>Signed displacement scale. </td></tr>
+    <tr><td class="paramname">falloff</td><td>Positive radial exponent. </td></tr>
+    <tr><td class="paramname">directionX</td><td>Directional brush X.</td></tr>
+    <tr><td class="paramname">directionY</td><td>Directional brush Y. </td></tr>
+    <tr><td class="paramname">directionZ</td><td>Directional brush Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied or a structured diagnostic; failure leaves the mesh unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="MeshBuild_8h_source.html#l00107">eve::procgen::MeshBuild::indices()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="MeshBuild_8h_source.html#l00104">eve::procgen::MeshBuild::normals()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00240">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00240">vy</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00250">vz</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a251b1312fb4d36683c54631061e17087" name="a251b1312fb4d36683c54631061e17087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a251b1312fb4d36683c54631061e17087">&#9670;&#160;</a></span>applyImpactGpuResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applyImpactGpuResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>plasticity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hardness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDisplacement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply plastic damage through the registered GPU provider; absence returns Unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#ad484627cdd3787fe17281d95f1517b2ba21f59b54f62b5b8b4bc0f63f0f617fc1">eve::Impact</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="MeshBuild_8h_source.html#l00104">eve::procgen::MeshBuild::normals()</a>, <a class="el" href="MeshDeformationCompute_8h_source.html#l00020">eve::MeshDeformationComputeRequest::operation</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a6c669595f06a4c3fa87a6728b2d7f1da" name="a6c669595f06a4c3fa87a6728b2d7f1da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c669595f06a4c3fa87a6728b2d7f1da">&#9670;&#160;</a></span>applyImpactResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applyImpactResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>plasticity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hardness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDisplacement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one collision-neutral plastic impact to the current mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Impact center X.</td></tr>
+    <tr><td class="paramname">y</td><td>Impact center Y.</td></tr>
+    <tr><td class="paramname">z</td><td>Impact center Z. </td></tr>
+    <tr><td class="paramname">impulseX</td><td>World/local impulse X.</td></tr>
+    <tr><td class="paramname">impulseY</td><td>Impulse Y.</td></tr>
+    <tr><td class="paramname">impulseZ</td><td>Impulse Z. </td></tr>
+    <tr><td class="paramname">radius</td><td>Positive influence radius. </td></tr>
+    <tr><td class="paramname">plasticity</td><td>Non-negative impulse-to-displacement scale. </td></tr>
+    <tr><td class="paramname">hardness</td><td>Positive radial falloff exponent. </td></tr>
+    <tr><td class="paramname">maxDisplacement</td><td>Positive distance each vertex may move from the baked baseline. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied atomically, or a diagnostic without changing mesh or history.</dd></dl>
+<p>Physics adapters remain responsible for coordinate conversion and impulse filtering. This session consumes plain values, retains no contact pointers, and is synchronous/thread-affine. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="acdc774250729f08e398b01616922baad" name="acdc774250729f08e398b01616922baad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc774250729f08e398b01616922baad">&#9670;&#160;</a></span>applySlimeImpulseResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applySlimeImpulseResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>impulseZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inject one localized velocity impulse into the Mesh Slime simulation state. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aa7338de7178cb01c262eec88e7cdaf87" name="aa7338de7178cb01c262eec88e7cdaf87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7338de7178cb01c262eec88e7cdaf87">&#9670;&#160;</a></span>applySurfaceContactResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::applySurfaceContactResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>normalX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>normalY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>normalZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>drag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>falloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>plasticity</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one Interactive Surface contact using caller-supplied local-space values. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Contact X.</td></tr>
+    <tr><td class="paramname">y</td><td>Contact Y.</td></tr>
+    <tr><td class="paramname">z</td><td>Contact Z. </td></tr>
+    <tr><td class="paramname">normalX</td><td>Surface normal X.</td></tr>
+    <tr><td class="paramname">normalY</td><td>Surface normal Y.</td></tr>
+    <tr><td class="paramname">normalZ</td><td>Surface normal Z. </td></tr>
+    <tr><td class="paramname">velocityX</td><td>Contact velocity X.</td></tr>
+    <tr><td class="paramname">velocityY</td><td>Contact velocity Y.</td></tr>
+    <tr><td class="paramname">velocityZ</td><td>Contact velocity Z. </td></tr>
+    <tr><td class="paramname">radius</td><td>Positive influence radius.</td></tr>
+    <tr><td class="paramname">depth</td><td>Non-negative indentation distance. </td></tr>
+    <tr><td class="paramname">drag</td><td>Non-negative tangential velocity scale.</td></tr>
+    <tr><td class="paramname">falloff</td><td>Positive radial exponent. </td></tr>
+    <tr><td class="paramname">plasticity</td><td>Permanent displacement fraction in [0, 1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied atomically, or a diagnostic preserving mesh, equilibrium state, and history. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a7619d9c2373223ad3752c31f1869cd9c" name="a7619d9c2373223ad3752c31f1869cd9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7619d9c2373223ad3752c31f1869cd9c">&#9670;&#160;</a></span>bakeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::bakeResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Make the current mesh the new restore point and clear undo history. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00725">725</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3f8fa148712f2f0d60db55696b94649f" name="a3f8fa148712f2f0d60db55696b94649f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f8fa148712f2f0d60db55696b94649f">&#9670;&#160;</a></span>clearVertexSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshDeformationSession::clearVertexSelection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear runtime vertex selection. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00621">621</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="af90c6213202e8144abed74a6c32ab487" name="af90c6213202e8144abed74a6c32ab487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af90c6213202e8144abed74a6c32ab487">&#9670;&#160;</a></span>colliderMeshResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::MeshDeformationSession::colliderMeshResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning current triangle-mesh collider snapshot with configured offset applied. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00561">561</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00229">eve::procgen::MeshBuild::setMeta()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab0e08947b2ea3f8ed11c39e80a93c145" name="ab0e08947b2ea3f8ed11c39e80a93c145"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0e08947b2ea3f8ed11c39e80a93c145">&#9670;&#160;</a></span>configureColliderRefreshResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::configureColliderRefreshResult </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intervalSeconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetY</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetZ</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure collider refresh scheduling and local position offset. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00508">508</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>, <a class="el" href="TileConfig_8cpp_source.html#l00918">offsetY</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac4df9b92175dac44e7b9a4f5ad49ce88" name="ac4df9b92175dac44e7b9a4f5ad49ce88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4df9b92175dac44e7b9a4f5ad49ce88">&#9670;&#160;</a></span>currentMeshResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::MeshDeformationSession::currentMeshResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an independent owning snapshot of the current mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00748">748</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a81d2637e17649a235efc597cce3b3b70" name="a81d2637e17649a235efc597cce3b3b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d2637e17649a235efc597cce3b3b70">&#9670;&#160;</a></span>hasImpactVertexBlocks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshDeformationSession::hasImpactVertexBlocks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Report whether impact queries currently use a prepared vertex-block index. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a> 第 <a class="el" href="MeshDeformationSession_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa3299147045669d158c5d07c8d81bee" name="afa3299147045669d158c5d07c8d81bee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa3299147045669d158c5d07c8d81bee">&#9670;&#160;</a></span>impactVertexBlockCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshDeformationSession::impactVertexBlockCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of non-empty prepared impact blocks. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b79f275c3583ad0216b3926e99f6c11" name="a0b79f275c3583ad0216b3926e99f6c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b79f275c3583ad0216b3926e99f6c11">&#9670;&#160;</a></span>initializeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::initializeResult </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the session with an owning copy of a valid source mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="aa54406e8377501fbee2acd3449c578e8" name="aa54406e8377501fbee2acd3449c578e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54406e8377501fbee2acd3449c578e8">&#9670;&#160;</a></span>isInitialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshDeformationSession::isInitialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Report whether the session has been initialized. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a> 第 <a class="el" href="MeshDeformationSession_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a920f9665e03272b17ee0e3ee6885844a" name="a920f9665e03272b17ee0e3ee6885844a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a920f9665e03272b17ee0e3ee6885844a">&#9670;&#160;</a></span>manipulateSelectedVerticesResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::manipulateSelectedVerticesResult </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply pull, push, or grab to selected vertices as one undoable edit. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>pull, push, or grab.</td></tr>
+    <tr><td class="paramname">originX</td><td>Manipulator origin X. </td></tr>
+    <tr><td class="paramname">originY</td><td>Manipulator origin Y.</td></tr>
+    <tr><td class="paramname">originZ</td><td>Manipulator origin Z. </td></tr>
+    <tr><td class="paramname">directionX</td><td>Grab direction X.</td></tr>
+    <tr><td class="paramname">directionY</td><td>Grab direction Y.</td></tr>
+    <tr><td class="paramname">directionZ</td><td>Grab direction Z. </td></tr>
+    <tr><td class="paramname">distance</td><td>Signed manipulation distance. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00676">676</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00651">moveSelectedVerticesResult()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">selectedVertexCount()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a257d17971d743d6d2099c91f5debcbad" name="a257d17971d743d6d2099c91f5debcbad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a257d17971d743d6d2099c91f5debcbad">&#9670;&#160;</a></span>moveSelectedVerticesResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::moveSelectedVerticesResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Translate selected vertices by a finite axis-gizmo delta as one undoable edit. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00651">651</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">selectedVertexCount()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00676">manipulateSelectedVerticesResult()</a>.</p>
+
+</div>
+</div>
+<a id="a490ec9c41d41924daa8304b8e8af4aa2" name="a490ec9c41d41924daa8304b8e8af4aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a490ec9c41d41924daa8304b8e8af4aa2">&#9670;&#160;</a></span>prepareImpactVertexBlocksResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::prepareImpactVertexBlocksResult </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>divisionsPerAxis</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a bounded uniform vertex-block index for repeated high-density impact queries. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00027">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="afd26db8e127b18c7e2cddf642f254deb" name="afd26db8e127b18c7e2cddf642f254deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd26db8e127b18c7e2cddf642f254deb">&#9670;&#160;</a></span>recoverSurfaceResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::recoverSurfaceResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>recoveryRate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance elastic recovery using explicit simulation time. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Non-negative injected step duration. </td></tr>
+    <tr><td class="paramname">recoveryRate</td><td>Positive exponential recovery rate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success without adding undo history; invalid input leaves state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a945a38278595783843ee7ce3ec19cb8f" name="a945a38278595783843ee7ce3ec19cb8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a945a38278595783843ee7ce3ec19cb8f">&#9670;&#160;</a></span>requestColliderRefreshResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::requestColliderRefreshResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark a manual or once collider refresh as pending. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00530">530</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abec7d6887e7f7654765a9bf072c27f8a" name="abec7d6887e7f7654765a9bf072c27f8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec7d6887e7f7654765a9bf072c27f8a">&#9670;&#160;</a></span>restoreResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::restoreResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the initial mesh and clear undo history. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00713">713</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a480f3e20399df459b8e16bbfb5edd4ef" name="a480f3e20399df459b8e16bbfb5edd4ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480f3e20399df459b8e16bbfb5edd4ef">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::MeshDeformationSession::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the monotonic state revision. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a> 第 <a class="el" href="MeshDeformationSession_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b23ecb8385c345392c9f042a2342a8f" name="a9b23ecb8385c345392c9f042a2342a8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b23ecb8385c345392c9f042a2342a8f">&#9670;&#160;</a></span>selectedVertexCenterResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">MeshVertexSelectionCenter</a> &gt; eve::procgen::MeshDeformationSession::selectedVertexCenterResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the arithmetic center of selected vertices for gizmo adapters. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00629">629</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">selectedVertexCount()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a07d20c966a03f799a8a33370adbcdf8c" name="a07d20c966a03f799a8a33370adbcdf8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07d20c966a03f799a8a33370adbcdf8c">&#9670;&#160;</a></span>selectedVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshDeformationSession::selectedVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return selected vertex count. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">625</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00676">manipulateSelectedVerticesResult()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00651">moveSelectedVerticesResult()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00629">selectedVertexCenterResult()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00599">selectVerticesBoxResult()</a> , 以及 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00578">selectVerticesSphereResult()</a>.</p>
+
+</div>
+</div>
+<a id="a6040926d800b7259ceafbf3a6c300510" name="a6040926d800b7259ceafbf3a6c300510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6040926d800b7259ceafbf3a6c300510">&#9670;&#160;</a></span>selectVerticesBoxResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::MeshDeformationSession::selectVerticesBoxResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>replace</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace or extend vertex selection using an axis-aligned world/local-space box. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00599">599</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">selectedVertexCount()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="a198469299a05509ff48c2062c81f0528" name="a198469299a05509ff48c2062c81f0528"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198469299a05509ff48c2062c81f0528">&#9670;&#160;</a></span>selectVerticesSphereResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::MeshDeformationSession::selectVerticesSphereResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>replace</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace or extend vertex selection using a world/local-space sphere. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00578">578</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00625">selectedVertexCount()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a49a74f47d2a90f188b666eecd61bb132" name="a49a74f47d2a90f188b666eecd61bb132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a74f47d2a90f188b666eecd61bb132">&#9670;&#160;</a></span>stepSlimeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::stepSlimeResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxSpeed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance deterministic spring-damper Mesh Slime dynamics using injected time. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Positive simulation step.</td></tr>
+    <tr><td class="paramname">stiffness</td><td>Non-negative equilibrium attraction. </td></tr>
+    <tr><td class="paramname">damping</td><td>Non-negative exponential velocity damping.</td></tr>
+    <tr><td class="paramname">maxSpeed</td><td>Positive velocity bound. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00471">471</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>, <a class="el" href="MeshBuild_8h_source.html#l00103">eve::procgen::MeshBuild::positions()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a848ed99ffdc7054f77b6d9c656e7ec9a" name="a848ed99ffdc7054f77b6d9c656e7ec9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a848ed99ffdc7054f77b6d9c656e7ec9a">&#9670;&#160;</a></span>undoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshDeformationSession::undoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of available undo snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a> 第 <a class="el" href="MeshDeformationSession_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2eeb63bbd624b3e36b3360f2c6af1867" name="a2eeb63bbd624b3e36b3360f2c6af1867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eeb63bbd624b3e36b3360f2c6af1867">&#9670;&#160;</a></span>undoResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::MeshDeformationSession::undoResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the most recent pre-edit snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00737">737</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a5e71c8da5d4973eec52b5d89af77fe27" name="a5e71c8da5d4973eec52b5d89af77fe27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e71c8da5d4973eec52b5d89af77fe27">&#9670;&#160;</a></span>updateColliderRefreshResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::procgen::MeshDeformationSession::updateColliderRefreshResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the refresh scheduler and consume at most one pending refresh. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a> 第 <a class="el" href="MeshDeformationSession_8cpp_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/mesh/<a class="el" href="MeshDeformationSession_8h_source.html">MeshDeformationSession.h</a></li>
+<li>src/modules/procgen/mesh/<a class="el" href="MeshDeformationSession_8cpp_source.html">MeshDeformationSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

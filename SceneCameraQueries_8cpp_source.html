@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/scene/SceneCameraQueries.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ec6971fd057795f74726f2442b6b5463.html">scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneCameraQueries.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneCameraQueries_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Picking / culling entry points whose camera math belongs to graphics.</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// The traversal and mutation stay here because the scene owns them; only the</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// screen ray and the clip matrix come from the ISceneCameraProjection</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// capability (graphics/ScenePicking.cpp registers it). Querying a capability</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// instead of calling graphics keeps this module free of an upward include while</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// still defining these symbols in scene, which a per-layer DLL split needs:</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// graphics (L4) cannot be imported by scene (L1).</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Split out of Scene.cpp (already past the ~1000 line limit) rather than</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// appended to it.</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Scene_8h.html">scene/Scene.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="SceneBounds_8h.html">scene/SceneBounds.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="SceneCameraProjection_8h.html">scene/SceneCameraProjection.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="SceneHost_8h.html">scene/SceneHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene.html">eve::scene</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1Scene.html#a2d7c76c4b6554752c8f553cfe1e5242b">   28</a></span>std::string <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#a2d7c76c4b6554752c8f553cfe1e5242b">Scene::pickScreenAt</a>(<span class="keyword">const</span> std::string &amp;hostName, <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *cam, <span class="keywordtype">float</span> screenX, <span class="keywordtype">float</span> screenY,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                <span class="keywordtype">float</span> viewW, <span class="keywordtype">float</span> viewH)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!cam) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span> *projection = eve::cap::query&lt;ISceneCameraProjection&gt;();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!projection) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keyword">auto</span> ray = projection-&gt;screenRay(*cam, screenX, screenY, viewW, viewH);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (!ray) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#af39c0543fc22cd94a32106341b8604b4">pickRayAt</a>(hostName, ray-&gt;origin.x, ray-&gt;origin.y, ray-&gt;origin.z, ray-&gt;direction.x, ray-&gt;direction.y,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                     ray-&gt;direction.z);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1Scene.html#ae528898db34887ca81892f021321666e">   39</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#ae528898db34887ca81892f021321666e">Scene::collectFrustumIdsAt</a>(<span class="keyword">const</span> std::string &amp;hostName, <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *cam, <span class="keywordtype">float</span> viewW,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                    <span class="keywordtype">float</span> viewH)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a>               *<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#a03bf26eed9fda817ef582016ff3688b9">resolveHost</a>(hostName);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::vector&lt;std::string&gt; out;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> || !cam || viewW &lt;= 0.f || viewH &lt;= 0.f) <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">auto</span> *projection = eve::cap::query&lt;ISceneCameraProjection&gt;();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (!projection) <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a> = projection-&gt;clipForViewport(*cam, viewW, viewH);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>) <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>-&gt;walkDepthFirst([&amp;](<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *, <span class="keywordtype">int</span>, <a class="code hl_struct" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a> &amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.hasBounds) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1scene.html#a34f5a7e15db573c65e624a34e0be27de">aabbIntersectsFrustum</a>(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;clip, <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;inverse, <a class="code hl_function" href="namespaceeve_1_1scene.html#a8c3516dbf52b742a320339f6562b5115">worldBoundsOf</a>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>))) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            out.push_back(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.id);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    });</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1Scene.html#a45ca6afca8a773a289cd942e393e48ca">   58</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#a45ca6afca8a773a289cd942e393e48ca">Scene::applyPcgTerrainCullingAt</a>(<span class="keyword">const</span> std::string &amp;hostName, <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *cam, <span class="keywordtype">float</span> viewW,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                            <span class="keywordtype">float</span> viewH, <span class="keyword">const</span> std::string &amp;tag) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a> = <a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#a03bf26eed9fda817ef582016ff3688b9">resolveHost</a>(hostName);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a> || !cam || !std::isfinite(viewW) || !std::isfinite(viewH) || viewW &lt;= 0.f || viewH &lt;= 0.f || tag.empty())</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Pcg terrain culling requires host, camera, positive viewport and tag&quot;</span>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="stringliteral">&quot;scene.pcgTerrainCulling&quot;</span>));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">auto</span> *projection = eve::cap::query&lt;ISceneCameraProjection&gt;();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!projection)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;Pcg terrain culling needs the graphics camera projection capability&quot;</span>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="stringliteral">&quot;scene.pcgTerrainCulling&quot;</span>));</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a> = projection-&gt;clipForViewport(*cam, viewW, viewH);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;int&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                      <span class="stringliteral">&quot;Pcg terrain culling requires a usable camera viewport&quot;</span>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                                      <span class="stringliteral">&quot;scene.pcgTerrainCulling&quot;</span>));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::vector&lt;std::pair&lt;std::string, bool&gt;&gt; changes;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>-&gt;walkDepthFirst([&amp;](<a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a> *, <span class="keywordtype">int</span>, <a class="code hl_struct" href="structeve_1_1scene_1_1SceneNode.html">SceneNode</a> &amp;<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#a334e9d381ae93ec302477b9e2d1fa8a7">hasBounds</a> || std::find(<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#aedc5bd86944ea2ba06042bbe52e5c728">tags</a>.begin(), <a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#aedc5bd86944ea2ba06042bbe52e5c728">tags</a>.end(), tag) == <a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#aedc5bd86944ea2ba06042bbe52e5c728">tags</a>.end()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a> = <a class="code hl_function" href="namespaceeve_1_1scene.html#a34f5a7e15db573c65e624a34e0be27de">aabbIntersectsFrustum</a>(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;clip, <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;inverse, <a class="code hl_function" href="namespaceeve_1_1scene.html#a8c3516dbf52b742a320339f6562b5115">worldBoundsOf</a>(<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>));</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#ab292b7adc9fae227145f97e1250872f5">visible</a> != <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>) changes.emplace_back(<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">id</a>, <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    });</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[<span class="keywordtype">id</span>, <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>] : changes) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a> = <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>-&gt;findById(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_function" href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">node</a>.value()-&gt;<a class="code hl_variable" href="structeve_1_1scene_1_1NodeDesc.html#ab292b7adc9fae227145f97e1250872f5">visible</a> = <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>-&gt;markSubtreeDirtyById(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;int&gt;::success</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(changes.size()));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::scene</span></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00690">ImageData.cpp:690</a></div></div>
+<div class="ttc" id="aSceneBounds_8h_html"><div class="ttname"><a href="SceneBounds_8h.html">SceneBounds.h</a></div></div>
+<div class="ttc" id="aSceneCameraProjection_8h_html"><div class="ttname"><a href="SceneCameraProjection_8h.html">SceneCameraProjection.h</a></div></div>
+<div class="ttc" id="aSceneHost_8h_html"><div class="ttname"><a href="SceneHost_8h.html">SceneHost.h</a></div></div>
+<div class="ttc" id="aScene_8h_html"><div class="ttname"><a href="Scene_8h.html">Scene.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00222">UIAutomationCapabilities.cpp:222</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html">eve::graphics::Camera3D</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00028">RenderSystem3D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneHost_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneHost.html">eve::scene::SceneHost</a></div><div class="ttdoc">ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...</div><div class="ttdef"><b>Definition</b> <a href="SceneHost_8h_source.html#l00089">SceneHost.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_a03bf26eed9fda817ef582016ff3688b9"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#a03bf26eed9fda817ef582016ff3688b9">eve::scene::Scene::resolveHost</a></div><div class="ttdeci">SceneHost * resolveHost(const std::string &amp;hostName) const</div><div class="ttdoc">Host-qualified resolution: empty hostName → currently selected host.</div><div class="ttdef"><b>Definition</b> <a href="Scene_8cpp_source.html#l00911">Scene.cpp:911</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_a2d7c76c4b6554752c8f553cfe1e5242b"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#a2d7c76c4b6554752c8f553cfe1e5242b">eve::scene::Scene::pickScreenAt</a></div><div class="ttdeci">std::string pickScreenAt(const std::string &amp;hostName, graphics::Camera3D *cam, float screenX, float screenY, float viewW, float viewH) const</div><div class="ttdoc">Screen-space picking through a Camera3D (camera.screenToRay).</div><div class="ttdef"><b>Definition</b> <a href="SceneCameraQueries_8cpp_source.html#l00028">SceneCameraQueries.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_a45ca6afca8a773a289cd942e393e48ca"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#a45ca6afca8a773a289cd942e393e48ca">eve::scene::Scene::applyPcgTerrainCullingAt</a></div><div class="ttdeci">Result&lt; int &gt; applyPcgTerrainCullingAt(const std::string &amp;hostName, graphics::Camera3D *cam, float viewW, float viewH, const std::string &amp;tag)</div><div class="ttdoc">Apply PcgScenePlayer frustum visibility to bounded nodes carrying a tag.</div><div class="ttdef"><b>Definition</b> <a href="SceneCameraQueries_8cpp_source.html#l00058">SceneCameraQueries.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_ae528898db34887ca81892f021321666e"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#ae528898db34887ca81892f021321666e">eve::scene::Scene::collectFrustumIdsAt</a></div><div class="ttdeci">std::vector&lt; std::string &gt; collectFrustumIdsAt(const std::string &amp;hostName, graphics::Camera3D *cam, float viewW, float viewH) const</div><div class="ttdoc">Ids of nodes whose world AABB intersects the camera frustum.</div><div class="ttdef"><b>Definition</b> <a href="SceneCameraQueries_8cpp_source.html#l00039">SceneCameraQueries.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_af39c0543fc22cd94a32106341b8604b4"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#af39c0543fc22cd94a32106341b8604b4">eve::scene::Scene::pickRayAt</a></div><div class="ttdeci">std::string pickRayAt(const std::string &amp;hostName, float ox, float oy, float oz, float dx, float dy, float dz) const</div><div class="ttdoc">Nearest node id hit by a world ray (nodes with bounds), or &quot;&quot;.</div><div class="ttdef"><b>Definition</b> <a href="SceneNodes_8cpp_source.html#l00472">SceneNodes.cpp:472</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html"><div class="ttname"><a href="namespaceeve_1_1scene.html">eve::scene</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00033">AvatarInstance.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_a1779dfe6284e86612832629a08a49a2e"><div class="ttname"><a href="namespaceeve_1_1scene.html#a1779dfe6284e86612832629a08a49a2e">eve::scene::node</a></div><div class="ttdeci">NodeDesc node(std::string id, std::vector&lt; NodeDesc &gt; children, std::string name)</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8cpp_source.html#l00216">NodeDesc.cpp:216</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_a34f5a7e15db573c65e624a34e0be27de"><div class="ttname"><a href="namespaceeve_1_1scene.html#a34f5a7e15db573c65e624a34e0be27de">eve::scene::aabbIntersectsFrustum</a></div><div class="ttdeci">bool aabbIntersectsFrustum(const glm::mat4 &amp;clip, const glm::mat4 &amp;invClip, const AABB3f &amp;b)</div><div class="ttdoc">Conservative AABB ↔ frustum overlap (AABB corners + frustum corners).</div><div class="ttdef"><b>Definition</b> <a href="SceneBounds_8h_source.html#l00075">SceneBounds.h:75</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_a8c3516dbf52b742a320339f6562b5115"><div class="ttname"><a href="namespaceeve_1_1scene.html#a8c3516dbf52b742a320339f6562b5115">eve::scene::worldBoundsOf</a></div><div class="ttdeci">AABB3f worldBoundsOf(const SceneNode &amp;n)</div><div class="ttdoc">World-space AABB of a node's local bounds (8 corners through world matrix).</div><div class="ttdef"><b>Definition</b> <a href="SceneBounds_8h_source.html#l00026">SceneBounds.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html_a0f2765e75805274e5e85c47ac5f2ac96"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html#a0f2765e75805274e5e85c47ac5f2ac96">eve::scene::NodeDesc::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00020">NodeDesc.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html_a334e9d381ae93ec302477b9e2d1fa8a7"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html#a334e9d381ae93ec302477b9e2d1fa8a7">eve::scene::NodeDesc::hasBounds</a></div><div class="ttdeci">bool hasBounds</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00039">NodeDesc.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html_ab292b7adc9fae227145f97e1250872f5"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html#ab292b7adc9fae227145f97e1250872f5">eve::scene::NodeDesc::visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00034">NodeDesc.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1NodeDesc_html_aedc5bd86944ea2ba06042bbe52e5c728"><div class="ttname"><a href="structeve_1_1scene_1_1NodeDesc.html#aedc5bd86944ea2ba06042bbe52e5c728">eve::scene::NodeDesc::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="NodeDesc_8h_source.html#l00035">NodeDesc.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1scene_1_1SceneNode_html"><div class="ttname"><a href="structeve_1_1scene_1_1SceneNode.html">eve::scene::SceneNode</a></div><div class="ttdoc">Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.</div><div class="ttdef"><b>Definition</b> <a href="SceneHost_8h_source.html#l00046">SceneHost.h:46</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

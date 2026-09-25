@@ -1,0 +1,301 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/import/VegetationPreset.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_5a462b2626f54b4e1f382bc8b7e5a769.html">import</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">VegetationPreset.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CanonicalMesh_8h_source.html">asset/CanonicalMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="AssetImporter_8h_source.html">asset/import/AssetImporter.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="VegetationPreset_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationPresetCommand.html">eve::asset_import::VegetationPresetCommand</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One evaluated TVE conversion command in source execution order.  <a href="structeve_1_1asset__import_1_1VegetationPresetCommand.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationPresetContext.html">eve::asset_import::VegetationPresetContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable source facts used by TVE preset predicates.  <a href="structeve_1_1asset__import_1_1VegetationPresetContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationTextureChannelRecipe.html">eve::asset_import::VegetationTextureChannelRecipe</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One channel instruction in a TVE packed-texture recipe.  <a href="structeve_1_1asset__import_1_1VegetationTextureChannelRecipe.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationTexturePackRecipe.html">eve::asset_import::VegetationTexturePackRecipe</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One ordered texture packing recipe produced by preset execution.  <a href="structeve_1_1asset__import_1_1VegetationTexturePackRecipe.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">eve::asset_import::VegetationPresetImage</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning linear RGBA8 source or packed texture used by preset conversion.  <a href="structeve_1_1asset__import_1_1VegetationPresetImage.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">eve::asset_import::VegetationConversionCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning unpublished material, mesh and texture candidate mutated transactionally by preset commands.  <a href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1VegetationConversionResult.html">eve::asset_import::VegetationConversionResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete detached output of one vegetation preset conversion transaction.  <a href="structeve_1_1asset__import_1_1VegetationConversionResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1UnityVegetationConversionRequest.html">eve::asset_import::UnityVegetationConversionRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning inputs for one complete Unity Material and TVE preset conversion transaction.  <a href="structeve_1_1asset__import_1_1UnityVegetationConversionRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1UnityVegetationAssetImportRequest.html">eve::asset_import::UnityVegetationAssetImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning inputs for one atomically prepared Unity vegetation asset group.  <a href="structeve_1_1asset__import_1_1UnityVegetationAssetImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__import_1_1UnityVegetationBatchImportRequest.html">eve::asset_import::UnityVegetationBatchImportRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning ordered set of independently converted vegetation objects published as one package.  <a href="structeve_1_1asset__import_1_1UnityVegetationBatchImportRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1asset__import" id="r_namespaceeve_1_1asset__import"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html">eve::asset_import</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a7b65a36100395ccc4fc48796e5f44b7f" id="r_a7b65a36100395ccc4fc48796e5f44b7f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a7b65a36100395ccc4fc48796e5f44b7f">eve::asset_import::VegetationMeshOutputMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#a7b65a36100395ccc4fc48796e5f44b7fad15305d7a4e34e02489c74a5ef542f36">eve::asset_import::Off</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a7b65a36100395ccc4fc48796e5f44b7fa7a1920d61156abc05a60135aefe8bc67">eve::asset_import::Default</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a7b65a36100395ccc4fc48796e5f44b7fa90589c47f06eb971d548591f23c285af">eve::asset_import::Custom</a>
+ }</td></tr>
+<tr class="memdesc:a7b65a36100395ccc4fc48796e5f44b7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">TVE mesh publication mode selected by OutputMeshes.  <a href="namespaceeve_1_1asset__import.html#a7b65a36100395ccc4fc48796e5f44b7f">更多...</a><br /></td></tr>
+<tr class="separator:a7b65a36100395ccc4fc48796e5f44b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac81411335cf84d0e420ad94a7a85d232" id="r_ac81411335cf84d0e420ad94a7a85d232"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#ac81411335cf84d0e420ad94a7a85d232">eve::asset_import::VegetationMaterialOutputMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#ac81411335cf84d0e420ad94a7a85d232ad15305d7a4e34e02489c74a5ef542f36">eve::asset_import::Off</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#ac81411335cf84d0e420ad94a7a85d232a7a1920d61156abc05a60135aefe8bc67">eve::asset_import::Default</a>
+ }</td></tr>
+<tr class="memdesc:ac81411335cf84d0e420ad94a7a85d232"><td class="mdescLeft">&#160;</td><td class="mdescRight">TVE material publication mode selected by OutputMaterials.  <a href="namespaceeve_1_1asset__import.html#ac81411335cf84d0e420ad94a7a85d232">更多...</a><br /></td></tr>
+<tr class="separator:ac81411335cf84d0e420ad94a7a85d232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d78bbda2ea4f9bc4ca1304f80d2cb15" id="r_a2d78bbda2ea4f9bc4ca1304f80d2cb15"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15">eve::asset_import::VegetationTextureOutputEncoding</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15af8fd4f1b5b05c6b1cc6a661141fd4f54">eve::asset_import::Png</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15a38f4e5f66749f755f54ef67faa2058dc">eve::asset_import::Tga</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15af3b6c8e35353cb1f2d284d8deabbf7b6">eve::asset_import::Exr</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15a9b0fa1d3f5088cab777d4b69f39cc7e3">eve::asset_import::UnityAsset</a>
+ }</td></tr>
+<tr class="memdesc:a2d78bbda2ea4f9bc4ca1304f80d2cb15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requested source encoding for converted texture publication.  <a href="namespaceeve_1_1asset__import.html#a2d78bbda2ea4f9bc4ca1304f80d2cb15">更多...</a><br /></td></tr>
+<tr class="separator:a2d78bbda2ea4f9bc4ca1304f80d2cb15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5851e6d42fef837ddfb259338f662e54" id="r_a5851e6d42fef837ddfb259338f662e54"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a5851e6d42fef837ddfb259338f662e54">eve::asset_import::VegetationTransformOutputMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__import.html#a5851e6d42fef837ddfb259338f662e54a6cf3ef30af57209f338b6354f2541acf">eve::asset_import::KeepOriginal</a>
+, <a class="el" href="namespaceeve_1_1asset__import.html#a5851e6d42fef837ddfb259338f662e54a7aa143ac78a598092008ff8090f63ce1">eve::asset_import::TransformToWorldSpace</a>
+ }</td></tr>
+<tr class="memdesc:a5851e6d42fef837ddfb259338f662e54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform policy selected for converted mesh publication.  <a href="namespaceeve_1_1asset__import.html#a5851e6d42fef837ddfb259338f662e54">更多...</a><br /></td></tr>
+<tr class="separator:a5851e6d42fef837ddfb259338f662e54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a67a68d475f441439aa4256d4f84a5000" id="r_a67a68d475f441439aa4256d4f84a5000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a67a68d475f441439aa4256d4f84a5000">eve::asset_import::decodeUnityVegetationConversionCandidate</a> (std::span&lt; const std::uint8_t &gt; yaml, std::string <a class="el" href="TileConfig_8cpp.html#a99ae91f77d0452d3aa8a61d60339963d">sourcePath</a>, std::uint64_t maximumBytes=16ull *1024ull *1024ull)</td></tr>
+<tr class="memdesc:a67a68d475f441439aa4256d4f84a5000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode Unity text Material saved properties into an owning vegetation conversion baseline.  <br /></td></tr>
+<tr class="separator:a67a68d475f441439aa4256d4f84a5000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ceb9d43381719a0f99b6bd5fe0ef961" id="r_a3ceb9d43381719a0f99b6bd5fe0ef961"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a3ceb9d43381719a0f99b6bd5fe0ef961">eve::asset_import::encodeUnityVegetationConversionMaterial</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, std::uint64_t maximumBytes=16ull *1024ull *1024ull)</td></tr>
+<tr class="memdesc:a3ceb9d43381719a0f99b6bd5fe0ef961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode an applied vegetation candidate as a detached Unity text Material for the canonical TVE importer.  <br /></td></tr>
+<tr class="separator:a3ceb9d43381719a0f99b6bd5fe0ef961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7755e326230a525aecdaad6a30c267d" id="r_ac7755e326230a525aecdaad6a30c267d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetContext.html">VegetationPresetContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#ac7755e326230a525aecdaad6a30c267d">eve::asset_import::makeVegetationPresetContext</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, std::string shaderName, std::string materialName, std::string shaderPipeline, std::set&lt; std::string &gt; outputOptions={})</td></tr>
+<tr class="memdesc:ac7755e326230a525aecdaad6a30c267d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one conversion baseline into immutable preset predicate facts.  <br /></td></tr>
+<tr class="separator:ac7755e326230a525aecdaad6a30c267d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abac7e9a2cde26253c49529d36cac657a" id="r_abac7e9a2cde26253c49529d36cac657a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetCommand.html">VegetationPresetCommand</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#abac7e9a2cde26253c49529d36cac657a">eve::asset_import::evaluateVegetationPreset</a> (const std::map&lt; std::string, <a class="el" href="classeve_1_1Value.html">Value</a> &gt; &amp;definitions, std::string_view <a class="el" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>, const <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetContext.html">VegetationPresetContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>)</td></tr>
+<tr class="memdesc:abac7e9a2cde26253c49529d36cac657a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode, resolve and evaluate a library of canonical TVE preset definitions.  <br /></td></tr>
+<tr class="separator:abac7e9a2cde26253c49529d36cac657a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71282cb0454f8dbc4a023f976382c3aa" id="r_a71282cb0454f8dbc4a023f976382c3aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a71282cb0454f8dbc4a023f976382c3aa">eve::asset_import::applyVegetationPreset</a> (<a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::vector&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetCommand.html">VegetationPresetCommand</a> &gt; &amp;<a class="el" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>)</td></tr>
+<tr class="memdesc:a71282cb0454f8dbc4a023f976382c3aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type-check and atomically apply an evaluated TVE command sequence.  <br /></td></tr>
+<tr class="separator:a71282cb0454f8dbc4a023f976382c3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7da6f98f9863fa4c8117dfd8a8facd1" id="r_ab7da6f98f9863fa4c8117dfd8a8facd1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#ab7da6f98f9863fa4c8117dfd8a8facd1">eve::asset_import::executeVegetationTexturePacks</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, const std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &amp;sources, std::uint64_t maximumPixels=16ull *1024ull *1024ull)</td></tr>
+<tr class="memdesc:ab7da6f98f9863fa4c8117dfd8a8facd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute all texture recipes against detached RGBA8 source images.  <br /></td></tr>
+<tr class="separator:ab7da6f98f9863fa4c8117dfd8a8facd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ae1e5d4c1748c10c23a0db73a5d8d06" id="r_a0ae1e5d4c1748c10c23a0db73a5d8d06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a0ae1e5d4c1748c10c23a0db73a5d8d06">eve::asset_import::executeVegetationTexturePacks</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, const std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &amp;sources, const <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, std::uint64_t maximumPixels=16ull *1024ull *1024ull)</td></tr>
+<tr class="memdesc:a0ae1e5d4c1748c10c23a0db73a5d8d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute texture recipes with a canonical mesh for object/tangent normal-space transforms.  <br /></td></tr>
+<tr class="separator:a0ae1e5d4c1748c10c23a0db73a5d8d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e73df1643c4f034ccd706dac2262ee0" id="r_a9e73df1643c4f034ccd706dac2262ee0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a9e73df1643c4f034ccd706dac2262ee0">eve::asset_import::executeVegetationMeshRules</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float variationSeed=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a9e73df1643c4f034ccd706dac2262ee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute preset mask and coordinate rules into canonical TVE authoring streams.  <br /></td></tr>
+<tr class="separator:a9e73df1643c4f034ccd706dac2262ee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34264d26e136ca825b5309f73e228c38" id="r_a34264d26e136ca825b5309f73e228c38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a34264d26e136ca825b5309f73e228c38">eve::asset_import::executeVegetationMeshRules</a> (const <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> &amp;candidate, <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &amp;textures, float variationSeed=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a34264d26e136ca825b5309f73e228c38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute mesh rules with RGBA8 textures keyed by source material property.  <br /></td></tr>
+<tr class="separator:a34264d26e136ca825b5309f73e228c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab91dbcd2cb3169c7d1bed18bc4041b22" id="r_ab91dbcd2cb3169c7d1bed18bc4041b22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionResult.html">VegetationConversionResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#ab91dbcd2cb3169c7d1bed18bc4041b22">eve::asset_import::executeVegetationConversion</a> (<a class="el" href="structeve_1_1asset__import_1_1VegetationConversionCandidate.html">VegetationConversionCandidate</a> <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::vector&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetCommand.html">VegetationPresetCommand</a> &gt; &amp;<a class="el" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>, std::optional&lt; <a class="el" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> &gt; <a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, const std::map&lt; std::string, <a class="el" href="structeve_1_1asset__import_1_1VegetationPresetImage.html">VegetationPresetImage</a> &gt; &amp;textures, float variationSeed=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, const std::optional&lt; std::array&lt; float, 16 &gt; &gt; &amp;sourceToWorld={}, const std::optional&lt; std::array&lt; float, 9 &gt; &gt; &amp;sourceDirectionToWorld={})</td></tr>
+<tr class="memdesc:ab91dbcd2cb3169c7d1bed18bc4041b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply commands and execute all available mesh and texture outputs as one transaction.  <br /></td></tr>
+<tr class="separator:ab91dbcd2cb3169c7d1bed18bc4041b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8357c6c051c3ec7e04bf45d3da039cc4" id="r_a8357c6c051c3ec7e04bf45d3da039cc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1VegetationConversionResult.html">VegetationConversionResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a8357c6c051c3ec7e04bf45d3da039cc4">eve::asset_import::executeUnityVegetationConversion</a> (const <a class="el" href="structeve_1_1asset__import_1_1UnityVegetationConversionRequest.html">UnityVegetationConversionRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a8357c6c051c3ec7e04bf45d3da039cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a Unity Material, evaluate one TVE preset graph, and execute every output atomically.  <br /></td></tr>
+<tr class="separator:a8357c6c051c3ec7e04bf45d3da039cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be42ed6a8b55b716ea7d456c6263337" id="r_a3be42ed6a8b55b716ea7d456c6263337"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a3be42ed6a8b55b716ea7d456c6263337">eve::asset_import::prepareUnityVegetationConversionImport</a> (const <a class="el" href="structeve_1_1asset__import_1_1UnityVegetationAssetImportRequest.html">UnityVegetationAssetImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a3be42ed6a8b55b716ea7d456c6263337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert and prepare one material, its packed images, and optional mesh as a single EVA candidate.  <br /></td></tr>
+<tr class="separator:a3be42ed6a8b55b716ea7d456c6263337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a671bd71e5e773f7f6182a25f4677b86d" id="r_a671bd71e5e773f7f6182a25f4677b86d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import.html#a671bd71e5e773f7f6182a25f4677b86d">eve::asset_import::prepareUnityVegetationConversionBatch</a> (const <a class="el" href="structeve_1_1asset__import_1_1UnityVegetationBatchImportRequest.html">UnityVegetationBatchImportRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a671bd71e5e773f7f6182a25f4677b86d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare several vegetation objects as one all-or-nothing EVA candidate.  <br /></td></tr>
+<tr class="separator:a671bd71e5e773f7f6182a25f4677b86d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

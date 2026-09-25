@@ -1,0 +1,645 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::PbrVegetationDetail结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html">PbrVegetationDetail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1PbrVegetationDetail-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::PbrVegetationDetail结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>TVE secondary material layer evaluated after primary texture sampling. Three borrowed bindings contain secondary albedo, normal and mask data. UV mode 0 uses the primary mesh UV, 1 uses the authored TVE detail UV and 2 projects world XZ. All scalar masks are remapped with the TVE 0.0001 epsilon; reversed endpoints are valid.  
+ <a href="structeve_1_1graphics_1_1PbrVegetationDetail.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a2e839c9b47cc7add5acba4095a700085" id="r_a2e839c9b47cc7add5acba4095a700085"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="structeve_1_1graphics_1_1PbrTextureBinding.html">PbrTextureBinding</a>, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a2e839c9b47cc7add5acba4095a700085">textures</a> {}</td></tr>
+<tr class="separator:a2e839c9b47cc7add5acba4095a700085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0e13e18cb2d2fef00c3f5f1aa69470" id="r_a7d0e13e18cb2d2fef00c3f5f1aa69470"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a7d0e13e18cb2d2fef00c3f5f1aa69470">color</a> {1, 1, 1, 1}</td></tr>
+<tr class="separator:a7d0e13e18cb2d2fef00c3f5f1aa69470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67fffe9deb92fe53c9cb90b5078245e9" id="r_a67fffe9deb92fe53c9cb90b5078245e9"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a67fffe9deb92fe53c9cb90b5078245e9">colorTwo</a> {1, 1, 1, 1}</td></tr>
+<tr class="separator:a67fffe9deb92fe53c9cb90b5078245e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c4aa119a6e0bb741e423b1e715491ec" id="r_a5c4aa119a6e0bb741e423b1e715491ec"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a5c4aa119a6e0bb741e423b1e715491ec">uvScale</a> {1, 1}</td></tr>
+<tr class="separator:a5c4aa119a6e0bb741e423b1e715491ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7c524c5042a5cd076fa8c1f4c2b578" id="r_aba7c524c5042a5cd076fa8c1f4c2b578"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#aba7c524c5042a5cd076fa8c1f4c2b578">uvOffset</a> {0, 0}</td></tr>
+<tr class="separator:aba7c524c5042a5cd076fa8c1f4c2b578"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdd5eaf3f7731b78e265245533f17abe" id="r_acdd5eaf3f7731b78e265245533f17abe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#acdd5eaf3f7731b78e265245533f17abe">value</a> = 0</td></tr>
+<tr class="separator:acdd5eaf3f7731b78e265245533f17abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44c495c98d2395901331ff28e8652d10" id="r_a44c495c98d2395901331ff28e8652d10"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a44c495c98d2395901331ff28e8652d10">normalValue</a> = 1</td></tr>
+<tr class="separator:a44c495c98d2395901331ff28e8652d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c40ecf1a86b005902996906d19df30f" id="r_a6c40ecf1a86b005902996906d19df30f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a6c40ecf1a86b005902996906d19df30f">normalBlendValue</a> = 1</td></tr>
+<tr class="separator:a6c40ecf1a86b005902996906d19df30f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa349729aebd76c4e9782be66c4753cf4" id="r_aa349729aebd76c4e9782be66c4753cf4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#aa349729aebd76c4e9782be66c4753cf4">albedoValue</a> = 1</td></tr>
+<tr class="separator:aa349729aebd76c4e9782be66c4753cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6736602e9dfb7d85ce203990db15056" id="r_ab6736602e9dfb7d85ce203990db15056"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#ab6736602e9dfb7d85ce203990db15056">metallicValue</a> = 0</td></tr>
+<tr class="separator:ab6736602e9dfb7d85ce203990db15056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a010c63d1390fb51fac473cbc0af6b320" id="r_a010c63d1390fb51fac473cbc0af6b320"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a010c63d1390fb51fac473cbc0af6b320">occlusionValue</a> = 1</td></tr>
+<tr class="separator:a010c63d1390fb51fac473cbc0af6b320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc132a903c01933f3173d8540c241cab" id="r_afc132a903c01933f3173d8540c241cab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#afc132a903c01933f3173d8540c241cab">smoothnessValue</a> = 1</td></tr>
+<tr class="separator:afc132a903c01933f3173d8540c241cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d615946ecffb06cfdb28a576fb5f0d" id="r_a69d615946ecffb06cfdb28a576fb5f0d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a69d615946ecffb06cfdb28a576fb5f0d">blendMinimum</a> = 0</td></tr>
+<tr class="separator:a69d615946ecffb06cfdb28a576fb5f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf46707db6c7e3ef9852b4dd1dd8ccbb" id="r_abf46707db6c7e3ef9852b4dd1dd8ccbb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#abf46707db6c7e3ef9852b4dd1dd8ccbb">blendMaximum</a> = 1</td></tr>
+<tr class="separator:abf46707db6c7e3ef9852b4dd1dd8ccbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e3a440a5620bccc3e7069f627537f92" id="r_a8e3a440a5620bccc3e7069f627537f92"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a8e3a440a5620bccc3e7069f627537f92">maskMinimum</a> = 0</td></tr>
+<tr class="separator:a8e3a440a5620bccc3e7069f627537f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b03a90e1e4ef0b32e2adad0bfea8611" id="r_a7b03a90e1e4ef0b32e2adad0bfea8611"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a7b03a90e1e4ef0b32e2adad0bfea8611">maskMaximum</a> = 1</td></tr>
+<tr class="separator:a7b03a90e1e4ef0b32e2adad0bfea8611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c87ba4bdcbc7005be85ccab0ed996b9" id="r_a5c87ba4bdcbc7005be85ccab0ed996b9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a5c87ba4bdcbc7005be85ccab0ed996b9">meshMinimum</a> = 0</td></tr>
+<tr class="separator:a5c87ba4bdcbc7005be85ccab0ed996b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac144306b8a8a3fe830675cadb07faaac" id="r_ac144306b8a8a3fe830675cadb07faaac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#ac144306b8a8a3fe830675cadb07faaac">meshMaximum</a> = 1</td></tr>
+<tr class="separator:ac144306b8a8a3fe830675cadb07faaac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1801eaa45c3b5dabcb306d6cf2d4f81d" id="r_a1801eaa45c3b5dabcb306d6cf2d4f81d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a1801eaa45c3b5dabcb306d6cf2d4f81d">uvMode</a> = 0</td></tr>
+<tr class="separator:a1801eaa45c3b5dabcb306d6cf2d4f81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a0adc32c00234125153685a71b4982" id="r_a05a0adc32c00234125153685a71b4982"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a05a0adc32c00234125153685a71b4982">colorMode</a> = 0</td></tr>
+<tr class="separator:a05a0adc32c00234125153685a71b4982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a580043a51a079268211755c116a49d83" id="r_a580043a51a079268211755c116a49d83"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a580043a51a079268211755c116a49d83">blendMode</a> = 0</td></tr>
+<tr class="separator:a580043a51a079268211755c116a49d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d506e9f493bcc9818a0d2f5c829a6e6" id="r_a2d506e9f493bcc9818a0d2f5c829a6e6"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a2d506e9f493bcc9818a0d2f5c829a6e6">alphaMode</a> = 1</td></tr>
+<tr class="separator:a2d506e9f493bcc9818a0d2f5c829a6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a879ba546101fa2ae29d22a09837bc468" id="r_a879ba546101fa2ae29d22a09837bc468"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a879ba546101fa2ae29d22a09837bc468">maskMode</a> = 0</td></tr>
+<tr class="separator:a879ba546101fa2ae29d22a09837bc468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5dc96974d5e3fb0b21d8bbe3c57129" id="r_a0b5dc96974d5e3fb0b21d8bbe3c57129"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#a0b5dc96974d5e3fb0b21d8bbe3c57129">meshMode</a> = 0</td></tr>
+<tr class="separator:a0b5dc96974d5e3fb0b21d8bbe3c57129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6586596f403fbe300a7c48533f02190" id="r_ac6586596f403fbe300a7c48533f02190"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1PbrVegetationDetail.html#ac6586596f403fbe300a7c48533f02190">inverseUvScale</a> = false</td></tr>
+<tr class="separator:ac6586596f403fbe300a7c48533f02190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>TVE secondary material layer evaluated after primary texture sampling. Three borrowed bindings contain secondary albedo, normal and mask data. UV mode 0 uses the primary mesh UV, 1 uses the authored TVE detail UV and 2 projects world XZ. All scalar masks are remapped with the TVE 0.0001 epsilon; reversed endpoints are valid. </p>
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00103">103</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aa349729aebd76c4e9782be66c4753cf4" name="aa349729aebd76c4e9782be66c4753cf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa349729aebd76c4e9782be66c4753cf4">&#9670;&#160;</a></span>albedoValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::albedoValue = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d506e9f493bcc9818a0d2f5c829a6e6" name="a2d506e9f493bcc9818a0d2f5c829a6e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d506e9f493bcc9818a0d2f5c829a6e6">&#9670;&#160;</a></span>alphaMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::alphaMode = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abf46707db6c7e3ef9852b4dd1dd8ccbb" name="abf46707db6c7e3ef9852b4dd1dd8ccbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf46707db6c7e3ef9852b4dd1dd8ccbb">&#9670;&#160;</a></span>blendMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::blendMaximum = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69d615946ecffb06cfdb28a576fb5f0d" name="a69d615946ecffb06cfdb28a576fb5f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d615946ecffb06cfdb28a576fb5f0d">&#9670;&#160;</a></span>blendMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::blendMinimum = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a580043a51a079268211755c116a49d83" name="a580043a51a079268211755c116a49d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a580043a51a079268211755c116a49d83">&#9670;&#160;</a></span>blendMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::blendMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d0e13e18cb2d2fef00c3f5f1aa69470" name="a7d0e13e18cb2d2fef00c3f5f1aa69470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d0e13e18cb2d2fef00c3f5f1aa69470">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::graphics::PbrVegetationDetail::color {1, 1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05a0adc32c00234125153685a71b4982" name="a05a0adc32c00234125153685a71b4982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a0adc32c00234125153685a71b4982">&#9670;&#160;</a></span>colorMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::colorMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67fffe9deb92fe53c9cb90b5078245e9" name="a67fffe9deb92fe53c9cb90b5078245e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67fffe9deb92fe53c9cb90b5078245e9">&#9670;&#160;</a></span>colorTwo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::graphics::PbrVegetationDetail::colorTwo {1, 1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6586596f403fbe300a7c48533f02190" name="ac6586596f403fbe300a7c48533f02190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6586596f403fbe300a7c48533f02190">&#9670;&#160;</a></span>inverseUvScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::PbrVegetationDetail::inverseUvScale = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b03a90e1e4ef0b32e2adad0bfea8611" name="a7b03a90e1e4ef0b32e2adad0bfea8611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b03a90e1e4ef0b32e2adad0bfea8611">&#9670;&#160;</a></span>maskMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::maskMaximum = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e3a440a5620bccc3e7069f627537f92" name="a8e3a440a5620bccc3e7069f627537f92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e3a440a5620bccc3e7069f627537f92">&#9670;&#160;</a></span>maskMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::maskMinimum = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a879ba546101fa2ae29d22a09837bc468" name="a879ba546101fa2ae29d22a09837bc468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a879ba546101fa2ae29d22a09837bc468">&#9670;&#160;</a></span>maskMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::maskMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac144306b8a8a3fe830675cadb07faaac" name="ac144306b8a8a3fe830675cadb07faaac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac144306b8a8a3fe830675cadb07faaac">&#9670;&#160;</a></span>meshMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::meshMaximum = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c87ba4bdcbc7005be85ccab0ed996b9" name="a5c87ba4bdcbc7005be85ccab0ed996b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c87ba4bdcbc7005be85ccab0ed996b9">&#9670;&#160;</a></span>meshMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::meshMinimum = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b5dc96974d5e3fb0b21d8bbe3c57129" name="a0b5dc96974d5e3fb0b21d8bbe3c57129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5dc96974d5e3fb0b21d8bbe3c57129">&#9670;&#160;</a></span>meshMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::meshMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6736602e9dfb7d85ce203990db15056" name="ab6736602e9dfb7d85ce203990db15056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6736602e9dfb7d85ce203990db15056">&#9670;&#160;</a></span>metallicValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::metallicValue = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c40ecf1a86b005902996906d19df30f" name="a6c40ecf1a86b005902996906d19df30f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c40ecf1a86b005902996906d19df30f">&#9670;&#160;</a></span>normalBlendValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::normalBlendValue = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44c495c98d2395901331ff28e8652d10" name="a44c495c98d2395901331ff28e8652d10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44c495c98d2395901331ff28e8652d10">&#9670;&#160;</a></span>normalValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::normalValue = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a010c63d1390fb51fac473cbc0af6b320" name="a010c63d1390fb51fac473cbc0af6b320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a010c63d1390fb51fac473cbc0af6b320">&#9670;&#160;</a></span>occlusionValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::occlusionValue = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc132a903c01933f3173d8540c241cab" name="afc132a903c01933f3173d8540c241cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc132a903c01933f3173d8540c241cab">&#9670;&#160;</a></span>smoothnessValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::smoothnessValue = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e839c9b47cc7add5acba4095a700085" name="a2e839c9b47cc7add5acba4095a700085"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e839c9b47cc7add5acba4095a700085">&#9670;&#160;</a></span>textures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="structeve_1_1graphics_1_1PbrTextureBinding.html">PbrTextureBinding</a>, 3&gt; eve::graphics::PbrVegetationDetail::textures {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PbrVariantPlan_8cpp_source.html#l00025">eve::graphics::webgpu::planPbrVariant()</a>, <a class="el" href="vulkan_2GraphicsPbr_8cpp_source.html#l00092">eve::graphics::vulkan::Graphics::setMesh3DPbrSurface()</a> , 以及 <a class="el" href="webgpu_2GraphicsPbr_8cpp_source.html#l00056">eve::graphics::webgpu::Graphics::setMesh3DPbrSurface()</a>.</p>
+
+</div>
+</div>
+<a id="a1801eaa45c3b5dabcb306d6cf2d4f81d" name="a1801eaa45c3b5dabcb306d6cf2d4f81d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1801eaa45c3b5dabcb306d6cf2d4f81d">&#9670;&#160;</a></span>uvMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::PbrVegetationDetail::uvMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba7c524c5042a5cd076fa8c1f4c2b578" name="aba7c524c5042a5cd076fa8c1f4c2b578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba7c524c5042a5cd076fa8c1f4c2b578">&#9670;&#160;</a></span>uvOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 2&gt; eve::graphics::PbrVegetationDetail::uvOffset {0, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c4aa119a6e0bb741e423b1e715491ec" name="a5c4aa119a6e0bb741e423b1e715491ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c4aa119a6e0bb741e423b1e715491ec">&#9670;&#160;</a></span>uvScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 2&gt; eve::graphics::PbrVegetationDetail::uvScale {1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdd5eaf3f7731b78e265245533f17abe" name="acdd5eaf3f7731b78e265245533f17abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdd5eaf3f7731b78e265245533f17abe">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::PbrVegetationDetail::value = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a> 第 <a class="el" href="PbrSurface_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PbrVariantPlan_8cpp_source.html#l00025">eve::graphics::webgpu::planPbrVariant()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="PbrSurface_8h_source.html">PbrSurface.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

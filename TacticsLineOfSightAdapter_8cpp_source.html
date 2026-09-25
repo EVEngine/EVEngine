@@ -1,0 +1,340 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsLineOfSightAdapter.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TacticsLineOfSightAdapter.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TacticsLineOfSightAdapter_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsLineOfSightAdapter_8h.html">tactics/TacticsLineOfSightAdapter.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="LineOfSightRouter_8h.html">sensing/LineOfSightRouter.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="LineOfSight_8h.html">tactics/LineOfSight.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsTypes_8h.html">tactics/TacticsTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">bool</span> sameHandle(<span class="keyword">const</span> ecs::EntityHandle&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>, <span class="keyword">const</span> ecs::EntityHandle&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>.table == <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>.table &amp;&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>.type == <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>.type &amp;&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>.id == <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>.id &amp;&amp;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>           <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>.generation == <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>.generation;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">const</span> BoardState* boundBoard(ecs::EntityHandle battle, <span class="keywordtype">bool</span> bound) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (!bound) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="comment">// Resolving by handle each call is what makes a released battle safe: the ECS refuses a stale</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// generation, so a dangling board is never read.</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span>* resolved = <span class="keyword">dynamic_cast&lt;</span>Battle*<span class="keyword">&gt;</span>(ecs::try_get(battle));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> resolved != <span class="keyword">nullptr</span> ? &amp;resolved-&gt;board()-&gt;value : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>Result&lt;Cell&gt; toCell(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">sensing::TargetLocation</a>&amp; location) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> std::visit(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) -&gt; Result&lt;Cell&gt; {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">using </span><a class="code hl_enumvalue" href="namespaceeve_1_1image.html#a619d10e7f4af9ab708c0e74ea0a71952a2a3cd5946cfd317eb99c3d32e35e2d4c">Point</a> = std::decay_t&lt;<span class="keyword">decltype</span>(<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>)&gt;;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;Point, sensing::GridPoint&gt;) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                <span class="comment">// A 2D grid point is layer zero; a 3D one keeps its z as the tactical layer, so a</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                <span class="comment">// layered board is reachable without converting between spaces.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.space() == <a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">sensing::CoordinateSpace::Grid2D</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;Cell&gt;::success</a>(Cell{<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.x(), <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.y(), 0});</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.space() == <a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">sensing::CoordinateSpace::Grid3D</a>)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;Cell&gt;::success</a>(Cell{<a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.x(), <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.y(), <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.z()});</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Cell&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                               <span class="stringliteral">&quot;tactics line of sight answers grid coordinates only&quot;</span>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                                               <span class="stringliteral">&quot;lineOfSight.space&quot;</span>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Cell&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                                               <span class="stringliteral">&quot;tactics line of sight answers grid coordinates only&quot;</span>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                                               <span class="stringliteral">&quot;lineOfSight.space&quot;</span>));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        },</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        location);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#af41bdf4fd6f42a1148b6ea1a85cdecd8">   59</a></span><a class="code hl_class" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a>&amp; <a class="code hl_function" href="namespaceeve_1_1tactics.html#af41bdf4fd6f42a1148b6ea1a85cdecd8">tacticsLineOfSightAdapter</a>() {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a> <a class="code hl_variable" href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a9f8a67892cd73b6136ba178c79f3ce1f">   64</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a9f8a67892cd73b6136ba178c79f3ce1f">TacticsLineOfSightAdapter::bindBattle</a>(ecs::EntityHandle battle) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (boundBoard(battle, <span class="keyword">true</span>) == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                                       <span class="stringliteral">&quot;line-of-sight battle binding is not a live battle&quot;</span>, <span class="stringliteral">&quot;battle&quot;</span>));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (bound_ &amp;&amp; sameHandle(battle_, battle)) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (bound_)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="comment">// One board at a time on purpose: with two bound boards the answer would depend on which</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="comment">// was bound last, exactly the order-dependence the router exists to remove.</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;another battle is already bound for grid line of sight&quot;</span>, <span class="stringliteral">&quot;battle&quot;</span>));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    battle_ = battle;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    bound_  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#ac0b715ac7180d0eaa5ac4514c3c2f66d">   79</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#ac0b715ac7180d0eaa5ac4514c3c2f66d">TacticsLineOfSightAdapter::unbindBattle</a>(ecs::EntityHandle battle) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (!bound_ || !sameHandle(battle_, battle))</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    battle_ = {};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    bound_  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a8feb9b22920f2e0a29a5d6a8787c3f0c">   87</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;sensing::LineOfSightResult&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a8feb9b22920f2e0a29a5d6a8787c3f0c">TacticsLineOfSightAdapter::query</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">sensing::TargetLocation</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                                   <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">sensing::TargetLocation</a>&amp; <a class="code hl_variable" href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a> = boundBoard(battle_, bound_);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a> == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;sensing::LineOfSightResult&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;no tactics battle is bound for grid line of sight&quot;</span>, <span class="stringliteral">&quot;lineOfSight.battle&quot;</span>));</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">auto</span> fromCell = toCell(<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!fromCell) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;sensing::LineOfSightResult&gt;::failure</a>(fromCell.status());</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">auto</span> toCellValue = toCell(<a class="code hl_variable" href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!toCellValue) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;sensing::LineOfSightResult&gt;::failure</a>(toCellValue.status());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="comment">// The same policy the module&#39;s own range query uses: a registered sight policy when a project</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// provided one, otherwise the built-in grid rule. One authority for &quot;what blocks sight&quot;.</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a>* registered = cap::query&lt;ILineOfSightPolicy&gt;();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a>&amp; policy = registered != <span class="keyword">nullptr</span> ? *registered : *<a class="code hl_function" href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">gridLineOfSightPolicy</a>();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a> = policy.<a class="code hl_function" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a15afbe8e016cb31429d2814c9daf20ca">visible</a>(*<a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, fromCell.value(), toCellValue.value());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;sensing::LineOfSightResult&gt;::failure</a>(<a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>.status());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_struct" href="structeve_1_1sensing_1_1LineOfSightResult.html">sensing::LineOfSightResult</a> result;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    result.<a class="code hl_variable" href="structeve_1_1sensing_1_1LineOfSightResult.html#ad8ff2adf2225133be603af5cad2d2030">visible</a> = <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>.value();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="comment">// `blocker` is left empty on purpose: the grid policy answers visibility without naming what</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="comment">// blocked it, and reporting the target&#39;s occupant instead would be a different fact wearing</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// the same field. A policy that can identify the blocker is free to fill it in.</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;sensing::LineOfSightResult&gt;::success</a>(std::move(result));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#ab4357136cec6e632b94c416112a63e18">  113</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1tactics.html#ab4357136cec6e632b94c416112a63e18">registerTacticsLineOfSightProvider</a>() {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">auto</span> router = <a class="code hl_function" href="namespaceeve_1_1sensing.html#a400aa7b0fa2cc62247a36cfe2da0a0ff">sensing::ensureLineOfSightRouter</a>();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (!router) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(router.status());</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_class" href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">TacticsLineOfSightAdapter</a>&amp; <a class="code hl_variable" href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a> = <a class="code hl_function" href="namespaceeve_1_1tactics.html#af41bdf4fd6f42a1148b6ea1a85cdecd8">tacticsLineOfSightAdapter</a>();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keyword">auto</span> grid2d = router.value()-&gt;addProvider(<a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">sensing::CoordinateSpace::Grid2D</a>, &amp;<a class="code hl_variable" href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (!grid2d) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(grid2d.status());</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">auto</span> grid3d = router.value()-&gt;addProvider(<a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">sensing::CoordinateSpace::Grid3D</a>, &amp;<a class="code hl_variable" href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">if</span> (!grid3d) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(grid3d.status());</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00161">AssetCommand.cpp:161</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a4aec083086e51d216483397c15f1518c"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a></div><div class="ttdeci">HexVec3 left</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00219">HexSphereMesh.cpp:219</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a693f5ccb2102b8c2a7eb23cbb1e337bc"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a></div><div class="ttdeci">HexVec3 right</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00220">HexSphereMesh.cpp:220</a></div></div>
+<div class="ttc" id="aHexUnits_8cpp_html_a1cda486e5488f8ab9196eb812fc14402"><div class="ttname"><a href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a></div><div class="ttdeci">HexCoordinates to</div><div class="ttdoc">Cell the unit walks towards on this segment.</div><div class="ttdef"><b>Definition</b> <a href="HexUnits_8cpp_source.html#l00064">HexUnits.cpp:64</a></div></div>
+<div class="ttc" id="aLineOfSightRouter_8h_html"><div class="ttname"><a href="LineOfSightRouter_8h.html">LineOfSightRouter.h</a></div><div class="ttdoc">One registered line-of-sight provider that dispatches to backends by coordinate space.</div></div>
+<div class="ttc" id="aLineOfSight_8h_html"><div class="ttname"><a href="LineOfSight_8h.html">LineOfSight.h</a></div><div class="ttdoc">Injectable line-of-sight and cover policies over the tactical board.</div></div>
+<div class="ttc" id="aStandardAbilities_8cpp_html_aca9b4ab23dcb837a01245a33e4768dce"><div class="ttname"><a href="StandardAbilities_8cpp.html#aca9b4ab23dcb837a01245a33e4768dce">adapter</a></div><div class="ttdeci">std::string_view adapter</div><div class="ttdef"><b>Definition</b> <a href="StandardAbilities_8cpp_source.html#l00018">StandardAbilities.cpp:18</a></div></div>
+<div class="ttc" id="aTacticsLineOfSightAdapter_8h_html"><div class="ttname"><a href="TacticsLineOfSightAdapter_8h.html">TacticsLineOfSightAdapter.h</a></div><div class="ttdoc">Grid line of sight for sensing consumers, answered from a bound tactics board.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_afa74608efad845cb4247c533f215f71b"><div class="ttname"><a href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a></div><div class="ttdeci">BoardState board</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00153">TacticsPersistence.cpp:153</a></div></div>
+<div class="ttc" id="aTacticsTypes_8h_html"><div class="ttname"><a href="TacticsTypes_8h.html">TacticsTypes.h</a></div><div class="ttdoc">Deterministic board values and short-root ECS entities for tactics.</div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aVolumeFluidSimplexQuery_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">VolumeFluidSimplexQuery.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BoardState_html"><div class="ttname"><a href="classeve_1_1tactics_1_1BoardState.html">eve::tactics::BoardState</a></div><div class="ttdoc">Authoritative board facts and occupancy indexes for one battle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00152">TacticsTypes.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">eve::tactics::ILineOfSightPolicy</a></div><div class="ttdoc">Answers &quot;can @p from see @p to&quot; for one board.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00061">LineOfSight.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html_a15afbe8e016cb31429d2814c9daf20ca"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a15afbe8e016cb31429d2814c9daf20ca">eve::tactics::ILineOfSightPolicy::visible</a></div><div class="ttdeci">virtual Result&lt; bool &gt; visible(const BoardState &amp;board, Cell from, Cell to) const =0</div><div class="ttdoc">Report whether from can see to.</div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1TacticsLineOfSightAdapter_html"><div class="ttname"><a href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html">eve::tactics::TacticsLineOfSightAdapter</a></div><div class="ttdoc">Answers grid line-of-sight queries from the bound tactics battle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8h_source.html#l00039">TacticsLineOfSightAdapter.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1TacticsLineOfSightAdapter_html_a8feb9b22920f2e0a29a5d6a8787c3f0c"><div class="ttname"><a href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a8feb9b22920f2e0a29a5d6a8787c3f0c">eve::tactics::TacticsLineOfSightAdapter::query</a></div><div class="ttdeci">Result&lt; sensing::LineOfSightResult &gt; query(const sensing::TargetLocation &amp;from, const sensing::TargetLocation &amp;to) const override</div><div class="ttdoc">Tests the segment between two same-space locations.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8cpp_source.html#l00087">TacticsLineOfSightAdapter.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1TacticsLineOfSightAdapter_html_a9f8a67892cd73b6136ba178c79f3ce1f"><div class="ttname"><a href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#a9f8a67892cd73b6136ba178c79f3ce1f">eve::tactics::TacticsLineOfSightAdapter::bindBattle</a></div><div class="ttdeci">Result&lt; void &gt; bindBattle(ecs::EntityHandle battle)</div><div class="ttdoc">Bind the battle this adapter answers for.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8cpp_source.html#l00064">TacticsLineOfSightAdapter.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1TacticsLineOfSightAdapter_html_ac0b715ac7180d0eaa5ac4514c3c2f66d"><div class="ttname"><a href="classeve_1_1tactics_1_1TacticsLineOfSightAdapter.html#ac0b715ac7180d0eaa5ac4514c3c2f66d">eve::tactics::TacticsLineOfSightAdapter::unbindBattle</a></div><div class="ttdeci">Result&lt; void &gt; unbindBattle(ecs::EntityHandle battle)</div><div class="ttdoc">Release the binding when battle is the bound one; otherwise NoOp.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8cpp_source.html#l00079">TacticsLineOfSightAdapter.cpp:79</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html_a619d10e7f4af9ab708c0e74ea0a71952a2a3cd5946cfd317eb99c3d32e35e2d4c"><div class="ttname"><a href="namespaceeve_1_1image.html#a619d10e7f4af9ab708c0e74ea0a71952a2a3cd5946cfd317eb99c3d32e35e2d4c">eve::image::ImageScaleFilter::Point</a></div><div class="ttdeci">@ Point</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a1ab946bebc2c46570a1c777473564d98"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">eve::sensing::TargetLocation</a></div><div class="ttdeci">std::variant&lt; WorldPoint, GridPoint &gt; TargetLocation</div><div class="ttdoc">Either a world point or a grid point, with the tag retained.</div><div class="ttdef"><b>Definition</b> <a href="Targeting_8h_source.html#l00197">Targeting.h:197</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a400aa7b0fa2cc62247a36cfe2da0a0ff"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a400aa7b0fa2cc62247a36cfe2da0a0ff">eve::sensing::ensureLineOfSightRouter</a></div><div class="ttdeci">Result&lt; LineOfSightRouter * &gt; ensureLineOfSightRouter()</div><div class="ttdoc">The process-wide router, registered as the ILineOfSightQuery capability.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSightRouter_8cpp_source.html#l00033">LineOfSightRouter.cpp:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">eve::sensing::CoordinateSpace::Grid3D</a></div><div class="ttdeci">@ Grid3D</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">eve::sensing::CoordinateSpace::Grid2D</a></div><div class="ttdeci">@ Grid2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00013">Interaction.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a9b390cc88bf047721fcf5d16492b3222"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">eve::tactics::gridLineOfSightPolicy</a></div><div class="ttdeci">std::shared_ptr&lt; ILineOfSightPolicy &gt; gridLineOfSightPolicy()</div><div class="ttdoc">The process-wide built-in line-of-sight policy.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8cpp_source.html#l00176">LineOfSight.cpp:176</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_ab4357136cec6e632b94c416112a63e18"><div class="ttname"><a href="namespaceeve_1_1tactics.html#ab4357136cec6e632b94c416112a63e18">eve::tactics::registerTacticsLineOfSightProvider</a></div><div class="ttdeci">Result&lt; void &gt; registerTacticsLineOfSightProvider()</div><div class="ttdoc">Claim the grid coordinate spaces for the tactics adapter.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8cpp_source.html#l00113">TacticsLineOfSightAdapter.cpp:113</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_af41bdf4fd6f42a1148b6ea1a85cdecd8"><div class="ttname"><a href="namespaceeve_1_1tactics.html#af41bdf4fd6f42a1148b6ea1a85cdecd8">eve::tactics::tacticsLineOfSightAdapter</a></div><div class="ttdeci">TacticsLineOfSightAdapter &amp; tacticsLineOfSightAdapter()</div><div class="ttdoc">The process-wide adapter instance the capability answers with.</div><div class="ttdef"><b>Definition</b> <a href="TacticsLineOfSightAdapter_8cpp_source.html#l00059">TacticsLineOfSightAdapter.cpp:59</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a></div><div class="ttdeci">@ NoOp</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1LineOfSightResult_html"><div class="ttname"><a href="structeve_1_1sensing_1_1LineOfSightResult.html">eve::sensing::LineOfSightResult</a></div><div class="ttdoc">Result of one injected line-of-sight query.</div><div class="ttdef"><b>Definition</b> <a href="Targeting_8h_source.html#l00414">Targeting.h:414</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1LineOfSightResult_html_ad8ff2adf2225133be603af5cad2d2030"><div class="ttname"><a href="structeve_1_1sensing_1_1LineOfSightResult.html#ad8ff2adf2225133be603af5cad2d2030">eve::sensing::LineOfSightResult::visible</a></div><div class="ttdeci">bool visible</div><div class="ttdoc">True when the complete segment is visible.</div><div class="ttdef"><b>Definition</b> <a href="Targeting_8h_source.html#l00416">Targeting.h:416</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

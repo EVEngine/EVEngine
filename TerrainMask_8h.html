@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainMask.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">TerrainMask.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+</div>
+<p><a href="TerrainMask_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainConcavitySettings.html">eve::procgen::TerrainConcavitySettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concavity source controls; featureSize is in height texels, concavity is signed.  <a href="structeve_1_1procgen_1_1TerrainConcavitySettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainCurvatureSettings.html">eve::procgen::TerrainCurvatureSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Radial curvature controls; radius is UV distance, worldUnits scales signed height-minus-blur.  <a href="structeve_1_1procgen_1_1TerrainCurvatureSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html">eve::procgen::TerrainBrushBlendSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paint-context affine UV mappings, evaluated at destination pixel centers.  <a href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainSampleGrid.html">eve::procgen::TerrainSampleGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World X/Z positions of height sample centers, with positive spacing and dimensions.  <a href="structeve_1_1procgen_1_1TerrainSampleGrid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainDistanceMaskSettings.html">eve::procgen::TerrainDistanceMaskSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value-only UV transform; distances are relative to the target raster, rotation in radians.  <a href="structeve_1_1procgen_1_1TerrainDistanceMaskSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a0005971539609c5c49293e5ddb1c4e1d" id="r_a0005971539609c5c49293e5ddb1c4e1d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1d">eve::procgen::TerrainStrengthMode</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1da0ebe6df8a3ac338e0512acc741823fdb">eve::procgen::Replace</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1da8321e79c278ec510f63675c040594892">eve::procgen::Maximum</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1daa1d0ec6d56f8833a078b5a7ac4caf2d4">eve::procgen::Minimum</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1daec211f7c20af43e742bf2570c3cb84f9">eve::procgen::Add</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1da1d9baf077ee87921f57a8fe42d510b65">eve::procgen::Subtract</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a0005971539609c5c49293e5ddb1c4e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">StrengthTransform pass order; source pass 0 named Multiply actually replaces with the curve value.  <a href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1d">更多...</a><br /></td></tr>
+<tr class="separator:a0005971539609c5c49293e5ddb1c4e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac11562566bfede74c7f8adb84f94a11d" id="r_ac11562566bfede74c7f8adb84f94a11d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11d">eve::procgen::TerrainDistanceAxis</a> { <a class="el" href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11da30954d90085f6eaaf5817917fc5fecb3">eve::procgen::Circle</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11da02129bb861061d1a052c592e2dc6b383">eve::procgen::X</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11da21c2e59531c8710156d34a3c30ac81d5">eve::procgen::Z</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11dac5d092876864bd426781aec978ca1186">eve::procgen::RoundedSquare</a>
+ }</td></tr>
+<tr class="memdesc:ac11562566bfede74c7f8adb84f94a11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance coordinates used by the Pcg distance-mask shader.  <a href="namespaceeve_1_1procgen.html#ac11562566bfede74c7f8adb84f94a11d">更多...</a><br /></td></tr>
+<tr class="separator:ac11562566bfede74c7f8adb84f94a11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aa8ee2c332c03c0d039ec0f940900d4c8" id="r_aa8ee2c332c03c0d039ec0f940900d4c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa8ee2c332c03c0d039ec0f940900d4c8">eve::procgen::generateTerrainConcavityMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainConcavitySettings.html">TerrainConcavitySettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <a class="el" href="namespaceeve_1_1procgen.html#a63cd0bc370f3b434c921cbc6bdb0d1a4">TerrainMaskBlend</a> mode)</td></tr>
+<tr class="memdesc:aa8ee2c332c03c0d039ec0f940900d4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate source normalized-gradient concavity with border attenuation and indexed curve lookup.  <br /></td></tr>
+<tr class="separator:aa8ee2c332c03c0d039ec0f940900d4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7cbedf03a788815bd6a7e19155a431" id="r_a2d7cbedf03a788815bd6a7e19155a431"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a2d7cbedf03a788815bd6a7e19155a431">eve::procgen::generateTerrainCurvatureMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainCurvatureSettings.html">TerrainCurvatureSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <a class="el" href="namespaceeve_1_1procgen.html#a63cd0bc370f3b434c921cbc6bdb0d1a4">TerrainMaskBlend</a> mode)</td></tr>
+<tr class="memdesc:a2d7cbedf03a788815bd6a7e19155a431"><td class="mdescLeft">&#160;</td><td class="mdescRight">Radially blur heights, derive source curvature, transform its curve and combine with an input mask.  <br /></td></tr>
+<tr class="separator:a2d7cbedf03a788815bd6a7e19155a431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad974aad7282051c5f9b942b586bd348a" id="r_ad974aad7282051c5f9b942b586bd348a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad974aad7282051c5f9b942b586bd348a">eve::procgen::growShrinkTerrainMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, float distance)</td></tr>
+<tr class="memdesc:ad974aad7282051c5f9b942b586bd348a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered radial Grow/Shrink followed by the reference strength curve.  <br /></td></tr>
+<tr class="separator:ad974aad7282051c5f9b942b586bd348a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86ad7f83d67f58aeea5244331f6ce4d7" id="r_a86ad7f83d67f58aeea5244331f6ce4d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a86ad7f83d67f58aeea5244331f6ce4d7">eve::procgen::applyTerrainStrength</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, <a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1d">TerrainStrengthMode</a> mode, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, bool invert)</td></tr>
+<tr class="memdesc:a86ad7f83d67f58aeea5244331f6ce4d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the reference strength curve, inversion, mode and final interpolation.  <br /></td></tr>
+<tr class="separator:a86ad7f83d67f58aeea5244331f6ce4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76cb1dbed951153b3e213c4caea8c010" id="r_a76cb1dbed951153b3e213c4caea8c010"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a76cb1dbed951153b3e213c4caea8c010">eve::procgen::smoothTerrainMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float verticality, float blurRadius)</td></tr>
+<tr class="memdesc:a76cb1dbed951153b3e213c4caea8c010"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg's two-pass Smooth ImageMask operation to a scalar mask.  <br /></td></tr>
+<tr class="separator:a76cb1dbed951153b3e213c4caea8c010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac4b07e9e7390960077b983ff05f41e" id="r_a3ac4b07e9e7390960077b983ff05f41e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3ac4b07e9e7390960077b983ff05f41e">eve::procgen::configureTerrainBrushWorld</a> (<a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html">TerrainBrushBlendSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, int contextWidth, int contextHeight, const <a class="el" href="structeve_1_1procgen_1_1TerrainSampleGrid.html">TerrainSampleGrid</a> &amp;heights)</td></tr>
+<tr class="memdesc:a3ac4b07e9e7390960077b983ff05f41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure paint-context UV matrices from world sample centers and a rotated stamp footprint.  <br /></td></tr>
+<tr class="separator:a3ac4b07e9e7390960077b983ff05f41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fecc06e045f65bc56737538f3030632" id="r_a5fecc06e045f65bc56737538f3030632"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a5fecc06e045f65bc56737538f3030632">eve::procgen::blendTerrainBrush</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;oldHeights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;newHeights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;brush, const <a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html">TerrainBrushBlendSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:a5fecc06e045f65bc56737538f3030632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend an erosion scalar output with old heights through transformed brush UVs.  <br /></td></tr>
+<tr class="separator:a5fecc06e045f65bc56737538f3030632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96d24705a95fe97a4f19b8e6c493e16c" id="r_a96d24705a95fe97a4f19b8e6c493e16c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a96d24705a95fe97a4f19b8e6c493e16c">eve::procgen::generateTerrainErosionMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;oldHeights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;erosion, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;brush, const <a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html">TerrainBrushBlendSettings</a> &amp;spatial, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, <a class="el" href="namespaceeve_1_1procgen.html#a0005971539609c5c49293e5ddb1c4e1d">TerrainStrengthMode</a> mode, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, bool userInvert)</td></tr>
+<tr class="memdesc:a96d24705a95fe97a4f19b8e6c493e16c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose spatial erosion-output blending and the source's inverted strength filter atomically.  <br /></td></tr>
+<tr class="separator:a96d24705a95fe97a4f19b8e6c493e16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e456dbc87e70bb73a5fb8c3be5a246a" id="r_a1e456dbc87e70bb73a5fb8c3be5a246a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a1e456dbc87e70bb73a5fb8c3be5a246a">eve::procgen::transformTerrainMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>)</td></tr>
+<tr class="memdesc:a1e456dbc87e70bb73a5fb8c3be5a246a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform scalar input through a clamped bilinear one-row curve texture.  <br /></td></tr>
+<tr class="separator:a1e456dbc87e70bb73a5fb8c3be5a246a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ebe79352ae8f952f14e105202ad7ac4" id="r_a1ebe79352ae8f952f14e105202ad7ac4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a1ebe79352ae8f952f14e105202ad7ac4">eve::procgen::generateTerrainRangeMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, float <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;filterCurve, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;strengthCurve)</td></tr>
+<tr class="memdesc:a1ebe79352ae8f952f14e105202ad7ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate height/range fitness with smoothstep followed by filter and strength curves.  <br /></td></tr>
+<tr class="separator:a1ebe79352ae8f952f14e105202ad7ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be271ad4b4ad2e22f3eef6679477a2f" id="r_a8be271ad4b4ad2e22f3eef6679477a2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8be271ad4b4ad2e22f3eef6679477a2f">eve::procgen::deriveTerrainSlope</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heights, float <a class="el" href="TerrainMultiTile_8cpp.html#a8e300545fd138aff61cd8aa6447fa5f9">spacingX</a>, float <a class="el" href="TerrainMultiTile_8cpp.html#a67605dabf645f45d01548c32f19a8d52">spacingZ</a>, float heightScale=1)</td></tr>
+<tr class="memdesc:a8be271ad4b4ad2e22f3eef6679477a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive the shader's slope metric 1-normal.y from world-scaled height gradients.  <br /></td></tr>
+<tr class="separator:a8be271ad4b4ad2e22f3eef6679477a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a189d51e97e77fa8ffd2b039fe38a7975" id="r_a189d51e97e77fa8ffd2b039fe38a7975"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a189d51e97e77fa8ffd2b039fe38a7975">eve::procgen::generateTerrainDistanceMask</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainDistanceMaskSettings.html">TerrainDistanceMaskSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;filterCurve, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;strengthCurve)</td></tr>
+<tr class="memdesc:a189d51e97e77fa8ffd2b039fe38a7975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a transformed distance mask using circle, X, Z or rounded-square coordinates.  <br /></td></tr>
+<tr class="separator:a189d51e97e77fa8ffd2b039fe38a7975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

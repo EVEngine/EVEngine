@@ -1,0 +1,356 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/editor/ActionTimelineWidget.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li><li class="navelem"><a class="el" href="dir_e2877bc6242eb11d142b1e9b9d86d4c4.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">ActionTimelineWidget.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="ActionTimelineWidget_8h_source.html">action/editor/ActionTimelineWidget.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ActionAudioBlock_8h_source.html">action/ActionAudioBlock.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ActionAudioWaveform_8h_source.html">action/ActionAudioWaveform.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ActionParameterCurve_8h_source.html">action/ActionParameterCurve.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Capability_8h_source.html">common/Capability.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="ActionTimelineWidget_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1editor" id="r_namespaceeve_1_1editor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editor.html">eve::editor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aa96a7d2264379e1a15101365e538479b" id="r_aa96a7d2264379e1a15101365e538479b"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editor.html#aa96a7d2264379e1a15101365e538479b">eve::editor::timelineItemVisualName</a> (<a class="el" href="namespaceeve_1_1editor.html#adda13e48ec0a7eca5aea10ea8cd8f0ed">TimelineItemVisual</a> visual) noexcept</td></tr>
+<tr class="memdesc:aa96a7d2264379e1a15101365e538479b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable script-facing name for a timeline visual kind.  <br /></td></tr>
+<tr class="separator:aa96a7d2264379e1a15101365e538479b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a57305422b12d254f28b2672578e831b0" name="a57305422b12d254f28b2672578e831b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57305422b12d254f28b2672578e831b0">&#9670;&#160;</a></span>animationSection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool animationSection = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00368">eve::editor::ActionTimelineWidget::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a831c184a4a6468e68e592a9fafdfec69" name="a831c184a4a6468e68e592a9fafdfec69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a831c184a4a6468e68e592a9fafdfec69">&#9670;&#160;</a></span>end</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Duration end</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5758f9b5a368e496aaa5da3aa74dfd6" name="ac5758f9b5a368e496aaa5da3aa74dfd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5758f9b5a368e496aaa5da3aa74dfd6">&#9670;&#160;</a></span>itemId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LogicalId itemId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InventorySystem_8cpp_source.html#l00366">eve::inventory::InventorySystem::addItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00067">eve::inventory::Bag::addItem()</a>, <a class="el" href="UI_8cpp_source.html#l01191">eve::ui::UI::addListItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00672">eve::editor::ActionTimelineEditor::addParameterKey()</a>, <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00120">eve::archspace::appendCatalogItem()</a>, <a class="el" href="ShopTransaction_8cpp_source.html#l00075">eve::rpg::ShopTransaction::buy()</a>, <a class="el" href="RPG_8cpp_source.html#l00108">eve::rpg::RPG::buyFromShop()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00350">eve::inventory::InventorySystem::canAdd()</a>, <a class="el" href="Bag_8cpp_source.html#l00057">eve::inventory::Bag::canAddItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00061">eve::inventory::Bag::canAddItemReason()</a>, <a class="el" href="EquipmentSystem_8cpp_source.html#l00054">eve::rpg::EquipmentSystem::clearItemStats()</a>, <a class="el" href="RPG_8cpp_source.html#l00344">eve::rpg::RPG::clearItemStats()</a>, <a class="el" href="Equipment_8cpp_source.html#l00139">eve::inventory::EquipmentSet::clearSlot()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00814">eve::inventory::InventorySystem::countItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00087">eve::inventory::Bag::countItem()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00227">eve::avatar::AvatarInstance::defineEquipmentSkinnedVisual3D()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00166">eve::avatar::AvatarInstance::defineEquipmentVisual2D()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00193">eve::avatar::AvatarInstance::defineEquipmentVisual3D()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00746">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00697">eve::editor::ActionTimelineEditor::editParameterKey()</a>, <a class="el" href="ItemTypes_8h_source.html#l00040">eve::inventory::ItemStack::empty()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l01023">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00823">eve::inventory::InventorySystem::findItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00091">eve::inventory::Bag::findItem()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00066">eve::editor::ActionTimelinePayloadEditor::fitBlockToClip()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00084">eve::editor::ActionTimelinePayloadEditor::fitClipToBlock()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00104">eve::editor::ActionTimelinePayloadEditor::fitClipToNaturalDuration()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00421">eve::avatar::AvatarInstance::getEquipmentRenderStackItem()</a>, <a class="el" href="Inventory_8cpp_source.html#l00050">eve::inventory::Inventory::getItemCategory()</a>, <a class="el" href="Inventory_8cpp_source.html#l00030">eve::inventory::Inventory::getItemDisplayName()</a>, <a class="el" href="Inventory_8cpp_source.html#l00055">eve::inventory::Inventory::getItemEquipSlot()</a>, <a class="el" href="Inventory_8cpp_source.html#l00065">eve::inventory::Inventory::getItemExtra()</a>, <a class="el" href="Inventory_8cpp_source.html#l00035">eve::inventory::Inventory::getItemMaxStack()</a>, <a class="el" href="Inventory_8cpp_source.html#l00045">eve::inventory::Inventory::getItemVolume()</a>, <a class="el" href="Inventory_8cpp_source.html#l00040">eve::inventory::Inventory::getItemWeight()</a>, <a class="el" href="Inventory_8cpp_source.html#l00026">eve::inventory::Inventory::hasItemDefinition()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00336">eve::inventory::ItemCostAdapter::itemCost()</a>, <a class="el" href="Inventory_8cpp_source.html#l00060">eve::inventory::Inventory::itemHasTag()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00499">eve::archspace_editing::ArchSpaceDocumentTarget::makePlaceItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00606">eve::editor::ActionTimelineEditor::moveItem()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00053">eve::editor::ActionTimelinePayloadEditor::patch()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00045">eve::editor::ActionTimelinePayloadEditor::payload()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00351">eve::archspace::Document::placeItem()</a>, <a class="el" href="ArchSpaceTools_8cpp_source.html#l00287">eve::editor::ArchSpaceItemPlaceTool::pointerEvent()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00497">eve::inventory::InventorySystem::prepareRemove()</a>, <a class="el" href="EquipmentSystem_8cpp_source.html#l00023">eve::rpg::EquipmentSystem::registerItemStat()</a>, <a class="el" href="EquipmentSystem_8cpp_source.html#l00028">eve::rpg::EquipmentSystem::registerItemStatsFromJson()</a>, <a class="el" href="RPG_8cpp_source.html#l00340">eve::rpg::RPG::registerItemStatsFromJson()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00575">eve::inventory::InventorySystem::removeAt()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00551">eve::inventory::InventorySystem::removeItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00778">eve::editor::ActionTimelineEditor::removeItem()</a>, <a class="el" href="Bag_8cpp_source.html#l00071">eve::inventory::Bag::removeItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00722">eve::editor::ActionTimelineEditor::removeParameterKey()</a>, <a class="el" href="ShopCatalogue_8cpp_source.html#l00048">eve::rpg::ShopCatalogue::replaceFromJsonStrict()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00867">eve::editor::ActionTimelineEditor::selectItem()</a>, <a class="el" href="ShopTransaction_8cpp_source.html#l00093">eve::rpg::ShopTransaction::sell()</a>, <a class="el" href="RPG_8cpp_source.html#l00118">eve::rpg::RPG::sellToShop()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00310">eve::avatar::AvatarInstance::setEquipmentVisualLayer()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00809">eve::editor::ActionTimelineEditor::setItemEnabled()</a>, <a class="el" href="InventoryControl_8cpp_source.html#l00228">eve::inventory::InventoryControl::submitGameplay()</a>, <a class="el" href="EquipmentSystem_8cpp_source.html#l00060">eve::rpg::EquipmentSystem::syncEquipModifiers()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00677">eve::inventory::InventorySystem::transfer()</a>, <a class="el" href="Inventory_8cpp_source.html#l00081">eve::inventory::Inventory::transferItem()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00717">eve::inventory::InventorySystem::transferSlot()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00920">eve::inventory::InventorySystem::unequipToBag()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00650">eve::editor::ActionTimelineEditor::updateItem()</a>.</p>
+
+</div>
+</div>
+<a id="a18a0f1e6c3d21c252b14ea6ae162e2ff" name="a18a0f1e6c3d21c252b14ea6ae162e2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18a0f1e6c3d21c252b14ea6ae162e2ff">&#9670;&#160;</a></span>locked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool locked = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l01023">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00407">eve::action::ActionTimeline::fromValue()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00841">eve::editor::ActionTimelineEditor::setTrackLocked()</a>.</p>
+
+</div>
+</div>
+<a id="aa50532026e25d28aec12f8f0f8b0ebf5" name="aa50532026e25d28aec12f8f0f8b0ebf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa50532026e25d28aec12f8f0f8b0ebf5">&#9670;&#160;</a></span>payload</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Value::Object payload</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49e8e0531d987839917d88f5cfa8385f" name="a49e8e0531d987839917d88f5cfa8385f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49e8e0531d987839917d88f5cfa8385f">&#9670;&#160;</a></span>start</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Duration start</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00557">eve::map::Fov::Impl::addAngleShadow()</a>, <a class="el" href="UI_8cpp_source.html#l00938">eve::ui::UI::addCombo()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00136">eve::editor::ActionTimelineEditor::alignSelectionEnd()</a>, <a class="el" href="DayNight_8cpp_source.html#l00533">eve::daynight::DayNight::applyAtmosphere()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00443">eve::animation::AnimClip::applyPlanarRootMotion()</a>, <a class="el" href="WaterUnderwaterEffects_8cpp_source.html#l00221">eve::graphics::applyWaterUnderwaterFog()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00519">eve::procgen::bakeGtsWeatherAlbedo()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00575">eve::procgen::bakeGtsWeatherPbr()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00850">eve::editor::ActionTimelineEditor::boxSelect()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="BeamEffect_8cpp_source.html#l00084">eve::stylize::buildBeamEffect()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00169">eve::buildingfx::BuildingFx::buildEdgeCurveMesh()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00323">eve::buildingfx::BuildingFx::buildSurfaceCurveMesh()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00083">eve::procgen::caveWetnessField()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="CaveSediment_8cpp_source.html#l00066">eve::procgen::createCaveSediment()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00311">eve::archspace::Document::createWall()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00081">eve::asset::detail::decodeTiffRgba8()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00415">eve::graphics::PrimitiveCanvas2D::drawRoundedRect()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00537">eve::editor::ActionTimelineEditor::editAnimationSection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00746">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="OnnxCompiler_8h_source.html#l00074">eve::tensor::onnx_detail::CompilerQueue::enqueue()</a>, <a class="el" href="OnnxIndexOps_8cpp_source.html#l00009">eve::tensor::onnx_detail::executeIndex()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l01023">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00104">eve::graphics::exposePrimitiveScriptBindings()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00307">eve::scene::SceneHost::findIndexByPath()</a>, <a class="el" href="GridGraphAlgorithms_8cpp_source.html#l00294">eve::procgen::gridgraph::findPath()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00497">eve::map::Pathfinder::findPath()</a>, <a class="el" href="LanguageText_8cpp_source.html#l00230">eve::dev::lsp::foldingRanges()</a>, <a class="el" href="AudioWaveform_8cpp_source.html#l00009">eve::audio_editing::AudioWaveformService::generate()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00487">eve::procgen::generateTreeMesh()</a>, <a class="el" href="StateValue_8cpp_source.html#l00093">eve::StateValue::get()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00604">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="ClimbingTrajectory_8h_source.html#l00014">eve::climbing::detail::interpolate()</a>, <a class="el" href="Learning_8h_source.html#l00032">eve::agent::detail::layer()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00297">eve::editor::ActionTimelineWidget::layout()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00336">eve::procgen::lerpTerrainHeightmap()</a>, <a class="el" href="DnutLexer_8cpp_source.html#l00092">eve::dnut::lexDnut()</a>, <a class="el" href="TF_8cpp_source.html#l00184">eve::tensor::TF::linspace()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00202">eve::graphics::Renderable3D::MeshRenderer::lodBlendForDistance()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00470">eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateWall()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00065">eve::agent::detail::makePolicyGraph()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00512">eve::editor::ActionTimelineEditor::moveAnimationSection()</a>, <a class="el" href="World3D_8cpp_source.html#l01917">eve::physics::World3D::moveCapsule()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00606">eve::editor::ActionTimelineEditor::moveItem()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00053">eve::editor::ActionTimelineEditor::moveSelection()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00213">eve::editor::ActionTimelineWidget::pan()</a>, <a class="el" href="VrmDocument_8cpp_source.html#l00227">eve::avatar::parseVrm()</a>, <a class="el" href="Sprite3D_8cpp_source.html#l00162">eve::hd2d::Sprite3D::play()</a>, <a class="el" href="UnityNativeMesh_8cpp_source.html#l00046">eve::asset_import::prepareUnityNativeMesh()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00288">eve::animation::MontagePlayer::present()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01553">eve::building::PlacementSystem::previewEdgePath()</a>, <a class="el" href="TerrainDerivedMap_8cpp_source.html#l00461">eve::procgen::quantizeTerrainHeightmapTerraces()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00285">eve::dev::ConsolePanel::recent()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00097">eve::dev::AiPanel::recentLog()</a>, <a class="el" href="Capability_8cpp_source.html#l00104">eve::boot::registerVulkanInstanceWarmup()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00527">eve::editor::ActionTimelineEditor::resizeAnimationSection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00633">eve::editor::ActionTimelineEditor::resizeState()</a>, <a class="el" href="MotionDatabaseSchema_8cpp_source.html#l00169">eve::animation::MotionDatabase::SchemaSampler::root()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00020">eve::physics::Rope3D::Rope3D()</a>, <a class="el" href="GltfDecode_8cpp_source.html#l00075">eve::asset_import::gltf::safeUri()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00178">eve::editor::ActionTimelineEditor::scaleSelection()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00561">eve::action::ActionTimeline::sectionRange()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00028">eve::editor::ActionTimelineEditor::selectionRange()</a>, <a class="el" href="BeamSkillEffect_8cpp_source.html#l00065">eve::stylize::BeamSkillEffect::setEndpoints()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00033">eve::audio_editing::AudioAuditionTransport::setLoop()</a>, <a class="el" href="StateValue_8cpp_source.html#l00121">eve::StateValue::setPath()</a>, <a class="el" href="RTS_8cpp_source.html#l02932">eve::rts::RTS::setReinforcementFallback()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00184">eve::editor::ActionTimelineWidget::setVisibleRange()</a>, <a class="el" href="ScriptError_8cpp_source.html#l00170">eve::script::sourceLineText()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00601">eve::rts::TacticsSystem::step()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00093">eve::pixelworld::PixelWorldControlService::step()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00183">eve::fluids::VolumeFluid::stepWithThermalContacts()</a>, <a class="el" href="RTS_8cpp_source.html#l01216">eve::rts::RTS::suppressArea()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00118">eve::procgen::TerrainStreamingCache::traceFlow()</a>, <a class="el" href="Learning_8h_source.html#l00074">eve::agent::detail::train()</a>, <a class="el" href="ClimbingTrajectory_8h_source.html#l00025">eve::climbing::detail::trajectoryPoint()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00484">eve::editor::TransformGizmo::updateDrag()</a>, <a class="el" href="UnitySourceInternal_8h_source.html#l00082">eve::asset_import::unity_detail::validPath()</a>, <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00115">eve::fluids::FluidSurfaceConstraintAdapter::walk()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00240">eve::fluids::FluidSurfaceBinding::walkAcrossSurface()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00194">eve::editor::ActionTimelineWidget::zoom()</a>.</p>
+
+</div>
+</div>
+<a id="ab30ba07e2a0bd07a15e45a92c32db9c5" name="ab30ba07e2a0bd07a15e45a92c32db9c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab30ba07e2a0bd07a15e45a92c32db9c5">&#9670;&#160;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool state = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00330">eve::action::ActionTimeline::activeBlocks()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00016">eve::tactics::BoardState::addCell()</a>, <a class="el" href="Tactics_8cpp_source.html#l00807">eve::tactics::Tactics::addCell()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00137">eve::tactics::BoardState::addEdge()</a>, <a class="el" href="Tactics_8cpp_source.html#l01023">eve::tactics::Tactics::addEdge()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00233">eve::attributes::AttributeSet::addModifier()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00672">eve::editor::ActionTimelineEditor::addParameterKey()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00596">eve::editor::ActionTimelineEditor::addState()</a>, <a class="el" href="ThunderStrike_8cpp_source.html#l00038">eve::weather::advanceThunderStrike()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00048">eve::graphics::advanceVegetationWind()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00068">eve::graphics::advanceVegetationWindAudio()</a>, <a class="el" href="WaterSystem_8cpp_source.html#l00050">eve::graphics::advanceWaterSystem()</a>, <a class="el" href="WaterUnderwaterEffects_8cpp_source.html#l00206">eve::graphics::advanceWaterUnderwaterDisableTrigger()</a>, <a class="el" href="WaterUnderwaterEffects_8cpp_source.html#l00070">eve::graphics::advanceWaterUnderwaterEffects()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00136">eve::editor::ActionTimelineEditor::alignSelectionEnd()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00094">eve::editor::ActionTimelineEditor::alignSelectionStart()</a>, <a class="el" href="PlayTrace_8cpp_source.html#l00177">eve::dev::PlayTraceBuffer::append()</a>, <a class="el" href="GrassWind_8cpp_source.html#l00008">eve::graphics::applyGrassWind()</a>, <a class="el" href="TreeWind_8cpp_source.html#l00013">eve::graphics::applyTreeWind()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00532">eve::npc_ai::NpcAiWorld::archive()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00505">eve::animation::MontagePlayer::beginBlendOut()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00850">eve::editor::ActionTimelineEditor::boxSelect()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00100">eve::rpg::QuestSystem::canActivateReason()</a>, <a class="el" href="RTSSnapshot_8cpp_source.html#l00311">eve::rts::RTS::canonicalStateJson()</a>, <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>, <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00438">eve::dev::Snapshot::capture()</a>, <a class="el" href="Card_8cpp_source.html#l00518">eve::card::Card::capturePresentation()</a>, <a class="el" href="Conversation_8cpp_source.html#l00480">eve::dialogue::ConversationRunner::captureStateChecked()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00012">eve::card::cardStateName()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00100">eve::tactics::BoardState::cells()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01737">eve::rts::FogOfWarSystem::clear()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00581">eve::buildingfx::BuildingFx::clearEdgeCurvePreview()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00339">eve::attributes::AttributeSet::clearModifiers()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00246">eve::definition::cloneRuntimeState()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00277">eve::card::CardPlayParticipant::commit()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00298">eve::card::CardPlayParticipant::compensate()</a>, <a class="el" href="GraphicsShaderSurface_8cpp_source.html#l00011">eve::graphics::vulkan::Graphics::configureMeshShaderRaster()</a>, <a class="el" href="Procgen_8cpp_source.html#l02363">eve::procgen::Procgen::configurePcgMeshLods()</a>, <a class="el" href="ConversationPersistence_8cpp_source.html#l00089">eve::dialogue::conversationStateFromJson()</a>, <a class="el" href="ConversationPersistence_8cpp_source.html#l00077">eve::dialogue::conversationStateToJson()</a>, <a class="el" href="ClimbingECS_8cpp_source.html#l00032">eve::climbing::ClimbingState::create()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00038">eve::pixelworld::MaterialCatalog::create()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00142">eve::npc_ai::NpcAiWorld::createAgent()</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00347">eve::tensor::createOnnxGpuCompute()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00991">eve::graphics::webgpu::Graphics::debugGpuDrivenGpuVisibleCount()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00517">eve::graphics::webgpu::Graphics::debugGpuDrivenVgGpuVisibleCount()</a>, <a class="el" href="thread_2Channel_8cpp_source.html#l00033">eve::thread::Channel::demand()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00195">eve::npc_ai::NpcAiWorld::destroyAgent()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00258">eve::definition::destroyRuntimeState()</a>, <a class="el" href="ClimbingAnimation_8cpp_source.html#l00105">eve::climbing::driveClimbingGraph()</a>, <a class="el" href="ClimbingAnimation_8cpp_source.html#l00130">eve::climbing::driveClimbingMotionMatching()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00169">eve::tactics::BoardState::edgeRecords()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00746">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00697">eve::editor::ActionTimelineEditor::editParameterKey()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00280">eve::fluids::encodeVolumeFluidEmitterState()</a>, <a class="el" href="AudioZone_8cpp_source.html#l00022">eve::audio::evaluateAudioZone()</a>, <a class="el" href="DepthOfFieldFocus_8cpp_source.html#l00005">eve::graphics::evaluateDepthOfFieldFocus()</a>, <a class="el" href="ParentScaler_8cpp_source.html#l00008">eve::ui::evaluateParentScaler()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00097">eve::graphics::evaluateVegetationWind()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00078">eve::tensor::onnx_detail::executeQuantLstm()</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00212">eve::dialogue::DialoguePaymentAdapter::executeStateMutation()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l01023">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="DepthOfFieldFocusBindings_8cpp_source.html#l00005">eve::graphics::exposeDepthOfFieldFocusBindings()</a>, <a class="el" href="GrassWindBindings_8cpp_source.html#l00013">eve::graphics::exposeGrassWindBindings()</a>, <a class="el" href="ParentScalerBindings_8cpp_source.html#l00009">eve::ui::exposeParentScalerBindings()</a>, <a class="el" href="ShaderScriptBindings_8cpp_source.html#l00086">eve::graphics::exposeShaderScriptBindings()</a>, <a class="el" href="WaterSystemBindings_8cpp_source.html#l00015">eve::graphics::exposeWaterSystemBindings()</a>, <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00618">eve::pixelworld::PixelWorld::extractUnsupportedFragments()</a>, <a class="el" href="LanguageText_8cpp_source.html#l00230">eve::dev::lsp::foldingRanges()</a>, <a class="el" href="LanguageText_8cpp_source.html#l00196">eve::dev::lsp::formatEveScript()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00321">eve::graphics::hair::GroomInstance::getClusterCount()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01076">eve::buildingfx::BuildingFx::getContinuousCurveVisualCount()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01068">eve::buildingfx::BuildingFx::getCurveGroupCount()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01087">eve::buildingfx::BuildingFx::getCurveVisualFallbackReason()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00601">eve::buildingfx::BuildingFx::getEdgeCurvePreviewFallbackReason()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00610">eve::buildingfx::BuildingFx::getEdgeCurvePreviewSurfaceId()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00617">eve::buildingfx::BuildingFx::getEdgeCurvePreviewSurfaceRevision()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00207">eve::attributes::AttributeSet::getFinal()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00166">eve::procgen::PcgMeshLodProfile::getLevelRendererState()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00290">eve::graphics::Renderable3D::getMeshLodRendererState()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00327">eve::graphics::hair::GroomInstance::getVisibleCurveCount()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01152">eve::buildingfx::BuildingFx::getVisualFallbackReason()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01145">eve::buildingfx::BuildingFx::getVisualResource()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l01137">eve::buildingfx::BuildingFx::getVisualVariant()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00074">eve::action::AbilityRuntime::grant()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00595">eve::buildingfx::BuildingFx::hasEdgeCurvePreview()</a>, <a class="el" href="RTS_8cpp_source.html#l01608">eve::rts::RTS::heal()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00032">eve::graphics::initializeVegetationWind()</a>, <a class="el" href="WaterSystem_8cpp_source.html#l00033">eve::graphics::initializeWaterSystem()</a>, <a class="el" href="Interaction_8cpp_source.html#l00026">eve::tactics::interactionStateName()</a>, <a class="el" href="MontagePlayer_8cpp_source.html#l00474">eve::animation::MontagePlayer::interrupt()</a>, <a class="el" href="sdl_2Keyboard_8cpp_source.html#l00031">eve::keyboard::sdl::Keyboard::isDown()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00129">eve::pixelworld::PixelWorld::Impl::isMobile()</a>, <a class="el" href="Source_8cpp_source.html#l00175">eve::audio::Source::isPlaying()</a>, <a class="el" href="sdl_2Keyboard_8cpp_source.html#l00048">eve::keyboard::sdl::Keyboard::isScancodeDown()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00512">eve::thread::JobSystemThreadPool::JobSystemThreadPool()</a>, <a class="el" href="ConversationPersistence_8cpp_source.html#l00131">eve::dialogue::ConversationSaveMigrations::migrate()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00348">eve::attributes::AttributeSet::modifierCount()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00190">eve::attributes::AttributeSet::modifyBase()</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00407">eve::physics::DistanceField3D::moveCapsule()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00606">eve::editor::ActionTimelineEditor::moveItem()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00053">eve::editor::ActionTimelineEditor::moveSelection()</a>, <a class="el" href="ProductControl_8cpp_source.html#l00149">eve::rpg::ProductControl::observeGameplay()</a>, <a class="el" href="Production_8h_source.html#l00380">eve::production::operator&lt;&lt;()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00018">eve::graphics::packVegetationWind()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l01000">eve::editor::ActionTimelineEditor::pasteTrack()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00332">eve::card::CardPlayPaymentAdapter::play()</a>, <a class="el" href="PlayTrace_8cpp_source.html#l00057">eve::dev::playObservationDigest()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00265">eve::card::CardPlayParticipant::prepare()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00110">eve::tactics::BoardState::records()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00121">eve::editor::EditorTargetCoordinator::registerPlannedCommand()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00315">eve::attributes::AttributeSet::removeBySource()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00778">eve::editor::ActionTimelineEditor::removeItem()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00276">eve::attributes::AttributeSet::removeModifier()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00722">eve::editor::ActionTimelineEditor::removeParameterKey()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00450">eve::editor::ActionTimelineEditor::removeTrack()</a>, <a class="el" href="PlayTrace_8cpp_source.html#l00103">eve::dev::replayPlayTrace()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00512">eve::procgen::ArtifactPublisher::restore()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00439">eve::climbing::ClimbingRuntime::restore()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00205">eve::weapon::ProjectileRuntime::restore()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04163">eve::rts::RTSProjectileSystem::restore()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00737">eve::fluids::VolumeFluidEmitter::restore()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00748">eve::fluids::VolumeFluidJetEmitter::restore()</a>, <a class="el" href="VolumeFluidFoam_8cpp_source.html#l00120">eve::fluids::VolumeFluidFoam::restore()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00375">eve::hexmap::HexUnitRegistry::restore()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00476">eve::orders::CommandQueue::restore()</a>, <a class="el" href="ProductionPersistence_8cpp_source.html#l00287">eve::production::WorkQueue::restore()</a>, <a class="el" href="Transaction_8cpp_source.html#l00592">eve::transaction::Ledger::restore()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00554">eve::npc_ai::NpcAiWorld::restoreAgent()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">eve::rpg::Tracker::restoreSnapshotJson()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01526">eve::procgen::ArtifactStore::restoreState()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00387">eve::graphics::GraphicsArtifactProvider::restoreState()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00165">eve::map::MapArtifactProvider::restoreState()</a>, <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00529">eve::physics::PhysicsArtifactProvider::restoreState()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00198">eve::scene::SceneArtifactProvider::restoreState()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00455">eve::dev::Snapshot::restoreState()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00294">eve::action::ActionTimeline::sample()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00178">eve::editor::ActionTimelineEditor::scaleSelection()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00850">eve::dialogue::DialogueFlow::select()</a>, <a class="el" href="ActionTimelineSelection_8cpp_source.html#l00028">eve::editor::ActionTimelineEditor::selectionRange()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00182">eve::attributes::AttributeSet::setBase()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00278">eve::graphics::hair::GroomInstance::setGuideSimParams()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00809">eve::editor::ActionTimelineEditor::setItemEnabled()</a>, <a class="el" href="PcgMeshLod_8cpp_source.html#l00142">eve::procgen::PcgMeshLodProfile::setLevelRendererState()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00248">eve::graphics::Renderable3D::setMeshLodRendererState()</a>, <a class="el" href="DayNight_8cpp_source.html#l00420">eve::daynight::DayNight::setPcgAmbientLight()</a>, <a class="el" href="DayNight_8cpp_source.html#l00383">eve::daynight::DayNight::setPcgFog()</a>, <a class="el" href="DayNight_8cpp_source.html#l00343">eve::daynight::DayNight::setPcgManualSun()</a>, <a class="el" href="DayNight_8cpp_source.html#l00365">eve::daynight::DayNight::setPcgSkybox()</a>, <a class="el" href="ActionDamageSink_8cpp_source.html#l00037">eve::combat::CombatActionDamageSink::setWindowState()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00393">eve::climbing::ClimbingRuntime::snapshot()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00363">eve::hexmap::HexUnitRegistry::snapshot()</a>, <a class="el" href="Fov_8cpp_source.html#l01242">eve::map::Fov::snapshot()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00521">eve::npc_ai::NpcAiWorld::snapshot()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00475">eve::procgen::ArtifactPublisher::snapshot()</a>, <a class="el" href="Definitions_8cpp_source.html#l00395">eve::definitions::DefinitionRegistry::snapshotJson()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00390">eve::policyregistry::PolicyRegistry::snapshotJson()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01504">eve::procgen::ArtifactStore::snapshotState()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00355">eve::graphics::GraphicsArtifactProvider::snapshotState()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00137">eve::map::MapArtifactProvider::snapshotState()</a>, <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00499">eve::physics::PhysicsArtifactProvider::snapshotState()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00168">eve::scene::SceneArtifactProvider::snapshotState()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00065">eve::ik::Solver2D::solve()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00065">eve::ik::Solver3D::solve()</a>, <a class="el" href="ChainSolver_8h_source.html#l00170">eve::ik::detail::solveChain()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00104">eve::weapon::ProjectileRuntime::spawn()</a>, <a class="el" href="WeaponSystem_8cpp_source.html#l00404">eve::weapon::WeaponSystem::startReload()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00158">eve::orders::stateName()</a>, <a class="el" href="Transaction_8cpp_source.html#l00319">eve::transaction::stateName()</a>, <a class="el" href="CombatLocomotion_8cpp_source.html#l00051">eve::combat::DirectCombatNavigationProvider::steer()</a>, <a class="el" href="PathfinderCombatNavigation_8cpp_source.html#l00054">eve::combat::navigation::PathfinderCombatNavigationProvider::steer()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04298">eve::rts::RTSProjectileSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01751">eve::rts::FogOfWarSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01941">eve::rts::CrowdMotionSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04467">eve::rts::CombatFireSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05287">eve::rts::ReinforcementProductionPolicySystem::step()</a>, <a class="el" href="ClimbingECS_8h_source.html#l00458">eve::climbing::ClimbingPoseSystem::step()</a>, <a class="el" href="NpcAiECS_8h_source.html#l00082">eve::npc_ai::NpcAiEcsSystem::step()</a>, <a class="el" href="ClimbingECS_8h_source.html#l00224">eve::climbing::ClimbingEcsSelectionSystem::step()</a>, <a class="el" href="ClimbingECS_8h_source.html#l00177">eve::climbing::ClimbingProbeSystem::step()</a>, <a class="el" href="Solver2D_8cpp_source.html#l00085">eve::ik::Solver2D::step()</a>, <a class="el" href="Solver3D_8cpp_source.html#l00086">eve::ik::Solver3D::step()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00091">eve::thread::ThreadPool::submit()</a>, <a class="el" href="Subscription_8h_source.html#l00095">eve::Observer&lt; Args &gt;::subscribe()</a>, <a class="el" href="EditorPropertyModel_8cpp_source.html#l00373">eve::editor::EditorPropertyModel::subscribe()</a>, <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00215">eve::property_access::ReflectedPropertyModel::subscribe()</a>, <a class="el" href="thread_2Channel_8cpp_source.html#l00042">eve::thread::Channel::supply()</a>, <a class="el" href="Production_8cpp_source.html#l00056">eve::production::taskStateName()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00033">eve::thread::ThreadPool::ThreadPool()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00366">eve::npc_ai::NpcAiWorld::tick()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00358">eve::action::ActionTimeline::toValue()</a>, <a class="el" href="ThunderStrike_8cpp_source.html#l00016">eve::weather::triggerThunderStrike()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00347">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>, <a class="el" href="Presentation_8cpp_source.html#l00047">eve::tactics::unitVisualStateName()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00131">eve::weapon::ProjectileRuntime::update()</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00465">eve::weapon::CombatCarrierRuntime::update()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00287">eve::graphics::hair::GroomInstance::update()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00449">eve::buildingfx::BuildingFx::updateEdgeCurvePreview()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00473">eve::buildingfx::BuildingFx::updateEdgeCurveSurfacePreview()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00650">eve::editor::ActionTimelineEditor::updateItem()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00376">eve::graphics::hair::GroomInstance::updateVisibility()</a>, <a class="el" href="WaterSystem_8cpp_source.html#l00097">eve::graphics::updateWaterSeaLevel()</a>, <a class="el" href="ClimbingAnimation_8cpp_source.html#l00147">eve::climbing::useDirectClimbingPose()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00224">eve::action::ActionTimeline::validate()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00048">eve::npc_ai::NpcAiWorld::validate()</a>, <a class="el" href="TacticsTypes_8cpp_source.html#l00176">eve::tactics::BoardState::validateInvariants()</a>, <a class="el" href="MeshShaderRasterState_8cpp_source.html#l00005">eve::graphics::validateMeshShaderRasterState()</a>, <a class="el" href="UI_8cpp_source.html#l01956">eve::ui::UI::viewportActive()</a>, <a class="el" href="UI_8cpp_source.html#l01939">eve::ui::UI::viewportCanvas()</a>, <a class="el" href="UI_8cpp_source.html#l01977">eve::ui::UI::viewportDragDX()</a>, <a class="el" href="UI_8cpp_source.html#l01984">eve::ui::UI::viewportDragDY()</a>, <a class="el" href="UI_8cpp_source.html#l01949">eve::ui::UI::viewportHovered()</a>, <a class="el" href="UI_8cpp_source.html#l01963">eve::ui::UI::viewportMouseX()</a>, <a class="el" href="UI_8cpp_source.html#l01970">eve::ui::UI::viewportMouseY()</a>, <a class="el" href="UI_8cpp_source.html#l01991">eve::ui::UI::viewportWheel()</a>, <a class="el" href="Task_8cpp_source.html#l00038">eve::thread::Task::wait()</a>, <a class="el" href="ThreadPool_8cpp_source.html#l00156">eve::thread::ThreadPool::waitAll()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00668">eve::thread::JobSystemThreadPool::waitAll()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00413">eve::thread::JobSystemThreadPool::State::workerLoop()</a>.</p>
+
+</div>
+</div>
+<a id="a796271009cb4b679640c5ea4ecf8f6c8" name="a796271009cb4b679640c5ea4ecf8f6c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a796271009cb4b679640c5ea4ecf8f6c8">&#9670;&#160;</a></span>trackId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LogicalId trackId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc84214b4748705f4d18dd8d143e70be" name="acc84214b4748705f4d18dd8d143e70be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc84214b4748705f4d18dd8d143e70be">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LogicalId type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::VegetationDetailSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html">VegetationDetailSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1VegetationDetailSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::VegetationDetailSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>TVE Global Details values, independent of scene components and global shader state.  
+ <a href="structeve_1_1graphics_1_1VegetationDetailSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a111dd753ffbbf5a9c7e2745e15cb71a3" id="r_a111dd753ffbbf5a9c7e2745e15cb71a3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a111dd753ffbbf5a9c7e2745e15cb71a3">colorsLayer</a> = 0</td></tr>
+<tr class="separator:a111dd753ffbbf5a9c7e2745e15cb71a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9ebfc1e2d8c340ac16ce277c06e1c1a" id="r_ae9ebfc1e2d8c340ac16ce277c06e1c1a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#ae9ebfc1e2d8c340ac16ce277c06e1c1a">extrasLayer</a> = 0</td></tr>
+<tr class="separator:ae9ebfc1e2d8c340ac16ce277c06e1c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56bcd0041a31999f982599d39ecafaf3" id="r_a56bcd0041a31999f982599d39ecafaf3"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a56bcd0041a31999f982599d39ecafaf3">motionLayer</a> = 0</td></tr>
+<tr class="separator:a56bcd0041a31999f982599d39ecafaf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee745d61f61d1809474bb185077ce46" id="r_a8ee745d61f61d1809474bb185077ce46"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a8ee745d61f61d1809474bb185077ce46">globalColor</a> = 1</td></tr>
+<tr class="separator:a8ee745d61f61d1809474bb185077ce46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04be5aa2c725bd9b29776bfde9df6490" id="r_a04be5aa2c725bd9b29776bfde9df6490"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a04be5aa2c725bd9b29776bfde9df6490">globalAlpha</a> = 1</td></tr>
+<tr class="separator:a04be5aa2c725bd9b29776bfde9df6490"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528dab55810b5838370aa2b91b12948a" id="r_a528dab55810b5838370aa2b91b12948a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a528dab55810b5838370aa2b91b12948a">globalOverlay</a> = 1</td></tr>
+<tr class="separator:a528dab55810b5838370aa2b91b12948a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62d9fe8c44e3f8008038b3534204f36d" id="r_a62d9fe8c44e3f8008038b3534204f36d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a62d9fe8c44e3f8008038b3534204f36d">globalWetness</a> = 1</td></tr>
+<tr class="separator:a62d9fe8c44e3f8008038b3534204f36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c058dac782f551ab0d0d6a11fb74fa1" id="r_a2c058dac782f551ab0d0d6a11fb74fa1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a2c058dac782f551ab0d0d6a11fb74fa1">colorMaskMinimum</a> = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2c058dac782f551ab0d0d6a11fb74fa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97fc2f9415ce8b477f0feac1c1550375" id="r_a97fc2f9415ce8b477f0feac1c1550375"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a97fc2f9415ce8b477f0feac1c1550375">colorMaskMaximum</a> = .6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a97fc2f9415ce8b477f0feac1c1550375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39b116d92c45842d25d5dd9c9e726f43" id="r_a39b116d92c45842d25d5dd9c9e726f43"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a39b116d92c45842d25d5dd9c9e726f43">overlayMaskMinimum</a> = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a39b116d92c45842d25d5dd9c9e726f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab482ab374ae3be21aad873c982f2b294" id="r_ab482ab374ae3be21aad873c982f2b294"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#ab482ab374ae3be21aad873c982f2b294">overlayMaskMaximum</a> = .6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab482ab374ae3be21aad873c982f2b294"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a793e61b36b41e47658d001bde3d38a" id="r_a1a793e61b36b41e47658d001bde3d38a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a1a793e61b36b41e47658d001bde3d38a">alphaThreshold</a> = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1a793e61b36b41e47658d001bde3d38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411e6010d01a6d34699ee40438ad0848" id="r_a411e6010d01a6d34699ee40438ad0848"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a411e6010d01a6d34699ee40438ad0848">perspectivePush</a> = 0</td></tr>
+<tr class="separator:a411e6010d01a6d34699ee40438ad0848"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0251378af7c4d2f64a8f4307feaa611c" id="r_a0251378af7c4d2f64a8f4307feaa611c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a0251378af7c4d2f64a8f4307feaa611c">perspectiveNoise</a> = 0</td></tr>
+<tr class="separator:a0251378af7c4d2f64a8f4307feaa611c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43698a71240198f74b4f3314540083fa" id="r_a43698a71240198f74b4f3314540083fa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a43698a71240198f74b4f3314540083fa">perspectiveAngle</a> = 1</td></tr>
+<tr class="separator:a43698a71240198f74b4f3314540083fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f60d64c8b54bde90d45c5b053d9ee4d" id="r_a8f60d64c8b54bde90d45c5b053d9ee4d"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a8f60d64c8b54bde90d45c5b053d9ee4d">motionHighlight</a> {1, 1, 1}</td></tr>
+<tr class="separator:a8f60d64c8b54bde90d45c5b053d9ee4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e59b6d210d5da77f2900dfa1dd3d0d7" id="r_a0e59b6d210d5da77f2900dfa1dd3d0d7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a0e59b6d210d5da77f2900dfa1dd3d0d7">bendingAmplitude</a> = 1</td></tr>
+<tr class="separator:a0e59b6d210d5da77f2900dfa1dd3d0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f70204c034e7a07031673d67b578fb6" id="r_a5f70204c034e7a07031673d67b578fb6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a5f70204c034e7a07031673d67b578fb6">bendingSpeed</a> = 6</td></tr>
+<tr class="separator:a5f70204c034e7a07031673d67b578fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a696c4260b487682ae2bef8d0526f4f2d" id="r_a696c4260b487682ae2bef8d0526f4f2d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a696c4260b487682ae2bef8d0526f4f2d">bendingScale</a> = 2</td></tr>
+<tr class="separator:a696c4260b487682ae2bef8d0526f4f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f783a77aad926c8e3f4a53c2d932a8d" id="r_a3f783a77aad926c8e3f4a53c2d932a8d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a3f783a77aad926c8e3f4a53c2d932a8d">flutterAmplitude</a> = .1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3f783a77aad926c8e3f4a53c2d932a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1877f4745148705f0d2b04c4b6c0213f" id="r_a1877f4745148705f0d2b04c4b6c0213f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a1877f4745148705f0d2b04c4b6c0213f">flutterSpeed</a> = 20</td></tr>
+<tr class="separator:a1877f4745148705f0d2b04c4b6c0213f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa840f2efc1d31f780491e8d09ca0ae31" id="r_aa840f2efc1d31f780491e8d09ca0ae31"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#aa840f2efc1d31f780491e8d09ca0ae31">flutterScale</a> = 10</td></tr>
+<tr class="separator:aa840f2efc1d31f780491e8d09ca0ae31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25844aba5835e8a0594b0da3a1173cc1" id="r_a25844aba5835e8a0594b0da3a1173cc1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationDetailSettings.html#a25844aba5835e8a0594b0da3a1173cc1">interactionAmplitude</a> = 1</td></tr>
+<tr class="separator:a25844aba5835e8a0594b0da3a1173cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>TVE Global Details values, independent of scene components and global shader state. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a1a793e61b36b41e47658d001bde3d38a" name="a1a793e61b36b41e47658d001bde3d38a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a793e61b36b41e47658d001bde3d38a">&#9670;&#160;</a></span>alphaThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::alphaThreshold = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a0e59b6d210d5da77f2900dfa1dd3d0d7" name="a0e59b6d210d5da77f2900dfa1dd3d0d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e59b6d210d5da77f2900dfa1dd3d0d7">&#9670;&#160;</a></span>bendingAmplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::bendingAmplitude = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a696c4260b487682ae2bef8d0526f4f2d" name="a696c4260b487682ae2bef8d0526f4f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a696c4260b487682ae2bef8d0526f4f2d">&#9670;&#160;</a></span>bendingScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::bendingScale = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a5f70204c034e7a07031673d67b578fb6" name="a5f70204c034e7a07031673d67b578fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f70204c034e7a07031673d67b578fb6">&#9670;&#160;</a></span>bendingSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::bendingSpeed = 6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a97fc2f9415ce8b477f0feac1c1550375" name="a97fc2f9415ce8b477f0feac1c1550375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97fc2f9415ce8b477f0feac1c1550375">&#9670;&#160;</a></span>colorMaskMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::colorMaskMaximum = .6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a2c058dac782f551ab0d0d6a11fb74fa1" name="a2c058dac782f551ab0d0d6a11fb74fa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c058dac782f551ab0d0d6a11fb74fa1">&#9670;&#160;</a></span>colorMaskMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::colorMaskMinimum = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a111dd753ffbbf5a9c7e2745e15cb71a3" name="a111dd753ffbbf5a9c7e2745e15cb71a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a111dd753ffbbf5a9c7e2745e15cb71a3">&#9670;&#160;</a></span>colorsLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::graphics::VegetationDetailSettings::colorsLayer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="ae9ebfc1e2d8c340ac16ce277c06e1c1a" name="ae9ebfc1e2d8c340ac16ce277c06e1c1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9ebfc1e2d8c340ac16ce277c06e1c1a">&#9670;&#160;</a></span>extrasLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::graphics::VegetationDetailSettings::extrasLayer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a3f783a77aad926c8e3f4a53c2d932a8d" name="a3f783a77aad926c8e3f4a53c2d932a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f783a77aad926c8e3f4a53c2d932a8d">&#9670;&#160;</a></span>flutterAmplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::flutterAmplitude = .1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="aa840f2efc1d31f780491e8d09ca0ae31" name="aa840f2efc1d31f780491e8d09ca0ae31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa840f2efc1d31f780491e8d09ca0ae31">&#9670;&#160;</a></span>flutterScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::flutterScale = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a1877f4745148705f0d2b04c4b6c0213f" name="a1877f4745148705f0d2b04c4b6c0213f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1877f4745148705f0d2b04c4b6c0213f">&#9670;&#160;</a></span>flutterSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::flutterSpeed = 20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a04be5aa2c725bd9b29776bfde9df6490" name="a04be5aa2c725bd9b29776bfde9df6490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04be5aa2c725bd9b29776bfde9df6490">&#9670;&#160;</a></span>globalAlpha</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::globalAlpha = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a8ee745d61f61d1809474bb185077ce46" name="a8ee745d61f61d1809474bb185077ce46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ee745d61f61d1809474bb185077ce46">&#9670;&#160;</a></span>globalColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::globalColor = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a528dab55810b5838370aa2b91b12948a" name="a528dab55810b5838370aa2b91b12948a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a528dab55810b5838370aa2b91b12948a">&#9670;&#160;</a></span>globalOverlay</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::globalOverlay = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a62d9fe8c44e3f8008038b3534204f36d" name="a62d9fe8c44e3f8008038b3534204f36d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62d9fe8c44e3f8008038b3534204f36d">&#9670;&#160;</a></span>globalWetness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::globalWetness = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a25844aba5835e8a0594b0da3a1173cc1" name="a25844aba5835e8a0594b0da3a1173cc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25844aba5835e8a0594b0da3a1173cc1">&#9670;&#160;</a></span>interactionAmplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::interactionAmplitude = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a8f60d64c8b54bde90d45c5b053d9ee4d" name="a8f60d64c8b54bde90d45c5b053d9ee4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f60d64c8b54bde90d45c5b053d9ee4d">&#9670;&#160;</a></span>motionHighlight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 3&gt; eve::graphics::VegetationDetailSettings::motionHighlight {1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a56bcd0041a31999f982599d39ecafaf3" name="a56bcd0041a31999f982599d39ecafaf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56bcd0041a31999f982599d39ecafaf3">&#9670;&#160;</a></span>motionLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::graphics::VegetationDetailSettings::motionLayer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="ab482ab374ae3be21aad873c982f2b294" name="ab482ab374ae3be21aad873c982f2b294"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab482ab374ae3be21aad873c982f2b294">&#9670;&#160;</a></span>overlayMaskMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::overlayMaskMaximum = .6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a39b116d92c45842d25d5dd9c9e726f43" name="a39b116d92c45842d25d5dd9c9e726f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b116d92c45842d25d5dd9c9e726f43">&#9670;&#160;</a></span>overlayMaskMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::overlayMaskMinimum = .4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a43698a71240198f74b4f3314540083fa" name="a43698a71240198f74b4f3314540083fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43698a71240198f74b4f3314540083fa">&#9670;&#160;</a></span>perspectiveAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::perspectiveAngle = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a0251378af7c4d2f64a8f4307feaa611c" name="a0251378af7c4d2f64a8f4307feaa611c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0251378af7c4d2f64a8f4307feaa611c">&#9670;&#160;</a></span>perspectiveNoise</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::perspectiveNoise = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<a id="a411e6010d01a6d34699ee40438ad0848" name="a411e6010d01a6d34699ee40438ad0848"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411e6010d01a6d34699ee40438ad0848">&#9670;&#160;</a></span>perspectivePush</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationDetailSettings::perspectivePush = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a> 第 <a class="el" href="VegetationDetails_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00128">eve::graphics::restoreVegetationDetails()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="VegetationDetails_8h_source.html">VegetationDetails.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1298 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimRetargetProfile类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html">AnimRetargetProfile</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1animation_1_1AnimRetargetProfile-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimRetargetProfile类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Settings and diagnostics for offline skeletal animation retargeting.  
+ <a href="classeve_1_1animation_1_1AnimRetargetProfile.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimClip_8h_source.html">AnimClip.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a93e842e8f9eb565e1b34149a523a180f" id="r_a93e842e8f9eb565e1b34149a523a180f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a93e842e8f9eb565e1b34149a523a180f">addBoneMapping</a> (const std::string &amp;sourceBone, const std::string &amp;targetBone)</td></tr>
+<tr class="memdesc:a93e842e8f9eb565e1b34149a523a180f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map one source bone to one target bone; replaces an existing mapping for that target.  <br /></td></tr>
+<tr class="separator:a93e842e8f9eb565e1b34149a523a180f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba69f0035738a368b53b5ca244c6b83d" id="r_aba69f0035738a368b53b5ca244c6b83d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#aba69f0035738a368b53b5ca244c6b83d">clearBoneMappings</a> ()</td></tr>
+<tr class="memdesc:aba69f0035738a368b53b5ca244c6b83d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all explicit bone mappings.  <br /></td></tr>
+<tr class="separator:aba69f0035738a368b53b5ca244c6b83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad484530c8653e771fa7d0cdc009904a1" id="r_ad484530c8653e771fa7d0cdc009904a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ad484530c8653e771fa7d0cdc009904a1">setNormalizedNameMatching</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ad484530c8653e771fa7d0cdc009904a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable exact-then-normalized automatic bone-name matching.  <br /></td></tr>
+<tr class="separator:ad484530c8653e771fa7d0cdc009904a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc5e1e07a3faf2d3683c46640f0ef063" id="r_afc5e1e07a3faf2d3683c46640f0ef063"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#afc5e1e07a3faf2d3683c46640f0ef063">getNormalizedNameMatching</a> () const</td></tr>
+<tr class="memdesc:afc5e1e07a3faf2d3683c46640f0ef063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether normalized automatic bone-name matching is enabled.  <br /></td></tr>
+<tr class="separator:afc5e1e07a3faf2d3683c46640f0ef063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af98b97a9b0a5b06599afd276aff222b6" id="r_af98b97a9b0a5b06599afd276aff222b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#af98b97a9b0a5b06599afd276aff222b6">setRootBones</a> (const std::string &amp;sourceBone, const std::string &amp;targetBone)</td></tr>
+<tr class="memdesc:af98b97a9b0a5b06599afd276aff222b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the source and target pelvis/root used for proportional translation.  <br /></td></tr>
+<tr class="separator:af98b97a9b0a5b06599afd276aff222b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac071e975d032a3a381831bfb647deb1" id="r_aac071e975d032a3a381831bfb647deb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#aac071e975d032a3a381831bfb647deb1">setAutoRootScale</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:aac071e975d032a3a381831bfb647deb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable automatic root translation scaling from skeleton extents.  <br /></td></tr>
+<tr class="separator:aac071e975d032a3a381831bfb647deb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dd07fc67007acc29896c3d984079cf7" id="r_a7dd07fc67007acc29896c3d984079cf7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a7dd07fc67007acc29896c3d984079cf7">getAutoRootScale</a> () const</td></tr>
+<tr class="memdesc:a7dd07fc67007acc29896c3d984079cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether automatic root scaling is enabled.  <br /></td></tr>
+<tr class="separator:a7dd07fc67007acc29896c3d984079cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e7048631ec65bab1ccf75d0f86e4839" id="r_a1e7048631ec65bab1ccf75d0f86e4839"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a1e7048631ec65bab1ccf75d0f86e4839">setRootTranslationScale</a> (float horizontal, float vertical)</td></tr>
+<tr class="memdesc:a1e7048631ec65bab1ccf75d0f86e4839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set additional horizontal and vertical multipliers for root translation.  <br /></td></tr>
+<tr class="separator:a1e7048631ec65bab1ccf75d0f86e4839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa29fb8d5ceb1af02c6212d3a3cc098b7" id="r_aa29fb8d5ceb1af02c6212d3a3cc098b7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#aa29fb8d5ceb1af02c6212d3a3cc098b7">getRootHorizontalScale</a> () const</td></tr>
+<tr class="memdesc:aa29fb8d5ceb1af02c6212d3a3cc098b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the additional horizontal root translation multiplier.  <br /></td></tr>
+<tr class="separator:aa29fb8d5ceb1af02c6212d3a3cc098b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a829c7cf0d8939a591c4e55bb2ff2b8" id="r_a5a829c7cf0d8939a591c4e55bb2ff2b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a5a829c7cf0d8939a591c4e55bb2ff2b8">getRootVerticalScale</a> () const</td></tr>
+<tr class="memdesc:a5a829c7cf0d8939a591c4e55bb2ff2b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the additional vertical root translation multiplier.  <br /></td></tr>
+<tr class="separator:a5a829c7cf0d8939a591c4e55bb2ff2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bce2d96b266cc7efeabcdccae69a767" id="r_a4bce2d96b266cc7efeabcdccae69a767"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a4bce2d96b266cc7efeabcdccae69a767">setUseSkeletonSpaceRotation</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a4bce2d96b266cc7efeabcdccae69a767"><td class="mdescLeft">&#160;</td><td class="mdescRight">Choose skeleton-space Bind correction instead of legacy local-space correction.  <br /></td></tr>
+<tr class="separator:a4bce2d96b266cc7efeabcdccae69a767"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d29d7aa71bc85c0fa34f2852e295638" id="r_a7d29d7aa71bc85c0fa34f2852e295638"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a7d29d7aa71bc85c0fa34f2852e295638">getUseSkeletonSpaceRotation</a> () const</td></tr>
+<tr class="memdesc:a7d29d7aa71bc85c0fa34f2852e295638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether skeleton-space rotation correction is enabled.  <br /></td></tr>
+<tr class="separator:a7d29d7aa71bc85c0fa34f2852e295638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79f93f03c5334f1787b628b8f233e7f7" id="r_a79f93f03c5334f1787b628b8f233e7f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a79f93f03c5334f1787b628b8f233e7f7">setSkinnedInteractionPreserve</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a79f93f03c5334f1787b628b8f233e7f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable MeshRet-inspired skinned interaction preservation after FK retarget.  <br /></td></tr>
+<tr class="separator:a79f93f03c5334f1787b628b8f233e7f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8362a4f86dda302c4721b04d0d86a8d" id="r_ad8362a4f86dda302c4721b04d0d86a8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ad8362a4f86dda302c4721b04d0d86a8d">getSkinnedInteractionPreserve</a> () const</td></tr>
+<tr class="memdesc:ad8362a4f86dda302c4721b04d0d86a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether skinned interaction preservation is enabled.  <br /></td></tr>
+<tr class="separator:ad8362a4f86dda302c4721b04d0d86a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad910b76a2219afc19fd3d5ec616fb162" id="r_ad910b76a2219afc19fd3d5ec616fb162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ad910b76a2219afc19fd3d5ec616fb162">setInteractionContactThreshold</a> (float distance)</td></tr>
+<tr class="memdesc:ad910b76a2219afc19fd3d5ec616fb162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute source-space distance below which a sensor pair counts as interacting. Values &lt;= 0 select 8% of the source skeleton extent.  <br /></td></tr>
+<tr class="separator:ad910b76a2219afc19fd3d5ec616fb162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ecb15c45db3d850fe008bf7ce03c13" id="r_a13ecb15c45db3d850fe008bf7ce03c13"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a13ecb15c45db3d850fe008bf7ce03c13">getInteractionContactThreshold</a> () const</td></tr>
+<tr class="memdesc:a13ecb15c45db3d850fe008bf7ce03c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the configured interaction contact threshold (0 = auto).  <br /></td></tr>
+<tr class="separator:a13ecb15c45db3d850fe008bf7ce03c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451ac745cacfda170d53203c5d090b76" id="r_a451ac745cacfda170d53203c5d090b76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a451ac745cacfda170d53203c5d090b76">setInteractionCorrectionWeight</a> (float <a class="el" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>)</td></tr>
+<tr class="memdesc:a451ac745cacfda170d53203c5d090b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend weight [0,1] applied to interaction IK corrections.  <br /></td></tr>
+<tr class="separator:a451ac745cacfda170d53203c5d090b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8620a276e2a3a3ee97e83b2b87401d3" id="r_ad8620a276e2a3a3ee97e83b2b87401d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ad8620a276e2a3a3ee97e83b2b87401d3">getInteractionCorrectionWeight</a> () const</td></tr>
+<tr class="memdesc:ad8620a276e2a3a3ee97e83b2b87401d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the interaction IK blend weight.  <br /></td></tr>
+<tr class="separator:ad8620a276e2a3a3ee97e83b2b87401d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761964be9739447dbd73b8753bfcb277" id="r_a761964be9739447dbd73b8753bfcb277"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a761964be9739447dbd73b8753bfcb277">addInteractionIkChain</a> (const std::string &amp;rootBone, const std::string &amp;midBone, const std::string &amp;tipBone)</td></tr>
+<tr class="memdesc:a761964be9739447dbd73b8753bfcb277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a two-bone IK chain used to realize tip-sensor corrections.  <br /></td></tr>
+<tr class="separator:a761964be9739447dbd73b8753bfcb277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e39e90aa19509beb3d7a8e8fe834b79" id="r_a8e39e90aa19509beb3d7a8e8fe834b79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a8e39e90aa19509beb3d7a8e8fe834b79">clearInteractionIkChains</a> ()</td></tr>
+<tr class="memdesc:a8e39e90aa19509beb3d7a8e8fe834b79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all explicitly registered interaction IK chains (auto-detect remains).  <br /></td></tr>
+<tr class="separator:a8e39e90aa19509beb3d7a8e8fe834b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56256ffc37d3670e77f4c75fb681fef2" id="r_a56256ffc37d3670e77f4c75fb681fef2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a56256ffc37d3670e77f4c75fb681fef2">getInteractionCorrectionCount</a> () const</td></tr>
+<tr class="memdesc:a56256ffc37d3670e77f4c75fb681fef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of frames that received at least one interaction IK correction last retarget.  <br /></td></tr>
+<tr class="separator:a56256ffc37d3670e77f4c75fb681fef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f985554e637717afcd64fb69d32209" id="r_ad1f985554e637717afcd64fb69d32209"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ad1f985554e637717afcd64fb69d32209">setNeuralModelPath</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:ad1f985554e637717afcd64fb69d32209"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filesystem path to a MeshRet-compatible ONNX model for neural skinned retarget. Empty path selects the builtin tensor MeshRet graph when animation_tensor is loaded.  <br /></td></tr>
+<tr class="separator:ad1f985554e637717afcd64fb69d32209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55cd8114a9fa62677d20263975eb066a" id="r_a55cd8114a9fa62677d20263975eb066a"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a55cd8114a9fa62677d20263975eb066a">getNeuralModelPath</a> () const</td></tr>
+<tr class="memdesc:a55cd8114a9fa62677d20263975eb066a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the configured neural model path (may be empty).  <br /></td></tr>
+<tr class="separator:a55cd8114a9fa62677d20263975eb066a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b33a09631db657baa95df6bcd18b966" id="r_a4b33a09631db657baa95df6bcd18b966"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a4b33a09631db657baa95df6bcd18b966">setNeuralRetargetEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a4b33a09631db657baa95df6bcd18b966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefer neural MeshRet inference when animation_tensor provides <a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html" title="Optional MeshRet/SMR neural retarget provider (implemented by animation_tensor).">ISmrNeuralRetarget</a>. Classical two-bone IK remains the active path when the provider is absent or not ready.  <br /></td></tr>
+<tr class="separator:a4b33a09631db657baa95df6bcd18b966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab82e2d6a52cac3e97a04857328a9e14" id="r_aab82e2d6a52cac3e97a04857328a9e14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#aab82e2d6a52cac3e97a04857328a9e14">getNeuralRetargetEnabled</a> () const</td></tr>
+<tr class="memdesc:aab82e2d6a52cac3e97a04857328a9e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether neural retarget is preferred when a provider is available.  <br /></td></tr>
+<tr class="separator:aab82e2d6a52cac3e97a04857328a9e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd315136aa0effb727176293d66a0d42" id="r_afd315136aa0effb727176293d66a0d42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#afd315136aa0effb727176293d66a0d42">setNeuralBackend</a> (const std::string &amp;backend)</td></tr>
+<tr class="memdesc:afd315136aa0effb727176293d66a0d42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend hint: "auto" (default), "onnx", or "tensor". Unknown values are treated as "auto".  <br /></td></tr>
+<tr class="separator:afd315136aa0effb727176293d66a0d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a057626ce53c184e5f76bfb80adb218fa" id="r_a057626ce53c184e5f76bfb80adb218fa"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a057626ce53c184e5f76bfb80adb218fa">getNeuralBackend</a> () const</td></tr>
+<tr class="memdesc:a057626ce53c184e5f76bfb80adb218fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the neural backend hint.  <br /></td></tr>
+<tr class="separator:a057626ce53c184e5f76bfb80adb218fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab7da47e12081cdef238ef184bae0c4" id="r_a4ab7da47e12081cdef238ef184bae0c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a4ab7da47e12081cdef238ef184bae0c4">getNeuralInferenceCount</a> () const</td></tr>
+<tr class="memdesc:a4ab7da47e12081cdef238ef184bae0c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-zero when the last retarget used the neural MeshRet path.  <br /></td></tr>
+<tr class="separator:a4ab7da47e12081cdef238ef184bae0c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9c60cede71082da8fe9d9e5560b7659" id="r_ac9c60cede71082da8fe9d9e5560b7659"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#ac9c60cede71082da8fe9d9e5560b7659">getMatchedBoneCount</a> () const</td></tr>
+<tr class="memdesc:ac9c60cede71082da8fe9d9e5560b7659"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of target bones mapped by the most recent retarget operation.  <br /></td></tr>
+<tr class="separator:ac9c60cede71082da8fe9d9e5560b7659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600914d6151a32273f2497649d2251aa" id="r_a600914d6151a32273f2497649d2251aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a600914d6151a32273f2497649d2251aa">getUnmatchedBoneCount</a> () const</td></tr>
+<tr class="memdesc:a600914d6151a32273f2497649d2251aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of target bones left at bind pose by the most recent operation.  <br /></td></tr>
+<tr class="separator:a600914d6151a32273f2497649d2251aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a644bb98fdec5a7a1266e83574f69b1d0" id="r_a644bb98fdec5a7a1266e83574f69b1d0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a644bb98fdec5a7a1266e83574f69b1d0">getUnmatchedTargetBone</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a644bb98fdec5a7a1266e83574f69b1d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of an unmatched target bone, or empty for an invalid index.  <br /></td></tr>
+<tr class="separator:a644bb98fdec5a7a1266e83574f69b1d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a6cb5a996910bbaba1a8f432baa791fae" id="r_a6cb5a996910bbaba1a8f432baa791fae"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a6cb5a996910bbaba1a8f432baa791fae">AnimClip</a></td></tr>
+<tr class="separator:a6cb5a996910bbaba1a8f432baa791fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2856ffa70eee8087c6db52222e727b5a" id="r_a2856ffa70eee8087c6db52222e727b5a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html#a2856ffa70eee8087c6db52222e727b5a">smrRefineRetargetedClip</a> (const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &amp;, <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &amp;, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *, <a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html">AnimRetargetProfile</a> &amp;)</td></tr>
+<tr class="memdesc:a2856ffa70eee8087c6db52222e727b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine an FK-retargeted clip so source body-part proximity/contact is preserved on the target.  <br /></td></tr>
+<tr class="separator:a2856ffa70eee8087c6db52222e727b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Settings and diagnostics for offline skeletal animation retargeting. </p>
+<p>Explicit bone mappings take precedence over automatic matching. Automatic matching first tries the exact name, then a normalized name with namespaces, punctuation and case removed (for example <code>mixamorig:Hips</code> matches <code>hips</code>). Script type: <code><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html" title="Settings and diagnostics for offline skeletal animation retargeting.">AnimRetargetProfile</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a93e842e8f9eb565e1b34149a523a180f" name="a93e842e8f9eb565e1b34149a523a180f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93e842e8f9eb565e1b34149a523a180f">&#9670;&#160;</a></span>addBoneMapping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::addBoneMapping </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sourceBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>targetBone</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Map one source bone to one target bone; replaces an existing mapping for that target. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00684">684</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a761964be9739447dbd73b8753bfcb277" name="a761964be9739447dbd73b8753bfcb277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761964be9739447dbd73b8753bfcb277">&#9670;&#160;</a></span>addInteractionIkChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::addInteractionIkChain </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rootBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>midBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tipBone</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a two-bone IK chain used to realize tip-sensor corrections. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00726">726</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba69f0035738a368b53b5ca244c6b83d" name="aba69f0035738a368b53b5ca244c6b83d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba69f0035738a368b53b5ca244c6b83d">&#9670;&#160;</a></span>clearBoneMappings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::clearBoneMappings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all explicit bone mappings. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00696">696</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e39e90aa19509beb3d7a8e8fe834b79" name="a8e39e90aa19509beb3d7a8e8fe834b79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e39e90aa19509beb3d7a8e8fe834b79">&#9670;&#160;</a></span>clearInteractionIkChains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::clearInteractionIkChains </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all explicitly registered interaction IK chains (auto-detect remains). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00733">733</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7dd07fc67007acc29896c3d984079cf7" name="a7dd07fc67007acc29896c3d984079cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dd07fc67007acc29896c3d984079cf7">&#9670;&#160;</a></span>getAutoRootScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimRetargetProfile::getAutoRootScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether automatic root scaling is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13ecb15c45db3d850fe008bf7ce03c13" name="a13ecb15c45db3d850fe008bf7ce03c13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ecb15c45db3d850fe008bf7ce03c13">&#9670;&#160;</a></span>getInteractionContactThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimRetargetProfile::getInteractionContactThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the configured interaction contact threshold (0 = auto). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56256ffc37d3670e77f4c75fb681fef2" name="a56256ffc37d3670e77f4c75fb681fef2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56256ffc37d3670e77f4c75fb681fef2">&#9670;&#160;</a></span>getInteractionCorrectionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimRetargetProfile::getInteractionCorrectionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of frames that received at least one interaction IK correction last retarget. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8620a276e2a3a3ee97e83b2b87401d3" name="ad8620a276e2a3a3ee97e83b2b87401d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8620a276e2a3a3ee97e83b2b87401d3">&#9670;&#160;</a></span>getInteractionCorrectionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimRetargetProfile::getInteractionCorrectionWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the interaction IK blend weight. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9c60cede71082da8fe9d9e5560b7659" name="ac9c60cede71082da8fe9d9e5560b7659"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9c60cede71082da8fe9d9e5560b7659">&#9670;&#160;</a></span>getMatchedBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimRetargetProfile::getMatchedBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of target bones mapped by the most recent retarget operation. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a057626ce53c184e5f76bfb80adb218fa" name="a057626ce53c184e5f76bfb80adb218fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a057626ce53c184e5f76bfb80adb218fa">&#9670;&#160;</a></span>getNeuralBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::animation::AnimRetargetProfile::getNeuralBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the neural backend hint. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SmrNeuralProvider_8cpp_source.html#l00013">eve::animation::SmrNeuralProvider::isReady()</a>.</p>
+
+</div>
+</div>
+<a id="a4ab7da47e12081cdef238ef184bae0c4" name="a4ab7da47e12081cdef238ef184bae0c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ab7da47e12081cdef238ef184bae0c4">&#9670;&#160;</a></span>getNeuralInferenceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimRetargetProfile::getNeuralInferenceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Non-zero when the last retarget used the neural MeshRet path. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55cd8114a9fa62677d20263975eb066a" name="a55cd8114a9fa62677d20263975eb066a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55cd8114a9fa62677d20263975eb066a">&#9670;&#160;</a></span>getNeuralModelPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::animation::AnimRetargetProfile::getNeuralModelPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the configured neural model path (may be empty). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SmrNeuralProvider_8cpp_source.html#l00013">eve::animation::SmrNeuralProvider::isReady()</a>.</p>
+
+</div>
+</div>
+<a id="aab82e2d6a52cac3e97a04857328a9e14" name="aab82e2d6a52cac3e97a04857328a9e14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab82e2d6a52cac3e97a04857328a9e14">&#9670;&#160;</a></span>getNeuralRetargetEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimRetargetProfile::getNeuralRetargetEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether neural retarget is preferred when a provider is available. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SmrNeuralProvider_8cpp_source.html#l00013">eve::animation::SmrNeuralProvider::isReady()</a>.</p>
+
+</div>
+</div>
+<a id="afc5e1e07a3faf2d3683c46640f0ef063" name="afc5e1e07a3faf2d3683c46640f0ef063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc5e1e07a3faf2d3683c46640f0ef063">&#9670;&#160;</a></span>getNormalizedNameMatching()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimRetargetProfile::getNormalizedNameMatching </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether normalized automatic bone-name matching is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa29fb8d5ceb1af02c6212d3a3cc098b7" name="aa29fb8d5ceb1af02c6212d3a3cc098b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29fb8d5ceb1af02c6212d3a3cc098b7">&#9670;&#160;</a></span>getRootHorizontalScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimRetargetProfile::getRootHorizontalScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the additional horizontal root translation multiplier. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a829c7cf0d8939a591c4e55bb2ff2b8" name="a5a829c7cf0d8939a591c4e55bb2ff2b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a829c7cf0d8939a591c4e55bb2ff2b8">&#9670;&#160;</a></span>getRootVerticalScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimRetargetProfile::getRootVerticalScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the additional vertical root translation multiplier. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8362a4f86dda302c4721b04d0d86a8d" name="ad8362a4f86dda302c4721b04d0d86a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8362a4f86dda302c4721b04d0d86a8d">&#9670;&#160;</a></span>getSkinnedInteractionPreserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimRetargetProfile::getSkinnedInteractionPreserve </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether skinned interaction preservation is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a600914d6151a32273f2497649d2251aa" name="a600914d6151a32273f2497649d2251aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600914d6151a32273f2497649d2251aa">&#9670;&#160;</a></span>getUnmatchedBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimRetargetProfile::getUnmatchedBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of target bones left at bind pose by the most recent operation. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimClip_8cpp_source.html#l00710">getUnmatchedTargetBone()</a>.</p>
+
+</div>
+</div>
+<a id="a644bb98fdec5a7a1266e83574f69b1d0" name="a644bb98fdec5a7a1266e83574f69b1d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644bb98fdec5a7a1266e83574f69b1d0">&#9670;&#160;</a></span>getUnmatchedTargetBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimRetargetProfile::getUnmatchedTargetBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Name of an unmatched target bone, or empty for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00710">710</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8h_source.html#l00109">getUnmatchedBoneCount()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a7d29d7aa71bc85c0fa34f2852e295638" name="a7d29d7aa71bc85c0fa34f2852e295638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d29d7aa71bc85c0fa34f2852e295638">&#9670;&#160;</a></span>getUseSkeletonSpaceRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimRetargetProfile::getUseSkeletonSpaceRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether skeleton-space rotation correction is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac071e975d032a3a381831bfb647deb1" name="aac071e975d032a3a381831bfb647deb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac071e975d032a3a381831bfb647deb1">&#9670;&#160;</a></span>setAutoRootScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setAutoRootScale </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable automatic root translation scaling from skeleton extents. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ad910b76a2219afc19fd3d5ec616fb162" name="ad910b76a2219afc19fd3d5ec616fb162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad910b76a2219afc19fd3d5ec616fb162">&#9670;&#160;</a></span>setInteractionContactThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setInteractionContactThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute source-space distance below which a sensor pair counts as interacting. Values &lt;= 0 select 8% of the source skeleton extent. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00715">715</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a451ac745cacfda170d53203c5d090b76" name="a451ac745cacfda170d53203c5d090b76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a451ac745cacfda170d53203c5d090b76">&#9670;&#160;</a></span>setInteractionCorrectionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setInteractionCorrectionWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Blend weight [0,1] applied to interaction IK corrections. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00720">720</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>.</p>
+
+</div>
+</div>
+<a id="afd315136aa0effb727176293d66a0d42" name="afd315136aa0effb727176293d66a0d42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd315136aa0effb727176293d66a0d42">&#9670;&#160;</a></span>setNeuralBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setNeuralBackend </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>backend</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Backend hint: "auto" (default), "onnx", or "tensor". Unknown values are treated as "auto". </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1f985554e637717afcd64fb69d32209" name="ad1f985554e637717afcd64fb69d32209"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f985554e637717afcd64fb69d32209">&#9670;&#160;</a></span>setNeuralModelPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setNeuralModelPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Filesystem path to a MeshRet-compatible ONNX model for neural skinned retarget. Empty path selects the builtin tensor MeshRet graph when animation_tensor is loaded. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00140">path</a>.</p>
+
+</div>
+</div>
+<a id="a4b33a09631db657baa95df6bcd18b966" name="a4b33a09631db657baa95df6bcd18b966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b33a09631db657baa95df6bcd18b966">&#9670;&#160;</a></span>setNeuralRetargetEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setNeuralRetargetEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prefer neural MeshRet inference when animation_tensor provides <a class="el" href="classeve_1_1animation_1_1ISmrNeuralRetarget.html" title="Optional MeshRet/SMR neural retarget provider (implemented by animation_tensor).">ISmrNeuralRetarget</a>. Classical two-bone IK remains the active path when the provider is absent or not ready. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ad484530c8653e771fa7d0cdc009904a1" name="ad484530c8653e771fa7d0cdc009904a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad484530c8653e771fa7d0cdc009904a1">&#9670;&#160;</a></span>setNormalizedNameMatching()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setNormalizedNameMatching </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable exact-then-normalized automatic bone-name matching. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="af98b97a9b0a5b06599afd276aff222b6" name="af98b97a9b0a5b06599afd276aff222b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af98b97a9b0a5b06599afd276aff222b6">&#9670;&#160;</a></span>setRootBones()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setRootBones </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sourceBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>targetBone</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select the source and target pelvis/root used for proportional translation. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00698">698</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e7048631ec65bab1ccf75d0f86e4839" name="a1e7048631ec65bab1ccf75d0f86e4839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e7048631ec65bab1ccf75d0f86e4839">&#9670;&#160;</a></span>setRootTranslationScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setRootTranslationScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>horizontal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>vertical</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set additional horizontal and vertical multipliers for root translation. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a> 第 <a class="el" href="AnimClip_8cpp_source.html#l00703">703</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79f93f03c5334f1787b628b8f233e7f7" name="a79f93f03c5334f1787b628b8f233e7f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79f93f03c5334f1787b628b8f233e7f7">&#9670;&#160;</a></span>setSkinnedInteractionPreserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setSkinnedInteractionPreserve </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable MeshRet-inspired skinned interaction preservation after FK retarget. </p>
+<p>When enabled, close body-part sensor pairs on the source are recreated on the target via two-bone IK (classical DMI stand-in; no neural weights). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a4bce2d96b266cc7efeabcdccae69a767" name="a4bce2d96b266cc7efeabcdccae69a767"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bce2d96b266cc7efeabcdccae69a767">&#9670;&#160;</a></span>setUseSkeletonSpaceRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimRetargetProfile::setUseSkeletonSpaceRotation </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Choose skeleton-space Bind correction instead of legacy local-space correction. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a6cb5a996910bbaba1a8f432baa791fae" name="a6cb5a996910bbaba1a8f432baa791fae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb5a996910bbaba1a8f432baa791fae">&#9670;&#160;</a></span>AnimClip</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimClip_8h_source.html">AnimClip.h</a> 第 <a class="el" href="AnimClip_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2856ffa70eee8087c6db52222e727b5a" name="a2856ffa70eee8087c6db52222e727b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2856ffa70eee8087c6db52222e727b5a">&#9670;&#160;</a></span>smrRefineRetargetedClip</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int smrRefineRetargetedClip </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimRetargetProfile.html">AnimRetargetProfile</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Refine an FK-retargeted clip so source body-part proximity/contact is preserved on the target. </p>
+<p>Classical stand-in for MeshRet's DMI alignment: detect close sensor pairs on the source, map them to the target, and pull tip bones with two-bone IK. Returns the number of frames that received at least one chain correction.</p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html">Exception</a></td><td>on null skeleton arguments. @thread Owner thread; not re-entrant on the same targetClip. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AnimSmr_8cpp_source.html">AnimSmr.cpp</a> 第 <a class="el" href="AnimSmr_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimClip_8h_source.html">AnimClip.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimClip_8cpp_source.html">AnimClip.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

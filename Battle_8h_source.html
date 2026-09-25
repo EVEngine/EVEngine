@@ -1,0 +1,338 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/Battle.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Battle.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Battle_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="settlement_2Settlement_8h.html">settlement/Settlement.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="SettlementRules_8h.html">settlement/SettlementRules.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>BattleTacticsCatalogue;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">struct </span>StatusTickEvent;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html">   30</a></span><span class="keyword">namespace </span>BattleSide {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">   31</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Party.html">Party</a>   = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">   32</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">Enemies</a> = 1;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}  <span class="comment">// namespace BattleSide</span></div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">   36</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb">Auto</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806">Self</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77">LowestHealthAlly</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb">LowestHealthEnemy</a> };</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">   41</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">action</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">   42</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">skillId</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">   43</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">caster</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">   44</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">target</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">   45</a></span>    <span class="keywordtype">double</span>          <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">amount</a> = 0.0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">   46</a></span>    <span class="keywordtype">bool</span>            <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">crit</a>   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html">   54</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">   56</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">Battle</a>()  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">   57</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">~Battle</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">   59</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">Battle</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">   60</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> addActor(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> configureSettlementRules(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1settlement_1_1SettlementRuleSet.html">settlement::SettlementRuleSet</a>&amp; rules);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::vector&lt;settlement::SettlementBatchItemResult&gt;</a>&gt; settleStatusTick(</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1StatusTickEvent.html">StatusTickEvent</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> simulationTick);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> setAction(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; skillId, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> setActionChecked(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; skillId,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                                     <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> setActionByPolicyChecked(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; skillId,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                                                             <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a> policy);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> autoEnemyActions();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> startRound();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">bool</span> executeNextAction();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">bool</span> isFinished() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">bool</span> isVictory() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">bool</span> isDefeat() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> setPlayerSide(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">int</span>  getPlayerSide() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">int</span> getWinnerSide() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">int</span>  getTurn() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">bool</span> isActorAlive(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">int</span> getActorCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* getActor(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">int</span>       getSide(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">int</span>         getEventCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <a class="code hl_struct" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a> getEvent(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">void</span>        pollEvents();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="comment">// 事件字段访问（脚本向）</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::string getEventAction(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    std::string getEventSkillId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* getEventCaster(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* getEventTarget(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">double</span>    getEventAmount(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">bool</span>      getEventCrit(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">struct </span>Participant {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*  actor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordtype">int</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>  = 0;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> settlementSubject;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    };</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">struct </span>PendingAction {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*   actor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        std::string skillId;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*   <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordtype">double</span>      initiative = 0.0;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    };</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">bool</span>                   isDead(<span class="keyword">const</span> Participant&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    std::vector&lt;RPGActor*&gt; livingOnSide(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">int</span>                    sideOf(RPGActor* actor) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>             settlementSubjectOf(RPGActor* actor) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    RPGActor* randomOpponent(<span class="keywordtype">int</span> mySide);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    RPGActor* lowestHealthTarget(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>, <span class="keywordtype">bool</span> sameSide) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">int</span>       computeWinnerSide() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::vector&lt;settlement::SettlementBatchItemResult&gt;</a>&gt; settleRequest(</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1settlement_1_1SettlementRequest.html">settlement::SettlementRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">void</span>      execute(PendingAction&amp; pa, <span class="keywordtype">unsigned</span>&amp; seedCounter);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    std::vector&lt;Participant&gt;       participants_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    std::vector&lt;PendingAction&gt;     queue_;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    std::vector&lt;PendingAction&gt;     roundActions_;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    std::vector&lt;BattleEvent&gt;       events_;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    std::vector&lt;BattleEvent&gt;       polled_;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordtype">int</span>                            turn_                  = 0;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">bool</span>                           started_               = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordtype">bool</span>                           finished_              = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">int</span>                            winner_                = -1;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">int</span>                            playerSide_            = BattleSide::Party;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">unsigned</span>                       seedCounter_           = 1;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    std::uint64_t                  nextSettlementSubject_ = 1;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <a class="code hl_class" href="classeve_1_1settlement_1_1SettlementPipeline.html">settlement::SettlementPipeline</a> settlement_;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#afe1b81265c1b16ba5a640d3b7265e90c">  200</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1BattleTacticsCatalogue.html">BattleTacticsCatalogue</a>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>};</div>
+</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00158">ActionNotifyRegistry.cpp:158</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ae0f3ddf34dc12c944c03445c0bc3fee6"><div class="ttname"><a href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a></div><div class="ttdeci">#define EVENGINE_API_PLATFORM</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00107">Export.h:107</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSettlementRules_8h_html"><div class="ttname"><a href="SettlementRules_8h.html">SettlementRules.h</a></div><div class="ttdoc">Declarative, domain-neutral rules for buffs and gameplay effects.</div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_af7594145399eb356e6b338bf7d5a5c54"><div class="ttname"><a href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a></div><div class="ttdeci">ecs::EntityHandle side</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00144">TacticsPersistence.cpp:144</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleTacticsCatalogue_html"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleTacticsCatalogue.html">eve::rpg::BattleTacticsCatalogue</a></div><div class="ttdoc">Process-local strict catalogue that selects and queues companion/AI actions.</div><div class="ttdef"><b>Definition</b> <a href="BattleTactics_8h_source.html#l00032">BattleTactics.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html">eve::rpg::Battle</a></div><div class="ttdoc">一场回合制战斗（任意阵营数）。 @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。 @thread 在单一模拟线程上驱动整场战斗。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00054">Battle.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a42174b8456818f5490c1145d679d9e35"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">eve::rpg::Battle::Battle</a></div><div class="ttdeci">Battle(const Battle &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a8ddf7019ce56827b9f6fe745059c34d3"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">eve::rpg::Battle::Battle</a></div><div class="ttdeci">Battle()=default</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a943b76fbda7a00808bc6a5e545cbfaea"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">eve::rpg::Battle::operator=</a></div><div class="ttdeci">Battle &amp; operator=(const Battle &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_acf25af084c4bf0090d2c493bc458236c"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">eve::rpg::Battle::~Battle</a></div><div class="ttdeci">~Battle()=default</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Party_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Party.html">eve::rpg::Party</a></div><div class="ttdoc">Authoritative ordered relationship between stable party member IDs and RPG actors....</div><div class="ttdef"><b>Definition</b> <a href="Party_8h_source.html#l00024">Party.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00034">RPGActor.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1settlement_1_1SettlementPipeline_html"><div class="ttname"><a href="classeve_1_1settlement_1_1SettlementPipeline.html">eve::settlement::SettlementPipeline</a></div><div class="ttdoc">Deterministically ordered, composable settlement pipeline.</div><div class="ttdef"><b>Definition</b> <a href="settlement_2Settlement_8h_source.html#l00537">Settlement.h:537</a></div></div>
+<div class="ttc" id="aclasseve_1_1settlement_1_1SettlementRuleSet_html"><div class="ttname"><a href="classeve_1_1settlement_1_1SettlementRuleSet.html">eve::settlement::SettlementRuleSet</a></div><div class="ttdoc">Validated immutable-style rule collection installable into pipelines.</div><div class="ttdef"><b>Definition</b> <a href="SettlementRules_8h_source.html#l00077">SettlementRules.h:77</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_1_1BattleSide_html_a19b0b6a85f860774d7ead153d80836bf"><div class="ttname"><a href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">eve::rpg::BattleSide::Enemies</a></div><div class="ttdeci">constexpr int Enemies</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00032">Battle.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0c"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">eve::rpg::BattleTargetPolicy</a></div><div class="ttdeci">BattleTargetPolicy</div><div class="ttdoc">Deterministic target-selection policies for queued battle actions.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00036">Battle.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb">eve::rpg::BattleTargetPolicy::Auto</a></div><div class="ttdeci">@ Auto</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb">eve::rpg::BattleTargetPolicy::LowestHealthEnemy</a></div><div class="ttdeci">@ LowestHealthEnemy</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806">eve::rpg::BattleTargetPolicy::Self</a></div><div class="ttdeci">@ Self</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77">eve::rpg::BattleTargetPolicy::LowestHealthAlly</a></div><div class="ttdeci">@ LowestHealthAlly</div></div>
+<div class="ttc" id="asettlement_2Settlement_8h_html"><div class="ttname"><a href="settlement_2Settlement_8h.html">Settlement.h</a></div><div class="ttdoc">Domain-neutral, deterministic settlement pipeline.</div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html">eve::rpg::BattleEvent</a></div><div class="ttdoc">一次战斗反馈事件。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00039">Battle.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a2c4072e78effceec5ac1d98585236545"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">eve::rpg::BattleEvent::skillId</a></div><div class="ttdeci">std::string skillId</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00042">Battle.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a462ec995c58b8c758144d882dcc86c1f"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">eve::rpg::BattleEvent::caster</a></div><div class="ttdeci">class RPGActor * caster</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00043">Battle.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a4657f360f4d74adcc7f48d26dca40eeb"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">eve::rpg::BattleEvent::amount</a></div><div class="ttdeci">double amount</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00045">Battle.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a6969ccd9aaadb9f510dd16c9fb9855c7"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">eve::rpg::BattleEvent::target</a></div><div class="ttdeci">class RPGActor * target</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00044">Battle.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a7433694c6585feb92f4c18eca66a4911"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">eve::rpg::BattleEvent::crit</a></div><div class="ttdeci">bool crit</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00046">Battle.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_aea215c97fea578b742f8d1ed79e0f68a"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">eve::rpg::BattleEvent::action</a></div><div class="ttdeci">std::string action</div><div class="ttdoc">roundStart | actionStart | damage | heal | miss | effect | settlementFailed | victory | defeat</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00041">Battle.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StatusTickEvent_html"><div class="ttname"><a href="structeve_1_1rpg_1_1StatusTickEvent.html">eve::rpg::StatusTickEvent</a></div><div class="ttdoc">周期性状态触发的 tick 事件。周期效果（period &gt; 0）不会自动修改属性， 而是每个周期产生一个 tick 事件交给上层（脚本或 C++ 结算系统）处理—— 这样伤害/治疗类周期效果可以完整地...</div><div class="ttdef"><b>Definition</b> <a href="StatusTypes_8h_source.html#l00069">StatusTypes.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1settlement_1_1SettlementRequest_html"><div class="ttname"><a href="structeve_1_1settlement_1_1SettlementRequest.html">eve::settlement::SettlementRequest</a></div><div class="ttdoc">Domain-neutral input to one settlement operation.</div><div class="ttdef"><b>Definition</b> <a href="settlement_2Settlement_8h_source.html#l00107">Settlement.h:107</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/Presentation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Presentation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Presentation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Presentation_8h.html">tactics/Presentation.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> restingFor(<span class="keyword">const</span> PresentationFrame&amp; frame, SubjectRef <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = frame.restingState.find(<a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>.format());</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == frame.restingState.end() ? <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c">UnitVisualState::Idle</a> : <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>PresentationCommand revertible(<span class="keyword">const</span> BattleEvent&amp; event, <span class="keyword">const</span> PresentationFrame&amp; frame, SubjectRef <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                              <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> state, <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">PresentationRevertTrigger</a> trigger) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    PresentationCommand command;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    command.intent.sequence = <span class="keyword">event</span>.sequence;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    command.intent.subject  = <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    command.intent.state    = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    command.intent.revision = frame.revision;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    command.intent.tick     = <span class="keyword">event</span>.tick;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    command.revert.restingState = restingFor(frame, <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    command.revert.trigger      = trigger;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    command.revert.sequence     = <span class="keyword">event</span>.sequence;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (trigger == <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">PresentationRevertTrigger::OnExpiry</a>)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        command.intent.expiresAtTick = <a class="code hl_typedef" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>(event.tick.value() + frame.transientTicks);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> command;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>PresentationCommand durable(<span class="keyword">const</span> BattleEvent&amp; event, <span class="keyword">const</span> PresentationFrame&amp; frame, SubjectRef <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                           <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> state) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    PresentationCommand command = revertible(event, frame, <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, state, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c">PresentationRevertTrigger::Never</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// A durable intent never expires, so it must not advertise a deadline.</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    command.intent.expiresAtTick = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> command;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#a4d424d91ef68337e30447f97d394a7f8">   47</a></span>std::string_view <a class="code hl_function" href="namespaceeve_1_1tactics.html#a4d424d91ef68337e30447f97d394a7f8">unitVisualStateName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">UnitVisualState</a> state) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c">UnitVisualState::Idle</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;idle&quot;</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df">UnitVisualState::Friendly</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;friendly&quot;</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">UnitVisualState::Selected</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;selected&quot;</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">UnitVisualState::Finished</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;finished&quot;</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c">UnitVisualState::Targetable</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;targetable&quot;</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">UnitVisualState::Attacking</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;attacking&quot;</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051">UnitVisualState::Defending</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;defending&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">UnitVisualState::Moving</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;moving&quot;</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">UnitVisualState::Destroyed</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;destroyed&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;idle&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#a4105467e7d24591a1d109e1ad03efcfc">   62</a></span>std::string_view <a class="code hl_function" href="namespaceeve_1_1tactics.html#a4105467e7d24591a1d109e1ad03efcfc">presentationRevertTriggerName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">PresentationRevertTrigger</a> trigger) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">switch</span> (trigger) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c">PresentationRevertTrigger::Never</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;never&quot;</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">PresentationRevertTrigger::OnExpiry</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;on_expiry&quot;</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">PresentationRevertTrigger::OnNextTurn</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;on_next_turn&quot;</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">PresentationRevertTrigger::OnRoundStart</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;on_round_start&quot;</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;never&quot;</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1PresentationProjector.html#af8a188d894db8ad9c739cd6bf8ce2be6">   72</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;PresentationCommand&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1tactics_1_1PresentationProjector.html#af8a188d894db8ad9c739cd6bf8ce2be6">PresentationProjector::project</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1BattleEvent.html">BattleEvent</a>&amp; event,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1BattleCommand.html">BattleCommand</a>* command,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationFrame.html">PresentationFrame</a>&amp; frame)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    (void)transientTicks_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::vector&lt;PresentationCommand&gt; <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// The event type is the stable protocol spelling owned by the simulation; matching on it</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// keeps presentation a pure function of the event stream instead of a second opinion.</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;turn.pending&quot;</span>) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.push_back(revertible(event, frame, event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">subject</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">UnitVisualState::Selected</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                      <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">PresentationRevertTrigger::OnNextTurn</a>));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;turn.completed&quot;</span>) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="comment">// Finishing an activation lasts until the round boundary, which is exactly the kind</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="comment">// of lifetime a view-object API cannot state.</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.push_back(revertible(event, frame, event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">subject</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">UnitVisualState::Finished</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                      <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">PresentationRevertTrigger::OnRoundStart</a>));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;round.pending&quot;</span>) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="comment">// The round boundary clears every per-round marker, so it emits no new intent; the</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="comment">// consumer reverts everything this trigger names.</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;PresentationCommand&gt;</a>&gt;::success(std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;unit.moved&quot;</span>) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationCommand.html">PresentationCommand</a> moved = revertible(event, frame, event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">subject</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">UnitVisualState::Moving</a>,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                                               <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">PresentationRevertTrigger::OnExpiry</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">if</span> (command != <span class="keyword">nullptr</span> &amp;&amp; command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8280eecd7f9a5e4683bc8bc3b6beeedb">kind</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">BattleCommandKind::Move</a>) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            moved.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">intent</a>.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a4d88df8b46bfd184dd39ba445da0bc50">from</a> = command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8eb6106b0474a926101fd3d933663155">cell</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            moved.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">intent</a>.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a6b22f44bf362ee8e40bd4f117b0f0073">to</a>   = command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8eb6106b0474a926101fd3d933663155">cell</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            moved.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">intent</a>.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a705d86d550e2cbdf9bbfe367d2aa069a">path</a> = {command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8eb6106b0474a926101fd3d933663155">cell</a>};</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.push_back(std::move(moved));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;action.declared&quot;</span>) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationCommand.html">PresentationCommand</a> declared = revertible(event, frame, event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">subject</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">UnitVisualState::Attacking</a>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                                 <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">PresentationRevertTrigger::OnExpiry</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">if</span> (command != <span class="keyword">nullptr</span> &amp;&amp; command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8280eecd7f9a5e4683bc8bc3b6beeedb">kind</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5">BattleCommandKind::UseAbility</a>) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            declared.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">intent</a>.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a6b22f44bf362ee8e40bd4f117b0f0073">to</a>    = command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a8eb6106b0474a926101fd3d933663155">cell</a>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            declared.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">intent</a>.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ad43f4f656ab65747d5d03ad8a00859ae">other</a> = command-&gt;<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleCommand.html#a2339086c7dd4f4130b4d13f7255e8cf0">targetUnit</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.push_back(std::move(declared));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">type</a> == <span class="stringliteral">&quot;unit.defeated&quot;</span>) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="comment">// Terminal: a destroyed unit is not coming back, so the revert is refused by contract.</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.push_back(durable(event, frame, event.<a class="code hl_variable" href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">subject</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">UnitVisualState::Destroyed</a>));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;PresentationCommand&gt;</a>&gt;::success(std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1PresentationProjector.html#a42ddfa4739f64966eb24aa201226b1a1">  115</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PresentationIntent&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1PresentationProjector.html#a42ddfa4739f64966eb24aa201226b1a1">PresentationProjector::revert</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a>&amp; intent,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationRevert.html">PresentationRevert</a>&amp; spec)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (!spec.<a class="code hl_function" href="structeve_1_1tactics_1_1PresentationRevert.html#a7501e2f6b7d39c6f48263bf49a4520b5">isRevertable</a>())</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PresentationIntent&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;durable presentation intent cannot be reverted&quot;</span>, <span class="stringliteral">&quot;presentation.revert&quot;</span>));</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a> inverse;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ae76583d34a6e358133bef256965a9188">sequence</a> = spec.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationRevert.html#a27149ff6f9685dfc7a2d1286e49b2fd9">sequence</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ac773a714b6faaf01e51cc42214818bb4">subject</a>  = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ac773a714b6faaf01e51cc42214818bb4">subject</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ad43f4f656ab65747d5d03ad8a00859ae">other</a>    = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#ad43f4f656ab65747d5d03ad8a00859ae">other</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a635974b0386f14ec8783df0f0e3f96d5">state</a>    = spec.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationRevert.html#a4e70995cfe7465c973a8beceb392dc86">restingState</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a4d88df8b46bfd184dd39ba445da0bc50">from</a>     = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a6b22f44bf362ee8e40bd4f117b0f0073">to</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a6b22f44bf362ee8e40bd4f117b0f0073">to</a>       = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a4d88df8b46bfd184dd39ba445da0bc50">from</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#aa715f137bbb723914a5417865ca8305f">revision</a> = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#aa715f137bbb723914a5417865ca8305f">revision</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a0400ed0c1a3e252bbde133330eb826c6">tick</a>     = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a0c5aea8a930157fd4b4a1da42dc87848">expiresAtTick</a>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="comment">// The inverse is itself a transient instruction, so it must expire too; otherwise the</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="comment">// &quot;undo&quot; would become the next stale state.</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    inverse.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a0c5aea8a930157fd4b4a1da42dc87848">expiresAtTick</a> = intent.<a class="code hl_variable" href="structeve_1_1tactics_1_1PresentationIntent.html#a0c5aea8a930157fd4b4a1da42dc87848">expiresAtTick</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;PresentationIntent&gt;::success</a>(std::move(inverse));</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>}</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_aaca3fbd883cca67884738545312b4752"><div class="ttname"><a href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a></div><div class="ttdeci">int subject</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00163">AnimSmr.cpp:163</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aPresentation_8h_html"><div class="ttname"><a href="Presentation_8h.html">Presentation.h</a></div><div class="ttdoc">Presentation intents derived from the battle event stream, with an explicit undo.</div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a7141f237b2648c631ce5b73215683565"><div class="ttname"><a href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a></div><div class="ttdeci">bool found</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00334">RpgDialect.cpp:334</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_a9adc8157fafdeebb0f2a513f628b4f87"><div class="ttname"><a href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a></div><div class="ttdeci">std::vector&lt; VegetationPresetCommand &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00096">VegetationPreset.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1PresentationProjector_html_a42ddfa4739f64966eb24aa201226b1a1"><div class="ttname"><a href="classeve_1_1tactics_1_1PresentationProjector.html#a42ddfa4739f64966eb24aa201226b1a1">eve::tactics::PresentationProjector::revert</a></div><div class="ttdeci">Result&lt; PresentationIntent &gt; revert(const PresentationIntent &amp;intent, const PresentationRevert &amp;spec) const</div><div class="ttdoc">Build the inverse intent that undoes intent.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8cpp_source.html#l00115">Presentation.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1PresentationProjector_html_af8a188d894db8ad9c739cd6bf8ce2be6"><div class="ttname"><a href="classeve_1_1tactics_1_1PresentationProjector.html#af8a188d894db8ad9c739cd6bf8ce2be6">eve::tactics::PresentationProjector::project</a></div><div class="ttdeci">Result&lt; std::vector&lt; PresentationCommand &gt; &gt; project(const BattleEvent &amp;event, const BattleCommand *command, const PresentationFrame &amp;frame) const</div><div class="ttdoc">Project one authoritative event into presentation commands.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8cpp_source.html#l00072">Presentation.cpp:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00013">Interaction.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a3fff92b0e855225a00aa6e66bbf51e3d"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3d">eve::tactics::PresentationRevertTrigger</a></div><div class="ttdeci">PresentationRevertTrigger</div><div class="ttdoc">What makes a presentation intent stop being true.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00062">Presentation.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">eve::tactics::PresentationRevertTrigger::OnExpiry</a></div><div class="ttdeci">@ OnExpiry</div><div class="ttdoc">Clear when expiresAtTick has passed.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da6e7b34fa59e1bd229b207892956dc41c">eve::tactics::PresentationRevertTrigger::Never</a></div><div class="ttdeci">@ Never</div><div class="ttdoc">Durable state (defeat, end of round): never taken back.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">eve::tactics::PresentationRevertTrigger::OnNextTurn</a></div><div class="ttdeci">@ OnNextTurn</div><div class="ttdoc">Clear when any unit's next turn starts.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">eve::tactics::PresentationRevertTrigger::OnRoundStart</a></div><div class="ttdeci">@ OnRoundStart</div><div class="ttdoc">Clear at the next round boundary.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a4105467e7d24591a1d109e1ad03efcfc"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a4105467e7d24591a1d109e1ad03efcfc">eve::tactics::presentationRevertTriggerName</a></div><div class="ttdeci">std::string_view presentationRevertTriggerName(PresentationRevertTrigger trigger) noexcept</div><div class="ttdoc">Human-readable stable spelling of a revert trigger (protocol text).</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8cpp_source.html#l00062">Presentation.cpp:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a4d424d91ef68337e30447f97d394a7f8"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a4d424d91ef68337e30447f97d394a7f8">eve::tactics::unitVisualStateName</a></div><div class="ttdeci">std::string_view unitVisualStateName(UnitVisualState state) noexcept</div><div class="ttdoc">Human-readable stable spelling of a visual state (protocol text).</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8cpp_source.html#l00047">Presentation.cpp:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">eve::tactics::BattleCommandKind::Move</a></div><div class="ttdeci">@ Move</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5">eve::tactics::BattleCommandKind::UseAbility</a></div><div class="ttdeci">@ UseAbility</div><div class="ttdoc">Declare a unit ability activation against a target cell.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3">eve::tactics::UnitVisualState</a></div><div class="ttdeci">UnitVisualState</div><div class="ttdoc">How a consumer should draw one unit.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00036">Presentation.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a03fdbf12e03a4cd1409b84abe2b631df">eve::tactics::UnitVisualState::Friendly</a></div><div class="ttdeci">@ Friendly</div><div class="ttdoc">Controlled by the viewing session.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a591bebd7029b03a0862247b13bb0588c">eve::tactics::UnitVisualState::Targetable</a></div><div class="ttdeci">@ Targetable</div><div class="ttdoc">A legal target for the armed ability.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">eve::tactics::UnitVisualState::Attacking</a></div><div class="ttdeci">@ Attacking</div><div class="ttdoc">Currently declaring an ability.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">eve::tactics::UnitVisualState::Finished</a></div><div class="ttdeci">@ Finished</div><div class="ttdoc">Already finished this round.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">eve::tactics::UnitVisualState::Selected</a></div><div class="ttdeci">@ Selected</div><div class="ttdoc">Currently selected or acting.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">eve::tactics::UnitVisualState::Destroyed</a></div><div class="ttdeci">@ Destroyed</div><div class="ttdoc">Defeated; terminal.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">eve::tactics::UnitVisualState::Moving</a></div><div class="ttdeci">@ Moving</div><div class="ttdoc">In transit between cells.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3ae599161956d626eda4cb0a5ffb85271c">eve::tactics::UnitVisualState::Idle</a></div><div class="ttdeci">@ Idle</div><div class="ttdoc">Resting, nothing special.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3afb08a52d95d398c12b24d6c075d43051">eve::tactics::UnitVisualState::Defending</a></div><div class="ttdeci">@ Defending</div><div class="ttdoc">Reacting to an incoming effect.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_abfcfee3f5f9b1b38ed11b9c5f17cd675"><div class="ttname"><a href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a></div><div class="ttdeci">detail::StrongUint64&lt; detail::SimulationTickTag &gt; SimulationTick</div><div class="ttdoc">Deterministic simulation time step; it is not wall-clock time.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00029">Time.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html">eve::tactics::BattleCommand</a></div><div class="ttdoc">One accepted replay command using only persistent identities and values.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00380">TacticsTypes.h:380</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_a2339086c7dd4f4130b4d13f7255e8cf0"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#a2339086c7dd4f4130b4d13f7255e8cf0">eve::tactics::BattleCommand::targetUnit</a></div><div class="ttdeci">SubjectRef targetUnit</div><div class="ttdoc">The unit this command targeted, when the command targets one.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00395">TacticsTypes.h:395</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_a8280eecd7f9a5e4683bc8bc3b6beeedb"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#a8280eecd7f9a5e4683bc8bc3b6beeedb">eve::tactics::BattleCommand::kind</a></div><div class="ttdeci">BattleCommandKind kind</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00382">TacticsTypes.h:382</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleCommand_html_a8eb6106b0474a926101fd3d933663155"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleCommand.html#a8eb6106b0474a926101fd3d933663155">eve::tactics::BattleCommand::cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00387">TacticsTypes.h:387</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleEvent_html"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleEvent.html">eve::tactics::BattleEvent</a></div><div class="ttdoc">One deterministic battle lifecycle event owned by Battle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00306">TacticsTypes.h:306</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleEvent_html_ac5f55760a74af3a2fac5035a0ab3eb24"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleEvent.html#ac5f55760a74af3a2fac5035a0ab3eb24">eve::tactics::BattleEvent::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00313">TacticsTypes.h:313</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1BattleEvent_html_af52cdddd5f17746f3d6618f1b247e781"><div class="ttname"><a href="structeve_1_1tactics_1_1BattleEvent.html#af52cdddd5f17746f3d6618f1b247e781">eve::tactics::BattleEvent::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00314">TacticsTypes.h:314</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationCommand_html"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationCommand.html">eve::tactics::PresentationCommand</a></div><div class="ttdoc">One intent together with the way to take it back.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00136">Presentation.h:136</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationCommand_html_a9b00d1581fe70b9098fa2d8582ec057b"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationCommand.html#a9b00d1581fe70b9098fa2d8582ec057b">eve::tactics::PresentationCommand::intent</a></div><div class="ttdeci">PresentationIntent intent</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00137">Presentation.h:137</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationFrame_html"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationFrame.html">eve::tactics::PresentationFrame</a></div><div class="ttdoc">What the projector knows about the battle beyond the event itself.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00148">Presentation.h:148</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html">eve::tactics::PresentationIntent</a></div><div class="ttdoc">One presentation instruction: what to show, where, and until when.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00088">Presentation.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a0400ed0c1a3e252bbde133330eb826c6"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a0400ed0c1a3e252bbde133330eb826c6">eve::tactics::PresentationIntent::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdoc">Battle tick this intent was projected from.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00105">Presentation.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a0c5aea8a930157fd4b4a1da42dc87848"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a0c5aea8a930157fd4b4a1da42dc87848">eve::tactics::PresentationIntent::expiresAtTick</a></div><div class="ttdeci">SimulationTick expiresAtTick</div><div class="ttdoc">Tick after which the intent is stale.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00112">Presentation.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a4d88df8b46bfd184dd39ba445da0bc50"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a4d88df8b46bfd184dd39ba445da0bc50">eve::tactics::PresentationIntent::from</a></div><div class="ttdeci">Cell from</div><div class="ttdoc">Origin cell, when the intent has geometry.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00097">Presentation.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a635974b0386f14ec8783df0f0e3f96d5"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a635974b0386f14ec8783df0f0e3f96d5">eve::tactics::PresentationIntent::state</a></div><div class="ttdeci">UnitVisualState state</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00095">Presentation.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a6b22f44bf362ee8e40bd4f117b0f0073"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a6b22f44bf362ee8e40bd4f117b0f0073">eve::tactics::PresentationIntent::to</a></div><div class="ttdeci">Cell to</div><div class="ttdoc">Destination or target cell, when the intent has geometry.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00099">Presentation.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_a705d86d550e2cbdf9bbfe367d2aa069a"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#a705d86d550e2cbdf9bbfe367d2aa069a">eve::tactics::PresentationIntent::path</a></div><div class="ttdeci">std::vector&lt; Cell &gt; path</div><div class="ttdoc">Traversal the consumer may animate; empty when not applicable.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00101">Presentation.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_aa715f137bbb723914a5417865ca8305f"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#aa715f137bbb723914a5417865ca8305f">eve::tactics::PresentationIntent::revision</a></div><div class="ttdeci">Revision revision</div><div class="ttdoc">Battle revision this intent was projected from.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00103">Presentation.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_ac773a714b6faaf01e51cc42214818bb4"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#ac773a714b6faaf01e51cc42214818bb4">eve::tactics::PresentationIntent::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdoc">The unit the intent is about.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00092">Presentation.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_ad43f4f656ab65747d5d03ad8a00859ae"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#ad43f4f656ab65747d5d03ad8a00859ae">eve::tactics::PresentationIntent::other</a></div><div class="ttdeci">SubjectRef other</div><div class="ttdoc">The other unit involved (ability target, attacker), when there is one.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00094">Presentation.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationIntent_html_ae76583d34a6e358133bef256965a9188"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationIntent.html#ae76583d34a6e358133bef256965a9188">eve::tactics::PresentationIntent::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdoc">Battle event sequence this intent was projected from.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00090">Presentation.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationRevert_html"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationRevert.html">eve::tactics::PresentationRevert</a></div><div class="ttdoc">The explicit undo contract for one intent.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00122">Presentation.h:122</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationRevert_html_a27149ff6f9685dfc7a2d1286e49b2fd9"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationRevert.html#a27149ff6f9685dfc7a2d1286e49b2fd9">eve::tactics::PresentationRevert::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdoc">Event sequence the revert belongs to, for correlation.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00127">Presentation.h:127</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationRevert_html_a4e70995cfe7465c973a8beceb392dc86"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationRevert.html#a4e70995cfe7465c973a8beceb392dc86">eve::tactics::PresentationRevert::restingState</a></div><div class="ttdeci">UnitVisualState restingState</div><div class="ttdoc">The state to restore when the trigger fires.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00124">Presentation.h:124</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1PresentationRevert_html_a7501e2f6b7d39c6f48263bf49a4520b5"><div class="ttname"><a href="structeve_1_1tactics_1_1PresentationRevert.html#a7501e2f6b7d39c6f48263bf49a4520b5">eve::tactics::PresentationRevert::isRevertable</a></div><div class="ttdeci">constexpr bool isRevertable() const noexcept</div><div class="ttdoc">Whether a consumer may undo the intent at all.</div><div class="ttdef"><b>Definition</b> <a href="Presentation_8h_source.html#l00130">Presentation.h:130</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

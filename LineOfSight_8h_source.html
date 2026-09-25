@@ -1,0 +1,287 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/LineOfSight.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">LineOfSight.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LineOfSight_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsPath_8h.html">tactics/TacticsPath.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsTypes_8h.html">tactics/TacticsTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#adc314cc3edba9374fdcea00968b5a696">   39</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="namespaceeve_1_1tactics.html#adc314cc3edba9374fdcea00968b5a696">kSightBlockerTag</a> = <span class="stringliteral">&quot;sight_blocker&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">   42</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a> : std::uint8_t {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85">Half</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75">Full</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::string_view <a class="code hl_function" href="namespaceeve_1_1tactics.html#a14c323ea9cdac9a673ff1474e86d0fd7">coverLevelName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a> level) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">   61</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#abfa218ad6e545e1aeefd9fd8abc8e3f1">   64</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#abfa218ad6e545e1aeefd9fd8abc8e3f1">capabilityName</a> = <span class="stringliteral">&quot;eve.tactics.ILineOfSightPolicy&quot;</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a708de4d3bc3b9d1b526040652231dae7">   66</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a708de4d3bc3b9d1b526040652231dae7">~ILineOfSightPolicy</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#aec547fde5dc05e5aaa2ab0b34bddd349">   69</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string_view <a class="code hl_function" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#aec547fde5dc05e5aaa2ab0b34bddd349">id</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a15afbe8e016cb31429d2814c9daf20ca">   78</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">bool</span>&gt; <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>(const <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a>) const = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="};">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ICoverPolicy.html">   88</a></span>class <a class="code hl_class" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a> {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ICoverPolicy.html#a91686c10ef368a0418a5ac4bed42ab24">   91</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#abfa218ad6e545e1aeefd9fd8abc8e3f1">capabilityName</a> = <span class="stringliteral">&quot;eve.tactics.ICoverPolicy&quot;</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ICoverPolicy.html#a0764843b44824d07f81959969aef3389">   93</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1tactics_1_1ICoverPolicy.html#a0764843b44824d07f81959969aef3389">~ICoverPolicy</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ICoverPolicy.html#aecb4e24b8a5a3157420b6330ade3da16">   96</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string_view <a class="code hl_function" href="classeve_1_1tactics_1_1ICoverPolicy.html#aecb4e24b8a5a3157420b6330ade3da16">id</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1ICoverPolicy.html#a10d463710b8128dd076a100809479ee6">  102</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a>&gt; cover(const <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> attacker, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) const = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>};</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="};">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html">  121</a></span>class <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html">GridLineOfSightPolicy</a> final : public <a class="code hl_class" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html#af4215df5e78f2e5f8c3765e3fb266352">  123</a></span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html#af4215df5e78f2e5f8c3765e3fb266352">id</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;grid_line_of_sight&quot;</span>; }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>};</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00136" data-start="{" data-end="};">
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1GridCoverPolicy.html">  136</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1tactics_1_1GridCoverPolicy.html">GridCoverPolicy</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a> {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1GridCoverPolicy.html#ac9140d8e345fedab6a9791e34db7b657">  138</a></span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1tactics_1_1GridCoverPolicy.html#ac9140d8e345fedab6a9791e34db7b657">id</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;grid_cover&quot;</span>; }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CoverLevel&gt;</a> cover(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> attacker, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>};</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::shared_ptr&lt;ILineOfSightPolicy&gt; <a class="code hl_function" href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">gridLineOfSightPolicy</a>();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> std::shared_ptr&lt;ICoverPolicy&gt; <a class="code hl_function" href="namespaceeve_1_1tactics.html#afde99d4ffa1be62ce6d904f614d06520">gridCoverPolicy</a>();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Cell&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1tactics.html#a1fa05447001ddc8124fc62cb398659a9">visibleCellsInRange</a>(<span class="keyword">const</span> BoardState&amp;         <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                                                                                 <span class="keyword">const</span> ILineOfSightPolicy&amp; policy,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                                                                                 Cell origin, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>,</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                                                                                 <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> metric);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00158">ActionNotifyRegistry.cpp:158</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00161">AssetCommand.cpp:161</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00027">GltfImporter.cpp:27</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00026">GltfImporter.cpp:26</a></div></div>
+<div class="ttc" id="aHexUnits_8cpp_html_a1cda486e5488f8ab9196eb812fc14402"><div class="ttname"><a href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a></div><div class="ttdeci">HexCoordinates to</div><div class="ttdoc">Cell the unit walks towards on this segment.</div><div class="ttdef"><b>Definition</b> <a href="HexUnits_8cpp_source.html#l00064">HexUnits.cpp:64</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPath_8h_html"><div class="ttname"><a href="TacticsPath_8h.html">TacticsPath.h</a></div><div class="ttdoc">Deterministic fixed-cost tactics path queries.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_afa74608efad845cb4247c533f215f71b"><div class="ttname"><a href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a></div><div class="ttdeci">BoardState board</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00153">TacticsPersistence.cpp:153</a></div></div>
+<div class="ttc" id="aTacticsTypes_8h_html"><div class="ttname"><a href="TacticsTypes_8h.html">TacticsTypes.h</a></div><div class="ttdoc">Deterministic board values and short-root ECS entities for tactics.</div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BoardState_html"><div class="ttname"><a href="classeve_1_1tactics_1_1BoardState.html">eve::tactics::BoardState</a></div><div class="ttdoc">Authoritative board facts and occupancy indexes for one battle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00152">TacticsTypes.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1GridCoverPolicy_html"><div class="ttname"><a href="classeve_1_1tactics_1_1GridCoverPolicy.html">eve::tactics::GridCoverPolicy</a></div><div class="ttdoc">The built-in cover policy: blockers adjacent to the target, prioritising the line.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00136">LineOfSight.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1GridCoverPolicy_html_ac9140d8e345fedab6a9791e34db7b657"><div class="ttname"><a href="classeve_1_1tactics_1_1GridCoverPolicy.html#ac9140d8e345fedab6a9791e34db7b657">eve::tactics::GridCoverPolicy::id</a></div><div class="ttdeci">std::string_view id() const noexcept override</div><div class="ttdoc">Stable id of this implementation.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00138">LineOfSight.h:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1GridLineOfSightPolicy_html"><div class="ttname"><a href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html">eve::tactics::GridLineOfSightPolicy</a></div><div class="ttdoc">The built-in grid policy: a straight-line trace over the board's own topology.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00121">LineOfSight.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1GridLineOfSightPolicy_html_af4215df5e78f2e5f8c3765e3fb266352"><div class="ttname"><a href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html#af4215df5e78f2e5f8c3765e3fb266352">eve::tactics::GridLineOfSightPolicy::id</a></div><div class="ttdeci">std::string_view id() const noexcept override</div><div class="ttdoc">Stable id of this implementation, for diagnostics and configuration.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00123">LineOfSight.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ICoverPolicy_html"><div class="ttname"><a href="classeve_1_1tactics_1_1ICoverPolicy.html">eve::tactics::ICoverPolicy</a></div><div class="ttdoc">Answers &quot;how much cover does @p target have against @p attacker&quot;.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00088">LineOfSight.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ICoverPolicy_html_a0764843b44824d07f81959969aef3389"><div class="ttname"><a href="classeve_1_1tactics_1_1ICoverPolicy.html#a0764843b44824d07f81959969aef3389">eve::tactics::ICoverPolicy::~ICoverPolicy</a></div><div class="ttdeci">virtual ~ICoverPolicy()=default</div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ICoverPolicy_html_aecb4e24b8a5a3157420b6330ade3da16"><div class="ttname"><a href="classeve_1_1tactics_1_1ICoverPolicy.html#aecb4e24b8a5a3157420b6330ade3da16">eve::tactics::ICoverPolicy::id</a></div><div class="ttdeci">virtual std::string_view id() const noexcept=0</div><div class="ttdoc">Stable id of this implementation.</div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">eve::tactics::ILineOfSightPolicy</a></div><div class="ttdoc">Answers &quot;can @p from see @p to&quot; for one board.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00061">LineOfSight.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html_a708de4d3bc3b9d1b526040652231dae7"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#a708de4d3bc3b9d1b526040652231dae7">eve::tactics::ILineOfSightPolicy::~ILineOfSightPolicy</a></div><div class="ttdeci">virtual ~ILineOfSightPolicy()=default</div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html_abfa218ad6e545e1aeefd9fd8abc8e3f1"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#abfa218ad6e545e1aeefd9fd8abc8e3f1">eve::tactics::ILineOfSightPolicy::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdoc">Capability name a provider registers under.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00064">LineOfSight.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1ILineOfSightPolicy_html_aec547fde5dc05e5aaa2ab0b34bddd349"><div class="ttname"><a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#aec547fde5dc05e5aaa2ab0b34bddd349">eve::tactics::ILineOfSightPolicy::id</a></div><div class="ttdeci">virtual std::string_view id() const noexcept=0</div><div class="ttdoc">Stable id of this implementation, for diagnostics and configuration.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00013">Interaction.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a14c323ea9cdac9a673ff1474e86d0fd7"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a14c323ea9cdac9a673ff1474e86d0fd7">eve::tactics::coverLevelName</a></div><div class="ttdeci">std::string_view coverLevelName(CoverLevel level) noexcept</div><div class="ttdoc">Stable protocol spelling of a cover level.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8cpp_source.html#l00122">LineOfSight.cpp:122</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a1fa05447001ddc8124fc62cb398659a9"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a1fa05447001ddc8124fc62cb398659a9">eve::tactics::visibleCellsInRange</a></div><div class="ttdeci">Result&lt; std::vector&lt; Cell &gt; &gt; visibleCellsInRange(const BoardState &amp;board, const ILineOfSightPolicy &amp;policy, Cell origin, int minimum, int maximum, CellRangeMetric metric)</div><div class="ttdoc">Cells within a metric range of origin that policy can actually see.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8cpp_source.html#l00186">LineOfSight.cpp:186</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">eve::tactics::InteractionIntentKind::None</a></div><div class="ttdeci">@ None</div><div class="ttdoc">Nothing to do: the click landed somewhere with no meaning in this state.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a9b390cc88bf047721fcf5d16492b3222"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">eve::tactics::gridLineOfSightPolicy</a></div><div class="ttdeci">std::shared_ptr&lt; ILineOfSightPolicy &gt; gridLineOfSightPolicy()</div><div class="ttdoc">The process-wide built-in line-of-sight policy.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8cpp_source.html#l00176">LineOfSight.cpp:176</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_aa5126ccf84ac156a65549f81f996ef84"><div class="ttname"><a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">eve::tactics::CellRangeMetric</a></div><div class="ttdeci">CellRangeMetric</div><div class="ttdoc">Deterministic logical distance used by cellsInRange.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00015">TacticsPath.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_adc314cc3edba9374fdcea00968b5a696"><div class="ttname"><a href="namespaceeve_1_1tactics.html#adc314cc3edba9374fdcea00968b5a696">eve::tactics::kSightBlockerTag</a></div><div class="ttdeci">constexpr std::string_view kSightBlockerTag</div><div class="ttdoc">Cell tag that makes a cell block line of sight.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00039">LineOfSight.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_af1918f1a4d961c1bbec50e48449554d8"><div class="ttname"><a href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">eve::tactics::CoverLevel</a></div><div class="ttdeci">CoverLevel</div><div class="ttdoc">How much protection a cell gives against an attacker.</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8h_source.html#l00042">LineOfSight.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75"><div class="ttname"><a href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75">eve::tactics::CoverLevel::Full</a></div><div class="ttdeci">@ Full</div><div class="ttdoc">Full protection: a blocker sits between the attacker and the target.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85"><div class="ttname"><a href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85">eve::tactics::CoverLevel::Half</a></div><div class="ttdeci">@ Half</div><div class="ttdoc">Partial protection: an adjacent blocker, but not on the incoming line.</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_afde99d4ffa1be62ce6d904f614d06520"><div class="ttname"><a href="namespaceeve_1_1tactics.html#afde99d4ffa1be62ce6d904f614d06520">eve::tactics::gridCoverPolicy</a></div><div class="ttdeci">std::shared_ptr&lt; ICoverPolicy &gt; gridCoverPolicy()</div><div class="ttdoc">The process-wide built-in cover policy (same ownership remarks as above).</div><div class="ttdef"><b>Definition</b> <a href="LineOfSight_8cpp_source.html#l00181">LineOfSight.cpp:181</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1Cell_html"><div class="ttname"><a href="structeve_1_1tactics_1_1Cell.html">eve::tactics::Cell</a></div><div class="ttdoc">Logical board coordinate independent of rendering projection.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00030">TacticsTypes.h:30</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

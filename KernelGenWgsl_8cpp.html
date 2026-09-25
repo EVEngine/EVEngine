@@ -1,0 +1,232 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tensor/KernelGenWgsl.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_782bbf0976eacdfd5fcf4a27f0d60777.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">KernelGenWgsl.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Exception_8h_source.html">common/Exception.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CpuKernels_8h_source.html">tensor/CpuKernels.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="KernelGenWgslInternal_8h_source.html">tensor/KernelGenWgslInternal.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Quant_8h_source.html">tensor/Quant.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+</div>
+<p><a href="KernelGenWgsl_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1wgsl__detail_1_1ChainContext.html">eve::tensor::wgsl_detail::ChainContext</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor" id="r_namespaceeve_1_1tensor"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html">eve::tensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tensor_1_1wgsl__detail" id="r_namespaceeve_1_1tensor_1_1wgsl__detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html">eve::tensor::wgsl_detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aec40bac94436c29347913932dabbbc01" id="r_aec40bac94436c29347913932dabbbc01"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">eve::tensor::wgsl_detail::header</a> (int localX, int localY)</td></tr>
+<tr class="separator:aec40bac94436c29347913932dabbbc01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab36d96220820f7cfd000f279c3e98a79" id="r_ab36d96220820f7cfd000f279c3e98a79"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">eve::tensor::wgsl_detail::bufferDecl</a> (int <a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const char *<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:ab36d96220820f7cfd000f279c3e98a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a485f235c4e255b8652c5f10d31339cb5" id="r_a485f235c4e255b8652c5f10d31339cb5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a485f235c4e255b8652c5f10d31339cb5">eve::tensor::wgsl_detail::bufferDeclUint</a> (int <a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const char *<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a485f235c4e255b8652c5f10d31339cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a962aa8f4113cd03cb781e8431abb171b" id="r_a962aa8f4113cd03cb781e8431abb171b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a962aa8f4113cd03cb781e8431abb171b">eve::tensor::wgsl_detail::emitQuantizedBVal</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, int <a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, const char *bufName=&quot;b&quot;)</td></tr>
+<tr class="separator:a962aa8f4113cd03cb781e8431abb171b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab410e02fa3f0e0150364f1560423ff20" id="r_ab410e02fa3f0e0150364f1560423ff20"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">eve::tensor::wgsl_detail::pushConstant</a> ()</td></tr>
+<tr class="separator:ab410e02fa3f0e0150364f1560423ff20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8e4ce64609d6bd82048f77049ea1314" id="r_ab8e4ce64609d6bd82048f77049ea1314"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">eve::tensor::wgsl_detail::groupsFor</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="separator:ab8e4ce64609d6bd82048f77049ea1314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a915772f282e21971b37de3942436b9" id="r_a6a915772f282e21971b37de3942436b9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">eve::tensor::wgsl_detail::scalarStr</a> (float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a6a915772f282e21971b37de3942436b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc91ac2c4e828de18a7ed75edc11ac82" id="r_acc91ac2c4e828de18a7ed75edc11ac82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#acc91ac2c4e828de18a7ed75edc11ac82">eve::tensor::wgsl_detail::emitInputIndexExprs</a> (std::ostringstream &amp;os, const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, std::vector&lt; std::string &gt; &amp;indexExprs)</td></tr>
+<tr class="separator:acc91ac2c4e828de18a7ed75edc11ac82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf89542b0166351e827cc1bf509a1ee2" id="r_aaf89542b0166351e827cc1bf509a1ee2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aaf89542b0166351e827cc1bf509a1ee2">eve::tensor::wgsl_detail::genElementwise</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:aaf89542b0166351e827cc1bf509a1ee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1647b80822d4036e8e5c8dd6facd94d" id="r_af1647b80822d4036e8e5c8dd6facd94d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#af1647b80822d4036e8e5c8dd6facd94d">eve::tensor::wgsl_detail::genMatMul</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, bool tiled, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:af1647b80822d4036e8e5c8dd6facd94d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77303619a370047b007e0be746800a6b" id="r_a77303619a370047b007e0be746800a6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a77303619a370047b007e0be746800a6b">eve::tensor::wgsl_detail::genConv</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a77303619a370047b007e0be746800a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd402381c860f81c14a382d26fbd73f2" id="r_abd402381c860f81c14a382d26fbd73f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#abd402381c860f81c14a382d26fbd73f2">eve::tensor::wgsl_detail::genPool</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:abd402381c860f81c14a382d26fbd73f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69278681af826f3397eae1080d6f41ad" id="r_a69278681af826f3397eae1080d6f41ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#a69278681af826f3397eae1080d6f41ad">eve::tensor::generateKernelWgslImpl</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;<a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a69278681af826f3397eae1080d6f41ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad034eda67f4dfb63fc6d3553c67b0983" id="r_ad034eda67f4dfb63fc6d3553c67b0983"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor.html#ad034eda67f4dfb63fc6d3553c67b0983">eve::tensor::generateWgslKernel</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;<a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, <a class="el" href="namespaceeve_1_1tensor.html#a4b457830243c141b820823788507108b">KernelVariant</a> <a class="el" href="BuildingFx_8cpp.html#afd32ff0f48ffc545efb12df727dce08d">variant</a>=<a class="el" href="namespaceeve_1_1tensor.html#a4b457830243c141b820823788507108ba7a1920d61156abc05a60135aefe8bc67">KernelVariant::Default</a>)</td></tr>
+<tr class="memdesc:ad034eda67f4dfb63fc6d3553c67b0983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower an optimizer-produced group directly to owning WGSL source and dispatch metadata.  <br /></td></tr>
+<tr class="separator:ad034eda67f4dfb63fc6d3553c67b0983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

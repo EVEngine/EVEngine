@@ -1,0 +1,244 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/SnapshotHash.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SnapshotHash.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SnapshotHash_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77">   38</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77">ContentDigestKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77aa9737aedf41d800bf516491741bba8b8">NonCryptographic</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77a5a6fe61e51947fb52d5674046a6230f8">Cryptographic</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string_view <a class="code hl_function" href="namespaceeve.html#a5293d87629419534f087020e1e5393b5">contentDigestKindName</a>(<a class="code hl_enumeration" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77">ContentDigestKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html">   54</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ISnapshotContentHasher.html">ISnapshotContentHasher</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html#a52ac90a8e3ebaea17692e40a2791c719">   57</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1ISnapshotContentHasher.html#a52ac90a8e3ebaea17692e40a2791c719">capabilityName</a> = <span class="stringliteral">&quot;eve.ISnapshotContentHasher&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html#a2b95dfa34d0253c2cc01766df0df3a08">   59</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1ISnapshotContentHasher.html#a2b95dfa34d0253c2cc01766df0df3a08">~ISnapshotContentHasher</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html#a4b7e7436f57a6c39c9ecc4f00518b95d">   62</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string_view <a class="code hl_function" href="classeve_1_1ISnapshotContentHasher.html#a4b7e7436f57a6c39c9ecc4f00518b95d">id</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html#af82bac4a5aaf330ad5709b054c72140a">   65</a></span>    [[nodiscard]] virtual <a class="code hl_enumeration" href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77">ContentDigestKind</a> <a class="code hl_function" href="classeve_1_1ISnapshotContentHasher.html#af82bac4a5aaf330ad5709b054c72140a">digestKind</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1ISnapshotContentHasher.html#a5b8745c81f3f72185e451cb7e2d6fc1f">   72</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">ContentId</a>&gt; <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view canonicalInput) const = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_namespace" href="namespacestd.html">std</a>::shared_ptr&lt;<a class="code hl_class" href="classeve_1_1ISnapshotContentHasher.html">ISnapshotContentHasher</a>&gt; <a class="code hl_function" href="namespaceeve.html#ad1aa6978d307e453b403d0ef9948e909">builtinSnapshotContentHasher</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1ISnapshotContentHasher.html">ISnapshotContentHasher</a>* <a class="code hl_function" href="namespaceeve.html#af21ad45410c890a6eb1564a73a26ee20">registeredSnapshotContentHasher</a>() noexcept;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="namespaceeve.html#a70a5c57c96ecd7ee9a91f2c389af085d">registerBuiltinSnapshotHasher</a>();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a> <a class="code hl_function" href="namespaceeve.html#ab018e7d181b1bc3474a356f0948121ec">snapshotContentHashProvider</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_namespace" href="namespacestd.html">std</a>::string_view <a class="code hl_function" href="namespaceeve.html#aea548cff064d335921ccc9a7f00015e6">activeSnapshotHashAlgorithm</a>() noexcept;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aEvpack_8cpp_html_a5fb132b1d88427518f97e5e710bc1c93"><div class="ttname"><a href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a></div><div class="ttdeci">std::array&lt; std::uint8_t, 32 &gt; hash</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00172">Evpack.cpp:172</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00031">Export.h:31</a></div></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aclasseve_1_1ISnapshotContentHasher_html"><div class="ttname"><a href="classeve_1_1ISnapshotContentHasher.html">eve::ISnapshotContentHasher</a></div><div class="ttdoc">One content-digest implementation usable for snapshot sealing and verification.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8h_source.html#l00054">SnapshotHash.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1ISnapshotContentHasher_html_a2b95dfa34d0253c2cc01766df0df3a08"><div class="ttname"><a href="classeve_1_1ISnapshotContentHasher.html#a2b95dfa34d0253c2cc01766df0df3a08">eve::ISnapshotContentHasher::~ISnapshotContentHasher</a></div><div class="ttdeci">virtual ~ISnapshotContentHasher()=default</div></div>
+<div class="ttc" id="aclasseve_1_1ISnapshotContentHasher_html_a4b7e7436f57a6c39c9ecc4f00518b95d"><div class="ttname"><a href="classeve_1_1ISnapshotContentHasher.html#a4b7e7436f57a6c39c9ecc4f00518b95d">eve::ISnapshotContentHasher::id</a></div><div class="ttdeci">virtual std::string_view id() const noexcept=0</div><div class="ttdoc">Stable algorithm id, persisted or logged next to the data it hashed.</div></div>
+<div class="ttc" id="aclasseve_1_1ISnapshotContentHasher_html_a52ac90a8e3ebaea17692e40a2791c719"><div class="ttname"><a href="classeve_1_1ISnapshotContentHasher.html#a52ac90a8e3ebaea17692e40a2791c719">eve::ISnapshotContentHasher::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdoc">Capability name a provider registers under.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8h_source.html#l00057">SnapshotHash.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1ISnapshotContentHasher_html_af82bac4a5aaf330ad5709b054c72140a"><div class="ttname"><a href="classeve_1_1ISnapshotContentHasher.html#af82bac4a5aaf330ad5709b054c72140a">eve::ISnapshotContentHasher::digestKind</a></div><div class="ttdeci">virtual ContentDigestKind digestKind() const noexcept=0</div><div class="ttdoc">What this digest guarantees.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00100">Identity.h:100</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a5293d87629419534f087020e1e5393b5"><div class="ttname"><a href="namespaceeve.html#a5293d87629419534f087020e1e5393b5">eve::contentDigestKindName</a></div><div class="ttdeci">std::string_view contentDigestKindName(ContentDigestKind kind) noexcept</div><div class="ttdoc">Stable protocol spelling of a digest kind.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00071">SnapshotHash.cpp:71</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a6d7e858018274b184a7e6deffe5efd77"><div class="ttname"><a href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77">eve::ContentDigestKind</a></div><div class="ttdeci">ContentDigestKind</div><div class="ttdoc">What a digest implementation actually guarantees, stated rather than implied.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8h_source.html#l00038">SnapshotHash.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a6d7e858018274b184a7e6deffe5efd77a5a6fe61e51947fb52d5674046a6230f8"><div class="ttname"><a href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77a5a6fe61e51947fb52d5674046a6230f8">eve::ContentDigestKind::Cryptographic</a></div><div class="ttdeci">@ Cryptographic</div><div class="ttdoc">A cryptographic digest; the provider documents its algorithm and properties.</div></div>
+<div class="ttc" id="anamespaceeve_html_a6d7e858018274b184a7e6deffe5efd77aa9737aedf41d800bf516491741bba8b8"><div class="ttname"><a href="namespaceeve.html#a6d7e858018274b184a7e6deffe5efd77aa9737aedf41d800bf516491741bba8b8">eve::ContentDigestKind::NonCryptographic</a></div><div class="ttdeci">@ NonCryptographic</div><div class="ttdoc">Fast, deterministic, collision-resistant enough for storage identity only.</div></div>
+<div class="ttc" id="anamespaceeve_html_a70a5c57c96ecd7ee9a91f2c389af085d"><div class="ttname"><a href="namespaceeve.html#a70a5c57c96ecd7ee9a91f2c389af085d">eve::registerBuiltinSnapshotHasher</a></div><div class="ttdeci">Result&lt; void &gt; registerBuiltinSnapshotHasher()</div><div class="ttdoc">Register the built-in hasher, unless a module already registered one.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00085">SnapshotHash.cpp:85</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ab018e7d181b1bc3474a356f0948121ec"><div class="ttname"><a href="namespaceeve.html#ab018e7d181b1bc3474a356f0948121ec">eve::snapshotContentHashProvider</a></div><div class="ttdeci">SnapshotHashProvider snapshotContentHashProvider()</div><div class="ttdoc">A SnapshotHashProvider backed by the active hasher.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00092">SnapshotHash.cpp:92</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ad1aa6978d307e453b403d0ef9948e909"><div class="ttname"><a href="namespaceeve.html#ad1aa6978d307e453b403d0ef9948e909">eve::builtinSnapshotContentHasher</a></div><div class="ttdeci">std::shared_ptr&lt; ISnapshotContentHasher &gt; builtinSnapshotContentHasher()</div><div class="ttdoc">The engine's built-in content hasher.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00079">SnapshotHash.cpp:79</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aea548cff064d335921ccc9a7f00015e6"><div class="ttname"><a href="namespaceeve.html#aea548cff064d335921ccc9a7f00015e6">eve::activeSnapshotHashAlgorithm</a></div><div class="ttdeci">std::string_view activeSnapshotHashAlgorithm() noexcept</div><div class="ttdoc">Id of the algorithm snapshotContentHashProvider currently uses.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00097">SnapshotHash.cpp:97</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af21ad45410c890a6eb1564a73a26ee20"><div class="ttname"><a href="namespaceeve.html#af21ad45410c890a6eb1564a73a26ee20">eve::registeredSnapshotContentHasher</a></div><div class="ttdeci">ISnapshotContentHasher * registeredSnapshotContentHasher() noexcept</div><div class="ttdoc">The currently registered hasher, if a module registered one.</div><div class="ttdef"><b>Definition</b> <a href="SnapshotHash_8cpp_source.html#l00081">SnapshotHash.cpp:81</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

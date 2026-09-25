@@ -1,0 +1,297 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/procgen/TerrainVegetationRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_1bcc9266249b89d726e83319c33eef27.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainVegetationRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainVegetationRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackInstanceSetLoader_8h.html">asset/procgen/EvpackInstanceSetLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackPointGraphLoader_8h.html">asset/procgen/EvpackPointGraphLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__procgen.html">eve::asset_procgen</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">struct </span>LoadedTerrainMaterial;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">struct </span>TerrainMaterialAtlases;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">TerrainVegetationLimits</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#aade2cee6990eaf575d2e7e217c9b431d">   20</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#aade2cee6990eaf575d2e7e217c9b431d">maximumGeneratedInstances</a> = 1&#39;000&#39;000;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#a81bbf63d2911b79a348d90b41ad7d145">   21</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#a81bbf63d2911b79a348d90b41ad7d145">maximumTotalInstances</a>     = 2&#39;000&#39;000;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#adf0d5526b13a48ce1fbec8e313968d37">   22</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#adf0d5526b13a48ce1fbec8e313968d37">maximumGraphNodes</a>         = 4096;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html">TerrainVegetationInstance</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a72ca9a1e7c871aac3ac1db821d2989ff">   27</a></span>    std::uint64_t        <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#ae0e3d9037cf15e5ca97338fd6183e93c">   28</a></span>    std::string          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#ae0e3d9037cf15e5ca97338fd6183e93c">prototype</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#afbf2a9bed673b0641f90ef7505efeed9">   29</a></span>    std::string          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#afbf2a9bed673b0641f90ef7505efeed9">layer</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a513167db69cd150c8fb2eb4f6156ca19">   30</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a513167db69cd150c8fb2eb4f6156ca19">position</a>{};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#abace1437522b56d3362af8876610bcac">   31</a></span>    std::array&lt;float, 4&gt; <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#abace1437522b56d3362af8876610bcac">rotation</a>{0.f, 0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a61fcc31b94ef2847cd490d8e629957ca">   32</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a61fcc31b94ef2847cd490d8e629957ca">scale</a>{1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aaeb636cdeae525413a8e0d721261dea1">   33</a></span>    std::array&lt;float, 3&gt; <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aaeb636cdeae525413a8e0d721261dea1">normal</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aafbad37fd5597f0dadcc0afdbed891b8">   34</a></span>    std::uint32_t        <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aafbad37fd5597f0dadcc0afdbed891b8">seed</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html">TerrainVegetationBucket</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a45114fe70cc27f37315231d1d59927d3">   39</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a45114fe70cc27f37315231d1d59927d3">prototype</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a8efec1bbadaadad94545761d93c37bcf">   40</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a8efec1bbadaadad94545761d93c37bcf">firstInstance</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a0003caf663564dcc8142e8a4f6679335">   41</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a0003caf663564dcc8142e8a4f6679335">instanceCount</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html">TerrainVegetationRealization</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a138746b78f7555888816a1a0af588de3">   46</a></span>    <span class="keywordtype">float</span>                                  <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a138746b78f7555888816a1a0af588de3">wavingGrassAmount</a> = 0.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a4da9e3d143706bce8314ae26cae66fa0">   47</a></span>    <span class="keywordtype">float</span>                                  <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a4da9e3d143706bce8314ae26cae66fa0">wavingGrassSpeed</a> = 0.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac735e6830bd5a961e98959fb4f720735">   48</a></span>    <span class="keywordtype">float</span>                                  <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac735e6830bd5a961e98959fb4f720735">wavingGrassStrength</a> = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ae023c92f2396e51b7a068097bab9b8a1">   49</a></span>    std::array&lt;float, 4&gt;                   <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ae023c92f2396e51b7a068097bab9b8a1">wavingGrassTint</a>{1.f, 1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a2fe9cc20ab8883d8baf29d05a5b844d6">   50</a></span>    std::vector&lt;RuntimeInstancePrototype&gt;  <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a2fe9cc20ab8883d8baf29d05a5b844d6">prototypes</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a324ebf0a6dd1900855c5dabf41298e38">   51</a></span>    std::vector&lt;TerrainVegetationInstance&gt; <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a324ebf0a6dd1900855c5dabf41298e38">instances</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac75d39956fdc4c8cd267c35cea84ead3">   52</a></span>    std::vector&lt;TerrainVegetationBucket&gt;   <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac75d39956fdc4c8cd267c35cea84ead3">buckets</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#aae084585fb2e5cbf9d4a28bc455d4c42">   53</a></span>    std::uint32_t                          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#aae084585fb2e5cbf9d4a28bc455d4c42">generatedCount</a>      = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5eca2ff1f502f4acb2e7a5355bec597c">   54</a></span>    std::uint32_t                          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5eca2ff1f502f4acb2e7a5355bec597c">explicitCount</a>       = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a1f4e71edd988727a0787ab81cae2ff19">   55</a></span>    std::uint32_t                          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a1f4e71edd988727a0787ab81cae2ff19">weightCulledCount</a>   = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a7f1226c2dcc83f0f8006a79ba67492c1">   56</a></span>    std::uint32_t                          <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a7f1226c2dcc83f0f8006a79ba67492c1">graphNodesEvaluated</a> = 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5ee50f81a26127911e4aff4430e90157">   57</a></span>    <span class="keywordtype">double</span>                                 <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5ee50f81a26127911e4aff4430e90157">graphMilliseconds</a>   = 0.0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html">   61</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html">TerrainVegetationWeightDomain</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a9659900d96bef4d6a8f6a4aa673d02cd">   62</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a9659900d96bef4d6a8f6a4aa673d02cd">minimumX</a> = 0.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ab42385c9bec564ff291652658173fd0a">   63</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ab42385c9bec564ff291652658173fd0a">minimumZ</a> = 0.f;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a88247d3a991277ad0da5b72119fe3340">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a88247d3a991277ad0da5b72119fe3340">maximumX</a> = 0.f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ac0f3647eeef12d15a5697017e9827f35">   65</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ac0f3647eeef12d15a5697017e9827f35">maximumZ</a> = 0.f;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ad4a173e3a7786887a55e39dfc8f05bc9">   67</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ad4a173e3a7786887a55e39dfc8f05bc9">flipV</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TerrainVegetationRealization&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__procgen.html#a0878e28d2e270560da9d2cf9843eba03">realizeTerrainVegetation</a>(</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_struct" href="structeve_1_1asset__procgen_1_1LoadedPointGraph.html">LoadedPointGraph</a>* <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__procgen_1_1LoadedInstanceSet.html">LoadedInstanceSet</a>* explicitInstances, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">TerrainVegetationLimits</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a> = {});</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TerrainVegetationRealization&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__procgen.html#a7f60e9768abbeba502bacf8fb46e5cb7">filterTerrainVegetationByLayerWeights</a>(</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">const</span> TerrainVegetationRealization&amp; realization, <span class="keyword">const</span> LoadedTerrainMaterial&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">const</span> TerrainMaterialAtlases&amp; atlases, <span class="keyword">const</span> TerrainVegetationWeightDomain&amp; domain);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}  <span class="comment">// namespace eve::asset_procgen</span></div>
+<div class="ttc" id="aEvpackInstanceSetLoader_8h_html"><div class="ttname"><a href="EvpackInstanceSetLoader_8h.html">EvpackInstanceSetLoader.h</a></div><div class="ttdoc">Runtime decoding of canonical static instances.</div></div>
+<div class="ttc" id="aEvpackPointGraphLoader_8h_html"><div class="ttname"><a href="EvpackPointGraphLoader_8h.html">EvpackPointGraphLoader.h</a></div><div class="ttdoc">Runtime binding for compiled PCG assets.</div></div>
+<div class="ttc" id="aExport_8h_html_af85ff84ca379cb803d64a467fc5faf5a"><div class="ttname"><a href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a></div><div class="ttdeci">#define EVENGINE_API_ORCHESTRATION</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00111">Export.h:111</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00642">RenderSystem3D.cpp:642</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_ac305f1e828b2cf82b0d6fed8194ce85c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a></div><div class="ttdeci">const AssetImportLimits &amp; limits</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00030">UnityVegetationPreset.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__procgen_html"><div class="ttname"><a href="namespaceeve_1_1asset__procgen.html">eve::asset_procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackInstanceSetLoader_8cpp_source.html#l00011">EvpackInstanceSetLoader.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__procgen_html_a0878e28d2e270560da9d2cf9843eba03"><div class="ttname"><a href="namespaceeve_1_1asset__procgen.html#a0878e28d2e270560da9d2cf9843eba03">eve::asset_procgen::realizeTerrainVegetation</a></div><div class="ttdeci">Result&lt; TerrainVegetationRealization &gt; realizeTerrainVegetation(LoadedPointGraph *graph, const LoadedInstanceSet *explicitInstances, const TerrainVegetationLimits &amp;limits)</div><div class="ttdoc">Execute an optional terrain PCG graph and merge an optional baked instance set.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8cpp_source.html#l00081">TerrainVegetationRuntime.cpp:81</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__procgen_html_a7f60e9768abbeba502bacf8fb46e5cb7"><div class="ttname"><a href="namespaceeve_1_1asset__procgen.html#a7f60e9768abbeba502bacf8fb46e5cb7">eve::asset_procgen::filterTerrainVegetationByLayerWeights</a></div><div class="ttdeci">Result&lt; TerrainVegetationRealization &gt; filterTerrainVegetationByLayerWeights(const TerrainVegetationRealization &amp;realization, const LoadedTerrainMaterial &amp;material, const TerrainMaterialAtlases &amp;atlases, const TerrainVegetationWeightDomain &amp;domain)</div><div class="ttdoc">Apply terrain RGBA layer weights to procedural instances using stable stochastic thinning.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8cpp_source.html#l00170">TerrainVegetationRuntime.cpp:170</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1LoadedInstanceSet_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1LoadedInstanceSet.html">eve::asset_procgen::LoadedInstanceSet</a></div><div class="ttdoc">Owning exact static-instance set selected for one runtime variant.</div><div class="ttdef"><b>Definition</b> <a href="EvpackInstanceSetLoader_8h_source.html#l00049">EvpackInstanceSetLoader.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1LoadedPointGraph_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1LoadedPointGraph.html">eve::asset_procgen::LoadedPointGraph</a></div><div class="ttdoc">Owning executable graph and its selected output node.</div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00020">EvpackPointGraphLoader.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationBucket_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html">eve::asset_procgen::TerrainVegetationBucket</a></div><div class="ttdoc">Contiguous prototype range suitable for one instanced render submission.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00038">TerrainVegetationRuntime.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationBucket_html_a0003caf663564dcc8142e8a4f6679335"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a0003caf663564dcc8142e8a4f6679335">eve::asset_procgen::TerrainVegetationBucket::instanceCount</a></div><div class="ttdeci">std::uint32_t instanceCount</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00041">TerrainVegetationRuntime.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationBucket_html_a45114fe70cc27f37315231d1d59927d3"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a45114fe70cc27f37315231d1d59927d3">eve::asset_procgen::TerrainVegetationBucket::prototype</a></div><div class="ttdeci">std::string prototype</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00039">TerrainVegetationRuntime.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationBucket_html_a8efec1bbadaadad94545761d93c37bcf"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationBucket.html#a8efec1bbadaadad94545761d93c37bcf">eve::asset_procgen::TerrainVegetationBucket::firstInstance</a></div><div class="ttdeci">std::uint32_t firstInstance</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00040">TerrainVegetationRuntime.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html">eve::asset_procgen::TerrainVegetationInstance</a></div><div class="ttdoc">One stable terrain vegetation transform and its source attributes.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00026">TerrainVegetationRuntime.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_a513167db69cd150c8fb2eb4f6156ca19"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a513167db69cd150c8fb2eb4f6156ca19">eve::asset_procgen::TerrainVegetationInstance::position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00030">TerrainVegetationRuntime.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_a61fcc31b94ef2847cd490d8e629957ca"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#a61fcc31b94ef2847cd490d8e629957ca">eve::asset_procgen::TerrainVegetationInstance::scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00032">TerrainVegetationRuntime.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_aaeb636cdeae525413a8e0d721261dea1"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aaeb636cdeae525413a8e0d721261dea1">eve::asset_procgen::TerrainVegetationInstance::normal</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; normal</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00033">TerrainVegetationRuntime.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_aafbad37fd5597f0dadcc0afdbed891b8"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#aafbad37fd5597f0dadcc0afdbed891b8">eve::asset_procgen::TerrainVegetationInstance::seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00034">TerrainVegetationRuntime.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_abace1437522b56d3362af8876610bcac"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#abace1437522b56d3362af8876610bcac">eve::asset_procgen::TerrainVegetationInstance::rotation</a></div><div class="ttdeci">std::array&lt; float, 4 &gt; rotation</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00031">TerrainVegetationRuntime.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_ae0e3d9037cf15e5ca97338fd6183e93c"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#ae0e3d9037cf15e5ca97338fd6183e93c">eve::asset_procgen::TerrainVegetationInstance::prototype</a></div><div class="ttdeci">std::string prototype</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00028">TerrainVegetationRuntime.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationInstance_html_afbf2a9bed673b0641f90ef7505efeed9"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationInstance.html#afbf2a9bed673b0641f90ef7505efeed9">eve::asset_procgen::TerrainVegetationInstance::layer</a></div><div class="ttdeci">std::string layer</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00029">TerrainVegetationRuntime.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationLimits_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">eve::asset_procgen::TerrainVegetationLimits</a></div><div class="ttdoc">Hard limits for one deterministic terrain vegetation realization.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00019">TerrainVegetationRuntime.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationLimits_html_a81bbf63d2911b79a348d90b41ad7d145"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#a81bbf63d2911b79a348d90b41ad7d145">eve::asset_procgen::TerrainVegetationLimits::maximumTotalInstances</a></div><div class="ttdeci">std::uint32_t maximumTotalInstances</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00021">TerrainVegetationRuntime.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationLimits_html_aade2cee6990eaf575d2e7e217c9b431d"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#aade2cee6990eaf575d2e7e217c9b431d">eve::asset_procgen::TerrainVegetationLimits::maximumGeneratedInstances</a></div><div class="ttdeci">std::uint32_t maximumGeneratedInstances</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00020">TerrainVegetationRuntime.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationLimits_html_adf0d5526b13a48ce1fbec8e313968d37"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html#adf0d5526b13a48ce1fbec8e313968d37">eve::asset_procgen::TerrainVegetationLimits::maximumGraphNodes</a></div><div class="ttdeci">std::uint32_t maximumGraphNodes</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00022">TerrainVegetationRuntime.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html">eve::asset_procgen::TerrainVegetationRealization</a></div><div class="ttdoc">Owning, prototype-sorted result plus scalability evidence.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00045">TerrainVegetationRuntime.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a138746b78f7555888816a1a0af588de3"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a138746b78f7555888816a1a0af588de3">eve::asset_procgen::TerrainVegetationRealization::wavingGrassAmount</a></div><div class="ttdeci">float wavingGrassAmount</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00046">TerrainVegetationRuntime.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a1f4e71edd988727a0787ab81cae2ff19"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a1f4e71edd988727a0787ab81cae2ff19">eve::asset_procgen::TerrainVegetationRealization::weightCulledCount</a></div><div class="ttdeci">std::uint32_t weightCulledCount</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00055">TerrainVegetationRuntime.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a2fe9cc20ab8883d8baf29d05a5b844d6"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a2fe9cc20ab8883d8baf29d05a5b844d6">eve::asset_procgen::TerrainVegetationRealization::prototypes</a></div><div class="ttdeci">std::vector&lt; RuntimeInstancePrototype &gt; prototypes</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00050">TerrainVegetationRuntime.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a324ebf0a6dd1900855c5dabf41298e38"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a324ebf0a6dd1900855c5dabf41298e38">eve::asset_procgen::TerrainVegetationRealization::instances</a></div><div class="ttdeci">std::vector&lt; TerrainVegetationInstance &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00051">TerrainVegetationRuntime.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a4da9e3d143706bce8314ae26cae66fa0"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a4da9e3d143706bce8314ae26cae66fa0">eve::asset_procgen::TerrainVegetationRealization::wavingGrassSpeed</a></div><div class="ttdeci">float wavingGrassSpeed</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00047">TerrainVegetationRuntime.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a5eca2ff1f502f4acb2e7a5355bec597c"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5eca2ff1f502f4acb2e7a5355bec597c">eve::asset_procgen::TerrainVegetationRealization::explicitCount</a></div><div class="ttdeci">std::uint32_t explicitCount</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00054">TerrainVegetationRuntime.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a5ee50f81a26127911e4aff4430e90157"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a5ee50f81a26127911e4aff4430e90157">eve::asset_procgen::TerrainVegetationRealization::graphMilliseconds</a></div><div class="ttdeci">double graphMilliseconds</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00057">TerrainVegetationRuntime.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_a7f1226c2dcc83f0f8006a79ba67492c1"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#a7f1226c2dcc83f0f8006a79ba67492c1">eve::asset_procgen::TerrainVegetationRealization::graphNodesEvaluated</a></div><div class="ttdeci">std::uint32_t graphNodesEvaluated</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00056">TerrainVegetationRuntime.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_aae084585fb2e5cbf9d4a28bc455d4c42"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#aae084585fb2e5cbf9d4a28bc455d4c42">eve::asset_procgen::TerrainVegetationRealization::generatedCount</a></div><div class="ttdeci">std::uint32_t generatedCount</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00053">TerrainVegetationRuntime.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_ac735e6830bd5a961e98959fb4f720735"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac735e6830bd5a961e98959fb4f720735">eve::asset_procgen::TerrainVegetationRealization::wavingGrassStrength</a></div><div class="ttdeci">float wavingGrassStrength</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00048">TerrainVegetationRuntime.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_ac75d39956fdc4c8cd267c35cea84ead3"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ac75d39956fdc4c8cd267c35cea84ead3">eve::asset_procgen::TerrainVegetationRealization::buckets</a></div><div class="ttdeci">std::vector&lt; TerrainVegetationBucket &gt; buckets</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00052">TerrainVegetationRuntime.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationRealization_html_ae023c92f2396e51b7a068097bab9b8a1"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationRealization.html#ae023c92f2396e51b7a068097bab9b8a1">eve::asset_procgen::TerrainVegetationRealization::wavingGrassTint</a></div><div class="ttdeci">std::array&lt; float, 4 &gt; wavingGrassTint</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00049">TerrainVegetationRuntime.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html">eve::asset_procgen::TerrainVegetationWeightDomain</a></div><div class="ttdoc">Explicit world-to-control-map projection for terrain layer filtering.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00061">TerrainVegetationRuntime.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html_a88247d3a991277ad0da5b72119fe3340"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a88247d3a991277ad0da5b72119fe3340">eve::asset_procgen::TerrainVegetationWeightDomain::maximumX</a></div><div class="ttdeci">float maximumX</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00064">TerrainVegetationRuntime.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html_a9659900d96bef4d6a8f6a4aa673d02cd"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#a9659900d96bef4d6a8f6a4aa673d02cd">eve::asset_procgen::TerrainVegetationWeightDomain::minimumX</a></div><div class="ttdeci">float minimumX</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00062">TerrainVegetationRuntime.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html_ab42385c9bec564ff291652658173fd0a"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ab42385c9bec564ff291652658173fd0a">eve::asset_procgen::TerrainVegetationWeightDomain::minimumZ</a></div><div class="ttdeci">float minimumZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00063">TerrainVegetationRuntime.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html_ac0f3647eeef12d15a5697017e9827f35"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ac0f3647eeef12d15a5697017e9827f35">eve::asset_procgen::TerrainVegetationWeightDomain::maximumZ</a></div><div class="ttdeci">float maximumZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00065">TerrainVegetationRuntime.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain_html_ad4a173e3a7786887a55e39dfc8f05bc9"><div class="ttname"><a href="structeve_1_1asset__procgen_1_1TerrainVegetationWeightDomain.html#ad4a173e3a7786887a55e39dfc8f05bc9">eve::asset_procgen::TerrainVegetationWeightDomain::flipV</a></div><div class="ttdeci">bool flipV</div><div class="ttdoc">Reverse V for source maps whose rows oppose the canonical terrain Z axis.</div><div class="ttdef"><b>Definition</b> <a href="TerrainVegetationRuntime_8h_source.html#l00067">TerrainVegetationRuntime.h:67</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1027 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::glsl_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html">glsl_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::glsl_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1glsl__detail_1_1ChainContext.html">ChainContext</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a019a048c4884fc6911da8a435a9e39af" id="r_a019a048c4884fc6911da8a435a9e39af"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a019a048c4884fc6911da8a435a9e39af">header</a> (int localX, int localY)</td></tr>
+<tr class="separator:a019a048c4884fc6911da8a435a9e39af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e388043bfaa2bb3cc0ae730aa29dba8" id="r_a1e388043bfaa2bb3cc0ae730aa29dba8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a1e388043bfaa2bb3cc0ae730aa29dba8">bufferDecl</a> (int <a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const char *<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a1e388043bfaa2bb3cc0ae730aa29dba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab26dbeeee969f697752372f3a0e4b4" id="r_a5ab26dbeeee969f697752372f3a0e4b4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a5ab26dbeeee969f697752372f3a0e4b4">bufferDeclUint</a> (int <a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const char *<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a5ab26dbeeee969f697752372f3a0e4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a681143352f2d0e6071a964f2111f6" id="r_a00a681143352f2d0e6071a964f2111f6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a00a681143352f2d0e6071a964f2111f6">emitQuantizedBVal</a> (<a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a> dt, int <a class="el" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>, const char *bufName=&quot;b&quot;)</td></tr>
+<tr class="separator:a00a681143352f2d0e6071a964f2111f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa69cc0afd57db8cd6101f4702cdf3028" id="r_aa69cc0afd57db8cd6101f4702cdf3028"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#aa69cc0afd57db8cd6101f4702cdf3028">pushConstant</a> ()</td></tr>
+<tr class="separator:aa69cc0afd57db8cd6101f4702cdf3028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a494a5a78f72a3845aed2b69d9b242f9f" id="r_a494a5a78f72a3845aed2b69d9b242f9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a494a5a78f72a3845aed2b69d9b242f9f">groupsFor</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="separator:a494a5a78f72a3845aed2b69d9b242f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f552eb88bf5a713e1f72a14b64ec113" id="r_a5f552eb88bf5a713e1f72a14b64ec113"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a5f552eb88bf5a713e1f72a14b64ec113">scalarStr</a> (float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a5f552eb88bf5a713e1f72a14b64ec113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfe1e5c7590f382bce0a51eb97167468" id="r_adfe1e5c7590f382bce0a51eb97167468"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#adfe1e5c7590f382bce0a51eb97167468">emitInputIndexExprs</a> (std::ostringstream &amp;os, const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, std::vector&lt; std::string &gt; &amp;indexExprs)</td></tr>
+<tr class="separator:adfe1e5c7590f382bce0a51eb97167468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae68bf07eccc05aa6906a3008a5505843" id="r_ae68bf07eccc05aa6906a3008a5505843"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#ae68bf07eccc05aa6906a3008a5505843">genElementwise</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:ae68bf07eccc05aa6906a3008a5505843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa71e2eb2a08b29cd64e32478304fe580" id="r_aa71e2eb2a08b29cd64e32478304fe580"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#aa71e2eb2a08b29cd64e32478304fe580">genMatMul</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, bool tiled, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:aa71e2eb2a08b29cd64e32478304fe580"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a008159af9c403efecb18d97636664f0a" id="r_a008159af9c403efecb18d97636664f0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a008159af9c403efecb18d97636664f0a">genConv</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a008159af9c403efecb18d97636664f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99af5557876b58b79abc56e3bf0e1f7" id="r_ab99af5557876b58b79abc56e3bf0e1f7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#ab99af5557876b58b79abc56e3bf0e1f7">genPool</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:ab99af5557876b58b79abc56e3bf0e1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4e916663862e32ca6d0fabf9d1398a" id="r_a3e4e916663862e32ca6d0fabf9d1398a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a3e4e916663862e32ca6d0fabf9d1398a">genSoftmax</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a3e4e916663862e32ca6d0fabf9d1398a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f4615d9ea2da573c5bcb1dad9f8c09" id="r_a54f4615d9ea2da573c5bcb1dad9f8c09"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a54f4615d9ea2da573c5bcb1dad9f8c09">genNorm</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, bool rms, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a54f4615d9ea2da573c5bcb1dad9f8c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85fa3e0ffa00d91a0ea24a241c5a67d9" id="r_a85fa3e0ffa00d91a0ea24a241c5a67d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a85fa3e0ffa00d91a0ea24a241c5a67d9">genReduceOrArgmax</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, bool argmax, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a85fa3e0ffa00d91a0ea24a241c5a67d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f4dbca9e0ec7eecdcd56b241b969d6" id="r_a28f4dbca9e0ec7eecdcd56b241b969d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a28f4dbca9e0ec7eecdcd56b241b969d6">genEmbedding</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a28f4dbca9e0ec7eecdcd56b241b969d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a413de139d3ce0036cd1d1a202f9330b4" id="r_a413de139d3ce0036cd1d1a202f9330b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a413de139d3ce0036cd1d1a202f9330b4">genConcat</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a413de139d3ce0036cd1d1a202f9330b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77714f361bf77b96ab2f5a6a3585fa44" id="r_a77714f361bf77b96ab2f5a6a3585fa44"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a77714f361bf77b96ab2f5a6a3585fa44">genSlice</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a77714f361bf77b96ab2f5a6a3585fa44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf8c9bf84d15179ca72505e5163b1fa8" id="r_aaf8c9bf84d15179ca72505e5163b1fa8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#aaf8c9bf84d15179ca72505e5163b1fa8">genPermute</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:aaf8c9bf84d15179ca72505e5163b1fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01aafce0234ddbb26fe5eda0046b50b4" id="r_a01aafce0234ddbb26fe5eda0046b50b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a01aafce0234ddbb26fe5eda0046b50b4">genSdpa</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out)</td></tr>
+<tr class="separator:a01aafce0234ddbb26fe5eda0046b50b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99b27da1d76377d76480b404a3663162" id="r_a99b27da1d76377d76480b404a3663162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a99b27da1d76377d76480b404a3663162">genResize2d</a> (const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;, const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;, <a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;)</td></tr>
+<tr class="separator:a99b27da1d76377d76480b404a3663162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a5c4d9531b921c4ea97cb99bbf19ff05e" id="r_a5c4d9531b921c4ea97cb99bbf19ff05e"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a5c4d9531b921c4ea97cb99bbf19ff05e">kLocalSize</a> = 256</td></tr>
+<tr class="separator:a5c4d9531b921c4ea97cb99bbf19ff05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a1e388043bfaa2bb3cc0ae730aa29dba8" name="a1e388043bfaa2bb3cc0ae730aa29dba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e388043bfaa2bb3cc0ae730aa29dba8">&#9670;&#160;</a></span>bufferDecl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::bufferDecl </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00170">binding</a> , 以及 <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00749">genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00387">genConv()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00820">genPermute()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00464">genPool()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00853">genSdpa()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">genSlice()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00512">genSoftmax()</a>.</p>
+
+</div>
+</div>
+<a id="a5ab26dbeeee969f697752372f3a0e4b4" name="a5ab26dbeeee969f697752372f3a0e4b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab26dbeeee969f697752372f3a0e4b4">&#9670;&#160;</a></span>bufferDeclUint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::bufferDeclUint </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00170">binding</a> , 以及 <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>.</p>
+
+</div>
+</div>
+<a id="adfe1e5c7590f382bce0a51eb97167468" name="adfe1e5c7590f382bce0a51eb97167468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfe1e5c7590f382bce0a51eb97167468">&#9670;&#160;</a></span>emitInputIndexExprs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::glsl_detail::emitInputIndexExprs </td>
+          <td>(</td>
+          <td class="paramtype">std::ostringstream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>indexExprs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Per-input flat-index expression for an elementwise group. When an input has the exact output shape, the identity index is used; otherwise a broadcast index is decomposed from the output flat index with baked strides. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="Optimizer_8h_source.html#l00051">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00055">pad</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::rank</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>.</p>
+
+</div>
+</div>
+<a id="a00a681143352f2d0e6071a964f2111f6" name="a00a681143352f2d0e6071a964f2111f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00a681143352f2d0e6071a964f2111f6">&#9670;&#160;</a></span>emitQuantizedBVal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::emitQuantizedBVal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdb">DType</a>&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>bufName</em> = <code>&quot;b&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>GLSL dequantizer <code>float bval(uint elemIdx)</code> for a packed weight buffer <code>bufName</code> (byte-addressed inside a uint SSBO) plus optional per-group scales <code>bs</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba4bd13b22f622177b8aaf2cad7f67a7ea">eve::tensor::Fp4E2M1</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba500453d11f5837a78797aca67bdb4d95">eve::tensor::Fp8E4M3</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00248">group</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba1a44f12c3427b3e11c171d09632bad8d">eve::tensor::Int4</a> , 以及 <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdba7d839b2c12bfd40ac121b4cc9e81c539">eve::tensor::Int8</a>.</p>
+
+</div>
+</div>
+<a id="a413de139d3ce0036cd1d1a202f9330b4" name="a413de139d3ce0036cd1d1a202f9330b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a413de139d3ce0036cd1d1a202f9330b4">&#9670;&#160;</a></span>genConcat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genConcat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00749">749</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Optimizer_8h_source.html#l00051">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::rank</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a> , 以及 <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">sz</a>.</p>
+
+</div>
+</div>
+<a id="a008159af9c403efecb18d97636664f0a" name="a008159af9c403efecb18d97636664f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a008159af9c403efecb18d97636664f0a">&#9670;&#160;</a></span>genConv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genConv </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Optimizer_8h_source.html#l00062">eve::tensor::FusedGroup::biasNode</a>, <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67af067d5cabede124eb2d45faaa3caf7b1">eve::tensor::Conv1d</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="Optimizer_8h_source.html#l00063">eve::tensor::FusedGroup::epilogue</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00094">eve::tensor::GraphNode::i1</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="Graph_8h_source.html#l00084">eve::tensor::GraphNode::in1</a>, <a class="el" href="Graph_8h_source.html#l00085">eve::tensor::GraphNode::in2</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Optimizer_8h_source.html#l00051">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00049">eve::tensor::FusedGroup::nodes</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00055">pad</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::type</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="ae68bf07eccc05aa6906a3008a5505843" name="ae68bf07eccc05aa6906a3008a5505843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae68bf07eccc05aa6906a3008a5505843">&#9670;&#160;</a></span>genElementwise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genElementwise </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00199">emitInputIndexExprs()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Optimizer_8h_source.html#l00051">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="KernelGen_8h_source.html#l00064">eve::tensor::kMaxKernelBindings</a>, <a class="el" href="Optimizer_8h_source.html#l00049">eve::tensor::FusedGroup::nodes</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="a28f4dbca9e0ec7eecdcd56b241b969d6" name="a28f4dbca9e0ec7eecdcd56b241b969d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f4dbca9e0ec7eecdcd56b241b969d6">&#9670;&#160;</a></span>genEmbedding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genEmbedding </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00712">712</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00029">bufferDeclUint()</a>, <a class="el" href="Graph_8h_source.html#l00103">eve::tensor::GraphNode::constBytes</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="Graph_8h_source.html#l00100">eve::tensor::GraphNode::dtype</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Quant_8h_source.html#l00016">eve::tensor::q::isQuantDType()</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="KernelGen_8h_source.html#l00045">eve::tensor::KernelSpec::outputBinding</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="KernelGen_8h_source.html#l00042">eve::tensor::KernelSpec::qDtype</a>, <a class="el" href="Graph_8h_source.html#l00105">eve::tensor::GraphNode::qGroup</a>, <a class="el" href="KernelGen_8h_source.html#l00043">eve::tensor::KernelSpec::qGroup</a>, <a class="el" href="KernelGen_8h_source.html#l00044">eve::tensor::KernelSpec::scalesBinding</a> , 以及 <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>.</p>
+
+</div>
+</div>
+<a id="aa71e2eb2a08b29cd64e32478304fe580" name="aa71e2eb2a08b29cd64e32478304fe580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa71e2eb2a08b29cd64e32478304fe580">&#9670;&#160;</a></span>genMatMul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genMatMul </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>tiled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Emit matmul kernel; <code>tiled</code> selects the shared-memory 16x16 variant. </p>
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Optimizer_8h_source.html#l00062">eve::tensor::FusedGroup::biasNode</a>, <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00029">bufferDeclUint()</a>, <a class="el" href="Optimizer_8h_source.html#l00063">eve::tensor::FusedGroup::epilogue</a>, <a class="el" href="namespaceeve_1_1tensor.html#a43869f5ea043bebf459b08b562e25fdbafe294cd6f9909150e9ab48cdebcc2caa">eve::tensor::Fp16</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsY2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="Graph_8h_source.html#l00084">eve::tensor::GraphNode::in1</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Optimizer_8h_source.html#l00051">eve::tensor::FusedGroup::inputs</a>, <a class="el" href="Quant_8h_source.html#l00016">eve::tensor::q::isQuantDType()</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="Optimizer_8h_source.html#l00049">eve::tensor::FusedGroup::nodes</a>, <a class="el" href="KernelGen_8h_source.html#l00045">eve::tensor::KernelSpec::outputBinding</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="KernelGen_8h_source.html#l00042">eve::tensor::KernelSpec::qDtype</a>, <a class="el" href="KernelGen_8h_source.html#l00043">eve::tensor::KernelSpec::qGroup</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::rank</a>, <a class="el" href="KernelGen_8h_source.html#l00044">eve::tensor::KernelSpec::scalesBinding</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="a54f4615d9ea2da573c5bcb1dad9f8c09" name="a54f4615d9ea2da573c5bcb1dad9f8c09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f4615d9ea2da573c5bcb1dad9f8c09">&#9670;&#160;</a></span>genNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genNorm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>rms</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00578">578</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00029">eve::tensor::KernelSpec::groupsX1</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="Optimizer_8h_source.html#l00065">eve::tensor::FusedGroup::hasBias</a>, <a class="el" href="Optimizer_8h_source.html#l00064">eve::tensor::FusedGroup::hasScale</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGen_8h_source.html#l00035">eve::tensor::KernelSpec::inputsReadPass1</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a>, <a class="el" href="Graph_8h_source.html#l00088">eve::tensor::GraphNode::s0</a>, <a class="el" href="KernelGen_8cpp_source.html#l00107">scalarStr()</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>, <a class="el" href="KernelGen_8h_source.html#l00036">eve::tensor::KernelSpec::statsCount</a>, <a class="el" href="KernelGen_8h_source.html#l00037">eve::tensor::KernelSpec::statsSize</a> , 以及 <a class="el" href="KernelGen_8h_source.html#l00038">eve::tensor::KernelSpec::twoPass</a>.</p>
+
+</div>
+</div>
+<a id="aaf8c9bf84d15179ca72505e5163b1fa8" name="aaf8c9bf84d15179ca72505e5163b1fa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf8c9bf84d15179ca72505e5163b1fa8">&#9670;&#160;</a></span>genPermute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genPermute </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00820">820</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Tensor_8h_source.html#l00047">eve::tensor::Tensor::kMaxRank</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="Graph_8h_source.html#l00097">eve::tensor::GraphNode::perm</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::rank</a> , 以及 <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>.</p>
+
+</div>
+</div>
+<a id="ab99af5557876b58b79abc56e3bf0e1f7" name="ab99af5557876b58b79abc56e3bf0e1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab99af5557876b58b79abc56e3bf0e1f7">&#9670;&#160;</a></span>genPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genPool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00094">eve::tensor::GraphNode::i1</a>, <a class="el" href="Graph_8h_source.html#l00095">eve::tensor::GraphNode::i2</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a8aaa1c2de2d50cbd4e3bcd76a62a9fbd">eve::tensor::MaxPool2d</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00055">pad</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a> , 以及 <a class="el" href="Graph_8h_source.html#l00079">eve::tensor::GraphNode::type</a>.</p>
+
+</div>
+</div>
+<a id="a85fa3e0ffa00d91a0ea24a241c5a67d9" name="a85fa3e0ffa00d91a0ea24a241c5a67d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85fa3e0ffa00d91a0ea24a241c5a67d9">&#9670;&#160;</a></span>genReduceOrArgmax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genReduceOrArgmax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>argmax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00653">653</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00047">eve::tensor::FusedGroup::op</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="tensor_2GpuBackend_8cpp_source.html#l00088">reduce</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd">eve::tensor::ReduceMax</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206">eve::tensor::ReduceMean</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e">eve::tensor::ReduceMin</a>, <a class="el" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a">eve::tensor::ReduceSum</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00107">scalarStr()</a>.</p>
+
+</div>
+</div>
+<a id="a99b27da1d76377d76480b404a3663162" name="a99b27da1d76377d76480b404a3663162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99b27da1d76377d76480b404a3663162">&#9670;&#160;</a></span>genResize2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::glsl_detail::genResize2d </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGenResize_8cpp_source.html">KernelGenResize.cpp</a> 第 <a class="el" href="KernelGenResize_8cpp_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00107">scalarStr()</a> , 以及 <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>.</p>
+
+</div>
+</div>
+<a id="a01aafce0234ddbb26fe5eda0046b50b4" name="a01aafce0234ddbb26fe5eda0046b50b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01aafce0234ddbb26fe5eda0046b50b4">&#9670;&#160;</a></span>genSdpa()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genSdpa </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00853">853</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsY2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="Graph_8h_source.html#l00084">eve::tensor::GraphNode::in1</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="Optimizer_8h_source.html#l00066">eve::tensor::FusedGroup::masked</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00088">eve::tensor::GraphNode::s0</a>, <a class="el" href="KernelGen_8cpp_source.html#l00107">scalarStr()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a77714f361bf77b96ab2f5a6a3585fa44" name="a77714f361bf77b96ab2f5a6a3585fa44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77714f361bf77b96ab2f5a6a3585fa44">&#9670;&#160;</a></span>genSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genSlice </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00792">792</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="Graph_8h_source.html#l00080">eve::tensor::GraphNode::dims</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">end</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00094">eve::tensor::GraphNode::i1</a>, <a class="el" href="Graph_8h_source.html#l00095">eve::tensor::GraphNode::i2</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="Graph_8h_source.html#l00081">eve::tensor::GraphNode::rank</a> , 以及 <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>.</p>
+
+</div>
+</div>
+<a id="a3e4e916663862e32ca6d0fabf9d1398a" name="a3e4e916663862e32ca6d0fabf9d1398a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e4e916663862e32ca6d0fabf9d1398a">&#9670;&#160;</a></span>genSoftmax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tensor::glsl_detail::genSoftmax </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>grp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="KernelGen_8cpp_source.html#l00022">bufferDecl()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>, <a class="el" href="KernelGen_8h_source.html#l00029">eve::tensor::KernelSpec::groupsX1</a>, <a class="el" href="KernelGen_8h_source.html#l00030">eve::tensor::KernelSpec::groupsX2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00013">header()</a>, <a class="el" href="Graph_8h_source.html#l00093">eve::tensor::GraphNode::i0</a>, <a class="el" href="Graph_8h_source.html#l00083">eve::tensor::GraphNode::in0</a>, <a class="el" href="KernelGen_8h_source.html#l00034">eve::tensor::KernelSpec::inputCount</a>, <a class="el" href="KernelGen_8h_source.html#l00035">eve::tensor::KernelSpec::inputsReadPass1</a>, <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>, <a class="el" href="Optimizer_8h_source.html#l00067">eve::tensor::FusedGroup::logMode</a>, <a class="el" href="Optimizer_8h_source.html#l00052">eve::tensor::FusedGroup::outputNode</a>, <a class="el" href="KernelGen_8h_source.html#l00027">eve::tensor::KernelSpec::pass1</a>, <a class="el" href="KernelGen_8h_source.html#l00028">eve::tensor::KernelSpec::pass2</a>, <a class="el" href="KernelGen_8cpp_source.html#l00101">pushConstant()</a>, <a class="el" href="tensor_2GpuBackend_8cpp_source.html#l00088">reduce</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">rows</a>, <a class="el" href="Graph_8h_source.html#l00082">eve::tensor::GraphNode::size</a>, <a class="el" href="KernelGen_8h_source.html#l00036">eve::tensor::KernelSpec::statsCount</a>, <a class="el" href="KernelGen_8h_source.html#l00037">eve::tensor::KernelSpec::statsSize</a> , 以及 <a class="el" href="KernelGen_8h_source.html#l00038">eve::tensor::KernelSpec::twoPass</a>.</p>
+
+</div>
+</div>
+<a id="a494a5a78f72a3845aed2b69d9b242f9f" name="a494a5a78f72a3845aed2b69d9b242f9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a494a5a78f72a3845aed2b69d9b242f9f">&#9670;&#160;</a></span>groupsFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::glsl_detail::groupsFor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a> , 以及 <a class="el" href="KernelGenInternal_8h_source.html#l00006">kLocalSize</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00749">genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00387">genConv()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00820">genPermute()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00464">genPool()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">genSlice()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00512">genSoftmax()</a>.</p>
+
+</div>
+</div>
+<a id="a019a048c4884fc6911da8a435a9e39af" name="a019a048c4884fc6911da8a435a9e39af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a019a048c4884fc6911da8a435a9e39af">&#9670;&#160;</a></span>header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::header </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>localX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>localY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00749">genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00387">genConv()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00820">genPermute()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00464">genPool()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00853">genSdpa()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">genSlice()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00512">genSoftmax()</a>.</p>
+
+</div>
+</div>
+<a id="aa69cc0afd57db8cd6101f4702cdf3028" name="aa69cc0afd57db8cd6101f4702cdf3028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa69cc0afd57db8cd6101f4702cdf3028">&#9670;&#160;</a></span>pushConstant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::pushConstant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00749">genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00387">genConv()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00820">genPermute()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00464">genPool()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00853">genSdpa()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">genSlice()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00512">genSoftmax()</a>.</p>
+
+</div>
+</div>
+<a id="a5f552eb88bf5a713e1f72a14b64ec113" name="a5f552eb88bf5a713e1f72a14b64ec113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f552eb88bf5a713e1f72a14b64ec113">&#9670;&#160;</a></span>scalarStr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tensor::glsl_detail::scalarStr </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGen_8cpp_source.html">KernelGen.cpp</a> 第 <a class="el" href="KernelGen_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00141">eve::tensor::glsl_detail::ChainContext::emit()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00853">genSdpa()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a5c4d9531b921c4ea97cb99bbf19ff05e" name="a5c4d9531b921c4ea97cb99bbf19ff05e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c4d9531b921c4ea97cb99bbf19ff05e">&#9670;&#160;</a></span>kLocalSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::tensor::glsl_detail::kLocalSize = 256</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="KernelGenInternal_8h_source.html">KernelGenInternal.h</a> 第 <a class="el" href="KernelGenInternal_8h_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="KernelGen_8cpp_source.html#l00749">genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00387">genConv()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00247">genElementwise()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00712">genEmbedding()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00273">genMatMul()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00578">genNorm()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00820">genPermute()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00464">genPool()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00005">genResize2d()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">genSlice()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00512">genSoftmax()</a> , 以及 <a class="el" href="KernelGen_8cpp_source.html#l00105">groupsFor()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

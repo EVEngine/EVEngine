@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/mesh/MeshDeformationSession.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_2dad9a76876d25b82e87ad5f65925277.html">mesh</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshDeformationSession.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshDeformationSession_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">MeshVertexSelectionCenter</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#aea4abdac2a4118e07915f4f0699a3e50">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#aea4abdac2a4118e07915f4f0699a3e50">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#a1feccde61489506d61e934530dda8ed1">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#ad879101d37b2ef21b9522e691c4a2e84">z</a> = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshDeformationSession.html">   25</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1MeshDeformationSession.html">MeshDeformationSession</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> initializeResult(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applyBrushResult(std::string_view mode, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                <span class="keywordtype">float</span> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, <span class="keywordtype">float</span> falloff, <span class="keywordtype">float</span> directionX = 0.f,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                <span class="keywordtype">float</span> directionY = 1.f, <span class="keywordtype">float</span> directionZ = 0.f);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applyBrushGpuResult(std::string_view mode, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                   <span class="keywordtype">float</span> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, <span class="keywordtype">float</span> falloff, <span class="keywordtype">float</span> directionX = 0.f,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                   <span class="keywordtype">float</span> directionY = 1.f, <span class="keywordtype">float</span> directionZ = 0.f);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applyImpactResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> impulseX, <span class="keywordtype">float</span> impulseY,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                 <span class="keywordtype">float</span> impulseZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> plasticity, <span class="keywordtype">float</span> hardness,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                 <span class="keywordtype">float</span> maxDisplacement);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applyImpactGpuResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> impulseX, <span class="keywordtype">float</span> impulseY,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                                    <span class="keywordtype">float</span> impulseZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> plasticity, <span class="keywordtype">float</span> hardness,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                                    <span class="keywordtype">float</span> maxDisplacement);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> prepareImpactVertexBlocksResult(<span class="keywordtype">int</span> divisionsPerAxis);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <span class="keywordtype">int</span> impactVertexBlockCount() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a81d2637e17649a235efc597cce3b3b70">   72</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a81d2637e17649a235efc597cce3b3b70">hasImpactVertexBlocks</a>() const noexcept { <span class="keywordflow">return</span> !impactVertexBlocks_.empty(); }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applySurfaceContactResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> normalX, <span class="keywordtype">float</span> normalY,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                         <span class="keywordtype">float</span> normalZ, <span class="keywordtype">float</span> velocityX, <span class="keywordtype">float</span> velocityY,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                                         <span class="keywordtype">float</span> velocityZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, <span class="keywordtype">float</span> drag,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                                         <span class="keywordtype">float</span> falloff, <span class="keywordtype">float</span> plasticity = 0.f);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> recoverSurfaceResult(<span class="keywordtype">float</span> dt, <span class="keywordtype">float</span> recoveryRate);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applySlimeImpulseResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> impulseX, <span class="keywordtype">float</span> impulseY,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                                       <span class="keywordtype">float</span> impulseZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> falloff);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> stepSlimeResult(<span class="keywordtype">float</span> dt, <span class="keywordtype">float</span> stiffness, <span class="keywordtype">float</span> damping, <span class="keywordtype">float</span> maxSpeed);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> configureColliderRefreshResult(std::string_view mode, <span class="keywordtype">float</span> intervalSeconds,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                                              <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a> = 0.f, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a> = 0.f,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                                              <span class="keywordtype">float</span> offsetZ = 0.f);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> requestColliderRefreshResult();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> updateColliderRefreshResult(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MeshBuild&gt;</a> colliderMeshResult() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> selectVerticesSphereResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">bool</span> replace = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> selectVerticesBoxResult(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                                                      <span class="keywordtype">float</span> maxZ, <span class="keywordtype">bool</span> replace = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> clearVertexSelection() noexcept;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    [[nodiscard]] <span class="keywordtype">int</span> selectedVertexCount() const noexcept;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">MeshVertexSelectionCenter</a>&gt; selectedVertexCenterResult() const;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; moveSelectedVerticesResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; manipulateSelectedVerticesResult(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view mode, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                                                                <span class="keywordtype">float</span> originZ, <span class="keywordtype">float</span> directionX, <span class="keywordtype">float</span> directionY,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                                                                <span class="keywordtype">float</span> directionZ, <span class="keywordtype">float</span> distance);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; restoreResult();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; bakeResult();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; undoResult();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>&gt; currentMeshResult() const;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a480f3e20399df459b8e16bbfb5edd4ef">  145</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>() const noexcept { <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a848ed99ffdc7054f77b6d9c656e7ec9a">  147</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshDeformationSession.html#a848ed99ffdc7054f77b6d9c656e7ec9a">undoCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(undo_.size()); }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1MeshDeformationSession.html#aa54406e8377501fbee2acd3449c578e8">  149</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1MeshDeformationSession.html#aa54406e8377501fbee2acd3449c578e8">isInitialized</a>() const noexcept { <span class="keywordflow">return</span> initialized_; }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">struct </span>UndoState {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>          <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        std::vector&lt;float&gt; equilibrium;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        std::vector&lt;float&gt; velocity;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    };</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">void</span> pushUndo();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">void</span> invalidateImpactVertexBlocks() noexcept;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::uint32_t&gt; impactCandidates(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) const;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    MeshBuild                 original_;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    MeshBuild                 current_;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<span class="keywordtype">float</span>&gt;        surfaceEquilibrium_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<span class="keywordtype">float</span>&gt;        surfaceVelocity_;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::uint8_t&gt; selectedVertices_;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::uint32_t&gt;&gt; impactVertexBlocks_;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">int</span>                                     impactBlockDivisions_ = 0;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">float</span> impactBlockMinX_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, impactBlockMinY_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, impactBlockMinZ_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">float</span> impactBlockMaxX_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, impactBlockMaxY_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, impactBlockMaxZ_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;UndoState&gt;    undo_;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>               colliderRefreshMode_        = &quot;manual&quot;;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">float</span>                     colliderRefreshInterval_    = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">float</span>                     colliderRefreshAccumulator_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">float</span>                     colliderOffsetX_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, colliderOffsetY_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, colliderOffsetZ_ = 0.<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">bool</span>                      colliderRefreshConfigured_ = false;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">bool</span>                      colliderRefreshPending_    = false;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t             revision_                  = 0;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">bool</span>                      initialized_               = false;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>};</div>
+</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00641">RenderSystem3D.cpp:641</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2c1c8f9331368f38bfc3eaee260b59a6"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00121">TerrainGenerationSession.cpp:121</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a40e27a95878bc0a443bac4815628f3e2"><div class="ttname"><a href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a></div><div class="ttdeci">float offsetX</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00917">TileConfig.cpp:917</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a577cbd3610eed001754028f74db1dd02"><div class="ttname"><a href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a></div><div class="ttdeci">float offsetY</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00918">TileConfig.cpp:918</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a3f756ed587723434bfe4adef4d8f3bfd"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a></div><div class="ttdeci">std::uint32_t depth</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00034">UnityVegetationPreset.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00019">MeshBuild.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshDeformationSession_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshDeformationSession.html">eve::procgen::MeshDeformationSession</a></div><div class="ttdoc">Stateful CPU sculpting session with explicit bake, restore, and undo semantics.</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00025">MeshDeformationSession.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshDeformationSession_html_a81d2637e17649a235efc597cce3b3b70"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshDeformationSession.html#a81d2637e17649a235efc597cce3b3b70">eve::procgen::MeshDeformationSession::hasImpactVertexBlocks</a></div><div class="ttdeci">bool hasImpactVertexBlocks() const noexcept</div><div class="ttdoc">Report whether impact queries currently use a prepared vertex-block index.</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00072">MeshDeformationSession.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshDeformationSession_html_a848ed99ffdc7054f77b6d9c656e7ec9a"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshDeformationSession.html#a848ed99ffdc7054f77b6d9c656e7ec9a">eve::procgen::MeshDeformationSession::undoCount</a></div><div class="ttdeci">int undoCount() const noexcept</div><div class="ttdoc">Return the number of available undo snapshots.</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00147">MeshDeformationSession.h:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshDeformationSession_html_aa54406e8377501fbee2acd3449c578e8"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshDeformationSession.html#aa54406e8377501fbee2acd3449c578e8">eve::procgen::MeshDeformationSession::isInitialized</a></div><div class="ttdeci">bool isInitialized() const noexcept</div><div class="ttdoc">Report whether the session has been initialized.</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00149">MeshDeformationSession.h:149</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1MeshVertexSelectionCenter_html"><div class="ttname"><a href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html">eve::procgen::MeshVertexSelectionCenter</a></div><div class="ttdoc">Value-only center of the current runtime vertex selection.</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00015">MeshDeformationSession.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1MeshVertexSelectionCenter_html_a1feccde61489506d61e934530dda8ed1"><div class="ttname"><a href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#a1feccde61489506d61e934530dda8ed1">eve::procgen::MeshVertexSelectionCenter::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00016">MeshDeformationSession.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1MeshVertexSelectionCenter_html_ad879101d37b2ef21b9522e691c4a2e84"><div class="ttname"><a href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#ad879101d37b2ef21b9522e691c4a2e84">eve::procgen::MeshVertexSelectionCenter::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00016">MeshDeformationSession.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1MeshVertexSelectionCenter_html_aea4abdac2a4118e07915f4f0699a3e50"><div class="ttname"><a href="structeve_1_1procgen_1_1MeshVertexSelectionCenter.html#aea4abdac2a4118e07915f4f0699a3e50">eve::procgen::MeshVertexSelectionCenter::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="MeshDeformationSession_8h_source.html#l00016">MeshDeformationSession.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

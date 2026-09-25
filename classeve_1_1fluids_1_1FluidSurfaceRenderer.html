@@ -1,0 +1,2068 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::FluidSurfaceRenderer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1FluidSurfaceRenderer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::FluidSurfaceRenderer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Buffer-level screen-space fluid renderer.  
+ <a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac699829d6d7c2b99c78038ad6eb08e14" id="r_ac699829d6d7c2b99c78038ad6eb08e14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ac699829d6d7c2b99c78038ad6eb08e14">FluidSurfaceRenderer</a> (const <a class="el" href="structeve_1_1fluids_1_1FluidSurfaceParams.html">FluidSurfaceParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>, bool preferGpu)</td></tr>
+<tr class="separator:ac699829d6d7c2b99c78038ad6eb08e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe7a07e4fc2f0c13bd9cff2fc149e88e" id="r_afe7a07e4fc2f0c13bd9cff2fc149e88e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#afe7a07e4fc2f0c13bd9cff2fc149e88e">~FluidSurfaceRenderer</a> ()</td></tr>
+<tr class="separator:afe7a07e4fc2f0c13bd9cff2fc149e88e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab36e02906f0d1389fa355764f4f19282" id="r_ab36e02906f0d1389fa355764f4f19282"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ab36e02906f0d1389fa355764f4f19282">FluidSurfaceRenderer</a> (const <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:ab36e02906f0d1389fa355764f4f19282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9cf4b523ace57846e39bcd7fa56e5d2" id="r_ab9cf4b523ace57846e39bcd7fa56e5d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ab9cf4b523ace57846e39bcd7fa56e5d2">operator=</a> (const <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:ab9cf4b523ace57846e39bcd7fa56e5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55cc501d6556ae837b29c8e24cf873c8" id="r_a55cc501d6556ae837b29c8e24cf873c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a55cc501d6556ae837b29c8e24cf873c8">render</a> (const std::vector&lt; glm::vec3 &gt; &amp;<a class="el" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>, float particleRadius)</td></tr>
+<tr class="memdesc:a55cc501d6556ae837b29c8e24cf873c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstruct a frame from particle positions.  <br /></td></tr>
+<tr class="separator:a55cc501d6556ae837b29c8e24cf873c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74da3f6403ba7bf048ed572717696fca" id="r_a74da3f6403ba7bf048ed572717696fca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a74da3f6403ba7bf048ed572717696fca">render</a> (const <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a> &amp;sim)</td></tr>
+<tr class="memdesc:a74da3f6403ba7bf048ed572717696fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstruct a frame from a simulator's live particles.  <br /></td></tr>
+<tr class="separator:a74da3f6403ba7bf048ed572717696fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab852d1e709bb2b8d8acd0494244b6931" id="r_ab852d1e709bb2b8d8acd0494244b6931"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ab852d1e709bb2b8d8acd0494244b6931">renderVolume</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim)</td></tr>
+<tr class="memdesc:ab852d1e709bb2b8d8acd0494244b6931"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstructs a volume-fluid snapshot and shades its diffusing particle colors.  <br /></td></tr>
+<tr class="separator:ab852d1e709bb2b8d8acd0494244b6931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acba8810436e8df6f40389a7ac527d98a" id="r_acba8810436e8df6f40389a7ac527d98a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#acba8810436e8df6f40389a7ac527d98a">renderVolumeInterpolated</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim, float alpha)</td></tr>
+<tr class="memdesc:acba8810436e8df6f40389a7ac527d98a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstructs from fixed-step interpolated volume positions using the existing SSF pipeline.  <br /></td></tr>
+<tr class="separator:acba8810436e8df6f40389a7ac527d98a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9007a94071cc49a0c13217a82e44a0" id="r_aed9007a94071cc49a0c13217a82e44a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#aed9007a94071cc49a0c13217a82e44a0">renderVolumeColorOnly</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim)</td></tr>
+<tr class="memdesc:aed9007a94071cc49a0c13217a82e44a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstructs only the RGBA output for display, skipping auxiliary GPU readback when color is uniform.  <br /></td></tr>
+<tr class="separator:aed9007a94071cc49a0c13217a82e44a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a070df8f39565a0faacdac1a68cbbfed6" id="r_a070df8f39565a0faacdac1a68cbbfed6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a070df8f39565a0faacdac1a68cbbfed6">renderGasVolume</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim, float absorption=5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a070df8f39565a0faacdac1a68cbbfed6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders gas particles as a blurred, translucent thickness volume.  <br /></td></tr>
+<tr class="separator:a070df8f39565a0faacdac1a68cbbfed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c2eec1063cdf0e1108888102f20b82" id="r_ae2c2eec1063cdf0e1108888102f20b82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae2c2eec1063cdf0e1108888102f20b82">renderVolumeWithoutSurface</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim, float absorption=5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ae2c2eec1063cdf0e1108888102f20b82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders every material phase as a blurred color/thickness volume without reconstructing a surface.  <br /></td></tr>
+<tr class="separator:ae2c2eec1063cdf0e1108888102f20b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeabb44d1092b9811df5c82b4a210f66" id="r_afeabb44d1092b9811df5c82b4a210f66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#afeabb44d1092b9811df5c82b4a210f66">renderConfiguredVolume</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim)</td></tr>
+<tr class="memdesc:afeabb44d1092b9811df5c82b4a210f66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders through Fluid3D's configured generateSurface policy.  <br /></td></tr>
+<tr class="separator:afeabb44d1092b9811df5c82b4a210f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adda6263b8f3a998942b154e8d10554d3" id="r_adda6263b8f3a998942b154e8d10554d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#adda6263b8f3a998942b154e8d10554d3">prepare</a> ()</td></tr>
+<tr class="memdesc:adda6263b8f3a998942b154e8d10554d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the preferred reconstruction backend before frame timing begins.  <br /></td></tr>
+<tr class="separator:adda6263b8f3a998942b154e8d10554d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746d08338f8c0133817ddd75040140bb" id="r_a746d08338f8c0133817ddd75040140bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a746d08338f8c0133817ddd75040140bb">copyToTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="memdesc:a746d08338f8c0133817ddd75040140bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Present the current RGBA8 result into an existing graphics texture.  <br /></td></tr>
+<tr class="separator:a746d08338f8c0133817ddd75040140bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c978e90cd61c8d62cc355c905c6430a" id="r_a9c978e90cd61c8d62cc355c905c6430a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a9c978e90cd61c8d62cc355c905c6430a">renderVolumeColorToTexture</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;sim, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="memdesc:a9c978e90cd61c8d62cc355c905c6430a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstruct and present a uniform-color volume without host color readback when supported.  <br /></td></tr>
+<tr class="separator:a9c978e90cd61c8d62cc355c905c6430a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae739643806711a356c3ad4eda5fada55" id="r_ae739643806711a356c3ad4eda5fada55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae739643806711a356c3ad4eda5fada55">compositeDiffuse</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a> &amp;pool, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a>, float fadeSeconds)</td></tr>
+<tr class="memdesc:ae739643806711a356c3ad4eda5fada55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composites white secondary particles over the last reconstructed frame.  <br /></td></tr>
+<tr class="separator:ae739643806711a356c3ad4eda5fada55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3097c53be5eb15c1f6ee073b84e960e3" id="r_a3097c53be5eb15c1f6ee073b84e960e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a3097c53be5eb15c1f6ee073b84e960e3">configureFoam</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, int downsample=1)</td></tr>
+<tr class="memdesc:a3097c53be5eb15c1f6ee073b84e960e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures Fluid3D-compatible foam generation visibility and render-target downsampling.  <br /></td></tr>
+<tr class="separator:a3097c53be5eb15c1f6ee073b84e960e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a334af693d367b82209463d52ebce5a90" id="r_a334af693d367b82209463d52ebce5a90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a334af693d367b82209463d52ebce5a90">occludeWithSceneDepth</a> (std::span&lt; const float &gt; sceneDepth, float depthBias=0.001<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a334af693d367b82209463d52ebce5a90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes fluid and diffuse color hidden by borrowed linear scene depth.  <br /></td></tr>
+<tr class="separator:a334af693d367b82209463d52ebce5a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af36b46b3cc5f0155f89d35d36a73a3e5" id="r_af36b46b3cc5f0155f89d35d36a73a3e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#af36b46b3cc5f0155f89d35d36a73a3e5">compositeSceneRefraction</a> (std::span&lt; const uint8_t &gt; sceneColor, float distortion=8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float absorption=3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:af36b46b3cc5f0155f89d35d36a73a3e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refracts a matching opaque RGBA8 scene through the current liquid surface.  <br /></td></tr>
+<tr class="separator:af36b46b3cc5f0155f89d35d36a73a3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a378ba6c5d7c03665b9185a2b8b8d3c" id="r_a3a378ba6c5d7c03665b9185a2b8b8d3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a3a378ba6c5d7c03665b9185a2b8b8d3c">configureRefraction</a> (float transparency, float absorption, float coefficient, int downsample)</td></tr>
+<tr class="memdesc:a3a378ba6c5d7c03665b9185a2b8b8d3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure Fluid3D-compatible scene refraction controls atomically.  <br /></td></tr>
+<tr class="separator:a3a378ba6c5d7c03665b9185a2b8b8d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea3e4e0fefa9b19816a09391ed7e6e3e" id="r_aea3e4e0fefa9b19816a09391ed7e6e3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#aea3e4e0fefa9b19816a09391ed7e6e3e">configureRefractionEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:aea3e4e0fefa9b19816a09391ed7e6e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables Fluid3D's configured refraction stage without losing its controls.  <br /></td></tr>
+<tr class="separator:aea3e4e0fefa9b19816a09391ed7e6e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88080e8f635385e82710c644d7559bb2" id="r_a88080e8f635385e82710c644d7559bb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a88080e8f635385e82710c644d7559bb2">compositeConfiguredSceneRefraction</a> (std::span&lt; const uint8_t &gt; sceneColor)</td></tr>
+<tr class="memdesc:a88080e8f635385e82710c644d7559bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the configured Fluid3D-compatible refraction to a matching opaque RGBA8 scene.  <br /></td></tr>
+<tr class="separator:a88080e8f635385e82710c644d7559bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a334693fbb410a10c650dee75b84fb103" id="r_a334693fbb410a10c650dee75b84fb103"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a334693fbb410a10c650dee75b84fb103">configureSurfaceBlend</a> (int <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int destination)</td></tr>
+<tr class="memdesc:a334693fbb410a10c650dee75b84fb103"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically configures Fluid3D's final surface source and destination blend factors.  <br /></td></tr>
+<tr class="separator:a334693fbb410a10c650dee75b84fb103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d2490c3ebf42378b080e290847f97f" id="r_a57d2490c3ebf42378b080e290847f97f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a57d2490c3ebf42378b080e290847f97f">compositeConfiguredSurfaceBlend</a> (std::span&lt; const uint8_t &gt; sceneColor)</td></tr>
+<tr class="memdesc:a57d2490c3ebf42378b080e290847f97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composites the current surface over a matching RGBA8 scene using the configured Fluid3D factors.  <br /></td></tr>
+<tr class="separator:a57d2490c3ebf42378b080e290847f97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada4e38b5ff7b6a42fad5ea0a23db36ad" id="r_ada4e38b5ff7b6a42fad5ea0a23db36ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ada4e38b5ff7b6a42fad5ea0a23db36ad">configureParticleBlend</a> (int <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int destination, bool depthWrite)</td></tr>
+<tr class="memdesc:ada4e38b5ff7b6a42fad5ea0a23db36ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures Fluid3D's particle-color target blending and depth writes atomically.  <br /></td></tr>
+<tr class="separator:ada4e38b5ff7b6a42fad5ea0a23db36ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3170f2704823e51ad84e67d4c38008" id="r_a5c3170f2704823e51ad84e67d4c38008"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a5c3170f2704823e51ad84e67d4c38008">configureSurface</a> (float thicknessScale, float thicknessCutoff, float depthFalloff, int smoothIterations)</td></tr>
+<tr class="memdesc:a5c3170f2704823e51ad84e67d4c38008"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically configures thickness reconstruction and surface smoothing.  <br /></td></tr>
+<tr class="separator:a5c3170f2704823e51ad84e67d4c38008"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c09735028802d29d55143c0c72869bc" id="r_a0c09735028802d29d55143c0c72869bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a0c09735028802d29d55143c0c72869bc">configureSurfaceEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a0c09735028802d29d55143c0c72869bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables Fluid3D's generateSurface policy for renderConfiguredVolume.  <br /></td></tr>
+<tr class="separator:a0c09735028802d29d55143c0c72869bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa82deab45792c234e2d6907b57eaee68" id="r_aa82deab45792c234e2d6907b57eaee68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#aa82deab45792c234e2d6907b57eaee68">configureRendererSettings</a> (const <a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:aa82deab45792c234e2d6907b57eaee68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and atomically applies every Fluid3DRendererSettings field.  <br /></td></tr>
+<tr class="separator:aa82deab45792c234e2d6907b57eaee68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad649b7f8c47dfa092ada9b26717cd0f1" id="r_ad649b7f8c47dfa092ada9b26717cd0f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ad649b7f8c47dfa092ada9b26717cd0f1">rendererSettings</a> () const noexcept</td></tr>
+<tr class="memdesc:ad649b7f8c47dfa092ada9b26717cd0f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an owning snapshot of the current Fluid3D renderer settings without allocation.  <br /></td></tr>
+<tr class="separator:ad649b7f8c47dfa092ada9b26717cd0f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572ea0bab47dcc7a56cecd048d2fdc9d" id="r_a572ea0bab47dcc7a56cecd048d2fdc9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a572ea0bab47dcc7a56cecd048d2fdc9d">configureSurfaceBlurRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a572ea0bab47dcc7a56cecd048d2fdc9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets Fluid3D's world-space surface blur radius for subsequent reconstruction.  <br /></td></tr>
+<tr class="separator:a572ea0bab47dcc7a56cecd048d2fdc9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f2e6f8fad4cd6689d0dacf016c38ccd" id="r_a7f2e6f8fad4cd6689d0dacf016c38ccd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a7f2e6f8fad4cd6689d0dacf016c38ccd">configureMaterial</a> (bool <a class="el" href="RenderSystem3D_8cpp.html#aca19a5737361a1d9d610c1ca0936eda9">lighting</a>, float smoothness, float metalness, float ambientMultiplier, float reflection, float <a class="el" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a>)</td></tr>
+<tr class="memdesc:a7f2e6f8fad4cd6689d0dacf016c38ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically configures lighting and material response for subsequent liquid frames.  <br /></td></tr>
+<tr class="separator:a7f2e6f8fad4cd6689d0dacf016c38ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a1d7093f9be797b5ef7db6dc3980a41" id="r_a7a1d7093f9be797b5ef7db6dc3980a41"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a7a1d7093f9be797b5ef7db6dc3980a41">configureReflection</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a7a1d7093f9be797b5ef7db6dc3980a41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables the configured reflection contribution without losing its coefficient.  <br /></td></tr>
+<tr class="separator:a7a1d7093f9be797b5ef7db6dc3980a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c76d76b7ff401ca7520700d21dc4ee" id="r_a89c76d76b7ff401ca7520700d21dc4ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a89c76d76b7ff401ca7520700d21dc4ee">configureColors</a> (const glm::vec3 &amp;baseColor, const glm::vec3 &amp;reflectionColor)</td></tr>
+<tr class="memdesc:a89c76d76b7ff401ca7520700d21dc4ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the linear RGB base and reflection colors atomically.  <br /></td></tr>
+<tr class="separator:a89c76d76b7ff401ca7520700d21dc4ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6142c2ab7bd06ff03ea9aa51ad7c6c7b" id="r_a6142c2ab7bd06ff03ea9aa51ad7c6c7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a6142c2ab7bd06ff03ea9aa51ad7c6c7b">configureAnisotropy</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a6142c2ab7bd06ff03ea9aa51ad7c6c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables oriented-ellipsoid projection for volume-fluid particles.  <br /></td></tr>
+<tr class="separator:a6142c2ab7bd06ff03ea9aa51ad7c6c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cfabef1c3c1fa7644dce736cfde5e6f" id="r_a2cfabef1c3c1fa7644dce736cfde5e6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a2cfabef1c3c1fa7644dce736cfde5e6f">configureSurfaceDownsample</a> (int factor)</td></tr>
+<tr class="memdesc:a2cfabef1c3c1fa7644dce736cfde5e6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures Fluid3D-style surface target downsampling.  <br /></td></tr>
+<tr class="separator:a2cfabef1c3c1fa7644dce736cfde5e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21066831895b1f901d0311a62c715f14" id="r_a21066831895b1f901d0311a62c715f14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a21066831895b1f901d0311a62c715f14">configureThicknessDownsample</a> (int factor)</td></tr>
+<tr class="memdesc:a21066831895b1f901d0311a62c715f14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the independently reconstructed liquid-thickness target divisor.  <br /></td></tr>
+<tr class="separator:a21066831895b1f901d0311a62c715f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95fc3386e115876ab03ae46d8b7b42f6" id="r_a95fc3386e115876ab03ae46d8b7b42f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a95fc3386e115876ab03ae46d8b7b42f6">configureProjection</a> (bool orthographic, float verticalHalfSize=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a95fc3386e115876ab03ae46d8b7b42f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects perspective or orthographic reconstruction for subsequent frames.  <br /></td></tr>
+<tr class="separator:a95fc3386e115876ab03ae46d8b7b42f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f1fcc322fe6b3b244f5c389e9dc616" id="r_a81f1fcc322fe6b3b244f5c389e9dc616"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a81f1fcc322fe6b3b244f5c389e9dc616">renderFrom</a> (<a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a> *sim)</td></tr>
+<tr class="memdesc:a81f1fcc322fe6b3b244f5c389e9dc616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly wrapper: render(*sim) with a null check.  <br /></td></tr>
+<tr class="separator:a81f1fcc322fe6b3b244f5c389e9dc616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23afcf6dc8a5615809eccf8d9be3e1d9" id="r_a23afcf6dc8a5615809eccf8d9be3e1d9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a23afcf6dc8a5615809eccf8d9be3e1d9">getWidth</a> () const</td></tr>
+<tr class="separator:a23afcf6dc8a5615809eccf8d9be3e1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad55fff4e812397c3012740d8652ea8" id="r_a6ad55fff4e812397c3012740d8652ea8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a6ad55fff4e812397c3012740d8652ea8">getHeight</a> () const</td></tr>
+<tr class="separator:a6ad55fff4e812397c3012740d8652ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbdaa26793e389bffbf0629947da9946" id="r_adbdaa26793e389bffbf0629947da9946"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#adbdaa26793e389bffbf0629947da9946">depth</a> () const</td></tr>
+<tr class="memdesc:adbdaa26793e389bffbf0629947da9946"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear view depth per pixel (FLT_MAX where no fluid).  <br /></td></tr>
+<tr class="separator:adbdaa26793e389bffbf0629947da9946"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a8d0dd4db03bf63c5a1340d684c5b72" id="r_a8a8d0dd4db03bf63c5a1340d684c5b72"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; glm::vec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a8a8d0dd4db03bf63c5a1340d684c5b72">normals</a> () const</td></tr>
+<tr class="memdesc:a8a8d0dd4db03bf63c5a1340d684c5b72"><td class="mdescLeft">&#160;</td><td class="mdescRight">View-space normals (0 where no fluid).  <br /></td></tr>
+<tr class="separator:a8a8d0dd4db03bf63c5a1340d684c5b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6343baca2dffb59cd154b69d61f360c6" id="r_a6343baca2dffb59cd154b69d61f360c6"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a6343baca2dffb59cd154b69d61f360c6">thickness</a> () const</td></tr>
+<tr class="memdesc:a6343baca2dffb59cd154b69d61f360c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulated thickness per pixel.  <br /></td></tr>
+<tr class="separator:a6343baca2dffb59cd154b69d61f360c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a854e9555bc3d0778ce873487aff90" id="r_a37a854e9555bc3d0778ce873487aff90"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a37a854e9555bc3d0778ce873487aff90">color</a> () const</td></tr>
+<tr class="memdesc:a37a854e9555bc3d0778ce873487aff90"><td class="mdescLeft">&#160;</td><td class="mdescRight">RGBA8 shaded output.  <br /></td></tr>
+<tr class="separator:a37a854e9555bc3d0778ce873487aff90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a083453fbeeeb1004e892f3794282d490" id="r_a083453fbeeeb1004e892f3794282d490"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a083453fbeeeb1004e892f3794282d490">usingGpu</a> () const</td></tr>
+<tr class="separator:a083453fbeeeb1004e892f3794282d490"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b6623be84c23969be1ce4a8a3cd5189" id="r_a0b6623be84c23969be1ce4a8a3cd5189"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a0b6623be84c23969be1ce4a8a3cd5189">setMode</a> (int mode)</td></tr>
+<tr class="memdesc:a0b6623be84c23969be1ce4a8a3cd5189"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switch shading: 0 water, 1 mud.  <br /></td></tr>
+<tr class="separator:a0b6623be84c23969be1ce4a8a3cd5189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa22a51d9db6a1d1ec1d5570d9b2cbfc6" id="r_aa22a51d9db6a1d1ec1d5570d9b2cbfc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#aa22a51d9db6a1d1ec1d5570d9b2cbfc6">setCamera</a> (const glm::vec3 &amp;<a class="el" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, const glm::vec3 &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const glm::vec3 &amp;<a class="el" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a>, float fovYDeg)</td></tr>
+<tr class="memdesc:aa22a51d9db6a1d1ec1d5570d9b2cbfc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the camera.  <br /></td></tr>
+<tr class="separator:aa22a51d9db6a1d1ec1d5570d9b2cbfc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad53ba11c50c25edd9b78aace61050dcd" id="r_ad53ba11c50c25edd9b78aace61050dcd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ad53ba11c50c25edd9b78aace61050dcd">writePpm</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const</td></tr>
+<tr class="memdesc:ad53ba11c50c25edd9b78aace61050dcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the color buffer as a PPM image (debug artifact).  <br /></td></tr>
+<tr class="separator:ad53ba11c50c25edd9b78aace61050dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Buffer-level screen-space fluid renderer. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00103">103</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac699829d6d7c2b99c78038ad6eb08e14" name="ac699829d6d7c2b99c78038ad6eb08e14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac699829d6d7c2b99c78038ad6eb08e14">&#9670;&#160;</a></span>FluidSurfaceRenderer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::FluidSurfaceRenderer::FluidSurfaceRenderer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1FluidSurfaceParams.html">FluidSurfaceParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>preferGpu</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>camera / resolution / material tuning. </td></tr>
+    <tr><td class="paramname">preferGpu</td><td>use compute kernels when a device is available. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00068">eve::fluids::FluidSurfaceParams::aspect</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+</div>
+</div>
+<a id="afe7a07e4fc2f0c13bd9cff2fc149e88e" name="afe7a07e4fc2f0c13bd9cff2fc149e88e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe7a07e4fc2f0c13bd9cff2fc149e88e">&#9670;&#160;</a></span>~FluidSurfaceRenderer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::FluidSurfaceRenderer::~FluidSurfaceRenderer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab36e02906f0d1389fa355764f4f19282" name="ab36e02906f0d1389fa355764f4f19282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab36e02906f0d1389fa355764f4f19282">&#9670;&#160;</a></span>FluidSurfaceRenderer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::FluidSurfaceRenderer::FluidSurfaceRenderer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a37a854e9555bc3d0778ce873487aff90" name="a37a854e9555bc3d0778ce873487aff90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a854e9555bc3d0778ce873487aff90">&#9670;&#160;</a></span>color()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; uint8_t &gt; &amp; eve::fluids::FluidSurfaceRenderer::color </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>RGBA8 shaded output. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00408">408</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00017">compositeDiffuse()</a>.</p>
+
+</div>
+</div>
+<a id="a88080e8f635385e82710c644d7559bb2" name="a88080e8f635385e82710c644d7559bb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88080e8f635385e82710c644d7559bb2">&#9670;&#160;</a></span>compositeConfiguredSceneRefraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::compositeConfiguredSceneRefraction </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>sceneColor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply the configured Fluid3D-compatible refraction to a matching opaque RGBA8 scene. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sceneColor</td><td>Borrowed width*height*4 background bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after one bounded composition, or failure before color mutation.</dd></dl>
+<p>Reuses an owned target no larger than the output, submits no GPU work and retains no input. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a57d2490c3ebf42378b080e290847f97f" name="a57d2490c3ebf42378b080e290847f97f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57d2490c3ebf42378b080e290847f97f">&#9670;&#160;</a></span>compositeConfiguredSurfaceBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::compositeConfiguredSurfaceBlend </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>sceneColor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composites the current surface over a matching RGBA8 scene using the configured Fluid3D factors. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sceneColor</td><td>Borrowed width*height*4 destination bytes; never retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after one bounded linear host pass, or failure before output mutation.</dd></dl>
+<p>Supports every Unity BlendMode factor without creating parameterized Vulkan pipelines. Render-thread affine. The resident color-only GPU path is rejected because host RGBA is not current. @ownership No ownership transfer occurs. @lifetime The input span is borrowed only for this synchronous call and is never retained. @thread Render-thread affine; do not race with rendering or presentation. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceBlend_8cpp_source.html">FluidSurfaceBlend.cpp</a> 第 <a class="el" href="FluidSurfaceBlend_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+</div>
+</div>
+<a id="ae739643806711a356c3ad4eda5fada55" name="ae739643806711a356c3ad4eda5fada55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae739643806711a356c3ad4eda5fada55">&#9670;&#160;</a></span>compositeDiffuse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::compositeDiffuse </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>opacity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeSeconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Composites white secondary particles over the last reconstructed frame. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pool</td><td>Borrowed secondary particles; no pointer is retained or state advanced. </td></tr>
+    <tr><td class="paramname">radius</td><td>World-space splat radius in (0,1]. </td></tr>
+    <tr><td class="paramname">opacity</td><td>Peak alpha in [0,1]. </td></tr>
+    <tr><td class="paramname">fadeSeconds</td><td>Remaining-life interval in (0,86400] used for fading.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Render-thread affine, no concurrent calls or callbacks. Call after render/renderVolume with the same camera, before image upload. Modifies only RGBA output, preserving liquid depth/normals/thickness. Tests liquid depth, not external scene geometry. Repeated calls accumulate until the next render. Preflights at most 4M covered bounding-box pixels; failure leaves color intact. Uses CPU buffers already read back by SSF; no new GPU submission or readback. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html">VolumeFluidFoamSurface.cpp</a> 第 <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00408">color()</a>, <a class="el" href="VolumeFluidDiffuse_8cpp_source.html#l00073">eve::fluids::VolumeFluidDiffuse::copyRenderData()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00062">eve::fluids::FluidSurfaceParams::eye</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00070">eve::fluids::FluidSurfaceParams::farZ</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00065">eve::fluids::FluidSurfaceParams::fovYDeg</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00069">eve::fluids::FluidSurfaceParams::nearZ</a>, <a class="el" href="TileConfig_8cpp_source.html#l00919">opacity</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="VolumeFluidDiffuse_8cpp_source.html#l00071">eve::fluids::VolumeFluidDiffuse::particleCount()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00040">sy</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00063">eve::fluids::FluidSurfaceParams::target</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00064">eve::fluids::FluidSurfaceParams::up</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00594">view</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="af36b46b3cc5f0155f89d35d36a73a3e5" name="af36b46b3cc5f0155f89d35d36a73a3e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af36b46b3cc5f0155f89d35d36a73a3e5">&#9670;&#160;</a></span>compositeSceneRefraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::compositeSceneRefraction </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>sceneColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distortion</em> = <code>8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>absorption</em> = <code>3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refracts a matching opaque RGBA8 scene through the current liquid surface. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sceneColor</td><td>Borrowed width*height*4 RGBA8 background; it is never retained. </td></tr>
+    <tr><td class="paramname">distortion</td><td>Maximum screen-space displacement in pixels, in [0,64]. </td></tr>
+    <tr><td class="paramname">absorption</td><td>Beer-Lambert absorption coefficient in [0,30]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error before any output mutation.</dd></dl>
+<p>Render-thread affine. Call after a full render/renderVolume. Performs one allocation-free bounded pixel pass, modifies only RGBA output, and submits no GPU work. The color-only GPU fast path is rejected because it has no current host auxiliaries. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00520">520</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00040">sy</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a6142c2ab7bd06ff03ea9aa51ad7c6c7b" name="a6142c2ab7bd06ff03ea9aa51ad7c6c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6142c2ab7bd06ff03ea9aa51ad7c6c7b">&#9670;&#160;</a></span>configureAnisotropy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureAnisotropy </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables oriented-ellipsoid projection for volume-fluid particles. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>When true, renderVolume uses particle radii and orientations. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success. GPU resources are created lazily on the next nonempty frame.</dd></dl>
+<p>The disabled path performs no shape copy, anisotropy preprocessing, extra upload or dispatch. Enabling replaces the spherical splat dispatch; it does not add a second dispatch. Render-thread affine. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00714">714</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a89c76d76b7ff401ca7520700d21dc4ee" name="a89c76d76b7ff401ca7520700d21dc4ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89c76d76b7ff401ca7520700d21dc4ee">&#9670;&#160;</a></span>configureColors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureColors </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>baseColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>reflectionColor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the linear RGB base and reflection colors atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">baseColor</td><td>Linear RGB base color with finite channels in [0,1]. </td></tr>
+    <tr><td class="paramname">reflectionColor</td><td>Linear RGB reflection tint with finite channels in [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error without changing prior configuration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00698">698</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="a3097c53be5eb15c1f6ee073b84e960e3" name="a3097c53be5eb15c1f6ee073b84e960e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3097c53be5eb15c1f6ee073b84e960e3">&#9670;&#160;</a></span>configureFoam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureFoam </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>downsample</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures Fluid3D-compatible foam generation visibility and render-target downsampling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>When false, compositeDiffuse returns success without touching the current frame. </td></tr>
+    <tr><td class="paramname">downsample</td><td>Integer foam target divisor in [1,4]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing prior configuration.</dd></dl>
+<p>Render-thread affine. Configuration allocates nothing. Factors above one reduce particle splat visits on each axis, reuse one owned scalar coverage target, then composite through one linear output pass. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html">VolumeFluidFoamSurface.cpp</a> 第 <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7f2e6f8fad4cd6689d0dacf016c38ccd" name="a7f2e6f8fad4cd6689d0dacf016c38ccd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f2e6f8fad4cd6689d0dacf016c38ccd">&#9670;&#160;</a></span>configureMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureMaterial </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>lighting</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>smoothness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metalness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ambientMultiplier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>reflection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>opacity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically configures lighting and material response for subsequent liquid frames. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lighting</td><td>Enables diffuse and specular lighting. </td></tr>
+    <tr><td class="paramname">smoothness</td><td>Specular smoothness in [0,1]. </td></tr>
+    <tr><td class="paramname">metalness</td><td>Reflection tint metalness in [0,1]. </td></tr>
+    <tr><td class="paramname">ambientMultiplier</td><td>Ambient contribution in [0,6]. </td></tr>
+    <tr><td class="paramname">reflection</td><td>Fresnel reflection coefficient in [0,1]. </td></tr>
+    <tr><td class="paramname">opacity</td><td>Thickness-to-alpha coefficient in [0,30]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error without changing prior configuration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00662">662</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00600">lighting</a>, <a class="el" href="TileConfig_8cpp_source.html#l00919">opacity</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="ada4e38b5ff7b6a42fad5ea0a23db36ad" name="ada4e38b5ff7b6a42fad5ea0a23db36ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada4e38b5ff7b6a42fad5ea0a23db36ad">&#9670;&#160;</a></span>configureParticleBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureParticleBlend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>depthWrite</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures Fluid3D's particle-color target blending and depth writes atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Unity BlendMode integer in [0,10]. </td></tr>
+    <tr><td class="paramname">destination</td><td>Unity BlendMode integer in [0,10]. </td></tr>
+    <tr><td class="paramname">depthWrite</td><td>When true, only the nearest particle-color fragment at each pixel survives. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing the prior configuration.</dd></dl>
+<p>Enabling this explicit package path disables the uniform-color shortcut because overlap order affects the result. It reuses the existing tint and weight arrays and creates no GPU resources or passes. @ownership No external resource is accepted or retained. @lifetime The values live with this renderer. @thread Render-thread affine; do not race configuration with rendering. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceBlend_8cpp_source.html">FluidSurfaceBlend.cpp</a> 第 <a class="el" href="FluidSurfaceBlend_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1fluids.html#a5f4c9875c2259f021aecc7af9aadd1b7aa1e6a89ebadf4a9ff9a6eaaac32dcd3e">eve::fluids::OneMinusSourceAlpha</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1fluids.html#a5f4c9875c2259f021aecc7af9aadd1b7ad7ed4ee1df437474d005188535f74875">eve::fluids::Zero</a>.</p>
+
+</div>
+</div>
+<a id="a95fc3386e115876ab03ae46d8b7b42f6" name="a95fc3386e115876ab03ae46d8b7b42f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95fc3386e115876ab03ae46d8b7b42f6">&#9670;&#160;</a></span>configureProjection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureProjection </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>orthographic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>verticalHalfSize</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects perspective or orthographic reconstruction for subsequent frames. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">orthographic</td><td>Enables an orthographic camera matching Fluid3D camera setup. </td></tr>
+    <tr><td class="paramname">verticalHalfSize</td><td>Positive orthographic world-space half height in [0.001,10000]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing the prior projection.</dd></dl>
+<p>Render-thread affine. Reuses existing buffers and push constants; no GPU resource is created. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00066">eve::fluids::FluidSurfaceParams::orthographic</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00067">eve::fluids::FluidSurfaceParams::orthographicSize</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7a1d7093f9be797b5ef7db6dc3980a41" name="a7a1d7093f9be797b5ef7db6dc3980a41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1d7093f9be797b5ef7db6dc3980a41">&#9670;&#160;</a></span>configureReflection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureReflection </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables the configured reflection contribution without losing its coefficient. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>Matches Fluid3D's generateReflection renderer setting. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success. No resource is created and the current output is unchanged until the next render.</dd></dl>
+<p>Render-thread affine. Disabling reflection makes the next shaded frame omit its Fresnel reflection; enabling it restores the coefficient last supplied to configureMaterial. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00690">690</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3a378ba6c5d7c03665b9185a2b8b8d3c" name="a3a378ba6c5d7c03665b9185a2b8b8d3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a378ba6c5d7c03665b9185a2b8b8d3c">&#9670;&#160;</a></span>configureRefraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureRefraction </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>transparency</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>absorption</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>coefficient</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>downsample</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure Fluid3D-compatible scene refraction controls atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transparency</td><td>Blend between particle color and refracted scene in [0,1]. </td></tr>
+    <tr><td class="paramname">absorption</td><td>Per-channel Beer-Lambert coefficient in [0,30]. </td></tr>
+    <tr><td class="paramname">coefficient</td><td>Signed normalized-screen bend coefficient in [-0.1,0.1]. </td></tr>
+    <tr><td class="paramname">downsample</td><td>Refraction scene target divisor in [1,4]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing prior configuration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aea3e4e0fefa9b19816a09391ed7e6e3e" name="aea3e4e0fefa9b19816a09391ed7e6e3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea3e4e0fefa9b19816a09391ed7e6e3e">&#9670;&#160;</a></span>configureRefractionEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureRefractionEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables Fluid3D's configured refraction stage without losing its controls. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>When false, compositeConfiguredSceneRefraction is a zero-work no-op. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success. The current frame and owned scratch are unchanged.</dd></dl>
+<p>Render-thread affine; no allocation, scene copy or GPU work occurs during configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa82deab45792c234e2d6907b57eaee68" name="aa82deab45792c234e2d6907b57eaee68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa82deab45792c234e2d6907b57eaee68">&#9670;&#160;</a></span>configureRendererSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureRendererSettings </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates and atomically applies every Fluid3DRendererSettings field. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">settings</td><td>Owning value borrowed for this render-thread call only. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing any renderer configuration.</dd></dl>
+<p>Resets existing lazy reduced renderers once after commit; allocates and submits no GPU work. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00587">587</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00027">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a5c3170f2704823e51ad84e67d4c38008" name="a5c3170f2704823e51ad84e67d4c38008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3170f2704823e51ad84e67d4c38008">&#9670;&#160;</a></span>configureSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureSurface </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thicknessScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thicknessCutoff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depthFalloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>smoothIterations</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically configures thickness reconstruction and surface smoothing. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">thicknessScale</td><td>Thickness multiplier in [0,16]. </td></tr>
+    <tr><td class="paramname">thicknessCutoff</td><td>Fluid3D normalized thickness discard threshold in [0,5]; compares against thickness*10. </td></tr>
+    <tr><td class="paramname">depthFalloff</td><td>Bilateral depth falloff in (0,1]. </td></tr>
+    <tr><td class="paramname">smoothIterations</td><td>Bounded bilateral pass count in [0,8]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error without changing prior configuration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00565">565</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00075">eve::fluids::FluidSurfaceParams::depthFalloff</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00074">eve::fluids::FluidSurfaceParams::smoothIterations</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00076">eve::fluids::FluidSurfaceParams::thicknessScale</a>.</p>
+
+</div>
+</div>
+<a id="a334693fbb410a10c650dee75b84fb103" name="a334693fbb410a10c650dee75b84fb103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a334693fbb410a10c650dee75b84fb103">&#9670;&#160;</a></span>configureSurfaceBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureSurfaceBlend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>destination</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically configures Fluid3D's final surface source and destination blend factors. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Unity BlendMode integer in [0,10]. </td></tr>
+    <tr><td class="paramname">destination</td><td>Unity BlendMode integer in [0,10]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing the prior pair.</dd></dl>
+<p>Configuration allocates nothing and creates no graphics pipeline. The package defaults are SourceAlpha value 5 and OneMinusSourceAlpha value 10. @ownership No external resource is accepted or retained. @lifetime The selected value pair lives with this renderer. @thread Render-thread affine; do not race configuration with rendering. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceBlend_8cpp_source.html">FluidSurfaceBlend.cpp</a> 第 <a class="el" href="FluidSurfaceBlend_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1fluids.html#a5f4c9875c2259f021aecc7af9aadd1b7aa1e6a89ebadf4a9ff9a6eaaac32dcd3e">eve::fluids::OneMinusSourceAlpha</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1fluids.html#a5f4c9875c2259f021aecc7af9aadd1b7ad7ed4ee1df437474d005188535f74875">eve::fluids::Zero</a>.</p>
+
+</div>
+</div>
+<a id="a572ea0bab47dcc7a56cecd048d2fdc9d" name="a572ea0bab47dcc7a56cecd048d2fdc9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572ea0bab47dcc7a56cecd048d2fdc9d">&#9670;&#160;</a></span>configureSurfaceBlurRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureSurfaceBlurRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets Fluid3D's world-space surface blur radius for subsequent reconstruction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>Finite world-space radius in [0,0.1] metres. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument without changing the prior radius.</dd></dl>
+<p>The radius is converted to a bounded 0-4 pixel kernel per depth sample inside the existing bilateral smoothing passes. It adds no pass, resource, descriptor or submission. Render-thread affine. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00680">680</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2cfabef1c3c1fa7644dce736cfde5e6f" name="a2cfabef1c3c1fa7644dce736cfde5e6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cfabef1c3c1fa7644dce736cfde5e6f">&#9670;&#160;</a></span>configureSurfaceDownsample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureSurfaceDownsample </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>factor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures Fluid3D-style surface target downsampling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">factor</td><td>Integer reconstruction divisor in [1,4]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error without changing the prior factor.</dd></dl>
+<p>Factors above one run splat, smoothing, normals and shading at the reduced dimensions, then expand outputs in one bounded linear host pass. Resources are created lazily and retained. Render-thread affine. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00721">721</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0c09735028802d29d55143c0c72869bc" name="a0c09735028802d29d55143c0c72869bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c09735028802d29d55143c0c72869bc">&#9670;&#160;</a></span>configureSurfaceEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureSurfaceEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables Fluid3D's generateSurface policy for renderConfiguredVolume. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enabled</td><td>True selects existing SSF; false selects existing bounded thickness volume. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success without allocating or changing the current frame.</dd></dl>
+<p>Render-thread affine; the configured value is owned by this renderer. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00582">582</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a21066831895b1f901d0311a62c715f14" name="a21066831895b1f901d0311a62c715f14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21066831895b1f901d0311a62c715f14">&#9670;&#160;</a></span>configureThicknessDownsample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::configureThicknessDownsample </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>factor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the independently reconstructed liquid-thickness target divisor. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">factor</td><td>Integer divisor in [1,4]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or an invalid-argument diagnostic without changing configuration.</dd></dl>
+<p>renderVolume reconstructs thickness at dimensions ceil-divided by factor, expands it once, then performs material shading. The target is independent of surfaceDownsample and created lazily. Render-thread affine. @ownership No external object or pointer is retained. @lifetime The owned reduced target lives until reconfiguration or renderer destruction. @thread Render thread only; do not race configuration with rendering. @reentrancy Must not be called from renderer callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00731">731</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a746d08338f8c0133817ddd75040140bb" name="a746d08338f8c0133817ddd75040140bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746d08338f8c0133817ddd75040140bb">&#9670;&#160;</a></span>copyToTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::copyToTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Present the current RGBA8 result into an existing graphics texture. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graphics</td><td>Borrowed active graphics module. </td></tr>
+    <tr><td class="paramname">texture</td><td>Borrowed matching single-mip texture owned by graphics. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after presentation, or a structured argument/upload failure.</dd></dl>
+<p>Uses an allocation-free device-local copy when the current frame was shaded on the GPU without CPU post-processing. Other backends and modified frames use the existing host color upload. No resource or pointer is retained. @thread Render-thread affine and synchronous. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GpuBuffer_8h_source.html#l00048">eve::gpgpu::GpuBuffer::residentView()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a0c396408522b86eafc5677698db8d098">eve::graphics::Graphics::updateTexture()</a>, <a class="el" href="Graphics_8h_source.html#l00603">eve::graphics::Graphics::updateTextureFromResidentRgba8()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00295">renderVolumeColorToTexture()</a>.</p>
+
+</div>
+</div>
+<a id="adbdaa26793e389bffbf0629947da9946" name="adbdaa26793e389bffbf0629947da9946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbdaa26793e389bffbf0629947da9946">&#9670;&#160;</a></span>depth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::fluids::FluidSurfaceRenderer::depth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Linear view depth per pixel (FLT_MAX where no fluid). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00399">399</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ad55fff4e812397c3012740d8652ea8" name="a6ad55fff4e812397c3012740d8652ea8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad55fff4e812397c3012740d8652ea8">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidSurfaceRenderer::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00396">396</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a23afcf6dc8a5615809eccf8d9be3e1d9" name="a23afcf6dc8a5615809eccf8d9be3e1d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23afcf6dc8a5615809eccf8d9be3e1d9">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidSurfaceRenderer::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00395">395</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a8d0dd4db03bf63c5a1340d684c5b72" name="a8a8d0dd4db03bf63c5a1340d684c5b72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a8d0dd4db03bf63c5a1340d684c5b72">&#9670;&#160;</a></span>normals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; glm::vec3 &gt; &amp; eve::fluids::FluidSurfaceRenderer::normals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>View-space normals (0 where no fluid). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00402">402</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a334af693d367b82209463d52ebce5a90" name="a334af693d367b82209463d52ebce5a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a334af693d367b82209463d52ebce5a90">&#9670;&#160;</a></span>occludeWithSceneDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::occludeWithSceneDepth </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>sceneDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depthBias</em> = <code>0.001<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes fluid and diffuse color hidden by borrowed linear scene depth. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sceneDepth</td><td>One finite, nonnegative view-space depth per output pixel; use a large finite value for no geometry. </td></tr>
+    <tr><td class="paramname">depthBias</td><td>Nonnegative view-space tolerance in [0,1] metres for coincident surfaces. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error before any color mutation. @lifetime sceneDepth is borrowed for this call and is never retained.</dd></dl>
+<p>Render-thread affine. Call after full render/renderVolume/renderGasVolume and optional compositeDiffuse. This performs one allocation-free linear pixel pass and changes only RGBA. The color-only GPU fast path has no current host depth and is rejected explicitly. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00496">496</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+</div>
+</div>
+<a id="ab9cf4b523ace57846e39bcd7fa56e5d2" name="ab9cf4b523ace57846e39bcd7fa56e5d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9cf4b523ace57846e39bcd7fa56e5d2">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp; eve::fluids::FluidSurfaceRenderer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adda6263b8f3a998942b154e8d10554d3" name="adda6263b8f3a998942b154e8d10554d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adda6263b8f3a998942b154e8d10554d3">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::prepare </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepares the preferred reconstruction backend before frame timing begins. </p>
+<p>Render-thread affine. GPU resource and shader creation is attempted once; an unavailable GPU leaves the renderer on its CPU implementation. No simulation or output state is changed. Call <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a083453fbeeeb1004e892f3794282d490">usingGpu()</a> afterwards to observe the selected path. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a74da3f6403ba7bf048ed572717696fca" name="a74da3f6403ba7bf048ed572717696fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74da3f6403ba7bf048ed572717696fca">&#9670;&#160;</a></span>render() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::render </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstruct a frame from a simulator's live particles. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Fluids_8h_source.html#l00116">eve::fluids::FluidSimulator::params()</a>, <a class="el" href="FluidMath_8h_source.html#l00028">eve::fluids::FluidParams::particleRadius</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="Fluids_8cpp_source.html#l00230">eve::fluids::FluidSimulator::readPositions()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00163">render()</a>.</p>
+
+</div>
+</div>
+<a id="a55cc501d6556ae837b29c8e24cf873c8" name="a55cc501d6556ae837b29c8e24cf873c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55cc501d6556ae837b29c8e24cf873c8">&#9670;&#160;</a></span>render() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::render </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; glm::vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>positions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>particleRadius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstruct a frame from particle positions. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapMesh_8cpp_source.html#l00016">positions</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00123">render()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00129">renderFrom()</a>.</p>
+
+</div>
+</div>
+<a id="afeabb44d1092b9811df5c82b4a210f66" name="afeabb44d1092b9811df5c82b4a210f66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeabb44d1092b9811df5c82b4a210f66">&#9670;&#160;</a></span>renderConfiguredVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::renderConfiguredVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Renders through Fluid3D's configured generateSurface policy. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed simulator read only for this render-thread call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured budget failure from the surface-disabled volume path.</dd></dl>
+<p>Enabled uses the existing SSF reconstruction. Disabled uses the existing bounded all-phase thickness volume, skipping surface depth smoothing, normals, lighting, reflection, refraction and GPU work. No simulator or callback is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00264">renderVolumeWithoutSurface()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad649b7f8c47dfa092ada9b26717cd0f1" name="ad649b7f8c47dfa092ada9b26717cd0f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad649b7f8c47dfa092ada9b26717cd0f1">&#9670;&#160;</a></span>rendererSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a> eve::fluids::FluidSurfaceRenderer::rendererSettings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns an owning snapshot of the current Fluid3D renderer settings without allocation. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00634">634</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00083">eve::fluids::FluidRendererSettings::blendSource</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>.</p>
+
+</div>
+</div>
+<a id="a81f1fcc322fe6b3b244f5c389e9dc616" name="a81f1fcc322fe6b3b244f5c389e9dc616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f1fcc322fe6b3b244f5c389e9dc616">&#9670;&#160;</a></span>renderFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::renderFrom </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a> *&#160;</td>
+          <td class="paramname"><em>sim</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-friendly wrapper: render(*sim) with a null check. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed simulator; null performs no work. @ownership The simulator is never retained. @lifetime The borrow lasts only for this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00163">render()</a>.</p>
+
+</div>
+</div>
+<a id="a070df8f39565a0faacdac1a68cbbfed6" name="a070df8f39565a0faacdac1a68cbbfed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a070df8f39565a0faacdac1a68cbbfed6">&#9670;&#160;</a></span>renderGasVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::renderGasVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>absorption</em> = <code>5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Renders gas particles as a blurred, translucent thickness volume. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed simulator read during this call only. </td></tr>
+    <tr><td class="paramname">absorption</td><td>Beer-Lambert extinction coefficient in [0.01,30]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error when inputs or the fixed frame budget are exceeded. @lifetime The simulator is borrowed for this call and is never retained.</dd></dl>
+<p>Render-thread affine. Selects Gas particles only and does not run liquid surface reconstruction or submit GPU work. The frame is limited to 65536 particles and four million quarter-resolution projected bounding-box pixels; a failure preserves the previous output. Reuses frame scratch. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab852d1e709bb2b8d8acd0494244b6931" name="ab852d1e709bb2b8d8acd0494244b6931"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab852d1e709bb2b8d8acd0494244b6931">&#9670;&#160;</a></span>renderVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::renderVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstructs a volume-fluid snapshot and shades its diffusing particle colors. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed9007a94071cc49a0c13217a82e44a0" name="aed9007a94071cc49a0c13217a82e44a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed9007a94071cc49a0c13217a82e44a0">&#9670;&#160;</a></span>renderVolumeColorOnly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::renderVolumeColorOnly </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstructs only the RGBA output for display, skipping auxiliary GPU readback when color is uniform. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed simulator read during this call only. @lifetime The simulator is borrowed for the duration of this call and is never retained.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Render-thread affine. <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth()</a>, <a class="el" href="HeightmapMesh_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals()</a>, and <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness()</a> remain unchanged; do not call <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae739643806711a356c3ad4eda5fada55" title="Composites white secondary particles over the last reconstructed frame.">compositeDiffuse()</a> after this method. Multicolor frames transparently use the full renderVolume path. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00295">renderVolumeColorToTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a9c978e90cd61c8d62cc355c905c6430a" name="a9c978e90cd61c8d62cc355c905c6430a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c978e90cd61c8d62cc355c905c6430a">&#9670;&#160;</a></span>renderVolumeColorToTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::renderVolumeColorToTexture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstruct and present a uniform-color volume without host color readback when supported. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed solver used only during this call. </td></tr>
+    <tr><td class="paramname">graphics</td><td>Borrowed active graphics module. </td></tr>
+    <tr><td class="paramname">texture</td><td>Borrowed matching destination texture. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after reconstruction and presentation, or a structured failure.</dd></dl>
+<p>Vulkan keeps the shaded RGBA8 buffer device-local. Unsupported backends retain the normal host-visible color contract followed by texture upload. Do not insert CPU color compositing between reconstruction and presentation; use renderVolume plus copyToTexture for those modes. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00279">copyToTexture()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Profile_8h_source.html#l00137">EV_PROFILE_MODULE</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00016">renderVolumeColorOnly()</a>.</p>
+
+</div>
+</div>
+<a id="acba8810436e8df6f40389a7ac527d98a" name="acba8810436e8df6f40389a7ac527d98a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acba8810436e8df6f40389a7ac527d98a">&#9670;&#160;</a></span>renderVolumeInterpolated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::renderVolumeInterpolated </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconstructs from fixed-step interpolated volume positions using the existing SSF pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed solver; no pointer is retained. </td></tr>
+    <tr><td class="paramname">alpha</td><td>Finite fraction in [0,1] between previous and current successful step endpoints. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or invalid argument before replacing renderer outputs.</dd></dl>
+<p>Position interpolation is fused into the existing CPU upload-data copy. It adds no reconstruction pass, buffer, texture, descriptor or GPU submission. Render-thread affine. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae2c2eec1063cdf0e1108888102f20b82" name="ae2c2eec1063cdf0e1108888102f20b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c2eec1063cdf0e1108888102f20b82">&#9670;&#160;</a></span>renderVolumeWithoutSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::FluidSurfaceRenderer::renderVolumeWithoutSurface </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>sim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>absorption</em> = <code>5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Renders every material phase as a blurred color/thickness volume without reconstructing a surface. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sim</td><td>Borrowed simulator read during this call only. </td></tr>
+    <tr><td class="paramname">absorption</td><td>Beer-Lambert extinction coefficient in [0.01,30]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured error when inputs or the fixed frame budget are exceeded. @lifetime The simulator and its particle view are borrowed for this call and are never retained.</dd></dl>
+<p>Implements Fluid3D's generateSurface=false presentation contract. Render-thread affine; performs no GPU work and disables surface lighting implicitly by producing a volume frame directly. The frame is limited to 65536 particles and four million quarter-resolution projected bounding-box pixels. Scratch storage is reused, and a budget failure preserves the previous output. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a> 第 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00268">renderConfiguredVolume()</a>.</p>
+
+</div>
+</div>
+<a id="aa22a51d9db6a1d1ec1d5570d9b2cbfc6" name="aa22a51d9db6a1d1ec1d5570d9b2cbfc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa22a51d9db6a1d1ec1d5570d9b2cbfc6">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eye</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>up</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the camera. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00068">eve::fluids::FluidSurfaceParams::aspect</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00062">eve::fluids::FluidSurfaceParams::eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00593">eye</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00065">eve::fluids::FluidSurfaceParams::fovYDeg</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00158">target</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00063">eve::fluids::FluidSurfaceParams::target</a>, <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00064">eve::fluids::FluidSurfaceParams::up</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00218">up</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+</div>
+</div>
+<a id="a0b6623be84c23969be1ce4a8a3cd5189" name="a0b6623be84c23969be1ce4a8a3cd5189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b6623be84c23969be1ce4a8a3cd5189">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::setMode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switch shading: 0 water, 1 mud. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00414">414</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6343baca2dffb59cd154b69d61f360c6" name="a6343baca2dffb59cd154b69d61f360c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6343baca2dffb59cd154b69d61f360c6">&#9670;&#160;</a></span>thickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::fluids::FluidSurfaceRenderer::thickness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accumulated thickness per pixel. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00405">405</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a083453fbeeeb1004e892f3794282d490" name="a083453fbeeeb1004e892f3794282d490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a083453fbeeeb1004e892f3794282d490">&#9670;&#160;</a></span>usingGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidSurfaceRenderer::usingGpu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>true when the GPU compute path is active. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00411">411</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad53ba11c50c25edd9b78aace61050dcd" name="ad53ba11c50c25edd9b78aace61050dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad53ba11c50c25edd9b78aace61050dcd">&#9670;&#160;</a></span>writePpm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::FluidSurfaceRenderer::writePpm </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write the color buffer as a PPM image (debug artifact). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a> 第 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l01093">1093</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00072">eve::fluids::FluidSurfaceParams::height</a>, <a class="el" href="PlayHost_8cpp_source.html#l00140">path</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00071">eve::fluids::FluidSurfaceParams::width</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a></li>
+<li>src/modules/fluids/<a class="el" href="FluidSurfaceBlend_8cpp_source.html">FluidSurfaceBlend.cpp</a></li>
+<li>src/modules/fluids/<a class="el" href="FluidSurfaceRenderer_8cpp_source.html">FluidSurfaceRenderer.cpp</a></li>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidFoamSurface_8cpp_source.html">VolumeFluidFoamSurface.cpp</a></li>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidSurface_8cpp_source.html">VolumeFluidSurface.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

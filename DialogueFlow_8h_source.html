@@ -1,0 +1,432 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/DialogueFlow.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DialogueFlow.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DialogueFlow_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationCompiler_8h.html">dialogue/ConversationCompiler.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationLocalization_8h.html">dialogue/ConversationLocalization.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationPersistence_8h.html">dialogue/ConversationPersistence.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationText_8h.html">dialogue/ConversationText.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="DialogueState_8h.html">dialogue/DialogueState.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;squirrel.h&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">Object</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>ConversationDocument;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>DialogueControl;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1i18n.html">   32</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1i18n.html">eve::i18n</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1i18n_1_1I18n.html">I18n</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html">   39</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueFlow.html">DialogueFlow</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html">   51</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html">IntegrationConfig</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a13615194846737ccc73bb9157f9c6d5b">   53</a></span>        std::string <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a13615194846737ccc73bb9157f9c6d5b">subject</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a7f5d941bb3762099ac550097e424bf3c">   55</a></span>        <a class="code hl_class" href="classeve_1_1state_1_1IStateQuery.html">eve::IStateQuery</a>* stateQuery = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#acacf92e269c5cbf51da5ab6e80ebdd63">   57</a></span>        <a class="code hl_class" href="classeve_1_1state_1_1IStateMutation.html">eve::IStateMutation</a>* stateMutation = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a7a658cb3174ebf790e1f88813d6350c2">   59</a></span>        <a class="code hl_typedef" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">ConversationRunner::ConditionEvaluator</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a7a658cb3174ebf790e1f88813d6350c2">conditionEvaluator</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a3065ff40666a35bbc0a80446cbd8484c">   61</a></span>        <a class="code hl_typedef" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a3065ff40666a35bbc0a80446cbd8484c">operationHandler</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#abc463e3afea7bd8ae03d343dbfd02d4f">   63</a></span>        <a class="code hl_typedef" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#abc463e3afea7bd8ae03d343dbfd02d4f">gameplayActionHandler</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#aaf82e6fc8842a00a345f31f0af52ffd6">   65</a></span>        <a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#aaf82e6fc8842a00a345f31f0af52ffd6">accounts</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a2734085e85110df8eaee0f8fdeaefe28">   71</a></span>        <span class="keyword">using </span><a class="code hl_typedef" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a2734085e85110df8eaee0f8fdeaefe28">CommandParticipantFactory</a> =</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            std::function&lt;eve::Result&lt;std::unique_ptr&lt;eve::transaction::ITransactionParticipant&gt;&gt;(</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a393dd732300f4d4f138eb8ef27e58669">   75</a></span>        <a class="code hl_typedef" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a2734085e85110df8eaee0f8fdeaefe28">CommandParticipantFactory</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a393dd732300f4d4f138eb8ef27e58669">commandParticipantFactory</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a1504377b18ff295e7f69d1d6d4981c1c">   81</a></span>        std::function&lt;eve::Result&lt;std::string&gt;(<span class="keyword">const</span> std::string&amp;)&gt; <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a1504377b18ff295e7f69d1d6d4981c1c">contentReader</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    };</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4b7910d33972f1f88bc595255d999d8e">   84</a></span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4b7910d33972f1f88bc595255d999d8e">Module_REG</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueFlow.html">DialogueFlow</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueFlow.html">DialogueFlow</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueFlow.html">~DialogueFlow</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> configureIntegration(<a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html">IntegrationConfig</a> config);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> clearIntegration();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0ae5a6c63238dd3c36bac77dc3149551">  107</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateContext.html">DialogueStateContext</a>&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0ae5a6c63238dd3c36bac77dc3149551">stateContext</a>() const noexcept { <span class="keywordflow">return</span> stateContext_; }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::MutationReceipt&gt;</a> applyStateMutations(std::span&lt;const eve::StateMutation&gt; mutations,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1state_1_1MutationContext.html">eve::MutationContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> loadDnutChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> reloadDnutChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> loadDnutFileChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> importYarnChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> importTweeChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> removeSourceChecked(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> lintAllChecked();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> renameConversationChecked(<span class="keyword">const</span> std::string&amp; oldId, <span class="keyword">const</span> std::string&amp; newId);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> renameNodeChecked(<span class="keyword">const</span> std::string&amp; conversationId, <span class="keyword">const</span> std::string&amp; oldId,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                                      <span class="keyword">const</span> std::string&amp; newId);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#addcd6ff0e226fd35e14f5fe809f0b104">  125</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#addcd6ff0e226fd35e14f5fe809f0b104">getLastLoadChanged</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastLoadChanged_; }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span>        clear();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">int</span>         getConversationCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::string getConversationId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">bool</span>        hasConversation(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::string exportLocalizationCsv() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> importLocalizationCsvChecked(<span class="keyword">const</span> std::string&amp; csv,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                                                                <span class="keyword">const</span> std::string&amp; defaultLocale);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    std::string exportMissingLocalizationCsv(<span class="keyword">const</span> std::string&amp; locale) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    std::string exportVoiceRecordingCsv(<span class="keyword">const</span> std::string&amp; locale) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> validateLocalization(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1i18n_1_1I18n.html">eve::i18n::I18n</a>&amp; localization,</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                                                        <span class="keyword">const</span> std::string&amp;     locale) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a1072b031a074cbfd6acfee830a0b9612">  150</a></span>    <span class="keywordtype">void</span>                           <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a1072b031a074cbfd6acfee830a0b9612">setLocale</a>(<span class="keyword">const</span> std::string&amp; locale) { locale_ = locale; }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3fa17d48d44052b1ccb90ce2118da58d">  151</a></span>    std::string                    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3fa17d48d44052b1ccb90ce2118da58d">getLocale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> locale_; }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">int</span>                            getDiagnosticCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    std::string                    getDiagnosticSeverity(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::string                    getDiagnosticPath(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">int</span>                            getDiagnosticLine(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">int</span>                            getDiagnosticColumn(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    std::string                    getDiagnosticCode(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    std::string                    getDiagnosticAssetPath(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    std::string                    getDiagnosticMessage(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1ConversationDocument.html">ConversationDocument</a>* newDocument(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1ConversationDocument.html">ConversationDocument</a>* getDocument(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> applyDocumentChecked(<a class="code hl_class" href="classeve_1_1dialogue_1_1ConversationDocument.html">ConversationDocument</a>* document);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> startChecked(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>, ssq::Object <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a>);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> startChecked(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#aab5ecc3106c103a224c547edd0bc6b56">  190</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#aab5ecc3106c103a224c547edd0bc6b56">start</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>, ssq::Object <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a>);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> advanceChecked();</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> resumeCommandChecked(<span class="keyword">const</span> std::string&amp; requestId, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac014b214a190465e676e11a2c93cfe6f">  209</a></span>    std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac014b214a190465e676e11a2c93cfe6f">getPendingCommandRequestId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> runner_.pendingCommandRequestId(); }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> select(<span class="keyword">const</span> std::string&amp; routeId);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0d816eebcb68a542344124cefc3efd86">  217</a></span>    <span class="keywordtype">bool</span>                            <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0d816eebcb68a542344124cefc3efd86">isActive</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> runner_.isActive(); }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#af74ecbd56960779db9dd45213d169d96">  218</a></span>    <span class="keywordtype">bool</span>                            <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#af74ecbd56960779db9dd45213d169d96">isBlocked</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> runner_.isBlocked(); }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    std::string                     getConversationId() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#ab11c1f57843ee348889dda5affddaebd">  220</a></span>    std::string                     <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#ab11c1f57843ee348889dda5affddaebd">getNodeId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> runner_.currentNodeId(); }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    std::string                     getNodeKind() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a21b70be1a76f8bcbad743322d79ebae2">  222</a></span>    std::string                     <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a21b70be1a76f8bcbad743322d79ebae2">getSpeaker</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    std::string                     getText();</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac93344c980365f0216bb6e0ea8fc7b86">  224</a></span>    std::string                     <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac93344c980365f0216bb6e0ea8fc7b86">getPool</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a15f92fea5fa278c5bc105f5580e14036">  225</a></span>    std::string                     <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a15f92fea5fa278c5bc105f5580e14036">getI18nKey</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    std::string                     getVoice() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    std::string                     getVoiceStatus() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordtype">float</span>                           getVoiceDuration() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordtype">int</span>                             getRouteCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    std::string                     getRouteId(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    std::string                     getRouteText(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">void</span>                            setManualCommandMode(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> setExpressionEvaluatorChecked(ssq::Object <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordtype">void</span> clearExpressionEvaluator();</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4e20749ca93e478d32b92673580e09ed">  241</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;StateValue&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4e20749ca93e478d32b92673580e09ed">captureStateChecked</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> runner_.captureStateChecked(); }</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreStateChecked(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; in);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::string&gt;</a> captureStateJsonChecked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreStateJsonChecked(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> registerMigrationChecked(<span class="keyword">const</span> std::string&amp; assetId, <span class="keywordtype">int</span> fromVersion,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                                             <span class="keyword">const</span> std::string&amp; currentAssetId,</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                                                             <span class="keyword">const</span> std::string&amp; nodeMap);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa744a7947bd45fed509721681f4860ec">  248</a></span>    <span class="keywordtype">void</span>        <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa744a7947bd45fed509721681f4860ec">clearMigrations</a>() { migrations_.clear(); }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordtype">void</span>        addToneRule(<span class="keyword">const</span> std::string&amp; expression, <span class="keyword">const</span> std::string&amp; prefix, <span class="keyword">const</span> std::string&amp; suffix,</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                            <span class="keyword">const</span> std::string&amp; find, <span class="keyword">const</span> std::string&amp; replacement);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueFlow.html#acd6cdc3635d219254c2393da36bdde3e">  251</a></span>    <span class="keywordtype">void</span>        <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueFlow.html#acd6cdc3635d219254c2393da36bdde3e">clearToneRules</a>() { textRenderer_.clearToneRules(); }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> publishGameplay(<span class="keyword">const</span> std::string&amp; instanceId, <span class="keyword">const</span> std::string&amp; ownerId);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> unpublishGameplay(<span class="keyword">const</span> std::string&amp; instanceId);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordtype">void</span> clearGameplayControls();</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    [[nodiscard]] <span class="keywordtype">int</span> gameplayControlCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    [[nodiscard]] std::vector&lt;std::string&gt; gameplayInstances() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordtype">int</span> loadDnutImpl(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordtype">int</span> reloadDnutImpl(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordtype">int</span> loadDnutFileImpl(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> mergeImported(std::vector&lt;ConversationAsset&gt; <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad14b6eeb57c2224bf5c791e17f512d24">imported</a>);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a>* find(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;StateValue&gt;</a> evaluate(<span class="keyword">const</span> std::string&amp; expression, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a>,</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                                                   <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; locals);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <a class="code hl_struct" href="structeve_1_1dialogue_1_1CommandResponse.html">CommandResponse</a> dispatchCommand(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    std::string     nextTransactionId(<span class="keyword">const</span> <span class="keywordtype">char</span>* purpose);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    std::vector&lt;ConversationAsset&gt;                            assets_;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    std::vector&lt;ConversationDiagnostic&gt;                       diagnostics_;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1ConversationRunner.html">ConversationRunner</a>                                        runner_;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateContext.html">DialogueStateContext</a>                                      stateContext_;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <a class="code hl_typedef" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">ConversationRunner::ConditionEvaluator</a>                    configuredConditionEvaluator_;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <a class="code hl_typedef" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a>                                     operationRequestHandler_;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <a class="code hl_typedef" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a>                                     gameplayActionHandler_;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    std::function&lt;eve::Result&lt;std::string&gt;(<span class="keyword">const</span> std::string&amp;)&gt; contentReader_;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <a class="code hl_class" href="classeve_1_1state_1_1IStateMutation.html">eve::IStateMutation</a>*                                      stateMutationProvider_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">DialoguePaymentAdapter</a>                                    paymentAdapter_;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    std::uint64_t                                             transactionSequence_ = 1;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    std::string                                               failureMessage_;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>                                               vm_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    HSQOBJECT                                                 evaluator_{};</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="keywordtype">bool</span>                                                      hasEvaluator_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="keywordtype">bool</span>                                                      manualCommandMode_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    std::unordered_map&lt;std::string, std::string&gt;              sourceTexts_;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    std::unordered_map&lt;std::string, std::vector&lt;std::string&gt;&gt; sourceAssets_;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    std::unordered_map&lt;std::string, std::string&gt;              assetSources_;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    std::unordered_map&lt;std::string, DataValue&gt;                sourcePools_;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keywordtype">bool</span>                                                      lastLoadChanged_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    ConversationLocalizationCatalog                           localization_;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    std::string                                               locale_;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    ConversationSaveMigrations                                migrations_;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    ConversationTextRenderer                                  textRenderer_;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    std::unique_ptr&lt;DialogueControl&gt; gameplay_;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>};</div>
+</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aConversationCompiler_8h_html"><div class="ttname"><a href="ConversationCompiler_8h.html">ConversationCompiler.h</a></div></div>
+<div class="ttc" id="aConversationLocalization_8h_html"><div class="ttname"><a href="ConversationLocalization_8h.html">ConversationLocalization.h</a></div></div>
+<div class="ttc" id="aConversationPersistence_8h_html"><div class="ttname"><a href="ConversationPersistence_8h.html">ConversationPersistence.h</a></div></div>
+<div class="ttc" id="aConversationText_8h_html"><div class="ttname"><a href="ConversationText_8h.html">ConversationText.h</a></div></div>
+<div class="ttc" id="aDialogueState_8h_html"><div class="ttname"><a href="DialogueState_8h.html">DialogueState.h</a></div><div class="ttdoc">Dialogue's state boundary, condition adapter, and command request protocol.</div></div>
+<div class="ttc" id="aEvpackSceneTemplateLoader_8cpp_html_a7949c7ae554ffd67302880738fcc5387"><div class="ttname"><a href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a></div><div class="ttdeci">std::uint64_t sourceId</div><div class="ttdef"><b>Definition</b> <a href="EvpackSceneTemplateLoader_8cpp_source.html#l00049">EvpackSceneTemplateLoader.cpp:49</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_af85ff84ca379cb803d64a467fc5faf5a"><div class="ttname"><a href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a></div><div class="ttdeci">#define EVENGINE_API_ORCHESTRATION</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00111">Export.h:111</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad14b6eeb57c2224bf5c791e17f512d24"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad14b6eeb57c2224bf5c791e17f512d24">imported</a></div><div class="ttdeci">std::string imported</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00024">LanguageIndex.cpp:24</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a3b96f0049cce744b59366d192b92f638"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; DeviceBytes &gt; &gt; bindings</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00038">OnnxGpgpu.cpp:38</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00140">PlayHost.cpp:140</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00094">VegetationPreset.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html"><div class="ttname"><a href="classeve_1_1StateValue.html">eve::StateValue</a></div><div class="ttdoc">JSON-compatible state value tree used by state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00020">StateValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html">eve::dialogue::ConversationDocument</a></div><div class="ttdoc">Mutable, UI-neutral conversation document for custom editor composition.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8h_source.html#l00013">ConversationAuthoring.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationRunner_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationRunner.html">eve::dialogue::ConversationRunner</a></div><div class="ttdoc">Explicit conversation executor whose suspension points are node IDs.</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00107">Conversation.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationRunner_html_a40ed4f112c8ff45fb486f87da4610089"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">eve::dialogue::ConversationRunner::ConditionEvaluator</a></div><div class="ttdeci">std::function&lt; eve::decision::ConditionResult(const eve::Value &amp;)&gt; ConditionEvaluator</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00130">Conversation.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></div><div class="ttdoc">Script-facing registry and runner for compiled .dnut conversations.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00039">DialogueFlow.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a0ae5a6c63238dd3c36bac77dc3149551"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a0ae5a6c63238dd3c36bac77dc3149551">eve::dialogue::DialogueFlow::stateContext</a></div><div class="ttdeci">const DialogueStateContext &amp; stateContext() const noexcept</div><div class="ttdoc">Return the facade-owned state boundary; providers remain borrowed.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00107">DialogueFlow.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a0d816eebcb68a542344124cefc3efd86"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a0d816eebcb68a542344124cefc3efd86">eve::dialogue::DialogueFlow::isActive</a></div><div class="ttdeci">bool isActive() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00217">DialogueFlow.h:217</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a1072b031a074cbfd6acfee830a0b9612"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a1072b031a074cbfd6acfee830a0b9612">eve::dialogue::DialogueFlow::setLocale</a></div><div class="ttdeci">void setLocale(const std::string &amp;locale)</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00150">DialogueFlow.h:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a15f92fea5fa278c5bc105f5580e14036"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a15f92fea5fa278c5bc105f5580e14036">eve::dialogue::DialogueFlow::getI18nKey</a></div><div class="ttdeci">std::string getI18nKey() const</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a21b70be1a76f8bcbad743322d79ebae2"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a21b70be1a76f8bcbad743322d79ebae2">eve::dialogue::DialogueFlow::getSpeaker</a></div><div class="ttdeci">std::string getSpeaker() const</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a3fa17d48d44052b1ccb90ce2118da58d"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a3fa17d48d44052b1ccb90ce2118da58d">eve::dialogue::DialogueFlow::getLocale</a></div><div class="ttdeci">std::string getLocale() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00151">DialogueFlow.h:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a4b7910d33972f1f88bc595255d999d8e"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a4b7910d33972f1f88bc595255d999d8e">eve::dialogue::DialogueFlow::Module_REG</a></div><div class="ttdeci">Module_REG(DialogueFlow)</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_a4e20749ca93e478d32b92673580e09ed"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#a4e20749ca93e478d32b92673580e09ed">eve::dialogue::DialogueFlow::captureStateChecked</a></div><div class="ttdeci">eve::Result&lt; StateValue &gt; captureStateChecked() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00241">DialogueFlow.h:241</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_aa744a7947bd45fed509721681f4860ec"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#aa744a7947bd45fed509721681f4860ec">eve::dialogue::DialogueFlow::clearMigrations</a></div><div class="ttdeci">void clearMigrations()</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00248">DialogueFlow.h:248</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_aab5ecc3106c103a224c547edd0bc6b56"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#aab5ecc3106c103a224c547edd0bc6b56">eve::dialogue::DialogueFlow::start</a></div><div class="ttdeci">bool start(const std::string &amp;id, ssq::Object bindings)</div><div class="ttdoc">Compatibility-only bool projection of startChecked.</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_ab11c1f57843ee348889dda5affddaebd"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#ab11c1f57843ee348889dda5affddaebd">eve::dialogue::DialogueFlow::getNodeId</a></div><div class="ttdeci">std::string getNodeId() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00220">DialogueFlow.h:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_ac014b214a190465e676e11a2c93cfe6f"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#ac014b214a190465e676e11a2c93cfe6f">eve::dialogue::DialogueFlow::getPendingCommandRequestId</a></div><div class="ttdeci">std::string getPendingCommandRequestId() const</div><div class="ttdoc">Return the current pending command id, or an empty string when none is pending.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00209">DialogueFlow.h:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_ac93344c980365f0216bb6e0ea8fc7b86"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#ac93344c980365f0216bb6e0ea8fc7b86">eve::dialogue::DialogueFlow::getPool</a></div><div class="ttdeci">std::string getPool() const</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_acd6cdc3635d219254c2393da36bdde3e"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#acd6cdc3635d219254c2393da36bdde3e">eve::dialogue::DialogueFlow::clearToneRules</a></div><div class="ttdeci">void clearToneRules()</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00251">DialogueFlow.h:251</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_addcd6ff0e226fd35e14f5fe809f0b104"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#addcd6ff0e226fd35e14f5fe809f0b104">eve::dialogue::DialogueFlow::getLastLoadChanged</a></div><div class="ttdeci">bool getLastLoadChanged() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00125">DialogueFlow.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueFlow_html_af74ecbd56960779db9dd45213d169d96"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueFlow.html#af74ecbd56960779db9dd45213d169d96">eve::dialogue::DialogueFlow::isBlocked</a></div><div class="ttdeci">bool isBlocked() const</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00218">DialogueFlow.h:218</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">eve::dialogue::DialoguePaymentAdapter</a></div><div class="ttdoc">Composes Dialogue accounts with StatePatch or Action participants.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00125">DialoguePayment.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateContext_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateContext.html">eve::dialogue::DialogueStateContext</a></div><div class="ttdoc">Dialogue-owned facade for world reads, unified conditions, and mutations.</div><div class="ttdef"><b>Definition</b> <a href="DialogueState_8h_source.html#l00131">DialogueState.h:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1i18n_1_1I18n_html"><div class="ttname"><a href="classeve_1_1i18n_1_1I18n.html">eve::i18n::I18n</a></div><div class="ttdoc">Game localization (i18n) module.</div><div class="ttdef"><b>Definition</b> <a href="I18n_8h_source.html#l00038">I18n.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1state_1_1IStateMutation_html"><div class="ttname"><a href="classeve_1_1state_1_1IStateMutation.html">eve::state::IStateMutation</a></div><div class="ttdoc">All-or-nothing mutation boundary owned by the consumer.</div><div class="ttdef"><b>Definition</b> <a href="StateAccess_8h_source.html#l00106">StateAccess.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1state_1_1IStateQuery_html"><div class="ttname"><a href="classeve_1_1state_1_1IStateQuery.html">eve::state::IStateQuery</a></div><div class="ttdoc">Read-only world-state boundary owned by consumers such as Dialogue.</div><div class="ttdef"><b>Definition</b> <a href="StateAccess_8h_source.html#l00079">StateAccess.h:79</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="Conversation_8cpp_source.html#l00007">Conversation.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_aa8fe7ccee008de1c2af741622af042f0"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">eve::dialogue::CommandRequestHandler</a></div><div class="ttdeci">std::function&lt; CommandResponse(const CommandRequest &amp;)&gt; CommandRequestHandler</div><div class="ttdoc">Handler implemented by the owning operation or gameplay domain.</div><div class="ttdef"><b>Definition</b> <a href="DialogueState_8h_source.html#l00062">DialogueState.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1i18n_html"><div class="ttname"><a href="namespaceeve_1_1i18n.html">eve::i18n</a></div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00032">DialogueFlow.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b"><div class="ttname"><a href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">eve::ResourceRefKind::Object</a></div><div class="ttdeci">@ Object</div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00014">ECS.h:14</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00032">Settlement.cpp:32</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1CommandRequest_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1CommandRequest.html">eve::dialogue::CommandRequest</a></div><div class="ttdoc">Immutable request emitted by a command node.</div><div class="ttdef"><b>Definition</b> <a href="DialogueState_8h_source.html#l00038">DialogueState.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1CommandResponse_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1CommandResponse.html">eve::dialogue::CommandResponse</a></div><div class="ttdoc">Structured response to a request emitted by a command node.</div><div class="ttdef"><b>Definition</b> <a href="DialogueState_8h_source.html#l00053">DialogueState.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html">eve::dialogue::ConversationAsset</a></div><div class="ttdoc">Immutable, parameterized conversation definition.</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00053">Conversation.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">eve::dialogue::DialogueAccountBindings</a></div><div class="ttdoc">Borrowed account bindings used by one DialogueFlow integration.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00061">DialoguePayment.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html">eve::dialogue::DialogueFlow::IntegrationConfig</a></div><div class="ttdoc">Borrowed world and cross-domain callbacks used by all conversations in this facade.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00051">DialogueFlow.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a13615194846737ccc73bb9157f9c6d5b"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a13615194846737ccc73bb9157f9c6d5b">eve::dialogue::DialogueFlow::IntegrationConfig::subject</a></div><div class="ttdeci">std::string subject</div><div class="ttdoc">Stable world subject used by state-backed conditions.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00053">DialogueFlow.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a1504377b18ff295e7f69d1d6d4981c1c"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a1504377b18ff295e7f69d1d6d4981c1c">eve::dialogue::DialogueFlow::IntegrationConfig::contentReader</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; std::string &gt;(const std::string &amp;)&gt; contentReader</div><div class="ttdoc">Injected UTF-8 content reader used by loadDnutFileChecked.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00081">DialogueFlow.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a2734085e85110df8eaee0f8fdeaefe28"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a2734085e85110df8eaee0f8fdeaefe28">eve::dialogue::DialogueFlow::IntegrationConfig::CommandParticipantFactory</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; std::unique_ptr&lt; eve::transaction::ITransactionParticipant &gt; &gt;(const CommandRequest &amp;)&gt; CommandParticipantFactory</div><div class="ttdoc">Factory for transaction participants that stage an operation or Action.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00071">DialogueFlow.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a3065ff40666a35bbc0a80446cbd8484c"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a3065ff40666a35bbc0a80446cbd8484c">eve::dialogue::DialogueFlow::IntegrationConfig::operationHandler</a></div><div class="ttdeci">CommandRequestHandler operationHandler</div><div class="ttdoc">Handler for requests whose kind is Operation.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00061">DialogueFlow.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a393dd732300f4d4f138eb8ef27e58669"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a393dd732300f4d4f138eb8ef27e58669">eve::dialogue::DialogueFlow::IntegrationConfig::commandParticipantFactory</a></div><div class="ttdeci">CommandParticipantFactory commandParticipantFactory</div><div class="ttdoc">Optional factory used to stage an atomic operation or Action.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00075">DialogueFlow.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_a7a658cb3174ebf790e1f88813d6350c2"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#a7a658cb3174ebf790e1f88813d6350c2">eve::dialogue::DialogueFlow::IntegrationConfig::conditionEvaluator</a></div><div class="ttdeci">ConversationRunner::ConditionEvaluator conditionEvaluator</div><div class="ttdoc">Optional custom condition evaluator; empty uses the shared adapter.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00059">DialogueFlow.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_aaf82e6fc8842a00a345f31f0af52ffd6"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#aaf82e6fc8842a00a345f31f0af52ffd6">eve::dialogue::DialogueFlow::IntegrationConfig::accounts</a></div><div class="ttdeci">DialogueAccountBindings accounts</div><div class="ttdoc">Borrowed authoritative money/reputation account adapters.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00065">DialogueFlow.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig_html_abc463e3afea7bd8ae03d343dbfd02d4f"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueFlow_1_1IntegrationConfig.html#abc463e3afea7bd8ae03d343dbfd02d4f">eve::dialogue::DialogueFlow::IntegrationConfig::gameplayActionHandler</a></div><div class="ttdeci">CommandRequestHandler gameplayActionHandler</div><div class="ttdoc">Handler for requests whose kind is GameplayAction.</div><div class="ttdef"><b>Definition</b> <a href="DialogueFlow_8h_source.html#l00063">DialogueFlow.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1state_1_1MutationContext_html"><div class="ttname"><a href="structeve_1_1state_1_1MutationContext.html">eve::state::MutationContext</a></div><div class="ttdoc">Correlation metadata shared by a mutation transaction.</div><div class="ttdef"><b>Definition</b> <a href="StateAccess_8h_source.html#l00057">StateAccess.h:57</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

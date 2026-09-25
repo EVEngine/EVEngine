@@ -1,0 +1,407 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 声明式 UI模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">声明式 UI模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>声明式 UI模块</h1>
+<p><b>脚本入口：</b> <code>eve.UI()</code></p>
+<p>构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">ui.beginBuild();</div>
+<div class="line">ui.beginWindow(&quot;HUD&quot;, &quot;root&quot;);</div>
+<div class="line">ui.text(&quot;Ready&quot;, &quot;status&quot;);</div>
+<div class="line">ui.button(&quot;Start&quot;, &quot;start&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.mountBuildAs(&quot;hud&quot;);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>UI</code> 管理多个命名 Host；Host 保存控件树；稳定 ID 标识控件；<code>UIComponent.build()</code> 可封装可复用树。事件返回完整 host/id 路径，修改接口在当前 selected host 中查找。</p>
+<h2>自定义组件</h2>
+<p>脚本组件拥有实例级 <code>props</code> 与 <code>state</code> 表；<code>setProps(table)</code> / <code>setState(table)</code> 会合并 变更并标记脏状态。已挂载的根组件会进入帧调度队列，在下一次渲染前通过稳定 ID 自动协调旧树；同一帧的多次变更只重建一次，通常不需要手动调用 <code>updateIfDirty()</code>。 持久化的子组件实例可用 <code>renderChild(child, props)</code> 嵌入，子组件 <code>markDirty()</code> 会自动向 父组件传播。首次挂载和后续重建分别调用 <code>onMount()</code>、<code>onUpdated()</code>；显式 <code>unmount()</code> 会递归卸载子组件并调用 <code>onUnmount()</code>，同时隐藏对应 Host。</p>
+<p><code>renderChild(child, props, replaceProps=false)</code> 默认与 <code>setProps()</code> 一样合并属性；第三个 参数为 <code>true</code> 时先清空旧属性表再应用新属性。<code>updateIfDirty()</code> 仍可用于测试或确实需要 同步刷新的工具代码。</p>
+<p>组件可用 <code>bindClick(id, fn)</code> / <code>bindChange(id, fn)</code> 声明事件处理器；同一组件内相同 类型与 ID 的绑定会被替换而不是累加，组件卸载时自动注销。动态列表使用 <code>renderKeyed(key, factory, props)</code>：稳定 key 会复用原组件实例，移除 key 会触发子组件 <code>onUnmount()</code> 并释放其事件处理器。</p>
+<p><code>componentOnClick</code>、<code>componentOnChange</code> 与 <code>componentClearHandlers</code> 是 <code>UIComponent</code> 实现事件所有权的内部桥接函数；游戏脚本应使用上述 <code>bindClick</code> / <code>bindChange</code>，不要直接调用这些桥接函数。</p>
+<h2>布局</h2>
+<p><code>beginRow()</code> / <code>beginColumn()</code> 支持 <code>setItemFlexGrow()</code>、<code>setItemFlexShrink()</code>、 <code>setItemFlexBasis()</code>、<code>setItemAlignSelf()</code> 与 <code>setFlexWrap()</code>。独立的横纵间距使用 <code>setLayoutGaps(columnGap, rowGap)</code>；<code>setLayoutOverflow("visible" | "clip" | "scroll")</code> 控制超出内容的显示方式。<code>beginGrid(columns, id, columnGap, rowGap)</code> 创建等宽列网格， <code>setItemGridColumnSpan()</code> 设置最后一个子项的跨列数，<code>setItemAspectRatio()</code> 可让 Flex 或 Grid 根据宽高比推导另一轴尺寸。</p>
+<p><code>saveTreeJson()</code> 写出 <code>schema: "eve.ui.tree"</code> 与当前 <code>version: 4</code>。加载器把无版本文档 视为版本 1，接受版本 1–4，拒绝未知 schema 和未来版本；未知字段会被忽略，新增字段 均有向后兼容默认值。</p>
+<div class="fragment"><div class="line">class Label extends eve.UIComponent {</div>
+<div class="line">    function build() { ui().text(props.text, &quot;label&quot;) }</div>
+<div class="line">}</div>
+<div class="line">class Counter extends eve.UIComponent {</div>
+<div class="line">    label = null</div>
+<div class="line">    constructor(u) {</div>
+<div class="line">        base.constructor(u, { title = &quot;Counter&quot; })</div>
+<div class="line">        state.value &lt;- 0</div>
+<div class="line">        label = Label(u)</div>
+<div class="line">    }</div>
+<div class="line">    function build() {</div>
+<div class="line">        local u = ui()</div>
+<div class="line">        u.beginWindow(props.title, &quot;root&quot;)</div>
+<div class="line">        renderChild(label, { text = &quot;Value &quot; + state.value })</div>
+<div class="line">        u.button(&quot;+1&quot;, &quot;increment&quot;)</div>
+<div class="line">        u.end()</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2><code>.9.png</code> 九宫格资源</h2>
+<p>支持未经 Android 编译的标准 <code>.9.png</code>：顶边和左边各一段连续黑色像素定义可拉伸区， 底边和右边可选黑线定义内容区。加载时会移除四周 1px 标记框并缓存纹理。</p>
+<div class="fragment"><div class="line">ui.beginBuild()</div>
+<div class="line">ui.beginWindow(&quot;Nine patch&quot;, &quot;root&quot;)</div>
+<div class="line">if (ui.beginNinePatch(&quot;assets/panel.9.png&quot;, &quot;panel&quot;, 320, 0)) {</div>
+<div class="line">    ui.text(&quot;内容会自动使用 .9.png 声明的 padding&quot;, &quot;content&quot;)</div>
+<div class="line">    ui.end()</div>
+<div class="line">}</div>
+<div class="line">ui.ninePatch(&quot;assets/button.9.png&quot;, &quot;preview&quot;, 180, 48)</div>
+<div class="line">ui.end()</div>
+<div class="line">ui.mountBuildAs(&quot;nine-patch-demo&quot;)</div>
+</div><!-- fragment --><p><code>ninePatch(path,id,w,h)</code> 创建叶子图片；<code>beginNinePatch(path,id,w,h)</code> 创建可容纳子控件的 面板；<code>setImageNinePatchFile(id,path)</code> 可替换已挂载图片。当前解析器有意只接受单段拉伸 区（与引擎单中心九宫格模型一致），多个不连续拉伸段会返回 <code>false</code> 并输出诊断。</p>
+<h2>目标导向指南</h2>
+<h3>创建可交互 HUD</h3>
+<p><code>beginBuild()</code> 后用 Window/Flex/Group/List 组织控件，给每个交互控件稳定 ID，完成后 <code>mountBuildAs("hud")</code>。更新阶段循环 <code>consumeClick()</code> / <code>consumeChange()</code>，渲染阶段调用 <code>beginFrameAndRender()</code>。</p>
+<h3>使用弹性布局（Flex）</h3>
+<p><code>beginRow</code> / <code>beginColumn</code> / <code>beginFlex("row"|"column", id, gap)</code> 自动排列子控件，无需手写 <code>sameLine</code>。<code>spacer()</code> 吸收剩余空间；<code>setItemFlexGrow</code> / <code>setItemSize</code> 作用在刚添加的子项上；<code>setFlexAlign</code> / <code>setFlexJustify</code> 配置当前 Flex 容器。</p>
+<div class="fragment"><div class="line">ui.beginRow(&quot;toolbar&quot;, 8.0);</div>
+<div class="line">ui.setFlexJustify(&quot;space-between&quot;);</div>
+<div class="line">ui.iconButton(&quot;save&quot;, &quot;Save&quot;, &quot;save&quot;);</div>
+<div class="line">ui.spacer(&quot;sp&quot;);</div>
+<div class="line">ui.button(&quot;Quit&quot;, &quot;quit&quot;);</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><p>桌面框架可用 <code>beginToolbar</code>、<code>beginToolbox</code>、<code>beginSidebar</code>、<code>beginStatusBar</code> 和 <code>beginSplitPane("row"|"column", ratio, id)</code> 直接组合。SplitPane 必须包含两个直接子项， 拖拽分隔条会产生普通 value change；比例可通过 <code>getValue</code> / <code>setValue</code> 读取和恢复。 独立面板可用 <code>setHostMovable(true)</code> / <code>setHostResizable(true)</code> 允许用户调整；ImGui 会按 稳定 Host ID 自动写入和恢复 ini 布局。无标题 Overlay 的不透明度由 <code>setHostOverlayAlpha(0..1)</code> 控制。</p>
+<div class="fragment"><div class="line">ui.beginToolbar(&quot;toolbar&quot;);</div>
+<div class="line">ui.iconButton(&quot;save&quot;, &quot;&quot;, &quot;save&quot;);</div>
+<div class="line">ui.spacer(&quot;toolbar-fill&quot;);</div>
+<div class="line">ui.badge(&quot;Ready&quot;, &quot;ready&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line"> </div>
+<div class="line">ui.beginSplitPane(&quot;row&quot;, 0.25, &quot;workspace&quot;);</div>
+<div class="line">ui.beginSidebar(&quot;left&quot;, 240.0);</div>
+<div class="line">ui.searchField(&quot;Search tools&quot;, &quot;&quot;, &quot;tool-search&quot;);</div>
+<div class="line">ui.beginToolbox(&quot;tools&quot;, 40.0, 3);</div>
+<div class="line">ui.iconButton(&quot;pointer&quot;, &quot;&quot;, &quot;select&quot;);</div>
+<div class="line">ui.iconButton(&quot;move&quot;, &quot;&quot;, &quot;move&quot;);</div>
+<div class="line">ui.iconButton(&quot;paint-brush&quot;, &quot;&quot;, &quot;paint&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.beginCard(&quot;content&quot;);</div>
+<div class="line">ui.sectionHeader(&quot;Inspector&quot;, &quot;inspector&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><h3>使用内置编辑器图标</h3>
+<p><code><a class="el" href="Icons_8cpp.html#afdd3c4da11faf136d323a303a1dcca18">icon(name, id)</a></code> 显示语义图标，<code>iconButton(name, label, id)</code> 创建图标按钮。图标字体随 引擎构建和 SDK 安装，不依赖游戏工作目录。名称不区分大小写，空格和下划线会转成 连字符；常用名称包括 <code>search</code>、<code>settings</code>、<code>save</code>、<code>undo</code>、<code>redo</code>、<code>folder-open</code>、 <code>pointer</code>、<code>move</code>、<code>paint-brush</code>、<code>database</code>、<code>layers</code>、<code>play</code> 和 <code>warning</code>。</p>
+<div class="fragment"><div class="line">ui.beginRow(&quot;tools&quot;, 4.0);</div>
+<div class="line">ui.iconButton(&quot;pointer&quot;, &quot;&quot;, &quot;select&quot;);</div>
+<div class="line">ui.setItemSelected(true); // 当前工具使用主题激活色</div>
+<div class="line">ui.iconButton(&quot;move&quot;, &quot;&quot;, &quot;move&quot;);</div>
+<div class="line">ui.iconButton(&quot;paint-brush&quot;, &quot;Paint&quot;, &quot;paint&quot;);</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><p><code>setItemSelected(true)</code> 为刚加入的普通按钮或图标按钮设置选中外观；工具切换后用既有的 <code>setChecked(id, selected)</code> 更新已挂载控件。选中态只是 UI 投影，工具的权威状态仍由 <code>EditorToolbar</code> 或具体编辑器 session 持有。</p>
+<h3>组合桌面编辑器控件</h3>
+<p>Editor 常用控件已内置：<code>searchField</code>、<code>switch</code>、<code>badge</code>、<code>colorPalette</code>、<code>sectionHeader</code>、<code>beginCard</code>、 <code>beginMenuBar</code> / <code>beginMenu</code> / <code>menuItem</code>。<code>setItemTooltip</code> 为刚添加的控件设置悬停说明。 菜单栏应作为 Window 的直接子项；所有可交互控件都应使用稳定 ID。</p>
+<div class="fragment"><div class="line">ui.beginMenuBar(&quot;main-menu&quot;);</div>
+<div class="line">ui.beginMenu(&quot;File&quot;, &quot;file&quot;);</div>
+<div class="line">ui.menuItem(&quot;Save&quot;, &quot;Ctrl+S&quot;, &quot;save&quot;);</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.end();</div>
+<div class="line">ui.searchField(&quot;Search assets&quot;, &quot;&quot;, &quot;asset-search&quot;);</div>
+<div class="line">ui.setItemTooltip(&quot;Filter project assets&quot;);</div>
+<div class="line">ui.sectionHeader(&quot;Properties&quot;, &quot;properties&quot;);</div>
+<div class="line">ui.beginCard(&quot;selection-card&quot;);</div>
+<div class="line">local addSwitch = ui[&quot;switch&quot;].bindenv(ui); // `switch` 是 Squirrel 关键字</div>
+<div class="line">addSwitch(&quot;Visible&quot;, true, &quot;visible&quot;);</div>
+<div class="line">ui.badge(&quot;Modified&quot;, &quot;state&quot;);</div>
+<div class="line">ui.colorPalette(&quot;Accent&quot;, 0.18, 0.42, 0.86, 1.0, &quot;accent&quot;);</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><p><code>colorPalette(label, r, g, b, a, id)</code> 显示颜色编辑器与色板网格。当前颜色存在节点 tint 上，用 <code>getColorR/G/B/A</code> / <code>setColor</code> 读写；拖动或点选色块走普通 <code>consumeChange()</code>。 <code>setValueText(id, "#ff0000;#00ff00")</code> 可换成自定义色板（<code>#rrggbb</code> / <code>#rrggbbaa</code> 或 <code>r,g,b[,a]</code>， 分号或换行分隔）；留空则使用内置 16 色。</p>
+<h3>用 Theme 统一布局</h3>
+<p>Theme 除颜色和 <a class="el" href="namespaceImGui.html">ImGui</a> 基础几何外，还提供类似 CSS design tokens 的语义布局默认值： <code>toolbarHeight</code>、<code>statusBarHeight</code>、<code>sidebarWidth</code>、<code>toolboxCellSize</code>、 <code>splitterSize</code>、<code>minPaneSize</code>、<code>panelPadding</code>、<code>cardPadding</code>、<code>barPadding</code>、 <code>sectionSpacingY</code>、<code>searchMinWidth</code> 和 <code>searchIconGap</code>。暗色与亮色主题共享这些布局 参数，因此切换配色不会改变界面结构。</p>
+<p><code>Toolbar</code>、<code>Sidebar</code>、<code>Toolbox</code>、<code>Card</code>、<code>StatusBar</code>、<code>SplitPane</code> 和 <code>SearchField</code> 在没有显式尺寸时自动继承 Theme。局部差异继续通过 <code>setItemSize</code>、<code>setItemPadding</code>、<code>setItemMargin</code>、<code>setItemMinSize</code> 等接口覆盖， 其优先级高于 Theme 默认值。SplitPane 的直接子节点总是填满获分配的 pane，内部控件 再依据可用宽度响应式重排；Toolbox 的列数是上限，空间不足时会自动减少列数。</p>
+<h3>更新而不重建整个 UI</h3>
+<p>文本变化用 <code>setText(id, value)</code>，进度用 <code>setValue()</code>，显示隐藏用 <code>setVisible()</code>， 启用状态用 <code>setEnabled()</code>；结构变化才重新 build 并 <code>remountBuildAs()</code>。多宿主时先 <code>select(host)</code> 再按局部 ID 操作。</p>
+<h3>配置焦点、输入策略与无障碍语义</h3>
+<p>构建树时，<code>setItemFocusMode("none"|"click"|"all")</code>、 <code>setItemMouseFilter("stop"|"pass"|"ignore")</code> 与 <code>setItemTabIndex(index)</code> 作用于刚添加的 控件。<code>setItemFocusOrder(previous, next)</code> 配置顺序导航， <code>setItemFocusNeighbors(left, right, up, down)</code> 配置方向导航；空字符串表示继续使用稳定的 tabIndex/树顺序。<code>setItemEnabled(false)</code> 会同时禁止交互与焦点。</p>
+<p>指针点击在保留树中按 <code>MouseFilter</code> 路由：<code>stop</code> 在当前控件处理后截断，<code>pass</code> 处理后继续 向祖先冒泡，<code>ignore</code> 不处理但允许继续向祖先传递。轮询队列仍只记录原始目标一次，祖先 通过各自的 <code>onClick</code> 处理器观察同一事件，避免脚本收到重复目标。</p>
+<p><code>setItemAccessibility(role, name, description)</code> 为控件附加语义角色、可读名称和说明。 角色可用 <code>button</code>、<code>checkbox</code>、<code>combobox</code>、<code>textbox</code>、<code>slider</code>、<code>menuitem</code>、 <code>progressbar</code>、<code>image</code>、<code>heading</code>、<code>status</code>、<code>region</code> 或 <code>generic</code>。</p>
+<p>挂载后可用 <code>requestFocus(id)</code> 请求焦点，或用 <code>moveFocus("next"|"previous"|"left"|"right"|"up"|"down")</code> 导航； <code>getFocusedId()</code> 返回当前焦点的稳定 ID。键盘 Tab、Shift+Tab 和方向键会走同一套显式邻居 与顺序规则，游戏手柄或自定义输入层可直接调用 <code>moveFocus()</code>。</p>
+<div class="fragment"><div class="line">ui.searchField(&quot;Search&quot;, &quot;&quot;, &quot;search&quot;);</div>
+<div class="line">ui.setItemTabIndex(0);</div>
+<div class="line">ui.setItemFocusNeighbors(&quot;&quot;, &quot;save&quot;, &quot;&quot;, &quot;&quot;);</div>
+<div class="line">ui.setItemAccessibility(&quot;textbox&quot;, &quot;Search scene&quot;, &quot;Filter scene nodes&quot;);</div>
+<div class="line"> </div>
+<div class="line">ui.iconButton(&quot;save&quot;, &quot;&quot;, &quot;save&quot;);</div>
+<div class="line">ui.setItemTabIndex(1);</div>
+<div class="line">ui.setItemFocusOrder(&quot;search&quot;, &quot;&quot;);</div>
+<div class="line">ui.setItemAccessibility(&quot;button&quot;, &quot;Save scene&quot;, &quot;&quot;);</div>
+</div><!-- fragment --><h3>切换统一主题</h3>
+<p>内置 <code>dark</code> / <code>light</code> 预设共享圆角、边框、间距与字体缩放，只切换配色。推荐 <code>setTheme("dark")</code> / <code>setTheme("light")</code>，用 <code>getTheme()</code> 读取当前名；也可用 <code>setThemeDark()</code> / <code>setThemeLight()</code>。DPI 用 <code>setScale()</code>，主题几何会按比例缩放。</p>
+<p>需要在同一界面中区分编辑器面板、游戏 HUD 或嵌入工具时，在添加容器后调用 <code>setItemTheme("dark"|"light"|"inherit")</code>。主题覆盖作用于该容器及其整个子树，嵌套容器 可以再次覆盖；离开子树后自动恢复外层主题。该设置随 UI JSON 资产保存和加载。 对于刚通过 <code>beginWindow</code>、<code>beginCard</code>、<code>beginGroup</code> 等打开且仍在构建的当前容器，使用 <code>setThemeScope()</code>；这样根 Window 也能拥有独立于全局预设的主题。</p>
+<p>可复用的局部视觉样式使用命名 StyleClass。先用 <code>defineStyleClass(name, parent)</code> 声明类， 再用 <code>setStyleClassColor(name, "text"|"background"|"border"|"accent", r, g, b, a)</code> 和 <code>setStyleClassMetric(name, "padding"|"rounding"|"alpha", x, y)</code> 配置稀疏 token。三个修改 接口返回稳定状态字符串（如 <code>applied</code>、<code>unknown-parent</code>、<code>inheritance-cycle</code>），不会静默 接受无效定义。<code>setItemStyleClass()</code> 设置最近控件，<code>setStyleScope()</code> 设置当前容器并通过 <a class="el" href="namespaceImGui.html">ImGui</a> 样式栈自然作用于子树；子节点只覆盖自己声明的 token。命名继承在建树或 patch 时 解析为节点快照，因此逐帧渲染不做字符串注册表查询。类名随 version 4 JSON 保存；注册表 由应用启动脚本重新声明，加载旧版资产时缺失字段按无样式处理，未知字段仍忽略。</p>
+<p>保留树和 MCP <code>EditorHost</code> 的 Button、Checkbox、单值 Slider、Combo 与文本输入共享同一组 原生控件原语，因此尺寸、禁用态和编辑结果语义一致。文本输入持有 UTF-8 <code>std::string</code> 并在 <a class="el" href="namespaceImGui.html">ImGui</a> 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/ImGui 后端继续负责平台 IME。</p>
+<p>轻量动效可用 <code>animateItemOpacity(id, target, durationMs)</code>；它只改节点瞬态 opacity，不污染 JSON 资产或 StyleClass 注册表。<code>getLayoutDiagnostics()</code> 输出各节点测量尺寸和横纵溢出， <code>getAccessibilitySnapshot()</code> 输出语义节点的 role/name/description、enabled 与 focused 状态， 供调试器和自动化读取而不触碰 <a class="el" href="namespaceImGui.html">ImGui</a> 内部对象。</p>
+<h2>常见问题</h2>
+<ul>
+<li>每帧重新 mount，丢失输入焦点与控件状态。</li>
+<li>多个控件使用同一 ID。</li>
+<li>未循环消费全部 click/change，队列在后续帧才清空。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>beginBuild()</code>、<code>beginCard()</code>、<code>beginChild()</code>、<code>beginCollapsing()</code>、<code>beginColumn()</code>、<code>beginFlex()</code>、<code>beginFrameAndRender()</code>、<code>beginGroup()</code>、<code>beginList()</code>、<code>beginMenu()</code>、<code>beginMenuBar()</code>、<code>beginNinePatch()</code>、<code>beginRow()</code>、<code>beginSidebar()</code>、<code>beginSplitPane()</code>、<code>beginStatusBar()</code>、<code>beginScrollList()</code>、<code>beginToolbar()</code>、<code>beginToolbox()</code>、<code>beginWindow()</code>、<code>bindOwner()</code></li>
+<li><code>animateHostPos()</code>、<code>animateItemOpacity()</code>、<code>badge()</code>、<code>button()</code>、<code>checkbox()</code>、<code>colorPalette()</code>、<code>combo()</code>、<code>consumeChange()</code>、<code>consumeClick()</code>、<code>consumeDrop()</code>、<code>dispatchEvents()</code>、<code>dragDropSupport()</code>、<code><a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end()</a></code>、<code>getChecked()</code>、<code>getColorA()</code>、<code>getColorB()</code>、<code>getColorG()</code>、<code>getColorR()</code>、<code>getDropOrigin()</code>、<code>getDropSource()</code>、<code>getDropText()</code>、<code>getDropType()</code>、<code>getName()</code></li>
+<li><code>getFocusedId()</code>、<code>getScale()</code>、<code>getTheme()</code>、<code>getValue()</code>、<code>getValueText()</code>、<code><a class="el" href="Icons_8cpp.html#afdd3c4da11faf136d323a303a1dcca18">icon()</a></code>、<code>iconButton()</code>、<code>initBackend()</code>、<code>inputText()</code>、<code>isBackendReady()</code>、<code>listItem()</code>、<code>mountBuild()</code>、<code>moveFocus()</code></li>
+<li><code>menuItem()</code>、<code>mountBuildAs()</code>、<code>mountSimple()</code>、<code>progress()</code>、<code>remountBuildAs()</code>、<code>sameLine()</code>、<code>searchField()</code>、<code>sectionHeader()</code>、<code>select()</code>、<code>separator()</code>、<code>setChecked()</code></li>
+<li><code>requestFocus()</code>、<code>setEnabled()</code>、<code>setFlexAlign()</code>、<code>setFlexJustify()</code>、<code>setHostAnchor()</code>、<code>setHostLayer()</code>、<code>setHostModal()</code>、<code>setHostMovable()</code>、<code>setHostOverlay()</code>、<code>setHostOverlayAlpha()</code>、<code>setHostPercent()</code>、<code>setHostPos()</code>、<code>setHostResizable()</code>、<code>setHostSize()</code>、<code>setHostVisible()</code>、<code>setHostWorldAnchor()</code>、<code>clearHostWorldAnchor()</code>、<code>setHostWorldEdgePolicy()</code>、<code>setHostWorldDistanceScale()</code>、<code>setHostWorldOverlap()</code>、<code>getHostWorldState()</code>、<code>getHostWorldScreenX()</code>、<code>getHostWorldScreenY()</code>、<code>setImageCornerRadius()</code>、<code>setImageNinePatch()</code>、<code>setImageTint()</code>、<code>setImageUv()</code>、<code>setItemAbsolute()</code>、<code>setItemAccessibility()</code>、<code>setItemAlignSelf()</code>、<code>setItemDragSource()</code>、<code>setItemDropTarget()</code>、<code>setItemEnabled()</code>、<code>setItemSelected()</code>、<code>setItemFlexBasis()</code>、<code>setItemFlexGrow()</code>、<code>setItemFlexShrink()</code>、<code>setItemFocusMode()</code>、<code>setItemFocusNeighbors()</code>、<code>setItemFocusOrder()</code>、<code>setItemMargin()</code>、<code>setItemMaxSize()</code>、<code>setItemMinSize()</code>、<code>setItemMouseFilter()</code>、<code>setItemPadding()</code>、<code>setItemPercent()</code>、<code>setItemSize()</code>、<code>setItemTabIndex()</code>、<code>setItemTheme()</code>、<code>setItemTooltip()</code>、<code>setNavGamepad()</code>、<code>setNavKeyboard()</code>、<code>setScale()</code>、<code>setText()</code></li>
+<li><code>setTextWrap()</code>、<code>setTheme()</code>、<code>setThemeDark()</code>、<code>setThemeLight()</code>、<code>setThemeScope()</code>、<code>defineStyleClass()</code>、<code>setStyleClassColor()</code>、<code>setStyleClassMetric()</code>、<code>clearStyleClasses()</code>、<code>setItemStyleClass()</code>、<code>setStyleScope()</code>、<code>setColor()</code>、<code>setValue()</code>、<code>setValueText()</code>、<code>setVisible()</code>、<code>slider()</code>、<code>spacer()</code>、<code>switch()</code>、<code><a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text()</a></code>、<code>textWrapped()</code>、<code>wantCaptureKeyboard()</code></li>
+<li><code>wantCaptureMouse()</code>、<code>registerTexture()</code>、<code>unregisterTexture()</code>、<code>setImageTextureId()</code>、<code>setImageNinePatchFile()</code></li>
+<li><code><a class="el" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image()</a></code>、<code>imageButton()</code>、<code>ninePatch()</code>、<code>onClick()</code>、<code>onChange()</code>、<code>saveTreeJson()</code>、<code>loadTreeJson()</code>、<code>getStats()</code>、<code>getLayoutDiagnostics()</code>、<code>getAccessibilitySnapshot()</code></li>
+<li><code>viewport()</code>、<code>viewportCanvas()</code>、<code>viewportHovered()</code>、<code>viewportActive()</code>、<code>viewportMouseX()</code>、<code>viewportMouseY()</code>、<code>viewportDragDX()</code>、<code>viewportDragDY()</code>、<code>viewportWheel()</code></li>
+</ul>
+<h2>引擎纹理控件</h2>
+<p><code><a class="el" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image()</a></code> 和 <code>imageButton()</code> 可以显示任意引擎 <code>Texture</code>。先用 <code>textureId = ui.registerTexture(texture)</code> 获得后端中立句柄，再用 <code>ui.setImageTextureId(id, textureId)</code> 绑定到当前 Host 的控件。纹理不再使用时，先把相关 控件设为 <code>0</code>，再调用 <code>ui.unregisterTexture(textureId)</code>；这样 Vulkan 与 WebGPU 后端都能 释放对应资源。UV、色调、九宫格与圆角仍通过 <code>setImageUv/Tint/NinePatch/CornerRadius</code> 组合。</p>
+<h2>桌面 Drag &amp; Drop</h2>
+<p>Drag &amp; Drop 仅在 Windows、macOS、Linux 桌面构建启用；Android、iOS 和 Web/WASM 的 <code>dragDropSupport()</code> 返回 <code>unsupported-platform</code>，不会伪装成功。<code>setItemDragSource(type,
+text)</code> 和 <code>setItemDropTarget(type)</code> 作用于刚添加且会产生交互 item 的控件；目标类型可用 <code>*</code> 接受全部内部 payload，<code>file</code> 接受操作系统文件拖入。</p>
+<div class="fragment"><div class="line">ui.button(&quot;Stone&quot;, &quot;stone&quot;)</div>
+<div class="line">ui.setItemDragSource(&quot;asset&quot;, &quot;textures/stone.png&quot;)</div>
+<div class="line">ui.viewport(&quot;scene&quot;, 640, 360)</div>
+<div class="line">ui.setItemDropTarget(&quot;asset&quot;)</div>
+<div class="line"> </div>
+<div class="line">local target = ui.consumeDrop()</div>
+<div class="line">if (target != &quot;&quot;) {</div>
+<div class="line">    local payloadType = ui.getDropType()</div>
+<div class="line">    local payloadText = ui.getDropText()</div>
+<div class="line">    local source = ui.getDropSource() // OS 文件为空</div>
+<div class="line">    local origin = ui.getDropOrigin() // internal / os-file</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>事件保存 owning UTF-8 文本快照，源节点或目标节点在消费前销毁不会留下悬空引用。</p>
+<h2>内嵌渲染视口（Viewport）</h2>
+<p><code>ui.viewport(id, w, h)</code> 声明一个内嵌渲染目标控件：它维护一个离屏 <code>Canvas</code> （尺寸跟随控件矩形），游戏在 <code>eve_render</code> 里先把 2D（<code>gfx.setCanvas</code> + 立即模式绘制） 或 3D（<code>gfx.renderScene3DToCanvas(canvas, camera)</code>）渲染进去，然后 <code>ui.beginFrameAndRender()</code> 会把该 Canvas 纹理显示在控件中。视口交互输入 （悬停、按住、控件本地鼠标坐标、拖拽增量、滚轮）通过 <code>viewportHovered/Active/MouseX/ MouseY/DragDX/DragDY/Wheel(id)</code> 每帧读取。完整示例见 <code>examples/terrain-editor</code>（高度图地形 + orbit 相机 + 抬高/压低笔刷）。</p>
+<h2>3D 世界锚点（World Anchor）</h2>
+<p>世界锚点把整个 UI Host 投影到当前活动 <code>Camera3D</code> 的屏幕位置，适合单位名牌、交互提示、 任务标记和编辑器 3D gizmo 标签。先选择 Host，再调用 <code>setHostWorldAnchor(x, y, z)</code>；<code>clearHostWorldAnchor()</code> 恢复普通屏幕布局。</p>
+<p><code>setHostWorldEdgePolicy("hide"|"clamp")</code> 控制目标离开视口后的行为； <code>setHostWorldDistanceScale(enabled, referenceDistance, minScale, maxScale)</code> 配置按相机距离缩放。 相机不可用或目标在相机背面时 Host 自动隐藏，不会沿用上一帧坐标。世界坐标由游戏场景 持有者负责更新；UI 只保存投影输入和逐帧派生的屏幕状态。当前版本不做深度遮挡判断， 需要被场景几何遮挡的面板应继续使用 3D mesh/material。</p>
+<p>大量名牌同时出现时，可用 <code>setHostWorldOverlap(true, priority, padding,
+maxDisplacement)</code> 开启确定性的屏幕矩形避让。高优先级、近距离 Host 先占位，其余 Host 在限定距离内上下寻找空位；没有可用位置时状态变为 <code>crowded</code> 并暂停渲染。 <code>getHostWorldState()</code> 返回 <code>visible</code>、<code>behind-camera</code>、<code>outside-viewport</code>、<code>no-camera</code>、 <code>crowded</code> 或 <code>disabled</code>；最终屏幕坐标可通过 <code>getHostWorldScreenX/Y()</code> 查询。</p>
+<div class="fragment"><div class="line">ui.select(&quot;unit-nameplate&quot;)</div>
+<div class="line">ui.setHostWorldAnchor(unitX, unitY + 2.0, unitZ)</div>
+<div class="line">ui.setHostWorldEdgePolicy(&quot;clamp&quot;)</div>
+<div class="line">ui.setHostWorldDistanceScale(true, 10.0, 0.7, 1.2)</div>
+<div class="line">ui.setHostWorldOverlap(true, 10, 4.0, 96.0)</div>
+</div><!-- fragment --><h2>MCP EditorHost 脚本接口</h2>
+<p><code>eve mcp</code> 会在根表建立 <code>eve.host</code>，供项目脚本创建和维护 AI 编辑器。它与 <code>eve.UI()</code> 的游戏内 retained UI 相互独立，但都运行在同一个 Squirrel VM 中。</p>
+<ul>
+<li>窗口与状态：<code><a class="el" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status()</a></code>、<code>openWindow()</code>、<code>closeWindow()</code>、<code>windowState()</code>。</li>
+<li>View 与交互：<code>applyEditor()</code>、<code>removeEditor()</code>、<code>setValue()</code>、<code><a class="el" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events()</a></code>、 <code>widgetRect()</code>、<code>capture()</code>、<code>save()</code>。</li>
+<li>ViewModel：<code>registerVM()</code>、<code>unregisterVM()</code>、<code>runScript()</code>。</li>
+<li>热更新：<code>reloadResource(path)</code> 手动重载项目内的 <code>mcp.nut</code>、<code>mcp/*.nut</code>、 <code>editors/*.vm.nut</code> 或 <code>editors/*.editor.json</code>；<code>hotReloadStatus()</code> 返回 watcher、 成功/失败计数与最近诊断。正常保存会由 MCP 主机自动触发，无需重启。</li>
+</ul>
+<h2>Canvas 高度驱动的父布局</h2>
+<p><code>ParentScalerSettings</code>、<code>ParentScalerInput</code>、<code>ParentScalerState</code>、<code>ParentScalerOutput</code> 和 <code>evaluateParentScaler(state,output,settings,input)</code> 对应 Pcg <code>ParentScaler</code>。<code>scaleWithCanvas=true</code> 且存在 Canvas 和目标时，FullScreen 输出原始 <code>canvasHeight</code>；<code>partScreen=true</code> 时按 Pcg 公式将其钳制到 <code>[0.1,maxHeight]</code>。只有 Canvas 高度变化或 <code>lastScaleHeight==0</code> 时才令 <code>applyHeight=true</code>，调用者再把 <code>height</code> 应用到每个仍有效的目标 Rect，保留各自宽度。</p>
+<p>脚本字段包括 <code>scaleWithCanvas</code>、<code>partScreen</code>、<code>maxHeight</code>、<code>hasCanvas</code>、<code>targetCount</code>、<code>canvasHeight</code>、 <code>lastScaleHeight</code>、<code>applyHeight</code> 和 <code>height</code>。状态与输出由调用者持有；零目标不会消耗高度变化，后续加入目标 仍能获得写入。无效目标由调用者跳过，负目标数或非有限高度在修改 state/output 前失败。</p>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/ui/"><code>src/modules/ui/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>ui</code>。</p>
+<p>PhotoMode 的 Photo 域由 <code>PcgPhotoModePhotoAuthority</code> 保存并统一发布。它覆盖场景身份、 截图分辨率、EXR/JPG/PNG/TGA 格式、加载保存设置、关闭时恢复，以及 FPS、准星和三分法 叠层开关。分辨率索引 0 使用当前 drawable 尺寸，1..9 精确映射 Pcg 的 640×480 到 7680×4320 档位；<code>screenshotSize()</code> 与 <code>screenshotExtension()</code> 供捕获和 UI 调用方读取。 authority 只保存稳定值，不持有 widget；实际叠层仍由 UIHost 使用现有 UI API 构建。</p>
+<h3>Pcg 截图按钮与颜色预览同步</h3>
+<p><code>AutoAssignTakePhotoEvent</code> 的启动期按钮接线使用现有 <code>ui.onClick(id, callback)</code>：回调中调用 <code>gfx.saveFramePng(path)</code>；首次启用 readback 后若尚无已呈现帧会返回 <code>false</code>，下一帧再次调用。该组合对应 Unity <code>Button.onClick -&gt; ScreenShotter.TakeHiResShot</code>，并允许调用者显式选择输出路径。</p>
+<p><code>eve.PcgColorPreviewSync()</code> 对应 <code>ColorPreviewSync.OnEnable</code>。调用 <code>sync(r,g,b,a)</code> 后，通过 <code>getRed()</code>、<code>getGreen()</code>、<code>getBlue()</code>、<code>getAlpha()</code> 取得按钮 highlighted color：纯黑源色映射到 <code>(0.5,0.5,0.5,1)</code>，其余颜色严格乘以原脚本硬编码的 <code>2.5</code>。非有限输入返回结构化错误且保留原状态。</p>
+<h3>PcgDraggableWindow</h3>
+<p><code>eve.PcgDraggableWindow()</code> 对应照片模式的 <code>DraggableUIWindow</code>。<code>configure(x,y,width,height,screenWidth,screenHeight,canvasScale)</code> 保存初始 anchored position；<code>drag(deltaX,deltaY)</code> 按 canvas scale 换算并复现 Pcg 的 X 负向、Y 正向边界钳制。<code>pointerDown(middleButtonDown)</code> 总是产生置顶请求，中键同时复位；用 <code>consumeBringToFront()</code> 消费请求，并通过 <code>getX()</code> / <code>getY()</code> 将结果交给 <code>ui.setHostPos</code>。</p>
+<h3>PcgPhotoModePanels</h3>
+<p><code>eve.PcgPhotoModePanels()</code> 保留七个 Pcg 照片模式页签的固定编号：Camera=0、Unity=1、Terrain=2、Lighting=3、Water=4、PostFX=5、PhotoMode=6。<code>select(panel)</code> 原子关闭其余六个面板并选择目标；<code>getSelected()</code>、<code>isActive(panel)</code>、<code>getRevision()</code> 提供快照，<code>consumeScrollReset()</code> 通知调用者重建 scroll content 并把滚动条置顶。</p>
+<p><code>eve.PcgPhotoModePanelButton()</code> 通过 <code>configure(nonSelectedRGBA,selectedRGBA)</code> 保存两组颜色，<code>setSelected()</code> 同时控制按钮 normal/selected 色和面板布局开关。读取接口为 <code>getNormalR()</code>、<code>getNormalG()</code>、<code>getNormalB()</code>、<code>getNormalA()</code>、<code>getHighlightR()</code>、<code>getLayoutEnabled()</code>、<code>getSelected()</code>；highlight 始终来自选中色，与 Pcg 注册逻辑一致。</p>
+<h3>PcgPhotoModeColorPicker</h3>
+<p><code>eve.PcgPhotoModeColorPicker()</code> 实现照片模式颜色选择器。<code>open(r,g,b,a,hdr)</code>、<code>setLast(...)</code>、<code>setFocusedName(name)</code>、<code>close()</code> 管理打开、旧值和标题；<code>setRed()</code>、<code>setGreen()</code>、<code>setBlue()</code>、<code>setHdr()</code> 对应四条滑杆，<code>reset()</code> 恢复旧值。读取接口包括 <code>getRed/Green/Blue/Alpha</code>、<code>getPreviewRed/Green/Blue</code>、<code>getHdrSwatch()</code>、<code>getHdrEnabled()</code>、<code>getOpen()</code>、<code>getFocusedName()</code>、<code>getChangeRevision()</code> 和 <code>consumeBringToFront()</code>。HDR alpha 大于 1 或小于 0 时严格保留 Pcg 打开阶段和预览阶段的两次 RGB 乘法。 预览通道的完整方法名为 <code>getPreviewRed()</code>、<code>getPreviewGreen()</code>、<code>getPreviewBlue()</code>。</p>
+<h3>PcgScreenshotSavedNotice</h3>
+<p><code>eve.PcgScreenshotSavedNotice()</code> 对应截图保存提示。<code>configure(enabled,showSeconds)</code> 设置开关和持续时间；截图成功后调用 <code><a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request(path)</a></code>，在该帧渲染结束调用 <code>endFrame(unscaledNow)</code> 才显示，再用 <code><a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick(unscaledNow)</a></code> 到期隐藏。<code>getVisible()</code>、<code>getPathVisible()</code>、<code>getPath()</code>、<code>getPending()</code> 返回 UI 快照。重复 request 会取消旧显示并从新的 end-of-frame 重新计时。</p>
+<h3>PcgTooltipManager</h3>
+<p><code>eve.PcgTooltipManager()</code> 合并移植 Tooltip、TooltipManager、TooltipProfile 和 TooltipTrigger。<code>configure(interactionMode,theme,delay,bottomOffset,topOffset,wrapLimit)</code> 中 interactionMode 为 UI=0、SceneObjects=1、Both=2，theme 为 Light=0、Dark=1。<code>addTooltip()</code>、<code>removeTooltip()</code> 管理 profile；<code>enter(source,id,now)</code> 做 Pcg 的首个 substring 匹配，<code>enterText(source,content,header,now)</code> 对应 Trigger 自带文本，<code>exit(source)</code>、<code>hide()</code> 和 <code><a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick(now,mouseX,mouseY,screenWidth,screenHeight,anyInput)</a></code> 管理延迟、位置与隐藏。</p>
+<p>状态通过 <code>getVisible()</code>、<code>getPending()</code>、<code>getHeader()</code>、<code>getText()</code>、<code>getHeaderVisible()</code>、<code>getWrapEnabled()</code>、<code>getPivotX()</code>、<code>getPivotY()</code>、<code>getBackgroundR()</code>、<code>getForeground()</code>、<code>getCount()</code> 读取。</p>
+<h3>PcgControllerSelection</h3>
+<p><code>eve.PcgControllerSelection()</code> 对应 <code>UIControllerSelection</code>。用 <code>add(name,controllerType,widgetId)</code> 按 Inspector 顺序登记说明项，<code>refresh(currentController)</code> 选择第一个类型匹配项并生成互斥可见快照；没有匹配时返回成功但 value=false，保留之前状态。通过 <code>getCount()</code>、<code>getSelectedIndex()</code>、<code>getVisible(index)</code>、<code>getWidgetId(index)</code> 读取，再用 <code>ui.setVisible</code> 应用到稳定 widget id。</p>
+<h3>PcgPhotoModeRuntimeUI</h3>
+<p><code>eve.PcgPhotoModeRuntimeUI()</code> 对应 <code>PhotoModeUtils</code> 与 <code>PhotoModeUIHelper</code> 的运行时控件状态。<code>configure(kind,name,value,current,min,max,imageFound)</code> 的 kind 从 Field=0 到 Vector3=13。各 <code>get*Visible()</code> 返回原 prefab 的互斥可见快照，<code>getInitialCallbackRevision()</code> 记录配置后主动派发初值的次数。</p>
+<h3>PcgLoadingScreen</h3>
+<p><code>eve.PcgLoadingScreen()</code> 接收 TerrainLoader 的四类加载事件。<code>configure(fadeOutSpeed)</code> 设置背景每秒 衰减的 alpha；<code>onLoadProgressStarted()</code> 显示画布并把背景和进度复位， <code>onLoadProgressUpdated(progress)</code> 更新进度且在值达到 1 时自动执行 <code>onLoadProgressEnded()</code>。 结束会隐藏进度条和文本并开始淡出，调用方每帧用 <code><a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick(deltaTime)</a></code> 推进；alpha 到零后画布关闭。</p>
+<p>超时诊断使用 <code>beginTimeout()</code> 开始事务，<code>addMissingScene(terrainName,impostorName)</code> 返回索引，随后用 <code>addRegularReference(index,name)</code> 和 <code>addImpostorReference(index,name)</code> 收集仍引用该场景的对象，最后 <code>endTimeout()</code> 原子发布与 Pcg 相同结构的诊断并开始淡出。<code>getCanvasVisible</code>、<code>getProgressVisible</code>、 <code>getTextVisible</code>、<code>getFading</code>、<code>getProgress</code>、<code>getBackgroundAlpha</code> 和 <code>getTimeoutMessage</code> 返回 UI 快照。</p>
+<p><code>markSliderUsed()</code>、<code>setSliderValue()</code>、<code>applyFloatInput()</code> 保留滑杆与文本框同步规则；<code>updateWrap(text)</code> 复现 68 字符 metrics 换行，包括无空格硬切时跳过切点字符的原始行为。</p>
+<p>状态查询包括 <code>getKind()</code>、<code>getName()</code>、<code>getValueText()</code>、<code>getValue()</code>、<code>getMinimum()</code>、<code>getMaximum()</code>、 <code>getWholeNumbers()</code>、<code>getUsingSlider()</code>、<code>getInputRefresh()</code>、<code>getLabelVisible()</code>、 <code>getSecondLabelVisible()</code>、<code>getSliderVisible()</code>、<code>getInputVisible()</code>、<code>getToggleVisible()</code>、 <code>getButtonVisible()</code>、<code>getDropdownVisible()</code>、<code>getImageVisible()</code>、<code>getHeaderVisible()</code>、<code>getColorVisible()</code>、 <code>getVector2Visible()</code>、<code>getVector3Visible()</code> 和 <code>getInitialCallbackRevision()</code>。</p>
+<h3>PcgPhotoModeValues</h3>
+<p><code>eve.PcgPhotoModeValues()</code> 完整保存 Pcg <code>PhotoModeValues</code> 的 102 个字段及原始默认值。字段名沿用 <code>m_*</code> 配置名；<code>getFieldCount/getFieldName/getFieldType</code> 提供稳定 schema，类型编号为 Bool=0、Int=1、Float=2、String=3、Color=4。使用对应 <code>setBool/setInt/setFloat/setString/setColor</code> 与 <code>getBool/getInt/getFloat/getString</code>；颜色先 <code>selectColor(name)</code>，再读取 RGBA。<code>resetDefaults()</code> 原子恢复原始配置。</p>
+<p><code>snapshotJson()</code> 输出 <code>eve.ui.pcg-photo-mode-values</code> schema version 1，并包含全部 102 字段；<code>restoreJson(json)</code> 要求精确 schema、版本和字段集合，拒绝未知或缺失字段，解析到临时候选对象后一次性交换，因此任何错误都保留当前配置。</p>
+<h3>PcgPhotoModeSession</h3>
+<p><code>eve.PcgPhotoModeSession()</code> 对应 <code>PhotoMode.cs</code> 的进入、加载和退出事务。<code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin(capturedJson,savedJson,loadSaved,savedEver,currentPipeline,savedPipeline,sceneName,lightingProfile)</a></code> 保存进入前快照，仅在管线、场景和光照配置均匹配时加载保存值。<code>getLoadDecision()</code> 返回 Current=0、Saved=1、SaveCurrent=2。<code>replaceWorkingJson()</code> 原子更新运行值；<code><a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end(resetOnDisable,applicationPlaying)</a></code> 选择工作值或进入前快照作为 <code>outputJson()</code>。</p>
+<p>退出后 <code>getRemovePhotoCameraRequested()</code> 和 <code>getUnfreezePlayerRequested()</code> 始终为真；只有两个退出参数均为真时 <code>getRestoreRequested()</code> 为真。调用者按这些请求恢复各权威模块并清理临时对象。</p>
+<p>脚本方法：<code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>、<code>replaceWorkingJson()</code>、<code><a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end()</a></code>、<code>workingJson()</code>、<code>outputJson()</code>、<code>getActive()</code>、<code>getRestoreRequested()</code>、<code>getRemovePhotoCameraRequested()</code>、<code>getUnfreezePlayerRequested()</code>、<code>getLoadDecision()</code>、<code>getRevision()</code>。</p>
+<h3>PcgPhotoModeRanges</h3>
+<p><code>eve.PcgPhotoModeRanges()</code> 完整保存 <code>PhotoModeMinAndMaxValues</code> 的 57 组范围。<code>getCount/getName</code> 按原声明顺序枚举；<code>select(name)</code> 后用 <code>getMinimum/getMaximum/getIntegral</code> 读取。<code>setRange()</code> 原子替换自定义范围，整数范围要求整数端点；<code>clamp(name,value)</code> 返回钳制结果。<code>m_densityVolumeFogDistance</code> 的默认上限保留正无穷。</p>
+<h3>Pcg PhotoMode 跨域应用事务</h3>
+<p>PcgPhotoModeApplyPlan 比较两个完整 PcgPhotoModeValues 快照，按 Pcg 源字段声明顺序输出变更，并把字段路由到 Photo、System、Graphics、Camera、Streaming、Weather、Lighting、Water、PostFx、Terrain、Grass 或 Audio 权威域。executeRegistered() 通过 eve.photo-mode.apply capability 同步执行；未安装提供者会返回可观察的 Unsupported 错误。任一字段失败时，先前字段按逆序恢复，getRollbackComplete() 报告恢复是否完整。脚本可用 compileJson、命令枚举和执行状态来驱动照片模式。</p>
+<p>脚本方法：compileJson、executeRegistered、getCommandCount、getCommandField、getCommandDomain、getAppliedCount、getRollbackComplete、getRevision。</p>
+<p>照片模式注册执行器会把 m_globalVolume 通过现有 IAudioQuery 写入真实 Audio master volume。其他字段由实现 IPhotoModeFieldSink 的模块 listener 接收；每个字段必须恰有一个提供者，缺失或重复所有者都会使事务失败并触发逆序回滚。</p>
+<h3>Pcg Lighting profile 身份</h3>
+<p>PhotoMode 的 <code>m_isUsingPcgLighting</code> 与 <code>m_selectedPcgLightingProfile</code> 由 <code>PcgPhotoModePhotoAuthority</code> 作为持久化身份联合保存。<code>lightingProfileMatches(currentProfile)</code> 同时比较 profile 索引和 Pcg/custom 模式；<code>PcgPhotoModeSession.begin()</code> 也使用这两个条件与场景名、渲染管线共同决定是否允许加载旧设置。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

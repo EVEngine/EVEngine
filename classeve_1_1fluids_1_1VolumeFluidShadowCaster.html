@@ -1,0 +1,407 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::VolumeFluidShadowCaster类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1VolumeFluidShadowCaster-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluidShadowCaster类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One-draw particle shadow caster matching Fluid3D ShadowmapExposer behavior. @ownership Borrows Graphics for its lifetime and owns one Graphics-managed dynamic mesh. @thread Construction, update and destruction are render-thread affine. @reentrancy Invokes no script callbacks; destruction must occur outside shadow traversal.  
+ <a href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VolumeFluidShadowCaster_8h_source.html">VolumeFluidShadowCaster.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a43b7566c2b31dbb337ab86a54d34ddfe" id="r_a43b7566c2b31dbb337ab86a54d34ddfe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#a43b7566c2b31dbb337ab86a54d34ddfe">VolumeFluidShadowCaster</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics)</td></tr>
+<tr class="separator:a43b7566c2b31dbb337ab86a54d34ddfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add1d3a47b7367c10563af4de08786eef" id="r_add1d3a47b7367c10563af4de08786eef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#add1d3a47b7367c10563af4de08786eef">~VolumeFluidShadowCaster</a> ()</td></tr>
+<tr class="separator:add1d3a47b7367c10563af4de08786eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7e54a3ba01f86462c0e36ecf479559a" id="r_ae7e54a3ba01f86462c0e36ecf479559a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#ae7e54a3ba01f86462c0e36ecf479559a">VolumeFluidShadowCaster</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp;)=delete</td></tr>
+<tr class="separator:ae7e54a3ba01f86462c0e36ecf479559a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d354c16ec63c06389d64239dd0018c" id="r_a51d354c16ec63c06389d64239dd0018c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#a51d354c16ec63c06389d64239dd0018c">operator=</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp;)=delete</td></tr>
+<tr class="separator:a51d354c16ec63c06389d64239dd0018c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2404344937a756833e31bfc86d849b99" id="r_a2404344937a756833e31bfc86d849b99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#a2404344937a756833e31bfc86d849b99">update</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;fluid, unsigned actorGroup, float radiusScale, float alpha=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, unsigned maxParticles=4096)</td></tr>
+<tr class="memdesc:a2404344937a756833e31bfc86d849b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild one actor's bounded octahedral shadow batch.  <br /></td></tr>
+<tr class="separator:a2404344937a756833e31bfc86d849b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a478de28fedc4a1565a2109f61e4ef16d" id="r_a478de28fedc4a1565a2109f61e4ef16d"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html#a478de28fedc4a1565a2109f61e4ef16d">particleCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a478de28fedc4a1565a2109f61e4ef16d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of particles in the currently published shadow batch.  <br /></td></tr>
+<tr class="separator:a478de28fedc4a1565a2109f61e4ef16d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One-draw particle shadow caster matching Fluid3D ShadowmapExposer behavior. @ownership Borrows Graphics for its lifetime and owns one Graphics-managed dynamic mesh. @thread Construction, update and destruction are render-thread affine. @reentrancy Invokes no script callbacks; destruction must occur outside shadow traversal. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidShadowCaster_8h_source.html">VolumeFluidShadowCaster.h</a> 第 <a class="el" href="VolumeFluidShadowCaster_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a43b7566c2b31dbb337ab86a54d34ddfe" name="a43b7566c2b31dbb337ab86a54d34ddfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43b7566c2b31dbb337ab86a54d34ddfe">&#9670;&#160;</a></span>VolumeFluidShadowCaster() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidShadowCaster::VolumeFluidShadowCaster </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graphics</td><td>Initialized backend that must outlive this caster. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html">VolumeFluidShadowCaster.cpp</a> 第 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add1d3a47b7367c10563af4de08786eef" name="add1d3a47b7367c10563af4de08786eef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add1d3a47b7367c10563af4de08786eef">&#9670;&#160;</a></span>~VolumeFluidShadowCaster()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidShadowCaster::~VolumeFluidShadowCaster </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html">VolumeFluidShadowCaster.cpp</a> 第 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l00868">eve::graphics::Graphics::releaseMesh()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00512">eve::graphics::RenderSystem3D::removeShadowExtraDrawer()</a>.</p>
+
+</div>
+</div>
+<a id="ae7e54a3ba01f86462c0e36ecf479559a" name="ae7e54a3ba01f86462c0e36ecf479559a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e54a3ba01f86462c0e36ecf479559a">&#9670;&#160;</a></span>VolumeFluidShadowCaster() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidShadowCaster::VolumeFluidShadowCaster </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a51d354c16ec63c06389d64239dd0018c" name="a51d354c16ec63c06389d64239dd0018c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d354c16ec63c06389d64239dd0018c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp; eve::fluids::VolumeFluidShadowCaster::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidShadowCaster.html">VolumeFluidShadowCaster</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a478de28fedc4a1565a2109f61e4ef16d" name="a478de28fedc4a1565a2109f61e4ef16d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a478de28fedc4a1565a2109f61e4ef16d">&#9670;&#160;</a></span>particleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::fluids::VolumeFluidShadowCaster::particleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of particles in the currently published shadow batch. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidShadowCaster_8h_source.html">VolumeFluidShadowCaster.h</a> 第 <a class="el" href="VolumeFluidShadowCaster_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2404344937a756833e31bfc86d849b99" name="a2404344937a756833e31bfc86d849b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2404344937a756833e31bfc86d849b99">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::VolumeFluidShadowCaster::update </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>fluid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>actorGroup</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radiusScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>maxParticles</em> = <code>4096</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuild one actor's bounded octahedral shadow batch. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fluid</td><td>Borrowed solver, not mutated or retained. </td></tr>
+    <tr><td class="paramname">actorGroup</td><td>Stable emitter actor identity. </td></tr>
+    <tr><td class="paramname">radiusScale</td><td>Positive particle radius multiplier. </td></tr>
+    <tr><td class="paramname">alpha</td><td>Fixed-step interpolation fraction in [0,1]. </td></tr>
+    <tr><td class="paramname">maxParticles</td><td>Complete-output budget in [1,65536]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or failure preserving the prior visible batch.</dd></dl>
+<p>Reuses CPU arrays and one dynamic GPU mesh after capacity warm-up. The registered CSM callback issues at most one indexed draw per cascade. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html">VolumeFluidShadowCaster.cpp</a> 第 <a class="el" href="VolumeFluidShadowCaster_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00505">eve::graphics::RenderSystem3D::addShadowExtraDrawer()</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00557">eve::fluids::VolumeFluid::copyParticleImpostors()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="OnnxLstm_8cpp_source.html#l00029">directions</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a39050eb7fdf509c1e8150a0f9e924215">eve::graphics::Graphics::drawMeshShadow()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00118">normal</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices()</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidShadowCaster_8h_source.html">VolumeFluidShadowCaster.h</a></li>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidShadowCaster_8cpp_source.html">VolumeFluidShadowCaster.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

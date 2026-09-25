@@ -1,0 +1,353 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 命名空间成员</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
+<li>safeUri()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#adff5a502f697fd57cf25baba2748f0ec">eve::asset_import::gltf</a></li>
+<li>sameLine()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#aebe7bf1189195dd203f40337c8b7cf99">eve::ui</a></li>
+<li>sample()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">eve::procgen::raster_detail</a></li>
+<li>sampleBase()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">eve::graphics::cubemap_prefilter_detail</a></li>
+<li>sampleBoundary()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aa8dd65b3aa133925edeb21aa4ea22068">eve::procgen::urban</a></li>
+<li>sampleCaveBiogenicCorrosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#af85e9293f8e4a92a5d8a62abb5abdf1c">eve::procgen</a></li>
+<li>sampleCaveCondensationFacets()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a4845c7e2d66dd70212acc7fc0df2b864">eve::procgen</a></li>
+<li>sampleCaveConstrictionScour()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ae420b2b988e61879ae28f0092b27891a">eve::procgen</a></li>
+<li>sampleCaveDensity()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a53b4d6ca3239bd2b1e3848aecaa46b14">eve::procgen</a></li>
+<li>sampleCaveDensityGradient()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a70ca50600a21c4214b2e50b3dacf965b">eve::procgen</a></li>
+<li>sampleCaveDifferentialVeinErosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a66919e203297fd803b199f676ae5cc73">eve::procgen</a></li>
+<li>sampleCaveFloodAbrasion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a4ac7ed84b78621dc854818235c3e8e15">eve::procgen</a></li>
+<li>sampleCaveFloodPlucking()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ad5724b30ac66c4b89461c9c79a3d167d">eve::procgen</a></li>
+<li>sampleCaveFracture()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a7ec6dac9adce79ce5ab5790f46f26f04">eve::procgen</a></li>
+<li>sampleCaveFractureChannelization()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a2162ee3e822f77d280be341301687fd8">eve::procgen</a></li>
+<li>sampleCaveKnickpointErosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a7de6b13041f8d8117cd442b41e71e418">eve::procgen</a></li>
+<li>sampleCaveLithology()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ab24463df2eb1312ed63f06635af6eec3">eve::procgen</a></li>
+<li>sampleCaveMicrostructure()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#adc8d4dd7771a3680671026536a8fea8d">eve::procgen</a></li>
+<li>sampleCaveMineralArmoring()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ac0c68bf7a5c51da42ed88eaa699a170a">eve::procgen</a></li>
+<li>sampleCaveMixingCorrosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a29f9acf561b9ba2e7159a482e898ea04">eve::procgen</a></li>
+<li>sampleCaveObstacleScour()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a490ee299c09e2992f750583eda8a8dde">eve::procgen</a></li>
+<li>sampleCavePotholeErosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ae0e8a17f23c2da22f1191adffc4d1e81">eve::procgen</a></li>
+<li>sampleCaveRoughnessTransfer()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a0b80b52d0dd41473b740916333f52c11">eve::procgen</a></li>
+<li>sampleCaveScallopHistory()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a4937c78b9e474572c9a70f16d9fa5d3b">eve::procgen</a></li>
+<li>sampleCaveScallops()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a87565677029fa99b24218003a4cf6e14">eve::procgen</a></li>
+<li>sampleCaveStreamKarren()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#aca4f0cee88176460b88c468611377157">eve::procgen</a></li>
+<li>sampleCaveWallRoughness()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a127d1ba4df28c3d9dee39e04decaaf69">eve::procgen</a></li>
+<li>sampleCaveWaterTableCorrosion()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a64f571c755056942358ae75be27fc434">eve::procgen</a></li>
+<li>sampleGridPoints()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ae24b30e964ac9f21554fc921151509c2">eve::procgen</a></li>
+<li>sampleHalton()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#a6d2ea28105fab6019c5bf506777f9660">eve::graphics::grass</a></li>
+<li>samplePoisson()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#ab35a5ead6095b6ac59b25a404bb66605">eve::graphics::grass</a></li>
+<li>samplePolylinePoints()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a0b5767e075b6ebbeb17f3e173d4501d2">eve::procgen</a></li>
+<li>sampleSkinSpawn()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#ac4fa77736fec4b5a5798916d1d81c57a">eve::particles</a></li>
+<li>sampleSpatialOntoChannel()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#aa9a8daecaf9a3a7ecea7344262750020">eve::procgen</a></li>
+<li>sampleTerrainHeightmapNormalized()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#acd398dcfe0bcf664f801976ba8c908aa">eve::procgen</a></li>
+<li>sampleTerrainHeightmapSafe()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a8c176244f995b767a7756cbe33f72e65">eve::procgen</a></li>
+<li>saveHexMap()&#160;:&#160;<a class="el" href="namespaceeve_1_1hexmap.html#ad99ec002a910e9081efca91c05580667">eve::hexmap</a></li>
+<li>scalarStr()&#160;:&#160;<a class="el" href="namespaceeve_1_1tensor_1_1glsl__detail.html#a5f552eb88bf5a713e1f72a14b64ec113">eve::tensor::glsl_detail</a>, <a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">eve::tensor::wgsl_detail</a></li>
+<li>sceneArtifactProvider()&#160;:&#160;<a class="el" href="namespaceeve_1_1scene.html#aa04e51a8da21e68cb1bc08ecba919b54">eve::scene</a></li>
+<li>schemaDifference()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1detail.html#a47712b5d68f9efd7712fb28317edeeda">eve::animation::detail</a></li>
+<li>schemaEncode()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1detail.html#af4b9be80e8561be073298d276e1890b6">eve::animation::detail</a></li>
+<li>schemaHeading()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1detail.html#ab0a0c98f589407e578f787deb1630761">eve::animation::detail</a></li>
+<li>schemaRegistrationStatusName()&#160;:&#160;<a class="el" href="namespaceeve_1_1schema.html#af3ceff08988acc1770d19d463cf5d44e">eve::schema</a></li>
+<li>schemaRotate()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1detail.html#adf4639638c9585de698f80de466764a0">eve::animation::detail</a></li>
+<li>scriptToolCount()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#a14afd88b48049a55ecb27507bd0cf681">eve::dev</a></li>
+<li>scriptToolNames()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#a472c894b6e8c0984a984a06d457e788d">eve::dev</a></li>
+<li>scriptToolSchemas()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#aa195ec7dc81cbe3d1ddcd73d00e600fc">eve::dev</a></li>
+<li>scrollList()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a633a23e566a99176f310f4121dbcabbf">eve::ui</a></li>
+<li>sdkTargetPlatform()&#160;:&#160;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ada26ba1493c1263301287a02a40dcf8e">eve::cmd::sdk</a></li>
+<li>sdkVersionTag()&#160;:&#160;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#a32cb57c8e5b83deed7572131c7e2a74b">eve::cmd::sdk</a></li>
+<li>sdpa()&#160;:&#160;<a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a1ba5e33713009552b0930ad4e7b831c9">eve::tensor::kernels</a></li>
+<li>searchField()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#aa119fe5e55abfa661c909ae67129f61b">eve::ui</a></li>
+<li>secondsForStep()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1detail.html#a4854b585aa226af46df63e068294d681">eve::animation::detail</a></li>
+<li>sectionHeader()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#ae177dfa694f2ec9dcd053f8ae83a5e1e">eve::ui</a></li>
+<li>seek()&#160;:&#160;<a class="el" href="namespaceeve_1_1math_1_1steering.html#a5320266753c2b280e39991ceab8566d7">eve::math::steering</a></li>
+<li>segmentIntersectsPolyline()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aea49479cdf0b5164827feba9faaff74f">eve::procgen::urban</a></li>
+<li>segmentsIntersect()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a9cd354ae904473265586fd9a1ce7ad23">eve::procgen::urban</a></li>
+<li>select()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1gridgraph.html#a6bec1cff2953776d60608b4585f4e719">eve::procgen::gridgraph</a></li>
+<li>selectClusters()&#160;:&#160;<a class="el" href="namespaceeve_1_1virtualgeometry.html#a99fd11d65055e69346ae31bc72c7e861">eve::virtualgeometry</a></li>
+<li>selectEvpackVariant()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset.html#ac15ff603c45e50874928c6b46fad8415">eve::asset</a></li>
+<li>selectionCost()&#160;:&#160;<a class="el" href="namespaceeve_1_1climbing_1_1runtime__detail.html#a05dc1e31dc1e0cc29d73ddc8c943cfb1">eve::climbing::runtime_detail</a></li>
+<li>selectLodIndex()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1hair.html#aefc281c1c682e27e4d01ed217f73e58d">eve::graphics::hair</a></li>
+<li>selectPointFloatAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a5158d522e4bb0ce4808fe69c71fe6e88">eve::procgen</a></li>
+<li>selfPrunePoints()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#abfc6174097ea44289b7783c063f6bdad">eve::procgen</a></li>
+<li>semanticId()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ae504cb1a36250b74c8c751efe330d125">eve::procgen</a></li>
+<li>semanticName()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a1d61f69a6f7f25bebecfec2d0bfbf28f">eve::procgen</a></li>
+<li>separation()&#160;:&#160;<a class="el" href="namespaceeve_1_1math_1_1steering.html#ac2892e726a9009ae0c1d9edf99dd513b">eve::math::steering</a></li>
+<li>separator()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#ae537acffea93130f93f16ba310bb5730">eve::ui</a></li>
+<li>serializeEvaManifest()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset.html#ad735b8648ddb44aed89bbef8a363af65">eve::asset</a></li>
+<li>serializeSnapshotEnvelope()&#160;:&#160;<a class="el" href="namespaceeve.html#a88fa47382a7db88ab2831d1433518549">eve</a></li>
+<li>setEnv()&#160;:&#160;<a class="el" href="namespaceeve_1_1cmd_1_1sdk.html#ab24a55358379efff928f71ab6ce63e51">eve::cmd::sdk</a></li>
+<li>setFrameDuration()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#a1a29e981fc2aafd1585fff31a6dea70a">eve::graphics::grass</a></li>
+<li>setGlobalTheme()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#aa200d302b6b78ce89841abe1dc03f106">eve::ui</a></li>
+<li>setLastScriptError()&#160;:&#160;<a class="el" href="namespaceeve_1_1script.html#acd9feaabe52ababa3a03050ed729f330">eve::script</a></li>
+<li>setPointBoolAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ad6f80663fb0125a8fd9ff89b041bffe7">eve::procgen</a></li>
+<li>setPointDataFloatAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a47c244465ad982365463b8dc9558353c">eve::procgen</a></li>
+<li>setPointDataIntAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a90d42a8de47215345404df195dfbfeb9">eve::procgen</a></li>
+<li>setPointDataStringAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a907b2a99469ed44768c65c456dad00b7">eve::procgen</a></li>
+<li>setPointIntAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a8217b05cf8dd0e5d192d27a4d896f58e">eve::procgen</a></li>
+<li>setPointVectorAttribute()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ad5280fdc2955c2f756d141ce76d9db37">eve::procgen</a></li>
+<li>setRenderTracer()&#160;:&#160;<a class="el" href="namespaceeve_1_1debug.html#a66d6a3461e5969f1875ea855d8b43d3a">eve::debug</a></li>
+<li>setStyleClassColor()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#afb9b68c09e1264438e63ee8e32302287">eve::ui</a></li>
+<li>setStyleClassMetric()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a7411b75eeffbb13c101818ec6629d8bb">eve::ui</a></li>
+<li>setTerrainHeightmapColumn()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a6fe8486e409f9a76e0ca8b820a91553a">eve::procgen</a></li>
+<li>setTerrainHeightmapRow()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a231a05780be5f64a799da63586009013">eve::procgen</a></li>
+<li>setTerrainHeightmapSafe()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ae345dd52cb270df95a85a61a76d275ce">eve::procgen</a></li>
+<li>setThemeByName()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a5a449969e268e5ce472bf83071d4035a">eve::ui</a></li>
+<li>setThemeDpiScale()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a3efcb33e45f899de64fbe3d83129b440">eve::ui</a></li>
+<li>setThemeUiScale()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a5c90ca2eaa115345067ba30c97e1b723">eve::ui</a></li>
+<li>setTime()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#ae62cd63dedf2ee9077ba497da48ff2f9">eve::graphics::grass</a></li>
+<li>settlementDispositionName()&#160;:&#160;<a class="el" href="namespaceeve_1_1settlement.html#a0758f0d8e0ee05ac806f0da467cb64bf">eve::settlement</a></li>
+<li>settlementReplayRequest()&#160;:&#160;<a class="el" href="namespaceeve_1_1settlement.html#a1d9a7ed8d8e4dd9ca4fdaa1621b9ca98">eve::settlement</a></li>
+<li>settlementResultCanonicalJson()&#160;:&#160;<a class="el" href="namespaceeve_1_1settlement.html#aea649a667b98d6b6f99e929aae51052e">eve::settlement</a></li>
+<li>settlementResultDigest()&#160;:&#160;<a class="el" href="namespaceeve_1_1settlement.html#afcd1ea5d424ee83c9bcf41f9a029bd13">eve::settlement</a></li>
+<li>setupChains()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation_1_1hair.html#abac3b6bb9a1c54e65a4bd8e7dd2a561c">eve::animation::hair</a></li>
+<li>setWorldCollisionResolver()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#a3c6693026b797da8e3e2fbd43300977e">eve::particles</a></li>
+<li>severityName()&#160;:&#160;<a class="el" href="namespaceeve.html#a1458a37ac5088f18eeee15d5ecf7b10f">eve</a></li>
+<li>sha256()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#a1bec4edd0427191572ee50a9b98ff2e9">eve::asset_import::detail</a></li>
+<li>shaderImageRegions()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a9562809849a47ad9e51a0c17f1f6aa2c">eve::graphics</a></li>
+<li>shaderInstanceMatrixCount()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a447701bbad3c400d76b82491f5583317">eve::graphics</a></li>
+<li>shapeIrregularity()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ac16d4fa028bef661f2b7a4d034a1316d">eve::procgen::urban</a></li>
+<li>shiftWorldSpaceParticles()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#aaf9bacdd167921d4e808a11161917023">eve::particles</a></li>
+<li>ShowFontAtlas()&#160;:&#160;<a class="el" href="namespaceImGui.html#a2ed2584ce359d3c2dc9b69443bf66663">ImGui</a></li>
+<li>shutdownPrefabActionCapabilities()&#160;:&#160;<a class="el" href="namespaceeve_1_1sceneloader.html#a214dc592d40b2bbbb81a26de1af79040">eve::sceneloader</a></li>
+<li>sidebar()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#aab8e50c5179620258460c2221371a239">eve::ui</a></li>
+<li>signedArea()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ab2d032dea1baf87ebadcf72801ddbb02">eve::procgen::urban</a></li>
+<li>signedHorizontalAngle()&#160;:&#160;<a class="el" href="namespaceeve_1_1climbing_1_1runtime__detail.html#ade7de8ba4d7dae35de8e287dd93b3663">eve::climbing::runtime_detail</a></li>
+<li>silPomCoverage()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a35f95e1b27363fced0a485dfbb6a4257">eve::graphics</a></li>
+<li>silPomCoverageSoft()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#ac9c9758229f15c7987056ce19b47ece1">eve::graphics</a></li>
+<li>silPomHorizonTrim()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#abbcf69fac495eee74db549b4eca92fdf">eve::graphics</a></li>
+<li>simplifyGtsMesh()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a35d70dd8be0c82ae3e85da39bea258c9">eve::procgen</a></li>
+<li>simulationBackendDomainName()&#160;:&#160;<a class="el" href="namespaceeve_1_1physics.html#a06173573b61cca9d662bea861a0d7e38">eve::physics</a></li>
+<li>simulationBackendKindName()&#160;:&#160;<a class="el" href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">eve::physics</a></li>
+<li>simulationDeterminismName()&#160;:&#160;<a class="el" href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">eve::physics</a></li>
+<li>slerpMotionQuat()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#a3aaa499d0754e1c5a552763fc3ec8075">eve::animation</a></li>
+<li>slerpQuat()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#a1cce09aba063bd49f2ea648f95972479">eve::animation</a></li>
+<li>sliceLines()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp.html#a4e34c4d9eeefab6c9690cbb76c755772">eve::dev::lsp</a></li>
+<li>sliceMeshToLayers()&#160;:&#160;<a class="el" href="namespaceeve_1_1spritestack.html#a12b935d3b716c33c3659ff1392163037">eve::spritestack</a></li>
+<li>sliceModelToLayers()&#160;:&#160;<a class="el" href="namespaceeve_1_1spritestack.html#af9eecc7c2047f4b94588113cdd1790cd">eve::spritestack</a></li>
+<li>sliceOp()&#160;:&#160;<a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#a266752949f81dacd4200bda04ad372e4">eve::tensor::kernels</a></li>
+<li>slicePrimitiveToLayers()&#160;:&#160;<a class="el" href="namespaceeve_1_1spritestack.html#a4cab4403725517190d67e69d40e66336">eve::spritestack</a></li>
+<li>slider()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui_1_1controls.html#a06798458a7e71d63f694e1f7bbc6ae35">eve::ui::controls</a>, <a class="el" href="namespaceeve_1_1ui.html#a378889a2b59b2d905b40998eb8e7d6b4">eve::ui</a></li>
+<li>smoothStep()&#160;:&#160;<a class="el" href="namespaceeve_1_1climbing_1_1detail.html#a1b9976a3a100efa3ef33d371ca22fc1f">eve::climbing::detail</a></li>
+<li>smoothTerrainHeightmap()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a4a933b44cdc8f3afcc1c2225704f97b7">eve::procgen</a></li>
+<li>smoothTerrainHeightmapRadius()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a6012edd775ce9111ae52eddbcb63eba2">eve::procgen</a></li>
+<li>smoothTerrainMask()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a76cb1dbed951153b3e213c4caea8c010">eve::procgen</a></li>
+<li>smrRefineRetargetedClip()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#af8e124018d94259008c5afbd0fdfb202">eve::animation</a></li>
+<li>snapshotContentHashProvider()&#160;:&#160;<a class="el" href="namespaceeve.html#ab018e7d181b1bc3474a356f0948121ec">eve</a></li>
+<li>snapshotEnvelopeValue()&#160;:&#160;<a class="el" href="namespaceeve.html#a1d50f64554fb2285ec2655306a71289a">eve</a></li>
+<li>snapshotHashInput()&#160;:&#160;<a class="el" href="namespaceeve.html#a77af0ba0868cb90350ee40a0f861292c">eve</a></li>
+<li>snapshotRuntimeInstance()&#160;:&#160;<a class="el" href="namespaceeve_1_1definition.html#a40632c7db0d93d4538a284e7f1d2ba72">eve::definition</a></li>
+<li>snapshotVegetationDetails()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a4fcba7a3333aa2c02c4a6fe831dea640">eve::graphics</a></li>
+<li>softBody3DDefinitionSchema()&#160;:&#160;<a class="el" href="namespaceeve_1_1physics__editing.html#a70ae10854fc8e3dee126e21b50cddce9">eve::physics_editing</a></li>
+<li>softmax()&#160;:&#160;<a class="el" href="namespaceeve_1_1agent_1_1detail.html#ad747664a1a8b7e650158f00a7f88c79d">eve::agent::detail</a>, <a class="el" href="namespaceeve_1_1tensor_1_1kernels.html#acaeb5a2000787785125e2dac5914267b">eve::tensor::kernels</a></li>
+<li>solveChain()&#160;:&#160;<a class="el" href="namespaceeve_1_1ik_1_1detail.html#aeab0f37629a8abd31ace6ca9c34b9f38">eve::ik::detail</a></li>
+<li>sortDrawItems2D()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#ac57a2ef893af9fa844685a5c63c0d9a9">eve::graphics</a></li>
+<li>sourceLineText()&#160;:&#160;<a class="el" href="namespaceeve_1_1script.html#a2ad5f6c40b79c070887bf5d654814861">eve::script</a></li>
+<li>spacer()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a62e00f3c30a647806ee97a8fb05d2b4f">eve::ui</a></li>
+<li>spawnParticle()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#a32e39e13805e24c7604f96f7c715468b">eve::particles</a></li>
+<li>spawnParticleAt()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#aff71ad952e2886da6fffe3cad0a85056">eve::particles</a></li>
+<li>specializeInputBindings()&#160;:&#160;<a class="el" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab375064438033e0202548c021c2050ff">eve::tensor::wgsl_detail</a></li>
+<li>specializePbrVariantSources()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ad561f5e11e8a0d49f6da72788acc1784">eve::graphics::webgpu</a></li>
+<li>splitGtsMesh()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a0b8ee34d23200a5f1cdf0528469c9ed4">eve::procgen</a></li>
+<li>splitGtsMeshInto()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a1735d1a3adc73b97e30390ce1793ac2f">eve::procgen</a></li>
+<li>splitPane()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#ae0f546afa5e6b78077b98149ba945298">eve::ui</a></li>
+<li>splitPolygonByPolyline()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a34d6bdce0d20c711a7e25154ea426796">eve::procgen::urban</a></li>
+<li>sqKeyToJson()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#a5dfa61548e5c5280a2fe7fe174b279dd">eve::dev</a></li>
+<li>sqValueToJson()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#ac691882ba23142d545be6e79f0e307cd">eve::dev</a></li>
+<li>ssdmCoverage()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a3a603a346ae0d3a185218c80ece4db32">eve::graphics</a></li>
+<li>ssdmScreenOffset()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a4b3d354b59e9d9ed2403ea7b1adff9fe">eve::graphics</a></li>
+<li>stageKindName()&#160;:&#160;<a class="el" href="namespaceeve_1_1settlement.html#a84e12d3896a768fd1f5feaaa0d3e7a14">eve::settlement</a></li>
+<li>standardCombatAbilities()&#160;:&#160;<a class="el" href="namespaceeve_1_1combat.html#a59b0c0057ace91b211e06a6c91aab22c">eve::combat</a></li>
+<li>startStderrCapture()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#ae0b31b527d957b12b74451a485a60115">eve::dev</a></li>
+<li>startVulkanInstanceWarmup()&#160;:&#160;<a class="el" href="namespaceeve_1_1boot.html#ae804cbcb5ab917fb6b45aab84205a8d8">eve::boot</a></li>
+<li>stateName()&#160;:&#160;<a class="el" href="namespaceeve_1_1orders.html#a9a10d13f698ec0bc423e4dc13e9f7b4a">eve::orders</a>, <a class="el" href="namespaceeve_1_1transaction.html#a4fcd4c223ae7e72db417a90968865cb5">eve::transaction</a></li>
+<li>statusBar()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a34eb028614cc914589edfeb289c89934">eve::ui</a></li>
+<li>statusCodeName()&#160;:&#160;<a class="el" href="namespaceeve.html#a7fa8305dbdc1893a04b6ac109c035a76">eve</a></li>
+<li>statusName()&#160;:&#160;<a class="el" href="namespaceeve_1_1tactics.html#a2d79210b8666201065a6be2a27d9e2c2">eve::tactics</a></li>
+<li>stderrCaptureActive()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#a5498cb7cfbf0d96f403333c014e9c4e2">eve::dev</a></li>
+<li>stepDampedSpring()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#af4bdde8d264cb4c904985f606dc0178f">eve::animation</a></li>
+<li>stepEmitterSim()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">eve::particles</a></li>
+<li>stepPd()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#a4e520c7d8df60bea57d5e43af4cc7a75">eve::animation</a></li>
+<li>stepSecondOrder()&#160;:&#160;<a class="el" href="namespaceeve_1_1animation.html#a948f35c766ea0be2250cd441570a6696">eve::animation</a></li>
+<li>stepShapeName()&#160;:&#160;<a class="el" href="namespaceeve_1_1dnut.html#ad34e8b0206a54482d72f96ae2441134a">eve::dnut</a></li>
+<li>stitchTerrainHeightmaps()&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#aa0a26fc4984267c07719726821f66f84">eve::procgen</a></li>
+<li>stopStderrCapture()&#160;:&#160;<a class="el" href="namespaceeve_1_1dev.html#a0dd82f9431e65cb0eae965b5fbf3857a">eve::dev</a></li>
+<li>stringify()&#160;:&#160;<a class="el" href="namespaceeve_1_1json.html#a2cb8af4650f7452556e584086196a976">eve::json</a></li>
+<li>stripNinePatchBorder()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a921129621b850c400cd46c54e82e4cae">eve::ui</a></li>
+<li>styleClassStatusName()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a827ed8b81c1d919fedabd983be677db7">eve::ui</a></li>
+<li>styleCount()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#a8c8508200d40b400228a548bdefc549e">eve::stylize</a></li>
+<li>styleIdAt()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#a37d52993c55efdbbb7b5630ffcb64ce9">eve::stylize</a></li>
+<li>styleParamCount()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#a8cbe9a4aae957d497eb40ae6b2ce4ec8">eve::stylize</a></li>
+<li>styleParameterAt()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#ad02e6e39653b08a75417954e176226da">eve::stylize</a></li>
+<li>styleParamName()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#ac3338dd5425891686dace300038f0b37">eve::stylize</a></li>
+<li>styleSupports()&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize.html#a33ac6533e1e73d99cdb65ab02d0f8ad8">eve::stylize</a></li>
+<li>submitTerrainVegetation()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset__procgen.html#a235b4ba840f1e417203fa2ab375f08d8">eve::asset_procgen</a></li>
+<li>supportsMaterialExtension()&#160;:&#160;<a class="el" href="namespaceeve_1_1asset__import_1_1gltf.html#a08c39a60a5214e7618f4f0e1ad128c89">eve::asset_import::gltf</a></li>
+<li>sv()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a23b4e26d36ca9e4d7226a70f4b619981">eve::graphics::webgpu</a></li>
+<li>swayAtlasHeight()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#a92504efa99850c7fa0be1b1bb12e593d">eve::graphics::grass</a></li>
+<li>swayAtlasWidth()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#a6067a672884c4119f0535f08de18a3aa">eve::graphics::grass</a></li>
+<li>swayFrame()&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1grass.html#a263f1747e928252a59c66f11ed92b725">eve::graphics::grass</a></li>
+<li>sweepTerrainCircle()&#160;:&#160;<a class="el" href="namespaceeve_1_1pixelworld__physics.html#a0bedc6f21f385457a35e6b0d8968e7c0">eve::pixelworld_physics</a></li>
+<li>syncEmitterSources()&#160;:&#160;<a class="el" href="namespaceeve_1_1particles.html#ad7817df01fe50db953ce73e4d881f60e">eve::particles</a></li>
+<li>syncPropertyView()&#160;:&#160;<a class="el" href="namespaceeve_1_1ui.html#a7d62f57339731324a8927e961de46784">eve::ui</a></li>
+<li>systemContracts()&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#a312386f7cb822dcd86ff973a4d458d3b">eve::rts</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

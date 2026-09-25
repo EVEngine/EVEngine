@@ -1,0 +1,449 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainBrushBlendSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html">TerrainBrushBlendSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1TerrainBrushBlendSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainBrushBlendSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Paint-context affine UV mappings, evaluated at destination pixel centers.  
+ <a href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a2cf0bf779719ab4bdf89fbd632b20787" id="r_a2cf0bf779719ab4bdf89fbd632b20787"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a2cf0bf779719ab4bdf89fbd632b20787">heightXX</a> = 1</td></tr>
+<tr class="separator:a2cf0bf779719ab4bdf89fbd632b20787"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6b26a6f4ed2942d91c3efdd9726c250" id="r_ab6b26a6f4ed2942d91c3efdd9726c250"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#ab6b26a6f4ed2942d91c3efdd9726c250">heightXZ</a> = 0</td></tr>
+<tr class="separator:ab6b26a6f4ed2942d91c3efdd9726c250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a677d3e25f0f634620fa6120586362a39" id="r_a677d3e25f0f634620fa6120586362a39"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a677d3e25f0f634620fa6120586362a39">heightZX</a> = 0</td></tr>
+<tr class="separator:a677d3e25f0f634620fa6120586362a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15ed158936eab62821ee85cd284e074a" id="r_a15ed158936eab62821ee85cd284e074a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a15ed158936eab62821ee85cd284e074a">heightZZ</a> = 1</td></tr>
+<tr class="separator:a15ed158936eab62821ee85cd284e074a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a726bbd76e84503e9241253cd5944ccfe" id="r_a726bbd76e84503e9241253cd5944ccfe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a726bbd76e84503e9241253cd5944ccfe">heightOffsetX</a> = 0</td></tr>
+<tr class="separator:a726bbd76e84503e9241253cd5944ccfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33774a125be6fa667578bdcbffe162dc" id="r_a33774a125be6fa667578bdcbffe162dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a33774a125be6fa667578bdcbffe162dc">heightOffsetZ</a> = 0</td></tr>
+<tr class="separator:a33774a125be6fa667578bdcbffe162dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac27390b96ae18dba91f817410ce1ee2" id="r_aac27390b96ae18dba91f817410ce1ee2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#aac27390b96ae18dba91f817410ce1ee2">brushXX</a> = 1</td></tr>
+<tr class="separator:aac27390b96ae18dba91f817410ce1ee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed1f474b905329cf37a01b15de5a73d" id="r_a4ed1f474b905329cf37a01b15de5a73d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a4ed1f474b905329cf37a01b15de5a73d">brushXZ</a> = 0</td></tr>
+<tr class="separator:a4ed1f474b905329cf37a01b15de5a73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a158bea488731d092c7842898e3e860ca" id="r_a158bea488731d092c7842898e3e860ca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a158bea488731d092c7842898e3e860ca">brushZX</a> = 0</td></tr>
+<tr class="separator:a158bea488731d092c7842898e3e860ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade2c0f5e0c580753d2b3e401c44df11c" id="r_ade2c0f5e0c580753d2b3e401c44df11c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#ade2c0f5e0c580753d2b3e401c44df11c">brushZZ</a> = 1</td></tr>
+<tr class="separator:ade2c0f5e0c580753d2b3e401c44df11c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accb393d021d31b159df80d75fb5c383a" id="r_accb393d021d31b159df80d75fb5c383a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#accb393d021d31b159df80d75fb5c383a">brushOffsetX</a> = 0</td></tr>
+<tr class="separator:accb393d021d31b159df80d75fb5c383a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7807423cdbdb98fe7e2209c6071807fe" id="r_a7807423cdbdb98fe7e2209c6071807fe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#a7807423cdbdb98fe7e2209c6071807fe">brushOffsetZ</a> = 0</td></tr>
+<tr class="separator:a7807423cdbdb98fe7e2209c6071807fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8977bdc99c4ea441b90bd93987835b1" id="r_ab8977bdc99c4ea441b90bd93987835b1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBrushBlendSettings.html#ab8977bdc99c4ea441b90bd93987835b1">strength</a> = 1</td></tr>
+<tr class="separator:ab8977bdc99c4ea441b90bd93987835b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Paint-context affine UV mappings, evaluated at destination pixel centers. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00116">116</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="accb393d021d31b159df80d75fb5c383a" name="accb393d021d31b159df80d75fb5c383a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accb393d021d31b159df80d75fb5c383a">&#9670;&#160;</a></span>brushOffsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushOffsetX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a7807423cdbdb98fe7e2209c6071807fe" name="a7807423cdbdb98fe7e2209c6071807fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7807423cdbdb98fe7e2209c6071807fe">&#9670;&#160;</a></span>brushOffsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushOffsetZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="aac27390b96ae18dba91f817410ce1ee2" name="aac27390b96ae18dba91f817410ce1ee2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac27390b96ae18dba91f817410ce1ee2">&#9670;&#160;</a></span>brushXX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushXX = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a4ed1f474b905329cf37a01b15de5a73d" name="a4ed1f474b905329cf37a01b15de5a73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ed1f474b905329cf37a01b15de5a73d">&#9670;&#160;</a></span>brushXZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushXZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a158bea488731d092c7842898e3e860ca" name="a158bea488731d092c7842898e3e860ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a158bea488731d092c7842898e3e860ca">&#9670;&#160;</a></span>brushZX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushZX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ade2c0f5e0c580753d2b3e401c44df11c" name="ade2c0f5e0c580753d2b3e401c44df11c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade2c0f5e0c580753d2b3e401c44df11c">&#9670;&#160;</a></span>brushZZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::brushZZ = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a726bbd76e84503e9241253cd5944ccfe" name="a726bbd76e84503e9241253cd5944ccfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a726bbd76e84503e9241253cd5944ccfe">&#9670;&#160;</a></span>heightOffsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightOffsetX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a33774a125be6fa667578bdcbffe162dc" name="a33774a125be6fa667578bdcbffe162dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33774a125be6fa667578bdcbffe162dc">&#9670;&#160;</a></span>heightOffsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightOffsetZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a2cf0bf779719ab4bdf89fbd632b20787" name="a2cf0bf779719ab4bdf89fbd632b20787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cf0bf779719ab4bdf89fbd632b20787">&#9670;&#160;</a></span>heightXX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightXX = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ab6b26a6f4ed2942d91c3efdd9726c250" name="ab6b26a6f4ed2942d91c3efdd9726c250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6b26a6f4ed2942d91c3efdd9726c250">&#9670;&#160;</a></span>heightXZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightXZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a677d3e25f0f634620fa6120586362a39" name="a677d3e25f0f634620fa6120586362a39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a677d3e25f0f634620fa6120586362a39">&#9670;&#160;</a></span>heightZX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightZX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a15ed158936eab62821ee85cd284e074a" name="a15ed158936eab62821ee85cd284e074a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15ed158936eab62821ee85cd284e074a">&#9670;&#160;</a></span>heightZZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::heightZZ = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMask_8cpp_source.html#l00029">eve::procgen::configureTerrainBrushWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ab8977bdc99c4ea441b90bd93987835b1" name="ab8977bdc99c4ea441b90bd93987835b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8977bdc99c4ea441b90bd93987835b1">&#9670;&#160;</a></span>strength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainBrushBlendSettings::strength = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a> 第 <a class="el" href="TerrainMask_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMask_8h_source.html">TerrainMask.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

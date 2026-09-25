@@ -1,0 +1,425 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action::ActionVfxBinding结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li><li class="navelem"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html">ActionVfxBinding</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1action_1_1ActionVfxBinding-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::action::ActionVfxBinding结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning validated VFX settings shared by runtime and editor preview.  
+ <a href="structeve_1_1action_1_1ActionVfxBinding.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae1e7b16adc936063294e58807ecf36e1" id="r_ae1e7b16adc936063294e58807ecf36e1"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#ae1e7b16adc936063294e58807ecf36e1">operator&lt;=&gt;</a> (const <a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html">ActionVfxBinding</a> &amp;) const =default</td></tr>
+<tr class="separator:ae1e7b16adc936063294e58807ecf36e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad6b8563941791abb2c0c0bd205583395" id="r_ad6b8563941791abb2c0c0bd205583395"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html">ActionVfxBinding</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#ad6b8563941791abb2c0c0bd205583395">fromPayload</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;<a class="el" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>, <a class="el" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77">ActionVfxShape</a> <a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>)</td></tr>
+<tr class="memdesc:ad6b8563941791abb2c0c0bd205583395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode one dynamic VFX payload transactionally.  <br /></td></tr>
+<tr class="separator:ad6b8563941791abb2c0c0bd205583395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4b77f5c532f667c7ca5805cd9af39f90" id="r_a4b77f5c532f667c7ca5805cd9af39f90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#a4b77f5c532f667c7ca5805cd9af39f90">uri</a></td></tr>
+<tr class="separator:a4b77f5c532f667c7ca5805cd9af39f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09096efb3931fbe1c8188710d9045284" id="r_a09096efb3931fbe1c8188710d9045284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1action_1_1ActionSpatialBinding.html">ActionSpatialBinding</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#a09096efb3931fbe1c8188710d9045284">spatial</a></td></tr>
+<tr class="separator:a09096efb3931fbe1c8188710d9045284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09bda4d76a3b3841da683f7dc7417d66" id="r_a09bda4d76a3b3841da683f7dc7417d66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07">ActionVfxStopBehavior</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#a09bda4d76a3b3841da683f7dc7417d66">stopBehavior</a> = <a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07a9ce669057aef5a0b1e9768be824ac83d">ActionVfxStopBehavior::StopEmitting</a></td></tr>
+<tr class="separator:a09bda4d76a3b3841da683f7dc7417d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb11293c3ee2516042e6da887122228" id="r_afeb11293c3ee2516042e6da887122228"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#afeb11293c3ee2516042e6da887122228">playbackRateSynced</a> = true</td></tr>
+<tr class="separator:afeb11293c3ee2516042e6da887122228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f8a6da2eb160eca2af7196eee4cd77" id="r_a29f8a6da2eb160eca2af7196eee4cd77"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#a29f8a6da2eb160eca2af7196eee4cd77">clipStartTime</a> = 0.0</td></tr>
+<tr class="separator:a29f8a6da2eb160eca2af7196eee4cd77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab535d51ce383436b735498e0ca17dbf1" id="r_ab535d51ce383436b735498e0ca17dbf1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#ab535d51ce383436b735498e0ca17dbf1">clipEndTime</a> = 0.5</td></tr>
+<tr class="separator:ab535d51ce383436b735498e0ca17dbf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac747f4e445f9d95f5c5a0411868b8d38" id="r_ac747f4e445f9d95f5c5a0411868b8d38"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html#ac747f4e445f9d95f5c5a0411868b8d38">lifetimeSeconds</a> = 0.0</td></tr>
+<tr class="separator:ac747f4e445f9d95f5c5a0411868b8d38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning validated VFX settings shared by runtime and editor preview. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ad6b8563941791abb2c0c0bd205583395" name="ad6b8563941791abb2c0c0bd205583395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6b8563941791abb2c0c0bd205583395">&#9670;&#160;</a></span>fromPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html">ActionVfxBinding</a> &gt; eve::action::ActionVfxBinding::fromPayload </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77">ActionVfxShape</a>&#160;</td>
+          <td class="paramname"><em>shape</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode one dynamic VFX payload transactionally. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">payload</td><td>Owning payload borrowed only for this call. </td></tr>
+    <tr><td class="paramname">shape</td><td>Instant or state contract selected by the descriptor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Validated owning settings or a field-path diagnostic. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Clip bounds must be finite with end greater than start. Instant blocks additionally require a positive finite lifetimeSeconds value. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8cpp_source.html">ActionVfxBlock.cpp</a> 第 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07a0152a06f686474aa7d9d54f2910b73c5">eve::action::ClearImmediately</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00027">clipEndTime</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00026">clipStartTime</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ActionSpatialBlock_8cpp_source.html#l00064">eve::action::ActionSpatialBinding::fromPayload()</a>, <a class="el" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a54828f327f31abd59f2f459c0247756d">eve::action::Instant</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00117">lifetime</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00028">lifetimeSeconds</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">payload</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00025">playbackRateSynced</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00023">spatial</a>, <a class="el" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d">eve::action::State</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00024">stopBehavior</a>, <a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07a9ce669057aef5a0b1e9768be824ac83d">eve::action::StopEmitting</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionVfxBlock_8h_source.html#l00022">uri</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00066">eve::editor::ActionTimelinePayloadEditor::fitBlockToClip()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00084">eve::editor::ActionTimelinePayloadEditor::fitClipToBlock()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00104">eve::editor::ActionTimelinePayloadEditor::fitClipToNaturalDuration()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00280">eve::action::ActionNotifyRegistry::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae1e7b16adc936063294e58807ecf36e1" name="ae1e7b16adc936063294e58807ecf36e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e7b16adc936063294e58807ecf36e1">&#9670;&#160;</a></span>operator&lt;=&gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto eve::action::ActionVfxBinding::operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionVfxBinding.html">ActionVfxBinding</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ab535d51ce383436b735498e0ca17dbf1" name="ab535d51ce383436b735498e0ca17dbf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab535d51ce383436b735498e0ca17dbf1">&#9670;&#160;</a></span>clipEndTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::action::ActionVfxBinding::clipEndTime = 0.5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00066">eve::editor::ActionTimelinePayloadEditor::fitBlockToClip()</a> , 以及 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<a id="a29f8a6da2eb160eca2af7196eee4cd77" name="a29f8a6da2eb160eca2af7196eee4cd77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f8a6da2eb160eca2af7196eee4cd77">&#9670;&#160;</a></span>clipStartTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::action::ActionVfxBinding::clipStartTime = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00066">eve::editor::ActionTimelinePayloadEditor::fitBlockToClip()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00084">eve::editor::ActionTimelinePayloadEditor::fitClipToBlock()</a> , 以及 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<a id="ac747f4e445f9d95f5c5a0411868b8d38" name="ac747f4e445f9d95f5c5a0411868b8d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac747f4e445f9d95f5c5a0411868b8d38">&#9670;&#160;</a></span>lifetimeSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::action::ActionVfxBinding::lifetimeSeconds = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<a id="afeb11293c3ee2516042e6da887122228" name="afeb11293c3ee2516042e6da887122228"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb11293c3ee2516042e6da887122228">&#9670;&#160;</a></span>playbackRateSynced</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::action::ActionVfxBinding::playbackRateSynced = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<a id="a09096efb3931fbe1c8188710d9045284" name="a09096efb3931fbe1c8188710d9045284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09096efb3931fbe1c8188710d9045284">&#9670;&#160;</a></span>spatial</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1action_1_1ActionSpatialBinding.html">ActionSpatialBinding</a> eve::action::ActionVfxBinding::spatial</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00282">eve::procgen::PointGraph::setBindingPoints()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00269">eve::procgen::PointGraph::setBindingSpatial()</a>.</p>
+
+</div>
+</div>
+<a id="a09bda4d76a3b3841da683f7dc7417d66" name="a09bda4d76a3b3841da683f7dc7417d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09bda4d76a3b3841da683f7dc7417d66">&#9670;&#160;</a></span>stopBehavior</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07">ActionVfxStopBehavior</a> eve::action::ActionVfxBinding::stopBehavior = <a class="el" href="namespaceeve_1_1action.html#a40d3c75e5cdf802511cabd06a3cc8d07a9ce669057aef5a0b1e9768be824ac83d">ActionVfxStopBehavior::StopEmitting</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<a id="a4b77f5c532f667c7ca5805cd9af39f90" name="a4b77f5c532f667c7ca5805cd9af39f90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b77f5c532f667c7ca5805cd9af39f90">&#9670;&#160;</a></span>uri</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::action::ActionVfxBinding::uri</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a> 第 <a class="el" href="ActionVfxBlock_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00104">eve::editor::ActionTimelinePayloadEditor::fitClipToNaturalDuration()</a> , 以及 <a class="el" href="ActionVfxBlock_8cpp_source.html#l00029">fromPayload()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/action/<a class="el" href="ActionVfxBlock_8h_source.html">ActionVfxBlock.h</a></li>
+<li>src/modules/action/<a class="el" href="ActionVfxBlock_8cpp_source.html">ActionVfxBlock.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

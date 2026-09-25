@@ -1,0 +1,328 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/VolumeFluidFoamSurface.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VolumeFluidFoamSurface.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VolumeFluidFoamSurface_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/gtc/matrix_transform.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSurfaceRenderer_8h.html">fluids/FluidSurfaceRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="VolumeFluidDiffuse_8h.html">fluids/VolumeFluidDiffuse.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a3097c53be5eb15c1f6ee073b84e960e3">    8</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a3097c53be5eb15c1f6ee073b84e960e3">FluidSurfaceRenderer::configureFoam</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, <span class="keywordtype">int</span> downsample) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">if</span> (downsample &lt; 1 || downsample &gt; 4)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Foam downsample must be in [1,4]&quot;</span>, <span class="stringliteral">&quot;fluids.surface.configureFoam&quot;</span>));</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    foamEnabled_    = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    foamDownsample_ = downsample;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae739643806711a356c3ad4eda5fada55">   17</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae739643806711a356c3ad4eda5fada55">FluidSurfaceRenderer::compositeDiffuse</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a>&amp; pool, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                                                    <span class="keywordtype">float</span> fadeSeconds) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> <span class="keyword">auto</span> fail = [](<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;fluids.surface.diffuse&quot;</span>));</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) || radius &lt;= 0.f || radius &gt; 1.f || !std::isfinite(<a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a>) || <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a> &lt; 0.f ||</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a> &gt; 1.f || !std::isfinite(fadeSeconds) || fadeSeconds &lt;= 0.f || fadeSeconds &gt; 86400.f)</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid diffuse rendering settings&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (!foamEnabled_ || pool.<a class="code hl_function" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html#a17747463c1008e0ae7a7940c58afb7cd">particleCount</a>() == 0 || <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a> == 0.f) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a98e018a991850cf8162f33474d5a2dd8">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#ad9b0a71a7bb0826e7a626a13d58507b4">height</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> &lt;= 0 || <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> &lt;= 0 || depth_.size() != <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) * <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) ||</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        color_.size() != depth_.size() * 4)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid reconstructed frame size&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   renderWidth  = std::max(1, (<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> + foamDownsample_ - 1) / foamDownsample_);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   renderHeight = std::max(1, (<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> + foamDownsample_ - 1) / foamDownsample_);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>      = std::tan(glm::radians(params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a5cd67a1b6135f2d4e89a3016fb37adb4">fovYDeg</a>) * .5f);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>) || <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> &lt;= 0.f) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid diffuse camera projection&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> = glm::lookAtRH(params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a6edaf5d232c73e00be5ac1bba981e9d0">eye</a>, params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a67aae7cac28d584c07bb34062c25e5b9">target</a>, params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a10e159b397f31d190ede0e5c27e041c3">up</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    pool.<a class="code hl_function" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html#a9cb6ef737e00bc33c8b1cb46681aab7c">copyRenderData</a>(diffuseParticles_);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    diffuseSplats_.clear();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    diffuseSplats_.reserve(diffuseParticles_.size());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    uint64_t visits = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : diffuseParticles_) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a> * glm::vec4(glm::vec3(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>), 1.f);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.x) || !std::isfinite(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.y) || !std::isfinite(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.z))</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid diffuse camera transform&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        DiffuseSplat <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z = -<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.z;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z &lt;= params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#abd912ee87a8f78f2a8233d6cf1f48d77">nearZ</a> || <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z &gt;= params_.<a class="code hl_variable" href="structeve_1_1fluids_1_1FluidSurfaceParams.html#ae73e6a466043a578d5a04b6be3b0d521">farZ</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r = std::max(1.f, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * <span class="keywordtype">float</span>(renderHeight) / (2.f * <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z * <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x = (.5f + .5f * <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.x / (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z * <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> * float(renderWidth) / float(renderHeight))) * float(renderWidth);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y = (.5f - .5f * <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.y / (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z * <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>)) * float(renderHeight);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r) || !std::isfinite(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x) || !std::isfinite(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y))</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Invalid diffuse projection&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r &lt; 0.f || <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r &lt; 0.f || <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r &gt;= <span class="keywordtype">float</span>(renderWidth) || <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r &gt;= <span class="keywordtype">float</span>(renderHeight))</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="comment">// Clamp in floating point before converting extreme off-screen coordinates.</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x0    = int(std::floor(std::clamp(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r, 0.f, <span class="keywordtype">float</span>(renderWidth - 1))));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x1    = int(std::ceil(std::clamp(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r, 0.f, <span class="keywordtype">float</span>(renderWidth - 1))));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y0    = int(std::floor(std::clamp(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r, 0.f, <span class="keywordtype">float</span>(renderHeight - 1))));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y1    = int(std::ceil(std::clamp(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r, 0.f, <span class="keywordtype">float</span>(renderHeight - 1))));</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.alpha = <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a> * std::min(1.f, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.w / fadeSeconds);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        visits += uint64_t(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x1 - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x0 + 1) * uint64_t(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y1 - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y0 + 1);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">if</span> (visits &gt; 4000000) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;Diffuse rendering exceeds 4M pixel visits&quot;</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        diffuseSplats_.push_back(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">if</span> (foamDownsample_ &gt; 1) foamCoverageScratch_.assign(<span class="keywordtype">size_t</span>(renderWidth) * <span class="keywordtype">size_t</span>(renderHeight), 0.f);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> : diffuseSplats_) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt;= <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y1; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt;= <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x1; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dx = (float(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) + .5f - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.x) / <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r, dy = (<span class="keywordtype">float</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) + .5f - <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.y) / <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.r;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a> = 1.f - dx * dx - dy * dy;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a> &lt;= 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> reducedAt  = size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) * size_t(renderWidth) + size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keyword">const</span> <span class="keywordtype">int</span>    fullX      = std::min(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> * <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> / renderWidth);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                <span class="keyword">const</span> <span class="keywordtype">int</span>    fullY      = std::min(<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> * <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> / renderHeight);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>         = size_t(fullY) * size_t(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) + size_t(fullX);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keyword">const</span> <span class="keywordtype">float</span>  front      = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.z - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * std::sqrt(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <span class="keyword">const</span> <span class="keywordtype">float</span>  visibility = std::clamp(1.f + (depth_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>] - front) / <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keyword">const</span> <span class="keywordtype">float</span>  alpha      = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.alpha * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a> * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a> * visibility;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">if</span> (alpha &lt;= 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">if</span> (foamDownsample_ &gt; 1) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    foamCoverageScratch_[reducedAt] = alpha + foamCoverageScratch_[reducedAt] * (1.f - alpha);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> oldAlpha = float(color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4 + 3]) / 255.f;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> retained = oldAlpha * (1.f - alpha), combined = alpha + retained;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = 0; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> &lt; 3; ++<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a37a854e9555bc3d0778ce873487aff90">color</a>  = (alpha + float(color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4 + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>]) / 255.f * retained) / combined;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                    color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4 + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>] = uint8_t(std::clamp(<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a37a854e9555bc3d0778ce873487aff90">color</a>, 0.f, 1.f) * 255.f + .5f);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4 + 3] = uint8_t(std::clamp(combined, 0.f, 1.f) * 255.f + .5f);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (foamDownsample_ &gt; 1) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <span class="keyword">const</span> <span class="keywordtype">int</span>   <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>    = std::min(renderWidth - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> * renderWidth / <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <span class="keyword">const</span> <span class="keywordtype">int</span>   <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>    = std::min(renderHeight - 1, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> * renderHeight / <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> alpha = foamCoverageScratch_[size_t(<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>) * size_t(renderWidth) + size_t(<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>)];</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="keywordflow">if</span> (alpha &lt;= 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>       = size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) * size_t(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) + size_t(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                <span class="keyword">const</span> <span class="keywordtype">float</span>  oldAlpha = float(color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4u + 3u]) / 255.f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keyword">const</span> <span class="keywordtype">float</span>  retained = oldAlpha * (1.f - alpha), combined = alpha + retained;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = 0; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> &lt; 3; ++<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>   = (alpha + float(color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4u + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>]) / 255.f * retained) / combined;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4u + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>] = uint8_t(std::clamp(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, 0.f, 1.f) * 255.f + .5f);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                color_[<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> * 4u + 3u] = uint8_t(std::clamp(combined, 0.f, 1.f) * 255.f + .5f);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    residentColorCurrent_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceRenderer_8h_html"><div class="ttname"><a href="FluidSurfaceRenderer_8h.html">FluidSurfaceRenderer.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a0f8c585c1198bd8e07eba4b29cb3f745"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a></div><div class="ttdeci">std::array&lt; double, 10 &gt; q</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00014">GtsMeshSimplifier.cpp:14</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_a45a3b372c24413308bf197591146bde9"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00040">PrefabActionCapabilities.cpp:40</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_ae5a7fb9ce69778fd8de7ed7ca3d501ee"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00039">PrefabActionCapabilities.cpp:39</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00594">RenderSystem3D.cpp:594</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a6f4dca6b48529c4d3dade0e8d46f4e43"><div class="ttname"><a href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a></div><div class="ttdeci">float opacity</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00919">TileConfig.cpp:919</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_af1f11291c39b6010d450a6cc8b755b99"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a></div><div class="ttdeci">std::size_t at</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00032">UnityVegetationPreset.cpp:32</a></div></div>
+<div class="ttc" id="aVolumeFluidDiffuse_8h_html"><div class="ttname"><a href="VolumeFluidDiffuse_8h.html">VolumeFluidDiffuse.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceRenderer_html_a3097c53be5eb15c1f6ee073b84e960e3"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a3097c53be5eb15c1f6ee073b84e960e3">eve::fluids::FluidSurfaceRenderer::configureFoam</a></div><div class="ttdeci">Result&lt; void &gt; configureFoam(bool enabled, int downsample=1)</div><div class="ttdoc">Configures Fluid3D-compatible foam generation visibility and render-target downsampling.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00008">VolumeFluidFoamSurface.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceRenderer_html_a37a854e9555bc3d0778ce873487aff90"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#a37a854e9555bc3d0778ce873487aff90">eve::fluids::FluidSurfaceRenderer::color</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; color() const</div><div class="ttdoc">RGBA8 shaded output.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00408">FluidSurfaceRenderer.h:408</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceRenderer_html_ae739643806711a356c3ad4eda5fada55"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#ae739643806711a356c3ad4eda5fada55">eve::fluids::FluidSurfaceRenderer::compositeDiffuse</a></div><div class="ttdeci">Result&lt; void &gt; compositeDiffuse(const VolumeFluidDiffuse &amp;pool, float radius, float opacity, float fadeSeconds)</div><div class="ttdoc">Composites white secondary particles over the last reconstructed frame.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00017">VolumeFluidFoamSurface.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluidDiffuse_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">eve::fluids::VolumeFluidDiffuse</a></div><div class="ttdoc">Bounded, one-way fluid-advected secondary particle pool. @ownership Owns particles and capacity; no f...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidDiffuse_8h_source.html#l00038">VolumeFluidDiffuse.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluidDiffuse_html_a17747463c1008e0ae7a7940c58afb7cd"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html#a17747463c1008e0ae7a7940c58afb7cd">eve::fluids::VolumeFluidDiffuse::particleCount</a></div><div class="ttdeci">unsigned particleCount() const</div><div class="ttdoc">Returns live count without copying particle data.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidDiffuse_8cpp_source.html#l00071">VolumeFluidDiffuse.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluidDiffuse_html_a9cb6ef737e00bc33c8b1cb46681aab7c"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html#a9cb6ef737e00bc33c8b1cb46681aab7c">eve::fluids::VolumeFluidDiffuse::copyRenderData</a></div><div class="ttdeci">void copyRenderData(std::vector&lt; glm::vec4 &gt; &amp;positionLife) const</div><div class="ttdoc">Reuses caller storage to copy XY Z position and remaining life for rendering.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidDiffuse_8cpp_source.html#l00073">VolumeFluidDiffuse.cpp:73</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_a10e159b397f31d190ede0e5c27e041c3"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a10e159b397f31d190ede0e5c27e041c3">eve::fluids::FluidSurfaceParams::up</a></div><div class="ttdeci">glm::vec3 up</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00064">FluidSurfaceRenderer.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_a5cd67a1b6135f2d4e89a3016fb37adb4"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a5cd67a1b6135f2d4e89a3016fb37adb4">eve::fluids::FluidSurfaceParams::fovYDeg</a></div><div class="ttdeci">float fovYDeg</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00065">FluidSurfaceRenderer.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_a67aae7cac28d584c07bb34062c25e5b9"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a67aae7cac28d584c07bb34062c25e5b9">eve::fluids::FluidSurfaceParams::target</a></div><div class="ttdeci">glm::vec3 target</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00063">FluidSurfaceRenderer.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_a6edaf5d232c73e00be5ac1bba981e9d0"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a6edaf5d232c73e00be5ac1bba981e9d0">eve::fluids::FluidSurfaceParams::eye</a></div><div class="ttdeci">glm::vec3 eye</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00062">FluidSurfaceRenderer.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_a98e018a991850cf8162f33474d5a2dd8"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#a98e018a991850cf8162f33474d5a2dd8">eve::fluids::FluidSurfaceParams::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00071">FluidSurfaceRenderer.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_abd912ee87a8f78f2a8233d6cf1f48d77"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#abd912ee87a8f78f2a8233d6cf1f48d77">eve::fluids::FluidSurfaceParams::nearZ</a></div><div class="ttdeci">float nearZ</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00069">FluidSurfaceRenderer.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_ad9b0a71a7bb0826e7a626a13d58507b4"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#ad9b0a71a7bb0826e7a626a13d58507b4">eve::fluids::FluidSurfaceParams::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00072">FluidSurfaceRenderer.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidSurfaceParams_html_ae73e6a466043a578d5a04b6be3b0d521"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#ae73e6a466043a578d5a04b6be3b0d521">eve::fluids::FluidSurfaceParams::farZ</a></div><div class="ttdeci">float farZ</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00070">FluidSurfaceRenderer.h:70</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

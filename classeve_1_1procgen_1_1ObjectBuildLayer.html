@@ -1,0 +1,956 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::ObjectBuildLayer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html">ObjectBuildLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1ObjectBuildLayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::ObjectBuildLayer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic TileWorldCreator-style object build layer.  
+ <a href="classeve_1_1procgen_1_1ObjectBuildLayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ObjectBuildLayer_8h_source.html">ObjectBuildLayer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a48d93785dfca2ade0b177ee83af61b53" id="r_a48d93785dfca2ade0b177ee83af61b53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a48d93785dfca2ade0b177ee83af61b53">addAsset</a> (std::string asset, float <a class="el" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>)</td></tr>
+<tr class="memdesc:a48d93785dfca2ade0b177ee83af61b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a weighted asset candidate. Zero and negative weights are rejected.  <br /></td></tr>
+<tr class="separator:a48d93785dfca2ade0b177ee83af61b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72570afc3e7e9fb626dba41574f3666c" id="r_a72570afc3e7e9fb626dba41574f3666c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a72570afc3e7e9fb626dba41574f3666c">clearAssets</a> ()</td></tr>
+<tr class="separator:a72570afc3e7e9fb626dba41574f3666c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4fc8fa97cb1ed55e273381de0c11d7f" id="r_ae4fc8fa97cb1ed55e273381de0c11d7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#ae4fc8fa97cb1ed55e273381de0c11d7f">setSeed</a> (std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) noexcept</td></tr>
+<tr class="memdesc:ae4fc8fa97cb1ed55e273381de0c11d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the named deterministic random stream seed.  <br /></td></tr>
+<tr class="separator:ae4fc8fa97cb1ed55e273381de0c11d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70a2d48b3503d8b5c38b98100cbde416" id="r_a70a2d48b3503d8b5c38b98100cbde416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a70a2d48b3503d8b5c38b98100cbde416">setLayerOffset</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) noexcept</td></tr>
+<tr class="memdesc:a70a2d48b3503d8b5c38b98100cbde416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set fixed layer translation applied after source transforms.  <br /></td></tr>
+<tr class="separator:a70a2d48b3503d8b5c38b98100cbde416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f137f697b3f73f3b12d5916519b8ae7" id="r_a5f137f697b3f73f3b12d5916519b8ae7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a5f137f697b3f73f3b12d5916519b8ae7">setLayerScale</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a5f137f697b3f73f3b12d5916519b8ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set fixed component-wise scale multiplier. Values must be non-zero.  <br /></td></tr>
+<tr class="separator:a5f137f697b3f73f3b12d5916519b8ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac51d52ea1651b33f2c0c9eeff22f5dcd" id="r_ac51d52ea1651b33f2c0c9eeff22f5dcd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#ac51d52ea1651b33f2c0c9eeff22f5dcd">setPositionRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:ac51d52ea1651b33f2c0c9eeff22f5dcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set circular XZ position jitter radius.  <br /></td></tr>
+<tr class="separator:ac51d52ea1651b33f2c0c9eeff22f5dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d8d009c83a930cf57b841637fef651e" id="r_a2d8d009c83a930cf57b841637fef651e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a2d8d009c83a930cf57b841637fef651e">setRandomTransform</a> (const <a class="el" href="structeve_1_1procgen_1_1ObjectTransformRange.html">ObjectTransformRange</a> &amp;<a class="el" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>)</td></tr>
+<tr class="memdesc:a2d8d009c83a930cf57b841637fef651e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure independent random Euler and scale intervals for parent objects.  <br /></td></tr>
+<tr class="separator:a2d8d009c83a930cf57b841637fef651e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af818b9fd8e30825952dc16e10029a889" id="r_af818b9fd8e30825952dc16e10029a889"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#af818b9fd8e30825952dc16e10029a889">setRandomRotation</a> (float minPitch, float maxPitch, float minYaw, float maxYaw, float minRoll, float maxRoll)</td></tr>
+<tr class="memdesc:af818b9fd8e30825952dc16e10029a889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update only the parent Euler randomization interval.  <br /></td></tr>
+<tr class="separator:af818b9fd8e30825952dc16e10029a889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9790959cedc3d7edc0a5fb9b6fcf5cb9" id="r_a9790959cedc3d7edc0a5fb9b6fcf5cb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a9790959cedc3d7edc0a5fb9b6fcf5cb9">setRandomScale</a> (float minX, float maxX, float minY, float maxY, float minZ, float maxZ, bool uniform)</td></tr>
+<tr class="memdesc:a9790959cedc3d7edc0a5fb9b6fcf5cb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update only the parent scale randomization interval.  <br /></td></tr>
+<tr class="separator:a9790959cedc3d7edc0a5fb9b6fcf5cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114d6c390167e7812a680857de18f2e2" id="r_a114d6c390167e7812a680857de18f2e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a114d6c390167e7812a680857de18f2e2">setOrientation</a> (float cellSize, float yawOffset, bool invert)</td></tr>
+<tr class="memdesc:a114d6c390167e7812a680857de18f2e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable orientation toward the first matching N/E/S/W then diagonal orientation point.  <br /></td></tr>
+<tr class="separator:a114d6c390167e7812a680857de18f2e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af21b797f69973a49df9799ac6cd84f09" id="r_af21b797f69973a49df9799ac6cd84f09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#af21b797f69973a49df9799ac6cd84f09">disableOrientation</a> () noexcept</td></tr>
+<tr class="separator:af21b797f69973a49df9799ac6cd84f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65aec3b0bf7b35ca0830cd7b7a7b95ac" id="r_a65aec3b0bf7b35ca0830cd7b7a7b95ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a65aec3b0bf7b35ca0830cd7b7a7b95ac">setPlaceOnTop</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, bool useLowest, float topOffset) noexcept</td></tr>
+<tr class="memdesc:a65aec3b0bf7b35ca0830cd7b7a7b95ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project output Y to <code>surface_lowest_y</code> or <code>surface_highest_y</code>, plus offset, when present.  <br /></td></tr>
+<tr class="separator:a65aec3b0bf7b35ca0830cd7b7a7b95ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408f46b3ef49709745df0dc48b3a99a1" id="r_a408f46b3ef49709745df0dc48b3a99a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a408f46b3ef49709745df0dc48b3a99a1">addChildRule</a> (std::string asset, int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, const <a class="el" href="structeve_1_1procgen_1_1ObjectTransformRange.html">ObjectTransformRange</a> &amp;<a class="el" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>)</td></tr>
+<tr class="memdesc:a408f46b3ef49709745df0dc48b3a99a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a child-spawn rule with its own deterministic transform stream.  <br /></td></tr>
+<tr class="separator:a408f46b3ef49709745df0dc48b3a99a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd6f96924769ca1d07c0bdd03ef435f" id="r_abfd6f96924769ca1d07c0bdd03ef435f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#abfd6f96924769ca1d07c0bdd03ef435f">addChild</a> (std::string asset, int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float minScale, float maxScale, float minYaw, float maxYaw)</td></tr>
+<tr class="memdesc:abfd6f96924769ca1d07c0bdd03ef435f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly child rule using uniform scale and yaw ranges.  <br /></td></tr>
+<tr class="separator:abfd6f96924769ca1d07c0bdd03ef435f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dfe9264e60494efca88ddc1af13e449" id="r_a9dfe9264e60494efca88ddc1af13e449"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a9dfe9264e60494efca88ddc1af13e449">clearChildRules</a> ()</td></tr>
+<tr class="separator:a9dfe9264e60494efca88ddc1af13e449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f17ac9561508aeecd27f5cae400907" id="r_a76f17ac9561508aeecd27f5cae400907"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a76f17ac9561508aeecd27f5cae400907">build</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *orientation=nullptr) const</td></tr>
+<tr class="memdesc:a76f17ac9561508aeecd27f5cae400907"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build attributed object points from source points.  <br /></td></tr>
+<tr class="separator:a76f17ac9561508aeecd27f5cae400907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d11f8f48302609fb845720478c42e15" id="r_a4d11f8f48302609fb845720478c42e15"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a4d11f8f48302609fb845720478c42e15">serializeDefinition</a> () const</td></tr>
+<tr class="memdesc:a4d11f8f48302609fb845720478c42e15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize all layer settings using the versioned EVPCG object-layer schema.  <br /></td></tr>
+<tr class="separator:a4d11f8f48302609fb845720478c42e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11a4769c53b388c7c768109b944f7b89" id="r_a11a4769c53b388c7c768109b944f7b89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ObjectBuildLayer.html#a11a4769c53b388c7c768109b944f7b89">deserializeDefinition</a> (std::string_view definition)</td></tr>
+<tr class="memdesc:a11a4769c53b388c7c768109b944f7b89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace settings from schema version 1; unknown records are rejected.  <br /></td></tr>
+<tr class="separator:a11a4769c53b388c7c768109b944f7b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic TileWorldCreator-style object build layer. </p>
+<p>Input and output are owned values. Each source point emits one parent object point; child rules emit additional points carrying <code>asset</code>, <code>object_role</code> and <code>parent_index</code> attributes. The layer never creates scene objects or retains input pointers. @thread Affine; configure and build on the owning thread. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8h_source.html">ObjectBuildLayer.h</a> 第 <a class="el" href="ObjectBuildLayer_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a48d93785dfca2ade0b177ee83af61b53" name="a48d93785dfca2ade0b177ee83af61b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d93785dfca2ade0b177ee83af61b53">&#9670;&#160;</a></span>addAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::addAsset </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a weighted asset candidate. Zero and negative weights are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="abfd6f96924769ca1d07c0bdd03ef435f" name="abfd6f96924769ca1d07c0bdd03ef435f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfd6f96924769ca1d07c0bdd03ef435f">&#9670;&#160;</a></span>addChild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::addChild </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxYaw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-friendly child rule using uniform scale and yaw ranges. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00201">addChildRule()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00020">eve::procgen::ObjectTransformRange::minScaleX</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>.</p>
+
+</div>
+</div>
+<a id="a408f46b3ef49709745df0dc48b3a99a1" name="a408f46b3ef49709745df0dc48b3a99a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a408f46b3ef49709745df0dc48b3a99a1">&#9670;&#160;</a></span>addChildRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::addChildRule </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1ObjectTransformRange.html">ObjectTransformRange</a> &amp;&#160;</td>
+          <td class="paramname"><em>range</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a child-spawn rule with its own deterministic transform stream. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">asset</td><td>Asset identifier written to emitted child points. </td></tr>
+    <tr><td class="paramname">count</td><td>Children emitted per parent. </td></tr>
+    <tr><td class="paramname">radius</td><td>Circular XZ scatter radius around the parent. </td></tr>
+    <tr><td class="paramname">range</td><td>Random rotation and scale interval. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00219">addChild()</a> , 以及 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="a76f17ac9561508aeecd27f5cae400907" name="a76f17ac9561508aeecd27f5cae400907"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f17ac9561508aeecd27f5cae400907">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt; eve::procgen::ObjectBuildLayer::build </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td>
+          <td class="paramname"><em>orientation</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build attributed object points from source points. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Placement points; their attributes and transforms are preserved for parents. </td></tr>
+    <tr><td class="paramname">orientation</td><td>Optional point layer used to derive cardinal orientation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Complete result, or a diagnostic without mutating the layer or either input. @cost O(P*A + P*C + P*O) where P is source points, A assets, C emitted children, and O orientation points when orientation is enabled. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00239">angle</a>, <a class="el" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca26e9054be7f40079575582b7ad3f7363">eve::Asset</a>, <a class="el" href="PointSet_8cpp_source.html#l00466">eve::procgen::derivePointId()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Widget_8h_source.html#l00017">eve::ui::WidgetDesc::id</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00017">eve::procgen::ObjectTransformRange::maxYaw</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00016">eve::procgen::ObjectTransformRange::minYaw</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00176">random</a>, <a class="el" href="PointSet_8cpp_source.html#l00057">eve::procgen::PointSet::reserve()</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a72570afc3e7e9fb626dba41574f3666c" name="a72570afc3e7e9fb626dba41574f3666c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72570afc3e7e9fb626dba41574f3666c">&#9670;&#160;</a></span>clearAssets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::clearAssets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a9dfe9264e60494efca88ddc1af13e449" name="a9dfe9264e60494efca88ddc1af13e449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dfe9264e60494efca88ddc1af13e449">&#9670;&#160;</a></span>clearChildRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::clearChildRules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a11a4769c53b388c7c768109b944f7b89" name="a11a4769c53b388c7c768109b944f7b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a4769c53b388c7c768109b944f7b89">&#9670;&#160;</a></span>deserializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::deserializeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace settings from schema version 1; unknown records are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00107">addAsset()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00201">addChildRule()</a>, <a class="el" href="namespaceeve_1_1procgen.html#ad7f87908427854f2dc9a3084f767e65faad8437d4bf608f79c1f0de5b5f54d31b">eve::procgen::applied</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00165">ended</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00121">setLayerOffset()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00127">setLayerScale()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00179">setOrientation()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00195">setPlaceOnTop()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00138">setPositionRadius()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00147">setRandomTransform()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00120">setSeed()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00164">weight</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildLayerStack_8cpp_source.html#l00214">eve::procgen::BuildLayerStack::deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="af21b797f69973a49df9799ac6cd84f09" name="af21b797f69973a49df9799ac6cd84f09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af21b797f69973a49df9799ac6cd84f09">&#9670;&#160;</a></span>disableOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::disableOrientation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d11f8f48302609fb845720478c42e15" name="a4d11f8f48302609fb845720478c42e15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d11f8f48302609fb845720478c42e15">&#9670;&#160;</a></span>serializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::ObjectBuildLayer::serializeDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize all layer settings using the versioned EVPCG object-layer schema. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectBuildLayer_8h_source.html#l00015">eve::procgen::ObjectTransformRange::maxPitch</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00019">eve::procgen::ObjectTransformRange::maxRoll</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00021">eve::procgen::ObjectTransformRange::maxScaleX</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00023">eve::procgen::ObjectTransformRange::maxScaleY</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00025">eve::procgen::ObjectTransformRange::maxScaleZ</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00017">eve::procgen::ObjectTransformRange::maxYaw</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00014">eve::procgen::ObjectTransformRange::minPitch</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00018">eve::procgen::ObjectTransformRange::minRoll</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00020">eve::procgen::ObjectTransformRange::minScaleX</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00022">eve::procgen::ObjectTransformRange::minScaleY</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00024">eve::procgen::ObjectTransformRange::minScaleZ</a>, <a class="el" href="ObjectBuildLayer_8h_source.html#l00016">eve::procgen::ObjectTransformRange::minYaw</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="ObjectBuildLayer_8h_source.html#l00026">eve::procgen::ObjectTransformRange::uniformScale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a70a2d48b3503d8b5c38b98100cbde416" name="a70a2d48b3503d8b5c38b98100cbde416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70a2d48b3503d8b5c38b98100cbde416">&#9670;&#160;</a></span>setLayerOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::setLayerOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set fixed layer translation applied after source transforms. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="a5f137f697b3f73f3b12d5916519b8ae7" name="a5f137f697b3f73f3b12d5916519b8ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f137f697b3f73f3b12d5916519b8ae7">&#9670;&#160;</a></span>setLayerScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setLayerScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set fixed component-wise scale multiplier. Values must be non-zero. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="a114d6c390167e7812a680857de18f2e2" name="a114d6c390167e7812a680857de18f2e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a114d6c390167e7812a680857de18f2e2">&#9670;&#160;</a></span>setOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setOrientation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>invert</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable orientation toward the first matching N/E/S/W then diagonal orientation point. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="a65aec3b0bf7b35ca0830cd7b7a7b95ac" name="a65aec3b0bf7b35ca0830cd7b7a7b95ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65aec3b0bf7b35ca0830cd7b7a7b95ac">&#9670;&#160;</a></span>setPlaceOnTop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::setPlaceOnTop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useLowest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>topOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Project output Y to <code>surface_lowest_y</code> or <code>surface_highest_y</code>, plus offset, when present. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="ac51d52ea1651b33f2c0c9eeff22f5dcd" name="ac51d52ea1651b33f2c0c9eeff22f5dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51d52ea1651b33f2c0c9eeff22f5dcd">&#9670;&#160;</a></span>setPositionRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setPositionRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set circular XZ position jitter radius. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="af818b9fd8e30825952dc16e10029a889" name="af818b9fd8e30825952dc16e10029a889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af818b9fd8e30825952dc16e10029a889">&#9670;&#160;</a></span>setRandomRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setRandomRotation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxPitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minRoll</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxRoll</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update only the parent Euler randomization interval. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectBuildLayer_8h_source.html#l00014">eve::procgen::ObjectTransformRange::minPitch</a> , 以及 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00147">setRandomTransform()</a>.</p>
+
+</div>
+</div>
+<a id="a9790959cedc3d7edc0a5fb9b6fcf5cb9" name="a9790959cedc3d7edc0a5fb9b6fcf5cb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9790959cedc3d7edc0a5fb9b6fcf5cb9">&#9670;&#160;</a></span>setRandomScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setRandomScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>uniform</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update only the parent scale randomization interval. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectBuildLayer_8h_source.html#l00020">eve::procgen::ObjectTransformRange::minScaleX</a> , 以及 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00147">setRandomTransform()</a>.</p>
+
+</div>
+</div>
+<a id="a2d8d009c83a930cf57b841637fef651e" name="a2d8d009c83a930cf57b841637fef651e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d8d009c83a930cf57b841637fef651e">&#9670;&#160;</a></span>setRandomTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::ObjectBuildLayer::setRandomTransform </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1ObjectTransformRange.html">ObjectTransformRange</a> &amp;&#160;</td>
+          <td class="paramname"><em>range</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure independent random Euler and scale intervals for parent objects. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>, <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00154">setRandomRotation()</a> , 以及 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00166">setRandomScale()</a>.</p>
+
+</div>
+</div>
+<a id="ae4fc8fa97cb1ed55e273381de0c11d7f" name="ae4fc8fa97cb1ed55e273381de0c11d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4fc8fa97cb1ed55e273381de0c11d7f">&#9670;&#160;</a></span>setSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::ObjectBuildLayer::setSeed </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the named deterministic random stream seed. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a> 第 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectBuildLayer_8cpp_source.html#l00348">deserializeDefinition()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="ObjectBuildLayer_8h_source.html">ObjectBuildLayer.h</a></li>
+<li>src/modules/procgen/<a class="el" href="ObjectBuildLayer_8cpp_source.html">ObjectBuildLayer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

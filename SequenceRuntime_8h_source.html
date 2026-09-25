@@ -1,0 +1,339 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dnut_interpreter/SequenceRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bbfad302d625b3511988fd0c8438efa1.html">dnut_interpreter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SequenceRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SequenceRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="SequenceAsset_8h.html">dnut_interpreter/SequenceAsset.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="StepKindRegistry_8h.html">dnut_interpreter/StepKindRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dnut.html">eve::dnut</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ad430760b558cb3f667eb79560ac9d94a">   23</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ad430760b558cb3f667eb79560ac9d94a">passed</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ae51b020e8bd538d4e79c484a06ab1069">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ae51b020e8bd538d4e79c484a06ab1069">reason</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html">   39</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1dnut_1_1SequenceRuntime.html">SequenceRuntime</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">   42</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">AssetResolver</a> = std::function&lt;<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a>*(<span class="keyword">const</span> std::string&amp;)&gt;;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">   50</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">ConditionEvaluator</a> = std::function&lt;<a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">   53</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">EventKind</a> : std::uint8_t { Started, NodeEntered, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>, Stepped, Resumed, Ended, <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a> };</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">   56</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">Event</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a896de900400f4da69736495b0e1e6ff8">   57</a></span>        <a class="code hl_enumeration" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">EventKind</a>   <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = EventKind::NodeEntered;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a6c79597fb0a62ccbfa77f12eb02a5d2a">   58</a></span>        std::string <a class="code hl_variable" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a6c79597fb0a62ccbfa77f12eb02a5d2a">assetId</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a3f3a180ad7b2ef4dff48fd194d3bd016">   59</a></span>        std::string <a class="code hl_variable" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a3f3a180ad7b2ef4dff48fd194d3bd016">nodeId</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#aee2e6bc9bb4534af16c7094a4d46dae0">   60</a></span>        std::string <a class="code hl_variable" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#aee2e6bc9bb4534af16c7094a4d46dae0">detail</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    };</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">   64</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">EventSink</a> = std::function&lt;void(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">Event</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a46f6453de49fac4feeecb9544ffb7242">   72</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> kExecutionBudget = 10000;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a>* asset, <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a> = <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{});</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> runUntilBlocked();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> advance();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> select(std::string_view routeLabel);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> resumeStep(<a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> result);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> stop();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> captureState(<a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreState(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; in);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#af407ed2c4dc857e30719511a78a3978d">  137</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#af407ed2c4dc857e30719511a78a3978d">setAssetResolver</a>(<a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">AssetResolver</a> resolver) { assetResolver_ = std::move(resolver); }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3af6e1755c2e0a4d34c53d35b3f4c5d3">  138</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3af6e1755c2e0a4d34c53d35b3f4c5d3">setConditionEvaluator</a>(<a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">ConditionEvaluator</a> evaluator) { conditionEvaluator_ = std::move(evaluator); }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a725598d51f713517dfdcf79f76384345">  140</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a725598d51f713517dfdcf79f76384345">setStepRegistry</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a>* registry) { registry_ = registry; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2d846a3f40cbb2debd5597be0131bb83">  148</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2d846a3f40cbb2debd5597be0131bb83">setHostContext</a>(<span class="keywordtype">void</span>* <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>) { hostContext_ = <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>; }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a24b80531d7cbd9e9a20295abe2e681dd">  149</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a24b80531d7cbd9e9a20295abe2e681dd">setEventSink</a>(<a class="code hl_typedef" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">EventSink</a> sink) { eventSink_ = std::move(sink); }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2a2a13ae337347b4cb17b4cf5632ef6c">  152</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2a2a13ae337347b4cb17b4cf5632ef6c">isActive</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> asset_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3c325630eb95f314a3363e1093a63182">  154</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3c325630eb95f314a3363e1093a63182">isBlocked</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> blocked_; }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a1c808ab705df8f98289ff21efe93c46b">  156</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a1c808ab705df8f98289ff21efe93c46b">isWaitingStep</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> waitingStep_; }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa87ea9e398ba336fa01c32e2e7eafcaf">  158</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a>* <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa87ea9e398ba336fa01c32e2e7eafcaf">asset</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> asset_; }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>* currentNode() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a54fd5e2241132486d3893d8e28da0a13">  161</a></span>    [[nodiscard]] <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a54fd5e2241132486d3893d8e28da0a13">currentNodeId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nodeId_; }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#aba45c9cf6721dbe9a2a68e584fa702a7">  162</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#aba45c9cf6721dbe9a2a68e584fa702a7">bindings</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> bindings_; }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa8268457027b00642a7af4a77de1eed5">  163</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa8268457027b00642a7af4a77de1eed5">locals</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> locals_; }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a639499ac95192d31a8b09048e94ff7cc">  164</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a639499ac95192d31a8b09048e94ff7cc">locals</a>() { <span class="keywordflow">return</span> locals_; }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#ab1c0d792f1715e0d08f47f9d1e29cf9b">  166</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#ab1c0d792f1715e0d08f47f9d1e29cf9b">lastStepResult</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastStepResult_; }</div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1SequenceRuntime.html#a781e2f89958798d536d3ae953479fc52">  172</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a>* <a class="code hl_function" href="classeve_1_1dnut_1_1SequenceRuntime.html#a781e2f89958798d536d3ae953479fc52">lastConditionResult</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> lastConditionResult_ ? &amp;*lastConditionResult_ : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">struct </span>Frame {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a>* asset = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        std::string          returnNode;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>           <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a> = <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{};</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>           locals   = <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{};</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    };</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> enter(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> fail(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {});</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::string&gt;</a> evaluateRoute(<span class="keyword">const</span> SequenceNode&amp; node);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordtype">void</span> emit(EventKind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keyword">const</span> SequenceNode* node = <span class="keyword">nullptr</span>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">const</span> SequenceAsset*    asset_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    std::string             nodeId_;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>              bindings_ = <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{};</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>              locals_   = <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{};</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordtype">bool</span>                    blocked_   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">bool</span>                    waitingStep_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    std::vector&lt;Frame&gt;      callStack_;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    AssetResolver           assetResolver_;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    ConditionEvaluator      conditionEvaluator_;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">const</span> StepKindRegistry* registry_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">void</span>*                   hostContext_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    EventSink               eventSink_;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>              lastStepResult_;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    std::optional&lt;SequenceConditionOutcome&gt; lastConditionResult_;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    std::string             failureText_;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>};</div>
+</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>}  <span class="comment">// namespace eve::dnut</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aDnutCompiler_8cpp_html_ada457f520f5dccd1dcdc4167ce0879f0"><div class="ttname"><a href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00026">DnutCompiler.cpp:26</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ae0f3ddf34dc12c944c03445c0bc3fee6"><div class="ttname"><a href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a></div><div class="ttdeci">#define EVENGINE_API_PLATFORM</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00107">Export.h:107</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a3b96f0049cce744b59366d192b92f638"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a3b96f0049cce744b59366d192b92f638">bindings</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; DeviceBytes &gt; &gt; bindings</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00038">OnnxGpgpu.cpp:38</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00140">PlayHost.cpp:140</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSequenceAsset_8h_html"><div class="ttname"><a href="SequenceAsset_8h.html">SequenceAsset.h</a></div><div class="ttdoc">Domain-neutral compiled sequence graph for `.dnut` sources.</div></div>
+<div class="ttc" id="aStepKindRegistry_8h_html"><div class="ttname"><a href="StepKindRegistry_8h.html">StepKindRegistry.h</a></div><div class="ttdoc">Extensible step vocabulary, payload schema and dispatch.</div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00222">UIAutomationCapabilities.cpp:222</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html">eve::dnut::SequenceRuntime</a></div><div class="ttdoc">Caller-owned interpreter over a compiled sequence asset.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00039">SequenceRuntime.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a16794b409b65c4c462c9b9ec5187b48a"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">eve::dnut::SequenceRuntime::EventSink</a></div><div class="ttdeci">std::function&lt; void(const Event &amp;)&gt; EventSink</div><div class="ttdoc">Single event outlet; invoked synchronously without locks.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00064">SequenceRuntime.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a1c808ab705df8f98289ff21efe93c46b"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a1c808ab705df8f98289ff21efe93c46b">eve::dnut::SequenceRuntime::isWaitingStep</a></div><div class="ttdeci">bool isWaitingStep() const</div><div class="ttdoc">Whether the suspension is a step awaiting resumeStep.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00156">SequenceRuntime.h:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a24b80531d7cbd9e9a20295abe2e681dd"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a24b80531d7cbd9e9a20295abe2e681dd">eve::dnut::SequenceRuntime::setEventSink</a></div><div class="ttdeci">void setEventSink(EventSink sink)</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00149">SequenceRuntime.h:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a27380c0840563674d784c72b9e0881af"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">eve::dnut::SequenceRuntime::AssetResolver</a></div><div class="ttdeci">std::function&lt; const SequenceAsset *(const std::string &amp;)&gt; AssetResolver</div><div class="ttdoc">Resolves a called asset id to a borrowed, externally owned asset.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00042">SequenceRuntime.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a2a2a13ae337347b4cb17b4cf5632ef6c"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a2a2a13ae337347b4cb17b4cf5632ef6c">eve::dnut::SequenceRuntime::isActive</a></div><div class="ttdeci">bool isActive() const</div><div class="ttdoc">Whether a sequence is currently loaded.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00152">SequenceRuntime.h:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a2d846a3f40cbb2debd5597be0131bb83"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a2d846a3f40cbb2debd5597be0131bb83">eve::dnut::SequenceRuntime::setHostContext</a></div><div class="ttdeci">void setHostContext(void *host)</div><div class="ttdoc">Install the opaque consumer context forwarded to every step handler.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00148">SequenceRuntime.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a3af6e1755c2e0a4d34c53d35b3f4c5d3"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a3af6e1755c2e0a4d34c53d35b3f4c5d3">eve::dnut::SequenceRuntime::setConditionEvaluator</a></div><div class="ttdeci">void setConditionEvaluator(ConditionEvaluator evaluator)</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00138">SequenceRuntime.h:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a3c325630eb95f314a3363e1093a63182"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a3c325630eb95f314a3363e1093a63182">eve::dnut::SequenceRuntime::isBlocked</a></div><div class="ttdeci">bool isBlocked() const</div><div class="ttdoc">Whether execution is suspended and awaiting host acknowledgement.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00154">SequenceRuntime.h:154</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a54fd5e2241132486d3893d8e28da0a13"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a54fd5e2241132486d3893d8e28da0a13">eve::dnut::SequenceRuntime::currentNodeId</a></div><div class="ttdeci">const std::string &amp; currentNodeId() const</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00161">SequenceRuntime.h:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a590c70551f1c7c7d5d0cf195fa4bddd6"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">eve::dnut::SequenceRuntime::EventKind</a></div><div class="ttdeci">EventKind</div><div class="ttdoc">Observable runtime transition.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00053">SequenceRuntime.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a61a0496e94e7f78e02de783b86a9148d"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">eve::dnut::SequenceRuntime::ConditionEvaluator</a></div><div class="ttdeci">std::function&lt; SequenceConditionOutcome(const eve::Value &amp;)&gt; ConditionEvaluator</div><div class="ttdoc">Evaluates one authored condition value.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00050">SequenceRuntime.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a639499ac95192d31a8b09048e94ff7cc"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a639499ac95192d31a8b09048e94ff7cc">eve::dnut::SequenceRuntime::locals</a></div><div class="ttdeci">eve::Value &amp; locals()</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00164">SequenceRuntime.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a725598d51f713517dfdcf79f76384345"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a725598d51f713517dfdcf79f76384345">eve::dnut::SequenceRuntime::setStepRegistry</a></div><div class="ttdeci">void setStepRegistry(const StepKindRegistry *registry)</div><div class="ttdoc">Bind the step vocabulary; passing nullptr disables non-core steps.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00140">SequenceRuntime.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_a781e2f89958798d536d3ae953479fc52"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#a781e2f89958798d536d3ae953479fc52">eve::dnut::SequenceRuntime::lastConditionResult</a></div><div class="ttdeci">const SequenceConditionOutcome * lastConditionResult() const</div><div class="ttdoc">Last evaluated condition outcome.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00172">SequenceRuntime.h:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_aa8268457027b00642a7af4a77de1eed5"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#aa8268457027b00642a7af4a77de1eed5">eve::dnut::SequenceRuntime::locals</a></div><div class="ttdeci">const eve::Value &amp; locals() const</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00163">SequenceRuntime.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_aa87ea9e398ba336fa01c32e2e7eafcaf"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#aa87ea9e398ba336fa01c32e2e7eafcaf">eve::dnut::SequenceRuntime::asset</a></div><div class="ttdeci">const SequenceAsset * asset() const</div><div class="ttdoc">Borrowed active asset, or nullptr. @lifetime Owned by the caller of start.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00158">SequenceRuntime.h:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_ab1c0d792f1715e0d08f47f9d1e29cf9b"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#ab1c0d792f1715e0d08f47f9d1e29cf9b">eve::dnut::SequenceRuntime::lastStepResult</a></div><div class="ttdeci">const eve::Value &amp; lastStepResult() const</div><div class="ttdoc">Value supplied by the most recent resumeStep.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00166">SequenceRuntime.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_aba45c9cf6721dbe9a2a68e584fa702a7"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#aba45c9cf6721dbe9a2a68e584fa702a7">eve::dnut::SequenceRuntime::bindings</a></div><div class="ttdeci">const eve::Value &amp; bindings() const</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00162">SequenceRuntime.h:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1SequenceRuntime_html_af407ed2c4dc857e30719511a78a3978d"><div class="ttname"><a href="classeve_1_1dnut_1_1SequenceRuntime.html#af407ed2c4dc857e30719511a78a3978d">eve::dnut::SequenceRuntime::setAssetResolver</a></div><div class="ttdeci">void setAssetResolver(AssetResolver resolver)</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00137">SequenceRuntime.h:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html">eve::dnut::StepKindRegistry</a></div><div class="ttdoc">Canonical step vocabulary owner and runtime handler router.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00108">StepKindRegistry.h:108</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html"><div class="ttname"><a href="namespaceeve_1_1dnut.html">eve::dnut</a></div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00011">DnutCompiler.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::dnut::StepStatus::Blocked</a></div><div class="ttdeci">@ Blocked</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceAsset_html"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceAsset.html">eve::dnut::SequenceAsset</a></div><div class="ttdoc">Immutable, parameterized and versioned compiled sequence.</div><div class="ttdef"><b>Definition</b> <a href="SequenceAsset_8h_source.html#l00046">SequenceAsset.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceConditionOutcome_html"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">eve::dnut::SequenceConditionOutcome</a></div><div class="ttdoc">Outcome of one authored condition, as seen by the language core.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00022">SequenceRuntime.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceConditionOutcome_html_ad430760b558cb3f667eb79560ac9d94a"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ad430760b558cb3f667eb79560ac9d94a">eve::dnut::SequenceConditionOutcome::passed</a></div><div class="ttdeci">bool passed</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00023">SequenceRuntime.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceConditionOutcome_html_ae51b020e8bd538d4e79c484a06ab1069"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#ae51b020e8bd538d4e79c484a06ab1069">eve::dnut::SequenceConditionOutcome::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdoc">Stable machine-readable reason; empty when passed is true.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00025">SequenceRuntime.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceNode_html"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceNode.html">eve::dnut::SequenceNode</a></div><div class="ttdoc">One immutable step of a compiled sequence.</div><div class="ttdef"><b>Definition</b> <a href="SequenceAsset_8h_source.html#l00037">SequenceAsset.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceRuntime_1_1Event_html"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">eve::dnut::SequenceRuntime::Event</a></div><div class="ttdoc">One observable transition; every field is owned by the event.</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00056">SequenceRuntime.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceRuntime_1_1Event_html_a3f3a180ad7b2ef4dff48fd194d3bd016"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a3f3a180ad7b2ef4dff48fd194d3bd016">eve::dnut::SequenceRuntime::Event::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00059">SequenceRuntime.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceRuntime_1_1Event_html_a6c79597fb0a62ccbfa77f12eb02a5d2a"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#a6c79597fb0a62ccbfa77f12eb02a5d2a">eve::dnut::SequenceRuntime::Event::assetId</a></div><div class="ttdeci">std::string assetId</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00058">SequenceRuntime.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceRuntime_1_1Event_html_aee2e6bc9bb4534af16c7094a4d46dae0"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#aee2e6bc9bb4534af16c7094a4d46dae0">eve::dnut::SequenceRuntime::Event::detail</a></div><div class="ttdeci">std::string detail</div><div class="ttdef"><b>Definition</b> <a href="SequenceRuntime_8h_source.html#l00060">SequenceRuntime.h:60</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

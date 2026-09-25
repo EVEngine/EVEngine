@@ -1,0 +1,272 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainProbePlacement.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainProbePlacement.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainProbePlacement_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainMultiTile_8h.html">procgen/heightmap/TerrainMultiTile.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>Heightmap;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">PointSet</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">struct </span>TerrainStampSettings;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650">   12</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650">TerrainProbeType</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650aaea1e492943ccbad7ee270ec1e064758">Reflection</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650a9914a0ce04a7b7b6a8e39bec55064b82">Light</a> };</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">   14</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">TerrainProbeOperationMode</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720ea0ebe6df8a3ac338e0512acc741823fdb">Replace</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720ea1063e38cb53d94d386f21227fcd84717">Remove</a> };</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">TerrainProbePlacementSettings</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a4090b45b3ad1cd27c6ec7f1493736a24">   17</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a4090b45b3ad1cd27c6ec7f1493736a24">name</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a792898d2ea7529d592d7e11e4b9bfc5d">   18</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650">TerrainProbeType</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a792898d2ea7529d592d7e11e4b9bfc5d">type</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650aaea1e492943ccbad7ee270ec1e064758">TerrainProbeType::Reflection</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a503f0efada9e43f78b7ac529f12a729e">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a5a3a83f4d01c9e4a9a82f1e84495fafe">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a5708f5c4d2bc0fcff4a8f403d177fade">originZ</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#ad70260eb75b5aabfabe914add3782ada">width</a> = 1, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a503f0efada9e43f78b7ac529f12a729e">depth</a> = 1, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a90e9ca6bdf23ba080ae759204c738105">heightScale</a> = 1;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa5bdc86dc3ec127ed7094ed5d635baa5">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#af7c1a9522c8c9bd1556b23402c0a99a3">spacing</a> = 10, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa5bdc86dc3ec127ed7094ed5d635baa5">jitterPercent</a> = 0.5F, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a256f885cc69b8ff51bdad495bf15865b">minimumFitness</a> = 0.5F;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e7bb54de81d92b772cc2cdb7e7a3e25">   21</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e7bb54de81d92b772cc2cdb7e7a3e25">seaLevelActive</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a7995d94a2e7d9d12f6c02ac20bff3d56">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a922fb122e6f81dc3ff76144419c83d16">seaLevel</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a0e81132ebfc7b774e0cf512668939c23">reflectionOffset</a> = 1, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a7995d94a2e7d9d12f6c02ac20bff3d56">lightOffset</a> = 2.5F;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a1efa618505d3a69b72e77c01003b49e6">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a1efa618505d3a69b72e77c01003b49e6">reflectionResolution</a> = 128;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa143807e7b3588cc1e8c098632df3930">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa143807e7b3588cc1e8c098632df3930">reflectionClipDistance</a> = 1000, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a9d1f5105f292d6f74c819380f2bd7125">reflectionShadowDistance</a> = 80;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#acedf327723c4b74caf5350fb2a31321f">   25</a></span>    std::int32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#acedf327723c4b74caf5350fb2a31321f">seed</a> = 1;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a180bd7be58d6f775dd68b0ab69314a1e">   26</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a180bd7be58d6f775dd68b0ab69314a1e">namespaceId</a> = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e01d8c20ff2fea15d625f7aad3e2b85">   27</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e01d8c20ff2fea15d625f7aad3e2b85">maxPoints</a> = 1000000;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a332c6a228bfd9371bedfe8f9286291d7">exportTerrainProbePoints</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; fitness,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp;                     heights,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">TerrainProbePlacementSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html">   44</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainProbeTile.html">TerrainProbeTile</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a820b461a470a2ae56600e6350e4ce44d">   45</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a820b461a470a2ae56600e6350e4ce44d">name</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a75054a24dc5407444d1ca745743cfd43">   46</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>* <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a75054a24dc5407444d1ca745743cfd43">probes</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a419c67e5c2b97ebb1c62df3944afb8af">   47</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>* <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a419c67e5c2b97ebb1c62df3944afb8af">heights</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a14894d0c75c0d3ad520562982db978de">   48</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a0268040229b527b2116bc9c55f25d3b3">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a711ea2d7730c6b96a2d40af36691364d">originZ</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a92f6f041bc81765f61d96672388ea65a">width</a> = 1, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a14894d0c75c0d3ad520562982db978de">depth</a> = 1;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a36afd1dc1772d5925a3254ceecd2cf02">   49</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a36afd1dc1772d5925a3254ceecd2cf02">resolutionX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#a0ae23fe88145621c8f401aa8b694b2ea">resolutionY</a> = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainProbeTile.html#ac9be7b0e9385783f571b16e26a2dba5e">   50</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainProbeTile.html#ac9be7b0e9385783f571b16e26a2dba5e">worldMap</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TerrainMultiTileReport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#aba949c8b6758102c068948b80b663f69">applyTerrainProbesMultiTile</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> std::vector&lt;TerrainProbeTile&gt;&amp; <a class="code hl_variable" href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; operationFitness,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">TerrainProbePlacementSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a>&amp; operationSettings,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">TerrainProbeOperationMode</a> mode, <span class="keywordtype">bool</span> worldMapOperation = <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; validTerrainNames = {});</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00161">AssetCommand.cpp:161</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aTerrainMultiTile_8h_html"><div class="ttname"><a href="TerrainMultiTile_8h.html">TerrainMultiTile.h</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_a0c05430de08c4341b29a52bf20bd0ed1"><div class="ttname"><a href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a></div><div class="ttdeci">std::vector&lt; WfcTile &gt; tiles</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00022">WfcSimple.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00021">Heightmap.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00059">PointSet.h:59</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">eve::artifact::PartKind::PointSet</a></div><div class="ttdeci">@ PointSet</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a25a664e86f75d989b5f55859aaee7a7e"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">eve::procgen::TerrainProbeOperationMode</a></div><div class="ttdeci">TerrainProbeOperationMode</div><div class="ttdoc">Mutation performed by a multi-terrain probe rule.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00014">TerrainProbePlacement.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a332c6a228bfd9371bedfe8f9286291d7"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a332c6a228bfd9371bedfe8f9286291d7">eve::procgen::exportTerrainProbePoints</a></div><div class="ttdeci">Result&lt; int &gt; exportTerrainProbePoints(PointSet &amp;output, const Heightmap &amp;fitness, const Heightmap &amp;heights, const TerrainProbePlacementSettings &amp;s)</div><div class="ttdoc">Export Pcg ReflectionProbe or LightProbe placements into an owned attributed PointSet.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8cpp_source.html#l00037">TerrainProbePlacement.cpp:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5777eff8ab8b57178a90aeaa89ea6650"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650">eve::procgen::TerrainProbeType</a></div><div class="ttdeci">TerrainProbeType</div><div class="ttdoc">Pcg probe resource kind.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00012">TerrainProbePlacement.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5777eff8ab8b57178a90aeaa89ea6650a9914a0ce04a7b7b6a8e39bec55064b82"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650a9914a0ce04a7b7b6a8e39bec55064b82">eve::procgen::TerrainProbeType::Light</a></div><div class="ttdeci">@ Light</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5777eff8ab8b57178a90aeaa89ea6650aaea1e492943ccbad7ee270ec1e064758"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5777eff8ab8b57178a90aeaa89ea6650aaea1e492943ccbad7ee270ec1e064758">eve::procgen::TerrainProbeType::Reflection</a></div><div class="ttdeci">@ Reflection</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa2b010b065fef23cae621f8372f8720ea0ebe6df8a3ac338e0512acc741823fdb"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720ea0ebe6df8a3ac338e0512acc741823fdb">eve::procgen::TerrainDetailMode::Replace</a></div><div class="ttdeci">@ Replace</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa2b010b065fef23cae621f8372f8720ea1063e38cb53d94d386f21227fcd84717"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720ea1063e38cb53d94d386f21227fcd84717">eve::procgen::TerrainDetailMode::Remove</a></div><div class="ttdeci">@ Remove</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aba949c8b6758102c068948b80b663f69"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aba949c8b6758102c068948b80b663f69">eve::procgen::applyTerrainProbesMultiTile</a></div><div class="ttdeci">Result&lt; TerrainMultiTileReport &gt; applyTerrainProbesMultiTile(const std::vector&lt; TerrainProbeTile &gt; &amp;tiles, const Heightmap &amp;fitness, const TerrainProbePlacementSettings &amp;s, const TerrainStampSettings &amp;operation, TerrainProbeOperationMode mode, bool worldMapOperation, const std::vector&lt; std::string &gt; &amp;validNames)</div><div class="ttdoc">Apply one Pcg probe rule over mapped terrain tiles as one atomic transaction.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8cpp_source.html#l00102">TerrainProbePlacement.cpp:102</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_afbbb58d4ba23a25cb7266da135baf213aec211f7c20af43e742bf2570c3cb84f9"><div class="ttname"><a href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213aec211f7c20af43e742bf2570c3cb84f9">eve::procgen::TerrainHeightmapArithmetic::Add</a></div><div class="ttdeci">@ Add</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">eve::procgen::TerrainProbePlacementSettings</a></div><div class="ttdoc">Deterministic value settings for Pcg SetProbes terrain scanning.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00016">TerrainProbePlacement.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a0e81132ebfc7b774e0cf512668939c23"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a0e81132ebfc7b774e0cf512668939c23">eve::procgen::TerrainProbePlacementSettings::reflectionOffset</a></div><div class="ttdeci">float reflectionOffset</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00022">TerrainProbePlacement.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a180bd7be58d6f775dd68b0ab69314a1e"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a180bd7be58d6f775dd68b0ab69314a1e">eve::procgen::TerrainProbePlacementSettings::namespaceId</a></div><div class="ttdeci">std::uint64_t namespaceId</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00026">TerrainProbePlacement.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a1efa618505d3a69b72e77c01003b49e6"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a1efa618505d3a69b72e77c01003b49e6">eve::procgen::TerrainProbePlacementSettings::reflectionResolution</a></div><div class="ttdeci">int reflectionResolution</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00023">TerrainProbePlacement.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a256f885cc69b8ff51bdad495bf15865b"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a256f885cc69b8ff51bdad495bf15865b">eve::procgen::TerrainProbePlacementSettings::minimumFitness</a></div><div class="ttdeci">float minimumFitness</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00020">TerrainProbePlacement.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a2e01d8c20ff2fea15d625f7aad3e2b85"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e01d8c20ff2fea15d625f7aad3e2b85">eve::procgen::TerrainProbePlacementSettings::maxPoints</a></div><div class="ttdeci">int maxPoints</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00027">TerrainProbePlacement.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a2e7bb54de81d92b772cc2cdb7e7a3e25"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a2e7bb54de81d92b772cc2cdb7e7a3e25">eve::procgen::TerrainProbePlacementSettings::seaLevelActive</a></div><div class="ttdeci">bool seaLevelActive</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00021">TerrainProbePlacement.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a4090b45b3ad1cd27c6ec7f1493736a24"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a4090b45b3ad1cd27c6ec7f1493736a24">eve::procgen::TerrainProbePlacementSettings::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00017">TerrainProbePlacement.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a503f0efada9e43f78b7ac529f12a729e"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a503f0efada9e43f78b7ac529f12a729e">eve::procgen::TerrainProbePlacementSettings::depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00019">TerrainProbePlacement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a5708f5c4d2bc0fcff4a8f403d177fade"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a5708f5c4d2bc0fcff4a8f403d177fade">eve::procgen::TerrainProbePlacementSettings::originZ</a></div><div class="ttdeci">float originZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00019">TerrainProbePlacement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a5a3a83f4d01c9e4a9a82f1e84495fafe"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a5a3a83f4d01c9e4a9a82f1e84495fafe">eve::procgen::TerrainProbePlacementSettings::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00019">TerrainProbePlacement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a792898d2ea7529d592d7e11e4b9bfc5d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a792898d2ea7529d592d7e11e4b9bfc5d">eve::procgen::TerrainProbePlacementSettings::type</a></div><div class="ttdeci">TerrainProbeType type</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00018">TerrainProbePlacement.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a7995d94a2e7d9d12f6c02ac20bff3d56"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a7995d94a2e7d9d12f6c02ac20bff3d56">eve::procgen::TerrainProbePlacementSettings::lightOffset</a></div><div class="ttdeci">float lightOffset</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00022">TerrainProbePlacement.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a90e9ca6bdf23ba080ae759204c738105"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a90e9ca6bdf23ba080ae759204c738105">eve::procgen::TerrainProbePlacementSettings::heightScale</a></div><div class="ttdeci">float heightScale</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00019">TerrainProbePlacement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a922fb122e6f81dc3ff76144419c83d16"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a922fb122e6f81dc3ff76144419c83d16">eve::procgen::TerrainProbePlacementSettings::seaLevel</a></div><div class="ttdeci">float seaLevel</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00022">TerrainProbePlacement.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_a9d1f5105f292d6f74c819380f2bd7125"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#a9d1f5105f292d6f74c819380f2bd7125">eve::procgen::TerrainProbePlacementSettings::reflectionShadowDistance</a></div><div class="ttdeci">float reflectionShadowDistance</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00024">TerrainProbePlacement.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_aa143807e7b3588cc1e8c098632df3930"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa143807e7b3588cc1e8c098632df3930">eve::procgen::TerrainProbePlacementSettings::reflectionClipDistance</a></div><div class="ttdeci">float reflectionClipDistance</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00024">TerrainProbePlacement.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_aa5bdc86dc3ec127ed7094ed5d635baa5"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#aa5bdc86dc3ec127ed7094ed5d635baa5">eve::procgen::TerrainProbePlacementSettings::jitterPercent</a></div><div class="ttdeci">float jitterPercent</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00020">TerrainProbePlacement.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_acedf327723c4b74caf5350fb2a31321f"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#acedf327723c4b74caf5350fb2a31321f">eve::procgen::TerrainProbePlacementSettings::seed</a></div><div class="ttdeci">std::int32_t seed</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00025">TerrainProbePlacement.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_ad70260eb75b5aabfabe914add3782ada"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#ad70260eb75b5aabfabe914add3782ada">eve::procgen::TerrainProbePlacementSettings::width</a></div><div class="ttdeci">float width</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00019">TerrainProbePlacement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbePlacementSettings_html_af7c1a9522c8c9bd1556b23402c0a99a3"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html#af7c1a9522c8c9bd1556b23402c0a99a3">eve::procgen::TerrainProbePlacementSettings::spacing</a></div><div class="ttdeci">float spacing</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00020">TerrainProbePlacement.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html">eve::procgen::TerrainProbeTile</a></div><div class="ttdoc">One exclusively borrowed terrain probe owner and immutable height source.</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00044">TerrainProbePlacement.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a0268040229b527b2116bc9c55f25d3b3"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a0268040229b527b2116bc9c55f25d3b3">eve::procgen::TerrainProbeTile::originX</a></div><div class="ttdeci">double originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00048">TerrainProbePlacement.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a0ae23fe88145621c8f401aa8b694b2ea"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a0ae23fe88145621c8f401aa8b694b2ea">eve::procgen::TerrainProbeTile::resolutionY</a></div><div class="ttdeci">int resolutionY</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00049">TerrainProbePlacement.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a14894d0c75c0d3ad520562982db978de"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a14894d0c75c0d3ad520562982db978de">eve::procgen::TerrainProbeTile::depth</a></div><div class="ttdeci">double depth</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00048">TerrainProbePlacement.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a36afd1dc1772d5925a3254ceecd2cf02"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a36afd1dc1772d5925a3254ceecd2cf02">eve::procgen::TerrainProbeTile::resolutionX</a></div><div class="ttdeci">int resolutionX</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00049">TerrainProbePlacement.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a419c67e5c2b97ebb1c62df3944afb8af"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a419c67e5c2b97ebb1c62df3944afb8af">eve::procgen::TerrainProbeTile::heights</a></div><div class="ttdeci">const Heightmap * heights</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00047">TerrainProbePlacement.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a711ea2d7730c6b96a2d40af36691364d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a711ea2d7730c6b96a2d40af36691364d">eve::procgen::TerrainProbeTile::originZ</a></div><div class="ttdeci">double originZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00048">TerrainProbePlacement.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a75054a24dc5407444d1ca745743cfd43"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a75054a24dc5407444d1ca745743cfd43">eve::procgen::TerrainProbeTile::probes</a></div><div class="ttdeci">PointSet * probes</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00046">TerrainProbePlacement.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a820b461a470a2ae56600e6350e4ce44d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a820b461a470a2ae56600e6350e4ce44d">eve::procgen::TerrainProbeTile::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00045">TerrainProbePlacement.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_a92f6f041bc81765f61d96672388ea65a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#a92f6f041bc81765f61d96672388ea65a">eve::procgen::TerrainProbeTile::width</a></div><div class="ttdeci">double width</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00048">TerrainProbePlacement.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainProbeTile_html_ac9be7b0e9385783f571b16e26a2dba5e"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainProbeTile.html#ac9be7b0e9385783f571b16e26a2dba5e">eve::procgen::TerrainProbeTile::worldMap</a></div><div class="ttdeci">bool worldMap</div><div class="ttdef"><b>Definition</b> <a href="TerrainProbePlacement_8h_source.html#l00050">TerrainProbePlacement.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainStampSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainStampSettings.html">eve::procgen::TerrainStampSettings</a></div><div class="ttdoc">Value configuration for a rectangular stamp in world X/Z coordinates.</div><div class="ttdef"><b>Definition</b> <a href="TerrainStamp_8h_source.html#l00022">TerrainStamp.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

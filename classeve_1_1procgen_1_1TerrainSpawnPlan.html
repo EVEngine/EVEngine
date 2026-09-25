@@ -1,0 +1,681 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainSpawnPlan类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html">TerrainSpawnPlan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainSpawnPlan-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainSpawnPlan类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Own an ordered mixed-domain Pcg-style spawn recipe. Rule IDs are stable and unique. Every raster and setting is copied at insertion, so later caller mutation cannot alter replay. The plan is a value object with no scene references, callbacks, clock or mutable external state.  
+ <a href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainSpawnPlan_8h_source.html">TerrainSpawnPlan.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaadbbc5907d82a4f5d6b3cb64bf39735" id="r_aaadbbc5907d82a4f5d6b3cb64bf39735"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#aaadbbc5907d82a4f5d6b3cb64bf39735">addSplat</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;paint, int targetLayer, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="memdesc:aaadbbc5907d82a4f5d6b3cb64bf39735"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned terrain texture rule after validating a nonempty unique rule ID.  <br /></td></tr>
+<tr class="separator:aaadbbc5907d82a4f5d6b3cb64bf39735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40058beb96e1a2caceaa8d19a46a668" id="r_ac40058beb96e1a2caceaa8d19a46a668"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#ac40058beb96e1a2caceaa8d19a46a668">addDetail</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainDetailSettings.html">TerrainDetailSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720e">TerrainDetailMode</a> mode, std::int32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:ac40058beb96e1a2caceaa8d19a46a668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned detail rule after validating a nonempty unique rule ID.  <br /></td></tr>
+<tr class="separator:ac40058beb96e1a2caceaa8d19a46a668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd5f7e822385769a9ea1f6ed4ea5d34c" id="r_abd5f7e822385769a9ea1f6ed4ea5d34c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#abd5f7e822385769a9ea1f6ed4ea5d34c">addTrees</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainTreePlacementSettings.html">TerrainTreePlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve_1_1procgen.html#afaccded88c03174020af5d6e82511ee4">TerrainTreeOperationMode</a> mode)</td></tr>
+<tr class="memdesc:abd5f7e822385769a9ea1f6ed4ea5d34c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned tree rule after validating a nonempty unique rule ID.  <br /></td></tr>
+<tr class="separator:abd5f7e822385769a9ea1f6ed4ea5d34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb01cbc45e779fe3c281f004aab1b67f" id="r_adb01cbc45e779fe3c281f004aab1b67f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#adb01cbc45e779fe3c281f004aab1b67f">addObjects</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">TerrainObjectPlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056f">TerrainObjectOperationMode</a> mode)</td></tr>
+<tr class="memdesc:adb01cbc45e779fe3c281f004aab1b67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned object rule after validating a nonempty unique rule ID.  <br /></td></tr>
+<tr class="separator:adb01cbc45e779fe3c281f004aab1b67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ab13ab197c170322ac4d3848f37c2d2" id="r_a2ab13ab197c170322ac4d3848f37c2d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#a2ab13ab197c170322ac4d3848f37c2d2">addProbes</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;fitness, const <a class="el" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">TerrainProbePlacementSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">TerrainProbeOperationMode</a> mode)</td></tr>
+<tr class="memdesc:a2ab13ab197c170322ac4d3848f37c2d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned reflection or light probe rule after validating a nonempty unique rule ID.  <br /></td></tr>
+<tr class="separator:a2ab13ab197c170322ac4d3848f37c2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5fa8bfba526e2b2f359b56f770d13df" id="r_af5fa8bfba526e2b2f359b56f770d13df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#af5fa8bfba526e2b2f359b56f770d13df">addModifierStamp</a> (const std::string &amp;ruleId, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>, const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;localMask, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;globalMask)</td></tr>
+<tr class="memdesc:af5fa8bfba526e2b2f359b56f770d13df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owned TerrainModifierStamp with independent local and global mask snapshots.  <br /></td></tr>
+<tr class="separator:af5fa8bfba526e2b2f359b56f770d13df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac23a9424f6853d3d9b46f57cd0e3d311" id="r_ac23a9424f6853d3d9b46f57cd0e3d311"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#ac23a9424f6853d3d9b46f57cd0e3d311">setEnabled</a> (const std::string &amp;ruleId, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ac23a9424f6853d3d9b46f57cd0e3d311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable a stable rule without changing its order.  <br /></td></tr>
+<tr class="separator:ac23a9424f6853d3d9b46f57cd0e3d311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6a2b5d249f36c81b7961ee0c0b1c35" id="r_a8f6a2b5d249f36c81b7961ee0c0b1c35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#a8f6a2b5d249f36c81b7961ee0c0b1c35">getRuleCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f6a2b5d249f36c81b7961ee0c0b1c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of retained rules.  <br /></td></tr>
+<tr class="separator:a8f6a2b5d249f36c81b7961ee0c0b1c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a299968fa546a6b60fce87c1162a13609" id="r_a299968fa546a6b60fce87c1162a13609"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="namespaceeve_1_1procgen.html#aebf083b26629edf8f29eff26dbafbf65">TerrainSpawnRule</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#a299968fa546a6b60fce87c1162a13609">rules</a> () const noexcept</td></tr>
+<tr class="memdesc:a299968fa546a6b60fce87c1162a13609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return immutable ordered rules for transactional execution.  <br /></td></tr>
+<tr class="separator:a299968fa546a6b60fce87c1162a13609"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac4407d793650969dc0e08c74fb65a1" id="r_a4ac4407d793650969dc0e08c74fb65a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#a4ac4407d793650969dc0e08c74fb65a1">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a4ac4407d793650969dc0e08c74fb65a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize schema version 3 as deterministic strict JSON with an owning binary payload.  <br /></td></tr>
+<tr class="separator:a4ac4407d793650969dc0e08c74fb65a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac24757dbb3ecf7e9bfcdd873fbbecfb3" id="r_ac24757dbb3ecf7e9bfcdd873fbbecfb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#ac24757dbb3ecf7e9bfcdd873fbbecfb3">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:ac24757dbb3ecf7e9bfcdd873fbbecfb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restore versions 0-3; version 0 migrates all rules to enabled.  <br /></td></tr>
+<tr class="separator:ac24757dbb3ecf7e9bfcdd873fbbecfb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Own an ordered mixed-domain Pcg-style spawn recipe. Rule IDs are stable and unique. Every raster and setting is copied at insertion, so later caller mutation cannot alter replay. The plan is a value object with no scene references, callbacks, clock or mutable external state. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8h_source.html">TerrainSpawnPlan.h</a> 第 <a class="el" href="TerrainSpawnPlan_8h_source.html#l00087">87</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac40058beb96e1a2caceaa8d19a46a668" name="ac40058beb96e1a2caceaa8d19a46a668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac40058beb96e1a2caceaa8d19a46a668">&#9670;&#160;</a></span>addDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addDetail </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>fitness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainDetailSettings.html">TerrainDetailSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#aa2b010b065fef23cae621f8372f8720e">TerrainDetailMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned detail rule after validating a nonempty unique rule ID. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af5fa8bfba526e2b2f359b56f770d13df" name="af5fa8bfba526e2b2f359b56f770d13df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5fa8bfba526e2b2f359b56f770d13df">&#9670;&#160;</a></span>addModifierStamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addModifierStamp </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>stamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>localMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>globalMask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned TerrainModifierStamp with independent local and global mask snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00116">stamp</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="adb01cbc45e779fe3c281f004aab1b67f" name="adb01cbc45e779fe3c281f004aab1b67f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb01cbc45e779fe3c281f004aab1b67f">&#9670;&#160;</a></span>addObjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addObjects </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>fitness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainObjectPlacementSettings.html">TerrainObjectPlacementSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#af8db37dbc9c3a6ea3fe4bd786da8056f">TerrainObjectOperationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned object rule after validating a nonempty unique rule ID. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2ab13ab197c170322ac4d3848f37c2d2" name="a2ab13ab197c170322ac4d3848f37c2d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ab13ab197c170322ac4d3848f37c2d2">&#9670;&#160;</a></span>addProbes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addProbes </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>fitness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainProbePlacementSettings.html">TerrainProbePlacementSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a25a664e86f75d989b5f55859aaee7a7e">TerrainProbeOperationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned reflection or light probe rule after validating a nonempty unique rule ID. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aaadbbc5907d82a4f5d6b3cb64bf39735" name="aaadbbc5907d82a4f5d6b3cb64bf39735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaadbbc5907d82a4f5d6b3cb64bf39735">&#9670;&#160;</a></span>addSplat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addSplat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>paint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>targetLayer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned terrain texture rule after validating a nonempty unique rule ID. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abd5f7e822385769a9ea1f6ed4ea5d34c" name="abd5f7e822385769a9ea1f6ed4ea5d34c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd5f7e822385769a9ea1f6ed4ea5d34c">&#9670;&#160;</a></span>addTrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainSpawnPlan::addTrees </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>fitness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainTreePlacementSettings.html">TerrainTreePlacementSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#afaccded88c03174020af5d6e82511ee4">TerrainTreeOperationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append an owned tree rule after validating a nonempty unique rule ID. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8f6a2b5d249f36c81b7961ee0c0b1c35" name="a8f6a2b5d249f36c81b7961ee0c0b1c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6a2b5d249f36c81b7961ee0c0b1c35">&#9670;&#160;</a></span>getRuleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainSpawnPlan::getRuleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of retained rules. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac24757dbb3ecf7e9bfcdd873fbbecfb3" name="ac24757dbb3ecf7e9bfcdd873fbbecfb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac24757dbb3ecf7e9bfcdd873fbbecfb3">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::TerrainSpawnPlan::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically restore versions 0-3; version 0 migrates all rules to enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html">TerrainSpawnPlanCodec.cpp</a> 第 <a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html#l00018">bytes</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">payload</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainBiomePresetCodec_8cpp_source.html#l00042">eve::procgen::TerrainBiomePreset::restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a299968fa546a6b60fce87c1162a13609" name="a299968fa546a6b60fce87c1162a13609"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a299968fa546a6b60fce87c1162a13609">&#9670;&#160;</a></span>rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="namespaceeve_1_1procgen.html#aebf083b26629edf8f29eff26dbafbf65">TerrainSpawnRule</a> &gt; &amp; eve::procgen::TerrainSpawnPlan::rules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return immutable ordered rules for transactional execution. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainBiomePreset_8cpp_source.html#l00013">eve::procgen::TerrainBiomePreset::addSpawner()</a>, <a class="el" href="TerrainWorldWorkspace_8cpp_source.html#l00332">eve::procgen::TerrainWorldWorkspace::beginSpawn()</a> , 以及 <a class="el" href="TerrainWorldWorkspace_8cpp_source.html#l00291">eve::procgen::TerrainWorldWorkspace::spawn()</a>.</p>
+
+</div>
+</div>
+<a id="ac23a9424f6853d3d9b46f57cd0e3d311" name="ac23a9424f6853d3d9b46f57cd0e3d311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac23a9424f6853d3d9b46f57cd0e3d311">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::TerrainSpawnPlan::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ruleId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable a stable rule without changing its order. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a> 第 <a class="el" href="TerrainSpawnPlan_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a4ac4407d793650969dc0e08c74fb65a1" name="a4ac4407d793650969dc0e08c74fb65a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac4407d793650969dc0e08c74fb65a1">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::procgen::TerrainSpawnPlan::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize schema version 3 as deterministic strict JSON with an owning binary payload. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html">TerrainSpawnPlanCodec.cpp</a> 第 <a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSpawnPlan_8h_source.html">TerrainSpawnPlan.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSpawnPlan_8cpp_source.html">TerrainSpawnPlan.cpp</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainSpawnPlanCodec_8cpp_source.html">TerrainSpawnPlanCodec.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,906 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace::Document类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace.html">archspace</a></li><li class="navelem"><a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1archspace_1_1Document-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace::Document类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative architectural space document (Pascal-like node graph).  
+ <a href="classeve_1_1archspace_1_1Document.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6395af7e1947fcab5c884d37ed334b3c" id="r_a6395af7e1947fcab5c884d37ed334b3c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a6395af7e1947fcab5c884d37ed334b3c">Document</a> ()=default</td></tr>
+<tr class="separator:a6395af7e1947fcab5c884d37ed334b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae186523284aad88974362fc05361d379" id="r_ae186523284aad88974362fc05361d379"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#ae186523284aad88974362fc05361d379">rootId</a> () const noexcept</td></tr>
+<tr class="separator:ae186523284aad88974362fc05361d379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97bcec287a7687133101207f15f1e96f" id="r_a97bcec287a7687133101207f15f1e96f"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a> () const noexcept</td></tr>
+<tr class="separator:a97bcec287a7687133101207f15f1e96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee70d0e9442c68ac9996b654d4d802bb" id="r_aee70d0e9442c68ac9996b654d4d802bb"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#aee70d0e9442c68ac9996b654d4d802bb">nodeCount</a> () const noexcept</td></tr>
+<tr class="separator:aee70d0e9442c68ac9996b654d4d802bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a672c80e8769fd47248fa907afd278cb3" id="r_a672c80e8769fd47248fa907afd278cb3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">find</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a672c80e8769fd47248fa907afd278cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a node by id. @ownership Non-owning pointer into this document's node map; do not free. @lifetime Until the next mutating call.  <br /></td></tr>
+<tr class="separator:a672c80e8769fd47248fa907afd278cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a524691f66cac776ab7b9247f7555f21b" id="r_a524691f66cac776ab7b9247f7555f21b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a524691f66cac776ab7b9247f7555f21b">findMutable</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a524691f66cac776ab7b9247f7555f21b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a mutable node by id. @ownership Non-owning pointer into this document's node map; do not free. @lifetime Until the next structural mutation.  <br /></td></tr>
+<tr class="separator:a524691f66cac776ab7b9247f7555f21b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7327e7e520439484d42eff4b6c8486d" id="r_ad7327e7e520439484d42eff4b6c8486d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#ad7327e7e520439484d42eff4b6c8486d">insert</a> (<a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> node)</td></tr>
+<tr class="memdesc:ad7327e7e520439484d42eff4b6c8486d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a validated node and link it into the parent child list.  <br /></td></tr>
+<tr class="separator:ad7327e7e520439484d42eff4b6c8486d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81db86018323835e9f541cfcdaadd953" id="r_a81db86018323835e9f541cfcdaadd953"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a81db86018323835e9f541cfcdaadd953">replace</a> (<a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> node)</td></tr>
+<tr class="memdesc:a81db86018323835e9f541cfcdaadd953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace authored fields while preserving id, kind, parent and children.  <br /></td></tr>
+<tr class="separator:a81db86018323835e9f541cfcdaadd953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b4f72cd5c203b6a3cad066a41af5a84" id="r_a4b4f72cd5c203b6a3cad066a41af5a84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a4b4f72cd5c203b6a3cad066a41af5a84">eraseCascade</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a4b4f72cd5c203b6a3cad066a41af5a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a node and every descendant. Root deletion clears the document.  <br /></td></tr>
+<tr class="separator:a4b4f72cd5c203b6a3cad066a41af5a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b38fbc45f2b6c64b951987f956214ba" id="r_a6b38fbc45f2b6c64b951987f956214ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a6b38fbc45f2b6c64b951987f956214ba">clear</a> ()</td></tr>
+<tr class="memdesc:a6b38fbc45f2b6c64b951987f956214ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every node.  <br /></td></tr>
+<tr class="separator:a6b38fbc45f2b6c64b951987f956214ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5923e34961a7ca46ae149de1105afd19" id="r_a5923e34961a7ca46ae149de1105afd19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a5923e34961a7ca46ae149de1105afd19">bootstrap</a> (const std::string &amp;siteId, const std::string &amp;buildingId, const std::string &amp;levelId, double levelHeight=3.0)</td></tr>
+<tr class="memdesc:a5923e34961a7ca46ae149de1105afd19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create site → building → level skeleton when the document is empty.  <br /></td></tr>
+<tr class="separator:a5923e34961a7ca46ae149de1105afd19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc0830343c8888a4dbf7975dd2e07e6" id="r_aecc0830343c8888a4dbf7975dd2e07e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#aecc0830343c8888a4dbf7975dd2e07e6">createRoom</a> (const std::string &amp;levelId, const std::string &amp;roomId, std::string roomName, std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> &gt; polygon, double wallHeight, double wallThickness, double slabThickness)</td></tr>
+<tr class="memdesc:aecc0830343c8888a4dbf7975dd2e07e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a closed room: perimeter walls + slab + zone under an existing level.  <br /></td></tr>
+<tr class="separator:aecc0830343c8888a4dbf7975dd2e07e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37eacab296ff628e52d07f5a7eb9e2be" id="r_a37eacab296ff628e52d07f5a7eb9e2be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a37eacab296ff628e52d07f5a7eb9e2be">createWall</a> (const std::string &amp;levelId, const std::string &amp;wallId, std::string wallName, <a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> <a class="el" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, double <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, double <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>)</td></tr>
+<tr class="memdesc:a37eacab296ff628e52d07f5a7eb9e2be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a single wall under an existing level.  <br /></td></tr>
+<tr class="separator:a37eacab296ff628e52d07f5a7eb9e2be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec7d2d68282e2aa3c65012fb4905304a" id="r_aec7d2d68282e2aa3c65012fb4905304a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#aec7d2d68282e2aa3c65012fb4905304a">createOpening</a> (const std::string &amp;wallId, const std::string &amp;openingId, std::string openingName, <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, double <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, double <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, double <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, double sill=0.0)</td></tr>
+<tr class="memdesc:aec7d2d68282e2aa3c65012fb4905304a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a door/window opening on an existing wall.  <br /></td></tr>
+<tr class="separator:aec7d2d68282e2aa3c65012fb4905304a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b7c50c3193dff9ca206c20f4367236" id="r_a58b7c50c3193dff9ca206c20f4367236"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a58b7c50c3193dff9ca206c20f4367236">placeItem</a> (const std::string &amp;levelId, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, std::string itemName, std::string catalogId, <a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, double yawDegrees=0.0)</td></tr>
+<tr class="memdesc:a58b7c50c3193dff9ca206c20f4367236"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place a catalog item on an existing level.  <br /></td></tr>
+<tr class="separator:a58b7c50c3193dff9ca206c20f4367236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a773eb2ff8096922f7e36e9dcd002ab4f" id="r_a773eb2ff8096922f7e36e9dcd002ab4f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#a773eb2ff8096922f7e36e9dcd002ab4f">diagnostics</a> () const</td></tr>
+<tr class="memdesc:a773eb2ff8096922f7e36e9dcd002ab4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect structural and geometric diagnostics as human-readable lines.  <br /></td></tr>
+<tr class="separator:a773eb2ff8096922f7e36e9dcd002ab4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2dda8ed091613bf69ba02ad587de3df" id="r_ae2dda8ed091613bf69ba02ad587de3df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#ae2dda8ed091613bf69ba02ad587de3df">bakeMesh</a> () const</td></tr>
+<tr class="memdesc:ae2dda8ed091613bf69ba02ad587de3df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build wall boxes (with opening cutouts), slabs and item markers for viewport upload.  <br /></td></tr>
+<tr class="separator:ae2dda8ed091613bf69ba02ad587de3df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace1be652a707302981528a258a5cbae6" id="r_ace1be652a707302981528a258a5cbae6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html#ace1be652a707302981528a258a5cbae6">bakeMeshArrays</a> () const</td></tr>
+<tr class="memdesc:ace1be652a707302981528a258a5cbae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake and pack into GPU-upload float arrays with per-triangle normals.  <br /></td></tr>
+<tr class="separator:ace1be652a707302981528a258a5cbae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative architectural space document (Pascal-like node graph). </p>
+<p>@ownership The document exclusively owns its nodes. Borrowed pointers returned by <a class="el" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3" title="Borrow a node by id. @ownership Non-owning pointer into this document&#39;s node map; do not free....">find()</a> are invalidated by any mutating call. @thread Owner thread only. @failure Mutators return a checked <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> and leave the previous document state unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a> 第 <a class="el" href="ArchSpaceDocument_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6395af7e1947fcab5c884d37ed334b3c" name="a6395af7e1947fcab5c884d37ed334b3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6395af7e1947fcab5c884d37ed334b3c">&#9670;&#160;</a></span>Document()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace::Document::Document </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae2dda8ed091613bf69ba02ad587de3df" name="ae2dda8ed091613bf69ba02ad587de3df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2dda8ed091613bf69ba02ad587de3df">&#9670;&#160;</a></span>bakeMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> eve::archspace::Document::bakeMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build wall boxes (with opening cutouts), slabs and item markers for viewport upload. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00120">eve::archspace::appendCatalogItem()</a>, <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00135">eve::archspace::appendWallWithOpenings()</a>, <a class="el" href="NodeDesc_8h_source.html#l00045">eve::scene::NodeDesc::children</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00040">eve::archspace::Node::elevation</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::Item</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::Opening</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00">eve::archspace::Slab</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="ace1be652a707302981528a258a5cbae6" name="ace1be652a707302981528a258a5cbae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace1be652a707302981528a258a5cbae6">&#9670;&#160;</a></span>bakeMeshArrays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a> eve::archspace::Document::bakeMeshArrays </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bake and pack into GPU-upload float arrays with per-triangle normals. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a> 第 <a class="el" href="ArchSpaceDocument_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00091">eve::archspace::toMeshArrays()</a>.</p>
+
+</div>
+</div>
+<a id="a5923e34961a7ca46ae149de1105afd19" name="a5923e34961a7ca46ae149de1105afd19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5923e34961a7ca46ae149de1105afd19">&#9670;&#160;</a></span>bootstrap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::bootstrap </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>siteId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>levelHeight</em> = <code>3.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create site → building → level skeleton when the document is empty. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when the document already has a root or ids collide. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80">eve::archspace::Building</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00041">eve::archspace::Node::height</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">eve::archspace::Site</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00432">eve::archspace_editing::ArchSpaceDocumentTarget::makeBootstrap()</a>.</p>
+
+</div>
+</div>
+<a id="a6b38fbc45f2b6c64b951987f956214ba" name="a6b38fbc45f2b6c64b951987f956214ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b38fbc45f2b6c64b951987f956214ba">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace::Document::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every node. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec7d2d68282e2aa3c65012fb4905304a" name="aec7d2d68282e2aa3c65012fb4905304a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec7d2d68282e2aa3c65012fb4905304a">&#9670;&#160;</a></span>createOpening()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::createOpening </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>wallId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>openingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>openingName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sill</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a door/window opening on an existing wall. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when the wall is missing or parameters are invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::Opening</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00061">eve::archspace::Node::openingHeight</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00058">eve::archspace::Node::openingKind</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00062">eve::archspace::Node::sill</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00059">eve::archspace::Node::t</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00060">eve::archspace::Node::width</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00484">eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateOpening()</a>.</p>
+
+</div>
+</div>
+<a id="aecc0830343c8888a4dbf7975dd2e07e6" name="aecc0830343c8888a4dbf7975dd2e07e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc0830343c8888a4dbf7975dd2e07e6">&#9670;&#160;</a></span>createRoom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::createRoom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>roomId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>roomName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> &gt;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wallHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wallThickness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>slabThickness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a closed room: perimeter walls + slab + zone under an existing level. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">polygon</td><td>Level-local XZ loop; the first vertex should not be repeated. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when the level is missing or geometry is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00045">eve::archspace::Node::end</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00041">eve::archspace::Node::height</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00049">eve::archspace::Node::polygon</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00">eve::archspace::Slab</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00050">eve::archspace::Node::slabThickness</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00044">eve::archspace::Node::start</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00046">eve::archspace::Node::thickness</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::Zone</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00446">eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateRectRoom()</a>.</p>
+
+</div>
+</div>
+<a id="a37eacab296ff628e52d07f5a7eb9e2be" name="a37eacab296ff628e52d07f5a7eb9e2be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37eacab296ff628e52d07f5a7eb9e2be">&#9670;&#160;</a></span>createWall()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::createWall </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>wallId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>wallName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a>&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a>&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>thickness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a single wall under an existing level. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when the level is missing or geometry is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">end</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00045">eve::archspace::Node::end</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00041">eve::archspace::Node::height</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00030">start</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00044">eve::archspace::Node::start</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00046">eve::archspace::Node::thickness</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00083">thickness</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00470">eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateWall()</a>.</p>
+
+</div>
+</div>
+<a id="a773eb2ff8096922f7e36e9dcd002ab4f" name="a773eb2ff8096922f7e36e9dcd002ab4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a773eb2ff8096922f7e36e9dcd002ab4f">&#9670;&#160;</a></span>diagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::archspace::Document::diagnostics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect structural and geometric diagnostics as human-readable lines. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NodeDesc_8h_source.html#l00045">eve::scene::NodeDesc::children</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">eve::archspace::Site</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00341">eve::archspace_editing::ArchSpaceDocumentTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a4b4f72cd5c203b6a3cad066a41af5a84" name="a4b4f72cd5c203b6a3cad066a41af5a84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4f72cd5c203b6a3cad066a41af5a84">&#9670;&#160;</a></span>eraseCascade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::eraseCascade </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete a node and every descendant. Root deletion clears the document. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; NotFound when the id is unknown. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00514">eve::archspace_editing::ArchSpaceDocumentTarget::makeDeleteNode()</a>.</p>
+
+</div>
+</div>
+<a id="a672c80e8769fd47248fa907afd278cb3" name="a672c80e8769fd47248fa907afd278cb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a672c80e8769fd47248fa907afd278cb3">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> * eve::archspace::Document::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow a node by id. @ownership Non-owning pointer into this document's node map; do not free. @lifetime Until the next mutating call. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00399">bakeMesh()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00330">createOpening()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00261">createRoom()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00311">createWall()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00369">diagnostics()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00204">eraseCascade()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00572">eve::archspace_editing::ArchSpaceDocumentTarget::gizmo()</a> , 以及 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00351">placeItem()</a>.</p>
+
+</div>
+</div>
+<a id="a524691f66cac776ab7b9247f7555f21b" name="a524691f66cac776ab7b9247f7555f21b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a524691f66cac776ab7b9247f7555f21b">&#9670;&#160;</a></span>findMutable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> * eve::archspace::Document::findMutable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow a mutable node by id. @ownership Non-owning pointer into this document's node map; do not free. @lifetime Until the next structural mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00356">eve::archspace_editing::ArchSpaceDocumentTarget::makeSet()</a> , 以及 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00188">replace()</a>.</p>
+
+</div>
+</div>
+<a id="ad7327e7e520439484d42eff4b6c8486d" name="ad7327e7e520439484d42eff4b6c8486d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7327e7e520439484d42eff4b6c8486d">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::insert </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a>&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a validated node and link it into the parent child list. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when id/kind/parent/geometry rules fail. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00096">findMutable()</a>, <a class="el" href="NodeDesc_8h_source.html#l00020">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">eve::archspace::Site</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00225">bootstrap()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00330">createOpening()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00261">createRoom()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00311">createWall()</a> , 以及 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00351">placeItem()</a>.</p>
+
+</div>
+</div>
+<a id="aee70d0e9442c68ac9996b654d4d802bb" name="aee70d0e9442c68ac9996b654d4d802bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee70d0e9442c68ac9996b654d4d802bb">&#9670;&#160;</a></span>nodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::archspace::Document::nodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a> 第 <a class="el" href="ArchSpaceDocument_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00341">eve::archspace_editing::ArchSpaceDocumentTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a97bcec287a7687133101207f15f1e96f" name="a97bcec287a7687133101207f15f1e96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97bcec287a7687133101207f15f1e96f">&#9670;&#160;</a></span>nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> &gt; &amp; eve::archspace::Document::nodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a> 第 <a class="el" href="ArchSpaceDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00572">eve::archspace_editing::ArchSpaceDocumentTarget::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a58b7c50c3193dff9ca206c20f4367236" name="a58b7c50c3193dff9ca206c20f4367236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b7c50c3193dff9ca206c20f4367236">&#9670;&#160;</a></span>placeItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::placeItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>itemName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>catalogId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yawDegrees</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place a catalog item on an existing level. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when the level is missing or placement is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00055">eve::archspace::Node::catalogId</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">find()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00162">insert()</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::Item</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00028">itemId</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00053">eve::archspace::Node::position</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00054">eve::archspace::Node::yawDegrees</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00499">eve::archspace_editing::ArchSpaceDocumentTarget::makePlaceItem()</a>.</p>
+
+</div>
+</div>
+<a id="a81db86018323835e9f541cfcdaadd953" name="a81db86018323835e9f541cfcdaadd953"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81db86018323835e9f541cfcdaadd953">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::Document::replace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a>&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace authored fields while preserving id, kind, parent and children. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; NotFound/Rejected when missing or invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a> 第 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00037">eve::archspace::Node::children</a>, <a class="el" href="NodeDesc_8h_source.html#l00045">eve::scene::NodeDesc::children</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00096">findMutable()</a>, <a class="el" href="NodeDesc_8h_source.html#l00020">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00034">eve::archspace::Node::kind</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00035">eve::archspace::Node::parentId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00356">eve::archspace_editing::ArchSpaceDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="ae186523284aad88974362fc05361d379" name="ae186523284aad88974362fc05361d379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae186523284aad88974362fc05361d379">&#9670;&#160;</a></span>rootId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::archspace::Document::rootId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a> 第 <a class="el" href="ArchSpaceDocument_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/<a class="el" href="ArchSpaceDocument_8h_source.html">ArchSpaceDocument.h</a></li>
+<li>src/modules/archspace/<a class="el" href="ArchSpaceDocument_8cpp_source.html">ArchSpaceDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

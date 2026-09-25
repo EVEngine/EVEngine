@@ -1,0 +1,329 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainDerivedMap.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">TerrainDerivedMap.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+</div>
+<p><a href="TerrainDerivedMap_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a3c3c3fc651d3b7396877fb508877614f" id="r_a3c3c3fc651d3b7396877fb508877614f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614f">eve::procgen::TerrainHeightmapCurvature</a> { <a class="el" href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614fab1897515d548a960afe49ecf66a29021">eve::procgen::Average</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614fac1b5fa03ecdb95d4a45dd1c40b02527f">eve::procgen::Horizontal</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614fa06ce2a25e5d12c166a36f654dbea6012">eve::procgen::Vertical</a> = 2
+ }</td></tr>
+<tr class="memdesc:a3c3c3fc651d3b7396877fb508877614f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap.CurvatureMap modes in source enum order.  <a href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614f">更多...</a><br /></td></tr>
+<tr class="separator:a3c3c3fc651d3b7396877fb508877614f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acda3f5ccf621c69601d91f7835d5e591" id="r_acda3f5ccf621c69601d91f7835d5e591"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591">eve::procgen::TerrainHeightmapAspect</a> { <a class="el" href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591ade55f3429efef9d994dbe410026143e3">eve::procgen::Aspect</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591a4db3d80cae16fc3a29b6f6d54e92b79c">eve::procgen::Northerness</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591a8bab6311f6a7c3a0433ca7dd030ae33c">eve::procgen::Easterness</a> = 2
+ }</td></tr>
+<tr class="memdesc:acda3f5ccf621c69601d91f7835d5e591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap.Aspect modes in source enum order.  <a href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591">更多...</a><br /></td></tr>
+<tr class="separator:acda3f5ccf621c69601d91f7835d5e591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09f448ebb0e895a5cd7691e611baed16" id="r_a09f448ebb0e895a5cd7691e611baed16"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16">eve::procgen::TerrainHeightmapNeighborhood</a> { <a class="el" href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16a5e63bd1740d517cf6793e927025d7c9c">eve::procgen::DeNoise</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16a51a3501253c4a05e9fa428fd22d95a09">eve::procgen::GrowEdges</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16af79fe6aefb963bfa1f71a8f26c12c93e">eve::procgen::ShrinkEdges</a> = 2
+ }</td></tr>
+<tr class="memdesc:a09f448ebb0e895a5cd7691e611baed16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap neighborhood mutation modes.  <a href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16">更多...</a><br /></td></tr>
+<tr class="separator:a09f448ebb0e895a5cd7691e611baed16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbbb58d4ba23a25cb7266da135baf213" id="r_afbbb58d4ba23a25cb7266da135baf213"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213">eve::procgen::TerrainHeightmapArithmetic</a> { <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213aec211f7c20af43e742bf2570c3cb84f9">eve::procgen::Add</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213a1d9baf077ee87921f57a8fe42d510b65">eve::procgen::Subtract</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213ae257376d913f3b53cbb4a9b19d770648">eve::procgen::Multiply</a> = 2
+, <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213a0b914e196182d02615487e9793ecff3d">eve::procgen::Divide</a> = 3
+ }</td></tr>
+<tr class="memdesc:afbbb58d4ba23a25cb7266da135baf213"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap pointwise arithmetic operations.  <a href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213">更多...</a><br /></td></tr>
+<tr class="separator:afbbb58d4ba23a25cb7266da135baf213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e6001f73bbf6d50159046891e886d88" id="r_a8e6001f73bbf6d50159046891e886d88"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88">eve::procgen::TerrainHeightmapTransform</a> { <a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88a9b8958acb7be504bb5f55f17c0eea366">eve::procgen::Invert</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88ae6206f762bbca116cc0df08f1aca7826">eve::procgen::Normalise</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88add4fe0cc913f704600b97d1f5dd285de">eve::procgen::Power</a> = 2
+, <a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88ac63ecd19a0ca74c22dfcf3063c9805d2">eve::procgen::Contrast</a> = 3
+ }</td></tr>
+<tr class="memdesc:a8e6001f73bbf6d50159046891e886d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap whole-raster value transforms.  <a href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88">更多...</a><br /></td></tr>
+<tr class="separator:a8e6001f73bbf6d50159046891e886d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac50bd823958990624f7440e3ac09b047" id="r_ac50bd823958990624f7440e3ac09b047"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047">eve::procgen::TerrainHeightmapCopy</a> { <a class="el" href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047a68eec46437c384d8dad18d5464ebc35c">eve::procgen::Always</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047ae2f285539310a0ddb281af8e04cbe059">eve::procgen::IfLess</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047a83b88a386f4128b3f49344419cec4595">eve::procgen::IfGreater</a> = 2
+ }</td></tr>
+<tr class="memdesc:ac50bd823958990624f7440e3ac09b047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap.Copy conditional modes in source enum order.  <a href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047">更多...</a><br /></td></tr>
+<tr class="separator:ac50bd823958990624f7440e3ac09b047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e42d2130e77816471a5e37eaabf7874" id="r_a9e42d2130e77816471a5e37eaabf7874"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874">eve::procgen::TerrainHeightmapMeasure</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874aa1d0ec6d56f8833a078b5a7ac4caf2d4">eve::procgen::Minimum</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874a8321e79c278ec510f63675c040594892">eve::procgen::Maximum</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874aa0ec87054b5e5b7847d0d8780a01a3d5">eve::procgen::Sum</a> = 2
+, <a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874ab1897515d548a960afe49ecf66a29021">eve::procgen::Average</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874a045a1b9e4eb238fcda94459ba1cac721">eve::procgen::BaseLevel</a> = 4
+<br />
+ }</td></tr>
+<tr class="memdesc:a9e42d2130e77816471a5e37eaabf7874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap read-only scalar measurements.  <a href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874">更多...</a><br /></td></tr>
+<tr class="separator:a9e42d2130e77816471a5e37eaabf7874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a537a66ec6f678ccb0c001354796e5747" id="r_a537a66ec6f678ccb0c001354796e5747"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747">eve::procgen::TerrainHeightmapSlopeQuery</a> { <a class="el" href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747a19ee8eff133a7240c11f6d9e317e952e">eve::procgen::GridForward</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747a63fc04581c0ebd73c01bf42b95fcf965">eve::procgen::NormalizedCentral</a> = 1
+, <a class="el" href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747a04e544b8814566a91a6b371711826ebc">eve::procgen::NormalizedAverage</a> = 2
+ }</td></tr>
+<tr class="memdesc:a537a66ec6f678ccb0c001354796e5747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pcg HeightMap point slope query variants.  <a href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747">更多...</a><br /></td></tr>
+<tr class="separator:a537a66ec6f678ccb0c001354796e5747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a8c176244f995b767a7756cbe33f72e65" id="r_a8c176244f995b767a7756cbe33f72e65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8c176244f995b767a7756cbe33f72e65">eve::procgen::sampleTerrainHeightmapSafe</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a8c176244f995b767a7756cbe33f72e65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a finite heightmap at an integer coordinate clamped to its nearest border.  <br /></td></tr>
+<tr class="separator:a8c176244f995b767a7756cbe33f72e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd398dcfe0bcf664f801976ba8c908aa" id="r_acd398dcfe0bcf664f801976ba8c908aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#acd398dcfe0bcf664f801976ba8c908aa">eve::procgen::sampleTerrainHeightmapNormalized</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:acd398dcfe0bcf664f801976ba8c908aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read Pcg HeightMap's normalized bilinear sample using x*width and z*depth coordinates.  <br /></td></tr>
+<tr class="separator:acd398dcfe0bcf664f801976ba8c908aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a0a403b2cf76ee2a22545456e62f239" id="r_a8a0a403b2cf76ee2a22545456e62f239"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8a0a403b2cf76ee2a22545456e62f239">eve::procgen::terrainHeightmapHasData</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a8a0a403b2cf76ee2a22545456e62f239"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a heightmap contains a valid positive-size sample array.  <br /></td></tr>
+<tr class="separator:a8a0a403b2cf76ee2a22545456e62f239"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9635daef8a85be2aae720a9d5ff2dd59" id="r_a9635daef8a85be2aae720a9d5ff2dd59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9635daef8a85be2aae720a9d5ff2dd59">eve::procgen::terrainHeightmapIsPowerOfTwo</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a9635daef8a85be2aae720a9d5ff2dd59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether both positive heightmap dimensions are powers of two; malformed storage fails.  <br /></td></tr>
+<tr class="separator:a9635daef8a85be2aae720a9d5ff2dd59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affd921d530fc02ff3b90f6ab974f97a0" id="r_affd921d530fc02ff3b90f6ab974f97a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#affd921d530fc02ff3b90f6ab974f97a0">eve::procgen::generateTerrainHeightmapCurvature</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3c3c3fc651d3b7396877fb508877614f">TerrainHeightmapCurvature</a> mode)</td></tr>
+<tr class="memdesc:affd921d530fc02ff3b90f6ab974f97a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive Pcg HeightMap.CurvatureMap's normalized differential curvature.  <br /></td></tr>
+<tr class="separator:affd921d530fc02ff3b90f6ab974f97a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14c031abb6311674e3e5370b4dc55ba" id="r_ad14c031abb6311674e3e5370b4dc55ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad14c031abb6311674e3e5370b4dc55ba">eve::procgen::generateTerrainHeightmapAspect</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="namespaceeve_1_1procgen.html#acda3f5ccf621c69601d91f7835d5e591">TerrainHeightmapAspect</a> mode)</td></tr>
+<tr class="memdesc:ad14c031abb6311674e3e5370b4dc55ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive Pcg HeightMap.Aspect's aspect, northerness, or easterness raster.  <br /></td></tr>
+<tr class="separator:ad14c031abb6311674e3e5370b4dc55ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbc5b97a82e05fb93a6207f82ec05a5c" id="r_abbc5b97a82e05fb93a6207f82ec05a5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#abbc5b97a82e05fb93a6207f82ec05a5c">eve::procgen::filterTerrainHeightmapNeighborhood</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <a class="el" href="namespaceeve_1_1procgen.html#a09f448ebb0e895a5cd7691e611baed16">TerrainHeightmapNeighborhood</a> mode)</td></tr>
+<tr class="memdesc:abbc5b97a82e05fb93a6207f82ec05a5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg HeightMap.DeNoise, GrowEdges, or ShrinkEdges in source traversal order.  <br /></td></tr>
+<tr class="separator:abbc5b97a82e05fb93a6207f82ec05a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a933b44cdc8f3afcc1c2225704f97b7" id="r_a4a933b44cdc8f3afcc1c2225704f97b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a4a933b44cdc8f3afcc1c2225704f97b7">eve::procgen::smoothTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a4a933b44cdc8f3afcc1c2225704f97b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg HeightMap.Smooth's in-place four-neighbor passes.  <br /></td></tr>
+<tr class="separator:a4a933b44cdc8f3afcc1c2225704f97b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6012edd775ce9111ae52eddbcb63eba2" id="r_a6012edd775ce9111ae52eddbcb63eba2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6012edd775ce9111ae52eddbcb63eba2">eve::procgen::smoothTerrainHeightmapRadius</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, int <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a6012edd775ce9111ae52eddbcb63eba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg HeightMap.SmoothRadius's scaled sliding-window filter, including its first-row omission.  <br /></td></tr>
+<tr class="separator:a6012edd775ce9111ae52eddbcb63eba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a617e9824b2a643d99043545eb2a60671" id="r_a617e9824b2a643d99043545eb2a60671"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a617e9824b2a643d99043545eb2a60671">eve::procgen::convolveTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;kernel)</td></tr>
+<tr class="memdesc:a617e9824b2a643d99043545eb2a60671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg HeightMap.Convolve with an odd square kernel and source-order in-place feedback.  <br /></td></tr>
+<tr class="separator:a617e9824b2a643d99043545eb2a60671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16168e0f37f7c010586acf5365ca55b6" id="r_a16168e0f37f7c010586acf5365ca55b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a16168e0f37f7c010586acf5365ca55b6">eve::procgen::generateTerrainHeightmapSlope</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a16168e0f37f7c010586acf5365ca55b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate Pcg HeightMap.SlopeMap's normalized gradient magnitude.  <br /></td></tr>
+<tr class="separator:a16168e0f37f7c010586acf5365ca55b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f11843aa3311535cd14e4e030beb3a3" id="r_a8f11843aa3311535cd14e4e030beb3a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8f11843aa3311535cd14e4e030beb3a3">eve::procgen::quantizeTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float divisor)</td></tr>
+<tr class="memdesc:a8f11843aa3311535cd14e4e030beb3a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantize every sample using Pcg HeightMap.Quantize's Mathf.Round rule.  <br /></td></tr>
+<tr class="separator:a8f11843aa3311535cd14e4e030beb3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeba0f09e127769ab179962498db4c91" id="r_aeeba0f09e127769ab179962498db4c91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aeeba0f09e127769ab179962498db4c91">eve::procgen::applyTerrainHeightmapScalarArithmetic</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float operand, <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213">TerrainHeightmapArithmetic</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, bool clampResult, float minValue, float maxValue)</td></tr>
+<tr class="memdesc:aeeba0f09e127769ab179962498db4c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a scalar Pcg HeightMap arithmetic operation with optional clamping.  <br /></td></tr>
+<tr class="separator:aeeba0f09e127769ab179962498db4c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6874eafd605fc78e2588e69c9d70a6" id="r_a3b6874eafd605fc78e2588e69c9d70a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3b6874eafd605fc78e2588e69c9d70a6">eve::procgen::applyTerrainHeightmapRasterArithmetic</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;operand, <a class="el" href="namespaceeve_1_1procgen.html#afbbb58d4ba23a25cb7266da135baf213">TerrainHeightmapArithmetic</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, bool clampResult, float minValue, float maxValue)</td></tr>
+<tr class="memdesc:a3b6874eafd605fc78e2588e69c9d70a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply a raster Pcg HeightMap arithmetic operation, resampling a differently sized operand.  <br /></td></tr>
+<tr class="separator:a3b6874eafd605fc78e2588e69c9d70a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4526a9ab9ded75d9dd955d4fc7a65c" id="r_acd4526a9ab9ded75d9dd955d4fc7a65c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#acd4526a9ab9ded75d9dd955d4fc7a65c">eve::procgen::lerpTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:acd4526a9ab9ded75d9dd955d4fc7a65c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lerp source toward values under a mask using Pcg's clamped Mathf.Lerp semantics.  <br /></td></tr>
+<tr class="separator:acd4526a9ab9ded75d9dd955d4fc7a65c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce8ba692785da89c63c622f0bcd8dd2" id="r_a6ce8ba692785da89c63c622f0bcd8dd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6ce8ba692785da89c63c622f0bcd8dd2">eve::procgen::transformTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="namespaceeve_1_1procgen.html#a8e6001f73bbf6d50159046891e886d88">TerrainHeightmapTransform</a> transform, float parameter)</td></tr>
+<tr class="memdesc:a6ce8ba692785da89c63c622f0bcd8dd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg Invert, Normalise, Power, or Contrast to a finite heightmap.  <br /></td></tr>
+<tr class="separator:a6ce8ba692785da89c63c622f0bcd8dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a632c8da326a8d937ced0d19214e34e72" id="r_a632c8da326a8d937ced0d19214e34e72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a632c8da326a8d937ced0d19214e34e72">eve::procgen::copyTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="namespaceeve_1_1procgen.html#ac50bd823958990624f7440e3ac09b047">TerrainHeightmapCopy</a> mode)</td></tr>
+<tr class="memdesc:a632c8da326a8d937ced0d19214e34e72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy or conditionally merge a Pcg heightmap, resampling when dimensions differ.  <br /></td></tr>
+<tr class="separator:a632c8da326a8d937ced0d19214e34e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27577e595e578513ad6c698fca367af4" id="r_a27577e595e578513ad6c698fca367af4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a27577e595e578513ad6c698fca367af4">eve::procgen::copyTerrainHeightmapClamped</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float minValue, float maxValue)</td></tr>
+<tr class="memdesc:a27577e595e578513ad6c698fca367af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a Pcg heightmap with inclusive output clamping and normalized resampling.  <br /></td></tr>
+<tr class="separator:a27577e595e578513ad6c698fca367af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d602328d8cc3f0f1bcfec07651b277b" id="r_a3d602328d8cc3f0f1bcfec07651b277b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3d602328d8cc3f0f1bcfec07651b277b">eve::procgen::flipTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a3d602328d8cc3f0f1bcfec07651b277b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transpose a Pcg HeightMap exactly as HeightMap.Flip does.  <br /></td></tr>
+<tr class="separator:a3d602328d8cc3f0f1bcfec07651b277b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa607a134dcf2ff757ba0b34ba5bfb983" id="r_aa607a134dcf2ff757ba0b34ba5bfb983"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa607a134dcf2ff757ba0b34ba5bfb983">eve::procgen::measureTerrainHeightmap</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="namespaceeve_1_1procgen.html#a9e42d2130e77816471a5e37eaabf7874">TerrainHeightmapMeasure</a> measure)</td></tr>
+<tr class="memdesc:aa607a134dcf2ff757ba0b34ba5bfb983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measure Pcg height range, sum, average, or scanner base level from current samples.  <br /></td></tr>
+<tr class="separator:aa607a134dcf2ff757ba0b34ba5bfb983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0da77c74cb5793a7f29de92b691281d1" id="r_a0da77c74cb5793a7f29de92b691281d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a0da77c74cb5793a7f29de92b691281d1">eve::procgen::quantizeTerrainHeightmapTerraces</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;startHeights, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;curves)</td></tr>
+<tr class="memdesc:a0da77c74cb5793a7f29de92b691281d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Pcg's curve-driven Quantize overload using one sampled curve per raster row.  <br /></td></tr>
+<tr class="separator:a0da77c74cb5793a7f29de92b691281d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff2599121db887b306495f8d5ce6a597" id="r_aff2599121db887b306495f8d5ce6a597"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aff2599121db887b306495f8d5ce6a597">eve::procgen::measureTerrainHeightmapSlope</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="el" href="namespaceeve_1_1procgen.html#a537a66ec6f678ccb0c001354796e5747">TerrainHeightmapSlopeQuery</a> mode)</td></tr>
+<tr class="memdesc:aff2599121db887b306495f8d5ce6a597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate one of Pcg HeightMap's three point-slope formulas.  <br /></td></tr>
+<tr class="separator:aff2599121db887b306495f8d5ce6a597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cbe096b8c8aff6d6850254b72ee3e8d" id="r_a5cbe096b8c8aff6d6850254b72ee3e8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a5cbe096b8c8aff6d6850254b72ee3e8d">eve::procgen::fillTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a5cbe096b8c8aff6d6850254b72ee3e8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a finite Pcg heightmap with one value clamped to [0,1].  <br /></td></tr>
+<tr class="separator:a5cbe096b8c8aff6d6850254b72ee3e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae345dd52cb270df95a85a61a76d275ce" id="r_ae345dd52cb270df95a85a61a76d275ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ae345dd52cb270df95a85a61a76d275ce">eve::procgen::setTerrainHeightmapSafe</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ae345dd52cb270df95a85a61a76d275ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one sample after clamping its coordinates to the nearest border.  <br /></td></tr>
+<tr class="separator:ae345dd52cb270df95a85a61a76d275ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231a05780be5f64a799da63586009013" id="r_a231a05780be5f64a799da63586009013"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a231a05780be5f64a799da63586009013">eve::procgen::setTerrainHeightmapRow</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, int rowX, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>)</td></tr>
+<tr class="memdesc:a231a05780be5f64a799da63586009013"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Pcg's fixed-X row from a one-dimensional strip.  <br /></td></tr>
+<tr class="separator:a231a05780be5f64a799da63586009013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fe8486e409f9a76e0ca8b820a91553a" id="r_a6fe8486e409f9a76e0ca8b820a91553a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6fe8486e409f9a76e0ca8b820a91553a">eve::procgen::setTerrainHeightmapColumn</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, int columnZ, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>)</td></tr>
+<tr class="memdesc:a6fe8486e409f9a76e0ca8b820a91553a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set Pcg's fixed-Z column from a one-dimensional strip.  <br /></td></tr>
+<tr class="separator:a6fe8486e409f9a76e0ca8b820a91553a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00318d0f859ec439bcd831eb997dc8e6" id="r_a00318d0f859ec439bcd831eb997dc8e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a00318d0f859ec439bcd831eb997dc8e6">eve::procgen::resetTerrainHeightmap</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>)</td></tr>
+<tr class="memdesc:a00318d0f859ec439bcd831eb997dc8e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset a heightmap to Pcg's empty zero-by-zero state.  <br /></td></tr>
+<tr class="separator:a00318d0f859ec439bcd831eb997dc8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

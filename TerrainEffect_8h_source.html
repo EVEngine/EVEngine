@@ -1,0 +1,270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainEffect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainEffect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainEffect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">class </span>Heightmap;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> Result&lt;int&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#a33a1a7d915208556cf72be7707d14ed0">applyTerrainContrast</a>(Heightmap&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> Heightmap&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                                                    <span class="keywordtype">float</span> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ada74a2ad46bf78a90752295c71bd31ef">featureSize</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">TerrainSmoothSettings</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#a47dcb0e42c9b9a1abd217d06a24d6d0a">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#a47dcb0e42c9b9a1abd217d06a24d6d0a">radius</a> = 10, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#aae3f03bab58daed80037ac09280f292f">verticality</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#aa849b55aeeab05597e84c16759cf4e82">strength</a> = 1;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">TerrainRidgeSettings</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a12af010156d8a502757cb1c1fcc2d5f1">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#acd9b1941679fcf69c20b4991dcbd6cf7">mixStrength</a> = 0.5F, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a12af010156d8a502757cb1c1fcc2d5f1">exponent</a> = 16, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a44d95294403635d458ee41ad088a66a1">strength</a> = 1;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2eb7fc40a70f326b25a2cffb858a6813">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a3ff935bc2fe907cdb9f9e7d971912a84">minimum</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2eb7fc40a70f326b25a2cffb858a6813">maximum</a> = 0.5F;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2749e84b503c617e7c4a9f88cfacf057">   35</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2749e84b503c617e7c4a9f88cfacf057">passes</a> = 18;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">TerrainTerraceSettings</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#aa0ceb501af084a11b252f4efe6764ec8">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#a9007dbb0fa4d7308606756b54cc715d0">count</a> = 100, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#aa0ceb501af084a11b252f4efe6764ec8">bevel</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#a5fd86bee11fe70c36ced08d115bda1a0">strength</a> = 1;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a7b7912d3cf773f305c8e1ce139b549e5">applyTerrainSmooth</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">TerrainSmoothSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#ab21f6100195e08e8e4e6cd077a9589da">applyTerrainRidges</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">TerrainRidgeSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a1191c62836dd2aa349ae1ab451f185b4">applyTerrainTerrace</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                                   <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">TerrainTerraceSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a7e28618f26fc960f09f3544d746d3a7f">applyTerrainPower</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="RockMesh_8cpp.html#af2eae6b68aca1a3174f57157c50f58f1">power</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="};">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">  102</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">TerrainHeightMixSettings</a> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a060de50616a151afcc05f491a8674e06">  103</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a8dfa4b157b931308812c6ebb07ba5b13">minimum</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a060de50616a151afcc05f491a8674e06">maximum</a> = 1, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a816dd0736b22e2a158a5fc86aa325c31">midpoint</a> = 0.5F, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ab7853cdab20160b3d52bee602f60b8af">strength</a> = 0.5F;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ab5a5b60b05df97db7f6efb4a21b1b309">  104</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ad888dcce2a172fb0dc05fbe9abfed2b0">clipMinimum</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ab5a5b60b05df97db7f6efb4a21b1b309">clipMaximum</a> = 0.5F;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>};</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#afe13234469bdf9ea33c6eafaa802629d">applyTerrainHeightCurve</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                                                                       <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                                                       <span class="keywordtype">float</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a7714475aee7c5afce31730dff099af09">applyTerrainHeightMix</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                                                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&amp;                <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ac97c7885e9e0d6f6b3c7de60763dcc01">global</a>,</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                                                                     <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">TerrainHeightMixSettings</a>&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00158">ActionNotifyRegistry.cpp:158</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00027">GltfImporter.cpp:27</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00026">GltfImporter.cpp:26</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a8a71cf98f1ad6795a6d5c2397672e40d"><div class="ttname"><a href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a></div><div class="ttdeci">std::string local</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00025">LanguageIndex.cpp:25</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aRockMesh_8cpp_html_af2eae6b68aca1a3174f57157c50f58f1"><div class="ttname"><a href="RockMesh_8cpp.html#af2eae6b68aca1a3174f57157c50f58f1">power</a></div><div class="ttdeci">float power</div><div class="ttdef"><b>Definition</b> <a href="RockMesh_8cpp_source.html#l00023">RockMesh.cpp:23</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a278e616fc7e696932a959a2290b83515"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a></div><div class="ttdeci">Heightmap curve</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00140">TerrainGenerationSession.cpp:140</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2c1c8f9331368f38bfc3eaee260b59a6"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00121">TerrainGenerationSession.cpp:121</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_ac97c7885e9e0d6f6b3c7de60763dcc01"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#ac97c7885e9e0d6f6b3c7de60763dcc01">global</a></div><div class="ttdeci">Heightmap global</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00116">TerrainGenerationSession.cpp:116</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_ada74a2ad46bf78a90752295c71bd31ef"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#ada74a2ad46bf78a90752295c71bd31ef">featureSize</a></div><div class="ttdeci">float featureSize</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00121">TerrainGenerationSession.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00021">Heightmap.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a1191c62836dd2aa349ae1ab451f185b4"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a1191c62836dd2aa349ae1ab451f185b4">eve::procgen::applyTerrainTerrace</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainTerrace(Heightmap &amp;target, const Heightmap &amp;mask, const TerrainTerraceSettings &amp;settings)</div><div class="ttdoc">Terrace scalar heights using nearest-even rounding and the shader's one-sided bevel.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00125">TerrainEffect.cpp:125</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a33a1a7d915208556cf72be7707d14ed0"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a33a1a7d915208556cf72be7707d14ed0">eve::procgen::applyTerrainContrast</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainContrast(Heightmap &amp;target, const Heightmap &amp;mask, float strength, float featureSize)</div><div class="ttdoc">Apply the nine-tap Pcg contrast equation to native scalar heights.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00026">TerrainEffect.cpp:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a7714475aee7c5afce31730dff099af09"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a7714475aee7c5afce31730dff099af09">eve::procgen::applyTerrainHeightMix</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainHeightMix(Heightmap &amp;target, const Heightmap &amp;local, const Heightmap &amp;global, const TerrainHeightMixSettings &amp;settings)</div><div class="ttdoc">Mix centered local brush heights into terrain, then globally mask and clip.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00179">TerrainEffect.cpp:179</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a7b7912d3cf773f305c8e1ce139b549e5"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a7b7912d3cf773f305c8e1ce139b549e5">eve::procgen::applyTerrainSmooth</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainSmooth(Heightmap &amp;target, const Heightmap &amp;mask, const TerrainSmoothSettings &amp;settings)</div><div class="ttdoc">Apply Pcg's horizontal then vertical seven-pair weighted smooth passes.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00049">TerrainEffect.cpp:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a7e28618f26fc960f09f3544d746d3a7f"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a7e28618f26fc960f09f3544d746d3a7f">eve::procgen::applyTerrainPower</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainPower(Heightmap &amp;target, const Heightmap &amp;mask, float power)</div><div class="ttdoc">Apply the Pcg PowerOf control: lerp(height,pow(height,4-power),mask).</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00142">TerrainEffect.cpp:142</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab21f6100195e08e8e4e6cd077a9589da"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab21f6100195e08e8e4e6cd077a9589da">eve::procgen::applyTerrainRidges</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainRidges(Heightmap &amp;target, const Heightmap &amp;mask, const TerrainRidgeSettings &amp;settings)</div><div class="ttdoc">Apply ordered horizontal/vertical ridge powers, neighbor mixing and per-pass clipping.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00089">TerrainEffect.cpp:89</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_afe13234469bdf9ea33c6eafaa802629d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#afe13234469bdf9ea33c6eafaa802629d">eve::procgen::applyTerrainHeightCurve</a></div><div class="ttdeci">Result&lt; int &gt; applyTerrainHeightCurve(Heightmap &amp;target, const Heightmap &amp;mask, const Heightmap &amp;curve, float minimum, float maximum)</div><div class="ttdoc">Apply the height-transform shader's smoothstep and one-row height curve.</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8cpp_source.html#l00160">TerrainEffect.cpp:160</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html">eve::procgen::TerrainHeightMixSettings</a></div><div class="ttdoc">Mix-height scalar controls; delta scale is maximum-minimum, independent of clipping bounds....</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00102">TerrainEffect.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_a060de50616a151afcc05f491a8674e06"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a060de50616a151afcc05f491a8674e06">eve::procgen::TerrainHeightMixSettings::maximum</a></div><div class="ttdeci">float maximum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00103">TerrainEffect.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_a816dd0736b22e2a158a5fc86aa325c31"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a816dd0736b22e2a158a5fc86aa325c31">eve::procgen::TerrainHeightMixSettings::midpoint</a></div><div class="ttdeci">float midpoint</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00103">TerrainEffect.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_a8dfa4b157b931308812c6ebb07ba5b13"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#a8dfa4b157b931308812c6ebb07ba5b13">eve::procgen::TerrainHeightMixSettings::minimum</a></div><div class="ttdeci">float minimum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00103">TerrainEffect.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_ab5a5b60b05df97db7f6efb4a21b1b309"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ab5a5b60b05df97db7f6efb4a21b1b309">eve::procgen::TerrainHeightMixSettings::clipMaximum</a></div><div class="ttdeci">float clipMaximum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00104">TerrainEffect.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_ab7853cdab20160b3d52bee602f60b8af"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ab7853cdab20160b3d52bee602f60b8af">eve::procgen::TerrainHeightMixSettings::strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00103">TerrainEffect.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainHeightMixSettings_html_ad888dcce2a172fb0dc05fbe9abfed2b0"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainHeightMixSettings.html#ad888dcce2a172fb0dc05fbe9abfed2b0">eve::procgen::TerrainHeightMixSettings::clipMinimum</a></div><div class="ttdeci">float clipMinimum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00104">TerrainEffect.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html">eve::procgen::TerrainRidgeSettings</a></div><div class="ttdoc">Ridge controls in caller height units, with explicit clipping bounds. Defaults match the Pcg packed s...</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00032">TerrainEffect.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_a12af010156d8a502757cb1c1fcc2d5f1"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a12af010156d8a502757cb1c1fcc2d5f1">eve::procgen::TerrainRidgeSettings::exponent</a></div><div class="ttdeci">float exponent</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00033">TerrainEffect.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_a2749e84b503c617e7c4a9f88cfacf057"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2749e84b503c617e7c4a9f88cfacf057">eve::procgen::TerrainRidgeSettings::passes</a></div><div class="ttdeci">int passes</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00035">TerrainEffect.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_a2eb7fc40a70f326b25a2cffb858a6813"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a2eb7fc40a70f326b25a2cffb858a6813">eve::procgen::TerrainRidgeSettings::maximum</a></div><div class="ttdeci">float maximum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00034">TerrainEffect.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_a3ff935bc2fe907cdb9f9e7d971912a84"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a3ff935bc2fe907cdb9f9e7d971912a84">eve::procgen::TerrainRidgeSettings::minimum</a></div><div class="ttdeci">float minimum</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00034">TerrainEffect.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_a44d95294403635d458ee41ad088a66a1"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#a44d95294403635d458ee41ad088a66a1">eve::procgen::TerrainRidgeSettings::strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00033">TerrainEffect.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRidgeSettings_html_acd9b1941679fcf69c20b4991dcbd6cf7"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRidgeSettings.html#acd9b1941679fcf69c20b4991dcbd6cf7">eve::procgen::TerrainRidgeSettings::mixStrength</a></div><div class="ttdeci">float mixStrength</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00033">TerrainEffect.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainSmoothSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainSmoothSettings.html">eve::procgen::TerrainSmoothSettings</a></div><div class="ttdoc">Two-pass smoothing controls; radius in texels, verticality in [-1,1], strength in [0,...</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00022">TerrainEffect.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainSmoothSettings_html_a47dcb0e42c9b9a1abd217d06a24d6d0a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#a47dcb0e42c9b9a1abd217d06a24d6d0a">eve::procgen::TerrainSmoothSettings::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00023">TerrainEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainSmoothSettings_html_aa849b55aeeab05597e84c16759cf4e82"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#aa849b55aeeab05597e84c16759cf4e82">eve::procgen::TerrainSmoothSettings::strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00023">TerrainEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainSmoothSettings_html_aae3f03bab58daed80037ac09280f292f"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainSmoothSettings.html#aae3f03bab58daed80037ac09280f292f">eve::procgen::TerrainSmoothSettings::verticality</a></div><div class="ttdeci">float verticality</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00023">TerrainEffect.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainTerraceSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainTerraceSettings.html">eve::procgen::TerrainTerraceSettings</a></div><div class="ttdoc">Terrace frequency in inverse height units, interior bevel in [0,1], strength in [0,...</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00039">TerrainEffect.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainTerraceSettings_html_a5fd86bee11fe70c36ced08d115bda1a0"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#a5fd86bee11fe70c36ced08d115bda1a0">eve::procgen::TerrainTerraceSettings::strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00040">TerrainEffect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainTerraceSettings_html_a9007dbb0fa4d7308606756b54cc715d0"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#a9007dbb0fa4d7308606756b54cc715d0">eve::procgen::TerrainTerraceSettings::count</a></div><div class="ttdeci">float count</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00040">TerrainEffect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainTerraceSettings_html_aa0ceb501af084a11b252f4efe6764ec8"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainTerraceSettings.html#aa0ceb501af084a11b252f4efe6764ec8">eve::procgen::TerrainTerraceSettings::bevel</a></div><div class="ttdeci">float bevel</div><div class="ttdef"><b>Definition</b> <a href="TerrainEffect_8h_source.html#l00040">TerrainEffect.h:40</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

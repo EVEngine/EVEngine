@@ -1,0 +1,484 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/settlement/SettlementRules.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ddc3c20607213f0a961ae1e6b38c3bdf.html">settlement</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">SettlementRules.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="SettlementRules_8h_source.html">settlement/SettlementRules.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cctype&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;iomanip&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="SettlementRules_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1settlement" id="r_namespaceeve_1_1settlement"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1settlement.html">eve::settlement</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a857e4e5a2613b7cf584dbf12dae00525" name="a857e4e5a2613b7cf584dbf12dae00525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a857e4e5a2613b7cf584dbf12dae00525">&#9670;&#160;</a></span>boolean</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool boolean = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSArchetype_8cpp_source.html#l00284">eve::rts::RTSArchetypeMaterializer::apply()</a>, <a class="el" href="RTSArchetype_8cpp_source.html#l00119">eve::rts::RTSArchetypeMaterializer::apply()</a>, <a class="el" href="Runtime_8h_source.html#l00133">eve::ReflectedValue::asBool()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00144">eve::particles_editing::ParticleGraphDomain::compile()</a>, <a class="el" href="AbilityAsset_8cpp_source.html#l00493">eve::action::decodeAbilityAsset()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l01023">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00208">eve::physics::SoftBody3DDefinition::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a> , 以及 <a class="el" href="CookedMaterial_8cpp_source.html#l00050">eve::asset_graphics::detail::readCookedMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a089d91bd116086ed4a40aa34ef7611e8" name="a089d91bd116086ed4a40aa34ef7611e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a089d91bd116086ed4a40aa34ef7611e8">&#9670;&#160;</a></span>column</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t column = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8871064c44d68726753ea9cbfd9c6463" name="a8871064c44d68726753ea9cbfd9c6463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8871064c44d68726753ea9cbfd9c6463">&#9670;&#160;</a></span>digest</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string digest</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00725">725</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlayTrace_8cpp_source.html#l00177">eve::dev::PlayTraceBuffer::append()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00150">eve::pixelworld_streaming::archiveChunkBatch()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00206">eve::pixelworld_streaming::decodeChunkBatchArchive()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00271">eve::cmd::sdk::fileSha256()</a>, <a class="el" href="SettlementRules_8cpp_source.html#l00894">eve::settlement::SettlementRuleSet::install()</a>, <a class="el" href="PlayTrace_8cpp_source.html#l00103">eve::dev::replayPlayTrace()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00292">eve::pixelworld_replay::PixelReplayLog::restoreSnapshot()</a> , 以及 <a class="el" href="ImportCommon_8h_source.html#l00013">eve::asset_import::detail::sha256()</a>.</p>
+
+</div>
+</div>
+<a id="a38de9b52cbbca9313f7d7c8505a64e10" name="a38de9b52cbbca9313f7d7c8505a64e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38de9b52cbbca9313f7d7c8505a64e10">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TokenKind kind = ExpressionKind::Literal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e18ff64ccfde0a8ba47196c3d7dce72" name="a9e18ff64ccfde0a8ba47196c3d7dce72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e18ff64ccfde0a8ba47196c3d7dce72">&#9670;&#160;</a></span>left</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t left = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a053c9ceec697d4fbb801bcd7bc06d139" name="a053c9ceec697d4fbb801bcd7bc06d139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a053c9ceec697d4fbb801bcd7bc06d139">&#9670;&#160;</a></span>line</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t line = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f1388fa9a6e766ec51debbd2849ebe5" name="a8f1388fa9a6e766ec51debbd2849ebe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f1388fa9a6e766ec51debbd2849ebe5">&#9670;&#160;</a></span>literal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> literal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OnnxNumeric_8cpp_source.html#l00061">eve::tensor::onnx_detail::executeNumeric()</a>, <a class="el" href="Database_8cpp_source.html#l00121">eve::database::Connection::insert()</a>, <a class="el" href="Database_8cpp_source.html#l00165">eve::database::Connection::queryByKey()</a>, <a class="el" href="Database_8cpp_source.html#l00161">eve::database::Connection::removeByKey()</a>, <a class="el" href="Database_8cpp_source.html#l00135">eve::database::Connection::update()</a>, <a class="el" href="Database_8cpp_source.html#l00157">eve::database::Connection::updateByKey()</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00179">eve::database::Query::where()</a>.</p>
+
+</div>
+</div>
+<a id="a9b45b3e13bd9167aab02e17e08916231" name="a9b45b3e13bd9167aab02e17e08916231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b45b3e13bd9167aab02e17e08916231">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affaf3b4ffd820cdf6c62bf1c1279c83e" name="affaf3b4ffd820cdf6c62bf1c1279c83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affaf3b4ffd820cdf6c62bf1c1279c83e">&#9670;&#160;</a></span>nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ExpressionNode&gt; nodes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l00705">eve::sceneloader::SceneLoader::applyTreeDiff()</a>, <a class="el" href="UnityRenderBindings_8cpp_source.html#l00138">eve::asset_import::bindUnityRenderers()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00078">eve::ui::ScenePanel::build()</a>, <a class="el" href="DialogueGraphRuntime_8cpp_source.html#l00020">eve::dialogue_editing::DialogueGraphRuntimeBuilder::build()</a>, <a class="el" href="AnimationGraphRuntime_8cpp_source.html#l00022">eve::animation_editing::AnimationStateGraphRuntimeBuilder::build()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01280">eve::sceneloader::SceneLoader::collisionName()</a>, <a class="el" href="AnimationGraph_8cpp_source.html#l00090">eve::animation_editing::AnimationStateGraphDomain::compile()</a>, <a class="el" href="DialogueGraph_8cpp_source.html#l00106">eve::dialogue_editing::DialogueGraphDomain::compile()</a>, <a class="el" href="BehaviorGraph_8cpp_source.html#l00032">eve::npc_ai_editing::BehaviorGraphDomain::compile()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00144">eve::particles_editing::ParticleGraphDomain::compile()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00316">eve::climbing::decodeClimbingAnchorGraphDefinition()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00273">eve::climbing::encodeClimbingAnchorGraphDefinition()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00251">eve::scene::SceneHost::findByName()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00262">eve::scene::SceneHost::findByPath()</a>, <a class="el" href="SequenceAsset_8cpp_source.html#l00022">eve::dnut::SequenceAsset::findNode()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00337">eve::scene::SceneHost::getNodeCount()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00056">eve::asset_scene::EvpackSceneTemplateLoader::load()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00226">eve::social_editing::SocialDocumentTarget::loadSnapshot()</a>, <a class="el" href="VrmDocument_8cpp_source.html#l00227">eve::avatar::parseVrm()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00174">eve::scene::SceneHost::removeLeaf()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00198">eve::scene::SceneArtifactProvider::restoreState()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00596">eve::procgen::PointGraph::setExecutionNodeBudget()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00168">eve::scene::SceneArtifactProvider::snapshotState()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02075">eve::rts::WorkerAssignmentSystem::step()</a> , 以及 <a class="el" href="SceneHost_8cpp_source.html#l00524">eve::scene::SceneHost::walkChildren()</a>.</p>
+
+</div>
+</div>
+<a id="a01b4671c6b7cc8f831c951c000a37735" name="a01b4671c6b7cc8f831c951c000a37735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01b4671c6b7cc8f831c951c000a37735">&#9670;&#160;</a></span>number</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double number = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad09e427ff62de39c7b21cdd71166b69c" name="ad09e427ff62de39c7b21cdd71166b69c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09e427ff62de39c7b21cdd71166b69c">&#9670;&#160;</a></span>program</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;const ExpressionProgram&gt; program</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00724">724</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SettlementRules_8cpp_source.html#l00836">eve::settlement::SettlementRuleSet::configure()</a>.</p>
+
+</div>
+</div>
+<a id="a85b1a24c44a1558a437fe8be84d682dc" name="a85b1a24c44a1558a437fe8be84d682dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b1a24c44a1558a437fe8be84d682dc">&#9670;&#160;</a></span>right</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t right = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8555874c4f34a5c6e2704d16a684cb90" name="a8555874c4f34a5c6e2704d16a684cb90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8555874c4f34a5c6e2704d16a684cb90">&#9670;&#160;</a></span>root</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t root = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97e7e8062940786c1012d3203be046c2" name="a97e7e8062940786c1012d3203be046c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97e7e8062940786c1012d3203be046c2">&#9670;&#160;</a></span>string</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8h_source.html#l00042">eve::rpg::RPGActor::Attributes::Attributes()</a>, <a class="el" href="Codec_8cpp_source.html#l00117">eve::agent::decodeConfig()</a>, <a class="el" href="Codec_8cpp_source.html#l00189">eve::agent::decodePolicy()</a>, <a class="el" href="Codec_8cpp_source.html#l00207">eve::agent::decodeTrace()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">eve::dev::LanguageServer::Impl::Impl()</a>, <a class="el" href="CookedMaterial_8cpp_source.html#l00050">eve::asset_graphics::detail::readCookedMaterial()</a>, <a class="el" href="Value_8h_source.html#l00074">eve::Value::Value()</a> , 以及 <a class="el" href="EditingValue_8h_source.html#l00034">eve::editing::Value::Value()</a>.</p>
+
+</div>
+</div>
+<a id="a23c058547fbc73b5659191844a9f258c" name="a23c058547fbc73b5659191844a9f258c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23c058547fbc73b5659191844a9f258c">&#9670;&#160;</a></span>text</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string text</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38cddfe226f09087842d6f4d2e6aa871" name="a38cddfe226f09087842d6f4d2e6aa871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38cddfe226f09087842d6f4d2e6aa871">&#9670;&#160;</a></span>third</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint16_t third = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Learning_8h_source.html#l00054">eve::agent::detail::forward()</a> , 以及 <a class="el" href="Learning_8h_source.html#l00074">eve::agent::detail::train()</a>.</p>
+
+</div>
+</div>
+<a id="a314b5e6d3f00609d5fb9641a6fe29281" name="a314b5e6d3f00609d5fb9641a6fe29281"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a314b5e6d3f00609d5fb9641a6fe29281">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ExpressionType type = ExpressionType::Boolean</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

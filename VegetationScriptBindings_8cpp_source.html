@@ -1,0 +1,295 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/VegetationScriptBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VegetationScriptBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VegetationScriptBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="VegetationScriptBindings_8h.html">graphics/VegetationScriptBindings.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelOwnership_8h.html">common/SquirrelOwnership.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="VegetationDetails_8h.html">graphics/VegetationDetails.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="VegetationField_8h.html">graphics/VegetationField.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>        vector(glm::vec4 <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Value.html#a9c57d4d355c2dfbfa60bbbc31ea9d293">Value::array</a>({<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.x, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.y, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.z, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.w}); }</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>Result&lt;void&gt; missing() {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;vegetation field must not be null&quot;</span>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>Result&lt;void&gt; missingDetails() {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;vegetation details must not be null&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#af63034f89f25dce3a45d1e840a342500">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#af63034f89f25dce3a45d1e840a342500">exposeVegetationScriptBindings</a>(ssq::Table&amp; table, ssq::Class&amp; graphicsClass) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>  = table.getHandle();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">auto</span>       <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass&lt;<a class="code hl_class" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a>&gt;(<span class="stringliteral">&quot;VegetationField&quot;</span>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                                                     std::function&lt;VegetationField*()&gt;([] { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    graphicsClass.addFunc(<span class="stringliteral">&quot;newVegetationField&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>*) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ad8c1e86164a37718d037e4ebda9bdb79">script::makeOwnedSquirrelInstance</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::make_unique&lt;VegetationField&gt;());</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>.status());</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">auto</span> result = <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(), std::move(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>).takeValue());</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        result.set(<span class="stringliteral">&quot;ownership&quot;</span>, std::string(<span class="stringliteral">&quot;owned&quot;</span>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    });</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;restore&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a>* self, ssq::Object document) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, missing());</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(document);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.status()));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#a5f9eed7be74965dd052ee7514dee2769">restore</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.value()));</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    });</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;snapshot&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a>* self) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, missing());</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#af881119ef7b7871963d1db42b6a2ae3c">snapshot</a>(), [](<a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { return value; });</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    });</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;sample&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a>* self, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>, <span class="keywordtype">int</span> extras, <span class="keywordtype">int</span> motion,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               <span class="keywordtype">int</span> vertex) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, missing());</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">if</span> (color &lt; 0 || color &gt; 8 || extras &lt; 0 || extras &gt; 8 || motion &lt; 0 || motion &gt; 8 || vertex &lt; 0 || vertex &gt; 8)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                                                                     <span class="stringliteral">&quot;layers must be in [0,8]&quot;</span>)));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#af12e0cc7d33ff75dc4f3712126591cda">sample</a>({x, y, z}, {uint8_t(color), uint8_t(extras), uint8_t(motion), uint8_t(vertex)}),</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            [](<a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationSample.html">VegetationSample</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                return Value::object({{<span class="stringliteral">&quot;color&quot;</span>, vector(value.color)},</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                      {<span class="stringliteral">&quot;extras&quot;</span>, vector(value.extras)},</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                      {<span class="stringliteral">&quot;motion&quot;</span>, vector(value.motion)},</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                      {<span class="stringliteral">&quot;vertex&quot;</span>, vector(value.vertex)}});</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            });</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    });</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">auto</span> detailsClass = table.addClass&lt;VegetationDetailSettings&gt;(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="stringliteral">&quot;VegetationDetails&quot;</span>, std::function&lt;VegetationDetailSettings*()&gt;([] { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    graphicsClass.addFunc(<span class="stringliteral">&quot;newVegetationDetails&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](Graphics*) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ad8c1e86164a37718d037e4ebda9bdb79">script::makeOwnedSquirrelInstance</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::make_unique&lt;VegetationDetailSettings&gt;());</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>.status());</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">auto</span> result = <a class="code hl_function" href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(), std::move(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a>).takeValue());</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        result.set(<span class="stringliteral">&quot;ownership&quot;</span>, std::string(<span class="stringliteral">&quot;owned&quot;</span>));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    });</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    detailsClass.addFunc(<span class="stringliteral">&quot;restore&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](VegetationDetailSettings* self, ssq::Object document) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, missingDetails());</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(document);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.status()));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">auto</span> restored = <a class="code hl_function" href="namespaceeve_1_1graphics.html#a133a3f2de0c49833554d60430d23e706">restoreVegetationDetails</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.value());</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(restored.status()));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        *self = std::move(restored).takeValue();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    });</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    detailsClass.addFunc(<span class="stringliteral">&quot;snapshot&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](VegetationDetailSettings* self) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (!self) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, missingDetails());</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="namespaceeve_1_1graphics.html#a4fcba7a3333aa2c02c4a6fe831dea640">snapshotVegetationDetails</a>(*self), [](Value <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>; });</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    });</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_a374e8573581fe9b64dadaf512dc7ddda"><div class="ttname"><a href="AudioCapabilities_8cpp.html#a374e8573581fe9b64dadaf512dc7ddda">owned</a></div><div class="ttdeci">ActiveSource owned</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00394">AudioCapabilities.cpp:394</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00021">ECS.cpp:21</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00170">Evpack.cpp:170</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aSquirrelOwnership_8h_html"><div class="ttname"><a href="SquirrelOwnership_8h.html">SquirrelOwnership.h</a></div><div class="ttdoc">Explicit Value/Owned/Borrowed semantics at the Squirrel boundary.</div></div>
+<div class="ttc" id="aVegetationDetails_8h_html"><div class="ttname"><a href="VegetationDetails_8h.html">VegetationDetails.h</a></div></div>
+<div class="ttc" id="aVegetationField_8h_html"><div class="ttname"><a href="VegetationField_8h.html">VegetationField.h</a></div></div>
+<div class="ttc" id="aVegetationScriptBindings_8h_html"><div class="ttname"><a href="VegetationScriptBindings_8h.html">VegetationScriptBindings.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a9c57d4d355c2dfbfa60bbbc31ea9d293"><div class="ttname"><a href="classeve_1_1Value.html#a9c57d4d355c2dfbfa60bbbc31ea9d293">eve::Value::array</a></div><div class="ttdeci">static Value array(Array value)</div><div class="ttdoc">Compatibility factory for an array value.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00112">Value.h:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00114">Graphics.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html">eve::graphics::VegetationField</a></div><div class="ttdoc">Backend-independent, owning vegetation influence field. Single writer; concurrent const evaluation is...</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00086">VegetationField.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_a5f9eed7be74965dd052ee7514dee2769"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#a5f9eed7be74965dd052ee7514dee2769">eve::graphics::VegetationField::restore</a></div><div class="ttdeci">Result&lt; void &gt; restore(const Value &amp;document)</div><div class="ttdoc">Decode eve.graphics.vegetation-field version 1; rejects unknown fields/versions. Single-writer,...</div><div class="ttdef"><b>Definition</b> <a href="VegetationFieldCodec_8cpp_source.html#l00039">VegetationFieldCodec.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_af12e0cc7d33ff75dc4f3712126591cda"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#af12e0cc7d33ff75dc4f3712126591cda">eve::graphics::VegetationField::sample</a></div><div class="ttdeci">Result&lt; VegetationSample &gt; sample(glm::vec3 position, std::array&lt; uint8_t, 4 &gt; layers={}) const</div><div class="ttdoc">Evaluate four independently selected layers (0..8) at a finite world position.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8cpp_source.html#l00127">VegetationField.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_af881119ef7b7871963d1db42b6a2ae3c"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#af881119ef7b7871963d1db42b6a2ae3c">eve::graphics::VegetationField::snapshot</a></div><div class="ttdeci">Result&lt; Value &gt; snapshot() const</div><div class="ttdoc">Owning versioned snapshot; thread-safe while no mutation occurs. No callbacks.</div><div class="ttdef"><b>Definition</b> <a href="VegetationFieldCodec_8cpp_source.html#l00104">VegetationFieldCodec.cpp:104</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1database_html_a75dfba93933e5172c94376060426f2f4"><div class="ttname"><a href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">eve::database::Value</a></div><div class="ttdeci">std::variant&lt; std::monostate, std::int64_t, double, std::string, bool &gt; Value</div><div class="ttdef"><b>Definition</b> <a href="Database_8h_source.html#l00026">Database.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00021">Animation.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a133a3f2de0c49833554d60430d23e706"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a133a3f2de0c49833554d60430d23e706">eve::graphics::restoreVegetationDetails</a></div><div class="ttdeci">Result&lt; VegetationDetailSettings &gt; restoreVegetationDetails(const Value &amp;document)</div><div class="ttdoc">Decode one exact Global Details document transactionally.</div><div class="ttdef"><b>Definition</b> <a href="VegetationDetails_8cpp_source.html#l00128">VegetationDetails.cpp:128</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a4fcba7a3333aa2c02c4a6fe831dea640"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a4fcba7a3333aa2c02c4a6fe831dea640">eve::graphics::snapshotVegetationDetails</a></div><div class="ttdeci">Result&lt; Value &gt; snapshotVegetationDetails(const VegetationDetailSettings &amp;settings)</div><div class="ttdoc">Encode one owning Global Details document using eve.graphics.vegetation-details/1.</div><div class="ttdef"><b>Definition</b> <a href="VegetationDetails_8cpp_source.html#l00101">VegetationDetails.cpp:101</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af63034f89f25dce3a45d1e840a342500"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af63034f89f25dce3a45d1e840a342500">eve::graphics::exposeVegetationScriptBindings</a></div><div class="ttdeci">void exposeVegetationScriptBindings(ssq::Table &amp;table, ssq::Class &amp;graphicsClass)</div><div class="ttdoc">Register vegetation field bindings on the VM owner thread. Borrows tables for this call; no script ca...</div><div class="ttdef"><b>Definition</b> <a href="VegetationScriptBindings_8cpp_source.html#l00023">VegetationScriptBindings.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_aac755328623c2aea760607fc3d6c7c23"><div class="ttname"><a href="namespaceeve_1_1script.html#aac755328623c2aea760607fc3d6c7c23">eve::script::projectStatusResult</a></div><div class="ttdeci">ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status &amp;status)</div><div class="ttdoc">Project a checked native status that carries no payload.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00454">SquirrelBinding.cpp:454</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00470">SquirrelBinding.cpp:470</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ad8c1e86164a37718d037e4ebda9bdb79"><div class="ttname"><a href="namespaceeve_1_1script.html#ad8c1e86164a37718d037e4ebda9bdb79">eve::script::makeOwnedSquirrelInstance</a></div><div class="ttdeci">eve::Result&lt; ssq::Object &gt; makeOwnedSquirrelInstance(HSQUIRRELVM vm, Owned&lt; T &gt; object)</div><div class="ttdoc">Creates a Squirrel instance that owns a C++ wrapper through a release hook.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00227">SquirrelOwnership.h:227</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae6fb9fc56f0fc9e284edf3dbe1768c04"><div class="ttname"><a href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">eve::script::valueFromSquirrel</a></div><div class="ttdeci">Result&lt; Value &gt; valueFromSquirrel(HSQUIRRELVM vm, SQInteger index, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Convert one Squirrel value into the canonical owning Value tree.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00342">SquirrelBinding.cpp:342</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html">eve::graphics::VegetationSample</a></div><div class="ttdoc">Owning sampled field channels; no lifetime dependency on the field.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00061">VegetationField.h:61</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_af3f2d7fd6f40d5dd418aef858956a49b"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a></div><div class="ttdeci">glm::vec4 color</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">GraphicsGpuDriven.cpp:50</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

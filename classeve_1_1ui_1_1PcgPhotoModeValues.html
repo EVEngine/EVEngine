@@ -1,0 +1,882 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PcgPhotoModeValues类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html">PcgPhotoModeValues</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PcgPhotoModeValues-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PcgPhotoModeValues类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete typed value set from Pcg PhotoModeProfile with exact defaults.  
+ <a href="classeve_1_1ui_1_1PcgPhotoModeValues.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abbe6c896630e9aa2dca4c82c145eebf0" id="r_abbe6c896630e9aa2dca4c82c145eebf0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#abbe6c896630e9aa2dca4c82c145eebf0">PcgPhotoModeValues</a> ()</td></tr>
+<tr class="separator:abbe6c896630e9aa2dca4c82c145eebf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed492bbfbe397ba606843c1c422331e4" id="r_aed492bbfbe397ba606843c1c422331e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aed492bbfbe397ba606843c1c422331e4">resetDefaults</a> ()</td></tr>
+<tr class="memdesc:aed492bbfbe397ba606843c1c422331e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore all 102 Pcg defaults atomically.  <br /></td></tr>
+<tr class="separator:aed492bbfbe397ba606843c1c422331e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31860a9c843b2d31ae863362055190ea" id="r_a31860a9c843b2d31ae863362055190ea"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a31860a9c843b2d31ae863362055190ea">getFieldCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a31860a9c843b2d31ae863362055190ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return stable schema field count.  <br /></td></tr>
+<tr class="separator:a31860a9c843b2d31ae863362055190ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf7508f1db5f3ec2693a7ebfa5d3c5d1" id="r_acf7508f1db5f3ec2693a7ebfa5d3c5d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#acf7508f1db5f3ec2693a7ebfa5d3c5d1">getFieldName</a> (uint64_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:acf7508f1db5f3ec2693a7ebfa5d3c5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return schema field name by declaration order.  <br /></td></tr>
+<tr class="separator:acf7508f1db5f3ec2693a7ebfa5d3c5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155670a159f2217c369a3b0edc5997a3" id="r_a155670a159f2217c369a3b0edc5997a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a155670a159f2217c369a3b0edc5997a3">getFieldType</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a155670a159f2217c369a3b0edc5997a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return field type: bool=0, int=1, float=2, string=3, color=4.  <br /></td></tr>
+<tr class="separator:a155670a159f2217c369a3b0edc5997a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2361c3294a06b27cf45529891ba20b9f" id="r_a2361c3294a06b27cf45529891ba20b9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a2361c3294a06b27cf45529891ba20b9f">setBool</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a2361c3294a06b27cf45529891ba20b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a typed boolean field.  <br /></td></tr>
+<tr class="separator:a2361c3294a06b27cf45529891ba20b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6d771adf36cd770a5f398a838c7db05" id="r_ac6d771adf36cd770a5f398a838c7db05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac6d771adf36cd770a5f398a838c7db05">setInt</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int64_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ac6d771adf36cd770a5f398a838c7db05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a typed integer or enum field.  <br /></td></tr>
+<tr class="separator:ac6d771adf36cd770a5f398a838c7db05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5be7ddd6fa660f5225ac38756dd070d" id="r_ac5be7ddd6fa660f5225ac38756dd070d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ac5be7ddd6fa660f5225ac38756dd070d">setFloat</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ac5be7ddd6fa660f5225ac38756dd070d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a finite typed float field.  <br /></td></tr>
+<tr class="separator:ac5be7ddd6fa660f5225ac38756dd070d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ad6eaebc2279267f96dc66326217c68" id="r_a8ad6eaebc2279267f96dc66326217c68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a8ad6eaebc2279267f96dc66326217c68">setString</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a8ad6eaebc2279267f96dc66326217c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a typed string field.  <br /></td></tr>
+<tr class="separator:a8ad6eaebc2279267f96dc66326217c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae945673c1926649015c6142338012f6" id="r_aae945673c1926649015c6142338012f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aae945673c1926649015c6142338012f6">setColor</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float <a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="memdesc:aae945673c1926649015c6142338012f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a finite typed RGBA field.  <br /></td></tr>
+<tr class="separator:aae945673c1926649015c6142338012f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16776d3c9f3d3495c8124dc73edcff88" id="r_a16776d3c9f3d3495c8124dc73edcff88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a16776d3c9f3d3495c8124dc73edcff88">getBool</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a16776d3c9f3d3495c8124dc73edcff88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a typed boolean field.  <br /></td></tr>
+<tr class="separator:a16776d3c9f3d3495c8124dc73edcff88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cf97b6a9c71d7a3e534f90bd98feda8" id="r_a6cf97b6a9c71d7a3e534f90bd98feda8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a6cf97b6a9c71d7a3e534f90bd98feda8">getInt</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a6cf97b6a9c71d7a3e534f90bd98feda8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a typed integer field.  <br /></td></tr>
+<tr class="separator:a6cf97b6a9c71d7a3e534f90bd98feda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57372fbbde4c9a321dd16d66e2b75435" id="r_a57372fbbde4c9a321dd16d66e2b75435"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a57372fbbde4c9a321dd16d66e2b75435">getFloat</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a57372fbbde4c9a321dd16d66e2b75435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a typed float field.  <br /></td></tr>
+<tr class="separator:a57372fbbde4c9a321dd16d66e2b75435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6de9d43f3dd8c6b5c38cfd1aa469d33" id="r_ae6de9d43f3dd8c6b5c38cfd1aa469d33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#ae6de9d43f3dd8c6b5c38cfd1aa469d33">getString</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:ae6de9d43f3dd8c6b5c38cfd1aa469d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a typed string field.  <br /></td></tr>
+<tr class="separator:ae6de9d43f3dd8c6b5c38cfd1aa469d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c89235c466229f4fef40394669c28e" id="r_a81c89235c466229f4fef40394669c28e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">PcgPhotoModeValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a81c89235c466229f4fef40394669c28e">getValue</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a81c89235c466229f4fef40394669c28e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a field as its schema-declared native variant.  <br /></td></tr>
+<tr class="separator:a81c89235c466229f4fef40394669c28e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa90c3a1fd1ba28fe023720e4a79bd336" id="r_aa90c3a1fd1ba28fe023720e4a79bd336"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aa90c3a1fd1ba28fe023720e4a79bd336">selectColor</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:aa90c3a1fd1ba28fe023720e4a79bd336"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a color field for component reads.  <br /></td></tr>
+<tr class="separator:aa90c3a1fd1ba28fe023720e4a79bd336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3659b199e196081460dd32df59707d2f" id="r_a3659b199e196081460dd32df59707d2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a3659b199e196081460dd32df59707d2f">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a3659b199e196081460dd32df59707d2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode schema 1 JSON containing every field.  <br /></td></tr>
+<tr class="separator:a3659b199e196081460dd32df59707d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25701336d57159d76017ba57a12f8774" id="r_a25701336d57159d76017ba57a12f8774"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a25701336d57159d76017ba57a12f8774">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a25701336d57159d76017ba57a12f8774"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restore schema 1 JSON; unknown or missing fields are rejected.  <br /></td></tr>
+<tr class="separator:a25701336d57159d76017ba57a12f8774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a290d0e972a0b99274a0de6504772dbad" id="r_a290d0e972a0b99274a0de6504772dbad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#a290d0e972a0b99274a0de6504772dbad">getColorR</a> () const noexcept</td></tr>
+<tr class="separator:a290d0e972a0b99274a0de6504772dbad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2df42daa941e0aa8d9f7d31765ef34a" id="r_af2df42daa941e0aa8d9f7d31765ef34a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#af2df42daa941e0aa8d9f7d31765ef34a">getColorG</a> () const noexcept</td></tr>
+<tr class="separator:af2df42daa941e0aa8d9f7d31765ef34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafc12ae7e6dd1bdf38cc80c2411a777c" id="r_aafc12ae7e6dd1bdf38cc80c2411a777c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aafc12ae7e6dd1bdf38cc80c2411a777c">getColorB</a> () const noexcept</td></tr>
+<tr class="separator:aafc12ae7e6dd1bdf38cc80c2411a777c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef776c9ad247d4453847941b174b04dd" id="r_aef776c9ad247d4453847941b174b04dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeValues.html#aef776c9ad247d4453847941b174b04dd">getColorA</a> () const noexcept</td></tr>
+<tr class="separator:aef776c9ad247d4453847941b174b04dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete typed value set from Pcg PhotoModeProfile with exact defaults. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a> 第 <a class="el" href="PcgPhotoModeValues_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abbe6c896630e9aa2dca4c82c145eebf0" name="abbe6c896630e9aa2dca4c82c145eebf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe6c896630e9aa2dca4c82c145eebf0">&#9670;&#160;</a></span>PcgPhotoModeValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::PcgPhotoModeValues::PcgPhotoModeValues </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00118">resetDefaults()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a16776d3c9f3d3495c8124dc73edcff88" name="a16776d3c9f3d3495c8124dc73edcff88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16776d3c9f3d3495c8124dc73edcff88">&#9670;&#160;</a></span>getBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::ui::PcgPhotoModeValues::getBool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a typed boolean field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">eve::ui::Bool</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00015">eve::ui::PcgPhotoModeSession::begin()</a>.</p>
+
+</div>
+</div>
+<a id="aef776c9ad247d4453847941b174b04dd" name="aef776c9ad247d4453847941b174b04dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef776c9ad247d4453847941b174b04dd">&#9670;&#160;</a></span>getColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeValues::getColorA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a> 第 <a class="el" href="PcgPhotoModeValues_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafc12ae7e6dd1bdf38cc80c2411a777c" name="aafc12ae7e6dd1bdf38cc80c2411a777c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafc12ae7e6dd1bdf38cc80c2411a777c">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeValues::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a> 第 <a class="el" href="PcgPhotoModeValues_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2df42daa941e0aa8d9f7d31765ef34a" name="af2df42daa941e0aa8d9f7d31765ef34a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2df42daa941e0aa8d9f7d31765ef34a">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeValues::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a> 第 <a class="el" href="PcgPhotoModeValues_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a290d0e972a0b99274a0de6504772dbad" name="a290d0e972a0b99274a0de6504772dbad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a290d0e972a0b99274a0de6504772dbad">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgPhotoModeValues::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a> 第 <a class="el" href="PcgPhotoModeValues_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31860a9c843b2d31ae863362055190ea" name="a31860a9c843b2d31ae863362055190ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31860a9c843b2d31ae863362055190ea">&#9670;&#160;</a></span>getFieldCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeValues::getFieldCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return stable schema field count. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00141">fields</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00096">eve::ui::PcgPhotoModeApplyPlan::compile()</a>.</p>
+
+</div>
+</div>
+<a id="acf7508f1db5f3ec2693a7ebfa5d3c5d1" name="acf7508f1db5f3ec2693a7ebfa5d3c5d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf7508f1db5f3ec2693a7ebfa5d3c5d1">&#9670;&#160;</a></span>getFieldName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeValues::getFieldName </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return schema field name by declaration order. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00141">fields</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00096">eve::ui::PcgPhotoModeApplyPlan::compile()</a>.</p>
+
+</div>
+</div>
+<a id="a155670a159f2217c369a3b0edc5997a3" name="a155670a159f2217c369a3b0edc5997a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a155670a159f2217c369a3b0edc5997a3">&#9670;&#160;</a></span>getFieldType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::ui::PcgPhotoModeValues::getFieldType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return field type: bool=0, int=1, float=2, string=3, color=4. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a57372fbbde4c9a321dd16d66e2b75435" name="a57372fbbde4c9a321dd16d66e2b75435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57372fbbde4c9a321dd16d66e2b75435">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt; eve::ui::PcgPhotoModeValues::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a typed float field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">eve::ui::Float</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+</div>
+</div>
+<a id="a6cf97b6a9c71d7a3e534f90bd98feda8" name="a6cf97b6a9c71d7a3e534f90bd98feda8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cf97b6a9c71d7a3e534f90bd98feda8">&#9670;&#160;</a></span>getInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int64_t &gt; eve::ui::PcgPhotoModeValues::getInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a typed integer field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">eve::ui::Int</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00015">eve::ui::PcgPhotoModeSession::begin()</a>.</p>
+
+</div>
+</div>
+<a id="ae6de9d43f3dd8c6b5c38cfd1aa469d33" name="ae6de9d43f3dd8c6b5c38cfd1aa469d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6de9d43f3dd8c6b5c38cfd1aa469d33">&#9670;&#160;</a></span>getString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeValues::getString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a typed string field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">eve::ui::String</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00015">eve::ui::PcgPhotoModeSession::begin()</a>.</p>
+
+</div>
+</div>
+<a id="a81c89235c466229f4fef40394669c28e" name="a81c89235c466229f4fef40394669c28e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c89235c466229f4fef40394669c28e">&#9670;&#160;</a></span>getValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#a6c7fcde531ffd68d71257d0c33a1609d">PcgPhotoModeValue</a> &gt; eve::ui::PcgPhotoModeValues::getValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a field as its schema-declared native variant. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00096">eve::ui::PcgPhotoModeApplyPlan::compile()</a>.</p>
+
+</div>
+</div>
+<a id="aed492bbfbe397ba606843c1c422331e4" name="aed492bbfbe397ba606843c1c422331e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed492bbfbe397ba606843c1c422331e4">&#9670;&#160;</a></span>resetDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::PcgPhotoModeValues::resetDefaults </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore all 102 Pcg defaults atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a> , 以及 <a class="el" href="PlayHost_8cpp_source.html#l00141">fields</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00117">PcgPhotoModeValues()</a>.</p>
+
+</div>
+</div>
+<a id="a25701336d57159d76017ba57a12f8774" name="a25701336d57159d76017ba57a12f8774"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25701336d57159d76017ba57a12f8774">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically restore schema 1 JSON; unknown or missing fields are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">eve::ui::Bool</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5facb5feb1b7314637725a2e73bdc9f7295">eve::ui::Color</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00141">fields</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">eve::ui::Float</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">eve::ui::Int</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">eve::ui::String</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00015">eve::ui::PcgPhotoModeSession::begin()</a>, <a class="el" href="PcgPhotoModeApplyPlan_8cpp_source.html#l00107">eve::ui::PcgPhotoModeApplyPlan::compileJson()</a> , 以及 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00057">eve::ui::PcgPhotoModeSession::replaceWorkingJson()</a>.</p>
+
+</div>
+</div>
+<a id="aa90c3a1fd1ba28fe023720e4a79bd336" name="aa90c3a1fd1ba28fe023720e4a79bd336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa90c3a1fd1ba28fe023720e4a79bd336">&#9670;&#160;</a></span>selectColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::selectColor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a color field for component reads. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5facb5feb1b7314637725a2e73bdc9f7295">eve::ui::Color</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2361c3294a06b27cf45529891ba20b9f" name="a2361c3294a06b27cf45529891ba20b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2361c3294a06b27cf45529891ba20b9f">&#9670;&#160;</a></span>setBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::setBool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a typed boolean field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">eve::ui::Bool</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="aae945673c1926649015c6142338012f6" name="aae945673c1926649015c6142338012f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae945673c1926649015c6142338012f6">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::setColor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a finite typed RGBA field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5facb5feb1b7314637725a2e73bdc9f7295">eve::ui::Color</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>.</p>
+
+</div>
+</div>
+<a id="ac5be7ddd6fa660f5225ac38756dd070d" name="ac5be7ddd6fa660f5225ac38756dd070d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5be7ddd6fa660f5225ac38756dd070d">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a finite typed float field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">eve::ui::Float</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="ac6d771adf36cd770a5f398a838c7db05" name="ac6d771adf36cd770a5f398a838c7db05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6d771adf36cd770a5f398a838c7db05">&#9670;&#160;</a></span>setInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::setInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a typed integer or enum field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">eve::ui::Int</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a8ad6eaebc2279267f96dc66326217c68" name="a8ad6eaebc2279267f96dc66326217c68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ad6eaebc2279267f96dc66326217c68">&#9670;&#160;</a></span>setString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeValues::setString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a typed string field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">eve::ui::String</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a3659b199e196081460dd32df59707d2f" name="a3659b199e196081460dd32df59707d2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3659b199e196081460dd32df59707d2f">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeValues::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode schema 1 JSON containing every field. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a> 第 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fac26f15e86e3de4c398a8273272aba034">eve::ui::Bool</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5facb5feb1b7314637725a2e73bdc9f7295">eve::ui::Color</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="PlayHost_8cpp_source.html#l00141">fields</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa22ae0e2b89e5e3d477f988cc36d3272b">eve::ui::Float</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa1686a6c336b71b36d77354cea19a8b52">eve::ui::Int</a>, <a class="el" href="namespaceeve_1_1ui.html#abfa9ccc5fcd4e8d412531542da9d2e5fa27118326006d3829667a400ad23d5d98">eve::ui::String</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00080">eve::ui::PcgPhotoModeSession::outputJson()</a> , 以及 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00079">eve::ui::PcgPhotoModeSession::workingJson()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeValues_8h_source.html">PcgPhotoModeValues.h</a></li>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeValues_8cpp_source.html">PcgPhotoModeValues.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

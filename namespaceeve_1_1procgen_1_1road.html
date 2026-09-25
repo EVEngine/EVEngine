@@ -1,0 +1,571 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::road 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1road.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::road 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options for baking a road network into mesh + navigation overlays.  <a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">RoadBakeResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning bake result: triangle mesh groups plus overlay polylines.  <a href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html">RoadControlPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One authored control point on a road centerline (world space, Y-up).  <a href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">RoadEdge</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directed centerline edge with optional reverse lanes.  <a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">RoadLaneConnection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One legal lane-to-lane connection inside a junction.  <a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">RoadNetwork</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning directed road graph with lane connectivity.  <a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadNode.html">RoadNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Junction node owned by a road network.  <a href="structeve_1_1procgen_1_1road_1_1RoadNode.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">RoadOverlay</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning bake-time overlay snapshot (no pointers into the network).  <a href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html">RoadPolyline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One renderer-neutral polyline chunk for navigation / marking overlays.  <a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">RoadProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning open profile polyline for one edge style and lane layout.  <a href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">RoadProfilePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One 2D profile sample in the edge local (side, up) plane.  <a href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-section and structural style for one road edge.  <a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:af191b829859343aa409987fb00d0c798" id="r_af191b829859343aa409987fb00d0c798"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">Asphalt</a> = 0
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c">Curb</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1">Sidewalk</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc">Deck</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597">Pier</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00">Marking</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c">MarkingYellow</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3">Nav</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:af191b829859343aa409987fb00d0c798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Profile material tags used when lofting a road cross-section.  <a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">更多...</a><br /></td></tr>
+<tr class="separator:af191b829859343aa409987fb00d0c798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6ab9c6afb968cb8c472d65718ab4c067" id="r_a6ab9c6afb968cb8c472d65718ab4c067"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">RoadBakeResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a6ab9c6afb968cb8c472d65718ab4c067">bakeRoadNetwork</a> (const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">RoadNetwork</a> &amp;network, const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a6ab9c6afb968cb8c472d65718ab4c067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake every edge, junction platform, pier, marking and navigation overlay.  <br /></td></tr>
+<tr class="separator:a6ab9c6afb968cb8c472d65718ab4c067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ecf317960dc3061df94fe090df91dfb" id="r_a3ecf317960dc3061df94fe090df91dfb"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a3ecf317960dc3061df94fe090df91dfb">roadMaterialGroup</a> (<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a> <a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>) noexcept</td></tr>
+<tr class="memdesc:a3ecf317960dc3061df94fe090df91dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a material tag to the <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> group name used by the baker. @ownership borrowed — returns a pointer to a static string literal; callers must not free it. @lifetime Program lifetime; the pointer remains valid for the process.  <br /></td></tr>
+<tr class="separator:a3ecf317960dc3061df94fe090df91dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a164e1400e755299c673cf840046626c9" id="r_a164e1400e755299c673cf840046626c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">RoadProfile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a164e1400e755299c673cf840046626c9">makeRoadProfile</a> (const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a> &amp;style, int lanesForward, int lanesBackward)</td></tr>
+<tr class="memdesc:a164e1400e755299c673cf840046626c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a mathematical road cross-section for the given lane counts.  <br /></td></tr>
+<tr class="separator:a164e1400e755299c673cf840046626c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad934b4cd81c62294c59d3d19863ec9f2" id="r_ad934b4cd81c62294c59d3d19863ec9f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#ad934b4cd81c62294c59d3d19863ec9f2">generateRoadNetworkMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:ad934b4cd81c62294c59d3d19863ec9f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a multi-level interchange mesh from <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> (span/height/lanes/seed).  <br /></td></tr>
+<tr class="separator:ad934b4cd81c62294c59d3d19863ec9f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a596fbf7ff9c112d2fea818202f3ca330" id="r_a596fbf7ff9c112d2fea818202f3ca330"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">RoadOverlay</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a596fbf7ff9c112d2fea818202f3ca330">generateRoadNetworkOverlay</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a596fbf7ff9c112d2fea818202f3ca330"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake navigation overlay for the same <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> used by mesh.roadNetwork.  <br /></td></tr>
+<tr class="separator:a596fbf7ff9c112d2fea818202f3ca330"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cb40ceaf807d137268530cc4fe4450c" id="r_a5cb40ceaf807d137268530cc4fe4450c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a5cb40ceaf807d137268530cc4fe4450c">generateRoadMarkingsTexture</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a5cb40ceaf807d137268530cc4fe4450c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure-function road marking atlas (asphalt + edge + dashed center + zebra).  <br /></td></tr>
+<tr class="separator:a5cb40ceaf807d137268530cc4fe4450c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7680459fcedf7ec97bb94d110ba8f24" id="r_ae7680459fcedf7ec97bb94d110ba8f24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae7680459fcedf7ec97bb94d110ba8f24">registerRoadMeshRecipes</a> (<a class="el" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">MeshRecipeRegistry</a> &amp;registry)</td></tr>
+<tr class="separator:ae7680459fcedf7ec97bb94d110ba8f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8208fd02e6f3ed22be0fff27ff7f8c0" id="r_ae8208fd02e6f3ed22be0fff27ff7f8c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae8208fd02e6f3ed22be0fff27ff7f8c0">registerRoadTextureRecipes</a> (<a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp;registry)</td></tr>
+<tr class="separator:ae8208fd02e6f3ed22be0fff27ff7f8c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="af191b829859343aa409987fb00d0c798" name="af191b829859343aa409987fb00d0c798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af191b829859343aa409987fb00d0c798">&#9670;&#160;</a></span>RoadMaterial</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">eve::procgen::road::RoadMaterial</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Profile material tags used when lofting a road cross-section. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c" name="af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c"></a>Asphalt&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c" name="af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c"></a>Curb&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1" name="af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1"></a>Sidewalk&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc" name="af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc"></a>Deck&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597" name="af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597"></a>Pier&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00" name="af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00"></a>Marking&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c" name="af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c"></a>MarkingYellow&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3" name="af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3"></a>Nav&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a6ab9c6afb968cb8c472d65718ab4c067" name="a6ab9c6afb968cb8c472d65718ab4c067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab9c6afb968cb8c472d65718ab4c067">&#9670;&#160;</a></span>bakeRoadNetwork()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeResult.html">RoadBakeResult</a> &gt; eve::procgen::road::bakeRoadNetwork </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">RoadNetwork</a> &amp;&#160;</td>
+          <td class="paramname"><em>network</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake every edge, junction platform, pier, marking and navigation overlay. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">network</td><td>Borrowed live network; must outlive the call only. </td></tr>
+    <tr><td class="paramname">options</td><td>Bake knobs; segment counts must be positive. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning mesh/overlay snapshot, or a structured diagnostic. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Synchronous, owner-thread-only; result retains no pointers into network. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RoadBake_8cpp_source.html">RoadBake.cpp</a> 第 <a class="el" href="RoadBake_8cpp_source.html#l00834">834</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadNetwork_8h_source.html#l00036">eve::procgen::road::RoadNetwork::edgeCount()</a>, <a class="el" href="RoadNetwork_8h_source.html#l00043">eve::procgen::road::RoadNetwork::edges()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="RoadNetwork_8h_source.html#l00037">eve::procgen::road::RoadNetwork::laneLinkCount()</a>, <a class="el" href="RoadBake_8h_source.html#l00023">eve::procgen::road::RoadBakeResult::mesh</a>, <a class="el" href="RoadNetwork_8h_source.html#l00035">eve::procgen::road::RoadNetwork::nodeCount()</a>, <a class="el" href="RoadNetwork_8h_source.html#l00042">eve::procgen::road::RoadNetwork::nodes()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="RoadBake_8h_source.html#l00024">eve::procgen::road::RoadBakeResult::overlay</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00229">eve::procgen::MeshBuild::setMeta()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="UrbanGenerator_8cpp_source.html#l00212">turns</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadRecipes_8cpp_source.html#l00033">generateRoadNetworkMesh()</a> , 以及 <a class="el" href="RoadRecipes_8cpp_source.html#l00048">generateRoadNetworkOverlay()</a>.</p>
+
+</div>
+</div>
+<a id="a5cb40ceaf807d137268530cc4fe4450c" name="a5cb40ceaf807d137268530cc4fe4450c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cb40ceaf807d137268530cc4fe4450c">&#9670;&#160;</a></span>generateRoadMarkingsTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &gt; eve::procgen::road::generateRoadMarkingsTexture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pure-function road marking atlas (asphalt + edge + dashed center + zebra). </p>
+
+<p class="definition">在文件 <a class="el" href="RoadRecipes_8cpp_source.html">RoadRecipes.cpp</a> 第 <a class="el" href="RoadRecipes_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadRecipes_8cpp_source.html#l00128">registerRoadTextureRecipes()</a>.</p>
+
+</div>
+</div>
+<a id="ad934b4cd81c62294c59d3d19863ec9f2" name="ad934b4cd81c62294c59d3d19863ec9f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad934b4cd81c62294c59d3d19863ec9f2">&#9670;&#160;</a></span>generateRoadNetworkMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::road::generateRoadNetworkMesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate a multi-level interchange mesh from <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> (span/height/lanes/seed). </p>
+
+<p class="definition">在文件 <a class="el" href="RoadRecipes_8cpp_source.html">RoadRecipes.cpp</a> 第 <a class="el" href="RoadRecipes_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadBake_8cpp_source.html#l00834">bakeRoadNetwork()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadRecipes_8cpp_source.html#l00111">registerRoadMeshRecipes()</a>.</p>
+
+</div>
+</div>
+<a id="a596fbf7ff9c112d2fea818202f3ca330" name="a596fbf7ff9c112d2fea818202f3ca330"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a596fbf7ff9c112d2fea818202f3ca330">&#9670;&#160;</a></span>generateRoadNetworkOverlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">RoadOverlay</a> &gt; eve::procgen::road::generateRoadNetworkOverlay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake navigation overlay for the same <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> used by mesh.roadNetwork. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadRecipes_8cpp_source.html">RoadRecipes.cpp</a> 第 <a class="el" href="RoadRecipes_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadBake_8cpp_source.html#l00834">bakeRoadNetwork()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a164e1400e755299c673cf840046626c9" name="a164e1400e755299c673cf840046626c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a164e1400e755299c673cf840046626c9">&#9670;&#160;</a></span>makeRoadProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">RoadProfile</a> &gt; eve::procgen::road::makeRoadProfile </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a> &amp;&#160;</td>
+          <td class="paramname"><em>style</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lanesForward</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lanesBackward</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a mathematical road cross-section for the given lane counts. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">style</td><td>Geometric style; widths must be finite and non-negative. </td></tr>
+    <tr><td class="paramname">lanesForward</td><td>Forward driving lanes (&gt;= 1). </td></tr>
+    <tr><td class="paramname">lanesBackward</td><td>Optional opposite lanes (&gt;= 0). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning profile, or a structured validation diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RoadProfile_8cpp_source.html">RoadProfile.cpp</a> 第 <a class="el" href="RoadProfile_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">Asphalt</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c">Curb</a>, <a class="el" href="RoadTypes_8h_source.html#l00022">eve::procgen::road::RoadStyle::curbHeight</a>, <a class="el" href="RoadTypes_8h_source.html#l00021">eve::procgen::road::RoadStyle::curbWidth</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RoadTypes_8h_source.html#l00105">eve::procgen::road::RoadProfile::halfWidth</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RoadTypes_8h_source.html#l00020">eve::procgen::road::RoadStyle::laneWidth</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1">Sidewalk</a>, <a class="el" href="RoadTypes_8h_source.html#l00024">eve::procgen::road::RoadStyle::sidewalkHeight</a>, <a class="el" href="RoadTypes_8h_source.html#l00023">eve::procgen::road::RoadStyle::sidewalkWidth</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadNetwork_8cpp_source.html#l00068">eve::procgen::road::RoadNetwork::addEdge()</a> , 以及 <a class="el" href="RoadNetwork_8cpp_source.html#l00144">eve::procgen::road::RoadNetwork::setEdgeStyle()</a>.</p>
+
+</div>
+</div>
+<a id="ae7680459fcedf7ec97bb94d110ba8f24" name="ae7680459fcedf7ec97bb94d110ba8f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7680459fcedf7ec97bb94d110ba8f24">&#9670;&#160;</a></span>registerRoadMeshRecipes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::road::registerRoadMeshRecipes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">MeshRecipeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadRecipes_8cpp_source.html">RoadRecipes.cpp</a> 第 <a class="el" href="RoadRecipes_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8cpp_source.html#l00047">eve::procgen::ParamDescriptor::boolean()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00065">eve::procgen::ParamDescriptor::choice()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00033">eve::procgen::ParamDescriptor::floating()</a>, <a class="el" href="RoadRecipes_8cpp_source.html#l00033">generateRoadNetworkMesh()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00019">eve::procgen::ParamDescriptor::integer()</a>, <a class="el" href="ParamSchema_8h_source.html#l00056">eve::procgen::RecipeDescriptor::params</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00455">eve::procgen::MeshRecipeRegistry::registerRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="ae8208fd02e6f3ed22be0fff27ff7f8c0" name="ae8208fd02e6f3ed22be0fff27ff7f8c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8208fd02e6f3ed22be0fff27ff7f8c0">&#9670;&#160;</a></span>registerRoadTextureRecipes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::road::registerRoadTextureRecipes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadRecipes_8cpp_source.html">RoadRecipes.cpp</a> 第 <a class="el" href="RoadRecipes_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8cpp_source.html#l00047">eve::procgen::ParamDescriptor::boolean()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00033">eve::procgen::ParamDescriptor::floating()</a>, <a class="el" href="RoadRecipes_8cpp_source.html#l00056">generateRoadMarkingsTexture()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00073">eve::procgen::RecipeDescriptor::grid()</a>, <a class="el" href="ParamSchema_8h_source.html#l00056">eve::procgen::RecipeDescriptor::params</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">eve::procgen::TextureRecipeRegistry::registerRecipe()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuiltinTextures_8cpp_source.html#l00916">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a3ecf317960dc3061df94fe090df91dfb" name="a3ecf317960dc3061df94fe090df91dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ecf317960dc3061df94fe090df91dfb">&#9670;&#160;</a></span>roadMaterialGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> const char * eve::procgen::road::roadMaterialGroup </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a>&#160;</td>
+          <td class="paramname"><em>material</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map a material tag to the <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> group name used by the baker. @ownership borrowed — returns a pointer to a static string literal; callers must not free it. @lifetime Program lifetime; the pointer remains valid for the process. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadProfile_8cpp_source.html">RoadProfile.cpp</a> 第 <a class="el" href="RoadProfile_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">Asphalt</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c">Curb</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc">Deck</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00">Marking</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c">MarkingYellow</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00642">material</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3">Nav</a>, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597">Pier</a> , 以及 <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1">Sidewalk</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

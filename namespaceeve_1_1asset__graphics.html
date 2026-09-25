@@ -1,0 +1,842 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_graphics 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__graphics.html">asset_graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_graphics 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1asset__graphics_1_1detail" id="r_namespaceeve_1_1asset__graphics_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html">EvpackGraphicsLoader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability-aware adapter from admitted <code>.evpack</code> assets to graphics resources.  <a href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackImageLoader.html">EvpackImageLoader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability-aware adapter from admitted EVIMG assets to backend textures.  <a href="classeve_1_1asset__graphics_1_1EvpackImageLoader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackShader.html">EvpackShader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique lease on a validated package shader and its independent parameter instance. @ownership Graphics owns the allocation and must outlive this lease; destroy/release leases before backend shutdown. @lifetime No resource pointer escapes. Draw inputs are borrowed only during the call. Reload builds a new lease. @thread Load, update, draw, release and destruction are graphics-thread affine, outside callbacks/reentrancy.  <a href="classeve_1_1asset__graphics_1_1EvpackShader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning static-prefab GPU leases and immutable draw transforms; no ECS or Scene mutation. @ownership Mesh/image factories must outlive this object and its explicit release; the factories own GPU allocations. @lifetime Release before backend shutdown/device loss. Reimport builds a separate candidate; swap only after success. @thread Creation, drawing, release and destruction are graphics-thread affine. @reentrancy No scripts or caller callbacks and no locks; do not reenter from backend methods.  <a href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackVegetationSceneLoader.html">EvpackVegetationSceneLoader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict capability-aware decoder for <code>eve.vegetation-scene/1</code>.  <a href="classeve_1_1asset__graphics_1_1EvpackVegetationSceneLoader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1EvpackVolumeTextureLoader.html">EvpackVolumeTextureLoader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability-aware loader for canonical volume-texture/1 assets.  <a href="classeve_1_1asset__graphics_1_1EvpackVolumeTextureLoader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html">GraphicsAssetLoadLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounds applied before allocating canonical mesh staging arrays.  <a href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1GraphicsImageFactoryAdapter.html">GraphicsImageFactoryAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result-based adapter over the engine's established graphics resource factory.  <a href="classeve_1_1asset__graphics_1_1GraphicsImageFactoryAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html">GraphicsMeshFactoryAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Result-based adapter over the engine's established graphics resource factory.  <a href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1LoadedGraphicsImage.html">LoadedGraphicsImage</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successfully uploaded texture and selected capability variant.  <a href="structeve_1_1asset__graphics_1_1LoadedGraphicsImage.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html">LoadedGraphicsMesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successfully uploaded backend mesh and the selected package variant.  <a href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1LoadedGraphicsVolumeTexture.html">LoadedGraphicsVolumeTexture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Successfully uploaded volume texture and selected capability variant.  <a href="structeve_1_1asset__graphics_1_1LoadedGraphicsVolumeTexture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully validated, detached scene-manager candidate with no archive or GPU borrows.  <a href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1StaticPrefabGpuPart.html">StaticPrefabGpuPart</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One prefab renderer registered in backend GPU-driven tables.  <a href="structeve_1_1asset__graphics_1_1StaticPrefabGpuPart.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationAsset.html">VegetationAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning decoded TVE rest geometry, independent of archive and GPU resource lifetimes. Immutable after construction. CPU evaluation permits concurrent readers; GPU calls require the graphics owner thread. No callbacks or external pointers are retained.  <a href="classeve_1_1asset__graphics_1_1VegetationAsset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html">VegetationSceneAssociation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning decoded result of one unique source-GUID scene-manager association.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneAssociation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html">VegetationSceneAssociationLoader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a Scene Template to exactly one manager asset in the same admitted EVPACK.  <a href="classeve_1_1asset__graphics_1_1VegetationSceneAssociationLoader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneChannelGpuBuild.html">VegetationSceneChannelGpuBuild</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detached inputs for one independently sized TVE manager channel.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneChannelGpuBuild.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneControl.html">VegetationSceneControl</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning TVE Global Control values; texture identities remain source-map GUIDs.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneControl.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html">VegetationSceneElement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One normalized Unity TVEElement definition awaiting texture realization.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneElementHandle.html">VegetationSceneElementHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance-qualified handle for one dynamically registered TVE Element volume.  <a href="classeve_1_1asset__graphics_1_1VegetationSceneElementHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html">VegetationSceneElementPixel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detached TVE render-target source value and independent hardware blend policy.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixelInput.html">VegetationSceneElementPixelInput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit per-draw inputs consumed by one TVE Element fragment evaluation.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixelInput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementProperty.html">VegetationSceneElementProperty</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One normalized Unity TVEElement definition awaiting texture realization.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneElementProperty.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPublication.html">VegetationSceneElementPublication</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for one published dynamic Element registration or withdrawal.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneElementPublication.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html">VegetationSceneGpuBuild</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit detached inputs for publishing all nine TVE scene-manager field layers.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneGpuBuild.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneGpuPublication.html">VegetationSceneGpuPublication</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt for one atomic scene-manager GPU replacement.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneGpuPublication.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneGpuRuntime.html">VegetationSceneGpuRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning GPU publication of one immutable TVE manager scene. The resource factory, mask map and scene are borrowed only while create executes. The returned runtime owns the field textures and projected material snapshot. It must outlive every draw borrowing <a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneGpuRuntime.html#ab175ff97b467e83605ab63fa112818f6" title="Borrow the bound material snapshot; valid until release begins or destruction.">surface()</a>.  <a href="classeve_1_1asset__graphics_1_1VegetationSceneGpuRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html">VegetationSceneInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning executable instance coupling one Scene Template, its manager fields and live Element registry. GPU resources are graphics-thread affine. Base material texture pointers remain borrowed and must outlive this instance.  <a href="classeve_1_1asset__graphics_1_1VegetationSceneInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1VegetationSceneLiveElements.html">VegetationSceneLiveElements</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning registry that atomically couples dynamic Element state to a scene GPU runtime. Imported Elements remain immutable. Dynamic slots use generation-qualified handles and stable slot order. The registry and GPU runtime are graphics-thread affine; no callback is invoked while state is changing.  <a href="classeve_1_1asset__graphics_1_1VegetationSceneLiveElements.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneMotion.html">VegetationSceneMotion</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning TVE Global Motion values; time is supplied by each frame.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneMotion.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneProjection.html">VegetationSceneProjection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detached PBR and CPU-motion snapshot ready for atomic material publication.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneProjection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneVolume.html">VegetationSceneVolume</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning TVE Global Volume policy; render resources are allocated by the runtime host.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneVolume.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneVolumeChannel.html">VegetationSceneVolumeChannel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One TVE volume texture channel allocation policy.  <a href="structeve_1_1asset__graphics_1_1VegetationSceneVolumeChannel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1VolumeTextureAssetLoadLimits.html">VolumeTextureAssetLoadLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounds checked before backend volume allocation.  <a href="structeve_1_1asset__graphics_1_1VolumeTextureAssetLoadLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a495af75089f6673ef82d1c7880ac7d87" id="r_a495af75089f6673ef82d1c7880ac7d87"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a495af75089f6673ef82d1c7880ac7d87">ImageAssetLoadLimits</a> = <a class="el" href="structeve_1_1asset_1_1EvpackImageDecodeLimits.html">asset::EvpackImageDecodeLimits</a></td></tr>
+<tr class="separator:a495af75089f6673ef82d1c7880ac7d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a5201f0924fae1ba45fb6af01878f5672" id="r_a5201f0924fae1ba45fb6af01878f5672"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672">VegetationScenePixelBlend</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672a6132295fcf5570fb8b0a944ef322a598">Alpha</a>
+, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672ae257376d913f3b53cbb4a9b19d770648">Multiply</a>
+, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672aec211f7c20af43e742bf2570c3cb84f9">Add</a>
+, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672a0ebe6df8a3ac338e0512acc741823fdb">Replace</a>
+ }</td></tr>
+<tr class="memdesc:a5201f0924fae1ba45fb6af01878f5672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detached TVE render-target source value and independent hardware blend policy.  <a href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672">更多...</a><br /></td></tr>
+<tr class="separator:a5201f0924fae1ba45fb6af01878f5672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a350cfe7df2d1200b2d9bed6603dd86dd" id="r_a350cfe7df2d1200b2d9bed6603dd86dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneProjection.html">VegetationSceneProjection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a350cfe7df2d1200b2d9bed6603dd86dd">projectVegetationScene</a> (const <a class="el" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a> &amp;baseSurface, const <a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html">graphics::VegetationMotion</a> &amp;baseMotion, const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;scene)</td></tr>
+<tr class="memdesc:a350cfe7df2d1200b2d9bed6603dd86dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project validated TVE manager controls onto one material/motion snapshot.  <br /></td></tr>
+<tr class="separator:a350cfe7df2d1200b2d9bed6603dd86dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6b1d11690de31b7bb91c00d4bca041" id="r_a7e6b1d11690de31b7bb91c00d4bca041"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a7e6b1d11690de31b7bb91c00d4bca041">loadVegetationSceneElementMasks</a> (const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;reader, const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;scene, const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;capabilities, std::uint64_t maximumDecodedBytes=256 *1024 *1024)</td></tr>
+<tr class="memdesc:a7e6b1d11690de31b7bb91c00d4bca041"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode every runtime texture used by admitted TVE Element shaders into owning linear masks.  <br /></td></tr>
+<tr class="separator:a7e6b1d11690de31b7bb91c00d4bca041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fbd7a524fc4b4ba8586de5365162487" id="r_a2fbd7a524fc4b4ba8586de5365162487"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html">VegetationSceneElementPixel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a2fbd7a524fc4b4ba8586de5365162487">evaluateVegetationSceneElementPixel</a> (const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html">VegetationSceneElement</a> &amp;element, const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixelInput.html">VegetationSceneElementPixelInput</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>)</td></tr>
+<tr class="memdesc:a2fbd7a524fc4b4ba8586de5365162487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate one TVE Element fragment using caller-supplied texture, instance and particle inputs.  <br /></td></tr>
+<tr class="separator:a2fbd7a524fc4b4ba8586de5365162487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add08a277a5899bdf867470bde6a9b06d" id="r_add08a277a5899bdf867470bde6a9b06d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#add08a277a5899bdf867470bde6a9b06d">composeVegetationSceneElementPixel</a> (glm::vec4 destination, const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html">VegetationSceneElementPixel</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>) noexcept</td></tr>
+<tr class="memdesc:add08a277a5899bdf867470bde6a9b06d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one evaluated source pixel to a destination with TVE's separate blend factors and ColorMask.  <br /></td></tr>
+<tr class="separator:add08a277a5899bdf867470bde6a9b06d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2687fa8ebbad3d4f32dfaa610811e764" id="r_a2687fa8ebbad3d4f32dfaa610811e764"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a2687fa8ebbad3d4f32dfaa610811e764">bakeVegetationSceneChannel</a> (const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;scene, const std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &amp;masks, <a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">graphics::VegetationChannel</a> channel, const <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &amp;base, std::uint8_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0, std::span&lt; const glm::vec3 &gt; worldNormals={}, std::span&lt; const float &gt; terrainHeights={}, std::span&lt; const glm::vec4 &gt; noiseSamples={})</td></tr>
+<tr class="memdesc:a2687fa8ebbad3d4f32dfaa610811e764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake one TVE manager channel at its own resolution and world mapping.  <br /></td></tr>
+<tr class="separator:a2687fa8ebbad3d4f32dfaa610811e764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79e5d8463381df9682b89f6dd2dae884" id="r_a79e5d8463381df9682b89f6dd2dae884"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a79e5d8463381df9682b89f6dd2dae884">bakeVegetationSceneElements</a> (const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;scene, const std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &amp;masks, const <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &amp;base, std::array&lt; std::uint8_t, 4 &gt; layers={}, std::span&lt; const glm::vec3 &gt; worldNormals={}, std::span&lt; const float &gt; terrainHeights={}, std::span&lt; const glm::vec4 &gt; noiseSamples={})</td></tr>
+<tr class="memdesc:a79e5d8463381df9682b89f6dd2dae884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rasterize the ordered TVE Element list over an owning four-channel atlas candidate.  <br /></td></tr>
+<tr class="separator:a79e5d8463381df9682b89f6dd2dae884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1782f06a08e5a52320d995501a66c55a" id="r_a1782f06a08e5a52320d995501a66c55a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a1782f06a08e5a52320d995501a66c55a">convertVegetationSceneChannelToNative</a> (<a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">graphics::VegetationChannel</a> channel, const <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &amp;tveAtlas)</td></tr>
+<tr class="memdesc:a1782f06a08e5a52320d995501a66c55a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert one fully composed TVE channel atlas to EVEngine conventions.  <br /></td></tr>
+<tr class="separator:a1782f06a08e5a52320d995501a66c55a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4462a6a3d7c3fb880bad1422799f94c3" id="r_a4462a6a3d7c3fb880bad1422799f94c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#a4462a6a3d7c3fb880bad1422799f94c3">convertVegetationSceneAtlasToNative</a> (const <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &amp;tveAtlas)</td></tr>
+<tr class="memdesc:a4462a6a3d7c3fb880bad1422799f94c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a fully composed TVE render-target atlas to EVEngine field channel conventions.  <br /></td></tr>
+<tr class="separator:a4462a6a3d7c3fb880bad1422799f94c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5c1bb72d8a1a552b83dfdc91f54f09a" id="r_ae5c1bb72d8a1a552b83dfdc91f54f09a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__graphics.html#ae5c1bb72d8a1a552b83dfdc91f54f09a">validateShaderAssetGpu</a> (const <a class="el" href="structeve_1_1asset_1_1ShaderAsset.html">asset::ShaderAsset</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)</td></tr>
+<tr class="memdesc:ae5c1bb72d8a1a552b83dfdc91f54f09a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate complete SPIR-V semantics and the supported engine pipeline interface before upload.  <br /></td></tr>
+<tr class="separator:ae5c1bb72d8a1a552b83dfdc91f54f09a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a495af75089f6673ef82d1c7880ac7d87" name="a495af75089f6673ef82d1c7880ac7d87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a495af75089f6673ef82d1c7880ac7d87">&#9670;&#160;</a></span>ImageAssetLoadLimits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1asset__graphics.html#a495af75089f6673ef82d1c7880ac7d87">eve::asset_graphics::ImageAssetLoadLimits</a> = typedef <a class="el" href="structeve_1_1asset_1_1EvpackImageDecodeLimits.html">asset::EvpackImageDecodeLimits</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvpackImageLoader_8h_source.html">EvpackImageLoader.h</a> 第 <a class="el" href="EvpackImageLoader_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a5201f0924fae1ba45fb6af01878f5672" name="a5201f0924fae1ba45fb6af01878f5672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5201f0924fae1ba45fb6af01878f5672">&#9670;&#160;</a></span>VegetationScenePixelBlend</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672">eve::asset_graphics::VegetationScenePixelBlend</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Detached TVE render-target source value and independent hardware blend policy. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a5201f0924fae1ba45fb6af01878f5672a6132295fcf5570fb8b0a944ef322a598" name="a5201f0924fae1ba45fb6af01878f5672a6132295fcf5570fb8b0a944ef322a598"></a>Alpha&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5201f0924fae1ba45fb6af01878f5672ae257376d913f3b53cbb4a9b19d770648" name="a5201f0924fae1ba45fb6af01878f5672ae257376d913f3b53cbb4a9b19d770648"></a>Multiply&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5201f0924fae1ba45fb6af01878f5672aec211f7c20af43e742bf2570c3cb84f9" name="a5201f0924fae1ba45fb6af01878f5672aec211f7c20af43e742bf2570c3cb84f9"></a>Add&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5201f0924fae1ba45fb6af01878f5672a0ebe6df8a3ac338e0512acc741823fdb" name="a5201f0924fae1ba45fb6af01878f5672a0ebe6df8a3ac338e0512acc741823fdb"></a>Replace&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8h_source.html">EvpackVegetationScene.h</a> 第 <a class="el" href="EvpackVegetationScene_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a2687fa8ebbad3d4f32dfaa610811e764" name="a2687fa8ebbad3d4f32dfaa610811e764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2687fa8ebbad3d4f32dfaa610811e764">&#9670;&#160;</a></span>bakeVegetationSceneChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &gt; eve::asset_graphics::bakeVegetationSceneChannel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>masks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">graphics::VegetationChannel</a>&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &amp;&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint8_t&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const glm::vec3 &gt;&#160;</td>
+          <td class="paramname"><em>worldNormals</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>terrainHeights</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const glm::vec4 &gt;&#160;</td>
+          <td class="paramname"><em>noiseSamples</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake one TVE manager channel at its own resolution and world mapping. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>Target channel; only Elements writing this channel are evaluated. </td></tr>
+    <tr><td class="paramname">layer</td><td>Selected TVE layer in [0,8]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Fully composed detached channel atlas, or failure without mutating base. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00687">687</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VegetationField_8h_source.html#l00077">eve::graphics::VegetationChannelAtlas::center</a>, <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00668">composeVegetationSceneElementPixel()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00504">evaluateVegetationSceneElementPixel()</a>, <a class="el" href="VegetationField_8h_source.html#l00077">eve::graphics::VegetationChannelAtlas::extent</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="VegetationField_8h_source.html#l00076">eve::graphics::VegetationChannelAtlas::height</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00077">eve::asset_graphics::VegetationSceneElementPixelInput::localUv</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="VegetationField_8h_source.html#l00078">eve::graphics::VegetationChannelAtlas::pixels</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00016">uv</a>, <a class="el" href="VegetationField_8h_source.html#l00076">eve::graphics::VegetationChannelAtlas::width</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00775">bakeVegetationSceneElements()</a> , 以及 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="a79e5d8463381df9682b89f6dd2dae884" name="a79e5d8463381df9682b89f6dd2dae884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79e5d8463381df9682b89f6dd2dae884">&#9670;&#160;</a></span>bakeVegetationSceneElements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &gt; eve::asset_graphics::bakeVegetationSceneElements </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>masks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &amp;&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; std::uint8_t, 4 &gt;&#160;</td>
+          <td class="paramname"><em>layers</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const glm::vec3 &gt;&#160;</td>
+          <td class="paramname"><em>worldNormals</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const float &gt;&#160;</td>
+          <td class="paramname"><em>terrainHeights</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const glm::vec4 &gt;&#160;</td>
+          <td class="paramname"><em>noiseSamples</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rasterize the ordered TVE Element list over an owning four-channel atlas candidate. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scene</td><td>Borrowed immutable manager and Element state. </td></tr>
+    <tr><td class="paramname">masks</td><td>Borrowed immutable masks keyed by Unity texture GUID. </td></tr>
+    <tr><td class="paramname">base</td><td>Owning initial atlas and world XZ mapping; copied before any evaluation. </td></tr>
+    <tr><td class="paramname">layers</td><td>Selected 0..8 layer for Colors, Extras, Motion and Vertex respectively. </td></tr>
+    <tr><td class="paramname">worldNormals</td><td>Optional per-texel model/world normals; empty selects up. </td></tr>
+    <tr><td class="paramname">terrainHeights</td><td>Optional per-texel resolved terrain heights; empty selects zero. </td></tr>
+    <tr><td class="paramname">noiseSamples</td><td>Optional per-texel already time-filtered noise values; empty selects zero. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Fully composed owning atlas; any invalid input or evaluation failure leaves base unchanged. @thread Worker-safe; no callbacks, clocks, GPU work, global mutation or retained borrows. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00775">775</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00687">bakeVegetationSceneChannel()</a>, <a class="el" href="VegetationField_8h_source.html#l00068">eve::graphics::VegetationAtlas::center</a>, <a class="el" href="VegetationField_8h_source.html#l00069">eve::graphics::VegetationAtlas::channels</a>, <a class="el" href="VegetationField_8h_source.html#l00068">eve::graphics::VegetationAtlas::extent</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::height</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::width</a>.</p>
+
+</div>
+</div>
+<a id="add08a277a5899bdf867470bde6a9b06d" name="add08a277a5899bdf867470bde6a9b06d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add08a277a5899bdf867470bde6a9b06d">&#9670;&#160;</a></span>composeVegetationSceneElementPixel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> glm::vec4 eve::asset_graphics::composeVegetationSceneElementPixel </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec4&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html">VegetationSceneElementPixel</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one evaluated source pixel to a destination with TVE's separate blend factors and ColorMask. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00668">668</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672a6132295fcf5570fb8b0a944ef322a598">Alpha</a>, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672ae257376d913f3b53cbb4a9b19d770648">Multiply</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00159">operation</a>, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672a0ebe6df8a3ac338e0512acc741823fdb">Replace</a> , 以及 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00687">bakeVegetationSceneChannel()</a>.</p>
+
+</div>
+</div>
+<a id="a4462a6a3d7c3fb880bad1422799f94c3" name="a4462a6a3d7c3fb880bad1422799f94c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4462a6a3d7c3fb880bad1422799f94c3">&#9670;&#160;</a></span>convertVegetationSceneAtlasToNative()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &gt; eve::asset_graphics::convertVegetationSceneAtlasToNative </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">graphics::VegetationAtlas</a> &amp;&#160;</td>
+          <td class="paramname"><em>tveAtlas</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a fully composed TVE render-target atlas to EVEngine field channel conventions. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tveAtlas</td><td>Borrowed owning-value atlas produced by bakeVegetationSceneElements. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Detached atlas whose Motion RG stores signed world X/Z; other TVE channels stay unchanged. @thread Worker-safe; no callbacks, clocks, GPU work, global mutation or retained borrows. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00829">829</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VegetationField_8h_source.html#l00068">eve::graphics::VegetationAtlas::center</a>, <a class="el" href="VegetationField_8h_source.html#l00069">eve::graphics::VegetationAtlas::channels</a>, <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00796">convertVegetationSceneChannelToNative()</a>, <a class="el" href="VegetationField_8h_source.html#l00068">eve::graphics::VegetationAtlas::extent</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::height</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::width</a>.</p>
+
+</div>
+</div>
+<a id="a1782f06a08e5a52320d995501a66c55a" name="a1782f06a08e5a52320d995501a66c55a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1782f06a08e5a52320d995501a66c55a">&#9670;&#160;</a></span>convertVegetationSceneChannelToNative()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &gt; eve::asset_graphics::convertVegetationSceneChannelToNative </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">graphics::VegetationChannel</a>&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">graphics::VegetationChannelAtlas</a> &amp;&#160;</td>
+          <td class="paramname"><em>tveAtlas</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert one fully composed TVE channel atlas to EVEngine conventions. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00796">796</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VegetationField_8h_source.html#l00077">eve::graphics::VegetationChannelAtlas::center</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="VegetationField_8h_source.html#l00077">eve::graphics::VegetationChannelAtlas::extent</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VegetationField_8h_source.html#l00076">eve::graphics::VegetationChannelAtlas::height</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eea8226588f03da49b857e5ddf8c508dd2d">eve::graphics::Motion</a>, <a class="el" href="VegetationField_8h_source.html#l00078">eve::graphics::VegetationChannelAtlas::pixels</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00076">eve::graphics::VegetationChannelAtlas::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00829">convertVegetationSceneAtlasToNative()</a> , 以及 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="a2fbd7a524fc4b4ba8586de5365162487" name="a2fbd7a524fc4b4ba8586de5365162487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fbd7a524fc4b4ba8586de5365162487">&#9670;&#160;</a></span>evaluateVegetationSceneElementPixel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixel.html">VegetationSceneElementPixel</a> &gt; eve::asset_graphics::evaluateVegetationSceneElementPixel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElement.html">VegetationSceneElement</a> &amp;&#160;</td>
+          <td class="paramname"><em>element</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneElementPixelInput.html">VegetationSceneElementPixelInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate one TVE Element fragment using caller-supplied texture, instance and particle inputs. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">element</td><td>Borrowed immutable canonical Element. </td></tr>
+    <tr><td class="paramname">input</td><td>Detached values corresponding to TVE <code>_MainTex</code>, <code>_ElementParams</code>, vertex color and volume fade. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning source pixel plus exact independent RGB/alpha blend modes and color mask. @thread Worker-safe; no texture reads, callbacks, clocks, global state or GPU work. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00504">504</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00066">eve::asset_graphics::VegetationSceneElement::blendAlpha</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00066">eve::asset_graphics::VegetationSceneElement::blendRgb</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00097">eve::asset_graphics::VegetationSceneElementPixel::blendRgb</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">color</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00066">eve::asset_graphics::VegetationSceneElement::directionMode</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00065">eve::asset_graphics::VegetationSceneElement::enabled</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00068">eve::asset_graphics::VegetationSceneElement::intensity</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00065">eve::asset_graphics::VegetationSceneElement::invertDirection</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00062">eve::asset_graphics::VegetationSceneElement::kind</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00027">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00026">minimum</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00066">eve::asset_graphics::VegetationSceneElement::motionMode</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00068">eve::asset_graphics::VegetationSceneElement::motionPower</a>, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672ae257376d913f3b53cbb4a9b19d770648">Multiply</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00118">normal</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00072">eve::asset_graphics::VegetationSceneElement::remap</a>, <a class="el" href="namespaceeve_1_1asset__graphics.html#a5201f0924fae1ba45fb6af01878f5672a0ebe6df8a3ac338e0512acc741823fdb">Replace</a>, <a class="el" href="EvpackVegetationScene_8h_source.html#l00070">eve::asset_graphics::VegetationSceneElement::rotation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00387">volume</a> , 以及 <a class="el" href="EvpackVegetationScene_8h_source.html#l00065">eve::asset_graphics::VegetationSceneElement::volumeFade</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00687">bakeVegetationSceneChannel()</a>.</p>
+
+</div>
+</div>
+<a id="a7e6b1d11690de31b7bb91c00d4bca041" name="a7e6b1d11690de31b7bb91c00d4bca041"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6b1d11690de31b7bb91c00d4bca041">&#9670;&#160;</a></span>loadVegetationSceneElementMasks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::map&lt; std::string, <a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">graphics::VegetationMask</a> &gt; &gt; eve::asset_graphics::loadVegetationSceneElementMasks </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;&#160;</td>
+          <td class="paramname"><em>capabilities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>maximumDecodedBytes</em> = <code>256&#160;*1024&#160;*1024</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode every runtime texture used by admitted TVE Element shaders into owning linear masks. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reader</td><td>Borrowed immutable package reader, used only during this call. </td></tr>
+    <tr><td class="paramname">scene</td><td>Borrowed validated scene whose texture asset references identify the image dependencies. </td></tr>
+    <tr><td class="paramname">capabilities</td><td><a class="el" href="classeve_1_1Runtime.html">Runtime</a> variant capabilities. </td></tr>
+    <tr><td class="paramname">maximumDecodedBytes</td><td>Aggregate decoded-image and owning-mask byte budget across unique images. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning masks keyed by lowercase Unity GUID; missing required images fail the whole candidate. @thread Worker-safe when the reader is safe for concurrent reads. @reentrancy Performs no callbacks, GPU calls, global mutation, clocks or filesystem access. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="EvpackImageDecoder_8cpp_source.html#l00014">eve::asset::decodeEvpackImage()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00030">limits</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="EvpackImageDecoder_8h_source.html#l00012">eve::asset::EvpackImageDecodeLimits::maximumDimension</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00020">eve::AssetRef::parse()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00024">eve::graphics::VegetationMask::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationSceneInstance_8cpp_source.html#l00015">eve::asset_graphics::VegetationSceneAssociationLoader::load()</a>.</p>
+
+</div>
+</div>
+<a id="a350cfe7df2d1200b2d9bed6603dd86dd" name="a350cfe7df2d1200b2d9bed6603dd86dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a350cfe7df2d1200b2d9bed6603dd86dd">&#9670;&#160;</a></span>projectVegetationScene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset__graphics_1_1VegetationSceneProjection.html">VegetationSceneProjection</a> &gt; eve::asset_graphics::projectVegetationScene </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1PbrSurface.html">graphics::PbrSurface</a> &amp;&#160;</td>
+          <td class="paramname"><em>baseSurface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html">graphics::VegetationMotion</a> &amp;&#160;</td>
+          <td class="paramname"><em>baseMotion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__graphics_1_1LoadedVegetationScene.html">LoadedVegetationScene</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project validated TVE manager controls onto one material/motion snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">baseSurface</td><td>Borrowed immutable material values, including resolved texture pointers. </td></tr>
+    <tr><td class="paramname">baseMotion</td><td>Borrowed immutable object/time/camera values. </td></tr>
+    <tr><td class="paramname">scene</td><td>Owning validated scene state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Detached complete candidate; inputs remain unchanged on failure. @thread Worker-safe; no clocks, GPU calls, callbacks or global shader state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackVegetationScene_8cpp_source.html">EvpackVegetationScene.cpp</a> 第 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="VegetationDetails_8cpp_source.html#l00035">eve::graphics::configureVegetationDetails()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00020">scene</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="PbrSurface_8cpp_source.html#l00004">eve::graphics::validatePbrSurface()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="ae5c1bb72d8a1a552b83dfdc91f54f09a" name="ae5c1bb72d8a1a552b83dfdc91f54f09a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c1bb72d8a1a552b83dfdc91f54f09a">&#9670;&#160;</a></span>validateShaderAssetGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::validateShaderAssetGpu </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1ShaderAsset.html">asset::ShaderAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate complete SPIR-V semantics and the supported engine pipeline interface before upload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shader</td><td>Borrowed CPU snapshot, not retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, a structured incompatibility, or Unsupported when validation tools were not linked. @thread Worker-safe for immutable input. No GPU allocation, callbacks, or live-state mutation. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Version one permits one fragment sampler (albedo), fixed vertex attributes, a mesh Frame UBO, and optional float data[32] push constants. Other descriptor layouts are explicitly unsupported. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShaderAssetValidation_8cpp_source.html">ShaderAssetValidation.cpp</a> 第 <a class="el" href="ShaderAssetValidation_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="namespaceeve_1_1asset.html#a3e8cbdb349b5bf9d62672f017d7fd83ba8316b12f67e824b6ff0e82de691f0080">eve::asset::Mesh3D</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00643">shader</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">type</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackShader_8cpp_source.html#l00030">eve::asset_graphics::EvpackShader::load()</a> , 以及 <a class="el" href="EvpackMeshVfx_8cpp_source.html#l00020">eve::asset_stylize::EvpackMeshVfx::load()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

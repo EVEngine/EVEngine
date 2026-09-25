@@ -1,0 +1,429 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_procgen::TerrainDetailRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__procgen.html">asset_procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_procgen::TerrainDetailRuntime类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning runtime for one cooked Unity Terrain Detail instance set. @ownership Owns the realization, GPU resolver leases, and render registration. @lifetime The reader and Graphics backend passed to load must outlive this object and release. @thread Load, frame updates, rendering callbacks, release, and destruction are graphics-thread affine. @reentrancy Calls no scripts; release must not run from a render callback.  
+ <a href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainDetailGpuResolver_8h_source.html">TerrainDetailGpuResolver.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac4de732eb62fcbf57591076b727cf649" id="r_ac4de732eb62fcbf57591076b727cf649"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#ac4de732eb62fcbf57591076b727cf649">~TerrainDetailRuntime</a> ()</td></tr>
+<tr class="separator:ac4de732eb62fcbf57591076b727cf649"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb72bb24a52fc825dba30d94617ecd7" id="r_a8bb72bb24a52fc825dba30d94617ecd7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#a8bb72bb24a52fc825dba30d94617ecd7">TerrainDetailRuntime</a> (const <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a8bb72bb24a52fc825dba30d94617ecd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2da42a84f46afcf750276628916da4b" id="r_ad2da42a84f46afcf750276628916da4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#ad2da42a84f46afcf750276628916da4b">operator=</a> (const <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:ad2da42a84f46afcf750276628916da4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48f14266994cd38f9a7e40a78d188026" id="r_a48f14266994cd38f9a7e40a78d188026"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#a48f14266994cd38f9a7e40a78d188026">setFrame</a> (<a class="el" href="structeve_1_1asset__procgen_1_1TerrainVegetationGpuFrame.html">TerrainVegetationGpuFrame</a> frame)</td></tr>
+<tr class="memdesc:a48f14266994cd38f9a7e40a78d188026"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the absolute simulation time used for deterministic grass motion.  <br /></td></tr>
+<tr class="separator:a48f14266994cd38f9a7e40a78d188026"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1cfb8b4b002b161878486f4841e58f8" id="r_af1cfb8b4b002b161878486f4841e58f8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#af1cfb8b4b002b161878486f4841e58f8">lastSubmissionError</a> () const</td></tr>
+<tr class="memdesc:af1cfb8b4b002b161878486f4841e58f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest asynchronous render-submission diagnostic, if any. @ownership Borrowed; the runtime retains ownership. @lifetime Valid until the next render callback, release, or destruction.  <br /></td></tr>
+<tr class="separator:af1cfb8b4b002b161878486f4841e58f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4531793216fd80be18e4feac976e527" id="r_ab4531793216fd80be18e4feac976e527"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#ab4531793216fd80be18e4feac976e527">release</a> ()</td></tr>
+<tr class="memdesc:ab4531793216fd80be18e4feac976e527"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister rendering and release all backend resources; safe to retry after failure.  <br /></td></tr>
+<tr class="separator:ab4531793216fd80be18e4feac976e527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2769b21415fbc9fd3c6b29deb42a3f20" id="r_a2769b21415fbc9fd3c6b29deb42a3f20"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html#a2769b21415fbc9fd3c6b29deb42a3f20">load</a> (const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;reader, const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;capabilities, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, const <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &amp;asset, const <a class="el" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">TerrainVegetationLimits</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>={})</td></tr>
+<tr class="memdesc:a2769b21415fbc9fd3c6b29deb42a3f20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load, realize, and register one Detail set atomically; GPU resources resolve on first render.  <br /></td></tr>
+<tr class="separator:a2769b21415fbc9fd3c6b29deb42a3f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning runtime for one cooked Unity Terrain Detail instance set. @ownership Owns the realization, GPU resolver leases, and render registration. @lifetime The reader and Graphics backend passed to load must outlive this object and release. @thread Load, frame updates, rendering callbacks, release, and destruction are graphics-thread affine. @reentrancy Calls no scripts; release must not run from a render callback. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8h_source.html">TerrainDetailGpuResolver.h</a> 第 <a class="el" href="TerrainDetailGpuResolver_8h_source.html#l00060">60</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac4de732eb62fcbf57591076b727cf649" name="ac4de732eb62fcbf57591076b727cf649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4de732eb62fcbf57591076b727cf649">&#9670;&#160;</a></span>~TerrainDetailRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_procgen::TerrainDetailRuntime::~TerrainDetailRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a> 第 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00090">release()</a>.</p>
+
+</div>
+</div>
+<a id="a8bb72bb24a52fc825dba30d94617ecd7" name="a8bb72bb24a52fc825dba30d94617ecd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb72bb24a52fc825dba30d94617ecd7">&#9670;&#160;</a></span>TerrainDetailRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_procgen::TerrainDetailRuntime::TerrainDetailRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af1cfb8b4b002b161878486f4841e58f8" name="af1cfb8b4b002b161878486f4841e58f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1cfb8b4b002b161878486f4841e58f8">&#9670;&#160;</a></span>lastSubmissionError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> * eve::asset_procgen::TerrainDetailRuntime::lastSubmissionError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the latest asynchronous render-submission diagnostic, if any. @ownership Borrowed; the runtime retains ownership. @lifetime Valid until the next render callback, release, or destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a> 第 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2769b21415fbc9fd3c6b29deb42a3f20" name="a2769b21415fbc9fd3c6b29deb42a3f20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2769b21415fbc9fd3c6b29deb42a3f20">&#9670;&#160;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &gt; &gt; eve::asset_procgen::TerrainDetailRuntime::load </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a> &amp;&#160;</td>
+          <td class="paramname"><em>reader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a> &amp;&#160;</td>
+          <td class="paramname"><em>capabilities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__procgen_1_1TerrainVegetationLimits.html">TerrainVegetationLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load, realize, and register one Detail set atomically; GPU resources resolve on first render. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reader</td><td>Borrowed EVPACK reader containing the instance set and its resource closure. </td></tr>
+    <tr><td class="paramname">capabilities</td><td><a class="el" href="classeve_1_1Runtime.html">Runtime</a> variant used for every resource selection. </td></tr>
+    <tr><td class="paramname">graphics</td><td>Borrowed graphics backend that owns uploaded resources. </td></tr>
+    <tr><td class="paramname">asset</td><td>Canonical <code>eve.instance-set</code> asset reference. </td></tr>
+    <tr><td class="paramname">limits</td><td>Allocation limits applied before realization publication. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning active runtime, or a structured load failure with no render registration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a> 第 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainVegetationGpu_8cpp_source.html#l00018">eve::asset_procgen::buildTerrainVegetationGpuPlan()</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00030">limits</a>, <a class="el" href="EvpackInstanceSetLoader_8cpp_source.html#l00030">eve::asset_procgen::EvpackInstanceSetLoader::load()</a> , 以及 <a class="el" href="TerrainVegetationRuntime_8cpp_source.html#l00081">eve::asset_procgen::realizeTerrainVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="ad2da42a84f46afcf750276628916da4b" name="ad2da42a84f46afcf750276628916da4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2da42a84f46afcf750276628916da4b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp; eve::asset_procgen::TerrainDetailRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__procgen_1_1TerrainDetailRuntime.html">TerrainDetailRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4531793216fd80be18e4feac976e527" name="ab4531793216fd80be18e4feac976e527"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4531793216fd80be18e4feac976e527">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_procgen::TerrainDetailRuntime::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unregister rendering and release all backend resources; safe to retry after failure. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a> 第 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00073">~TerrainDetailRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a48f14266994cd38f9a7e40a78d188026" name="a48f14266994cd38f9a7e40a78d188026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48f14266994cd38f9a7e40a78d188026">&#9670;&#160;</a></span>setFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_procgen::TerrainDetailRuntime::setFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset__procgen_1_1TerrainVegetationGpuFrame.html">TerrainVegetationGpuFrame</a>&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the absolute simulation time used for deterministic grass motion. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a> 第 <a class="el" href="TerrainDetailGpuResolver_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a> , 以及 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/asset/procgen/<a class="el" href="TerrainDetailGpuResolver_8h_source.html">TerrainDetailGpuResolver.h</a></li>
+<li>src/modules/asset/procgen/<a class="el" href="TerrainDetailGpuResolver_8cpp_source.html">TerrainDetailGpuResolver.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

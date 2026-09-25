@@ -1,0 +1,319 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tactics::PresentationProjector类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li><li class="navelem"><a class="el" href="classeve_1_1tactics_1_1PresentationProjector.html">PresentationProjector</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1tactics_1_1PresentationProjector-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tactics::PresentationProjector类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Projects authoritative events into bounded, revertible presentation intents.  
+ <a href="classeve_1_1tactics_1_1PresentationProjector.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Presentation_8h_source.html">Presentation.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac4e8cbf297fb6c71e0d19656cb64beaf" id="r_ac4e8cbf297fb6c71e0d19656cb64beaf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1PresentationProjector.html#ac4e8cbf297fb6c71e0d19656cb64beaf">PresentationProjector</a> (std::uint64_t transientTicks=20)</td></tr>
+<tr class="memdesc:ac4e8cbf297fb6c71e0d19656cb64beaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the projector; the default lifetime is used unless overridden.  <br /></td></tr>
+<tr class="separator:ac4e8cbf297fb6c71e0d19656cb64beaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8a188d894db8ad9c739cd6bf8ce2be6" id="r_af8a188d894db8ad9c739cd6bf8ce2be6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1PresentationCommand.html">PresentationCommand</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1PresentationProjector.html#af8a188d894db8ad9c739cd6bf8ce2be6">project</a> (const <a class="el" href="structeve_1_1tactics_1_1BattleEvent.html">BattleEvent</a> &amp;event, const <a class="el" href="structeve_1_1tactics_1_1BattleCommand.html">BattleCommand</a> *command, const <a class="el" href="structeve_1_1tactics_1_1PresentationFrame.html">PresentationFrame</a> &amp;frame) const</td></tr>
+<tr class="memdesc:af8a188d894db8ad9c739cd6bf8ce2be6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one authoritative event into presentation commands.  <br /></td></tr>
+<tr class="separator:af8a188d894db8ad9c739cd6bf8ce2be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42ddfa4739f64966eb24aa201226b1a1" id="r_a42ddfa4739f64966eb24aa201226b1a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1PresentationProjector.html#a42ddfa4739f64966eb24aa201226b1a1">revert</a> (const <a class="el" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a> &amp;intent, const <a class="el" href="structeve_1_1tactics_1_1PresentationRevert.html">PresentationRevert</a> &amp;spec) const</td></tr>
+<tr class="memdesc:a42ddfa4739f64966eb24aa201226b1a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the inverse intent that undoes <code>intent</code>.  <br /></td></tr>
+<tr class="separator:a42ddfa4739f64966eb24aa201226b1a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Projects authoritative events into bounded, revertible presentation intents. </p>
+<p>@thread Stateless apart from its configuration; it holds no battle reference and can be shared or copied freely. </p>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8h_source.html">Presentation.h</a> 第 <a class="el" href="Presentation_8h_source.html#l00163">163</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac4e8cbf297fb6c71e0d19656cb64beaf" name="ac4e8cbf297fb6c71e0d19656cb64beaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4e8cbf297fb6c71e0d19656cb64beaf">&#9670;&#160;</a></span>PresentationProjector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tactics::PresentationProjector::PresentationProjector </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>transientTicks</em> = <code>20</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configure the projector; the default lifetime is used unless overridden. </p>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8h_source.html">Presentation.h</a> 第 <a class="el" href="Presentation_8h_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af8a188d894db8ad9c739cd6bf8ce2be6" name="af8a188d894db8ad9c739cd6bf8ce2be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8a188d894db8ad9c739cd6bf8ce2be6">&#9670;&#160;</a></span>project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1PresentationCommand.html">PresentationCommand</a> &gt; &gt; eve::tactics::PresentationProjector::project </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1BattleEvent.html">BattleEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1BattleCommand.html">BattleCommand</a> *&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1PresentationFrame.html">PresentationFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project one authoritative event into presentation commands. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>The battle event, which owns the sequence, tick and type. </td></tr>
+    <tr><td class="paramname">command</td><td>The accepted command the event points at, when the caller can supply it; it is the authority for the geometry (<code>cell</code>, <code>targetUnit</code>) the event does not carry. Pass <code>nullptr</code> when unavailable, in which case intents are emitted without geometry instead of guessing. </td></tr>
+    <tr><td class="paramname">frame</td><td>The revision and resting states the projection is anchored to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Zero or more commands. An event with no presentation meaning (a random draw, an objective evaluation) projects to an empty list; that is a normal answer. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8cpp_source.html">Presentation.cpp</a> 第 <a class="el" href="Presentation_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8abd002ea36128383f3269de7e74039b">eve::tactics::Attacking</a>, <a class="el" href="TacticsTypes_8h_source.html#l00387">eve::tactics::BattleCommand::cell</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00096">commands</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3aaefbd0597f1bc2493bbc18898243513b">eve::tactics::Destroyed</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a8f3d10eb21bd36347c258679eba9e92b">eve::tactics::Finished</a>, <a class="el" href="Presentation_8h_source.html#l00097">eve::tactics::PresentationIntent::from</a>, <a class="el" href="Presentation_8h_source.html#l00137">eve::tactics::PresentationCommand::intent</a>, <a class="el" href="TacticsTypes_8h_source.html#l00382">eve::tactics::BattleCommand::kind</a>, <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9ea6bc362dbf494c61ea117fe3c71ca48a5">eve::tactics::Move</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3adefe967ad0373b2274fc298f19125ca7">eve::tactics::Moving</a>, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da02a5737b22c0ec0d3c94a16456c18ea3">eve::tactics::OnExpiry</a>, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3da925599308f454173bb8241e78789e51f">eve::tactics::OnNextTurn</a>, <a class="el" href="namespaceeve_1_1tactics.html#a3fff92b0e855225a00aa6e66bbf51e3daf1e655db76d761918421b2aedd68b1ad">eve::tactics::OnRoundStart</a>, <a class="el" href="Presentation_8h_source.html#l00094">eve::tactics::PresentationIntent::other</a>, <a class="el" href="Presentation_8h_source.html#l00101">eve::tactics::PresentationIntent::path</a>, <a class="el" href="namespaceeve_1_1tactics.html#a7caee7bd83cc0384e2f35a10b4ce18d3a91b442d385b54e1418d81adc34871053">eve::tactics::Selected</a>, <a class="el" href="TacticsTypes_8h_source.html#l00314">eve::tactics::BattleEvent::subject</a>, <a class="el" href="TacticsTypes_8h_source.html#l00395">eve::tactics::BattleCommand::targetUnit</a>, <a class="el" href="Presentation_8h_source.html#l00099">eve::tactics::PresentationIntent::to</a>, <a class="el" href="TacticsTypes_8h_source.html#l00313">eve::tactics::BattleEvent::type</a> , 以及 <a class="el" href="namespaceeve_1_1tactics.html#a68a416c4caa9901c69f15df7de0e3a9eae07528049e22a8238b269fa3bf8679b5">eve::tactics::UseAbility</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tactics_8cpp_source.html#l01235">eve::tactics::Tactics::presentationIntents()</a>.</p>
+
+</div>
+</div>
+<a id="a42ddfa4739f64966eb24aa201226b1a1" name="a42ddfa4739f64966eb24aa201226b1a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42ddfa4739f64966eb24aa201226b1a1">&#9670;&#160;</a></span>revert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a> &gt; eve::tactics::PresentationProjector::revert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1PresentationIntent.html">PresentationIntent</a> &amp;&#160;</td>
+          <td class="paramname"><em>intent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tactics_1_1PresentationRevert.html">PresentationRevert</a> &amp;&#160;</td>
+          <td class="paramname"><em>spec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the inverse intent that undoes <code>intent</code>. </p>
+<dl class="section return"><dt>返回</dt><dd>The inverse intent, or <code>Unsupported</code> when the intent is durable (PresentationRevert::revertable is false). Refusing loudly is the point: a caller cannot "revert" a defeat and leave the view lying about the battle. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Presentation_8cpp_source.html">Presentation.cpp</a> 第 <a class="el" href="Presentation_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Presentation_8h_source.html#l00112">eve::tactics::PresentationIntent::expiresAtTick</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Presentation_8h_source.html#l00097">eve::tactics::PresentationIntent::from</a>, <a class="el" href="Presentation_8h_source.html#l00130">eve::tactics::PresentationRevert::isRevertable()</a>, <a class="el" href="Presentation_8h_source.html#l00094">eve::tactics::PresentationIntent::other</a>, <a class="el" href="Presentation_8h_source.html#l00124">eve::tactics::PresentationRevert::restingState</a>, <a class="el" href="Presentation_8h_source.html#l00103">eve::tactics::PresentationIntent::revision</a>, <a class="el" href="Presentation_8h_source.html#l00090">eve::tactics::PresentationIntent::sequence</a>, <a class="el" href="Presentation_8h_source.html#l00127">eve::tactics::PresentationRevert::sequence</a>, <a class="el" href="Presentation_8h_source.html#l00095">eve::tactics::PresentationIntent::state</a>, <a class="el" href="Presentation_8h_source.html#l00092">eve::tactics::PresentationIntent::subject</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Presentation_8h_source.html#l00105">eve::tactics::PresentationIntent::tick</a>, <a class="el" href="Presentation_8h_source.html#l00099">eve::tactics::PresentationIntent::to</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tactics/<a class="el" href="Presentation_8h_source.html">Presentation.h</a></li>
+<li>src/modules/tactics/<a class="el" href="Presentation_8cpp_source.html">Presentation.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

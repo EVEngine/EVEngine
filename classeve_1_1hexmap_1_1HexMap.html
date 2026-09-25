@@ -1,0 +1,2727 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexMap类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexMap-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexMap类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>An editable, chunked, pointy-top hex map.  
+ <a href="classeve_1_1hexmap_1_1HexMap.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexMap_8h_source.html">HexMap.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a00e322dc4be20f01e0ca6f14674af7fe" id="r_a00e322dc4be20f01e0ca6f14674af7fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a00e322dc4be20f01e0ca6f14674af7fe">HexMap</a> ()=default</td></tr>
+<tr class="separator:a00e322dc4be20f01e0ca6f14674af7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d91d5433114cf9a1bc7d8f91b658c9" id="r_ab1d91d5433114cf9a1bc7d8f91b658c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab1d91d5433114cf9a1bc7d8f91b658c9">reset</a> (std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5cf67d483c1173f08d88ae3d6c95f207">cellCountX</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abdf8f1303fd8bf331b7f7460cc6b97b2">cellCountZ</a>, std::uint32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a45139c24aa13b84342d31fbf2fb1c539">seed</a>)</td></tr>
+<tr class="memdesc:ab1d91d5433114cf9a1bc7d8f91b658c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the grid with a new <code>cellCountX * cellCountZ</code> map.  <br /></td></tr>
+<tr class="separator:ab1d91d5433114cf9a1bc7d8f91b658c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10a5b5a876d079f69fb6f902830d204c" id="r_a10a5b5a876d079f69fb6f902830d204c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a10a5b5a876d079f69fb6f902830d204c">empty</a> () const noexcept</td></tr>
+<tr class="memdesc:a10a5b5a876d079f69fb6f902830d204c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the map holds any cell.  <br /></td></tr>
+<tr class="separator:a10a5b5a876d079f69fb6f902830d204c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cf67d483c1173f08d88ae3d6c95f207" id="r_a5cf67d483c1173f08d88ae3d6c95f207"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5cf67d483c1173f08d88ae3d6c95f207">cellCountX</a> () const noexcept</td></tr>
+<tr class="memdesc:a5cf67d483c1173f08d88ae3d6c95f207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of columns.  <br /></td></tr>
+<tr class="separator:a5cf67d483c1173f08d88ae3d6c95f207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdf8f1303fd8bf331b7f7460cc6b97b2" id="r_abdf8f1303fd8bf331b7f7460cc6b97b2"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abdf8f1303fd8bf331b7f7460cc6b97b2">cellCountZ</a> () const noexcept</td></tr>
+<tr class="memdesc:abdf8f1303fd8bf331b7f7460cc6b97b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of rows.  <br /></td></tr>
+<tr class="separator:abdf8f1303fd8bf331b7f7460cc6b97b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a5e23d13f3feef13c3e20b245e92b1" id="r_a64a5e23d13f3feef13c3e20b245e92b1"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a64a5e23d13f3feef13c3e20b245e92b1">chunkCountX</a> () const noexcept</td></tr>
+<tr class="memdesc:a64a5e23d13f3feef13c3e20b245e92b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of chunk columns.  <br /></td></tr>
+<tr class="separator:a64a5e23d13f3feef13c3e20b245e92b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b37dd8572529d3e41dc83eff775616" id="r_ae8b37dd8572529d3e41dc83eff775616"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae8b37dd8572529d3e41dc83eff775616">chunkCountZ</a> () const noexcept</td></tr>
+<tr class="memdesc:ae8b37dd8572529d3e41dc83eff775616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of chunk rows.  <br /></td></tr>
+<tr class="separator:ae8b37dd8572529d3e41dc83eff775616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05d170464696233e6050d315d886a892" id="r_a05d170464696233e6050d315d886a892"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a05d170464696233e6050d315d886a892">chunkCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a05d170464696233e6050d315d886a892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of chunks.  <br /></td></tr>
+<tr class="separator:a05d170464696233e6050d315d886a892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a79e08d38fbfd82df813f01dfc89948" id="r_a8a79e08d38fbfd82df813f01dfc89948"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8a79e08d38fbfd82df813f01dfc89948">cellCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a8a79e08d38fbfd82df813f01dfc89948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of cells.  <br /></td></tr>
+<tr class="separator:a8a79e08d38fbfd82df813f01dfc89948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45139c24aa13b84342d31fbf2fb1c539" id="r_a45139c24aa13b84342d31fbf2fb1c539"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a45139c24aa13b84342d31fbf2fb1c539">seed</a> () const noexcept</td></tr>
+<tr class="memdesc:a45139c24aa13b84342d31fbf2fb1c539"><td class="mdescLeft">&#160;</td><td class="mdescRight">The seed this map was built with.  <br /></td></tr>
+<tr class="separator:a45139c24aa13b84342d31fbf2fb1c539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a346b478ef687bbf2c49e507ebbed7684" id="r_a346b478ef687bbf2c49e507ebbed7684"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a346b478ef687bbf2c49e507ebbed7684">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:a346b478ef687bbf2c49e507ebbed7684"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic counter bumped by every mutation; used to detect stale meshes.  <br /></td></tr>
+<tr class="separator:a346b478ef687bbf2c49e507ebbed7684"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d5ca3a1b6d937597f61e4952e2644d4" id="r_a7d5ca3a1b6d937597f61e4952e2644d4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1hexmap_1_1HexNoise.html">HexNoise</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7d5ca3a1b6d937597f61e4952e2644d4">noise</a> () const noexcept</td></tr>
+<tr class="memdesc:a7d5ca3a1b6d937597f61e4952e2644d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic noise field shared by this map's mesh builders.  <br /></td></tr>
+<tr class="separator:a7d5ca3a1b6d937597f61e4952e2644d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a789d876d4c0e996489a4e83e571fcc75" id="r_a789d876d4c0e996489a4e83e571fcc75"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a789d876d4c0e996489a4e83e571fcc75">contains</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:a789d876d4c0e996489a4e83e571fcc75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>coordinates</code> address a cell inside the grid.  <br /></td></tr>
+<tr class="separator:a789d876d4c0e996489a4e83e571fcc75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f544547f3c45153d376e9bdb5a458db" id="r_a2f544547f3c45153d376e9bdb5a458db"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2f544547f3c45153d376e9bdb5a458db">indexOf</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:a2f544547f3c45153d376e9bdb5a458db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear cell index of <code>coordinates</code> (offset order), or -1 when outside the grid.  <br /></td></tr>
+<tr class="separator:a2f544547f3c45153d376e9bdb5a458db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21eaab6065857b225fd9feedc2091d31" id="r_a21eaab6065857b225fd9feedc2091d31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a21eaab6065857b225fd9feedc2091d31">coordinatesAt</a> (std::int32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a21eaab6065857b225fd9feedc2091d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinates of a linear cell index; out-of-range indices return <code>(0, 0)</code>.  <br /></td></tr>
+<tr class="separator:a21eaab6065857b225fd9feedc2091d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1b210d7864bd138ae91913904c18fb2" id="r_ac1b210d7864bd138ae91913904c18fb2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1hexmap_1_1HexCellData.html">HexCellData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac1b210d7864bd138ae91913904c18fb2">cell</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:ac1b210d7864bd138ae91913904c18fb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell record, or null when outside the grid. @ownership Borrowed; the map owns the record. @lifetime Valid until this map is destroyed or <code>reset</code> is called; any mutation of the map's cell storage invalidates the pointer.  <br /></td></tr>
+<tr class="separator:ac1b210d7864bd138ae91913904c18fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae582e28bcf8009df21266108bda1dbcc" id="r_ae582e28bcf8009df21266108bda1dbcc"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1hexmap_1_1HexCellData.html">HexCellData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae582e28bcf8009df21266108bda1dbcc">cellAt</a> (std::int32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const noexcept</td></tr>
+<tr class="memdesc:ae582e28bcf8009df21266108bda1dbcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell record by linear index, or null when out of range. @ownership Borrowed; the map owns the record. @lifetime Valid until this map is destroyed or <code>reset</code> is called; any mutation of the map's cell storage invalidates the pointer.  <br /></td></tr>
+<tr class="separator:ae582e28bcf8009df21266108bda1dbcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b598859450a2d185249f9f6828c0ebe" id="r_a8b598859450a2d185249f9f6828c0ebe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8b598859450a2d185249f9f6828c0ebe">getNeighbor</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> direction, <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;out) const noexcept</td></tr>
+<tr class="memdesc:a8b598859450a2d185249f9f6828c0ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neighbour of <code>coordinates</code> in <code>direction</code>; false when it is off-grid.  <br /></td></tr>
+<tr class="separator:a8b598859450a2d185249f9f6828c0ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acad64bd082df67ede9ce31c91eaa536b" id="r_acad64bd082df67ede9ce31c91eaa536b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682ba">HexEdgeType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#acad64bd082df67ede9ce31c91eaa536b">edgeTypeTo</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) const noexcept</td></tr>
+<tr class="memdesc:acad64bd082df67ede9ce31c91eaa536b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relationship between two adjacent cells; Flat when not adjacent or out of range.  <br /></td></tr>
+<tr class="separator:acad64bd082df67ede9ce31c91eaa536b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3b2308dde7cce59a4079fb08381074" id="r_aaf3b2308dde7cce59a4079fb08381074"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aaf3b2308dde7cce59a4079fb08381074">chunkIndexOf</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:aaf3b2308dde7cce59a4079fb08381074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk index owning <code>coordinates</code>, or -1 when outside the grid.  <br /></td></tr>
+<tr class="separator:aaf3b2308dde7cce59a4079fb08381074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3433f61f5373142f5ef1d9c798652a8d" id="r_a3433f61f5373142f5ef1d9c798652a8d"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a3433f61f5373142f5ef1d9c798652a8d">chunkColumnOf</a> (std::int32_t chunkIndex) const noexcept</td></tr>
+<tr class="memdesc:a3433f61f5373142f5ef1d9c798652a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk column of a chunk index.  <br /></td></tr>
+<tr class="separator:a3433f61f5373142f5ef1d9c798652a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d8e6474edb23e8061f08275f2a2913f" id="r_a2d8e6474edb23e8061f08275f2a2913f"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2d8e6474edb23e8061f08275f2a2913f">chunkRowOf</a> (std::int32_t chunkIndex) const noexcept</td></tr>
+<tr class="memdesc:a2d8e6474edb23e8061f08275f2a2913f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk row of a chunk index.  <br /></td></tr>
+<tr class="separator:a2d8e6474edb23e8061f08275f2a2913f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc9c2031d235ac4e6ad2f43ae712a1a3" id="r_afc9c2031d235ac4e6ad2f43ae712a1a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#afc9c2031d235ac4e6ad2f43ae712a1a3">chunkCell</a> (std::int32_t chunkIndex, std::int32_t <a class="el" href="DnutParser_8cpp.html#a60dae4c6e78188cd718b696e4f08fc71">column</a>, std::int32_t row) const noexcept</td></tr>
+<tr class="memdesc:afc9c2031d235ac4e6ad2f43ae712a1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinates of the cell at <code>(column, row)</code> inside a chunk.  <br /></td></tr>
+<tr class="separator:afc9c2031d235ac4e6ad2f43ae712a1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10c8c5da8602f45399c7817b114c1486" id="r_a10c8c5da8602f45399c7817b114c1486"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a10c8c5da8602f45399c7817b114c1486">chunkCenter</a> (std::int32_t chunkIndex) const noexcept</td></tr>
+<tr class="memdesc:a10c8c5da8602f45399c7817b114c1486"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space centre of a chunk, at the first cell's elevation.  <br /></td></tr>
+<tr class="separator:a10c8c5da8602f45399c7817b114c1486"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f12e8952c845d41ccaa7a25af1f2921" id="r_a5f12e8952c845d41ccaa7a25af1f2921"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5f12e8952c845d41ccaa7a25af1f2921">markAllChunksDirty</a> () noexcept</td></tr>
+<tr class="memdesc:a5f12e8952c845d41ccaa7a25af1f2921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks every chunk dirty.  <br /></td></tr>
+<tr class="separator:a5f12e8952c845d41ccaa7a25af1f2921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7641f1c17f1a39586dc9f3a7fec04b5" id="r_ad7641f1c17f1a39586dc9f3a7fec04b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ad7641f1c17f1a39586dc9f3a7fec04b5">markChunkDirtyAndNeighbors</a> (std::int32_t chunkIndex) noexcept</td></tr>
+<tr class="memdesc:ad7641f1c17f1a39586dc9f3a7fec04b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks one chunk and its direct chunk neighbours dirty.  <br /></td></tr>
+<tr class="separator:ad7641f1c17f1a39586dc9f3a7fec04b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed84a8335fa61663c589ec300cf54ad1" id="r_aed84a8335fa61663c589ec300cf54ad1"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aed84a8335fa61663c589ec300cf54ad1">takeDirtyChunk</a> () noexcept</td></tr>
+<tr class="memdesc:aed84a8335fa61663c589ec300cf54ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the next dirty chunk.  <br /></td></tr>
+<tr class="separator:aed84a8335fa61663c589ec300cf54ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488b0b4983f32973efed3cda17cec99a" id="r_a488b0b4983f32973efed3cda17cec99a"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a488b0b4983f32973efed3cda17cec99a">dirtyChunkCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a488b0b4983f32973efed3cda17cec99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of chunks currently pending a rebuild.  <br /></td></tr>
+<tr class="separator:a488b0b4983f32973efed3cda17cec99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67fb89ce641f766297ee5d650e4742b7" id="r_a67fb89ce641f766297ee5d650e4742b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a67fb89ce641f766297ee5d650e4742b7">cellPosition</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:a67fb89ce641f766297ee5d650e4742b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell centre including elevation and vertical perturbation.  <br /></td></tr>
+<tr class="separator:a67fb89ce641f766297ee5d650e4742b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb85384bce45c8348ec8d0f1d11c9eed" id="r_aeb85384bce45c8348ec8d0f1d11c9eed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aeb85384bce45c8348ec8d0f1d11c9eed">cellGroundPosition</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:aeb85384bce45c8348ec8d0f1d11c9eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell centre at <code>y = 0</code> (no elevation, no perturbation).  <br /></td></tr>
+<tr class="separator:aeb85384bce45c8348ec8d0f1d11c9eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8af3b1b03729c7632e12377dd3619a26" id="r_a8af3b1b03729c7632e12377dd3619a26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8af3b1b03729c7632e12377dd3619a26">pickCell</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> rayOrigin, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> rayDirection) const noexcept</td></tr>
+<tr class="memdesc:a8af3b1b03729c7632e12377dd3619a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the cell under a world-space ray.  <br /></td></tr>
+<tr class="separator:a8af3b1b03729c7632e12377dd3619a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac116601332dd7207966a1ce41f008152" id="r_ac116601332dd7207966a1ce41f008152"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac116601332dd7207966a1ce41f008152">elevation</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:ac116601332dd7207966a1ce41f008152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20fc848753f63fa0b76e17643ccb5a6e" id="r_a20fc848753f63fa0b76e17643ccb5a6e"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a20fc848753f63fa0b76e17643ccb5a6e">waterLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:a20fc848753f63fa0b76e17643ccb5a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e4e3c8b8393aab591d89d5bff9408da" id="r_a6e4e3c8b8393aab591d89d5bff9408da"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6e4e3c8b8393aab591d89d5bff9408da">terrainType</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:a6e4e3c8b8393aab591d89d5bff9408da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae44f808003b23d467fb714a913300e2b" id="r_ae44f808003b23d467fb714a913300e2b"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae44f808003b23d467fb714a913300e2b">urbanLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:ae44f808003b23d467fb714a913300e2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af39850d6ccae60f8bb60c6e504584735" id="r_af39850d6ccae60f8bb60c6e504584735"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af39850d6ccae60f8bb60c6e504584735">farmLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:af39850d6ccae60f8bb60c6e504584735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a4f48e8d4326029f4b1b9e4f28e4fc" id="r_af2a4f48e8d4326029f4b1b9e4f28e4fc"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af2a4f48e8d4326029f4b1b9e4f28e4fc">plantLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:af2a4f48e8d4326029f4b1b9e4f28e4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b610bc957f057a95d9bef6d87380cce" id="r_a8b610bc957f057a95d9bef6d87380cce"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8b610bc957f057a95d9bef6d87380cce">specialIndex</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:a8b610bc957f057a95d9bef6d87380cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6a5d47f9bdced717003da303fa04466" id="r_aa6a5d47f9bdced717003da303fa04466"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aa6a5d47f9bdced717003da303fa04466">isUnderwater</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:aa6a5d47f9bdced717003da303fa04466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaf298608e37640f3e0b944ea539b8ad" id="r_abaf298608e37640f3e0b944ea539b8ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abaf298608e37640f3e0b944ea539b8ad">hasRiver</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:abaf298608e37640f3e0b944ea539b8ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9cd9fa3467119199fd53caa467bd788" id="r_af9cd9fa3467119199fd53caa467bd788"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af9cd9fa3467119199fd53caa467bd788">hasRoad</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:af9cd9fa3467119199fd53caa467bd788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57d7a3ec26acac13e230a93a66ab62e" id="r_ad57d7a3ec26acac13e230a93a66ab62e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ad57d7a3ec26acac13e230a93a66ab62e">hasRiverThrough</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) const noexcept</td></tr>
+<tr class="separator:ad57d7a3ec26acac13e230a93a66ab62e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a960fc6f4c2264418a3455a3b1a08501e" id="r_a960fc6f4c2264418a3455a3b1a08501e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a960fc6f4c2264418a3455a3b1a08501e">isWalled</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="separator:a960fc6f4c2264418a3455a3b1a08501e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa764e680884e3d88b8d42d8bf013805a" id="r_aa764e680884e3d88b8d42d8bf013805a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aa764e680884e3d88b8d42d8bf013805a">isExplored</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="memdesc:aa764e680884e3d88b8d42d8bf013805a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a cell has ever been seen by a viewer (the fog-of-war latch).  <br /></td></tr>
+<tr class="separator:aa764e680884e3d88b8d42d8bf013805a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ccff74f0be6e084bd588bf1f49f2913" id="r_a8ccff74f0be6e084bd588bf1f49f2913"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8ccff74f0be6e084bd588bf1f49f2913">isExplorable</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="memdesc:a8ccff74f0be6e084bd588bf1f49f2913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a cell may ever be revealed by a viewer.  <br /></td></tr>
+<tr class="separator:a8ccff74f0be6e084bd588bf1f49f2913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a762cb88b452bb2cb4728a107d10e226b" id="r_a762cb88b452bb2cb4728a107d10e226b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a762cb88b452bb2cb4728a107d10e226b">values</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="memdesc:a762cb88b452bb2cb4728a107d10e226b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full packed value record of a cell (zero when outside the grid).  <br /></td></tr>
+<tr class="separator:a762cb88b452bb2cb4728a107d10e226b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24094306b09d67bda14f948ac573935" id="r_ab24094306b09d67bda14f948ac573935"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexFlags.html">HexFlags</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab24094306b09d67bda14f948ac573935">flags</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) const noexcept</td></tr>
+<tr class="memdesc:ab24094306b09d67bda14f948ac573935"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full packed flag record of a cell (zero when outside the grid).  <br /></td></tr>
+<tr class="separator:ab24094306b09d67bda14f948ac573935"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9be2ee3fb894efb91eef7fc6e2fce57" id="r_ab9be2ee3fb894efb91eef7fc6e2fce57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab9be2ee3fb894efb91eef7fc6e2fce57">setElevation</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac116601332dd7207966a1ce41f008152">elevation</a>)</td></tr>
+<tr class="memdesc:ab9be2ee3fb894efb91eef7fc6e2fce57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's elevation, clamped to the editable range, and refreshes dependents.  <br /></td></tr>
+<tr class="separator:ab9be2ee3fb894efb91eef7fc6e2fce57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b916f0280f702fc25190c4ca588a25c" id="r_a9b916f0280f702fc25190c4ca588a25c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a9b916f0280f702fc25190c4ca588a25c">setWaterLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a20fc848753f63fa0b76e17643ccb5a6e">waterLevel</a>)</td></tr>
+<tr class="memdesc:a9b916f0280f702fc25190c4ca588a25c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's water level, clamped to <code>[0, maxElevation]</code>.  <br /></td></tr>
+<tr class="separator:a9b916f0280f702fc25190c4ca588a25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a527df338522d99504311d8783253460b" id="r_a527df338522d99504311d8783253460b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a527df338522d99504311d8783253460b">setTerrainType</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6e4e3c8b8393aab591d89d5bff9408da">terrainType</a>)</td></tr>
+<tr class="memdesc:a527df338522d99504311d8783253460b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's terrain palette index, clamped to the palette range.  <br /></td></tr>
+<tr class="separator:a527df338522d99504311d8783253460b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3470f3898062813d010e15be8ea4b43d" id="r_a3470f3898062813d010e15be8ea4b43d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a3470f3898062813d010e15be8ea4b43d">setUrbanLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t level)</td></tr>
+<tr class="memdesc:a3470f3898062813d010e15be8ea4b43d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's urban level, clamped to <code>[0, 3]</code>.  <br /></td></tr>
+<tr class="separator:a3470f3898062813d010e15be8ea4b43d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3392aebcc5c373d23b161121f1fd7dd" id="r_ac3392aebcc5c373d23b161121f1fd7dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac3392aebcc5c373d23b161121f1fd7dd">setFarmLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t level)</td></tr>
+<tr class="memdesc:ac3392aebcc5c373d23b161121f1fd7dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's farm level, clamped to <code>[0, 3]</code>.  <br /></td></tr>
+<tr class="separator:ac3392aebcc5c373d23b161121f1fd7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ce523b1a082654ae94602a1b96a6656" id="r_a7ce523b1a082654ae94602a1b96a6656"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7ce523b1a082654ae94602a1b96a6656">setPlantLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t level)</td></tr>
+<tr class="memdesc:a7ce523b1a082654ae94602a1b96a6656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's plant level, clamped to <code>[0, 3]</code>.  <br /></td></tr>
+<tr class="separator:a7ce523b1a082654ae94602a1b96a6656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ec527c6054c7a12bda8ac62f4d6e3b2" id="r_a0ec527c6054c7a12bda8ac62f4d6e3b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a0ec527c6054c7a12bda8ac62f4d6e3b2">setSpecialIndex</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::int32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</td></tr>
+<tr class="memdesc:a0ec527c6054c7a12bda8ac62f4d6e3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a cell's special-feature index; ignored while the cell carries a river.  <br /></td></tr>
+<tr class="separator:a0ec527c6054c7a12bda8ac62f4d6e3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ef0792938118d20bafa740a51fb0e9b" id="r_a1ef0792938118d20bafa740a51fb0e9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a1ef0792938118d20bafa740a51fb0e9b">setWalled</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, bool walled)</td></tr>
+<tr class="memdesc:a1ef0792938118d20bafa740a51fb0e9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether a cell is walled.  <br /></td></tr>
+<tr class="separator:a1ef0792938118d20bafa740a51fb0e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd86289db1c4cb903ebaaba12e9a84cc" id="r_abd86289db1c4cb903ebaaba12e9a84cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abd86289db1c4cb903ebaaba12e9a84cc">setExplored</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, bool explored)</td></tr>
+<tr class="memdesc:abd86289db1c4cb903ebaaba12e9a84cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the explored (fog-of-war) latch of a cell.  <br /></td></tr>
+<tr class="separator:abd86289db1c4cb903ebaaba12e9a84cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62f63d21187d830b98cc77f0b1d2311" id="r_af62f63d21187d830b98cc77f0b1d2311"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af62f63d21187d830b98cc77f0b1d2311">setExplorable</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, bool explorable)</td></tr>
+<tr class="memdesc:af62f63d21187d830b98cc77f0b1d2311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether a cell may ever be explored.  <br /></td></tr>
+<tr class="separator:af62f63d21187d830b98cc77f0b1d2311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f8b1aa75c6595310b196a2b8830ad0b" id="r_a6f8b1aa75c6595310b196a2b8830ad0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6f8b1aa75c6595310b196a2b8830ad0b">setCellState</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a762cb88b452bb2cb4728a107d10e226b">values</a>, <a class="el" href="classeve_1_1hexmap_1_1HexFlags.html">HexFlags</a> <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab24094306b09d67bda14f948ac573935">flags</a>)</td></tr>
+<tr class="memdesc:a6f8b1aa75c6595310b196a2b8830ad0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a complete cell record verbatim.  <br /></td></tr>
+<tr class="separator:a6f8b1aa75c6595310b196a2b8830ad0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ce0dd309ad696a8d571684aba9e16e7" id="r_a9ce0dd309ad696a8d571684aba9e16e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a9ce0dd309ad696a8d571684aba9e16e7">setOutgoingRiver</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> direction)</td></tr>
+<tr class="memdesc:a9ce0dd309ad696a8d571684aba9e16e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forces a river to leave the cell through <code>direction</code>, mirroring the neighbour.  <br /></td></tr>
+<tr class="separator:a9ce0dd309ad696a8d571684aba9e16e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4ba04720e287f52f2984de89e241fa" id="r_a0a4ba04720e287f52f2984de89e241fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a0a4ba04720e287f52f2984de89e241fa">removeRiver</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>)</td></tr>
+<tr class="memdesc:a0a4ba04720e287f52f2984de89e241fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every river connection of the cell and its neighbours.  <br /></td></tr>
+<tr class="separator:a0a4ba04720e287f52f2984de89e241fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add00c58a5ab282857da5e8ac0cd5be9a" id="r_add00c58a5ab282857da5e8ac0cd5be9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#add00c58a5ab282857da5e8ac0cd5be9a">addRoad</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> direction)</td></tr>
+<tr class="memdesc:add00c58a5ab282857da5e8ac0cd5be9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a road through <code>direction</code> when both cells can carry one.  <br /></td></tr>
+<tr class="separator:add00c58a5ab282857da5e8ac0cd5be9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c26cb50a80bb558ba69374cdff7f39f" id="r_a5c26cb50a80bb558ba69374cdff7f39f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5c26cb50a80bb558ba69374cdff7f39f">removeRoads</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>)</td></tr>
+<tr class="memdesc:a5c26cb50a80bb558ba69374cdff7f39f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every road of the cell and its neighbours.  <br /></td></tr>
+<tr class="separator:a5c26cb50a80bb558ba69374cdff7f39f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb973e76c38740af4187cd4757abe665" id="r_afb973e76c38740af4187cd4757abe665"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#afb973e76c38740af4187cd4757abe665">editElevation</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, std::int32_t <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::int32_t delta)</td></tr>
+<tr class="memdesc:afb973e76c38740af4187cd4757abe665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raises or lowers every cell within <code>radius</code> steps of <code>center</code>.  <br /></td></tr>
+<tr class="separator:afb973e76c38740af4187cd4757abe665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d5a2a3b94fb3ae021a19778256d8eda" id="r_a7d5a2a3b94fb3ae021a19778256d8eda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7d5a2a3b94fb3ae021a19778256d8eda">editWaterLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, std::int32_t <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::int32_t delta)</td></tr>
+<tr class="memdesc:a7d5a2a3b94fb3ae021a19778256d8eda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies <code>additive</code> water-level change over a hex brush.  <br /></td></tr>
+<tr class="separator:a7d5a2a3b94fb3ae021a19778256d8eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f70801411cba0d3eb7a615b12955eab" id="r_a2f70801411cba0d3eb7a615b12955eab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2f70801411cba0d3eb7a615b12955eab">editTerrainType</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, std::int32_t <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6e4e3c8b8393aab591d89d5bff9408da">terrainType</a>)</td></tr>
+<tr class="memdesc:a2f70801411cba0d3eb7a615b12955eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paints a terrain palette index over a hex brush.  <br /></td></tr>
+<tr class="separator:a2f70801411cba0d3eb7a615b12955eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15fbc344acca88c23194b24262dcd31a" id="r_a15fbc344acca88c23194b24262dcd31a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a15fbc344acca88c23194b24262dcd31a">editFeatureLevel</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, std::int32_t <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::int32_t feature, std::int32_t delta)</td></tr>
+<tr class="memdesc:a15fbc344acca88c23194b24262dcd31a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies <code>additive</code> change to one feature level (<code>0</code> urban, <code>1</code> farm, <code>2</code> plant).  <br /></td></tr>
+<tr class="separator:a15fbc344acca88c23194b24262dcd31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac919b8b925d729cc924e0eabed32ba66" id="r_ac919b8b925d729cc924e0eabed32ba66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac919b8b925d729cc924e0eabed32ba66">collectBrush</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, std::int32_t <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::vector&lt; std::int32_t &gt; &amp;out) const</td></tr>
+<tr class="memdesc:ac919b8b925d729cc924e0eabed32ba66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerates the cells of a hex brush into <code>out</code> (cleared first).  <br /></td></tr>
+<tr class="separator:ac919b8b925d729cc924e0eabed32ba66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>An editable, chunked, pointy-top hex map. </p>
+<p>The grid is rectangular in odd-row offset space: <code>cellCountX</code> columns and <code>cellCountZ</code> rows, with odd rows shifted half a cell to the right. Cells are partitioned into <code>chunkSizeX * chunkSizeZ</code> chunks; every mutation marks the owning chunk (and the chunks of affected neighbours) dirty so a renderer can rebuild only what changed.</p>
+<p>Ownership and lifetime: <code><a class="el" href="classeve_1_1hexmap_1_1HexMap.html" title="An editable, chunked, pointy-top hex map.">HexMap</a></code> owns its cell storage and its noise field and is a plain value type. It performs no I/O, opens no GPU resources and invokes no callbacks, so it is safe to hold on any single thread.</p>
+<p>Determinism: cell positions, perturbation and any future generation step are derived from the construction seed and the cell coordinates only. Two maps built with the same size and seed produce identical positions. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00072">72</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a00e322dc4be20f01e0ca6f14674af7fe" name="a00e322dc4be20f01e0ca6f14674af7fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00e322dc4be20f01e0ca6f14674af7fe">&#9670;&#160;</a></span>HexMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexMap::HexMap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="add00c58a5ab282857da5e8ac0cd5be9a" name="add00c58a5ab282857da5e8ac0cd5be9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add00c58a5ab282857da5e8ac0cd5be9a">&#9670;&#160;</a></span>addRoad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::addRoad </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a road through <code>direction</code> when both cells can carry one. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00581">581</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="HexCell_8h_source.html#l00201">eve::hexmap::HexCellData::flags</a>, <a class="el" href="HexMap_8cpp_source.html#l00090">getNeighbor()</a>, <a class="el" href="HexCell_8h_source.html#l00143">eve::hexmap::HexFlags::hasRiverThrough()</a>, <a class="el" href="HexMetrics_8h_source.html#l00060">eve::hexmap::opposite()</a>, <a class="el" href="HexCell_8h_source.html#l00052">eve::hexmap::HexValues::specialIndex()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexCell_8h_source.html#l00200">eve::hexmap::HexCellData::values</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00165">eve::hexmap::HexFlags::withRoad()</a>.</p>
+
+</div>
+</div>
+<a id="ac1b210d7864bd138ae91913904c18fb2" name="ac1b210d7864bd138ae91913904c18fb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1b210d7864bd138ae91913904c18fb2">&#9670;&#160;</a></span>cell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1hexmap_1_1HexCellData.html">HexCellData</a> * eve::hexmap::HexMap::cell </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell record, or null when outside the grid. @ownership Borrowed; the map owns the record. @lifetime Valid until this map is destroyed or <code>reset</code> is called; any mutation of the map's cell storage invalidates the pointer. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a> , 以及 <a class="el" href="HexSearch_8cpp_source.html#l00124">eve::hexmap::isValidDestination()</a>.</p>
+
+</div>
+</div>
+<a id="ae582e28bcf8009df21266108bda1dbcc" name="ae582e28bcf8009df21266108bda1dbcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae582e28bcf8009df21266108bda1dbcc">&#9670;&#160;</a></span>cellAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1hexmap_1_1HexCellData.html">HexCellData</a> * eve::hexmap::HexMap::cellAt </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell record by linear index, or null when out of range. @ownership Borrowed; the map owns the record. @lifetime Valid until this map is destroyed or <code>reset</code> is called; any mutation of the map's cell storage invalidates the pointer. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a> , 以及 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="a8a79e08d38fbfd82df813f01dfc89948" name="a8a79e08d38fbfd82df813f01dfc89948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a79e08d38fbfd82df813f01dfc89948">&#9670;&#160;</a></span>cellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::cellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">eve::hexmap::HexMapModule::adoptGrid()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00219">eve::hexmap::HexUnitRegistry::beginTravel()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00105">eve::hexmap::HexMapModule::newGrid()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00345">eve::hexmap::HexUnitRegistry::refreshPositions()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00375">eve::hexmap::HexUnitRegistry::restore()</a>, <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00055">eve::hexmap::HexMapModule::syncScratch()</a>.</p>
+
+</div>
+</div>
+<a id="a5cf67d483c1173f08d88ae3d6c95f207" name="a5cf67d483c1173f08d88ae3d6c95f207"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cf67d483c1173f08d88ae3d6c95f207">&#9670;&#160;</a></span>cellCountX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::cellCountX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of columns. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexMap_8cpp_source.html#l00040">reset()</a> , 以及 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="abdf8f1303fd8bf331b7f7460cc6b97b2" name="abdf8f1303fd8bf331b7f7460cc6b97b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdf8f1303fd8bf331b7f7460cc6b97b2">&#9670;&#160;</a></span>cellCountZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::cellCountZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of rows. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexMap_8cpp_source.html#l00040">reset()</a> , 以及 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="aeb85384bce45c8348ec8d0f1d11c9eed" name="aeb85384bce45c8348ec8d0f1d11c9eed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb85384bce45c8348ec8d0f1d11c9eed">&#9670;&#160;</a></span>cellGroundPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMap::cellGroundPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell centre at <code>y = 0</code> (no elevation, no perturbation). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a> , 以及 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a67fb89ce641f766297ee5d650e4742b7" name="a67fb89ce641f766297ee5d650e4742b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67fb89ce641f766297ee5d650e4742b7">&#9670;&#160;</a></span>cellPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMap::cellPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell centre including elevation and vertical perturbation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="HexMetrics_8h_source.html#l00259">eve::hexmap::HexMetrics::elevationY()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="HexCoordinates_8h_source.html#l00102">eve::hexmap::HexCoordinates::toWorldPosition()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>.</p>
+
+</div>
+</div>
+<a id="afc9c2031d235ac4e6ad2f43ae712a1a3" name="afc9c2031d235ac4e6ad2f43ae712a1a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc9c2031d235ac4e6ad2f43ae712a1a3">&#9670;&#160;</a></span>chunkCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> eve::hexmap::HexMap::chunkCell </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>row</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coordinates of the cell at <code>(column, row)</code> inside a chunk. </p>
+<p>Chunks are squares in <b>odd-row offset space</b>, so every mesh builder must enumerate cells through this helper rather than constructing axial coordinates from the loop indices directly.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chunkIndex</td><td>Chunk to address. </td></tr>
+    <tr><td class="paramname">column</td><td>Column inside the chunk, <code>[0, kChunkSizeX)</code>. </td></tr>
+    <tr><td class="paramname">row</td><td>Row inside the chunk, <code>[0, kChunkSizeZ)</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The cell's axial coordinates (not range checked). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00021">column</a>, <a class="el" href="HexCoordinates_8h_source.html#l00081">eve::hexmap::HexCoordinates::fromOffset()</a>, <a class="el" href="HexMetrics_8h_source.html#l00151">eve::hexmap::HexMetrics::kChunkSizeX</a>, <a class="el" href="HexMetrics_8h_source.html#l00153">eve::hexmap::HexMetrics::kChunkSizeZ</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a> , 以及 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a10c8c5da8602f45399c7817b114c1486" name="a10c8c5da8602f45399c7817b114c1486"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10c8c5da8602f45399c7817b114c1486">&#9670;&#160;</a></span>chunkCenter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMap::chunkCenter </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space centre of a chunk, at the first cell's elevation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="HexMetrics_8h_source.html#l00151">eve::hexmap::HexMetrics::kChunkSizeX</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00153">eve::hexmap::HexMetrics::kChunkSizeZ</a>.</p>
+
+</div>
+</div>
+<a id="a3433f61f5373142f5ef1d9c798652a8d" name="a3433f61f5373142f5ef1d9c798652a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3433f61f5373142f5ef1d9c798652a8d">&#9670;&#160;</a></span>chunkColumnOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkColumnOf </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk column of a chunk index. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05d170464696233e6050d315d886a892" name="a05d170464696233e6050d315d886a892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05d170464696233e6050d315d886a892">&#9670;&#160;</a></span>chunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of chunks. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFeatures_8cpp_source.html#l00644">eve::hexmap::buildFeatureMesh()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexTerrainMesh_8cpp_source.html#l00729">eve::hexmap::buildTerrainMesh()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00632">eve::hexmap::buildWallMesh()</a>, <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00129">eve::hexmap::HexMapModule::chunkMeshAt()</a>, <a class="el" href="HexMap_8cpp_source.html#l00155">markAllChunksDirty()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00139">eve::hexmap::HexMapModule::rebuildChunk()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00040">reset()</a>.</p>
+
+</div>
+</div>
+<a id="a64a5e23d13f3feef13c3e20b245e92b1" name="a64a5e23d13f3feef13c3e20b245e92b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a5e23d13f3feef13c3e20b245e92b1">&#9670;&#160;</a></span>chunkCountX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkCountX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of chunk columns. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8b37dd8572529d3e41dc83eff775616" name="ae8b37dd8572529d3e41dc83eff775616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8b37dd8572529d3e41dc83eff775616">&#9670;&#160;</a></span>chunkCountZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkCountZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of chunk rows. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf3b2308dde7cce59a4079fb08381074" name="aaf3b2308dde7cce59a4079fb08381074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf3b2308dde7cce59a4079fb08381074">&#9670;&#160;</a></span>chunkIndexOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkIndexOf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk index owning <code>coordinates</code>, or -1 when outside the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a> , 以及 <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>.</p>
+
+</div>
+</div>
+<a id="a2d8e6474edb23e8061f08275f2a2913f" name="a2d8e6474edb23e8061f08275f2a2913f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d8e6474edb23e8061f08275f2a2913f">&#9670;&#160;</a></span>chunkRowOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::chunkRowOf </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk row of a chunk index. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac919b8b925d729cc924e0eabed32ba66" name="ac919b8b925d729cc924e0eabed32ba66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac919b8b925d729cc924e0eabed32ba66">&#9670;&#160;</a></span>collectBrush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMap::collectBrush </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::int32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerates the cells of a hex brush into <code>out</code> (cleared first). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00624">624</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="DnutParser_8cpp_source.html#l00021">column</a>, <a class="el" href="HexMap_8h_source.html#l00121">contains()</a>, <a class="el" href="HexCoordinates_8h_source.html#l00081">eve::hexmap::HexCoordinates::fromOffset()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00651">editElevation()</a>, <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>, <a class="el" href="HexMap_8cpp_source.html#l00677">editTerrainType()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00664">editWaterLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a789d876d4c0e996489a4e83e571fcc75" name="a789d876d4c0e996489a4e83e571fcc75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a789d876d4c0e996489a4e83e571fcc75">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether <code>coordinates</code> address a cell inside the grid. </p>
+<p>The grid is the rectangle <code>[0, cellCountX) x [0, cellCountZ)</code> in <b>odd-row offset space</b>. An axial pair is inside only when its offset column <code>x + z/2</code> is in range, so cells with a negative axial X are valid members of the rectangle. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00021">column</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00139">eve::hexmap::HexUnitRegistry::addUnit()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">collectBrush()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexMap_8cpp_source.html#l00651">editElevation()</a>, <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>, <a class="el" href="HexMap_8cpp_source.html#l00677">editTerrainType()</a>, <a class="el" href="HexMap_8cpp_source.html#l00664">editWaterLevel()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a> , 以及 <a class="el" href="HexSearch_8cpp_source.html#l00124">eve::hexmap::isValidDestination()</a>.</p>
+
+</div>
+</div>
+<a id="a21eaab6065857b225fd9feedc2091d31" name="a21eaab6065857b225fd9feedc2091d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21eaab6065857b225fd9feedc2091d31">&#9670;&#160;</a></span>coordinatesAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> eve::hexmap::HexMap::coordinatesAt </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coordinates of a linear cell index; out-of-range indices return <code>(0, 0)</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexCoordinates_8h_source.html#l00081">eve::hexmap::HexCoordinates::fromOffset()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00275">eve::hexmap::HexUnitRegistry::advance()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00219">eve::hexmap::HexUnitRegistry::beginTravel()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a>, <a class="el" href="HexMap_8cpp_source.html#l00651">editElevation()</a>, <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>, <a class="el" href="HexMap_8cpp_source.html#l00677">editTerrainType()</a>, <a class="el" href="HexMap_8cpp_source.html#l00664">editWaterLevel()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>, <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00332">eve::hexmap::HexUnitRegistry::refreshVisibility()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00165">eve::hexmap::HexUnitRegistry::removeUnit()</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00375">eve::hexmap::HexUnitRegistry::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a488b0b4983f32973efed3cda17cec99a" name="a488b0b4983f32973efed3cda17cec99a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488b0b4983f32973efed3cda17cec99a">&#9670;&#160;</a></span>dirtyChunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::dirtyChunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of chunks currently pending a rebuild. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acad64bd082df67ede9ce31c91eaa536b" name="acad64bd082df67ede9ce31c91eaa536b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acad64bd082df67ede9ce31c91eaa536b">&#9670;&#160;</a></span>edgeTypeTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682ba">HexEdgeType</a> eve::hexmap::HexMap::edgeTypeTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relationship between two adjacent cells; Flat when not adjacent or out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="HexMetrics_8h_source.html#l00091">eve::hexmap::edgeType()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a> , 以及 <a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682baa745e3db6a7ffd50e1a72b39482f0882d">eve::hexmap::Flat</a>.</p>
+
+</div>
+</div>
+<a id="afb973e76c38740af4187cd4757abe665" name="afb973e76c38740af4187cd4757abe665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb973e76c38740af4187cd4757abe665">&#9670;&#160;</a></span>editElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::editElevation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raises or lowers every cell within <code>radius</code> steps of <code>center</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">center</td><td>Brush centre. </td></tr>
+    <tr><td class="paramname">radius</td><td>Hex distance reached by the brush; 0 edits only the centre. </td></tr>
+    <tr><td class="paramname">delta</td><td>Elevation change; clamped per cell to the editable range. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when <code>center</code> is outside the grid or <code>radius</code> is negative. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00651">651</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">collectBrush()</a>, <a class="el" href="HexMap_8h_source.html#l00121">contains()</a>, <a class="el" href="HexMap_8cpp_source.html#l00072">coordinatesAt()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="HexMap_8cpp_source.html#l00395">setElevation()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a15fbc344acca88c23194b24262dcd31a" name="a15fbc344acca88c23194b24262dcd31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15fbc344acca88c23194b24262dcd31a">&#9670;&#160;</a></span>editFeatureLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::editFeatureLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>feature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies <code>additive</code> change to one feature level (<code>0</code> urban, <code>1</code> farm, <code>2</code> plant). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00689">689</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8cpp_source.html#l00077">cellAt()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">collectBrush()</a>, <a class="el" href="HexMap_8h_source.html#l00121">contains()</a>, <a class="el" href="HexMap_8cpp_source.html#l00072">coordinatesAt()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="HexMap_8cpp_source.html#l00451">setFarmLevel()</a>, <a class="el" href="HexMap_8cpp_source.html#l00459">setPlantLevel()</a>, <a class="el" href="HexMap_8cpp_source.html#l00443">setUrbanLevel()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2f70801411cba0d3eb7a615b12955eab" name="a2f70801411cba0d3eb7a615b12955eab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f70801411cba0d3eb7a615b12955eab">&#9670;&#160;</a></span>editTerrainType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::editTerrainType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>terrainType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Paints a terrain palette index over a hex brush. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00677">677</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">collectBrush()</a>, <a class="el" href="HexMap_8h_source.html#l00121">contains()</a>, <a class="el" href="HexMap_8cpp_source.html#l00072">coordinatesAt()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="HexMap_8cpp_source.html#l00433">setTerrainType()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00311">terrainType()</a>.</p>
+
+</div>
+</div>
+<a id="a7d5a2a3b94fb3ae021a19778256d8eda" name="a7d5a2a3b94fb3ae021a19778256d8eda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d5a2a3b94fb3ae021a19778256d8eda">&#9670;&#160;</a></span>editWaterLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::editWaterLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies <code>additive</code> water-level change over a hex brush. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00664">664</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="HexMap_8cpp_source.html#l00624">collectBrush()</a>, <a class="el" href="HexMap_8h_source.html#l00121">contains()</a>, <a class="el" href="HexMap_8cpp_source.html#l00072">coordinatesAt()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="HexMap_8cpp_source.html#l00422">setWaterLevel()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">waterLevel</a>.</p>
+
+</div>
+</div>
+<a id="ac116601332dd7207966a1ce41f008152" name="ac116601332dd7207966a1ce41f008152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac116601332dd7207966a1ce41f008152">&#9670;&#160;</a></span>elevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::elevation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a> , 以及 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a>.</p>
+
+</div>
+</div>
+<a id="a10a5b5a876d079f69fb6f902830d204c" name="a10a5b5a876d079f69fb6f902830d204c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10a5b5a876d079f69fb6f902830d204c">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the map holds any cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00139">eve::hexmap::HexUnitRegistry::addUnit()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00644">eve::hexmap::buildFeatureMesh()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00632">eve::hexmap::buildWallMesh()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00139">eve::hexmap::HexMapModule::rebuildChunk()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00189">eve::hexmap::HexMapModule::rebuildDirtyChunks()</a> , 以及 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="af39850d6ccae60f8bb60c6e504584735" name="af39850d6ccae60f8bb60c6e504584735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af39850d6ccae60f8bb60c6e504584735">&#9670;&#160;</a></span>farmLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::farmLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a>.</p>
+
+</div>
+</div>
+<a id="ab24094306b09d67bda14f948ac573935" name="ab24094306b09d67bda14f948ac573935"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24094306b09d67bda14f948ac573935">&#9670;&#160;</a></span>flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexFlags.html">HexFlags</a> eve::hexmap::HexMap::flags </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Full packed flag record of a cell (zero when outside the grid). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00508">setCellState()</a>.</p>
+
+</div>
+</div>
+<a id="a8b598859450a2d185249f9f6828c0ebe" name="a8b598859450a2d185249f9f6828c0ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b598859450a2d185249f9f6828c0ebe">&#9670;&#160;</a></span>getNeighbor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::getNeighbor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Neighbour of <code>coordinates</code> in <code>direction</code>; false when it is off-grid. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexCoordinates_8h_source.html#l00042">eve::hexmap::HexCoordinates::step()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00581">addRoad()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>, <a class="el" href="HexMap_8cpp_source.html#l00561">removeRiver()</a>, <a class="el" href="HexMap_8cpp_source.html#l00605">removeRoads()</a>, <a class="el" href="HexMap_8cpp_source.html#l00395">setElevation()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00517">setOutgoingRiver()</a>.</p>
+
+</div>
+</div>
+<a id="abaf298608e37640f3e0b944ea539b8ad" name="abaf298608e37640f3e0b944ea539b8ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaf298608e37640f3e0b944ea539b8ad">&#9670;&#160;</a></span>hasRiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::hasRiver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ad57d7a3ec26acac13e230a93a66ab62e" name="ad57d7a3ec26acac13e230a93a66ab62e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad57d7a3ec26acac13e230a93a66ab62e">&#9670;&#160;</a></span>hasRiverThrough()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::hasRiverThrough </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>.</p>
+
+</div>
+</div>
+<a id="af9cd9fa3467119199fd53caa467bd788" name="af9cd9fa3467119199fd53caa467bd788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9cd9fa3467119199fd53caa467bd788">&#9670;&#160;</a></span>hasRoad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::hasRoad </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a2f544547f3c45153d376e9bdb5a458db" name="a2f544547f3c45153d376e9bdb5a458db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f544547f3c45153d376e9bdb5a458db">&#9670;&#160;</a></span>indexOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::indexOf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Linear cell index of <code>coordinates</code> (offset order), or -1 when outside the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00139">eve::hexmap::HexUnitRegistry::addUnit()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a> , 以及 <a class="el" href="HexSearch_8cpp_source.html#l00150">eve::hexmap::findPath()</a>.</p>
+
+</div>
+</div>
+<a id="a8ccff74f0be6e084bd588bf1f49f2913" name="a8ccff74f0be6e084bd588bf1f49f2913"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ccff74f0be6e084bd588bf1f49f2913">&#9670;&#160;</a></span>isExplorable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::isExplorable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a cell may ever be revealed by a viewer. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>.</p>
+
+</div>
+</div>
+<a id="aa764e680884e3d88b8d42d8bf013805a" name="aa764e680884e3d88b8d42d8bf013805a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa764e680884e3d88b8d42d8bf013805a">&#9670;&#160;</a></span>isExplored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::isExplored </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a cell has ever been seen by a viewer (the fog-of-war latch). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>.</p>
+
+</div>
+</div>
+<a id="aa6a5d47f9bdced717003da303fa04466" name="aa6a5d47f9bdced717003da303fa04466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6a5d47f9bdced717003da303fa04466">&#9670;&#160;</a></span>isUnderwater()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::isUnderwater </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a960fc6f4c2264418a3455a3b1a08501e" name="a960fc6f4c2264418a3455a3b1a08501e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a960fc6f4c2264418a3455a3b1a08501e">&#9670;&#160;</a></span>isWalled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMap::isWalled </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a>.</p>
+
+</div>
+</div>
+<a id="a5f12e8952c845d41ccaa7a25af1f2921" name="a5f12e8952c845d41ccaa7a25af1f2921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f12e8952c845d41ccaa7a25af1f2921">&#9670;&#160;</a></span>markAllChunksDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMap::markAllChunksDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Marks every chunk dirty. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00101">chunkCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00040">reset()</a>.</p>
+
+</div>
+</div>
+<a id="ad7641f1c17f1a39586dc9f3a7fec04b5" name="ad7641f1c17f1a39586dc9f3a7fec04b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7641f1c17f1a39586dc9f3a7fec04b5">&#9670;&#160;</a></span>markChunkDirtyAndNeighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMap::markChunkDirtyAndNeighbors </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Marks one chunk and its direct chunk neighbours dirty. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DnutParser_8cpp_source.html#l00021">column</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a> , 以及 <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>.</p>
+
+</div>
+</div>
+<a id="a7d5ca3a1b6d937597f61e4952e2644d4" name="a7d5ca3a1b6d937597f61e4952e2644d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d5ca3a1b6d937597f61e4952e2644d4">&#9670;&#160;</a></span>noise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1hexmap_1_1HexNoise.html">HexNoise</a> &amp; eve::hexmap::HexMap::noise </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deterministic noise field shared by this map's mesh builders. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a> , 以及 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a8af3b1b03729c7632e12377dd3619a26" name="a8af3b1b03729c7632e12377dd3619a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af3b1b03729c7632e12377dd3619a26">&#9670;&#160;</a></span>pickCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> &gt; eve::hexmap::HexMap::pickCell </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>rayOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>rayDirection</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Finds the cell under a world-space ray. </p>
+<p>The map has no collision geometry, so the ray is marched against the elevation plane of the candidate cell and refined until it converges.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rayOrigin</td><td>Ray origin in world space. </td></tr>
+    <tr><td class="paramname">rayDirection</td><td>Normalised ray direction in world space. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The hit cell, or NotFound when the ray misses the grid or points away. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00027">best</a>, <a class="el" href="HexMetrics_8h_source.html#l00259">eve::hexmap::HexMetrics::elevationY()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HexCoordinates_8h_source.html#l00081">eve::hexmap::HexCoordinates::fromOffset()</a>, <a class="el" href="HexCoordinates_8cpp_source.html#l00005">eve::hexmap::HexCoordinates::fromWorldPosition()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HexMetrics_8h_source.html#l00115">eve::hexmap::HexMetrics::kElevationStep</a>, <a class="el" href="HexMetrics_8h_source.html#l00157">eve::hexmap::HexMetrics::kMaxElevation</a>, <a class="el" href="HexMetrics_8h_source.html#l00155">eve::hexmap::HexMetrics::kMinElevation</a>, <a class="el" href="HexMetrics_8h_source.html#l00160">eve::hexmap::HexMetrics::kOuterRadius</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00120">mid</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00055">pad</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="HexMetrics_8h_source.html#l00019">eve::hexmap::HexVec3::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>, <a class="el" href="HexMetrics_8h_source.html#l00020">eve::hexmap::HexVec3::y</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00021">eve::hexmap::HexVec3::z</a>.</p>
+
+</div>
+</div>
+<a id="af2a4f48e8d4326029f4b1b9e4f28e4fc" name="af2a4f48e8d4326029f4b1b9e4f28e4fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a4f48e8d4326029f4b1b9e4f28e4fc">&#9670;&#160;</a></span>plantLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::plantLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a>.</p>
+
+</div>
+</div>
+<a id="a0a4ba04720e287f52f2984de89e241fa" name="a0a4ba04720e287f52f2984de89e241fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a4ba04720e287f52f2984de89e241fa">&#9670;&#160;</a></span>removeRiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::removeRiver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes every river connection of the cell and its neighbours. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00561">561</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexCell_8h_source.html#l00201">eve::hexmap::HexCellData::flags</a>, <a class="el" href="HexMap_8cpp_source.html#l00090">getNeighbor()</a>, <a class="el" href="HexMetrics_8h_source.html#l00057">eve::hexmap::kHexDirectionCount</a>, <a class="el" href="HexMetrics_8h_source.html#l00060">eve::hexmap::opposite()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexCell_8h_source.html#l00170">eve::hexmap::HexFlags::withoutRiverIn()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00176">eve::hexmap::HexFlags::withoutRiverOut()</a>.</p>
+
+</div>
+</div>
+<a id="a5c26cb50a80bb558ba69374cdff7f39f" name="a5c26cb50a80bb558ba69374cdff7f39f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c26cb50a80bb558ba69374cdff7f39f">&#9670;&#160;</a></span>removeRoads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::removeRoads </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes every road of the cell and its neighbours. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00605">605</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexCell_8h_source.html#l00201">eve::hexmap::HexCellData::flags</a>, <a class="el" href="HexMap_8cpp_source.html#l00090">getNeighbor()</a>, <a class="el" href="HexMetrics_8h_source.html#l00057">eve::hexmap::kHexDirectionCount</a>, <a class="el" href="HexMetrics_8h_source.html#l00060">eve::hexmap::opposite()</a>, <a class="el" href="HexCell_8h_source.html#l00192">eve::hexmap::HexFlags::roadMask()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00166">eve::hexmap::HexFlags::withoutRoad()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00395">setElevation()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00467">setSpecialIndex()</a>.</p>
+
+</div>
+</div>
+<a id="ab1d91d5433114cf9a1bc7d8f91b658c9" name="ab1d91d5433114cf9a1bc7d8f91b658c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d91d5433114cf9a1bc7d8f91b658c9">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::reset </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellCountX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellCountZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the grid with a new <code>cellCountX * cellCountZ</code> map. </p>
+<p>Existing cells are discarded and every chunk is marked dirty. Cell count must be a positive multiple of the chunk size in each dimension because chunk meshes own the blend strips on their north and west borders.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cellCountX</td><td>Columns; positive multiple of <code>kChunkSizeX</code>. </td></tr>
+    <tr><td class="paramname">cellCountZ</td><td>Rows; positive multiple of <code>kChunkSizeZ</code>. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic seed for the noise field. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when a dimension is out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00093">cellCountX()</a>, <a class="el" href="HexMap_8h_source.html#l00095">cellCountZ()</a>, <a class="el" href="HexMap_8h_source.html#l00101">chunkCount()</a>, <a class="el" href="HexMetrics_8h_source.html#l00151">eve::hexmap::HexMetrics::kChunkSizeX</a>, <a class="el" href="HexMetrics_8h_source.html#l00153">eve::hexmap::HexMetrics::kChunkSizeZ</a>, <a class="el" href="HexMap_8cpp_source.html#l00155">markAllChunksDirty()</a>, <a class="el" href="HexNoise_8h_source.html#l00035">eve::hexmap::HexNoise::reset()</a>, <a class="el" href="HexMap_8h_source.html#l00105">seed()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexCell_8h_source.html#l00200">eve::hexmap::HexCellData::values</a>, <a class="el" href="HexCell_8h_source.html#l00066">eve::hexmap::HexValues::withElevation()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00069">eve::hexmap::HexValues::withWaterLevel()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00105">eve::hexmap::HexMapModule::newGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a346b478ef687bbf2c49e507ebbed7684" name="a346b478ef687bbf2c49e507ebbed7684"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a346b478ef687bbf2c49e507ebbed7684">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::hexmap::HexMap::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic counter bumped by every mutation; used to detect stale meshes. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="a45139c24aa13b84342d31fbf2fb1c539" name="a45139c24aa13b84342d31fbf2fb1c539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45139c24aa13b84342d31fbf2fb1c539">&#9670;&#160;</a></span>seed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::hexmap::HexMap::seed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The seed this map was built with. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8h_source.html">HexMap.h</a> 第 <a class="el" href="HexMap_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00040">reset()</a> , 以及 <a class="el" href="HexSerializer_8cpp_source.html#l00163">eve::hexmap::saveHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="a6f8b1aa75c6595310b196a2b8830ad0b" name="a6f8b1aa75c6595310b196a2b8830ad0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f8b1aa75c6595310b196a2b8830ad0b">&#9670;&#160;</a></span>setCellState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setCellState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexFlags.html">HexFlags</a>&#160;</td>
+          <td class="paramname"><em>flags</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes a complete cell record verbatim. </p>
+<p>This is the restore path used by the save format. It deliberately skips the neighbour fix-ups of the individual authoring setters (<code>setOutgoingRiver</code>, <code>addRoad</code>, ...) because a payload carries both sides of every connection; the caller is responsible for a consistent payload and must finish with <code><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5f12e8952c845d41ccaa7a25af1f2921" title="Marks every chunk dirty.">markAllChunksDirty()</a></code>.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">c</td><td>Cell to overwrite. </td></tr>
+    <tr><td class="paramname">values</td><td>Packed values to store. </td></tr>
+    <tr><td class="paramname">flags</td><td>Packed flags to store. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when <code>c</code> is outside the grid. @cost Marks the owning chunk and its neighbours dirty. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00508">508</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexMap_8cpp_source.html#l00363">flags()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00490">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a>.</p>
+
+</div>
+</div>
+<a id="ab9be2ee3fb894efb91eef7fc6e2fce57" name="ab9be2ee3fb894efb91eef7fc6e2fce57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9be2ee3fb894efb91eef7fc6e2fce57">&#9670;&#160;</a></span>setElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setElevation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>elevation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's elevation, clamped to the editable range, and refreshes dependents. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="HexMap_8cpp_source.html#l00090">getNeighbor()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="HexMetrics_8h_source.html#l00057">eve::hexmap::kHexDirectionCount</a>, <a class="el" href="HexMetrics_8h_source.html#l00157">eve::hexmap::HexMetrics::kMaxElevation</a>, <a class="el" href="HexMetrics_8h_source.html#l00155">eve::hexmap::HexMetrics::kMinElevation</a>, <a class="el" href="HexMap_8cpp_source.html#l00605">removeRoads()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00651">editElevation()</a>.</p>
+
+</div>
+</div>
+<a id="af62f63d21187d830b98cc77f0b1d2311" name="af62f63d21187d830b98cc77f0b1d2311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af62f63d21187d830b98cc77f0b1d2311">&#9670;&#160;</a></span>setExplorable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setExplorable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>explorable</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets whether a cell may ever be explored. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00497">497</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abd86289db1c4cb903ebaaba12e9a84cc" name="abd86289db1c4cb903ebaaba12e9a84cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd86289db1c4cb903ebaaba12e9a84cc">&#9670;&#160;</a></span>setExplored()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setExplored </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>explored</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the explored (fog-of-war) latch of a cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00485">485</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>.</p>
+
+</div>
+</div>
+<a id="ac3392aebcc5c373d23b161121f1fd7dd" name="ac3392aebcc5c373d23b161121f1fd7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3392aebcc5c373d23b161121f1fd7dd">&#9670;&#160;</a></span>setFarmLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setFarmLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's farm level, clamped to <code>[0, 3]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a9ce0dd309ad696a8d571684aba9e16e7" name="a9ce0dd309ad696a8d571684aba9e16e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ce0dd309ad696a8d571684aba9e16e7">&#9670;&#160;</a></span>setOutgoingRiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setOutgoingRiver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forces a river to leave the cell through <code>direction</code>, mirroring the neighbour. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="HexCell_8h_source.html#l00201">eve::hexmap::HexCellData::flags</a>, <a class="el" href="HexMap_8cpp_source.html#l00090">getNeighbor()</a>, <a class="el" href="HexMetrics_8h_source.html#l00057">eve::hexmap::kHexDirectionCount</a>, <a class="el" href="HexMetrics_8h_source.html#l00060">eve::hexmap::opposite()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexCell_8h_source.html#l00200">eve::hexmap::HexCellData::values</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">waterLevel</a>, <a class="el" href="HexCell_8h_source.html#l00170">eve::hexmap::HexFlags::withoutRiverIn()</a>, <a class="el" href="HexCell_8h_source.html#l00176">eve::hexmap::HexFlags::withoutRiverOut()</a>, <a class="el" href="HexCell_8h_source.html#l00166">eve::hexmap::HexFlags::withoutRoad()</a>, <a class="el" href="HexCell_8h_source.html#l00167">eve::hexmap::HexFlags::withRiverIn()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00081">eve::hexmap::HexValues::withSpecialIndex()</a>.</p>
+
+</div>
+</div>
+<a id="a7ce523b1a082654ae94602a1b96a6656" name="a7ce523b1a082654ae94602a1b96a6656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ce523b1a082654ae94602a1b96a6656">&#9670;&#160;</a></span>setPlantLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setPlantLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's plant level, clamped to <code>[0, 3]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00459">459</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a0ec527c6054c7a12bda8ac62f4d6e3b2" name="a0ec527c6054c7a12bda8ac62f4d6e3b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ec527c6054c7a12bda8ac62f4d6e3b2">&#9670;&#160;</a></span>setSpecialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setSpecialIndex </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's special-feature index; ignored while the cell carries a river. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00467">467</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="HexMap_8cpp_source.html#l00605">removeRoads()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a527df338522d99504311d8783253460b" name="a527df338522d99504311d8783253460b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a527df338522d99504311d8783253460b">&#9670;&#160;</a></span>setTerrainType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setTerrainType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>terrainType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's terrain palette index, clamped to the palette range. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexCell_8h_source.html#l00024">eve::hexmap::clampTerrainType()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00677">editTerrainType()</a>.</p>
+
+</div>
+</div>
+<a id="a3470f3898062813d010e15be8ea4b43d" name="a3470f3898062813d010e15be8ea4b43d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3470f3898062813d010e15be8ea4b43d">&#9670;&#160;</a></span>setUrbanLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setUrbanLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's urban level, clamped to <code>[0, 3]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00443">443</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00689">editFeatureLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a1ef0792938118d20bafa740a51fb0e9b" name="a1ef0792938118d20bafa740a51fb0e9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef0792938118d20bafa740a51fb0e9b">&#9670;&#160;</a></span>setWalled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setWalled </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>walled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets whether a cell is walled. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00477">477</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a9b916f0280f702fc25190c4ca588a25c" name="a9b916f0280f702fc25190c4ca588a25c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b916f0280f702fc25190c4ca588a25c">&#9670;&#160;</a></span>setWaterLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMap::setWaterLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>waterLevel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a cell's water level, clamped to <code>[0, maxElevation]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="HexMetrics_8h_source.html#l00157">eve::hexmap::HexMetrics::kMaxElevation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00664">editWaterLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a8b610bc957f057a95d9bef6d87380cce" name="a8b610bc957f057a95d9bef6d87380cce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b610bc957f057a95d9bef6d87380cce">&#9670;&#160;</a></span>specialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::specialIndex </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+</div>
+</div>
+<a id="aed84a8335fa61663c589ec300cf54ad1" name="aed84a8335fa61663c589ec300cf54ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed84a8335fa61663c589ec300cf54ad1">&#9670;&#160;</a></span>takeDirtyChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::takeDirtyChunk </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pops the next dirty chunk. </p>
+<dl class="section return"><dt>返回</dt><dd>The dirty chunk index, or -1 when nothing is pending. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Callers loop until -1 is returned; the returned chunk is no longer reported dirty until it is mutated again. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00189">eve::hexmap::HexMapModule::rebuildDirtyChunks()</a>.</p>
+
+</div>
+</div>
+<a id="a6e4e3c8b8393aab591d89d5bff9408da" name="a6e4e3c8b8393aab591d89d5bff9408da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e4e3c8b8393aab591d89d5bff9408da">&#9670;&#160;</a></span>terrainType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::terrainType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00677">editTerrainType()</a>.</p>
+
+</div>
+</div>
+<a id="ae44f808003b23d467fb714a913300e2b" name="ae44f808003b23d467fb714a913300e2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae44f808003b23d467fb714a913300e2b">&#9670;&#160;</a></span>urbanLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::urbanLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00134">eve::hexmap::moveCost()</a>.</p>
+
+</div>
+</div>
+<a id="a762cb88b452bb2cb4728a107d10e226b" name="a762cb88b452bb2cb4728a107d10e226b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a762cb88b452bb2cb4728a107d10e226b">&#9670;&#160;</a></span>values()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexMap::values </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Full packed value record of a cell (zero when outside the grid). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00253">eve::hexmap::collectVisibleCells()</a>.</p>
+
+</div>
+</div>
+<a id="a20fc848753f63fa0b76e17643ccb5a6e" name="a20fc848753f63fa0b76e17643ccb5a6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20fc848753f63fa0b76e17643ccb5a6e">&#9670;&#160;</a></span>waterLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMap::waterLevel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a> 第 <a class="el" href="HexMap_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexMap_8h_source.html">HexMap.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexMap_8cpp_source.html">HexMap.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

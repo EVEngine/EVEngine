@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/editor/MeshModifierEditor.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_99f9a9a1c947aaf00777ae16791e00f2.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshModifierEditor.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshModifierEditor_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="MeshModifierEditor_8h.html">procgen/editor/MeshModifierEditor.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorProtocol_8h.html">editor/EditorProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen__editor.html">    7</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen__editor.html">eve::procgen_editor</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><a class="code hl_class" href="classeve_1_1Result.html">procgen_editing::EditorResult&lt;void&gt;</a> rejected(<span class="keyword">const</span> <span class="keywordtype">char</span>* rule, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(procgen_editing::EditorStatus::Rejected,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                      <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">eve::editing::RuleId</a>(rule), <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#af8db6e3bedc2df78eec97f5e98440f28">   14</a></span><a class="code hl_function" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#af8db6e3bedc2df78eec97f5e98440f28">MeshModifierEditor::MeshModifierEditor</a>(std::string targetId) : targetId_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(targetId)) {}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a3ea7aee5b57d9ab986744a7557885dbb">   16</a></span><a class="code hl_class" href="classeve_1_1Result.html">procgen_editing::EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a3ea7aee5b57d9ab986744a7557885dbb">MeshModifierEditor::configureWorkspace</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a>&amp; workspace)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (targetId_.empty()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.target&quot;</span>, <span class="stringliteral">&quot;Mesh modifier target id is empty&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> candidate = workspace;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">struct </span>Panel { <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>; <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>; <span class="keyword">const</span> <span class="keywordtype">char</span>* region; <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>; <span class="keywordtype">int</span> <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>; };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">constexpr</span> Panel panels[] = {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        {<span class="stringliteral">&quot;meshModifier.graph&quot;</span>, <span class="stringliteral">&quot;Modifier Graph&quot;</span>, <span class="stringliteral">&quot;left&quot;</span>, <span class="stringliteral">&quot;graph&quot;</span>, 100},</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        {<span class="stringliteral">&quot;meshModifier.viewport&quot;</span>, <span class="stringliteral">&quot;Mesh Preview&quot;</span>, <span class="stringliteral">&quot;center&quot;</span>, <span class="stringliteral">&quot;mesh-preview&quot;</span>, 100},</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        {<span class="stringliteral">&quot;meshModifier.inspector&quot;</span>, <span class="stringliteral">&quot;Modifier Inspector&quot;</span>, <span class="stringliteral">&quot;right&quot;</span>, <span class="stringliteral">&quot;inspector&quot;</span>, 100},</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        {<span class="stringliteral">&quot;meshModifier.spline&quot;</span>, <span class="stringliteral">&quot;Spline&quot;</span>, <span class="stringliteral">&quot;bottom&quot;</span>, <span class="stringliteral">&quot;spline&quot;</span>, 100},</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        {<span class="stringliteral">&quot;meshModifier.sculpt&quot;</span>, <span class="stringliteral">&quot;Sculpt &amp; Damage&quot;</span>, <span class="stringliteral">&quot;bottom&quot;</span>, <span class="stringliteral">&quot;sculpt&quot;</span>, 110},</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        {<span class="stringliteral">&quot;meshModifier.uvPaint&quot;</span>, <span class="stringliteral">&quot;UV Paint&quot;</span>, <span class="stringliteral">&quot;bottom&quot;</span>, <span class="stringliteral">&quot;uv-paint&quot;</span>, 120},</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; panel : panels) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_struct" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">editor::WorkspacePanelDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>{panel.<a class="code hl_variable" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html#a3eb093fdf72da9254bfe55631754aab5">id</a>, panel.title, panel.region, <span class="stringliteral">&quot;procgen.mesh-modifier&quot;</span>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                                     panel.context, panel.order, <span class="keyword">true</span>, <span class="keyword">true</span>};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">auto</span> added = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#aaa978b247536516b3beab8eec93e8451">registerPanel</a>(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (!added.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.workspace-conflict&quot;</span>, <span class="stringliteral">&quot;Could not install mesh modifier workspace&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">auto</span> activated = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a239655a77d6a3b9dde593bf6875beb81">activatePanel</a>(<a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editor::StableId</a>(<span class="stringliteral">&quot;meshModifier.viewport&quot;</span>));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (!activated.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.workspace-activate&quot;</span>, <span class="stringliteral">&quot;Could not activate mesh preview&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">auto</span> selected = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a0f2bbd8f0fb4b7be74c833959c8d4a97">selectItem</a>(<span class="stringliteral">&quot;meshModifier&quot;</span>, {editor::SelectionDomain::Asset, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">editor::TargetId</a>(targetId_),</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                           <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">editor::StableId</a>(targetId_), <span class="stringliteral">&quot;mesh&quot;</span>}, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!selected.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.workspace-selection&quot;</span>, <span class="stringliteral">&quot;Could not select mesh target&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    workspace = std::move(candidate);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a0b09cff18ca66da2753b176982745ef5">   43</a></span><a class="code hl_class" href="classeve_1_1Result.html">procgen_editing::EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a0b09cff18ca66da2753b176982745ef5">MeshModifierEditor::activateTool</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a>&amp; workspace,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                                     std::string tool) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::string panel;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;graph&quot;</span>) panel = <span class="stringliteral">&quot;meshModifier.graph&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;spline&quot;</span>) panel = <span class="stringliteral">&quot;meshModifier.spline&quot;</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;sculpt&quot;</span>) panel = <span class="stringliteral">&quot;meshModifier.sculpt&quot;</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;uvPaint&quot;</span>) panel = <span class="stringliteral">&quot;meshModifier.uvPaint&quot;</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">else</span> <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.tool&quot;</span>, <span class="stringliteral">&quot;Unknown mesh modifier tool&quot;</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> candidate = workspace;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">auto</span> activated = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a239655a77d6a3b9dde593bf6875beb81">activatePanel</a>(<a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editor::StableId</a>(panel));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (!activated.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.tool-panel&quot;</span>, <span class="stringliteral">&quot;Mesh modifier tool panel is unavailable&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">auto</span> mode = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a88cc7127efbee3caff7bad430ce12240">setModeId</a>(<a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editor::StableId</a>(<span class="stringliteral">&quot;meshModifier.&quot;</span> + tool));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!mode.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.tool-mode&quot;</span>, <span class="stringliteral">&quot;Could not set mesh modifier tool mode&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">auto</span> focus = candidate.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a1be4903344623ec4d3e3ea25ecf39dcc">focusItem</a>(<span class="stringliteral">&quot;meshModifier&quot;</span>, <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editor::StableId</a>(panel), <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editor::StableId</a>(targetId_));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (!focus.ok()) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.tool-focus&quot;</span>, <span class="stringliteral">&quot;Could not focus mesh modifier tool&quot;</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    workspace = std::move(candidate); activeTool_ = std::move(tool);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a14e2b937d838386d9acd57e718d8da52">   62</a></span><a class="code hl_class" href="classeve_1_1Result.html">procgen_editing::EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a14e2b937d838386d9acd57e718d8da52">MeshModifierEditor::observeRevision</a>(std::string document, std::uint64_t <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::uint64_t* destination = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">if</span> (document == <span class="stringliteral">&quot;graph&quot;</span>) destination = &amp;graphRevision_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (document == <span class="stringliteral">&quot;spline&quot;</span>) destination = &amp;splineRevision_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (document == <span class="stringliteral">&quot;mesh&quot;</span>) destination = &amp;meshRevision_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (document == <span class="stringliteral">&quot;paint&quot;</span>) destination = &amp;paintRevision_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">else</span> <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.document&quot;</span>, <span class="stringliteral">&quot;Unknown mesh modifier document&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a> &lt; *destination) <span class="keywordflow">return</span> rejected(<span class="stringliteral">&quot;editor.mesh-modifier.stale-revision&quot;</span>, <span class="stringliteral">&quot;Document revision cannot move backwards&quot;</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    *destination = <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace eve::procgen_editor</span></div>
+</div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_ac30fed21fe991cc8475ce543929f8b72"><div class="ttname"><a href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00013">ConversationImporter.cpp:13</a></div></div>
+<div class="ttc" id="aEditorProtocol_8h_html"><div class="ttname"><a href="EditorProtocol_8h.html">EditorProtocol.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aMeshModifierEditor_8h_html"><div class="ttname"><a href="MeshModifierEditor_8h.html">MeshModifierEditor.h</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00138">PlayHost.cpp:138</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00094">VegetationPreset.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00296">Identity.h:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html">eve::editor::EditorWorkspace</a></div><div class="ttdoc">Composition model shared by project-specific developer and runtime editors.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00043">EditorWorkspace.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a0f2bbd8f0fb4b7be74c833959c8d4a97"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a0f2bbd8f0fb4b7be74c833959c8d4a97">eve::editor::EditorWorkspace::selectItem</a></div><div class="ttdeci">EditorResult&lt; SelectionSnapshot &gt; selectItem(std::string channel, SelectionItem item, bool additive)</div><div class="ttdoc">Select one already typed item without string domain parsing.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8cpp_source.html#l00263">EditorWorkspace.cpp:263</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a1be4903344623ec4d3e3ea25ecf39dcc"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a1be4903344623ec4d3e3ea25ecf39dcc">eve::editor::EditorWorkspace::focusItem</a></div><div class="ttdeci">EditorResult&lt; EditorFocusSnapshot &gt; focusItem(const std::string &amp;channel, StableId surface, StableId item)</div><div class="ttdoc">Focus a strongly identified surface and item without discarding diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8cpp_source.html#l00318">EditorWorkspace.cpp:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a239655a77d6a3b9dde593bf6875beb81"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a239655a77d6a3b9dde593bf6875beb81">eve::editor::EditorWorkspace::activatePanel</a></div><div class="ttdeci">EditorResult&lt; WorkspacePanelDescriptor &gt; activatePanel(const StableId &amp;id)</div><div class="ttdoc">Activate a visible panel with structured not-found/rejected results.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8cpp_source.html#l00169">EditorWorkspace.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a88cc7127efbee3caff7bad430ce12240"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a88cc7127efbee3caff7bad430ce12240">eve::editor::EditorWorkspace::setModeId</a></div><div class="ttdeci">EditorResult&lt; StableId &gt; setModeId(StableId mode)</div><div class="ttdoc">Set a strongly identified workspace mode.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8cpp_source.html#l00244">EditorWorkspace.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_aaa978b247536516b3beab8eec93e8451"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#aaa978b247536516b3beab8eec93e8451">eve::editor::EditorWorkspace::registerPanel</a></div><div class="ttdeci">EditorResult&lt; WorkspacePanelDescriptor &gt; registerPanel(WorkspacePanelDescriptor descriptor)</div><div class="ttdoc">Register a checked owning panel descriptor.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8cpp_source.html#l00048">EditorWorkspace.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editor_1_1MeshModifierEditor_html_a0b09cff18ca66da2753b176982745ef5"><div class="ttname"><a href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a0b09cff18ca66da2753b176982745ef5">eve::procgen_editor::MeshModifierEditor::activateTool</a></div><div class="ttdeci">procgen_editing::EditorResult&lt; void &gt; activateTool(editor::EditorWorkspace &amp;workspace, std::string tool)</div><div class="ttdoc">Activate graph, spline, sculpt, or uvPaint and update semantic focus.</div><div class="ttdef"><b>Definition</b> <a href="MeshModifierEditor_8cpp_source.html#l00043">MeshModifierEditor.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editor_1_1MeshModifierEditor_html_a14e2b937d838386d9acd57e718d8da52"><div class="ttname"><a href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a14e2b937d838386d9acd57e718d8da52">eve::procgen_editor::MeshModifierEditor::observeRevision</a></div><div class="ttdeci">procgen_editing::EditorResult&lt; void &gt; observeRevision(std::string document, std::uint64_t revision)</div><div class="ttdoc">Observe an externally owned document revision without copying its state.</div><div class="ttdef"><b>Definition</b> <a href="MeshModifierEditor_8cpp_source.html#l00062">MeshModifierEditor.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editor_1_1MeshModifierEditor_html_a3ea7aee5b57d9ab986744a7557885dbb"><div class="ttname"><a href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#a3ea7aee5b57d9ab986744a7557885dbb">eve::procgen_editor::MeshModifierEditor::configureWorkspace</a></div><div class="ttdeci">procgen_editing::EditorResult&lt; void &gt; configureWorkspace(editor::EditorWorkspace &amp;workspace) const</div><div class="ttdoc">Atomically install the complete mesh-modifier panel composition.</div><div class="ttdef"><b>Definition</b> <a href="MeshModifierEditor_8cpp_source.html#l00016">MeshModifierEditor.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editor_1_1MeshModifierEditor_html_af8db6e3bedc2df78eec97f5e98440f28"><div class="ttname"><a href="classeve_1_1procgen__editor_1_1MeshModifierEditor.html#af8db6e3bedc2df78eec97f5e98440f28">eve::procgen_editor::MeshModifierEditor::MeshModifierEditor</a></div><div class="ttdeci">MeshModifierEditor(std::string targetId)</div><div class="ttdoc">Construct a controller for one mesh document.</div><div class="ttdef"><b>Definition</b> <a href="MeshModifierEditor_8cpp_source.html#l00014">MeshModifierEditor.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a0377b6158f0e722179dde541f17ebf93"><div class="ttname"><a href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">eve::editor::StableId</a></div><div class="ttdeci">eve::editing::StableId StableId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00036">EditorIds.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a5cad32dd3db1b40e5875c1b258a4e3e5"><div class="ttname"><a href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">eve::editor::TargetId</a></div><div class="ttdeci">eve::editing::TargetId TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00029">EditorIds.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editor_html"><div class="ttname"><a href="namespaceeve_1_1procgen__editor.html">eve::procgen_editor</a></div><div class="ttdef"><b>Definition</b> <a href="MeshModifierEditor_8cpp_source.html#l00007">MeshModifierEditor.cpp:7</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1WorkspacePanelDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">eve::editor::WorkspacePanelDescriptor</a></div><div class="ttdoc">UI-neutral description of one composable editor panel.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00023">EditorWorkspace.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1WorkspacePanelDescriptor_html_a3eb093fdf72da9254bfe55631754aab5"><div class="ttname"><a href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html#a3eb093fdf72da9254bfe55631754aab5">eve::editor::WorkspacePanelDescriptor::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00024">EditorWorkspace.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

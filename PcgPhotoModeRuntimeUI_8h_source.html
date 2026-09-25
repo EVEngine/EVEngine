@@ -1,0 +1,300 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/PcgPhotoModeRuntimeUI.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgPhotoModeRuntimeUI.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgPhotoModeRuntimeUI_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> { <span class="keyword">class </span><a class="code hl_variable" href="namespaceeve.html#af052cfc595f6252d226915e74384c755">Table</a>; }</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377">PcgPhotoModeWidgetKind</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a6f16a5f8ff5d75ab84c018adacdfcbb7">Field</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a2d9b9a764fb0be4be10e1b2fce63f561">Slider</a> = 1, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a0bd9c14da38ee05d0fa5f3cfe260f884">IntSlider</a> = 2, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a9f12e52509fc3a42526900a8354670a3">DisplaySlider</a> = 3, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a4cbe0c0aa0a41be395f513aec69194c7">DisplayIntSlider</a> = 4,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377aa8875bbe4272c0bdd786cfaaedf77921">Toggle</a> = 5, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377abf50d5e661106d0abe925af3c2e6f7e7">Header</a> = 6, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a7498c445a737312f3678aa1494e01a38">Dropdown</a> = 7, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377ab021df6aac4654c454f46c77646e745f">Label</a> = 8, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a87b7760f14fbff78d8819291f36ab9a0">Button</a> = 9, <a class="code hl_typedef" href="namespaceeve.html#aa24f76aa08bfbd65db55962a5177d8ef">Color</a> = 10,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377af0ae59ba5022f621aa4d11362005a688">BannerImage</a> = 11, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a1bebc5ae2822f8e361fb0ce57b5e09e2">Vector2</a> = 12, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a02b4dab58bbc49e0851fb3fd8df520cc">Vector3</a> = 13</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">   22</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">PcgPhotoModeInputStatus</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daad96143ba1b15645919cea00ec9d1be62">Ignored</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daa733d43480c8589b1368e5def6b480415">Applied</a> = 1 };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html">   25</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html">PcgPhotoModeRuntimeUI</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> configure(<span class="keywordtype">int</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                         <span class="keywordtype">float</span> sliderValue, <span class="keywordtype">float</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                         <span class="keywordtype">bool</span> bannerImageFound = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a615c8506b8d87a8d3714dbea8b35b86d">   32</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a615c8506b8d87a8d3714dbea8b35b86d">markSliderUsed</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a> = <span class="keyword">true</span>) noexcept { isUsingSlider_ = <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setSliderValue(<span class="keywordtype">float</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">PcgPhotoModeInputStatus</a> applyFloatInput(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">static</span> std::string updateWrap(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2386c7ab6d5b176807205011522b51f7">   40</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2386c7ab6d5b176807205011522b51f7">getKind</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(kind_); }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2aa2debdf8bf657e13114d5a3e0ec827">   41</a></span>    <span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2aa2debdf8bf657e13114d5a3e0ec827">getName</a>() const noexcept { <span class="keywordflow">return</span> name_; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a78deddd3b9830407c6c60832c2ea841b">   42</a></span>    <span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a78deddd3b9830407c6c60832c2ea841b">getValueText</a>() const noexcept { <span class="keywordflow">return</span> valueText_; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a7bcd876b04b5c3e63f0960e3a7203554">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a7bcd876b04b5c3e63f0960e3a7203554">getValue</a>() const noexcept { <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae4dfccc230b6117b7d307b85a1ec212f">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae4dfccc230b6117b7d307b85a1ec212f">getMinimum</a>() const noexcept { <span class="keywordflow">return</span> minimum_; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1a3d6f75895ad3c039da99b40471aa33">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1a3d6f75895ad3c039da99b40471aa33">getMaximum</a>() const noexcept { <span class="keywordflow">return</span> maximum_; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a104442531c4fd0a5a93dbdc8ab166b32">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a104442531c4fd0a5a93dbdc8ab166b32">getWholeNumbers</a>() const noexcept { <span class="keywordflow">return</span> wholeNumbers_; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a178c50ce4886869432185f48438eac4c">   47</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a178c50ce4886869432185f48438eac4c">getUsingSlider</a>() const noexcept { <span class="keywordflow">return</span> isUsingSlider_; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#adc6184cb61ad370c3e82a58c83317622">   48</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#adc6184cb61ad370c3e82a58c83317622">getInputRefresh</a>() const noexcept { <span class="keywordflow">return</span> inputRefresh_; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a66db7501e92bceb914acb73905058937">   49</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a66db7501e92bceb914acb73905058937">getLabelVisible</a>() const noexcept { <span class="keywordflow">return</span> labelVisible_; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae0e0d4b0ad8930736a9f3049a6855eae">   50</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae0e0d4b0ad8930736a9f3049a6855eae">getSecondLabelVisible</a>() const noexcept { <span class="keywordflow">return</span> secondLabelVisible_; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a70440fdb456feddaba7edbe968df2d4f">   51</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a70440fdb456feddaba7edbe968df2d4f">getSliderVisible</a>() const noexcept { <span class="keywordflow">return</span> sliderVisible_; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#acf7f3ea75d1490d1ca38c228d90f6290">   52</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#acf7f3ea75d1490d1ca38c228d90f6290">getInputVisible</a>() const noexcept { <span class="keywordflow">return</span> inputVisible_; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5df09f335e076ae599a77d15c500139e">   53</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5df09f335e076ae599a77d15c500139e">getToggleVisible</a>() const noexcept { <span class="keywordflow">return</span> toggleVisible_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a6177e271adfb496f1a4ebb45cfca7465">   54</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a6177e271adfb496f1a4ebb45cfca7465">getButtonVisible</a>() const noexcept { <span class="keywordflow">return</span> buttonVisible_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a8b4e4b3fbb271a3d117909b94e204b4b">   55</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a8b4e4b3fbb271a3d117909b94e204b4b">getDropdownVisible</a>() const noexcept { <span class="keywordflow">return</span> dropdownVisible_; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2bda0680db80798ac5586a085581817c">   56</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2bda0680db80798ac5586a085581817c">getImageVisible</a>() const noexcept { <span class="keywordflow">return</span> imageVisible_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a51d3f9eb1c16902f88e27fe8e79176a4">   57</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a51d3f9eb1c16902f88e27fe8e79176a4">getHeaderVisible</a>() const noexcept { <span class="keywordflow">return</span> headerVisible_; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5f711f8e2313ed6c03d99b0869dcb6e7">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5f711f8e2313ed6c03d99b0869dcb6e7">getColorVisible</a>() const noexcept { <span class="keywordflow">return</span> colorVisible_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a003db9dc5748a4b877057a3bea347473">   59</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a003db9dc5748a4b877057a3bea347473">getVector2Visible</a>() const noexcept { <span class="keywordflow">return</span> vector2Visible_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ad82197c73a21fde6991cda3c4781ecab">   60</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ad82197c73a21fde6991cda3c4781ecab">getVector3Visible</a>() const noexcept { <span class="keywordflow">return</span> vector3Visible_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1808fbed9f579396f3ff3ad4f64001f9">   61</a></span>    uint64_t <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1808fbed9f579396f3ff3ad4f64001f9">getInitialCallbackRevision</a>() const noexcept { <span class="keywordflow">return</span> initialCallbackRevision_; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377">PcgPhotoModeWidgetKind</a> kind_ = PcgPhotoModeWidgetKind::Field;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::string name_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string valueText_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span> value_ = 0.0f, minimum_ = 0.0f, maximum_ = 0.0f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> wholeNumbers_ = <span class="keyword">false</span>, isUsingSlider_ = <span class="keyword">true</span>, inputRefresh_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">bool</span> labelVisible_ = <span class="keyword">false</span>, secondLabelVisible_ = <span class="keyword">false</span>, sliderVisible_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">bool</span> inputVisible_ = <span class="keyword">false</span>, toggleVisible_ = <span class="keyword">false</span>, buttonVisible_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span> dropdownVisible_ = <span class="keyword">false</span>, imageVisible_ = <span class="keyword">false</span>, headerVisible_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">bool</span> colorVisible_ = <span class="keyword">false</span>, vector2Visible_ = <span class="keyword">false</span>, vector3Visible_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    uint64_t initialCallbackRevision_ = 0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a97bbbae059d707f25e24075f99830cf9">exposePcgPhotoModeRuntimeUIBindings</a>(ssq::Table &amp;table);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00027">GltfImporter.cpp:27</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00026">GltfImporter.cpp:26</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html">eve::ui::PcgPhotoModeRuntimeUI</a></div><div class="ttdoc">Backend-neutral state of one Pcg PhotoModeUIHelper prefab instance.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00025">PcgPhotoModeRuntimeUI.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a003db9dc5748a4b877057a3bea347473"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a003db9dc5748a4b877057a3bea347473">eve::ui::PcgPhotoModeRuntimeUI::getVector2Visible</a></div><div class="ttdeci">bool getVector2Visible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00059">PcgPhotoModeRuntimeUI.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a104442531c4fd0a5a93dbdc8ab166b32"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a104442531c4fd0a5a93dbdc8ab166b32">eve::ui::PcgPhotoModeRuntimeUI::getWholeNumbers</a></div><div class="ttdeci">bool getWholeNumbers() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00046">PcgPhotoModeRuntimeUI.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a178c50ce4886869432185f48438eac4c"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a178c50ce4886869432185f48438eac4c">eve::ui::PcgPhotoModeRuntimeUI::getUsingSlider</a></div><div class="ttdeci">bool getUsingSlider() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00047">PcgPhotoModeRuntimeUI.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a1808fbed9f579396f3ff3ad4f64001f9"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1808fbed9f579396f3ff3ad4f64001f9">eve::ui::PcgPhotoModeRuntimeUI::getInitialCallbackRevision</a></div><div class="ttdeci">uint64_t getInitialCallbackRevision() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00061">PcgPhotoModeRuntimeUI.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a1a3d6f75895ad3c039da99b40471aa33"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a1a3d6f75895ad3c039da99b40471aa33">eve::ui::PcgPhotoModeRuntimeUI::getMaximum</a></div><div class="ttdeci">float getMaximum() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00045">PcgPhotoModeRuntimeUI.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a2386c7ab6d5b176807205011522b51f7"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2386c7ab6d5b176807205011522b51f7">eve::ui::PcgPhotoModeRuntimeUI::getKind</a></div><div class="ttdeci">int getKind() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00040">PcgPhotoModeRuntimeUI.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a2aa2debdf8bf657e13114d5a3e0ec827"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2aa2debdf8bf657e13114d5a3e0ec827">eve::ui::PcgPhotoModeRuntimeUI::getName</a></div><div class="ttdeci">const std::string &amp; getName() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00041">PcgPhotoModeRuntimeUI.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a2bda0680db80798ac5586a085581817c"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a2bda0680db80798ac5586a085581817c">eve::ui::PcgPhotoModeRuntimeUI::getImageVisible</a></div><div class="ttdeci">bool getImageVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00056">PcgPhotoModeRuntimeUI.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a51d3f9eb1c16902f88e27fe8e79176a4"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a51d3f9eb1c16902f88e27fe8e79176a4">eve::ui::PcgPhotoModeRuntimeUI::getHeaderVisible</a></div><div class="ttdeci">bool getHeaderVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00057">PcgPhotoModeRuntimeUI.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a5df09f335e076ae599a77d15c500139e"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5df09f335e076ae599a77d15c500139e">eve::ui::PcgPhotoModeRuntimeUI::getToggleVisible</a></div><div class="ttdeci">bool getToggleVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00053">PcgPhotoModeRuntimeUI.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a5f711f8e2313ed6c03d99b0869dcb6e7"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a5f711f8e2313ed6c03d99b0869dcb6e7">eve::ui::PcgPhotoModeRuntimeUI::getColorVisible</a></div><div class="ttdeci">bool getColorVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00058">PcgPhotoModeRuntimeUI.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a615c8506b8d87a8d3714dbea8b35b86d"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a615c8506b8d87a8d3714dbea8b35b86d">eve::ui::PcgPhotoModeRuntimeUI::markSliderUsed</a></div><div class="ttdeci">void markSliderUsed(bool value=true) noexcept</div><div class="ttdoc">Mark that the next slider update also refreshes its input text.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00032">PcgPhotoModeRuntimeUI.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a6177e271adfb496f1a4ebb45cfca7465"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a6177e271adfb496f1a4ebb45cfca7465">eve::ui::PcgPhotoModeRuntimeUI::getButtonVisible</a></div><div class="ttdeci">bool getButtonVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00054">PcgPhotoModeRuntimeUI.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a66db7501e92bceb914acb73905058937"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a66db7501e92bceb914acb73905058937">eve::ui::PcgPhotoModeRuntimeUI::getLabelVisible</a></div><div class="ttdeci">bool getLabelVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00049">PcgPhotoModeRuntimeUI.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a70440fdb456feddaba7edbe968df2d4f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a70440fdb456feddaba7edbe968df2d4f">eve::ui::PcgPhotoModeRuntimeUI::getSliderVisible</a></div><div class="ttdeci">bool getSliderVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00051">PcgPhotoModeRuntimeUI.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a78deddd3b9830407c6c60832c2ea841b"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a78deddd3b9830407c6c60832c2ea841b">eve::ui::PcgPhotoModeRuntimeUI::getValueText</a></div><div class="ttdeci">const std::string &amp; getValueText() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00042">PcgPhotoModeRuntimeUI.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a7bcd876b04b5c3e63f0960e3a7203554"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a7bcd876b04b5c3e63f0960e3a7203554">eve::ui::PcgPhotoModeRuntimeUI::getValue</a></div><div class="ttdeci">float getValue() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00043">PcgPhotoModeRuntimeUI.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_a8b4e4b3fbb271a3d117909b94e204b4b"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#a8b4e4b3fbb271a3d117909b94e204b4b">eve::ui::PcgPhotoModeRuntimeUI::getDropdownVisible</a></div><div class="ttdeci">bool getDropdownVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00055">PcgPhotoModeRuntimeUI.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_acf7f3ea75d1490d1ca38c228d90f6290"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#acf7f3ea75d1490d1ca38c228d90f6290">eve::ui::PcgPhotoModeRuntimeUI::getInputVisible</a></div><div class="ttdeci">bool getInputVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00052">PcgPhotoModeRuntimeUI.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_ad82197c73a21fde6991cda3c4781ecab"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ad82197c73a21fde6991cda3c4781ecab">eve::ui::PcgPhotoModeRuntimeUI::getVector3Visible</a></div><div class="ttdeci">bool getVector3Visible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00060">PcgPhotoModeRuntimeUI.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_adc6184cb61ad370c3e82a58c83317622"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#adc6184cb61ad370c3e82a58c83317622">eve::ui::PcgPhotoModeRuntimeUI::getInputRefresh</a></div><div class="ttdeci">bool getInputRefresh() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00048">PcgPhotoModeRuntimeUI.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_ae0e0d4b0ad8930736a9f3049a6855eae"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae0e0d4b0ad8930736a9f3049a6855eae">eve::ui::PcgPhotoModeRuntimeUI::getSecondLabelVisible</a></div><div class="ttdeci">bool getSecondLabelVisible() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00050">PcgPhotoModeRuntimeUI.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRuntimeUI_html_ae4dfccc230b6117b7d307b85a1ec212f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRuntimeUI.html#ae4dfccc230b6117b7d307b85a1ec212f">eve::ui::PcgPhotoModeRuntimeUI::getMinimum</a></div><div class="ttdeci">float getMinimum() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00044">PcgPhotoModeRuntimeUI.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377">eve::ui::PcgPhotoModeWidgetKind</a></div><div class="ttdeci">PcgPhotoModeWidgetKind</div><div class="ttdoc">Widget families created by Pcg PhotoModeUtils.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00015">PcgPhotoModeRuntimeUI.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a02b4dab58bbc49e0851fb3fd8df520cc"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a02b4dab58bbc49e0851fb3fd8df520cc">eve::ui::PcgPhotoModeWidgetKind::Vector3</a></div><div class="ttdeci">@ Vector3</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a0bd9c14da38ee05d0fa5f3cfe260f884"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a0bd9c14da38ee05d0fa5f3cfe260f884">eve::ui::PcgPhotoModeWidgetKind::IntSlider</a></div><div class="ttdeci">@ IntSlider</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a1bebc5ae2822f8e361fb0ce57b5e09e2"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a1bebc5ae2822f8e361fb0ce57b5e09e2">eve::ui::PcgPhotoModeWidgetKind::Vector2</a></div><div class="ttdeci">@ Vector2</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a2d9b9a764fb0be4be10e1b2fce63f561"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a2d9b9a764fb0be4be10e1b2fce63f561">eve::ui::PcgPhotoModeWidgetKind::Slider</a></div><div class="ttdeci">@ Slider</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a4cbe0c0aa0a41be395f513aec69194c7"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a4cbe0c0aa0a41be395f513aec69194c7">eve::ui::PcgPhotoModeWidgetKind::DisplayIntSlider</a></div><div class="ttdeci">@ DisplayIntSlider</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a6f16a5f8ff5d75ab84c018adacdfcbb7"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a6f16a5f8ff5d75ab84c018adacdfcbb7">eve::ui::PcgPhotoModeWidgetKind::Field</a></div><div class="ttdeci">@ Field</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a7498c445a737312f3678aa1494e01a38"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a7498c445a737312f3678aa1494e01a38">eve::ui::PcgPhotoModeWidgetKind::Dropdown</a></div><div class="ttdeci">@ Dropdown</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a87b7760f14fbff78d8819291f36ab9a0"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a87b7760f14fbff78d8819291f36ab9a0">eve::ui::PcgPhotoModeWidgetKind::Button</a></div><div class="ttdeci">@ Button</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377a9f12e52509fc3a42526900a8354670a3"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377a9f12e52509fc3a42526900a8354670a3">eve::ui::PcgPhotoModeWidgetKind::DisplaySlider</a></div><div class="ttdeci">@ DisplaySlider</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377aa8875bbe4272c0bdd786cfaaedf77921"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377aa8875bbe4272c0bdd786cfaaedf77921">eve::ui::PcgPhotoModeWidgetKind::Toggle</a></div><div class="ttdeci">@ Toggle</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377ab021df6aac4654c454f46c77646e745f"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377ab021df6aac4654c454f46c77646e745f">eve::ui::PcgPhotoModeWidgetKind::Label</a></div><div class="ttdeci">@ Label</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377abf50d5e661106d0abe925af3c2e6f7e7"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377abf50d5e661106d0abe925af3c2e6f7e7">eve::ui::PcgPhotoModeWidgetKind::Header</a></div><div class="ttdeci">@ Header</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6d93ff75d7d87ef0faa55a4a688bd377af0ae59ba5022f621aa4d11362005a688"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6d93ff75d7d87ef0faa55a4a688bd377af0ae59ba5022f621aa4d11362005a688">eve::ui::PcgPhotoModeWidgetKind::BannerImage</a></div><div class="ttdeci">@ BannerImage</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a97bbbae059d707f25e24075f99830cf9"><div class="ttname"><a href="namespaceeve_1_1ui.html#a97bbbae059d707f25e24075f99830cf9">eve::ui::exposePcgPhotoModeRuntimeUIBindings</a></div><div class="ttdeci">void exposePcgPhotoModeRuntimeUIBindings(ssq::Table &amp;table)</div><div class="ttdoc">Register Pcg photo-mode runtime UI bindings.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8cpp_source.html#l00070">PcgPhotoModeRuntimeUI.cpp:70</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abcb2b48ae10a6389e0e7aa2a6b1934da"><div class="ttname"><a href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934da">eve::ui::PcgPhotoModeInputStatus</a></div><div class="ttdeci">PcgPhotoModeInputStatus</div><div class="ttdoc">Result of parsing one Pcg photo-mode numeric input field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRuntimeUI_8h_source.html#l00022">PcgPhotoModeRuntimeUI.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abcb2b48ae10a6389e0e7aa2a6b1934daa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daa733d43480c8589b1368e5def6b480415">eve::ui::PcgPhotoModeInputStatus::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_abcb2b48ae10a6389e0e7aa2a6b1934daad96143ba1b15645919cea00ec9d1be62"><div class="ttname"><a href="namespaceeve_1_1ui.html#abcb2b48ae10a6389e0e7aa2a6b1934daad96143ba1b15645919cea00ec9d1be62">eve::ui::PcgPhotoModeInputStatus::Ignored</a></div><div class="ttdeci">@ Ignored</div></div>
+<div class="ttc" id="anamespaceeve_html_aa24f76aa08bfbd65db55962a5177d8ef"><div class="ttname"><a href="namespaceeve.html#aa24f76aa08bfbd65db55962a5177d8ef">eve::Color</a></div><div class="ttdeci">glm::vec4 Color</div><div class="ttdoc">Render-neutral RGBA color shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00008">RenderTypes.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af052cfc595f6252d226915e74384c755"><div class="ttname"><a href="namespaceeve.html#af052cfc595f6252d226915e74384c755">eve::Table</a></div><div class="ttdeci">enum EVENGINE_API_FOUNDATION Table</div><div class="ttdoc">OT_TABLE (not yet editable).</div><div class="ttdef"><b>Definition</b> <a href="Runtime_8h_source.html#l00113">Runtime.h:113</a></div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00014">ECS.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

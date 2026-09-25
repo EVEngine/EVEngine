@@ -1,0 +1,2340 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editor::AnimationClipEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editor.html">animation_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation__editor_1_1AnimationClipEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editor::AnimationClipEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Timeline-style controller for one authored animation clip.  
+ <a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a730f3d4d47b63b35533c2876d97acb93" id="r_a730f3d4d47b63b35533c2876d97acb93"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a730f3d4d47b63b35533c2876d97acb93">AnimationClipEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:a730f3d4d47b63b35533c2876d97acb93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a seeded two-bone preview clip.  <br /></td></tr>
+<tr class="separator:a730f3d4d47b63b35533c2876d97acb93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a587713171297dab70fccd1d06d13ea79" id="r_a587713171297dab70fccd1d06d13ea79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a587713171297dab70fccd1d06d13ea79">loadRuntimeClip</a> (const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;skeleton, const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="memdesc:a587713171297dab70fccd1d06d13ea79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace the editor document from a real runtime skeleton and clip.  <br /></td></tr>
+<tr class="separator:a587713171297dab70fccd1d06d13ea79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7b606f962fd7f33a27a4731202872bc" id="r_af7b606f962fd7f33a27a4731202872bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af7b606f962fd7f33a27a4731202872bc">writeRuntimeClip</a> (<a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;skeleton) const</td></tr>
+<tr class="memdesc:af7b606f962fd7f33a27a4731202872bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace a runtime clip with the current authoritative editor document.  <br /></td></tr>
+<tr class="separator:af7b606f962fd7f33a27a4731202872bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d51984657c33e8ec54aaf803e3dadf4" id="r_a9d51984657c33e8ec54aaf803e3dadf4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d51984657c33e8ec54aaf803e3dadf4">AnimationClipEditor</a> (const <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a9d51984657c33e8ec54aaf803e3dadf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66a311842537c1117015272baba0f85" id="r_aa66a311842537c1117015272baba0f85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa66a311842537c1117015272baba0f85">operator=</a> (const <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:aa66a311842537c1117015272baba0f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84fbeb3c02eca9e4b30b26e0aa8ccce" id="r_af84fbeb3c02eca9e4b30b26e0aa8ccce"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">animation_editing::AnimationClipDocumentTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af84fbeb3c02eca9e4b30b26e0aa8ccce">target</a> () const noexcept</td></tr>
+<tr class="memdesc:af84fbeb3c02eca9e4b30b26e0aa8ccce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative clip document.  <br /></td></tr>
+<tr class="separator:af84fbeb3c02eca9e4b30b26e0aa8ccce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab310e2e3616d3f9895850004b6047b10" id="r_ab310e2e3616d3f9895850004b6047b10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab310e2e3616d3f9895850004b6047b10">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:ab310e2e3616d3f9895850004b6047b10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Skeleton / Pose Preview / Inspector / Dope panels.  <br /></td></tr>
+<tr class="separator:ab310e2e3616d3f9895850004b6047b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf9438e2edb05b4b871045904e278403" id="r_adf9438e2edb05b4b871045904e278403"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#adf9438e2edb05b4b871045904e278403">setViewport</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float rowHeight, float labelWidth)</td></tr>
+<tr class="memdesc:adf9438e2edb05b4b871045904e278403"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure dope-sheet pixel layout.  <br /></td></tr>
+<tr class="separator:adf9438e2edb05b4b871045904e278403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db099a0745cdc635d94216cb594ae7e" id="r_a5db099a0745cdc635d94216cb594ae7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5db099a0745cdc635d94216cb594ae7e">seekSeconds</a> (double seconds)</td></tr>
+<tr class="separator:a5db099a0745cdc635d94216cb594ae7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a046b2ddecb3c03727132b3a716f6b6f1" id="r_a046b2ddecb3c03727132b3a716f6b6f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a046b2ddecb3c03727132b3a716f6b6f1">seekX</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:a046b2ddecb3c03727132b3a716f6b6f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21aab6873c95392081b90feee721ff24" id="r_a21aab6873c95392081b90feee721ff24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a21aab6873c95392081b90feee721ff24">pointerDown</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a21aab6873c95392081b90feee721ff24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b7379acb39ebabbc46411ca94e75e0e" id="r_a0b7379acb39ebabbc46411ca94e75e0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a0b7379acb39ebabbc46411ca94e75e0e">selectBone</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>)</td></tr>
+<tr class="separator:a0b7379acb39ebabbc46411ca94e75e0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad91288aad1715a0f58aa0874d0b870" id="r_a9ad91288aad1715a0f58aa0874d0b870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9ad91288aad1715a0f58aa0874d0b870">setMaskWeight</a> (double <a class="el" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>)</td></tr>
+<tr class="separator:a9ad91288aad1715a0f58aa0874d0b870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c88354490867afdb2f2af097d92ff9" id="r_a66c88354490867afdb2f2af097d92ff9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a66c88354490867afdb2f2af097d92ff9">setDuration</a> (double <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">duration</a>)</td></tr>
+<tr class="memdesc:a66c88354490867afdb2f2af097d92ff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit clip duration through the document transaction path.  <br /></td></tr>
+<tr class="separator:a66c88354490867afdb2f2af097d92ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e047e5e89318f5fca3c9c90026a32c" id="r_ad3e047e5e89318f5fca3c9c90026a32c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad3e047e5e89318f5fca3c9c90026a32c">setSampleRate</a> (double <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">sampleRate</a>)</td></tr>
+<tr class="memdesc:ad3e047e5e89318f5fca3c9c90026a32c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit authored sample rate through the document transaction path.  <br /></td></tr>
+<tr class="separator:ad3e047e5e89318f5fca3c9c90026a32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9a483356d3b62de008f2c60723aa5b8" id="r_af9a483356d3b62de008f2c60723aa5b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af9a483356d3b62de008f2c60723aa5b8">setLoop</a> (bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>)</td></tr>
+<tr class="memdesc:af9a483356d3b62de008f2c60723aa5b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit looping through the document transaction path.  <br /></td></tr>
+<tr class="separator:af9a483356d3b62de008f2c60723aa5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16f47fb2144708e90c0b72f6b4afa11b" id="r_a16f47fb2144708e90c0b72f6b4afa11b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a16f47fb2144708e90c0b72f6b4afa11b">keySelectedBone</a> ()</td></tr>
+<tr class="memdesc:a16f47fb2144708e90c0b72f6b4afa11b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert or replace a transform key for the selected bone at the playhead.  <br /></td></tr>
+<tr class="separator:a16f47fb2144708e90c0b72f6b4afa11b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa012723a42e56a612b8d2c210f72b030" id="r_aa012723a42e56a612b8d2c210f72b030"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa012723a42e56a612b8d2c210f72b030">deleteSelectedKey</a> ()</td></tr>
+<tr class="memdesc:aa012723a42e56a612b8d2c210f72b030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the selected transform key.  <br /></td></tr>
+<tr class="separator:aa012723a42e56a612b8d2c210f72b030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c7c343469b4db177ca85c03c0d33c5c" id="r_a6c7c343469b4db177ca85c03c0d33c5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6c7c343469b4db177ca85c03c0d33c5c">setSelectedPosition</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, double <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a6c7c343469b4db177ca85c03c0d33c5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the selected bone position at the playhead and create a key when needed.  <br /></td></tr>
+<tr class="separator:a6c7c343469b4db177ca85c03c0d33c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9773f9d2220521983f8a63c91e10d9a" id="r_aa9773f9d2220521983f8a63c91e10d9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9773f9d2220521983f8a63c91e10d9a">setSelectedRotation</a> (double xDegrees, double yDegrees, double zDegrees)</td></tr>
+<tr class="memdesc:aa9773f9d2220521983f8a63c91e10d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the selected bone Euler rotation in degrees and create a key when needed.  <br /></td></tr>
+<tr class="separator:aa9773f9d2220521983f8a63c91e10d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeda35e82f79694fa4e6b5350be5f67d" id="r_abeda35e82f79694fa4e6b5350be5f67d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abeda35e82f79694fa4e6b5350be5f67d">setSelectedScale</a> (double <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, double <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, double <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:abeda35e82f79694fa4e6b5350be5f67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the selected bone scale at the playhead and create a key when needed.  <br /></td></tr>
+<tr class="separator:abeda35e82f79694fa4e6b5350be5f67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75ae7d712aeacecef8a41992059bd632" id="r_a75ae7d712aeacecef8a41992059bd632"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a75ae7d712aeacecef8a41992059bd632">moveSelectedKey</a> (double <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a>)</td></tr>
+<tr class="separator:a75ae7d712aeacecef8a41992059bd632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc81ce796ffd39ccc2c4df6acdcff58" id="r_a3fc81ce796ffd39ccc2c4df6acdcff58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a3fc81ce796ffd39ccc2c4df6acdcff58">undo</a> ()</td></tr>
+<tr class="separator:a3fc81ce796ffd39ccc2c4df6acdcff58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5785dfbe19a02e01d9b7b06688b2a44f" id="r_a5785dfbe19a02e01d9b7b06688b2a44f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5785dfbe19a02e01d9b7b06688b2a44f">redo</a> ()</td></tr>
+<tr class="separator:a5785dfbe19a02e01d9b7b06688b2a44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d29e19e617e85ef88dfba30fdf8b16a" id="r_a1d29e19e617e85ef88dfba30fdf8b16a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a1d29e19e617e85ef88dfba30fdf8b16a">play</a> () noexcept</td></tr>
+<tr class="separator:a1d29e19e617e85ef88dfba30fdf8b16a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca83abaa8ebe50032992b8f2750c6433" id="r_aca83abaa8ebe50032992b8f2750c6433"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aca83abaa8ebe50032992b8f2750c6433">pause</a> () noexcept</td></tr>
+<tr class="separator:aca83abaa8ebe50032992b8f2750c6433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecee25237a535897d5ecb91f0344342f" id="r_aecee25237a535897d5ecb91f0344342f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aecee25237a535897d5ecb91f0344342f">stop</a> () noexcept</td></tr>
+<tr class="separator:aecee25237a535897d5ecb91f0344342f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a176d8eea05a47aef8760205f86b5ca69" id="r_a176d8eea05a47aef8760205f86b5ca69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a176d8eea05a47aef8760205f86b5ca69">update</a> (double deltaSeconds)</td></tr>
+<tr class="memdesc:a176d8eea05a47aef8760205f86b5ca69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance playhead by injected dt and refresh pose/overlay.  <br /></td></tr>
+<tr class="separator:a176d8eea05a47aef8760205f86b5ca69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2229ce0e2b9c07b3734fd28bd72da5b" id="r_ac2229ce0e2b9c07b3734fd28bd72da5b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac2229ce0e2b9c07b3734fd28bd72da5b">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:ac2229ce0e2b9c07b3734fd28bd72da5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8d84f290ed907e50efd3594fadb8c95" id="r_ad8d84f290ed907e50efd3594fadb8c95"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad8d84f290ed907e50efd3594fadb8c95">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:ad8d84f290ed907e50efd3594fadb8c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb8b05dbf4ae7a8d302933e4a2db1089" id="r_afb8b05dbf4ae7a8d302933e4a2db1089"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#afb8b05dbf4ae7a8d302933e4a2db1089">isPlaying</a> () const noexcept</td></tr>
+<tr class="separator:afb8b05dbf4ae7a8d302933e4a2db1089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7771f16625519fb9d803c6df25cd061a" id="r_a7771f16625519fb9d803c6df25cd061a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7771f16625519fb9d803c6df25cd061a">revision</a> () const noexcept</td></tr>
+<tr class="separator:a7771f16625519fb9d803c6df25cd061a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cd5231629ed88b3b9283c2815be58c2" id="r_a2cd5231629ed88b3b9283c2815be58c2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">duration</a> () const noexcept</td></tr>
+<tr class="separator:a2cd5231629ed88b3b9283c2815be58c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ea284e53797d3d86cf9d25fcc853803" id="r_a7ea284e53797d3d86cf9d25fcc853803"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">sampleRate</a> () const noexcept</td></tr>
+<tr class="separator:a7ea284e53797d3d86cf9d25fcc853803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f1ff92991892c2c4cda8bf6883fb16" id="r_a64f1ff92991892c2c4cda8bf6883fb16"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a64f1ff92991892c2c4cda8bf6883fb16">isLooping</a> () const noexcept</td></tr>
+<tr class="separator:a64f1ff92991892c2c4cda8bf6883fb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ceed144a1923acdd0160c9dfa10bd1d" id="r_a6ceed144a1923acdd0160c9dfa10bd1d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ceed144a1923acdd0160c9dfa10bd1d">playhead</a> () const noexcept</td></tr>
+<tr class="separator:a6ceed144a1923acdd0160c9dfa10bd1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9eab9c9ab371c0c57028c57008d1458" id="r_aa9eab9c9ab371c0c57028c57008d1458"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9eab9c9ab371c0c57028c57008d1458">layoutWidth</a> () const noexcept</td></tr>
+<tr class="separator:aa9eab9c9ab371c0c57028c57008d1458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93e684049d8b7a1398087b7a3e7f0ba7" id="r_a93e684049d8b7a1398087b7a3e7f0ba7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a93e684049d8b7a1398087b7a3e7f0ba7">layoutHeight</a> () const noexcept</td></tr>
+<tr class="separator:a93e684049d8b7a1398087b7a3e7f0ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d17a4393100094f40f9f73103ce2717" id="r_a9d17a4393100094f40f9f73103ce2717"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d17a4393100094f40f9f73103ce2717">playheadX</a> () const noexcept</td></tr>
+<tr class="separator:a9d17a4393100094f40f9f73103ce2717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ba13387bab1d5de60546d13f7b9321d" id="r_a6ba13387bab1d5de60546d13f7b9321d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ba13387bab1d5de60546d13f7b9321d">selectedBone</a> () const</td></tr>
+<tr class="separator:a6ba13387bab1d5de60546d13f7b9321d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9028a8911bc449c5c52cfa71a84fafba" id="r_a9028a8911bc449c5c52cfa71a84fafba"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9028a8911bc449c5c52cfa71a84fafba">selectedMaskWeight</a> () const</td></tr>
+<tr class="separator:a9028a8911bc449c5c52cfa71a84fafba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe661bbfb1119f3c33e2dc1e9e5006dc" id="r_abe661bbfb1119f3c33e2dc1e9e5006dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abe661bbfb1119f3c33e2dc1e9e5006dc">hasSelectedKey</a> () const noexcept</td></tr>
+<tr class="separator:abe661bbfb1119f3c33e2dc1e9e5006dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfbed9ed67ac8a42ee5610dfda4bcadc" id="r_abfbed9ed67ac8a42ee5610dfda4bcadc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abfbed9ed67ac8a42ee5610dfda4bcadc">selectedKeyTime</a> () const</td></tr>
+<tr class="separator:abfbed9ed67ac8a42ee5610dfda4bcadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8be44f68991622530720e1bef38fb0c" id="r_ab8be44f68991622530720e1bef38fb0c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab8be44f68991622530720e1bef38fb0c">selectedPositionX</a> () const</td></tr>
+<tr class="separator:ab8be44f68991622530720e1bef38fb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d5e3f4ca35dd499df9c4bbe918b53cc" id="r_a8d5e3f4ca35dd499df9c4bbe918b53cc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a8d5e3f4ca35dd499df9c4bbe918b53cc">selectedPositionY</a> () const</td></tr>
+<tr class="separator:a8d5e3f4ca35dd499df9c4bbe918b53cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae934e27e9166aa65dd1a354a8403f242" id="r_ae934e27e9166aa65dd1a354a8403f242"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae934e27e9166aa65dd1a354a8403f242">selectedPositionZ</a> () const</td></tr>
+<tr class="separator:ae934e27e9166aa65dd1a354a8403f242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9e3dd5c7a58678bf32d70d5f78a3b8" id="r_a3a9e3dd5c7a58678bf32d70d5f78a3b8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a3a9e3dd5c7a58678bf32d70d5f78a3b8">selectedRotationX</a> () const</td></tr>
+<tr class="separator:a3a9e3dd5c7a58678bf32d70d5f78a3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab09eb41084be48e3a3745b692afd6d96" id="r_ab09eb41084be48e3a3745b692afd6d96"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab09eb41084be48e3a3745b692afd6d96">selectedRotationY</a> () const</td></tr>
+<tr class="separator:ab09eb41084be48e3a3745b692afd6d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab927ed4964680cdb9e168e1a6e86b020" id="r_ab927ed4964680cdb9e168e1a6e86b020"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab927ed4964680cdb9e168e1a6e86b020">selectedRotationZ</a> () const</td></tr>
+<tr class="separator:ab927ed4964680cdb9e168e1a6e86b020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18ab446cb946ae8fec1b8a055fae22c3" id="r_a18ab446cb946ae8fec1b8a055fae22c3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a18ab446cb946ae8fec1b8a055fae22c3">selectedScaleX</a> () const</td></tr>
+<tr class="separator:a18ab446cb946ae8fec1b8a055fae22c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a619f5245b84cb0ac7bd2749993b96820" id="r_a619f5245b84cb0ac7bd2749993b96820"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a619f5245b84cb0ac7bd2749993b96820">selectedScaleY</a> () const</td></tr>
+<tr class="separator:a619f5245b84cb0ac7bd2749993b96820"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4cd5ee50c79e2896fd8cb3037538ba4" id="r_ac4cd5ee50c79e2896fd8cb3037538ba4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac4cd5ee50c79e2896fd8cb3037538ba4">selectedScaleZ</a> () const</td></tr>
+<tr class="separator:ac4cd5ee50c79e2896fd8cb3037538ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a810e0e27f6a74e932f6bf7cfa9842e3e" id="r_a810e0e27f6a74e932f6bf7cfa9842e3e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a810e0e27f6a74e932f6bf7cfa9842e3e">boneCount</a> () const noexcept</td></tr>
+<tr class="separator:a810e0e27f6a74e932f6bf7cfa9842e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a729e06b96187062eee1ae61354fdedad" id="r_a729e06b96187062eee1ae61354fdedad"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a729e06b96187062eee1ae61354fdedad">boneName</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a729e06b96187062eee1ae61354fdedad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63037a75b92c5f75497388ab475539ac" id="r_a63037a75b92c5f75497388ab475539ac"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a63037a75b92c5f75497388ab475539ac">boneParent</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a63037a75b92c5f75497388ab475539ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3b51c1f9a7835212e2223f1c82cac12" id="r_ae3b51c1f9a7835212e2223f1c82cac12"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae3b51c1f9a7835212e2223f1c82cac12">trackCount</a> () const</td></tr>
+<tr class="separator:ae3b51c1f9a7835212e2223f1c82cac12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab20f2084c989cc14fcf5d1c4ebfee20f" id="r_ab20f2084c989cc14fcf5d1c4ebfee20f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab20f2084c989cc14fcf5d1c4ebfee20f">trackBone</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:ab20f2084c989cc14fcf5d1c4ebfee20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f38fc40ae447cf1bc524100fb46f034" id="r_a0f38fc40ae447cf1bc524100fb46f034"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a0f38fc40ae447cf1bc524100fb46f034">trackId</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a0f38fc40ae447cf1bc524100fb46f034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f1fb5b557e95e3e0e4b4f6bc06510db" id="r_a3f1fb5b557e95e3e0e4b4f6bc06510db"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a3f1fb5b557e95e3e0e4b4f6bc06510db">isTrackSelected</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a3f1fb5b557e95e3e0e4b4f6bc06510db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9000bc908ad517677813e86c607348" id="r_a2c9000bc908ad517677813e86c607348"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2c9000bc908ad517677813e86c607348">keyCount</a> () const</td></tr>
+<tr class="separator:a2c9000bc908ad517677813e86c607348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5c52f77cf6da46f95cf6a12be77b9ef" id="r_ae5c52f77cf6da46f95cf6a12be77b9ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae5c52f77cf6da46f95cf6a12be77b9ef">keyX</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:ae5c52f77cf6da46f95cf6a12be77b9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27173eca916d5f03189adc083351181e" id="r_a27173eca916d5f03189adc083351181e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a27173eca916d5f03189adc083351181e">keyY</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a27173eca916d5f03189adc083351181e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4de753b660e91ea0309651e58dbe32c3" id="r_a4de753b660e91ea0309651e58dbe32c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a4de753b660e91ea0309651e58dbe32c3">isKeySelected</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a4de753b660e91ea0309651e58dbe32c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab65d72eac7a933818ecb15aa8ff5d5c4" id="r_ab65d72eac7a933818ecb15aa8ff5d5c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab65d72eac7a933818ecb15aa8ff5d5c4">eventCount</a> () const</td></tr>
+<tr class="separator:ab65d72eac7a933818ecb15aa8ff5d5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d88514eedbbfc3eb56354896d41348a" id="r_a8d88514eedbbfc3eb56354896d41348a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a8d88514eedbbfc3eb56354896d41348a">eventX</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a8d88514eedbbfc3eb56354896d41348a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab21fdc6835867bee586ea3513a3122" id="r_a5ab21fdc6835867bee586ea3513a3122"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5ab21fdc6835867bee586ea3513a3122">eventName</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a5ab21fdc6835867bee586ea3513a3122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62c8ee0ee793fc3172d7416b219a9d08" id="r_a62c8ee0ee793fc3172d7416b219a9d08"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a62c8ee0ee793fc3172d7416b219a9d08">primitiveCount</a> () const</td></tr>
+<tr class="separator:a62c8ee0ee793fc3172d7416b219a9d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a601e64d86ffc5c0ebe439448683736b9" id="r_a601e64d86ffc5c0ebe439448683736b9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a601e64d86ffc5c0ebe439448683736b9">primitiveKind</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a601e64d86ffc5c0ebe439448683736b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b17795a5892fd3c83deee6ea0678979" id="r_a1b17795a5892fd3c83deee6ea0678979"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a1b17795a5892fd3c83deee6ea0678979">primitiveX</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a1b17795a5892fd3c83deee6ea0678979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c3db519011f6b61c9f09fae92cbfb71" id="r_a4c3db519011f6b61c9f09fae92cbfb71"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a4c3db519011f6b61c9f09fae92cbfb71">primitiveY</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a4c3db519011f6b61c9f09fae92cbfb71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e5261a1776790f6b30960e669d8c6a" id="r_a80e5261a1776790f6b30960e669d8c6a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a80e5261a1776790f6b30960e669d8c6a">primitiveDirX</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a80e5261a1776790f6b30960e669d8c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc05b2e4cf33f28384c31d70a28c3989" id="r_adc05b2e4cf33f28384c31d70a28c3989"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#adc05b2e4cf33f28384c31d70a28c3989">primitiveDirY</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:adc05b2e4cf33f28384c31d70a28c3989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d9afdd23b7b16ad4876f0deedc577df" id="r_a8d9afdd23b7b16ad4876f0deedc577df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a8d9afdd23b7b16ad4876f0deedc577df">primitiveLength</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a8d9afdd23b7b16ad4876f0deedc577df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e9363148b9511cff6cc7978a74ecc8" id="r_a96e9363148b9511cff6cc7978a74ecc8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a96e9363148b9511cff6cc7978a74ecc8">primitiveRadius</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a96e9363148b9511cff6cc7978a74ecc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea8db0a1c42727d346bfdd6b32d8a95e" id="r_aea8db0a1c42727d346bfdd6b32d8a95e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aea8db0a1c42727d346bfdd6b32d8a95e">primitiveR</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:aea8db0a1c42727d346bfdd6b32d8a95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2918aa165bcef902962bbf07a76f5e65" id="r_a2918aa165bcef902962bbf07a76f5e65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2918aa165bcef902962bbf07a76f5e65">primitiveG</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a2918aa165bcef902962bbf07a76f5e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac88e0ea27729e5426c6c6e0b19ac09b0" id="r_ac88e0ea27729e5426c6c6e0b19ac09b0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac88e0ea27729e5426c6c6e0b19ac09b0">primitiveB</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:ac88e0ea27729e5426c6c6e0b19ac09b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37284ccf7721374af9d2b98188de62d3" id="r_a37284ccf7721374af9d2b98188de62d3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationClipPreview.html">animation_editing::AnimationClipPreview</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a37284ccf7721374af9d2b98188de62d3">preview</a> () const noexcept</td></tr>
+<tr class="separator:a37284ccf7721374af9d2b98188de62d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Timeline-style controller for one authored animation clip. </p>
+<p>Owns the clip document, local undo, deterministic scrub preview and a renderer-neutral skeleton overlay. Script presenters draw layout getters only.</p>
+<p>@ownership Editor owns the document. Overlay snapshots are copied values. @threadaffinity Owner thread only. @reentrancy No unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a730f3d4d47b63b35533c2876d97acb93" name="a730f3d4d47b63b35533c2876d97acb93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a730f3d4d47b63b35533c2876d97acb93">&#9670;&#160;</a></span>AnimationClipEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editor::AnimationClipEditor::AnimationClipEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a seeded two-bone preview clip. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d51984657c33e8ec54aaf803e3dadf4" name="a9d51984657c33e8ec54aaf803e3dadf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d51984657c33e8ec54aaf803e3dadf4">&#9670;&#160;</a></span>AnimationClipEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editor::AnimationClipEditor::AnimationClipEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a810e0e27f6a74e932f6bf7cfa9842e3e" name="a810e0e27f6a74e932f6bf7cfa9842e3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a810e0e27f6a74e932f6bf7cfa9842e3e">&#9670;&#160;</a></span>boneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::AnimationClipEditor::boneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a729e06b96187062eee1ae61354fdedad" name="a729e06b96187062eee1ae61354fdedad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a729e06b96187062eee1ae61354fdedad">&#9670;&#160;</a></span>boneName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::boneName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00518">518</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00031">bones</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00519">boneParent()</a>.</p>
+
+</div>
+</div>
+<a id="a63037a75b92c5f75497388ab475539ac" name="a63037a75b92c5f75497388ab475539ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63037a75b92c5f75497388ab475539ac">&#9670;&#160;</a></span>boneParent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::boneParent </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00518">boneName()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="ad8d84f290ed907e50efd3594fadb8c95" name="ad8d84f290ed907e50efd3594fadb8c95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d84f290ed907e50efd3594fadb8c95">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2229ce0e2b9c07b3734fd28bd72da5b" name="ac2229ce0e2b9c07b3734fd28bd72da5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2229ce0e2b9c07b3734fd28bd72da5b">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab310e2e3616d3f9895850004b6047b10" name="ab310e2e3616d3f9895850004b6047b10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab310e2e3616d3f9895850004b6047b10">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Skeleton / Pose Preview / Inspector / Dope panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00094">context</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00048">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="aa012723a42e56a612b8d2c210f72b030" name="aa012723a42e56a612b8d2c210f72b030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa012723a42e56a612b8d2c210f72b030">&#9670;&#160;</a></span>deleteSelectedKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::deleteSelectedKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete the selected transform key. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00355">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00263">eve::animation_editing::AnimationClipDocumentTarget::makeSetTrack()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+</div>
+</div>
+<a id="a2cd5231629ed88b3b9283c2815be58c2" name="a2cd5231629ed88b3b9283c2815be58c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cd5231629ed88b3b9283c2815be58c2">&#9670;&#160;</a></span>duration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::duration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00194">seekSeconds()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00255">setDuration()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00435">update()</a>.</p>
+
+</div>
+</div>
+<a id="ab65d72eac7a933818ecb15aa8ff5d5c4" name="ab65d72eac7a933818ecb15aa8ff5d5c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab65d72eac7a933818ecb15aa8ff5d5c4">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::AnimationClipEditor::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00559">559</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00312">eve::animation_editing::AnimationClipDocumentTarget::events()</a>.</p>
+
+</div>
+</div>
+<a id="a5ab21fdc6835867bee586ea3513a3122" name="a5ab21fdc6835867bee586ea3513a3122"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab21fdc6835867bee586ea3513a3122">&#9670;&#160;</a></span>eventName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::eventName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00567">567</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00312">eve::animation_editing::AnimationClipDocumentTarget::events()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00172">events</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>.</p>
+
+</div>
+</div>
+<a id="a8d88514eedbbfc3eb56354896d41348a" name="a8d88514eedbbfc3eb56354896d41348a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d88514eedbbfc3eb56354896d41348a">&#9670;&#160;</a></span>eventX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::eventX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00561">561</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00312">eve::animation_editing::AnimationClipDocumentTarget::events()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00172">events</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">time</a>.</p>
+
+</div>
+</div>
+<a id="abe661bbfb1119f3c33e2dc1e9e5006dc" name="abe661bbfb1119f3c33e2dc1e9e5006dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe661bbfb1119f3c33e2dc1e9e5006dc">&#9670;&#160;</a></span>hasSelectedKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::hasSelectedKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4de753b660e91ea0309651e58dbe32c3" name="a4de753b660e91ea0309651e58dbe32c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de753b660e91ea0309651e58dbe32c3">&#9670;&#160;</a></span>isKeySelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::isKeySelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00551">551</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+</div>
+</div>
+<a id="a64f1ff92991892c2c4cda8bf6883fb16" name="a64f1ff92991892c2c4cda8bf6883fb16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f1ff92991892c2c4cda8bf6883fb16">&#9670;&#160;</a></span>isLooping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::isLooping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb8b05dbf4ae7a8d302933e4a2db1089" name="afb8b05dbf4ae7a8d302933e4a2db1089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb8b05dbf4ae7a8d302933e4a2db1089">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f1fb5b557e95e3e0e4b4f6bc06510db" name="a3f1fb5b557e95e3e0e4b4f6bc06510db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f1fb5b557e95e3e0e4b4f6bc06510db">&#9670;&#160;</a></span>isTrackSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editor::AnimationClipEditor::isTrackSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00523">trackBone()</a>.</p>
+
+</div>
+</div>
+<a id="a2c9000bc908ad517677813e86c607348" name="a2c9000bc908ad517677813e86c607348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9000bc908ad517677813e86c607348">&#9670;&#160;</a></span>keyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::AnimationClipEditor::keyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00537">537</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16f47fb2144708e90c0b72f6b4afa11b" name="a16f47fb2144708e90c0b72f6b4afa11b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16f47fb2144708e90c0b72f6b4afa11b">&#9670;&#160;</a></span>keySelectedBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::keySelectedBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert or replace a transform key for the selected bone at the playhead. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00263">eve::animation_editing::AnimationClipDocumentTarget::makeSetTrack()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+</div>
+</div>
+<a id="ae5c52f77cf6da46f95cf6a12be77b9ef" name="ae5c52f77cf6da46f95cf6a12be77b9ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c52f77cf6da46f95cf6a12be77b9ef">&#9670;&#160;</a></span>keyX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::keyX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00539">539</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">time</a>.</p>
+
+</div>
+</div>
+<a id="a27173eca916d5f03189adc083351181e" name="a27173eca916d5f03189adc083351181e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27173eca916d5f03189adc083351181e">&#9670;&#160;</a></span>keyY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::keyY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00545">545</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a93e684049d8b7a1398087b7a3e7f0ba7" name="a93e684049d8b7a1398087b7a3e7f0ba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93e684049d8b7a1398087b7a3e7f0ba7">&#9670;&#160;</a></span>layoutHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::layoutHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a>.</p>
+
+</div>
+</div>
+<a id="aa9eab9c9ab371c0c57028c57008d1458" name="aa9eab9c9ab371c0c57028c57008d1458"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9eab9c9ab371c0c57028c57008d1458">&#9670;&#160;</a></span>layoutWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::layoutWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a587713171297dab70fccd1d06d13ea79" name="a587713171297dab70fccd1d06d13ea79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a587713171297dab70fccd1d06d13ea79">&#9670;&#160;</a></span>loadRuntimeClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::loadRuntimeClip </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace the editor document from a real runtime skeleton and clip. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skeleton</td><td>Borrowed only for this call; the editor copies hierarchy metadata. </td></tr>
+    <tr><td class="paramname">clip</td><td>Borrowed only for this call; all authored keys are copied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a structured rejection when the runtime inputs are invalid. @thread Owner thread only. @reentrancy Does not invoke scripts or callbacks. </dd></dl>
+
+</div>
+</div>
+<a id="a75ae7d712aeacecef8a41992059bd632" name="a75ae7d712aeacecef8a41992059bd632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75ae7d712aeacecef8a41992059bd632">&#9670;&#160;</a></span>moveSelectedKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::moveSelectedKey </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">eve::animation_editing::AnimationClipDocumentTarget::duration()</a>, <a class="el" href="Identity_8h_source.html#l00355">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00263">eve::animation_editing::AnimationClipDocumentTarget::makeSetTrack()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">time</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+</div>
+</div>
+<a id="aa66a311842537c1117015272baba0f85" name="aa66a311842537c1117015272baba0f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa66a311842537c1117015272baba0f85">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp; eve::animation_editor::AnimationClipEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca83abaa8ebe50032992b8f2750c6433" name="aca83abaa8ebe50032992b8f2750c6433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca83abaa8ebe50032992b8f2750c6433">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation_editor::AnimationClipEditor::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d29e19e617e85ef88dfba30fdf8b16a" name="a1d29e19e617e85ef88dfba30fdf8b16a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d29e19e617e85ef88dfba30fdf8b16a">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation_editor::AnimationClipEditor::play </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ceed144a1923acdd0160c9dfa10bd1d" name="a6ceed144a1923acdd0160c9dfa10bd1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ceed144a1923acdd0160c9dfa10bd1d">&#9670;&#160;</a></span>playhead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::playhead </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d17a4393100094f40f9f73103ce2717" name="a9d17a4393100094f40f9f73103ce2717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d17a4393100094f40f9f73103ce2717">&#9670;&#160;</a></span>playheadX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::playheadX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00495">495</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21aab6873c95392081b90feee721ff24" name="a21aab6873c95392081b90feee721ff24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21aab6873c95392081b90feee721ff24">&#9670;&#160;</a></span>pointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::pointerDown </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00027">best</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00203">seekX()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00243">selectBone()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">time</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00019">trackId</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="a37284ccf7721374af9d2b98188de62d3" name="a37284ccf7721374af9d2b98188de62d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37284ccf7721374af9d2b98188de62d3">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationClipPreview.html">animation_editing::AnimationClipPreview</a> &amp; eve::animation_editor::AnimationClipEditor::preview </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac88e0ea27729e5426c6c6e0b19ac09b0" name="ac88e0ea27729e5426c6c6e0b19ac09b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac88e0ea27729e5426c6c6e0b19ac09b0">&#9670;&#160;</a></span>primitiveB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00620">620</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a62c8ee0ee793fc3172d7416b219a9d08" name="a62c8ee0ee793fc3172d7416b219a9d08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62c8ee0ee793fc3172d7416b219a9d08">&#9670;&#160;</a></span>primitiveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::AnimationClipEditor::primitiveCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00573">573</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingGizmo_8h_source.html#l00031">eve::editing::GizmoSnapshot::primitives</a>.</p>
+
+</div>
+</div>
+<a id="a80e5261a1776790f6b30960e669d8c6a" name="a80e5261a1776790f6b30960e669d8c6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e5261a1776790f6b30960e669d8c6a">&#9670;&#160;</a></span>primitiveDirX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveDirX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00590">590</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="adc05b2e4cf33f28384c31d70a28c3989" name="adc05b2e4cf33f28384c31d70a28c3989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc05b2e4cf33f28384c31d70a28c3989">&#9670;&#160;</a></span>primitiveDirY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveDirY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00595">595</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a2918aa165bcef902962bbf07a76f5e65" name="a2918aa165bcef902962bbf07a76f5e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2918aa165bcef902962bbf07a76f5e65">&#9670;&#160;</a></span>primitiveG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveG </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00615">615</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a601e64d86ffc5c0ebe439448683736b9" name="a601e64d86ffc5c0ebe439448683736b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a601e64d86ffc5c0ebe439448683736b9">&#9670;&#160;</a></span>primitiveKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::primitiveKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00575">575</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a8d9afdd23b7b16ad4876f0deedc577df" name="a8d9afdd23b7b16ad4876f0deedc577df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d9afdd23b7b16ad4876f0deedc577df">&#9670;&#160;</a></span>primitiveLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00600">600</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="aea8db0a1c42727d346bfdd6b32d8a95e" name="aea8db0a1c42727d346bfdd6b32d8a95e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea8db0a1c42727d346bfdd6b32d8a95e">&#9670;&#160;</a></span>primitiveR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveR </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00610">610</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a96e9363148b9511cff6cc7978a74ecc8" name="a96e9363148b9511cff6cc7978a74ecc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96e9363148b9511cff6cc7978a74ecc8">&#9670;&#160;</a></span>primitiveRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00605">605</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a1b17795a5892fd3c83deee6ea0678979" name="a1b17795a5892fd3c83deee6ea0678979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b17795a5892fd3c83deee6ea0678979">&#9670;&#160;</a></span>primitiveX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00580">580</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a4c3db519011f6b61c9f09fae92cbfb71" name="a4c3db519011f6b61c9f09fae92cbfb71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c3db519011f6b61c9f09fae92cbfb71">&#9670;&#160;</a></span>primitiveY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation_editor::AnimationClipEditor::primitiveY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00585">585</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a5785dfbe19a02e01d9b7b06688b2a44f" name="a5785dfbe19a02e01d9b7b06688b2a44f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5785dfbe19a02e01d9b7b06688b2a44f">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::animation_editor::AnimationClipEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a7771f16625519fb9d803c6df25cd061a" name="a7771f16625519fb9d803c6df25cd061a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7771f16625519fb9d803c6df25cd061a">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::animation_editor::AnimationClipEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00123">123</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ea284e53797d3d86cf9d25fcc853803" name="a7ea284e53797d3d86cf9d25fcc853803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ea284e53797d3d86cf9d25fcc853803">&#9670;&#160;</a></span>sampleRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::sampleRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00259">setSampleRate()</a>.</p>
+
+</div>
+</div>
+<a id="a5db099a0745cdc635d94216cb594ae7e" name="a5db099a0745cdc635d94216cb594ae7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db099a0745cdc635d94216cb594ae7e">&#9670;&#160;</a></span>seekSeconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::seekSeconds </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">eve::animation_editing::AnimationClipDocumentTarget::duration()</a> , 以及 <a class="el" href="AnimationClipEditor_8h_source.html#l00124">duration()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00203">seekX()</a>.</p>
+
+</div>
+</div>
+<a id="a046b2ddecb3c03727132b3a716f6b6f1" name="a046b2ddecb3c03727132b3a716f6b6f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a046b2ddecb3c03727132b3a716f6b6f1">&#9670;&#160;</a></span>seekX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::seekX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00194">seekSeconds()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00210">pointerDown()</a>.</p>
+
+</div>
+</div>
+<a id="a0b7379acb39ebabbc46411ca94e75e0e" name="a0b7379acb39ebabbc46411ca94e75e0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b7379acb39ebabbc46411ca94e75e0e">&#9670;&#160;</a></span>selectBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::selectBone </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>bone</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00210">pointerDown()</a>.</p>
+
+</div>
+</div>
+<a id="a6ba13387bab1d5de60546d13f7b9321d" name="a6ba13387bab1d5de60546d13f7b9321d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ba13387bab1d5de60546d13f7b9321d">&#9670;&#160;</a></span>selectedBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::selectedBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abfbed9ed67ac8a42ee5610dfda4bcadc" name="abfbed9ed67ac8a42ee5610dfda4bcadc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfbed9ed67ac8a42ee5610dfda4bcadc">&#9670;&#160;</a></span>selectedKeyTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedKeyTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00503">503</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a>.</p>
+
+</div>
+</div>
+<a id="a9028a8911bc449c5c52cfa71a84fafba" name="a9028a8911bc449c5c52cfa71a84fafba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9028a8911bc449c5c52cfa71a84fafba">&#9670;&#160;</a></span>selectedMaskWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedMaskWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00497">497</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00063">eve::animation_editing::AnimationClipPreview::bones</a>.</p>
+
+</div>
+</div>
+<a id="ab8be44f68991622530720e1bef38fb0c" name="ab8be44f68991622530720e1bef38fb0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8be44f68991622530720e1bef38fb0c">&#9670;&#160;</a></span>selectedPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedPositionX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00508">508</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00023">eve::animation_editing::AnimationTransformKey::positionX</a>.</p>
+
+</div>
+</div>
+<a id="a8d5e3f4ca35dd499df9c4bbe918b53cc" name="a8d5e3f4ca35dd499df9c4bbe918b53cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5e3f4ca35dd499df9c4bbe918b53cc">&#9670;&#160;</a></span>selectedPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedPositionY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00023">eve::animation_editing::AnimationTransformKey::positionY</a>.</p>
+
+</div>
+</div>
+<a id="ae934e27e9166aa65dd1a354a8403f242" name="ae934e27e9166aa65dd1a354a8403f242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae934e27e9166aa65dd1a354a8403f242">&#9670;&#160;</a></span>selectedPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedPositionZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00510">510</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00023">eve::animation_editing::AnimationTransformKey::positionZ</a>.</p>
+
+</div>
+</div>
+<a id="a3a9e3dd5c7a58678bf32d70d5f78a3b8" name="a3a9e3dd5c7a58678bf32d70d5f78a3b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a9e3dd5c7a58678bf32d70d5f78a3b8">&#9670;&#160;</a></span>selectedRotationX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedRotationX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>.</p>
+
+</div>
+</div>
+<a id="ab09eb41084be48e3a3745b692afd6d96" name="ab09eb41084be48e3a3745b692afd6d96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab09eb41084be48e3a3745b692afd6d96">&#9670;&#160;</a></span>selectedRotationY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedRotationY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>.</p>
+
+</div>
+</div>
+<a id="ab927ed4964680cdb9e168e1a6e86b020" name="ab927ed4964680cdb9e168e1a6e86b020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab927ed4964680cdb9e168e1a6e86b020">&#9670;&#160;</a></span>selectedRotationZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedRotationZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00516">516</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>.</p>
+
+</div>
+</div>
+<a id="a18ab446cb946ae8fec1b8a055fae22c3" name="a18ab446cb946ae8fec1b8a055fae22c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18ab446cb946ae8fec1b8a055fae22c3">&#9670;&#160;</a></span>selectedScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedScaleX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00511">511</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00025">eve::animation_editing::AnimationTransformKey::scaleX</a>.</p>
+
+</div>
+</div>
+<a id="a619f5245b84cb0ac7bd2749993b96820" name="a619f5245b84cb0ac7bd2749993b96820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a619f5245b84cb0ac7bd2749993b96820">&#9670;&#160;</a></span>selectedScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedScaleY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00025">eve::animation_editing::AnimationTransformKey::scaleY</a>.</p>
+
+</div>
+</div>
+<a id="ac4cd5ee50c79e2896fd8cb3037538ba4" name="ac4cd5ee50c79e2896fd8cb3037538ba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4cd5ee50c79e2896fd8cb3037538ba4">&#9670;&#160;</a></span>selectedScaleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::AnimationClipEditor::selectedScaleZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00025">eve::animation_editing::AnimationTransformKey::scaleZ</a>.</p>
+
+</div>
+</div>
+<a id="a66c88354490867afdb2f2af097d92ff9" name="a66c88354490867afdb2f2af097d92ff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c88354490867afdb2f2af097d92ff9">&#9670;&#160;</a></span>setDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setDuration </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commit clip duration through the document transaction path. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">duration</td><td>New duration in seconds; must be positive and finite. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClipEditor_8h_source.html#l00124">duration()</a>, <a class="el" href="AnimationClip_8h_source.html#l00128">eve::animation_editing::AnimationClipDocumentTarget::isLooping()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00243">eve::animation_editing::AnimationClipDocumentTarget::makeSetSettings()</a> , 以及 <a class="el" href="AnimationClip_8h_source.html#l00126">eve::animation_editing::AnimationClipDocumentTarget::sampleRate()</a>.</p>
+
+</div>
+</div>
+<a id="af9a483356d3b62de008f2c60723aa5b8" name="af9a483356d3b62de008f2c60723aa5b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9a483356d3b62de008f2c60723aa5b8">&#9670;&#160;</a></span>setLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setLoop </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commit looping through the document transaction path. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">eve::animation_editing::AnimationClipDocumentTarget::duration()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00243">eve::animation_editing::AnimationClipDocumentTarget::makeSetSettings()</a> , 以及 <a class="el" href="AnimationClip_8h_source.html#l00126">eve::animation_editing::AnimationClipDocumentTarget::sampleRate()</a>.</p>
+
+</div>
+</div>
+<a id="a9ad91288aad1715a0f58aa0874d0b870" name="a9ad91288aad1715a0f58aa0874d0b870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad91288aad1715a0f58aa0874d0b870">&#9670;&#160;</a></span>setMaskWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setMaskWeight </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00299">eve::animation_editing::AnimationClipDocumentTarget::makeSetMask()</a>.</p>
+
+</div>
+</div>
+<a id="ad3e047e5e89318f5fca3c9c90026a32c" name="ad3e047e5e89318f5fca3c9c90026a32c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3e047e5e89318f5fca3c9c90026a32c">&#9670;&#160;</a></span>setSampleRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setSampleRate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sampleRate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commit authored sample rate through the document transaction path. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sampleRate</td><td>New sample rate; must be positive and finite. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">eve::animation_editing::AnimationClipDocumentTarget::duration()</a>, <a class="el" href="AnimationClip_8h_source.html#l00128">eve::animation_editing::AnimationClipDocumentTarget::isLooping()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00243">eve::animation_editing::AnimationClipDocumentTarget::makeSetSettings()</a> , 以及 <a class="el" href="AnimationClipEditor_8h_source.html#l00125">sampleRate()</a>.</p>
+
+</div>
+</div>
+<a id="a6c7c343469b4db177ca85c03c0d33c5c" name="a6c7c343469b4db177ca85c03c0d33c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c7c343469b4db177ca85c03c0d33c5c">&#9670;&#160;</a></span>setSelectedPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setSelectedPosition </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the selected bone position at the playhead and create a key when needed. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aa9773f9d2220521983f8a63c91e10d9a" name="aa9773f9d2220521983f8a63c91e10d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9773f9d2220521983f8a63c91e10d9a">&#9670;&#160;</a></span>setSelectedRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setSelectedRotation </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>zDegrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the selected bone Euler rotation in degrees and create a key when needed. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00368">368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00040">sy</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">sz</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="abeda35e82f79694fa4e6b5350be5f67d" name="abeda35e82f79694fa4e6b5350be5f67d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeda35e82f79694fa4e6b5350be5f67d">&#9670;&#160;</a></span>setSelectedScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setSelectedScale </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the selected bone scale at the playhead and create a key when needed. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="adf9438e2edb05b4b871045904e278403" name="adf9438e2edb05b4b871045904e278403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf9438e2edb05b4b871045904e278403">&#9670;&#160;</a></span>setViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::setViewport </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rowHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>labelWidth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure dope-sheet pixel layout. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>Timeline width in pixels. </td></tr>
+    <tr><td class="paramname">rowHeight</td><td>Track row height. </td></tr>
+    <tr><td class="paramname">labelWidth</td><td>Left bone-name column width. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="aecee25237a535897d5ecb91f0344342f" name="aecee25237a535897d5ecb91f0344342f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecee25237a535897d5ecb91f0344342f">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation_editor::AnimationClipEditor::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af84fbeb3c02eca9e4b30b26e0aa8ccce" name="af84fbeb3c02eca9e4b30b26e0aa8ccce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84fbeb3c02eca9e4b30b26e0aa8ccce">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">animation_editing::AnimationClipDocumentTarget</a> &amp; eve::animation_editor::AnimationClipEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative clip document. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a> 第 <a class="el" href="AnimationClipEditor_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab20f2084c989cc14fcf5d1c4ebfee20f" name="ab20f2084c989cc14fcf5d1c4ebfee20f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab20f2084c989cc14fcf5d1c4ebfee20f">&#9670;&#160;</a></span>trackBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::trackBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00523">523</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00535">isTrackSelected()</a>.</p>
+
+</div>
+</div>
+<a id="ae3b51c1f9a7835212e2223f1c82cac12" name="ae3b51c1f9a7835212e2223f1c82cac12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3b51c1f9a7835212e2223f1c82cac12">&#9670;&#160;</a></span>trackCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::AnimationClipEditor::trackCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a>.</p>
+
+</div>
+</div>
+<a id="a0f38fc40ae447cf1bc524100fb46f034" name="a0f38fc40ae447cf1bc524100fb46f034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f38fc40ae447cf1bc524100fb46f034">&#9670;&#160;</a></span>trackId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::AnimationClipEditor::trackId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00529">529</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00308">eve::animation_editing::AnimationClipDocumentTarget::tracks()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a3fc81ce796ffd39ccc2c4df6acdcff58" name="a3fc81ce796ffd39ccc2c4df6acdcff58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc81ce796ffd39ccc2c4df6acdcff58">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::animation_editor::AnimationClipEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<a id="a176d8eea05a47aef8760205f86b5ca69" name="a176d8eea05a47aef8760205f86b5ca69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a176d8eea05a47aef8760205f86b5ca69">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::update </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>deltaSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance playhead by injected dt and refresh pose/overlay. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a> 第 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">eve::animation_editing::AnimationClipDocumentTarget::duration()</a>, <a class="el" href="AnimationClipEditor_8h_source.html#l00124">duration()</a> , 以及 <a class="el" href="AnimationClip_8h_source.html#l00128">eve::animation_editing::AnimationClipDocumentTarget::isLooping()</a>.</p>
+
+</div>
+</div>
+<a id="af7b606f962fd7f33a27a4731202872bc" name="af7b606f962fd7f33a27a4731202872bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7b606f962fd7f33a27a4731202872bc">&#9670;&#160;</a></span>writeRuntimeClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">animation_editing::EditorResult</a>&lt; void &gt; eve::animation_editor::AnimationClipEditor::writeRuntimeClip </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace a runtime clip with the current authoritative editor document. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clip</td><td><a class="el" href="classeve_1_1Runtime.html">Runtime</a> clip mutated atomically through AnimClip::adopt. </td></tr>
+    <tr><td class="paramname">skeleton</td><td>Skeleton used to resolve authored bone names. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a structured error; failure leaves <code>clip</code> unchanged. @thread Owner thread only. @reentrancy Does not invoke scripts or callbacks. </dd></dl>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/editor/<a class="el" href="AnimationClipEditor_8h_source.html">AnimationClipEditor.h</a></li>
+<li>src/modules/animation/editor/<a class="el" href="AnimationClipEditor_8cpp_source.html">AnimationClipEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
