@@ -4,6 +4,9 @@
 状态：设计（待实施）  
 关联：[`3D渲染管线.md`](../../3D渲染管线.md)、[`模块设计.md`](../../模块设计.md)、
 [`ClusteredLight.h`](../../../../src/modules/graphics/ClusteredLight.h)、
+[`PbrSurface.h`](../../../../src/modules/graphics/PbrSurface.h)、
+[`Material.h`](../../../../src/modules/graphics/Material.h)、
+[`canonical-material-v14.md`](../../canonical-material-v14.md)、
 [`2026-08-19-gpu-driven-rendering-phase-0-1-design.md`](./2026-08-19-gpu-driven-rendering-phase-0-1-design.md)
 
 ## 背景
@@ -11,32 +14,90 @@
 当前主管线是 **前向 / Clustered Forward + 可采样 GBuffer**：
 
 - `RenderControl` 默认：`shadow → gbuffer → [decal] → forward → … → hair`
-- 光照在 `forward` Pass 用 `mesh3d` / `mesh3d_clustered` 写入 scene color
-- GBuffer（normal / 线性深度 / albedo / hwDepth）主要供 AO、雾、SSR/GI、贴花、HZB
+- 光照在 `forward` Pass 用 `mesh3d` / `mesh3d_clustered` / `pbr_surface` 写入 scene color
+- GBuffer（normal / 线性深度 / albedo / hwDepth）主要供 AO、雾、SSR/GI、贴花、HZB；
+  今日仅把 metallic/roughness **粗量化进 normal.a**（各 3 bit），**不够做完整 PBR deferred**
+- `Material` 已有两档不透明 PBR：
+  - 轻量：`metallic` / `roughness` 标量 + albedo/normal（`mesh3d*`）
+  - 完整：`hasPbrSurface()` → `PbrSurface`（MR 贴图、emissive、occlusion、specular、
+    clearcoat、anisotropy、植被扩展等）走独立 `pbr_surface` 前向；且被 gpu-driven 排除
 - `ClusteredLight` 已提供 CPU 分簇（16×9×24）+ SSBO light list；半透明路径**已排除**
   clustered（透明仍走普通前向）
 - **没有** classic / tiled / clustered deferred lighting Pass；`"deferred"` 特性不存在
 
-目标：在桌面平台上用 **Clustered Deferred** 承载复杂多灯光与统一材质光照，同时保留
-**Forward+** 处理半透明；并做成可配置模式（可退回全 Forward+）。
+目标：在桌面平台上用 **Clustered Deferred** 承载 **完整 metallic-roughness PBR** 多灯光，
+同时保留 **Forward+** 处理半透明；并做成可配置模式（可退回全 Forward+）。
 
 ## 目标
 
 1. **混合默认（桌面建议）**：不透明 Opaque/Masked → Clustered Deferred；半透明
    Transparent（含 hair）→ Forward+ / 现有透明前向。
 2. **可配置 lighting mode**，至少支持：
-   - `forwardPlus` — 全量不透明也走现有 clustered forward（今日行为）
-   - `hybrid` — 不透明 deferred + 半透明 forward+
+   - `forwardPlus` — 全量不透明也走现有 clustered / PBR forward（今日行为）
+   - `hybrid` — 不透明 deferred PBR + 半透明 forward+
    - （可选后续）`deferred` — 强制尝试全 deferred（半透明仍必须 forward；该模式主要
      用于对比/调试，语义上等于 hybrid）
-3. **复用**现有 `ClusteredLight` 网格、上传、Vulkan/WebGPU SSBO 布局，避免第二套光列表。
-4. **两边 backend 对等**（Vulkan 权威，WebGPU 跟进），与现有 parity 规范一致。
-5. **可回退**：mode=`forwardPlus` 或能力/编译失败时行为与今日一致，不静默半接通。
+3. **首期必须支持核心 PBR**（见下一节），Hybrid 下与 Forward+ 同场景外观对齐（审计容差内）。
+4. **复用**现有 `ClusteredLight` 网格、上传、Vulkan/WebGPU SSBO 布局，避免第二套光列表。
+5. **两边 backend 对等**（Vulkan 权威，WebGPU 跟进），与现有 parity 规范一致。
+6. **可回退**：mode=`forwardPlus` 或能力/编译失败时行为与今日一致，不静默半接通。
+
+## PBR 支持范围（硬性）
+
+Hybrid / deferred 不是「只画 albedo 的假延迟」；不透明路径必须能表达引擎已有的
+**核心 metallic-roughness PBR**，并与前向 BRDF 一致。
+
+### 核心 PBR（阶段 B/C 必达 — Deferred 一等公民）
+
+| 输入 | GBuffer / lighting 要求 |
+|------|-------------------------|
+| Base color（albedo × tint，含 `albedoTextureStrength`） | 全精度 RGB（≥8-bit/通道）写入 GBuffer |
+| Metallic / Roughness（标量 **或** `MetallicRoughness` 贴图采样结果） | **独立全精度通道**（不得再用 3-bit pack） |
+| Tangent-space normal（`Normal` 槽 + `normalScale` / `normalMode` 解码后的 **世界法线**） | 写入 GBuffer；lighting 只读世界法线 |
+| Occlusion（贴图 × `occlusionStrength`，缺省 1） | 写入 GBuffer；乘在 ambient/IBL（及约定的直接光项） |
+| Emissive（RGB × `emissiveStrength`） | 写入 GBuffer（允许 HDR 目标或强度分离）；lighting 末尾相加 |
+| Dielectric F0（`specularFactor` + `ior` → 与前向相同的 F0 推导） | packing 进 params 或在 lighting 用固定 0.04×specularFactor；**须与 `pbr_surface` / `mesh3d` 一致** |
+| Direct lights | Clustered point list + primary directional + CSM（同 Forward+） |
+| IBL / env | 与前向同一 irradiance / prefiltered specular（或显式文档化的等价近似） |
+| Unlit（`shadingModel=="unlit"` / `PbrSurface.unlit`） | GBuffer 仍可写；lighting 输出 albedo+emissive，跳过灯循环 |
+| Masked alpha | GBuffer 几何 Pass 做 cutoff/dither/coverage（与今日 GBuffer alpha 变体对齐） |
+
+几何 Pass（GBuffer fill）负责：**采样全部相关贴图、做植被/detail 之前的标准表面求值，
+写出 shading 所需的最终 per-pixel 参数**。Lighting Pass **不再采样材质贴图**（decals 若在
+gbuffer 与 lighting 之间改 GBuffer，则 lighting 读修改后的缓冲）。
+
+轻量 `Material`（无 `hasPbrSurface`）与完整 `PbrSurface` 的 **核心子集** 必须都能走
+同一套 deferred GBuffer/lighting；禁止「只有标量 metallic 进 deferred、有 MR 贴图的仍
+强制前向」这种半接通。
+
+### 扩展 PBR（阶段 E — 可暂留 Forward，或后续扩 GBuffer）
+
+下列今日 `PbrSurface` 能力**不阻塞** Hybrid 首期合入，但必须有明确策略（不得静默丢效果）：
+
+| 能力 | 首期策略 |
+|------|----------|
+| Clearcoat（factor / roughness / normal） | **留在 Forward+**（opaque 特例仍前向），或阶段 E 增加 coat 层 RT/packing |
+| Anisotropy | 同上 |
+| SpecularColor / 彩色 F0 | 首期可用灰度 `specularFactor`；彩色进阶段 E |
+| Vegetation color/detail/extras/motion/translucency 等 TVE 扩展 | **Opaque 植被继续前向**（今日已是重前向变体），直到专档 deferred 植被设计 |
+| Color mask / motion highlight | 优先在 GBuffer fill 阶段 bake 进 albedo，再进 deferred |
+
+规则：**凡声称走 deferred 的 draw，其可见 shading 必须完整**；做不到的扩展特征
+→ 该 draw 整条留在 forward（可观察：debug 计数 / 文档），禁止只 bake 一部分。
+
+### BRDF 单一真源
+
+- 抽出与 `mesh3d_clustered.frag` / `pbr_surface.frag` **同一套** `shadeLight` /
+  IBL 项（GLSL + WGSL 共享 `.inc` 或代码生成）。
+- Deferred lighting 与 Forward+ 透明 / 特例 opaque **禁止复制粘贴第二套 BRDF**。
+- 验收：ClassicScenes PBR chart + DamagedHelmet 在 `forwardPlus` vs `hybrid` 下图像审计
+  容差内一致（金属、粗糙、IBL 边缘高光）。
 
 ## 非目标（本设计首期）
 
 - 不做移动端默认 deferred（移动建议默认 `forwardPlus`；见平台预设）。
 - 不把 hair / 自定义 mesh shader / X-ray / offscreen canvas 迁入 deferred lighting。
+- 首期不把 clearcoat / anisotropy / 全套 TVE 植被扩展塞进 deferred（见上表策略）。
 - 不在本阶段做 GPU light cull（可继续 CPU `buildClusteredLighting`；GPU cull 另开）。
 - 不与 `visResolve`（visibility-buffer 材质解析）合并；两者正交，可后接。
 - 不扩展为完整 area/spot/IES 灯类型（沿用当前 point + primary directional）。
@@ -144,86 +205,93 @@ else                       → opaque（含 Masked）
 
 Hybrid 规则：
 
-| SurfaceMode | GBuffer | Deferred lighting | Forward+ |
-|-------------|---------|-------------------|----------|
-| Opaque | ✓ | ✓ | ✗ |
-| Masked（cutoff/dither/coverage） | ✓（alpha test 在 GBuffer） | ✓ | ✗ |
+| SurfaceMode / 材质 | GBuffer | Deferred lighting | Forward+ |
+|--------------------|---------|-------------------|----------|
+| Opaque + 核心 PBR（标量或 `PbrSurface` 核心子集） | ✓ 求值后写入 | ✓ | ✗ |
+| Masked（cutoff/dither/coverage）+ 核心 PBR | ✓（alpha test 在 GBuffer） | ✓ | ✗ |
+| Opaque + clearcoat / anisotropy / 全套 TVE（首期） | ✗ 或仅 depth | ✗ | ✓（整 draw） |
 | Transparent | ✗ | ✗ | ✓ |
 | Hair / transparent hair | ✗ | ✗ | ✓（hair pass） |
 | 自定义 mesh `Shader*` | ✗（或仅 depth pre） | ✗ | ✓（保持今日例外） |
-| Double-sided / 特例 | 与今日 clustered 排除集一致，优先 forward | | |
+| Unlit opaque | ✓ | ✓（跳过灯，albedo+emissive） | ✗ |
+| Double-sided / 特例 | 与今日 clustered / PBR 排除集一致；做不到完整 shading 则整 draw 前向 | | |
 
 深度：GBuffer / deferred 写 HW depth；透明前向做 depth test、通常不写或按材质
 `depthWrite`（保持现有 `setMesh3DSurface` 语义）。
 
-## GBuffer 布局扩展
+## GBuffer 布局（面向完整核心 PBR）
 
-今日布局对 **post** 够用，对 **PBR deferred lighting** 不够（缺独立 metal/rough/emissive）。
+今日布局对 **post** 够用，对 **PBR deferred lighting 不够**（metallic/roughness 仅 3-bit；
+无 occlusion/emissive 独立通道）。Hybrid **采用中期四色附方案为权威布局**（桌面带宽可接受）；
+三 RT 紧打包仅作移动/低端可选 profile，不得作为桌面 Hybrid 默认（避免再次欠采样 PBR）。
 
-### 首期建议（尽量少增带宽）
+### 权威布局（Hybrid 默认 — 桌面）
 
-保持 3×RGBA8 + D32，收紧 packing：
+| Slot | 建议格式 | 内容 |
+|------|----------|------|
+| 0 `albedo` | RGBA8 或 R11G11B10F | RGB = base color；A = packed flags（unlit、specularMode、…）或 unused |
+| 1 `normal` | RG16F（oct）或 RGBA16F | 编码世界法线（已含 normal map / scale） |
+| 2 `pbrParams` | RGBA8 | R = metallic；G = roughness；B = occlusion；A = specularFactor（或 F0 灰度） |
+| 3 `emissive` | R11G11B10F 或 RGB8+scale | emissive × strength（HDR 优先） |
+| Depth `hwDepth` | D32 | NDC z；lighting 重建位置；AO/GI 继续用 |
+| （并行）`velocity` | 可留在独立目标或 depthColor 兼容层 | TAA/SSR；**不要**再和 metallic 抢同一通道 |
 
-| Attachment | RGB | A |
-|------------|-----|---|
-| **normal** | world normal octahedral 或现有 `*0.5+0.5` | roughness（或 packed） |
-| **depthColor** | R=linear depth；G/B=velocity（保留） | metallic 或 motion 保留位重新分配 |
-| **albedo** | albedo×tint | emissive intensity 或 linear depth（SSGI 现依赖 A=depth —— **迁移时必须改采样点**） |
+可选兼容附件：保留今日 `depthColor`（linear depth + velocity）给 volumetric/Canvas，直到
+消费者迁到 `hwDepth` / velocity。
 
-更干净的中期方案（桌面可接受多一个 RT）：
+`GBuffer` API 扩展：
 
-| Slot | Format | 内容 |
-|------|--------|------|
-| 0 | RGBA8 | albedo + unused/AO |
-| 1 | RG16F / RGBA16F | encoded normal |
-| 2 | RGBA8 | metallic, roughness, packed flags, unused |
-| 3 | R11G11B10F 或 RGB8 | emissive |
-| Depth | D32 | hw depth |
+- 现有：`getDepthTexture` / `getHwDepthTexture` / `getNormalTexture` / `getAlbedoTexture`
+- 新增：`getPbrParamsTexture()`、`getEmissiveTexture()`（或 `getBuffer("pbrParams"|"emissive")`）
+- `hasBuffer` / `readGBufferToImageData` 附件名同步；Doxygen 写明格式与通道语义
 
-实施原则：
+### 低端可选（非默认）
 
-- `GBuffer.h` 文档与 `readGBufferToImageData` 附件名同步更新。
-- 任何 packing 变更必须跑 `RenderImageAudit` / `graphics.imageAudit.gbufferViews` /
-  AO/GI 相关用例。
-- SSGI / fog 若读 albedo.a 作深度，改为 `hwDepth` 或 `depthColor.r`（契约写进
-  `3D渲染管线.md`）。
+保持 3×RGBA8 + D32 的紧打包 **仅**在显式 `GBufferProfile::Compact` 下启用，且必须仍提供
+**8-bit metallic + 8-bit roughness**（禁止回到 3-bit）。Emissive 可降为 luma×色度或
+lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** Compact。
+
+### 实施原则
+
+- `GBuffer.h` 与 `3D渲染管线.md` 同步更新通道契约。
+- Packing 变更必须跑 `RenderImageAudit` / `gbufferViews` / AO/GI/SSR 用例。
+- SSGI / fog 若读 albedo.a 作深度，改为 `hwDepth` 或专用 linear-depth；**albedo.a 不再表示深度**。
+- Decal Pass 若写入 metallic/rough/emissive，必须改权威 `pbrParams` / `emissive` 附件
+  （与今日 decal 改 GBuffer 语义一致）。
 
 ## Deferred lighting Pass
 
 ### 输入
 
-- GBuffer attachments（采样）
-- `ClusteredLightingUpload`（与 Forward+ **同一份**：lights / clusterTable / indices /
-  primaryDir / ambient / CSM）
-- Scene color target（可 clear 为天空/ambient，或先画 atmosphere 再 additive 灯 —— 首期建议：
-  deferred Pass **写入** scene color，天空/IBL 在 lighting shader 内或此前单独 clear+sky）
+- 权威 GBuffer：albedo、normal、pbrParams、emissive、hwDepth（+ 可选 velocity）
+- `ClusteredLightingUpload`（与 Forward+ **同一份**）
+- IBL / env maps（与前向 PBR 同一绑定约定）
+- CSM shadow map
+- Scene color target
 
-### 调度
+### 每像素求值（核心 PBR）
 
-**Clustered deferred（推荐，复用现有 grid）**：
-
-1. Fullscreen triangle（或按 tile dispatch）；每像素：
-   - 重建 view 位置（hwDepth + 逆投影）
-   - 读 cluster → 迭代 point lights（与 `mesh3d_clustered.frag` 同一索引约定）
-   - 加 primary directional + CSM
-   - 写 lit RGB；A 可继续写 linear depth 供后处理
-
-避免 classic 多 draw light volume（与现有 cluster 表重复）。
+1. 重建世界/视空间位置（hwDepth + 逆投影）
+2. 解码世界法线、albedo、metallic、roughness、occlusion、specularFactor、emissive、flags
+3. 若 unlit → `out = albedo + emissive`，结束
+4. Ambient/IBL：与前向相同的 diffuse irradiance + specular LOD；乘 occlusion
+5. Primary directional + CSM → 共享 `shadeLight`
+6. Cluster light list → 同一 `shadeLight` 循环
+7. `out.rgb += emissive`；`out.a` = linear depth（供后处理，若需要）
 
 ### Shader 共用
 
-抽出与 `mesh3d_clustered.frag` 共享的 BRDF / light loop 函数（GLSL/WGSL 各一份或公共
-`.inc` 生成），保证 Hybrid 下 opaque deferred 与 transparent forward **光照外观一致**
-（允许 ≤1 ULP / 审计阈值容差）。
+见上文「BRDF 单一真源」。GBuffer fill 侧复用 `PbrSurface` 贴图采样/解码逻辑
+（可从 `pbr_surface.frag` 抽 `evaluatePbrSurface(...)` → 写 MRT；lighting 只消费 MRT）。
 
 ## 平台与质量预设
 
-| 环境 | 建议默认 mode |
-|------|----------------|
-| 桌面 Vulkan/D3D 类（未来） | `Hybrid`（功能就绪后） |
-| 移动 / 带宽敏感 | `ForwardPlus` |
-| CI Lavapipe / headless | `ForwardPlus`（除非专测 `FILTER=…deferred…`） |
-| 用户显式 `setLightingMode` | 覆盖预设 |
+| 环境 | 建议默认 mode | GBuffer profile |
+|------|----------------|-----------------|
+| 桌面 Vulkan（功能就绪后） | `Hybrid` | 权威四色附 PBR |
+| 移动 / 带宽敏感 | `ForwardPlus` | （不用 deferred）或显式 Compact |
+| CI Lavapipe / headless | `ForwardPlus` | — |
+| 用户显式 `setLightingMode` | 覆盖预设 | 可另设 profile |
 
 可用现有 `OS`/GPU 查询做 preset，但不在 RenderControl 内偷偷改用户已设 mode。
 
@@ -232,27 +300,34 @@ Hybrid 规则：
 ### 阶段 A — 契约与模式（无视觉变化）
 
 - 加入 `LightingMode` API；默认 `ForwardPlus`
-- `compile()` 在 Hybrid 时插入 `deferredLighting` pass 名（可先空执行 / 未实现则
-  `ensureCompiled` 失败或自动回退并打可观察日志 —— **禁止静默空 pass**）
-- 更新 `MaterialRenderControl` 测试；文档勾选“设计中”
+- `compile()` 在 Hybrid 时插入 `deferredLighting` pass 名（未实现则失败或显式回退 ——
+  **禁止静默空 pass**）
+- 更新 `MaterialRenderControl` 测试；文档勾选「设计中」
 
-### 阶段 B — 扩展 GBuffer + opaque 只填材质
+### 阶段 B — PBR GBuffer（权威布局）+ opaque 材质写出
 
-- 扩展 packing / 可选第 4 RT
-- Opaque/Masked 只写 GBuffer；ForwardPlus 模式下仍走今日 forward lit
-- 图像审计：gbuffer 附件
+- 落地四色附 + `pbrParams` / `emissive` API
+- GBuffer fill：轻量 Material **与** `PbrSurface` 核心子集（MR/normal/occlusion/emissive
+  贴图求值后写入）；迁移 SSGI/fog 深度采样
+- ForwardPlus 模式下 opaque 仍走今日 lit forward（GBuffer 仅供 post）
+- 图像审计：各 PBR 附件读回
 
-### 阶段 C — Clustered deferred lighting（Vulkan 先）
+### 阶段 C — Clustered deferred PBR lighting（Vulkan 先）
 
-- Fullscreen lighting shader + CSM/IBL 对齐
-- Hybrid：opaque 不再跑 lit forward；transparent 仍 Forward+
-- ClassicScenes / imageAudit 对比 `forwardPlus` vs `hybrid`（同场景容差）
+- Fullscreen lighting：核心 PBR + CSM + IBL
+- Hybrid：核心 PBR opaque 不再 lit forward；transparent / 扩展特征 opaque 仍 Forward+
+- ClassicScenes：PBR chart、DamagedHelmet；`forwardPlus` vs `hybrid` 容差对比
 
-### 阶段 D — WebGPU parity + 默认预设
+### 阶段 D — WebGPU parity + 预设
 
-- WebGPU 同等 Pass
-- 桌面预设切 Hybrid；CI 保持 ForwardPlus
-- 用户文档：`docs/usr/modules/graphics/rendering-effects.md`
+- WebGPU 同等 GBuffer/lighting
+- 桌面预设可切 Hybrid；CI 保持 ForwardPlus
+- 用户文档更新
+
+### 阶段 E — 扩展 PBR（可选）
+
+- Clearcoat / anisotropy / colored specular 进 deferred 或确认永久前向特例
+- 植被 TVE deferred 专档（另文）
 
 每阶段单独可回退；**接口变更与 Vulkan/WebGPU/消费者同 PR**（协作规范）。
 
@@ -262,35 +337,41 @@ Hybrid 规则：
 |------|------|
 | `RenderControl` mode | set/get；非法字符串 → Result/`Unsupported`；compile pass 序 |
 | Feature 投影 | Hybrid ⇒ hasPass(`deferredLighting`)；ForwardPlus ⇒ 无 |
-| 透明排除 | Hybrid 下半透明像素与 ForwardPlus 一致（同灯） |
-| 不透明多灯 | Hybrid 与 ForwardPlus 审计图容差内一致（证明 BRDF 共用） |
-| GBuffer 读回 | normal/metal-rough/albedo 非空且布局契约 |
-| 回退 | 关 gbuffer 时无法停在 Hybrid；或 Result 失败 |
-| Backend | Vulkan + WebGPU 各跑最小 hybrid 场景 |
+| PBR GBuffer | metallic/roughness/occlusion/emissive 附件存在且通道语义正确（非 3-bit） |
+| MR 贴图材质 | `hasPbrSurface` opaque 在 Hybrid 下走 deferred，不回退半接通 |
+| 透明排除 | Hybrid 下半透明与 ForwardPlus 一致 |
+| 不透明 PBR 多灯 | Hybrid vs ForwardPlus 审计容差（chart / helmet / IBL） |
+| Unlit | deferred 输出无直接光，仅 albedo+emissive |
+| 扩展特征 | clearcoat/植被等要么完整 deferred，要么整 draw 前向（可计数） |
+| 回退 | 关 gbuffer 时无法停在 Hybrid |
+| Backend | Vulkan + WebGPU 最小 hybrid PBR 场景 |
 
 ## 风险
 
 1. **GBuffer packing 破坏 SSGI/雾** — 阶段 B 必须先改消费者再改默认。
 2. **与 FrameGraph “deferred record” 命名混淆** — API/文档用 `LightingMode`。
-3. **MSA A + deferred** — 首期 Hybrid 可禁用 MSAA 或只 resolve 后 lighting（与 TAA 链类似）；
-   写进 compile 约束。
-4. **自定义 shader 材质** — 继续 forward，避免半接通。
-5. **双路径维护** — 强制共享 light loop；禁止复制粘贴两套 BRDF。
+3. **MSAA + deferred** — 首期 Hybrid 可禁用 MSAA 或 resolve 后 lighting；写进 compile 约束。
+4. **自定义 / 扩展 PBR** — 整 draw 留 forward，避免半接通。
+5. **双路径 BRDF** — 强制共享；PBR chart 回归锁外观。
+6. **带宽** — 四 RT 桌面可接受；移动默认 ForwardPlus，不把 Compact 欠采样当默认。
 
 ## 架构规范核对
 
 - **Result / 不得丢弃**：`setLightingMode` 对非法值返回 `Result` 或强枚举不提供非法态；
   不新增含混 bool。
-- **单一真源**：mode enum 为真源；feature 字符串若保留则为投影。
+- **单一真源**：mode enum 为真源；feature 字符串若保留则为投影；BRDF 单一实现。
 - **可选依赖**：无 deferred lighting 实现时不得宣称 supports；fallback 显式可观察。
 - **跨 backend**：契约测试两端共享。
 - **不引入** 万能 GameObject；改动限制在 graphics `RenderControl` / `RenderSystem3D` /
-  backend Graphics / shaders。
+  `GBuffer` / `Material`·`PbrSurface` 消费路径 / backend Graphics / shaders。
 
 ## 决议摘要（拟采纳）
 
 1. 混合渲染：不透明 Clustered Deferred，半透明 Forward+。
-2. 可配置：`LightingMode::{ForwardPlus, Hybrid}`，首期默认 ForwardPlus。
-3. 复用 `ClusteredLight` 表；新增 `deferredLighting` pass，不复用
-   `GraphicsDeferredGraph` 语义名。
-4. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
+2. **核心 metallic-roughness PBR 为 Hybrid 硬性要求**（albedo、MR、世界法线、occlusion、
+   emissive、F0/IBL/CSM）；禁止 3-bit 伪 PBR。
+3. 权威 GBuffer：四色附 + hwDepth；低端 Compact 非桌面默认。
+4. 扩展特征（clearcoat / anisotropy / 全套 TVE）首期整 draw 留 Forward+，或列入阶段 E。
+5. 可配置：`LightingMode::{ForwardPlus, Hybrid}`，首期默认 ForwardPlus。
+6. 复用 `ClusteredLight`；新增 `deferredLighting`；不复用 `GraphicsDeferredGraph` 语义名。
+7. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
