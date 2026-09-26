@@ -61,9 +61,13 @@ for (local i = 0; i < engine.activationCount(); i++) {
 
 ## API 快查
 
-- `newEngine()`、`replaceCatalogueJson`、`setValue` / `setTag` / `setResource` / `setState`
+下列方法名来自当前 Squirrel 绑定。
+
+- `getName`、`newEngine`
+- `ownership`、`isStale`、`release`、`ruleCount`
+- `replaceCatalogueJson`、`setValue`、`setTag`、`setResource`、`setState`
 - `drain`、`activationCount`、`activationRuleId`、`clearActivations`、`lastDrainEvaluations`
-- `snapshotJson` / `restoreJson`
+- `snapshotJson`、`restoreJson`
 
 **源码：** [`src/modules/emergence/`](../../../src/modules/emergence/)
 **设计：** [`docs/dev/涌现式规则触发框架.md`](../../dev/涌现式规则触发框架.md)

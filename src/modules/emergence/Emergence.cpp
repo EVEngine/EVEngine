@@ -18,9 +18,7 @@ namespace {
 /** @brief Script-owned handle proxy; the rule engine remains module-owned. */
 struct ScriptRuleEngine {
     explicit ScriptRuleEngine(RuleEngineHandleRef value) : reference(value) {}
-    ~ScriptRuleEngine() noexcept {
-        Emergence::release(reference).ignore("script emergence engine proxy destruction");
-    }
+    ~ScriptRuleEngine() noexcept { Emergence::release(reference).ignore("script emergence engine proxy destruction"); }
     RuleEngineHandleRef reference;
 };
 
@@ -37,7 +35,7 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned emergence allocation");
         return eve::script::projectStatusResult(vm, status);
     }
-    ssq::Object owned = std::move(object).takeValue();
+    ssq::Object owned  = std::move(object).takeValue();
     auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
@@ -80,38 +78,33 @@ bool Emergence::isStale(RuleEngineHandleRef reference) noexcept {
 Module_IMPL(Emergence, new Emergence());
 
 void Emergence::expose(ssq::Table& t) {
-    const HSQUIRRELVM vm = t.getHandle();
-    auto              asBool  = [](bool value) { return eve::Value(value); };
-    auto              asInt   = [](int value) { return eve::Value(static_cast<std::int64_t>(value)); };
+    const HSQUIRRELVM vm        = t.getHandle();
+    auto              asBool    = [](bool value) { return eve::Value(value); };
+    auto              asInt     = [](int value) { return eve::Value(static_cast<std::int64_t>(value)); };
     auto              staleBool = [&]() {
         return eve::script::projectResult(
             vm,
-            eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                              "owned rule engine handle is stale", "engine", {},
-                                                              "emergence")),
+            eve::Result<bool>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle, "owned rule engine handle is stale", "engine", {}, "emergence")),
             asBool);
     };
     auto staleInt = [&]() {
         return eve::script::projectResult(
             vm,
-            eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                             "owned rule engine handle is stale", "engine", {},
-                                                             "emergence")),
+            eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle, "owned rule engine handle is stale", "engine", {}, "emergence")),
             asInt);
     };
 
-    auto owned = t.addClass<ScriptRuleEngine>(
-        "RuleEngine", std::function<ScriptRuleEngine*()>([]() { return nullptr; }), false);
+    auto owned =
+        t.addClass<ScriptRuleEngine>("RuleEngine", std::function<ScriptRuleEngine*()>([]() { return nullptr; }), false);
     owned.addFunc("ownership", [](ScriptRuleEngine*) { return std::string("owned"); });
-    owned.addFunc("isStale", [](ScriptRuleEngine* value) {
-        return !value || Emergence::isStale(value->reference);
-    });
+    owned.addFunc("isStale", [](ScriptRuleEngine* value) { return !value || Emergence::isStale(value->reference); });
     owned.addFunc("release", [vm](ScriptRuleEngine* value) {
         if (!value)
-            return eve::script::projectResult(
-                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                      "rule engine must not be null", "engine", {},
-                                                                      "emergence")));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "rule engine must not be null", "engine", {}, "emergence")));
         return eve::script::projectResult(vm, Emergence::release(value->reference));
     });
     owned.addFunc("replaceCatalogueJson", [vm, staleInt, asInt](ScriptRuleEngine* value, const std::string& json) {
@@ -128,8 +121,7 @@ void Emergence::expose(ssq::Table& t) {
         auto view = resolveOrEmpty(value);
         if (!view.isBound()) return staleBool();
         auto parsed = eve::Value::fromJson(valueJson);
-        if (!parsed)
-            return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
+        if (!parsed) return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
         return eve::script::projectResult(vm, view->setValue(key, std::move(parsed).takeValue()), asBool);
     });
     owned.addFunc("setTag", [vm, staleBool, asBool](ScriptRuleEngine* value, const std::string& tag, bool present) {
@@ -148,15 +140,14 @@ void Emergence::expose(ssq::Table& t) {
         auto view = resolveOrEmpty(value);
         if (!view.isBound()) return staleBool();
         auto parsed = eve::Value::fromJson(valueJson);
-        if (!parsed)
-            return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
+        if (!parsed) return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
         return eve::script::projectResult(vm, view->setState(key, std::move(parsed).takeValue()), asBool);
     });
     owned.addFunc("drain", [vm, staleInt, asInt](ScriptRuleEngine* value, std::int64_t tick) {
         auto view = resolveOrEmpty(value);
         if (!view.isBound()) return staleInt();
-        return eve::script::projectResult(
-            vm, view->drain(static_cast<std::uint64_t>(std::max<std::int64_t>(0, tick))), asInt);
+        return eve::script::projectResult(vm, view->drain(static_cast<std::uint64_t>(std::max<std::int64_t>(0, tick))),
+                                          asInt);
     });
     owned.addFunc("activationCount", [](ScriptRuleEngine* value) {
         auto view = resolveOrEmpty(value);
@@ -183,10 +174,9 @@ void Emergence::expose(ssq::Table& t) {
     owned.addFunc("restoreJson", [vm](ScriptRuleEngine* value, const std::string& json) {
         auto view = resolveOrEmpty(value);
         if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned rule engine handle is stale", "engine", {},
-                                                                      "emergence")));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::StaleHandle,
+                                                      "owned rule engine handle is stale", "engine", {}, "emergence")));
         return eve::script::projectResult(vm, view->restoreJson(json));
     });
 

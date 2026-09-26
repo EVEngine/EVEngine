@@ -28,18 +28,18 @@ eve::Result<std::string> requiredString(const eve::Value::Object& object, std::s
     const auto* value = field(object, name);
     const auto* text  = value == nullptr ? nullptr : value->getIf<std::string>();
     if (text == nullptr || text->empty())
-        return eve::Result<std::string>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition field must be a non-empty string", std::string(name), {},
-            "emergence.condition_codec"));
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "condition field must be a non-empty string",
+                                   std::string(name), {}, "emergence.condition_codec"));
     return eve::Result<std::string>::success(*text);
 }
 
 eve::Result<decision::ConditionKind> parseKind(const eve::Value& value) {
     const auto* text = value.getIf<std::string>();
     if (text == nullptr)
-        return eve::Result<decision::ConditionKind>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition kind must be a string", "kind", {},
-            "emergence.condition_codec"));
+        return eve::Result<decision::ConditionKind>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "condition kind must be a string", "kind", {},
+                                   "emergence.condition_codec"));
     using K                                             = decision::ConditionKind;
     static const std::pair<std::string_view, K> names[] = {
         {"all", K::All},
@@ -62,9 +62,9 @@ eve::Result<decision::ConditionKind> parseKind(const eve::Value& value) {
 eve::Result<decision::CompareOperator> parseOperator(const eve::Value& value) {
     const auto* text = value.getIf<std::string>();
     if (text == nullptr)
-        return eve::Result<decision::CompareOperator>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition operator must be a string", "operator", {},
-            "emergence.condition_codec"));
+        return eve::Result<decision::CompareOperator>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "condition operator must be a string",
+                                   "operator", {}, "emergence.condition_codec"));
     using O                                             = decision::CompareOperator;
     static const std::pair<std::string_view, O> names[] = {
         {"eq", O::Equal},     {"ne", O::NotEqual}, {"lt", O::Less},
@@ -72,17 +72,17 @@ eve::Result<decision::CompareOperator> parseOperator(const eve::Value& value) {
     };
     for (const auto& [name, op] : names)
         if (*text == name) return eve::Result<O>::success(op);
-    return eve::Result<O>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "unknown condition operator", "operator", {},
-        "emergence.condition_codec"));
+    return eve::Result<O>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                          "unknown condition operator", "operator", {},
+                                                          "emergence.condition_codec"));
 }
 
 eve::Result<decision::DeterminismLevel> parseDeterminism(const eve::Value& value) {
     const auto* text = value.getIf<std::string>();
     if (text == nullptr)
-        return eve::Result<decision::DeterminismLevel>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "determinism must be a string", "scriptDeclaration.determinism", {},
-            "emergence.condition_codec"));
+        return eve::Result<decision::DeterminismLevel>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "determinism must be a string",
+                                   "scriptDeclaration.determinism", {}, "emergence.condition_codec"));
     using D                                             = decision::DeterminismLevel;
     static const std::pair<std::string_view, D> names[] = {
         {"bit_exact", D::BitExact},
@@ -92,9 +92,9 @@ eve::Result<decision::DeterminismLevel> parseDeterminism(const eve::Value& value
     };
     for (const auto& [name, level] : names)
         if (*text == name) return eve::Result<D>::success(level);
-    return eve::Result<D>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "unknown condition determinism level", "scriptDeclaration.determinism",
-        {}, "emergence.condition_codec"));
+    return eve::Result<D>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unknown condition determinism level",
+                               "scriptDeclaration.determinism", {}, "emergence.condition_codec"));
 }
 
 eve::Result<decision::Condition> decodeNode(const eve::Value& value);
@@ -103,9 +103,9 @@ eve::Result<std::vector<decision::Condition>> decodeChildren(const eve::Value::O
     const auto* value = field(object, "children");
     const auto* array = value == nullptr ? nullptr : value->getIf<eve::Value::Array>();
     if (array == nullptr)
-        return eve::Result<std::vector<decision::Condition>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition children must be an array", "children", {},
-            "emergence.condition_codec"));
+        return eve::Result<std::vector<decision::Condition>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "condition children must be an array",
+                                   "children", {}, "emergence.condition_codec"));
     std::vector<decision::Condition> result;
     result.reserve(array->size());
     for (const auto& child : *array) {
@@ -119,14 +119,14 @@ eve::Result<std::vector<decision::Condition>> decodeChildren(const eve::Value::O
 eve::Result<decision::Condition> decodeNode(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (object == nullptr)
-        return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition node must be an object", {}, {},
-            "emergence.condition_codec"));
+        return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                "condition node must be an object", {},
+                                                                                {}, "emergence.condition_codec"));
     const auto* kindValue = field(*object, "kind");
     if (kindValue == nullptr)
-        return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "condition node requires kind", "kind", {},
-            "emergence.condition_codec"));
+        return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                "condition node requires kind", "kind",
+                                                                                {}, "emergence.condition_codec"));
     auto kind = parseKind(*kindValue);
     if (!kind) return eve::Result<decision::Condition>::failure(kind.status());
     const auto parsedKind = kind.value();
@@ -140,9 +140,9 @@ eve::Result<decision::Condition> decodeNode(const eve::Value& value) {
         if (!children) return eve::Result<decision::Condition>::failure(children.status());
         auto values = std::move(children).takeValue();
         if (parsedKind == K::Not && values.size() != 1)
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "not condition requires one child", "children", {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "not condition requires one child",
+                                       "children", {}, "emergence.condition_codec"));
         if (parsedKind == K::All)
             return eve::Result<decision::Condition>::success(decision::Condition::all(std::move(values)));
         if (parsedKind == K::Any)
@@ -158,29 +158,30 @@ eve::Result<decision::Condition> decodeNode(const eve::Value& value) {
         if (!key) return eve::Result<decision::Condition>::failure(key.status());
         const auto* opValue = field(*object, "operator");
         if (opValue == nullptr)
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "compare requires operator", "operator", {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "compare requires operator", "operator",
+                                       {}, "emergence.condition_codec"));
         auto op = parseOperator(*opValue);
         if (!op) return eve::Result<decision::Condition>::failure(op.status());
         const auto* expected = field(*object, "expected");
         if (expected == nullptr)
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "compare requires expected", "expected", {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "compare requires expected", "expected",
+                                       {}, "emergence.condition_codec"));
         return eve::Result<decision::Condition>::success(
             decision::Condition::compare(std::move(key).takeValue(), op.value(), *expected));
     }
     if (parsedKind == K::HasTag || parsedKind == K::HasAttribute || parsedKind == K::HasResource ||
         parsedKind == K::AuthorityCheck) {
         if (!exactFields(*object, {"kind", "key"}))
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "leaf condition contains an unknown field", {}, {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "leaf condition contains an unknown field",
+                                       {}, {}, "emergence.condition_codec"));
         auto key = requiredString(*object, "key");
         if (!key) return eve::Result<decision::Condition>::failure(key.status());
         auto name = std::move(key).takeValue();
-        if (parsedKind == K::HasTag) return eve::Result<decision::Condition>::success(decision::Condition::hasTag(std::move(name)));
+        if (parsedKind == K::HasTag)
+            return eve::Result<decision::Condition>::success(decision::Condition::hasTag(std::move(name)));
         if (parsedKind == K::HasAttribute)
             return eve::Result<decision::Condition>::success(decision::Condition::hasAttribute(std::move(name)));
         if (parsedKind == K::HasResource)
@@ -189,24 +190,24 @@ eve::Result<decision::Condition> decodeNode(const eve::Value& value) {
     }
     if (parsedKind == K::StateEquals) {
         if (!exactFields(*object, {"kind", "key", "expected"}))
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "state_equals contains an unknown field", {}, {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state_equals contains an unknown field",
+                                       {}, {}, "emergence.condition_codec"));
         auto key = requiredString(*object, "key");
         if (!key) return eve::Result<decision::Condition>::failure(key.status());
         const auto* expected = field(*object, "expected");
         if (expected == nullptr)
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "state_equals requires expected", "expected", {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state_equals requires expected",
+                                       "expected", {}, "emergence.condition_codec"));
         return eve::Result<decision::Condition>::success(
             decision::Condition::stateEquals(std::move(key).takeValue(), *expected));
     }
     if (parsedKind == K::PolicyCall) {
         if (!exactFields(*object, {"kind", "key", "arguments", "scriptDeclaration"}))
-            return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "policy_call contains an unknown field", {}, {},
-                "emergence.condition_codec"));
+            return eve::Result<decision::Condition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy_call contains an unknown field",
+                                       {}, {}, "emergence.condition_codec"));
         auto key = requiredString(*object, "key");
         if (!key) return eve::Result<decision::Condition>::failure(key.status());
         eve::Value arguments = eve::Value::Object{};
@@ -215,19 +216,19 @@ eve::Result<decision::Condition> decodeNode(const eve::Value& value) {
         if (const auto* declValue = field(*object, "scriptDeclaration")) {
             const auto* declObject = declValue->getIf<eve::Value::Object>();
             if (declObject == nullptr)
-                return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "scriptDeclaration must be an object", "scriptDeclaration",
-                    {}, "emergence.condition_codec"));
+                return eve::Result<decision::Condition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "scriptDeclaration must be an object",
+                                           "scriptDeclaration", {}, "emergence.condition_codec"));
             decision::ScriptConditionDeclaration parsed;
-            auto name = requiredString(*declObject, "name");
+            auto                                 name = requiredString(*declObject, "name");
             if (!name) return eve::Result<decision::Condition>::failure(name.status());
             parsed.name = std::move(name).takeValue();
             if (const auto* deps = field(*declObject, "dependencies")) {
                 const auto* array = deps->getIf<eve::Value::Array>();
                 if (array == nullptr)
-                    return eve::Result<decision::Condition>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "dependencies must be an array",
-                        "scriptDeclaration.dependencies", {}, "emergence.condition_codec"));
+                    return eve::Result<decision::Condition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dependencies must be an array",
+                                               "scriptDeclaration.dependencies", {}, "emergence.condition_codec"));
                 for (const auto& item : *array) {
                     const auto* text = item.getIf<std::string>();
                     if (text == nullptr || text->empty())

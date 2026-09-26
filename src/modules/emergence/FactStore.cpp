@@ -31,8 +31,8 @@ std::string makeFactKey(FactDomain domain, std::string_view name) {
 
 eve::Result<std::pair<FactDomain, std::string>> parseFactKey(std::string_view key) {
     const auto fail = [](const char* message) {
-        return eve::Result<std::pair<FactDomain, std::string>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, message, "key", {}, "emergence.fact"));
+        return eve::Result<std::pair<FactDomain, std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, "key", {}, "emergence.fact"));
     };
     if (key.empty()) return fail("fact key must be non-empty");
     const auto slash = key.find(':');
@@ -57,20 +57,19 @@ eve::Result<std::pair<FactDomain, std::string>> parseFactKey(std::string_view ke
         domain = FactDomain::Policy;
     else
         return fail("unknown fact domain prefix");
-    return eve::Result<std::pair<FactDomain, std::string>>::success(
-        std::make_pair(domain, std::string(name)));
+    return eve::Result<std::pair<FactDomain, std::string>>::success(std::make_pair(domain, std::string(name)));
 }
 
 template <class Map, class T>
-bool FactStore::assign(Map& map, std::string key, T value) {
+FactChange FactStore::assign(Map& map, std::string key, T value) {
     auto it = map.find(key);
     if (it != map.end()) {
-        if (it->second == value) return false;
+        if (it->second == value) return FactChange::Unchanged;
         it->second = std::move(value);
-        return true;
+        return FactChange::Changed;
     }
     map.emplace(std::move(key), std::move(value));
-    return true;
+    return FactChange::Changed;
 }
 
 void FactStore::clear() {
@@ -83,56 +82,56 @@ void FactStore::clear() {
     policies_.clear();
 }
 
-bool FactStore::setValue(std::string key, eve::Value value) {
-    if (key.empty()) return false;
+FactChange FactStore::setValue(std::string key, eve::Value value) {
+    if (key.empty()) return FactChange::Unchanged;
     return assign(values_, std::move(key), std::move(value));
 }
 
-bool FactStore::setTag(std::string tag, bool present) {
-    if (tag.empty()) return false;
+FactChange FactStore::setTag(std::string tag, bool present) {
+    if (tag.empty()) return FactChange::Unchanged;
     return assign(tags_, std::move(tag), present);
 }
 
-bool FactStore::setAttribute(std::string key, eve::Value value) {
-    if (key.empty()) return false;
+FactChange FactStore::setAttribute(std::string key, eve::Value value) {
+    if (key.empty()) return FactChange::Unchanged;
     return assign(attributes_, std::move(key), std::move(value));
 }
 
-bool FactStore::setResource(std::string key, eve::Value value) {
-    if (key.empty()) return false;
+FactChange FactStore::setResource(std::string key, eve::Value value) {
+    if (key.empty()) return FactChange::Unchanged;
     return assign(resources_, std::move(key), std::move(value));
 }
 
-bool FactStore::setState(std::string key, eve::Value value) {
-    if (key.empty()) return false;
+FactChange FactStore::setState(std::string key, eve::Value value) {
+    if (key.empty()) return FactChange::Unchanged;
     return assign(states_, std::move(key), std::move(value));
 }
 
-bool FactStore::setAuthority(std::string scope, bool granted) {
-    if (scope.empty()) return false;
+FactChange FactStore::setAuthority(std::string scope, bool granted) {
+    if (scope.empty()) return FactChange::Unchanged;
     return assign(authorities_, std::move(scope), granted);
 }
 
-bool FactStore::setPolicy(std::string name, decision::ConditionResult result) {
-    if (name.empty()) return false;
+FactChange FactStore::setPolicy(std::string name, decision::ConditionResult result) {
+    if (name.empty()) return FactChange::Unchanged;
     auto it = policies_.find(name);
     if (it != policies_.end()) {
         if (it->second.passed() == result.passed() && it->second.reasonCode() == result.reasonCode() &&
             it->second.evidence() == result.evidence())
-            return false;
+            return FactChange::Unchanged;
         it->second = std::move(result);
-        return true;
+        return FactChange::Changed;
     }
     policies_.emplace(std::move(name), std::move(result));
-    return true;
+    return FactChange::Changed;
 }
 
-bool FactStore::clearValue(std::string_view key) {
-    return values_.erase(std::string(key)) > 0;
+FactChange FactStore::clearValue(std::string_view key) {
+    return values_.erase(std::string(key)) > 0 ? FactChange::Changed : FactChange::Unchanged;
 }
 
-bool FactStore::clearTag(std::string_view tag) {
-    return tags_.erase(std::string(tag)) > 0;
+FactChange FactStore::clearTag(std::string_view tag) {
+    return tags_.erase(std::string(tag)) > 0 ? FactChange::Changed : FactChange::Unchanged;
 }
 
 std::optional<eve::Value> FactStore::value(std::string_view key) const {
@@ -198,13 +197,12 @@ std::string FactStore::snapshotJson() const {
 
 eve::Result<void> FactStore::restoreJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
-    if (!parsed)
-        return eve::Result<void>::failure(parsed.status());
+    if (!parsed) return eve::Result<void>::failure(parsed.status());
     const auto* object = parsed.value().getIf<eve::Value::Object>();
     if (object == nullptr)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "fact snapshot must be an object", {}, {}, "emergence.fact"));
-    const auto* schema = object->find("schema") == object->end() ? nullptr : &object->at("schema");
+    const auto* schema  = object->find("schema") == object->end() ? nullptr : &object->at("schema");
     const auto* version = object->find("version") == object->end() ? nullptr : &object->at("version");
     if (schema == nullptr || !schema->isString() || schema->asString() != "eve.emergence.facts")
         return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -214,7 +212,7 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
             eve::DiagnosticCode::UnknownVersion, "unsupported fact snapshot version", "version", {}, "emergence.fact"));
 
     FactStore next;
-    auto loadObject = [&](const char* field, auto&& setter) -> eve::Result<void> {
+    auto      loadObject = [&](const char* field, auto&& setter) -> eve::Result<void> {
         const auto it = object->find(field);
         if (it == object->end()) return eve::Result<void>::success();
         const auto* map = it->second.getIf<eve::Value::Object>();
@@ -229,42 +227,48 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
         return eve::Result<void>::success();
     };
 
-    if (auto r = loadObject("values", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            (void)store.setValue(key, value);
-            return true;
-        });
+    if (auto r = loadObject("values",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                (void)store.setValue(key, value);
+                                return true;
+                            });
         !r)
         return r;
-    if (auto r = loadObject("tags", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            if (!value.isBool()) return false;
-            (void)store.setTag(key, value.asBool());
-            return true;
-        });
+    if (auto r = loadObject("tags",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                if (!value.isBool()) return false;
+                                (void)store.setTag(key, value.asBool());
+                                return true;
+                            });
         !r)
         return r;
-    if (auto r = loadObject("attributes", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            (void)store.setAttribute(key, value);
-            return true;
-        });
+    if (auto r = loadObject("attributes",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                (void)store.setAttribute(key, value);
+                                return true;
+                            });
         !r)
         return r;
-    if (auto r = loadObject("resources", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            (void)store.setResource(key, value);
-            return true;
-        });
+    if (auto r = loadObject("resources",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                (void)store.setResource(key, value);
+                                return true;
+                            });
         !r)
         return r;
-    if (auto r = loadObject("states", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            (void)store.setState(key, value);
-            return true;
-        });
+    if (auto r = loadObject("states",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                (void)store.setState(key, value);
+                                return true;
+                            });
         !r)
         return r;
-    if (auto r = loadObject("authorities", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            if (!value.isBool()) return false;
-            (void)store.setAuthority(key, value.asBool());
-            return true;
-        });
+    if (auto r = loadObject("authorities",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                if (!value.isBool()) return false;
+                                (void)store.setAuthority(key, value.asBool());
+                                return true;
+                            });
         !r)
         return r;
 

@@ -20,7 +20,7 @@ enum class FireMode : std::uint8_t {
     /** @brief Fire only on false→true edges. */
     Rising = 0,
     /** @brief Fire whenever woken while the condition currently passes. */
-    Level  = 1,
+    Level = 1,
 };
 
 /** @brief One deferred side-effect descriptor; domains interpret `kind`. */
@@ -36,14 +36,14 @@ struct EmergenceAction {
  * the engine derives keys from the Condition AST via collectWatchKeys().
  */
 struct RuleDefinition {
-    std::string                   id;
-    int                           priority      = 0;
-    FireMode                      fireMode      = FireMode::Rising;
-    bool                          once          = false;
-    std::uint64_t                 cooldownTicks = 0;
-    decision::Condition           condition;
-    std::vector<std::string>      watchKeys;
-    std::vector<EmergenceAction>  actions;
+    std::string                  id;
+    int                          priority      = 0;
+    FireMode                     fireMode      = FireMode::Rising;
+    bool                         once          = false;
+    std::uint64_t                cooldownTicks = 0;
+    decision::Condition          condition;
+    std::vector<std::string>     watchKeys;
+    std::vector<EmergenceAction> actions;
 };
 
 /** @brief One scheduled activation produced by drain(). */

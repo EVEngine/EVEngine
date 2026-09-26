@@ -9,8 +9,8 @@ void WatchIndex::clear() { index_.clear(); }
 void WatchIndex::addRule(std::uint32_t ruleIndex, const std::vector<std::string>& keys) {
     for (const auto& key : keys) {
         if (key.empty()) continue;
-        auto& list = index_[key];
-        const auto it = std::lower_bound(list.begin(), list.end(), ruleIndex);
+        auto&      list = index_[key];
+        const auto it   = std::lower_bound(list.begin(), list.end(), ruleIndex);
         if (it == list.end() || *it != ruleIndex) list.insert(it, ruleIndex);
     }
 }

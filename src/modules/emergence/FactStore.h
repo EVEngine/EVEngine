@@ -30,6 +30,9 @@ enum class FactDomain : std::uint8_t {
     Policy,
 };
 
+/** @brief Whether a FactStore mutation changed stored state. */
+enum class FactChange : std::uint8_t { Unchanged = 0, Changed = 1 };
+
 /**
  * @brief Build the canonical watch key for one fact domain.
  * @param domain Fact namespace.
@@ -61,37 +64,37 @@ public:
 
     /**
      * @brief Set a compare/value fact.
-     * @return `true` when the stored value changed.
+     * @return FactChange::Changed when the stored value differed.
      */
-    [[nodiscard]] bool setValue(std::string key, eve::Value value);
-    /** @brief Set tag membership; `true` means present. */
-    [[nodiscard]] bool setTag(std::string tag, bool present);
+    [[nodiscard]] FactChange setValue(std::string key, eve::Value value);
+    /** @brief Set tag membership; present=true means the tag exists. */
+    [[nodiscard]] FactChange setTag(std::string tag, bool present);
     /** @brief Set an attribute value. */
-    [[nodiscard]] bool setAttribute(std::string key, eve::Value value);
+    [[nodiscard]] FactChange setAttribute(std::string key, eve::Value value);
     /** @brief Set a resource value. */
-    [[nodiscard]] bool setResource(std::string key, eve::Value value);
+    [[nodiscard]] FactChange setResource(std::string key, eve::Value value);
     /** @brief Set a state value. */
-    [[nodiscard]] bool setState(std::string key, eve::Value value);
+    [[nodiscard]] FactChange setState(std::string key, eve::Value value);
     /** @brief Set authority for a scope. */
-    [[nodiscard]] bool setAuthority(std::string scope, bool granted);
+    [[nodiscard]] FactChange setAuthority(std::string scope, bool granted);
     /**
      * @brief Register or replace a read-only policy result.
-     * @return `true` when the stored result changed.
+     * @return FactChange::Changed when the stored result differed.
      */
-    [[nodiscard]] bool setPolicy(std::string name, decision::ConditionResult result);
+    [[nodiscard]] FactChange setPolicy(std::string name, decision::ConditionResult result);
 
-    /** @brief Erase a value fact; returns whether a fact was removed. */
-    [[nodiscard]] bool clearValue(std::string_view key);
-    /** @brief Erase a tag fact; returns whether a fact was removed. */
-    [[nodiscard]] bool clearTag(std::string_view tag);
+    /** @brief Erase a value fact. */
+    [[nodiscard]] FactChange clearValue(std::string_view key);
+    /** @brief Erase a tag fact. */
+    [[nodiscard]] FactChange clearTag(std::string_view tag);
 
-    [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
-    [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
-    [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
-    [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
-    [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
-    [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view name,
+    [[nodiscard]] std::optional<eve::Value>                value(std::string_view key) const override;
+    [[nodiscard]] std::optional<bool>                      hasTag(std::string_view tag) const override;
+    [[nodiscard]] std::optional<eve::Value>                attribute(std::string_view key) const override;
+    [[nodiscard]] std::optional<eve::Value>                resource(std::string_view key) const override;
+    [[nodiscard]] std::optional<eve::Value>                state(std::string_view key) const override;
+    [[nodiscard]] std::optional<bool>                      authority(std::string_view scope) const override;
+    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
                                                                   const eve::Value& arguments) const override;
 
     /** @brief Export deterministic compact JSON for runtime snapshots. */
@@ -107,15 +110,15 @@ public:
 
 private:
     template <class Map, class T>
-    static bool assign(Map& map, std::string key, T value);
+    static FactChange assign(Map& map, std::string key, T value);
 
-    std::unordered_map<std::string, eve::Value>                 values_;
-    std::unordered_map<std::string, bool>                       tags_;
-    std::unordered_map<std::string, eve::Value>                 attributes_;
-    std::unordered_map<std::string, eve::Value>                 resources_;
-    std::unordered_map<std::string, eve::Value>                 states_;
-    std::unordered_map<std::string, bool>                       authorities_;
-    std::unordered_map<std::string, decision::ConditionResult>  policies_;
+    std::unordered_map<std::string, eve::Value>                values_;
+    std::unordered_map<std::string, bool>                      tags_;
+    std::unordered_map<std::string, eve::Value>                attributes_;
+    std::unordered_map<std::string, eve::Value>                resources_;
+    std::unordered_map<std::string, eve::Value>                states_;
+    std::unordered_map<std::string, bool>                      authorities_;
+    std::unordered_map<std::string, decision::ConditionResult> policies_;
 };
 
 }  // namespace eve::emergence

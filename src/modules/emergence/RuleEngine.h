@@ -31,9 +31,9 @@ using RuleEngineHandleRef = eve::script::RuntimeHandleRef<RuleEngineHandleTag>;
  *
  * Fact mutations only wake rules that watch the changed key. Activations are
  * queued and resolved by `drain`, never inline during mutation. Built-in
- * actions (`fact.set`, `economy.credit`, `economy.debit`) execute during drain;
- * other kinds go to `IEmergenceActionHandler` listeners and remain visible in
- * the activation log for scripts.
+ * fact.set plus economy credit/debit actions execute during drain; other kinds
+ * go to `IEmergenceActionHandler` listeners and remain visible in the
+ * activation log for scripts.
  *
  * @ownership Caller-owned when constructed directly; module-owned when created
  *            through `Emergence::newEngine()`.
@@ -73,14 +73,26 @@ public:
     [[nodiscard]] bool contains(std::string_view ruleId) const;
     /**
      * @brief Borrow one committed definition.
-     * @ownership Borrowed; invalidated by clear or successful catalogue replacement.
+     * @ownership Borrowed from this engine; callers must not delete it.
+     * @lifetime Invalidated by clear() or a successful catalogue replacement.
      * @nullable Null when the id is absent.
+     * @thread Owning simulation thread only.
      */
     [[nodiscard]] const RuleDefinition* find(std::string_view ruleId) const;
 
-    /** @brief Borrow the authoritative fact store. */
+    /**
+     * @brief Borrow the authoritative fact store.
+     * @ownership Borrowed; this engine remains the owner.
+     * @lifetime Valid until the engine is destroyed.
+     * @thread Owning simulation thread only.
+     */
     [[nodiscard]] FactStore& facts() noexcept { return facts_; }
-    /** @brief Borrow the authoritative fact store. */
+    /**
+     * @brief Borrow the authoritative fact store.
+     * @ownership Borrowed; this engine remains the owner.
+     * @lifetime Valid until the engine is destroyed.
+     * @thread Owning simulation thread only.
+     */
     [[nodiscard]] const FactStore& facts() const noexcept { return facts_; }
 
     /** @brief Set a value fact and wake watchers when it changes. */
@@ -108,8 +120,10 @@ public:
     [[nodiscard]] int activationCount() const noexcept { return static_cast<int>(activations_.size()); }
     /**
      * @brief Borrow one retained activation.
-     * @ownership Borrowed; invalidated by clear, clearActivations, or catalogue replacement.
+     * @ownership Borrowed from this engine; callers must not delete it.
+     * @lifetime Invalidated by clear, clearActivations, or catalogue replacement.
      * @nullable Null when index is out of range.
+     * @thread Owning simulation thread only.
      */
     [[nodiscard]] const Activation* activationAt(int index) const;
     /** @brief Drop retained activations without touching facts or rules. */
@@ -138,29 +152,28 @@ public:
 
 private:
     struct RuleRuntime {
-        bool          passed         = false;
-        bool          fired          = false;
-        bool          disabled       = false;
-        std::uint64_t cooldownUntil  = 0;
+        bool          passed        = false;
+        bool          fired         = false;
+        bool          disabled      = false;
+        std::uint64_t cooldownUntil = 0;
     };
 
-    void wakeKey(std::string_view key);
-    [[nodiscard]] eve::Result<void> executeActions(const std::vector<EmergenceAction>& actions,
-                                                   std::uint64_t                        tick);
+    void                            wakeKey(std::string_view key);
+    [[nodiscard]] eve::Result<void> executeActions(const std::vector<EmergenceAction>& actions, std::uint64_t tick);
     [[nodiscard]] eve::Result<void> executeOne(const EmergenceAction& action, std::uint64_t tick);
     [[nodiscard]] static eve::Result<RuleDefinition> validateAndNormalize(RuleDefinition rule);
 
-    FactStore                                       facts_;
-    WatchIndex                                      watchIndex_;
-    std::vector<RuleDefinition>                     rules_;
-    std::vector<RuleRuntime>                        runtime_;
-    std::unordered_map<std::string, std::uint32_t>  idToIndex_;
-    std::unordered_set<std::uint32_t>               dirty_;
-    std::vector<Activation>                         activations_;
-    std::uint64_t                                   nextSequence_         = 1;
-    std::uint64_t                                   lastDrainEvaluations_ = 0;
-    std::uint64_t                                   wakeKeyEvents_        = 0;
-    bool                                            draining_             = false;
+    FactStore                                      facts_;
+    WatchIndex                                     watchIndex_;
+    std::vector<RuleDefinition>                    rules_;
+    std::vector<RuleRuntime>                       runtime_;
+    std::unordered_map<std::string, std::uint32_t> idToIndex_;
+    std::unordered_set<std::uint32_t>              dirty_;
+    std::vector<Activation>                        activations_;
+    std::uint64_t                                  nextSequence_         = 1;
+    std::uint64_t                                  lastDrainEvaluations_ = 0;
+    std::uint64_t                                  wakeKeyEvents_        = 0;
+    bool                                           draining_             = false;
 };
 
 }  // namespace eve::emergence

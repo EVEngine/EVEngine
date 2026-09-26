@@ -83,9 +83,8 @@ TEST_CASE("emergence.ruleEngine.factSetCascadesWithinDrain") {
     unlock.id        = "unlock.door";
     unlock.condition = Condition::hasTag("key.found");
     unlock.actions.push_back(EmergenceAction{
-        "fact.set", eve::Value::Object{{"domain", eve::Value("state")},
-                                       {"key", eve::Value("door")},
-                                       {"value", eve::Value("open")}}});
+        "fact.set", eve::Value::Object{
+                        {"domain", eve::Value("state")}, {"key", eve::Value("door")}, {"value", eve::Value("open")}}});
     RuleDefinition celebrate;
     celebrate.id        = "celebrate";
     celebrate.condition = Condition::stateEquals("door", eve::Value("open"));
@@ -110,10 +109,9 @@ TEST_CASE("emergence.ruleEngine.questHandlerConsumesNotifyAction") {
     RuleDefinition rule;
     rule.id        = "intro.done";
     rule.condition = Condition::hasTag("intro.complete");
-    rule.actions.push_back(
-        EmergenceAction{"quest.notify", eve::Value::Object{{"topic", eve::Value("intro")},
-                                                           {"target", eve::Value("")},
-                                                           {"amount", eve::Value(1)}}});
+    rule.actions.push_back(EmergenceAction{
+        "quest.notify",
+        eve::Value::Object{{"topic", eve::Value("intro")}, {"target", eve::Value("")}, {"amount", eve::Value(1)}}});
     REQUIRE(engine.replaceCatalogue({rule}).ok());
     REQUIRE(engine.setTag("intro.complete", true).ok());
     auto drained = engine.drain(1);
@@ -127,8 +125,8 @@ TEST_CASE("emergence.ruleEngine.questHandlerConsumesNotifyAction") {
 
 TEST_CASE("emergence.ruleEngine.replaceCatalogueJsonRoundTrip") {
     using namespace eve::emergence;
-    RuleEngine engine;
-    const char* json = R"({
+    RuleEngine  engine;
+    const char* json      = R"({
       "schema": "eve.emergence.rules",
       "version": 1,
       "rules": [
@@ -149,7 +147,7 @@ TEST_CASE("emergence.ruleEngine.replaceCatalogueJsonRoundTrip") {
         }
       ]
     })";
-    auto committed = engine.replaceCatalogueJson(json);
+    auto        committed = engine.replaceCatalogueJson(json);
     REQUIRE(committed.ok());
     CHECK_EQ(committed.value(), 1);
     REQUIRE(engine.find("late.night") != nullptr);

@@ -26,9 +26,9 @@ eve::Result<void> walk(const decision::Condition& condition, std::set<std::strin
             return eve::Result<void>::success();
         case K::Not:
             if (condition.children().empty())
-                return eve::Result<void>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "not condition requires a child", "children", {},
-                    "emergence.watch"));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "not condition requires a child", "children",
+                                                                         {}, "emergence.watch"));
             return walk(condition.children().front(), out);
         case K::Compare:
             insertUnique(out, makeFactKey(FactDomain::Value, condition.key()));
@@ -63,9 +63,9 @@ eve::Result<void> walk(const decision::Condition& condition, std::set<std::strin
             return eve::Result<void>::success();
         }
     }
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "unknown condition kind while collecting watch keys", "kind", {},
-        "emergence.watch"));
+    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                             "unknown condition kind while collecting watch keys",
+                                                             "kind", {}, "emergence.watch"));
 }
 
 }  // namespace
@@ -75,13 +75,13 @@ eve::Result<std::vector<std::string>> collectWatchKeys(const decision::Condition
         return eve::Result<std::vector<std::string>>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "condition tree is invalid", "condition", {}, "emergence.watch"));
     std::set<std::string> unique;
-    auto walked = walk(condition, unique);
+    auto                  walked = walk(condition, unique);
     if (!walked) return eve::Result<std::vector<std::string>>::failure(walked.status());
     if (unique.empty())
-        return eve::Result<std::vector<std::string>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "condition produced no watch keys; empty All nodes cannot be indexed alone", "condition", {},
-            "emergence.watch"));
+        return eve::Result<std::vector<std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "condition produced no watch keys; empty All nodes cannot be indexed alone",
+                                   "condition", {}, "emergence.watch"));
     return eve::Result<std::vector<std::string>>::success(std::vector<std::string>(unique.begin(), unique.end()));
 }
 

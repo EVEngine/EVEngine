@@ -38,14 +38,14 @@ eve::Result<RuleDefinition> RuleEngine::validateAndNormalize(RuleDefinition rule
         return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "rule id must be non-empty", "id", {}, "emergence.rule_engine"));
     if (!rule.condition.isValid())
-        return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "rule condition is invalid", "condition", {},
-            "emergence.rule_engine"));
+        return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                           "rule condition is invalid", "condition", {},
+                                                                           "emergence.rule_engine"));
     for (const auto& action : rule.actions) {
         if (action.kind.empty())
-            return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "action kind must be non-empty", "actions.kind", {},
-                "emergence.rule_engine"));
+            return eve::Result<RuleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "action kind must be non-empty",
+                                       "actions.kind", {}, "emergence.rule_engine"));
     }
     if (rule.watchKeys.empty()) {
         auto keys = collectWatchKeys(rule.condition);
@@ -56,26 +56,25 @@ eve::Result<RuleDefinition> RuleEngine::validateAndNormalize(RuleDefinition rule
         rule.watchKeys.erase(std::unique(rule.watchKeys.begin(), rule.watchKeys.end()), rule.watchKeys.end());
         for (const auto& key : rule.watchKeys) {
             auto parsed = parseFactKey(key);
-            if (!parsed)
-                return eve::Result<RuleDefinition>::failure(parsed.status());
+            if (!parsed) return eve::Result<RuleDefinition>::failure(parsed.status());
         }
     }
     if (rule.watchKeys.empty())
-        return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "rule must declare at least one watch key", "watchKeys", {},
-            "emergence.rule_engine"));
+        return eve::Result<RuleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                           "rule must declare at least one watch key",
+                                                                           "watchKeys", {}, "emergence.rule_engine"));
     return eve::Result<RuleDefinition>::success(std::move(rule));
 }
 
 eve::Result<int> RuleEngine::replaceCatalogue(std::vector<RuleDefinition> rules) {
     if (draining_)
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, "cannot replace catalogue during drain", {}, {},
-            "emergence.rule_engine"));
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                "cannot replace catalogue during drain", {}, {},
+                                                                "emergence.rule_engine"));
     std::vector<RuleDefinition> next;
     next.reserve(rules.size());
     std::unordered_map<std::string, std::uint32_t> ids;
-    WatchIndex                                    index;
+    WatchIndex                                     index;
     for (auto& rule : rules) {
         auto normalized = validateAndNormalize(std::move(rule));
         if (!normalized) return eve::Result<int>::failure(normalized.status());
@@ -88,14 +87,13 @@ eve::Result<int> RuleEngine::replaceCatalogue(std::vector<RuleDefinition> rules)
         index.addRule(slot, value.watchKeys);
         next.push_back(std::move(value));
     }
-    rules_      = std::move(next);
+    rules_ = std::move(next);
     runtime_.assign(rules_.size(), RuleRuntime{});
     idToIndex_  = std::move(ids);
     watchIndex_ = std::move(index);
     dirty_.clear();
     activations_.clear();
-    return eve::Result<int>::success(static_cast<int>(rules_.size()),
-                                     eve::Status::success(eve::StatusCode::Applied));
+    return eve::Result<int>::success(static_cast<int>(rules_.size()), eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
@@ -104,8 +102,7 @@ eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
     const auto* root = parsed.value().getIf<eve::Value::Object>();
     if (root == nullptr)
         return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "rules document must be an object", {}, {},
-            "emergence.rule_engine"));
+            eve::DiagnosticCode::InvalidArgument, "rules document must be an object", {}, {}, "emergence.rule_engine"));
     const auto* schema  = objField(*root, "schema");
     const auto* version = objField(*root, "version");
     if (schema == nullptr || !schema->isString() || schema->asString() != "eve.emergence.rules")
@@ -125,76 +122,76 @@ eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
     for (std::size_t i = 0; i < rulesArray->size(); ++i) {
         const auto* object = (*rulesArray)[i].getIf<eve::Value::Object>();
         if (object == nullptr)
-            return eve::Result<int>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "rule entry must be an object", "rules", {},
-                "emergence.rule_engine"));
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "rule entry must be an object", "rules", {},
+                                                                    "emergence.rule_engine"));
         RuleDefinition rule;
         const auto*    id = objField(*object, "id");
         if (id == nullptr || !id->isString() || id->asString().empty())
-            return eve::Result<int>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "rule id must be a non-empty string", "rules.id", {},
-                "emergence.rule_engine"));
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "rule id must be a non-empty string", "rules.id",
+                                                                    {}, "emergence.rule_engine"));
         rule.id = id->asString();
         if (const auto* priority = objField(*object, "priority")) rule.priority = static_cast<int>(asInt64(*priority));
         if (const auto* once = objField(*object, "once")) {
             if (!once->isBool())
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "once must be a boolean", "rules.once", {},
-                    "emergence.rule_engine"));
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "once must be a boolean", "rules.once", {},
+                                                                        "emergence.rule_engine"));
             rule.once = once->asBool();
         }
         if (const auto* cooldown = objField(*object, "cooldownTicks"))
             rule.cooldownTicks = static_cast<std::uint64_t>(std::max<std::int64_t>(0, asInt64(*cooldown)));
         if (const auto* fireMode = objField(*object, "fireMode")) {
             if (!fireMode->isString())
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "fireMode must be a string", "rules.fireMode", {},
-                    "emergence.rule_engine"));
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "fireMode must be a string", "rules.fireMode",
+                                                                        {}, "emergence.rule_engine"));
             if (fireMode->asString() == "rising")
                 rule.fireMode = FireMode::Rising;
             else if (fireMode->asString() == "level")
                 rule.fireMode = FireMode::Level;
             else
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "unknown fireMode", "rules.fireMode", {},
-                    "emergence.rule_engine"));
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "unknown fireMode", "rules.fireMode", {},
+                                                                        "emergence.rule_engine"));
         }
         const auto* conditionValue = objField(*object, "condition");
         if (conditionValue == nullptr)
-            return eve::Result<int>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "rule requires condition", "rules.condition", {},
-                "emergence.rule_engine"));
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "rule requires condition", "rules.condition", {},
+                                                                    "emergence.rule_engine"));
         auto condition = decodeCondition(*conditionValue);
         if (!condition) return eve::Result<int>::failure(condition.status());
         rule.condition = std::move(condition).takeValue();
         if (const auto* watch = objField(*object, "watchKeys")) {
             const auto* array = watch->getIf<eve::Value::Array>();
             if (array == nullptr)
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "watchKeys must be an array", "rules.watchKeys", {},
-                    "emergence.rule_engine"));
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "watchKeys must be an array", "rules.watchKeys",
+                                                                        {}, "emergence.rule_engine"));
             for (const auto& item : *array) {
                 if (!item.isString() || item.asString().empty())
                     return eve::Result<int>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "watch key must be a non-empty string",
-                        "rules.watchKeys", {}, "emergence.rule_engine"));
+                        eve::DiagnosticCode::InvalidArgument, "watch key must be a non-empty string", "rules.watchKeys",
+                        {}, "emergence.rule_engine"));
                 rule.watchKeys.push_back(item.asString());
             }
         }
         if (const auto* actions = objField(*object, "actions")) {
             const auto* array = actions->getIf<eve::Value::Array>();
             if (array == nullptr)
-                return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "actions must be an array", "rules.actions", {},
-                    "emergence.rule_engine"));
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "actions must be an array", "rules.actions", {},
+                                                                        "emergence.rule_engine"));
             for (const auto& item : *array) {
                 const auto* actionObject = item.getIf<eve::Value::Object>();
                 if (actionObject == nullptr)
-                    return eve::Result<int>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "action must be an object", "rules.actions", {},
-                        "emergence.rule_engine"));
+                    return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                            "action must be an object", "rules.actions",
+                                                                            {}, "emergence.rule_engine"));
                 EmergenceAction action;
-                const auto*    kind = objField(*actionObject, "kind");
+                const auto*     kind = objField(*actionObject, "kind");
                 if (kind == nullptr || !kind->isString() || kind->asString().empty())
                     return eve::Result<int>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::InvalidArgument, "action kind must be a non-empty string",
@@ -239,7 +236,7 @@ void RuleEngine::wakeKey(std::string_view key) {
 
 eve::Result<bool> RuleEngine::setValue(std::string key, eve::Value value) {
     if (key.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "value key must be non-empty", "key");
-    const bool changed = facts_.setValue(key, std::move(value));
+    const bool changed = facts_.setValue(key, std::move(value)) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::Value, key));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
@@ -247,16 +244,15 @@ eve::Result<bool> RuleEngine::setValue(std::string key, eve::Value value) {
 
 eve::Result<bool> RuleEngine::setTag(std::string tag, bool present) {
     if (tag.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "tag must be non-empty", "tag");
-    const bool changed = facts_.setTag(tag, present);
+    const bool changed = facts_.setTag(tag, present) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::Tag, tag));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
 eve::Result<bool> RuleEngine::setAttribute(std::string key, eve::Value value) {
-    if (key.empty())
-        return fail<bool>(eve::DiagnosticCode::InvalidArgument, "attribute key must be non-empty", "key");
-    const bool changed = facts_.setAttribute(key, std::move(value));
+    if (key.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "attribute key must be non-empty", "key");
+    const bool changed = facts_.setAttribute(key, std::move(value)) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::Attribute, key));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
@@ -264,7 +260,7 @@ eve::Result<bool> RuleEngine::setAttribute(std::string key, eve::Value value) {
 
 eve::Result<bool> RuleEngine::setResource(std::string key, eve::Value value) {
     if (key.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "resource key must be non-empty", "key");
-    const bool changed = facts_.setResource(key, std::move(value));
+    const bool changed = facts_.setResource(key, std::move(value)) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::Resource, key));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
@@ -272,7 +268,7 @@ eve::Result<bool> RuleEngine::setResource(std::string key, eve::Value value) {
 
 eve::Result<bool> RuleEngine::setState(std::string key, eve::Value value) {
     if (key.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "state key must be non-empty", "key");
-    const bool changed = facts_.setState(key, std::move(value));
+    const bool changed = facts_.setState(key, std::move(value)) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::State, key));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
@@ -281,7 +277,7 @@ eve::Result<bool> RuleEngine::setState(std::string key, eve::Value value) {
 eve::Result<bool> RuleEngine::setAuthority(std::string scope, bool granted) {
     if (scope.empty())
         return fail<bool>(eve::DiagnosticCode::InvalidArgument, "authority scope must be non-empty", "scope");
-    const bool changed = facts_.setAuthority(scope, granted);
+    const bool changed = facts_.setAuthority(scope, granted) == FactChange::Changed;
     if (changed) wakeKey(makeFactKey(FactDomain::Authority, scope));
     return eve::Result<bool>::success(changed,
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
@@ -299,7 +295,8 @@ eve::Result<void> RuleEngine::executeOne(const EmergenceAction& action, std::uin
             return fail(eve::DiagnosticCode::InvalidArgument, "fact.set requires domain, key, value", "args");
         const auto& domainText = domain->asString();
         const auto& keyText    = key->asString();
-        if (domainText == "value") return setValue(keyText, *value).andThen([](bool) { return eve::Result<void>::success(); });
+        if (domainText == "value")
+            return setValue(keyText, *value).andThen([](bool) { return eve::Result<void>::success(); });
         if (domainText == "tag") {
             if (!value->isBool()) return fail(eve::DiagnosticCode::InvalidArgument, "tag value must be bool", "value");
             return setTag(keyText, value->asBool()).andThen([](bool) { return eve::Result<void>::success(); });
@@ -373,9 +370,9 @@ eve::Result<void> RuleEngine::executeActions(const std::vector<EmergenceAction>&
 
 eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
     if (draining_)
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, "nested drain is not allowed", {}, {},
-            "emergence.rule_engine"));
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                "nested drain is not allowed", {}, {},
+                                                                "emergence.rule_engine"));
     draining_             = true;
     lastDrainEvaluations_ = 0;
     int produced          = 0;
@@ -392,8 +389,7 @@ eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
         std::vector<std::uint32_t> batch(dirty_.begin(), dirty_.end());
         dirty_.clear();
         std::sort(batch.begin(), batch.end(), [&](std::uint32_t left, std::uint32_t right) {
-            if (rules_[left].priority != rules_[right].priority)
-                return rules_[left].priority > rules_[right].priority;
+            if (rules_[left].priority != rules_[right].priority) return rules_[left].priority > rules_[right].priority;
             return rules_[left].id < rules_[right].id;
         });
 
@@ -437,11 +433,11 @@ eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
         }
     }
     if (!dirty_.empty())
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvariantViolation, "emergence drain exceeded cascade pass budget", {}, {},
-            "emergence.rule_engine"));
-    return eve::Result<int>::success(produced, eve::Status::success(produced > 0 ? eve::StatusCode::Applied
-                                                                                : eve::StatusCode::NoOp));
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                "emergence drain exceeded cascade pass budget", {}, {},
+                                                                "emergence.rule_engine"));
+    return eve::Result<int>::success(
+        produced, eve::Status::success(produced > 0 ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
 const Activation* RuleEngine::activationAt(int index) const {
@@ -453,12 +449,11 @@ void RuleEngine::clearActivations() { activations_.clear(); }
 
 eve::Result<void> RuleEngine::resetRule(std::string_view ruleId) {
     auto it = idToIndex_.find(std::string(ruleId));
-    if (it == idToIndex_.end())
-        return fail(eve::DiagnosticCode::NotFound, "rule id not found", "ruleId");
-    auto& runtime        = runtime_[it->second];
-    runtime.disabled     = false;
-    runtime.fired        = false;
-    runtime.passed       = false;
+    if (it == idToIndex_.end()) return fail(eve::DiagnosticCode::NotFound, "rule id not found", "ruleId");
+    auto& runtime         = runtime_[it->second];
+    runtime.disabled      = false;
+    runtime.fired         = false;
+    runtime.passed        = false;
     runtime.cooldownUntil = 0;
     dirty_.insert(it->second);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -489,8 +484,7 @@ eve::Result<void> RuleEngine::restoreJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
     if (!parsed) return eve::Result<void>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();
-    if (root == nullptr)
-        return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot must be an object");
+    if (root == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot must be an object");
     const auto* schema  = objField(*root, "schema");
     const auto* version = objField(*root, "version");
     if (schema == nullptr || !schema->isString() || schema->asString() != "eve.emergence.runtime")
