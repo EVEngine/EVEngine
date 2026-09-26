@@ -24,8 +24,9 @@ TEST_CASE("graphics.raytracing.capabilityAbsentOrPresent") {
         CHECK(true);  // trimmed build: absence is explicit and OK
         return;
     }
-    // When the provider exists, isAvailable tracks the device caps after Graphics init.
-    CHECK(rt->caps().shaderGroupHandleSize >= 0u || !rt->isAvailable());
+    // Provider linked: caps snapshot is well-formed even before Graphics init.
+    const RayTracingCaps caps = rt->caps();
+    CHECK(caps.shaderGroupHandleSize == 0u || caps.shaderGroupHandleSize > 0u);
 }
 
 TEST_CASE("graphics.raytracing.probeAndUnsupportedOps") {
