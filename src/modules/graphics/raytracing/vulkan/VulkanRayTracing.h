@@ -114,15 +114,24 @@ public:
 
     void clearScene() override;
 
-    /** @brief Bind to the live Vulkan Graphics device (call after init). */
+    /**
+     * @brief Bind to the live Vulkan Graphics device (call after init).
+     * @ownership `device` is borrowed; Graphics remains the owner.
+     * @lifetime `device`, `uploadPool`, and `graphicsQueue` must outlive this
+     *           backend until `detachDevice()`.
+     * @thread Render thread only.
+     */
     void attachDevice(vkb::Device* device, const RayTracingCaps& caps, vk::CommandPool uploadPool,
                       vk::Queue graphicsQueue);
 
     /** @brief Drop GPU resources when Graphics tears down. */
     void detachDevice();
 
-    /** @brief Lazily bind to the process Graphics singleton when RT is available. */
-    bool ensureAttached();
+    /**
+     * @brief Lazily bind to the process Graphics singleton when RT is available.
+     * @return Success when attached and RT is usable; Unsupported otherwise.
+     */
+    [[nodiscard]] Result<void> ensureAttached();
 
 private:
     [[nodiscard]] Result<void> ensurePipeline();

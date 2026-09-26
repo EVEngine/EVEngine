@@ -12,9 +12,7 @@ namespace eve::graphics::raytracing {
 /**
  * @brief Optional Vulkan KHR ray-tracing module.
  *
- * Script:
- *   rt <- eve.RayTracing()
- *   if (rt.isAvailable()) { ... }
+ * Script: construct via `eve.RayTracing()`, then gate work on `isAvailable()`.
  *
  * When the GPU lacks RT extensions, factories still construct but every
  * fallible operation returns `StatusCode::Unsupported`.
@@ -34,6 +32,9 @@ public:
     /**
      * @brief Borrow the process-wide IRayTracing provider, or nullptr when the
      * module is linked but Graphics has not initialized yet.
+     * @ownership Non-owning borrow of the capability registry entry; do not delete.
+     * @lifetime Valid until Graphics tears down the RT backend (or process exit).
+     * @thread Render thread only.
      */
     IRayTracing *backend() const;
 };

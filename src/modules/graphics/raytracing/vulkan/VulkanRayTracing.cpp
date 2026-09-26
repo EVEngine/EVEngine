@@ -171,18 +171,19 @@ VulkanRayTracing& vulkanRayTracing() {
 
 VulkanRayTracing::~VulkanRayTracing() { detachDevice(); }
 
-bool VulkanRayTracing::ensureAttached() {
-    if (device_ && caps_.rayTracingAvailable()) return true;
+Result<void> VulkanRayTracing::ensureAttached() {
+    if (device_ && caps_.rayTracingAvailable()) return Result<void>::success();
     auto* base = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!base) base = eve::graphics::Graphics::create();
     auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(base);
     if (!vg || !vg->supportsRayTracing()) {
         if (vg) caps_ = vg->rayTracingCaps();
-        return false;
+        return unsupported("ensureAttached");
     }
     attachDevice(&vg->getDevice(), vg->rayTracingCaps(), vg->getUploadPool(),
                  vg->getDevice().getQueue(vkb::QueueType::graphics));
-    return isAvailable();
+    if (!isAvailable()) return unsupported("ensureAttached");
+    return Result<void>::success();
 }
 
 bool VulkanRayTracing::isAvailable() const {
@@ -246,9 +247,7 @@ void VulkanRayTracing::clearScene() {
 
 Result<uint32_t> VulkanRayTracing::addTriangleMesh(const float* positionsXYZ, int vertexCount, const uint32_t* indices,
                                                    int indexCount, const glm::mat4& transform) {
-    if (!ensureAttached())
-        return Result<uint32_t>::failure(Diagnostic::error(
-            DiagnosticCode::Unsupported, "addTriangleMesh: hardware ray tracing unavailable", "graphics.raytracing"));
+    if (auto attached = ensureAttached(); !attached.ok()) return Result<uint32_t>::failure(attached.status());
     if (!positionsXYZ || vertexCount < 3 || !indices || indexCount < 3 || (indexCount % 3) != 0)
         return Result<uint32_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                            "addTriangleMesh: invalid geometry", "graphics.raytracing"));
@@ -437,7 +436,7 @@ Result<void> VulkanRayTracing::buildTlas() {
 }
 
 Result<void> VulkanRayTracing::rebuildScene() {
-    if (!ensureAttached()) return unsupported("rebuildScene");
+    if (auto attached = ensureAttached(); !attached.ok()) return attached;
     return buildTlas();
 }
 
@@ -681,7 +680,7 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
 Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                 Texture* worldNormal, Canvas* dest, const glm::mat4& invViewProj,
                                                 const glm::vec3& eyeWorld) {
-    if (!ensureAttached()) return unsupported("applyReflections");
+    if (auto attached = ensureAttached(); !attached.ok()) return attached;
     if (!gfx || !sceneColor || !hwDepth || !worldNormal || !dest)
         return invalidArg("applyReflections", "null argument");
     if (meshes_.empty() || !tlas_.handle) {
