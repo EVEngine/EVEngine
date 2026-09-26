@@ -519,27 +519,24 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         // when every required extension is present on the physical device.
         // extensions_to_enable is private to vk-bootstrap — re-enumerate instead.
         rayTracingCaps_ = RayTracingCaps{};
-        vk::PhysicalDeviceBufferDeviceAddressFeatures        rtBdaEnable{};
-        vk::PhysicalDeviceAccelerationStructureFeaturesKHR   rtAsEnable{};
-        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR      rtPipeEnable{};
-        bool                                                 enableRtFeatures = false;
+        vk::PhysicalDeviceBufferDeviceAddressFeatures      rtBdaEnable{};
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR rtAsEnable{};
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR    rtPipeEnable{};
+        bool                                               enableRtFeatures = false;
         {
             const auto extProps = phys->enumerateDeviceExtensionProperties();
-            auto hasExt = [&](const char *name) {
-                for (const auto &p : extProps) {
+            auto       hasExt   = [&](const char* name) {
+                for (const auto& p : extProps) {
                     if (std::strcmp(p.extensionName, name) == 0) return true;
                 }
                 return false;
             };
-            const bool extsOk =
-                hasExt(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
-                hasExt(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) &&
-                hasExt(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
-            const bool api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
-            const bool bdaExt =
-                hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
-            const bool spirv14 =
-                hasExt(VK_KHR_SPIRV_1_4_EXTENSION_NAME) || api12;
+            const bool extsOk  = hasExt(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+            const bool api12   = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            const bool bdaExt  = hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
+            const bool spirv14 = hasExt(VK_KHR_SPIRV_1_4_EXTENSION_NAME) || api12;
 
             vk::PhysicalDeviceBufferDeviceAddressFeatures bdaFeat{};
             bdaFeat.sType = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
@@ -554,8 +551,7 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             features2Rt.pNext = &rtFeat;
             phys->getFeatures2(&features2Rt);
 
-            const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE &&
-                                    asFeat.accelerationStructure == VK_TRUE &&
+            const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE && asFeat.accelerationStructure == VK_TRUE &&
                                     bdaFeat.bufferDeviceAddress == VK_TRUE;
 
             if (extsOk && bdaExt && spirv14 && featuresOk) {
@@ -576,15 +572,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rayTracingCaps_.shaderGroupHandleAlignment = rtProps.shaderGroupHandleAlignment;
                 rayTracingCaps_.maxRecursionDepth          = rtProps.maxRayRecursionDepth;
 
-                rtBdaEnable.sType               = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
-                rtBdaEnable.bufferDeviceAddress = VK_TRUE;
+                rtBdaEnable.sType                = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
+                rtBdaEnable.bufferDeviceAddress  = VK_TRUE;
                 rtAsEnable.sType                 = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
                 rtAsEnable.accelerationStructure = VK_TRUE;
                 rtAsEnable.pNext                 = &rtBdaEnable;
-                rtPipeEnable.sType              = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
-                rtPipeEnable.rayTracingPipeline = VK_TRUE;
-                rtPipeEnable.pNext              = &rtAsEnable;
-                enableRtFeatures                = true;
+                rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+                rtPipeEnable.rayTracingPipeline  = VK_TRUE;
+                rtPipeEnable.pNext               = &rtAsEnable;
+                enableRtFeatures                 = true;
             }
             // When features are missing, desired RT extensions may still be
             // listed on the device; they stay inert without the feature bits.
@@ -604,16 +600,16 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         vmaAllocatorOwner_.create(inst, phys, device);
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
-        eve::recordLogEvent("info", "gpu: logical device created (gpuDriven=" +
-                                        std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
-                                        ", rayTracing=" +
-                                        std::string(rayTracingCaps_.rayTracingAvailable() ? "on" : "off") +
+        eve::recordLogEvent("info",
+                            "gpu: logical device created (gpuDriven=" +
+                                std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+                                ", rayTracing=" + std::string(rayTracingCaps_.rayTracingAvailable() ? "on" : "off") +
 #if defined(VKB_ENABLE_VMA)
-                                        ", allocator=VMA" +
+                                ", allocator=VMA" +
 #else
-                                        ", allocator=native" +
+                                ", allocator=native" +
 #endif
-                                        ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
+                                ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 

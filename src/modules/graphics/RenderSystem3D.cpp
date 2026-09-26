@@ -1,5 +1,4 @@
 #include "graphics/RenderSystem3D.h"
-#include "graphics/DiffuseLightProbeRegistry.h"
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
@@ -8,6 +7,7 @@
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/DepthPyramid.h"
+#include "graphics/DiffuseLightProbeRegistry.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
 #include "graphics/IRayTracing.h"
@@ -1435,14 +1435,13 @@ void RenderSystem3D::render(Graphics& gfx) {
                 if (doRTX) {
                     if (auto* rt = eve::cap::query<IRayTracing>()) {
                         if (rt->isAvailable()) {
-                            ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
-                            Canvas* reflCanvas = ssr->getReflectionCanvas();
+                            ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
+                            Canvas*                reflCanvas = ssr->getReflectionCanvas();
                             if (reflCanvas) {
-                                glm::mat4 invVP = !cams.empty() ? glm::inverse(cams.front().viewProj)
-                                                                : glm::mat4(1.f);
+                                glm::mat4 invVP = !cams.empty() ? glm::inverse(cams.front().viewProj) : glm::mat4(1.f);
                                 glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
-                                auto applied = rt->applyReflections(&gfx, sceneColor, depth,
-                                                                    gb->getNormalTexture(), reflCanvas, invVP, eye);
+                                auto applied = rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
+                                                                    reflCanvas, invVP, eye);
                                 if (applied.ok())
                                     ssrTexture = ssr->getReflectionTexture();
                                 else
