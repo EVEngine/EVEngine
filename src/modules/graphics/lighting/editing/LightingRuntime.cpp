@@ -44,6 +44,9 @@ EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& doc
     light->setShadowStrength(static_cast<float>(*document.value("shadow.strength")->getIf<double>()));
     light->setVolumetric(*document.value("volumetric.enabled")->getIf<bool>());
     light->setVolumetricIntensity(static_cast<float>(*document.value("volumetric.intensity")->getIf<double>()));
+    if (const auto* only = document.value("volumetric.only")) {
+        if (const auto* flag = only->getIf<bool>()) light->setVolumetricOnly(*flag);
+    }
     return eve::editing::applied<void>(diagnostics);
 }
 

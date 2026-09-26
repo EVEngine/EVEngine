@@ -200,6 +200,7 @@ void collectLights(Canvas *canvasKey, std::vector<PackedLight> &out) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
         if (!d->enabled) continue;
+        if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         if (d->canvas != canvasKey) continue;
         PackedLight pl;
         pl.data = d;

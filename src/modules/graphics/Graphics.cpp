@@ -417,7 +417,14 @@ void Graphics::expose(ssq::Table& table) {
     light.addFunc("getVolumetric", &Light2D::getVolumetric);
     light.addFunc("setVolumetricIntensity", &Light2D::setVolumetricIntensity);
     light.addFunc("getVolumetricIntensity", &Light2D::getVolumetricIntensity);
+    light.addFunc("setVolumetricOnly", &Light2D::setVolumetricOnly);
+    light.addFunc("getVolumetricOnly", &Light2D::getVolumetricOnly);
     light.addFunc("setCanvas", &Light2D::setCanvas);
+    table.addFunc("createEmissiveLight2D",
+                  std::function<Light2D *(float, float, float, float, float, float, float)>(
+                      [](float x, float y, float r, float g, float b, float intensity, float radius) {
+                          return Light2D::createEmissiveProxy(x, y, r, g, b, intensity, radius);
+                      }));
 
     auto cam = table.addClass<Camera3D>("Camera3D",
                                         std::function<Camera3D*()>([]() { return Camera3D::createCamera(); }), false);
@@ -507,6 +514,14 @@ void Graphics::expose(ssq::Table& table) {
     light3d.addFunc("getVolumetric", &Light3D::getVolumetric);
     light3d.addFunc("setVolumetricIntensity", &Light3D::setVolumetricIntensity);
     light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
+    light3d.addFunc("setVolumetricOnly", &Light3D::setVolumetricOnly);
+    light3d.addFunc("getVolumetricOnly", &Light3D::getVolumetricOnly);
+    table.addFunc("createEmissiveLight3D",
+                  std::function<Light3D *(float, float, float, float, float, float, float, float)>(
+                      [](float x, float y, float z, float r, float g, float b, float intensity,
+                         float radius) {
+                          return Light3D::createEmissiveProxy(x, y, z, r, g, b, intensity, radius);
+                      }));
 
     detail::exposeRenderable3DBindings(table);
 
@@ -653,6 +668,8 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("setIntensity", &Volumetric::setIntensity);
     vol.addFunc("setTime", &Volumetric::setTime);
     vol.addFunc("setDensity", &Volumetric::setDensity);
+    vol.addFunc("setAnisotropy", &Volumetric::setAnisotropy);
+    vol.addFunc("getAnisotropy", &Volumetric::getAnisotropy);
     vol.addFunc("hasParam", &Volumetric::hasParam);
     vol.addFunc("setFloat", &Volumetric::setFloat);
     vol.addFunc("getFloat", &Volumetric::getFloat);
@@ -699,6 +716,68 @@ void Graphics::expose(ssq::Table& table) {
     vol.addFunc("injectFroxelHeightFog", &Volumetric::injectFroxelHeightFog);
     vol.addFunc("injectFroxelLocalVolume", &Volumetric::injectFroxelLocalVolume);
     vol.addFunc("integrateFroxel", &Volumetric::integrateFroxel);
+    vol.addFunc("driveFromLight3D",
+                [vm = table.getHandle()](Volumetric *value, Light3D *light, float viewportW,
+                                         float viewportH) {
+                    auto result = value ? value->driveFromLight3D(light, viewportW, viewportH)
+                                        : Result<void>::failure(Diagnostic::error(
+                                              DiagnosticCode::InvalidArgument,
+                                              "Volumetric.driveFromLight3D: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result));
+                });
+    vol.addFunc("driveFromPrimarySceneLight3D",
+                [vm = table.getHandle()](Volumetric *value, float viewportW, float viewportH) {
+                    auto result = value ? value->driveFromPrimarySceneLight3D(viewportW, viewportH)
+                                        : Result<void>::failure(Diagnostic::error(
+                                              DiagnosticCode::InvalidArgument,
+                                              "Volumetric.driveFromPrimarySceneLight3D: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result));
+                });
+    vol.addFunc("integrateFroxelFromSceneLights",
+                [vm = table.getHandle()](Volumetric *value, float ambientR, float ambientG,
+                                         float ambientB, float minX, float minY, float minZ,
+                                         float maxX, float maxY, float maxZ, int maxLights) {
+                    auto result =
+                        value ? value->integrateFroxelFromSceneLights(
+                                    ambientR, ambientG, ambientB, glm::vec3(minX, minY, minZ),
+                                    glm::vec3(maxX, maxY, maxZ), maxLights)
+                              : Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "Volumetric.integrateFroxelFromSceneLights: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result));
+                });
+    vol.addFunc("beginOcclusionMapFromSceneLights2D",
+                [vm = table.getHandle()](Volumetric *value, Graphics *graphics, Canvas *canvas,
+                                         float defaultRadiusPixels) {
+                    auto result =
+                        value ? value->beginOcclusionMapFromSceneLights2D(graphics, canvas,
+                                                                          defaultRadiusPixels)
+                              : Result<int>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "Volumetric.beginOcclusionMapFromSceneLights2D: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result),
+                                                      [](int count) { return count; });
+                });
+    vol.addFunc("scatterFromSceneLights2D",
+                [vm = table.getHandle()](Volumetric *value, Graphics *graphics, Texture *occlusion,
+                                         Canvas *canvas) {
+                    auto result = value ? value->scatterFromSceneLights2D(graphics, occlusion, canvas)
+                                        : Result<int>::failure(Diagnostic::error(
+                                              DiagnosticCode::InvalidArgument,
+                                              "Volumetric.scatterFromSceneLights2D: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result),
+                                                      [](int count) { return count; });
+                });
+    vol.addFunc("injectEmissiveLightProxy",
+                [vm = table.getHandle()](Volumetric *value, float x, float y, float z, float r,
+                                         float g, float b, float radius, float intensity) {
+                    auto result =
+                        value ? value->injectEmissiveLightProxy(x, y, z, r, g, b, radius, intensity)
+                              : Result<void>::failure(Diagnostic::error(
+                                    DiagnosticCode::InvalidArgument,
+                                    "Volumetric.injectEmissiveLightProxy: non-null provider required"));
+                    return eve::script::projectResult(vm, std::move(result));
+                });
     vol.addFunc("uploadFroxel", &Volumetric::uploadFroxel);
     vol.addFunc("applyFroxel", &Volumetric::applyFroxel);
     vol.addFunc("applyFroxelTo", &Volumetric::applyFroxelTo);

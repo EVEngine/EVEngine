@@ -70,17 +70,22 @@ hair.setHair(true)   // Material/标志会带上双面、透明排序等发卡�
 
 `vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与 `resolutionFor`。
 
-- **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`
-- **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
+- **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`。多光源：`Light2D.setVolumetric(true)` 后用 `beginOcclusionMapFromSceneLights2D` / `scatterFromSceneLights2D`。
+- **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`；可用 `driveFromLight3D` / `driveFromPrimarySceneLight3D` 自动写入光向与屏坐标，`setAnisotropy` 控制双叶 HG。
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 - **froxel**：`configureFroxelGrid` → `clearFroxelGrid` →
-  `injectFroxelHeightFog` → `integrateFroxel` → `uploadFroxel`；在
+  `injectFroxelHeightFog` → `integrateFroxel`（或 `integrateFroxelFromSceneLights` /
+  `injectEmissiveLightProxy`）→ `uploadFroxel`；在
   `gfx.render3D()` 后将 GBuffer 线性深度传给 `applyFroxel` 或
   `applyFroxelTo`。介质未变化时不必每帧重新上传。
 - **cloud**：`setMode("cloud")`，用 `setCloudLayer`、`setCloudCoverage`、
   `setCloudDensity`、`setCloudScale`、`setCloudWind` 和 `setCloudLightColor`
   调整云层；线性深度输入通过 `renderClouds` 或 `renderCloudsTo` 渲染，
   `getCloudShader` 可用于高级参数检查与调试。
+
+发光体代理：`eve.createEmissiveLight2D` / `eve.createEmissiveLight3D`（或
+`Light*.createEmissiveProxy`）创建 `volumetricOnly` 点光——只进体积通道、跳过表面光照；
+表面自发光仍用 PBR `emissive` + bloom。
 
 细节见 [`体积光模块设计.md`](../../../dev/体积光模块设计.md)。
 

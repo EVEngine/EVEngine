@@ -10,6 +10,18 @@ Light2D *Light2D::createLight(const std::string &type) {
     return l;
 }
 
+Light2D *Light2D::createEmissiveProxy(float x, float y, float r, float g, float b, float intensity,
+                                      float radius) {
+    Light2D *l = createLight("point");
+    l->setPosition(x, y);
+    l->setColor(r, g, b, intensity);
+    l->setRadius(radius);
+    l->setVolumetric(true);
+    l->setVolumetricIntensity(1.f);
+    l->setVolumetricOnly(true);
+    return l;
+}
+
 void Light2D::setType(const std::string &type) {
     auto d = data();
     if (type == "dir" || type == "point")
@@ -58,6 +70,9 @@ void Light2D::setVolumetricIntensity(float intensity) {
 }
 float Light2D::getVolumetricIntensity() { return data()->volumetricIntensity; }
 
+void Light2D::setVolumetricOnly(bool enabled) { data()->volumetricOnly = enabled; }
+bool Light2D::getVolumetricOnly() { return data()->volumetricOnly; }
+
 void Light2D::setCanvas(Canvas *canvas) { data()->canvas = canvas; }
 
 Light3D *Light3D::createLight(const std::string &type) {
@@ -65,6 +80,19 @@ Light3D *Light3D::createLight(const std::string &type) {
     ASSERT(l != nullptr);
     l->data()->entity = l;
     l->setType(type);
+    return l;
+}
+
+Light3D *Light3D::createEmissiveProxy(float x, float y, float z, float r, float g, float b,
+                                      float intensity, float radius) {
+    Light3D *l = createLight("point");
+    l->setPosition(x, y, z);
+    l->setColor(r, g, b, intensity);
+    l->setRadius(radius);
+    l->setVolumetric(true);
+    l->setVolumetricIntensity(1.f);
+    l->setVolumetricOnly(true);
+    l->setCastShadow(false);
     return l;
 }
 
@@ -132,5 +160,8 @@ void Light3D::setVolumetricIntensity(float intensity) {
     data()->volumetricIntensity = intensity < 0.f ? 0.f : intensity;
 }
 float Light3D::getVolumetricIntensity() { return data()->volumetricIntensity; }
+
+void Light3D::setVolumetricOnly(bool enabled) { data()->volumetricOnly = enabled; }
+bool Light3D::getVolumetricOnly() { return data()->volumetricOnly; }
 
 }  // namespace eve::graphics

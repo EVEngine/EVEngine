@@ -37,9 +37,12 @@ function rebuildFog() {
         falloff,
         -2.0, 10.0);      // world-height range represented by grid rows
 
-    // Incident sun + sky radiance. DayNight can drive these values in a game;
-    // constants keep this example focused on the froxel API.
-    fogDemoVolume.integrateFroxel(1.18, 1.05, 0.82, 1.0);
+    // Warm emissive proxy near the mid columns — demonstrates local volumetric glow
+    // without surface double-lighting (volumetricOnly Light3D / injectEmissiveLightProxy).
+    fogDemoVolume.injectEmissiveLightProxy(0.0, 1.2, -10.0, 1.0, 0.45, 0.18, 7.0, 1.8);
+
+    // Ambient sky + directional fill; local emissive proxies ride on top.
+    fogDemoVolume.integrateFroxel(0.55, 0.62, 0.78, 1.0);
     fogDemoVolume.uploadFroxel(gfx);
 }
 
