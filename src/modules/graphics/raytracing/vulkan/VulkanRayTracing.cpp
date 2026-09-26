@@ -111,10 +111,10 @@ Result<void> DeviceAddressBuffer::allocate(vkb::Device& dev, vk::DeviceSize byte
 
     vk::BufferDeviceAddressInfo addrInfo{};
     addrInfo.buffer = buffer;
-    address         = (*device)->getBufferDeviceAddress(addrInfo);
+    address         = (*device)->getBufferAddress(addrInfo);
     if (address == 0) {
         release();
-        return failed("DeviceAddressBuffer.allocate", "getBufferDeviceAddress returned 0");
+        return failed("DeviceAddressBuffer.allocate", "getBufferAddress returned 0");
     }
     return Result<void>::success();
 }
@@ -229,10 +229,10 @@ void VulkanRayTracing::detachDevice() {
     missModule_       = vk::ShaderModule{};
     closestHitModule_ = vk::ShaderModule{};
     sbtBuffer_.release();
-    raygenRegion_   = {};
-    missRegion_     = {};
-    hitRegion_      = {};
-    callableRegion_ = {};
+    raygenRegion_   = vk::StridedDeviceAddressRegionKHR{};
+    missRegion_     = vk::StridedDeviceAddressRegionKHR{};
+    hitRegion_      = vk::StridedDeviceAddressRegionKHR{};
+    callableRegion_ = vk::StridedDeviceAddressRegionKHR{};
     device_         = nullptr;
     uploadPool_     = vk::CommandPool{};
     graphicsQueue_  = vk::Queue{};
@@ -317,7 +317,7 @@ Result<void> VulkanRayTracing::buildBlas(TriangleMeshRecord& mesh) {
 
     vk::AccelerationStructureDeviceAddressInfoKHR addrInfo{};
     addrInfo.accelerationStructure = mesh.blas.handle;
-    mesh.blas.deviceAddress        = (*device_)->getAccelerationStructureDeviceAddressKHR(addrInfo);
+    mesh.blas.deviceAddress        = (*device_)->getAccelerationStructureAddressKHR(addrInfo);
 
     DeviceAddressBuffer scratch;
     if (auto r =
@@ -407,7 +407,7 @@ Result<void> VulkanRayTracing::buildTlas() {
 
     vk::AccelerationStructureDeviceAddressInfoKHR addrInfo{};
     addrInfo.accelerationStructure = tlas_.handle;
-    tlas_.deviceAddress            = (*device_)->getAccelerationStructureDeviceAddressKHR(addrInfo);
+    tlas_.deviceAddress            = (*device_)->getAccelerationStructureAddressKHR(addrInfo);
 
     DeviceAddressBuffer scratch;
     if (auto r =
@@ -584,7 +584,7 @@ Result<void> VulkanRayTracing::createShaderBindingTable() {
     hitRegion_.stride        = handleSizeAligned;
     hitRegion_.size          = hitSize;
 
-    callableRegion_ = {};
+    callableRegion_ = vk::StridedDeviceAddressRegionKHR{};
     return Result<void>::success();
 }
 
