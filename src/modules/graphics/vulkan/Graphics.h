@@ -22,6 +22,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
+#include "graphics/RayTracingCaps.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
@@ -355,6 +356,11 @@ public:
 
     /** @brief Capabilities probed at device creation; empty when unavailable. */
     const GpuDrivenCaps &gpuDrivenCaps() const { return gpuDrivenCaps_; }
+
+    /** @brief Hardware ray-tracing capabilities probed at device creation. */
+    const RayTracingCaps& rayTracingCapsRef() const { return rayTracingCaps_; }
+    RayTracingCaps        rayTracingCaps() const override { return rayTracingCaps_; }
+    bool                  supportsRayTracing() const override { return rayTracingCaps_.rayTracingAvailable(); }
 
     /** @brief Per-frame arena for the current swapchain frame slot. */
     FrameArena &currentFrameArena();
@@ -1202,6 +1208,7 @@ private:
 
     // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
     GpuDrivenCaps gpuDrivenCaps_{};
+    RayTracingCaps          rayTracingCaps_{};
     std::vector<FrameArena> frameArenas_;
 
     vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};

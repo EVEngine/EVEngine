@@ -40,6 +40,8 @@ class Graphics;
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
  *   "ssr"           — PBR-aware screen-space reflections with coarse/fine tracing and temporal denoise
+ *   "rtx"           — hardware Vulkan KHR ray-traced reflections when IRayTracing is available;
+ *                     otherwise a no-op (SSR remains the portable path)
  *   "reflectionChain"— enables TAA plus the complete RTGI then SSR lighting chain (default off)
  *   "decal"         — screen-space decal layer pass between gbuffer and forward
  *                     (implies gbuffer; default off)

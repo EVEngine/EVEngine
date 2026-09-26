@@ -8,11 +8,31 @@
 namespace eve::graphics {
 namespace {
 
-const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
-                                "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "rtgi",      "taa",        "ssr",      "reflectionChain",
-                                "outline",   "gpuDriven", "visResolve", "frustumCull", "decal",
-                                "atmosphere", "volumetricFog", "fogLocalVolumes", "fogTemporal"};
+const char* kKnownFeatures[] = {"depthTest",
+                                "shadow",
+                                "gbuffer",
+                                "gbufferAlbedo",
+                                "forward",
+                                "hair",
+                                "clustered",
+                                "ao",
+                                "gi",
+                                "aa",
+                                "msaa",
+                                "rtgi",
+                                "taa",
+                                "ssr",
+                                "reflectionChain",
+                                "rtx",
+                                "outline",
+                                "gpuDriven",
+                                "visResolve",
+                                "frustumCull",
+                                "decal",
+                                "atmosphere",
+                                "volumetricFog",
+                                "fogLocalVolumes",
+                                "fogTemporal"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -38,6 +58,7 @@ RenderControl::RenderControl() {
     features_["taa"] = false;
     features_["ssr"] = false;
     features_["reflectionChain"] = false;
+    features_["rtx"]             = false;  // hardware RT reflections (optional; falls back to SSR)
     features_["msaa"] = true;
     features_["outline"] = false;
     features_["gpuDriven"] = false;  // stage 1 opt-in; off until runtime-verified
@@ -64,7 +85,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     const bool cur = it == features_.end() ? false : it->second;
     if (cur == enabled) return;
     features_[feature] = enabled;
-    if (gfx_ && (feature == "ssr" || feature == "rtgi" || feature == "reflectionChain")) {
+    if (gfx_ && (feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx")) {
         gfx_->pipelineScreenSpaceReflection()->invalidateHistory();
         gfx_->pipelineGlobalIllumination()->invalidateHistory();
     }
@@ -76,8 +97,13 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (feature == "decal" && enabled) features_["gbuffer"] = true;
     // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
     if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
-    if ((feature == "ssr" || feature == "rtgi" || feature == "reflectionChain") && enabled)
+    if ((feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx") && enabled)
         features_["gbuffer"] = true;
+    if (feature == "rtx" && enabled) {
+        // Prefer hardware RT when available; keep SSR as the portable path
+        // that RenderSystem3D can still run when IRayTracing is absent.
+        features_["gbuffer"] = true;
+    }
     if (feature == "reflectionChain" && enabled) {
         features_["aa"] = true;
         features_["taa"] = true;
@@ -117,6 +143,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
         features_["gi"] = false;
         features_["rtgi"] = false;
         features_["ssr"] = false;
+        features_["rtx"]             = false;
         features_["reflectionChain"] = false;
         features_["outline"] = false;
         features_["decal"] = false;
