@@ -95,6 +95,7 @@ void collectLights3D(std::vector<PackedLight3D>& out, size_t maxCount) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
         if (!d->enabled) continue;
+        if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         PackedLight3D pl;
         pl.data    = d;
         pl.isPoint = (d->type != "dir");

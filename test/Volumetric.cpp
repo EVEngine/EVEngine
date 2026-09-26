@@ -246,11 +246,131 @@ TEST_CASE("volumetric.lightFlags") {
     l2->setVolumetricIntensity(0.75f);
     CHECK(l2->getVolumetric() == true);
     CHECK(std::fabs(l2->getVolumetricIntensity() - 0.75f) < 1e-5f);
+    CHECK(l2->getVolumetricOnly() == false);
+    l2->setVolumetricOnly(true);
+    CHECK(l2->getVolumetricOnly() == true);
 
     auto *l3 = Light3D::createLight("dir");
     CHECK(l3->getVolumetric() == false);
     l3->setVolumetric(true);
     CHECK(l3->getVolumetric() == true);
+    CHECK(l3->getVolumetricOnly() == false);
+}
+
+TEST_CASE("volumetric.emissiveProxySkipsSurfaceLighting") {
+    auto *glow2 = Light2D::createEmissiveProxy(40.f, 30.f, 1.f, 0.4f, 0.1f, 2.f, 80.f);
+    CHECK(glow2->getVolumetric() == true);
+    CHECK(glow2->getVolumetricOnly() == true);
+    CHECK(std::fabs(glow2->getX() - 40.f) < 1e-5f);
+
+    auto *glow3 = Light3D::createEmissiveProxy(1.f, 2.f, 3.f, 0.2f, 0.8f, 1.f, 4.f, 6.f);
+    CHECK(glow3->getVolumetric() == true);
+    CHECK(glow3->getVolumetricOnly() == true);
+    CHECK(glow3->getCastShadow() == false);
+    CHECK(std::fabs(glow3->getRadius() - 6.f) < 1e-5f);
+}
+
+TEST_CASE("volumetric.collectAndDriveSceneLights3D") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol);
+
+    vol->setMode("raymarch");
+    vol->setCamera(0.f, 2.f, 8.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 60.f, 1.777f, 0.1f, 100.f);
+    vol->setAnisotropy(0.75f);
+    CHECK(std::fabs(vol->getAnisotropy() - 0.75f) < 1e-5f);
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.3f, 1.f, 0.2f);
+    sun->setColor(1.f, 0.95f, 0.8f, 1.5f);
+    sun->setVolumetric(true);
+
+    auto *neon = Light3D::createEmissiveProxy(0.f, 1.f, -2.f, 1.f, 0.2f, 0.4f, 3.f, 5.f);
+
+    std::vector<VolumetricLight> lights;
+    auto collected = vol->collectSceneLights3D(lights, 8);
+    REQUIRE(collected.ok());
+    // Directional is excluded from froxel local list; emissive proxy is included.
+    CHECK(collected.value() == 1);
+    CHECK(lights.size() == 1u);
+    CHECK(std::fabs(lights[0].position.z + 2.f) < 1e-5f);
+
+    auto driven = vol->driveFromLight3D(sun, 1280.f, 720.f);
+    REQUIRE(driven.ok());
+    CHECK(std::fabs(vol->getFloat("shaftR") - 1.f) < 1e-5f);
+    CHECK(vol->getFloat("intensity") > 1.f);
+
+    auto primary = vol->driveFromPrimarySceneLight3D(1280.f, 720.f);
+    REQUIRE(primary.ok());
+
+    (void)neon;
+    win->close();
+}
+
+TEST_CASE("volumetric.froxelIntegratesEmissiveProxyAndSceneLights") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol);
+    vol->setMode("froxel");
+    vol->setCamera(0.f, 2.f, 6.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 55.f, 1.777f, 0.1f, 40.f);
+    vol->configureFroxelGrid(8, 6, 16, 0.1f, 40.f);
+    vol->clearFroxelGrid();
+    vol->injectFroxelHeightFog(0.05f, 0.8f, 0.85f, 0.95f, 0.f, 0.2f, -4.f, 8.f);
+
+    auto injected =
+        vol->injectEmissiveLightProxy(0.f, 1.f, -4.f, 1.f, 0.15f, 0.05f, 6.f, 2.5f);
+    REQUIRE(injected.ok());
+    vol->integrateFroxel(0.05f, 0.05f, 0.06f, 1.f);
+
+    const glm::vec4 sample =
+        vol->getAtmosphereVolume()->sampleIntegrated(0.5f, 0.5f, 12.f);
+    CHECK(sample.r > sample.b);
+
+    auto *torch = Light3D::createEmissiveProxy(0.f, 1.f, -3.f, 1.f, 0.3f, 0.05f, 2.f, 4.f);
+    vol->clearFroxelGrid();
+    vol->injectFroxelHeightFog(0.05f, 0.8f, 0.85f, 0.95f, 0.f, 0.2f, -4.f, 8.f);
+    auto fromScene = vol->integrateFroxelFromSceneLights(0.02f, 0.02f, 0.03f, glm::vec3(-10.f),
+                                                         glm::vec3(10.f), 8);
+    REQUIRE(fromScene.ok());
+    const glm::vec4 sceneSample =
+        vol->getAtmosphereVolume()->sampleIntegrated(0.5f, 0.5f, 10.f);
+    CHECK(sceneSample.r > 0.f);
+    (void)torch;
+    win->close();
+}
+
+TEST_CASE("volumetric.occlusionFromSceneLights2D") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol);
+
+    Canvas *occ = gfx->newCanvas(128, 72);
+    gfx->setCanvas(occ);
+
+    auto *a = Light2D::createEmissiveProxy(20.f, 20.f, 1.f, 0.8f, 0.4f, 1.f, 40.f);
+    auto *b = Light2D::createEmissiveProxy(100.f, 50.f, 0.4f, 0.6f, 1.f, 1.2f, 40.f);
+    a->setCanvas(nullptr);
+    b->setCanvas(nullptr);
+
+    auto begun = vol->beginOcclusionMapFromSceneLights2D(gfx, nullptr, 12.f);
+    REQUIRE(begun.ok());
+    CHECK(begun.value() == 2);
+    // Bright cores should be present near both light positions.
+    CHECK(occ->getPixel(20, 20).r > 0.3f);
+    CHECK(occ->getPixel(100, 50).r > 0.3f);
+
+    auto passes = vol->scatterFromSceneLights2D(gfx, occ->getTexture(), nullptr);
+    REQUIRE(passes.ok());
+    CHECK(passes.value() == 2);
+
+    gfx->setCanvas(nullptr);
+    win->close();
 }
 
 TEST_CASE("volumetric.modeAndRayMarchQuality") {

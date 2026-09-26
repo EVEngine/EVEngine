@@ -49,6 +49,8 @@ PropertySchema lightSchema() {
     schema.properties.push_back(
         property("volumetric.enabled", "editor.light.volumetric", "volumetric", PropertyType::Bool, false));
     numeric(schema, "volumetric.intensity", "editor.light.volumetric-intensity", "volumetric", 1.0, 0.0, 100.0);
+    schema.properties.push_back(property("volumetric.only", "editor.light.volumetric-only", "volumetric",
+                                         PropertyType::Bool, false));
     return schema;
 }
 

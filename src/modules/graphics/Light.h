@@ -50,6 +50,11 @@ public:
         /** @brief Contribute as volumetric shaft source when collecting occlusion maps. */
         bool volumetric = false;
         float volumetricIntensity = 1.f;
+        /**
+         * @brief When true with volumetric, skip lit2d surface packing and only drive
+         * screenspace shafts (emissive-glow proxy for neon/sprites).
+         */
+        bool volumetricOnly = false;
         Canvas *canvas = nullptr;
         Light2D *entity = nullptr;
     };
@@ -57,6 +62,20 @@ public:
     COMPONENT(Data, data)
 
     static Light2D *createLight(const std::string &type = "point");
+
+    /**
+     * @brief Create a volumetric-only glow proxy (skips surface lighting).
+     * @param x World/canvas X of the glow core.
+     * @param y World/canvas Y of the glow core.
+     * @param r Linear HDR red.
+     * @param g Linear HDR green.
+     * @param b Linear HDR blue.
+     * @param intensity Non-negative radiance scale.
+     * @param radius Falloff radius in canvas units.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     */
+    static Light2D *createEmissiveProxy(float x, float y, float r, float g, float b,
+                                        float intensity = 1.f, float radius = 200.f);
 
     void setType(const std::string &type);
     std::string getType();
@@ -80,6 +99,8 @@ public:
     bool getVolumetric();
     void setVolumetricIntensity(float intensity);
     float getVolumetricIntensity();
+    void setVolumetricOnly(bool enabled);
+    bool getVolumetricOnly();
 
     void setCanvas(Canvas *canvas);
 };
@@ -128,12 +149,26 @@ public:
         float shadowStrength = 1.f;
         bool volumetric = false;
         float volumetricIntensity = 1.f;
+        /**
+         * @brief When true with volumetric, skip mesh/PBR surface lighting and only
+         * contribute to volumetric shafts / froxel media (emissive prop proxy).
+         */
+        bool volumetricOnly = false;
         Light3D *entity = nullptr;
     };
 
     COMPONENT(Data, data)
 
     static Light3D *createLight(const std::string &type = "point");
+
+    /**
+     * @brief Create a volumetric-only point glow proxy for emissive props.
+     * Pair with a PBR emissive material + bloom for the surface look; this light
+     * drives froxel / raymarch shafts without double-lighting the mesh.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     */
+    static Light3D *createEmissiveProxy(float x, float y, float z, float r, float g, float b,
+                                        float intensity = 1.f, float radius = 8.f);
 
     void setType(const std::string &type);
     std::string getType();
@@ -166,6 +201,8 @@ public:
     bool getVolumetric();
     void setVolumetricIntensity(float intensity);
     float getVolumetricIntensity();
+    void setVolumetricOnly(bool enabled);
+    bool getVolumetricOnly();
 };
 
 }  // namespace eve::graphics

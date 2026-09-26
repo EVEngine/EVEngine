@@ -103,7 +103,7 @@ Shader *createRayMarchShader(Graphics *gfx) {
     sh->declareFloat("sampleCount");
     sh->declareFloat("dustAmount");
     sh->declareFloat("fogAmount");
-    sh->declareFloat("shadowSteps");
+    sh->declareFloat("shadowAnisoPack");
     sh->declareFloat("lightU");
     sh->declareFloat("lightV");
 
@@ -121,7 +121,7 @@ Shader *createRayMarchShader(Graphics *gfx) {
     sh->sendFloat("sampleCount", 24.f);
     sh->sendFloat("dustAmount", 0.25f);
     sh->sendFloat("fogAmount", 0.2f);
-    sh->sendFloat("shadowSteps", 8.f);
+    sh->sendFloat("shadowAnisoPack", 8.6f);  // 8 steps + default g≈0.6
     sh->sendFloat("lightU", 0.7f);
     sh->sendFloat("lightV", 0.2f);
     return sh;
@@ -263,11 +263,16 @@ Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
 Volumetric::~Volumetric() = default;
 
 void Volumetric::applyQualityDefaults() {
+    auto sendRayShadow = [this](float steps) {
+        const float g = std::clamp(anisotropy_, -0.99f, 0.99f);
+        const float frac = std::clamp((g + 0.99f) / 1.98f, 0.005f, 0.995f);
+        rayShader_->sendFloat("shadowAnisoPack", std::floor(steps) + frac);
+    };
     if (quality_ == "low") {
         downscale_ = 4.f;
         if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 8.f);
-            rayShader_->sendFloat("shadowSteps", 4.f);
+            sendRayShadow(4.f);
             rayShader_->sendFloat("dustAmount", 0.12f);
             rayShader_->sendFloat("fogAmount", 0.12f);
         } else if (mode_ == "fog") {
@@ -287,7 +292,7 @@ void Volumetric::applyQualityDefaults() {
         downscale_ = 1.f;
         if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 48.f);
-            rayShader_->sendFloat("shadowSteps", 16.f);
+            sendRayShadow(16.f);
             rayShader_->sendFloat("dustAmount", 0.35f);
             rayShader_->sendFloat("fogAmount", 0.25f);
         } else if (mode_ == "fog") {
@@ -308,7 +313,7 @@ void Volumetric::applyQualityDefaults() {
         downscale_ = 2.f;
         if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 24.f);
-            rayShader_->sendFloat("shadowSteps", 8.f);
+            sendRayShadow(8.f);
             rayShader_->sendFloat("dustAmount", 0.25f);
             rayShader_->sendFloat("fogAmount", 0.2f);
         } else if (mode_ == "fog") {
@@ -561,6 +566,7 @@ void Volumetric::uploadRayMarchCommon() {
     rayShader_->sendFloat("lightDz", lightDir_.z);
     rayShader_->sendFloat("nearZ", nearZ_);
     rayShader_->sendFloat("farZ", farZ_);
+    uploadRayMarchShadowAnisotropy();
 }
 
 void Volumetric::uploadFogCommon() {
@@ -764,6 +770,17 @@ void Volumetric::injectFroxelLocalVolume(FogVolume *volume) {
 }
 
 void Volumetric::integrateFroxel(float lightR, float lightG, float lightB, float phaseScale) {
+    if (!pendingEmissiveProxies_.empty()) {
+        const glm::vec3 ambient(std::max(lightR, 0.f), std::max(lightG, 0.f),
+                                std::max(lightB, 0.f));
+        // Approximate world bounds from the active camera near/far and a generous XY span.
+        const glm::vec3 worldMin(-farZ_, -farZ_, -farZ_);
+        const glm::vec3 worldMax(farZ_, farZ_, farZ_);
+        atmosphereVolume_->integrateLocalLights(pendingEmissiveProxies_, worldMin, worldMax,
+                                                ambient * std::max(phaseScale, 0.f));
+        clearPendingEmissiveProxies();
+        return;
+    }
     atmosphereVolume_->integrate(glm::vec3(lightR, lightG, lightB), phaseScale);
 }
 

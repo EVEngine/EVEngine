@@ -3,19 +3,22 @@
 
 
 #include "common/Result.h"
+#include "graphics/AtmosphereVolume.h"
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace eve::graphics {
 
 class Canvas;
-class AtmosphereVolume;
 class FogVolume;
 class Drawable;
 class Graphics;
+class Light2D;
+class Light3D;
 class Mesh;
 class Shader;
 class Texture;
@@ -75,6 +78,14 @@ public:
     void setIntensity(float intensity);
     void setTime(float seconds);
     void setDensity(float density);
+
+    /**
+     * @brief Henyey–Greenstein anisotropy for raymarch shafts in [-0.99, 0.99].
+     * Positive values produce forward-scattering god rays; negative back-scatters.
+     */
+    void setAnisotropy(float g);
+    /** @brief Current raymarch anisotropy. */
+    float getAnisotropy() const;
 
     /** @brief Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
     void setFogHeight(float worldY);
@@ -186,6 +197,71 @@ public:
     void injectFroxelLocalVolume(FogVolume *volume);
     /** @brief Integrate the current froxel media using a uniform incident light. */
     void integrateFroxel(float lightR, float lightG, float lightB, float phaseScale = 1.f);
+
+    /**
+     * @brief Collect enabled Light3D with volumetric=true into froxel light snapshots.
+     * @param out Cleared then filled; not retained.
+     * @param maxCount Cap on collected lights (clamped to at least 1).
+     * @return Number of lights written, or InvalidArgument when out storage is unusable.
+     * @thread Render/main thread with a live ECS world.
+     */
+    [[nodiscard]] Result<int> collectSceneLights3D(std::vector<VolumetricLight> &out,
+                                                   int maxCount = 32);
+
+    /**
+     * @brief Drive shaft UV/direction/color/intensity from one Light3D using setCamera().
+     * Directional lights set lightDir; point lights aim from the camera toward the light
+     * and project the light position to screen UV for SS occlusion.
+     * @param light Borrowed; not retained.
+     * @param viewportW Viewport width in pixels; must be positive.
+     * @param viewportH Viewport height in pixels; must be positive.
+     * @return Success or InvalidArgument / NotFound.
+     */
+    [[nodiscard]] Result<void> driveFromLight3D(Light3D *light, float viewportW, float viewportH);
+
+    /**
+     * @brief Drive shafts from the strongest volumetric Light3D currently in ECS.
+     * @return Success, NotFound when none exist, or InvalidArgument for bad viewport.
+     */
+    [[nodiscard]] Result<void> driveFromPrimarySceneLight3D(float viewportW, float viewportH);
+
+    /**
+     * @brief Integrate froxels with volumetric Light3D (+ emissive proxies) from ECS.
+     * Falls back to uniform ambient-only integrate when no volumetric lights are present.
+     * @param worldMin World AABB min represented by the froxel grid.
+     * @param worldMax World AABB max represented by the froxel grid.
+     */
+    [[nodiscard]] Result<void> integrateFroxelFromSceneLights(float ambientR, float ambientG,
+                                                              float ambientB,
+                                                              const glm::vec3 &worldMin,
+                                                              const glm::vec3 &worldMax,
+                                                              int maxLights = 16);
+
+    /**
+     * @brief Clear the occlusion canvas and draw bright discs for every volumetric Light2D.
+     * Sets the primary (brightest) light UV for the first scatter pass.
+     * @param canvasFilter Optional canvas match; nullptr accepts lights with null canvas.
+     * @return Number of discs drawn.
+     */
+    [[nodiscard]] Result<int> beginOcclusionMapFromSceneLights2D(Graphics *gfx,
+                                                                Canvas *canvasFilter = nullptr,
+                                                                float defaultRadiusPixels = 24.f);
+
+    /**
+     * @brief Multi-pass screenspace scatter: one radial blur per volumetric Light2D.
+     * Additive-ish SrcAlpha compositing builds multi-source god rays.
+     * @return Number of scatter passes executed.
+     */
+    [[nodiscard]] Result<int> scatterFromSceneLights2D(Graphics *gfx, Texture *occlusion,
+                                                      Canvas *canvasFilter = nullptr);
+
+    /**
+     * @brief Inject a one-shot emissive glow proxy into the froxel integrate light list.
+     * Accumulates until the next integrateFroxel / integrateFroxelFromSceneLights call.
+     */
+    [[nodiscard]] Result<void> injectEmissiveLightProxy(float x, float y, float z, float r, float g,
+                                                        float b, float radius, float intensity);
+
     /** @brief Upload integrated froxels into a slice atlas sampled by applyFroxel. */
     void uploadFroxel(Graphics *gfx);
     /** @brief Composite the uploaded froxel volume over the current target using scene depth. */
@@ -227,6 +303,8 @@ private:
     void uploadFogCommon();
     void uploadCloudCommon();
     void drawFullscreen(Graphics *gfx, Texture *source, Shader *shader);
+    void uploadRayMarchShadowAnisotropy();
+    void clearPendingEmissiveProxies();
 
     Graphics *gfx_ = nullptr;     // not owned
     Shader *shader_ = nullptr;    // owned by Graphics (screenspace)
@@ -246,6 +324,7 @@ private:
     float nearZ_ = 0.1f;
     float farZ_ = 100.f;
     glm::vec3 lightDir_{0.4f, 1.f, 0.3f};
+    float anisotropy_ = 0.6f;
     float fogHeight_ = 0.f;
     float fogHeightFalloff_ = 0.15f;
     float fogStart_ = 2.f;
@@ -258,6 +337,7 @@ private:
     float cloudScale_ = 18.f;
     glm::vec3 cloudWind_{1.5f, 0.f, 0.4f};
     glm::vec3 cloudLightColor_{1.f, 0.92f, 0.78f};
+    std::vector<VolumetricLight> pendingEmissiveProxies_;
 };
 
 }  // namespace eve::graphics
