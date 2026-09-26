@@ -194,6 +194,74 @@ shadow
 mode。文档与 API 一律用 `LightingMode` / `deferredLighting` / `clusteredDeferred`，避免
 再叫笼统的 “deferred graph”。
 
+## Pass 并行与流水线重叠
+
+Hybrid 的 **GPU 执行顺序**仍受资源读写约束；并行主要来自三类：
+**(1) 同层无依赖 pass 真并行**、**(2) CPU 录制并行**、**(3) 跨帧 / 跨阶段流水线重叠**。
+不要假设整条 `shadow→…→hair` 能在同一帧 GPU 上全部并行。
+
+### 资源依赖（同一帧 GPU，硬边）
+
+```text
+          ┌── shadow0 ──┐
+          ├── shadow1 ──┼──► (CSM array ready)
+          └── shadow2 ──┘         │
+                                  ▼
+gbuffer ──────────────────► [decal?] ──► deferredLighting ──► forward(透明) ──► post/hair
+   │                              │              ▲
+   └──────── PBR GBuffer ─────────┴──────────────┘
+                    cluster light lists (CPU→SSBO) ──┘
+```
+
+| 边 | 原因 |
+|----|------|
+| `shadow*` ∥ `gbuffer` | **无读写冲突**（不同 image）；已在今日 FrameGraph 同层 |
+| `gbuffer` → `decal` → `deferredLighting` | decal/lighting **读写同一套 GBuffer**；必须串行 |
+| `shadow` → `deferredLighting` | lighting 采样 CSM |
+| `deferredLighting` → `forward(透明)` | 透明要 **depth test** 对上已 lit 的 opaque 深度；且写入同一 scene color |
+| `forward` → `hair` / post | scene color / depth 消费顺序 |
+
+结论：**真正同帧 GPU 可并行的，主要是「3 个 shadow cascade ∥ gbuffer」**；
+其后 `decal` / `deferredLighting` / 透明 `forward` / `hair` 在资源上是链式的。
+
+### 已有能力（保持并扩展）
+
+今日 Vulkan 已把 `shadow0..2 + gbuffer` 放在同一 FrameGraph 无依赖层，用 JobSystem
+**并行录制**四条 CB 再同 queue submit（`GraphicsDeferredGraph.cpp`、
+`2026-08-20-framegraph-mt-render.md`）。
+
+Hybrid 落地时应：
+
+1. **继续** CSM ∥ GBuffer 并行录制（GBuffer 变重后更值钱）。
+2. 把 `decal`、`deferredLighting` 收进同一 FrameGraph，用 attachment 依赖自动插 barrier；
+   与 shadow/gbuffer **不同层**（GPU 串行），CPU 仍可流水线准备。
+3. **不要**让透明 forward 与 deferredLighting 并行（深度与混合语义）。
+
+### 流水线式并行（推荐挖的潜力）
+
+| 重叠 | 做法 |
+|------|------|
+| **CPU cluster build ∥ GPU shadow/gbuffer** | `buildClusteredLighting` 只依赖相机与灯列表；可在 JobSystem 上与 gbuffer 录制/执行重叠，须在 lighting record 前完成 SSBO 上传 |
+| **CPU 透明排序 ∥ deferredLighting GPU** | 透明 draw list 与 opaque lighting 无数据依赖；lighting 结束后立刻录 forward |
+| **帧 N+1 准备 ∥ 帧 N GPU** | 已有 `kAsyncResourceCopies=2`；继续 FrameGraph-MT「快照 / 渲染线程」解耦 |
+| **Post 只读准备** | AO/SSR 可提前准备；composite 到 swapchain 仍有顺序 |
+
+可选进阶（非首期）：`deferredLighting` 改为 per-tile compute，便于 async compute 与
+graphics 重叠（需实测）；额外 depth-pre 与 shadow 同层并行收益也需实测。
+
+### 不该并行
+
+- GBuffer fill ↔ deferredLighting（读写冲突）
+- DeferredLighting ↔ 透明 forward（depth + scene color 混合顺序）
+- 多 camera 共享同一 GBuffer/scene color 时相机之间仍串行
+
+### 对实施的含义
+
+- 阶段 C：`deferredLighting` 声明 sample(GBuffer+CSM)、write(sceneColor)；与
+  shadow/gbuffer 分层。
+- JobSystem：`clusterBuild ∥ record(shadow∥gbuffer)`，join 后再 `record(lighting)`。
+- 调试 HUD 区分「录制并行」与「GPU pass 并行」，避免误解。
+
 ## 材质分流（与现有代码对齐）
 
 `RenderSystem3D` 已有分流：
