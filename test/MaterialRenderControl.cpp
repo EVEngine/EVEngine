@@ -61,7 +61,10 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.supports("aa"));
     CHECK(rc.supports("msaa"));
     CHECK(rc.supports("shadow"));
+    CHECK(rc.supports("clusteredDeferred"));
     CHECK(!rc.supports("deferred"));
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.isDeferredLightingAvailable());
 
     rc.compile();
     CHECK(rc.isCompiled());
@@ -69,6 +72,8 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.hasPass("forward"));
     CHECK(rc.hasPass("hair"));
     CHECK(rc.hasPass("gbuffer"));
+    CHECK(!rc.hasPass("deferredLighting"));
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
     CHECK(rc.isEnabled("ao"));
     CHECK(rc.isEnabled("gi"));
     CHECK(rc.isEnabled("aa"));
@@ -110,6 +115,45 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.isEnabled("gbuffer"));
     rc.disable("gbuffer");
     CHECK(!rc.isEnabled("gbufferAlbedo"));
+}
+
+TEST_CASE("renderControl.lightingModeHybridFallback") {
+    RenderControl rc;
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.isEnabled("clusteredDeferred"));
+
+    auto okHybrid = rc.setLightingMode(LightingMode::Hybrid);
+    CHECK(okHybrid.ok());
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+    CHECK(rc.isEnabled("clusteredDeferred"));
+    CHECK(rc.isEnabled("gbuffer"));
+    CHECK(rc.isEnabled("gbufferAlbedo"));
+    CHECK(rc.isDirty());
+
+    rc.compile();
+    // Phase A: deferredLighting GPU pass is not available yet — observable fallback.
+    CHECK(!rc.isDeferredLightingAvailable());
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
+    CHECK(rc.didFallbackFromHybridLighting());
+    CHECK(!rc.hasPass("deferredLighting"));
+    CHECK(rc.hasPass("forward"));
+    CHECK(rc.hasPass("gbuffer"));
+
+    auto bad = rc.setLightingMode("nope");
+    CHECK(!bad.ok());
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+
+    auto okName = rc.setLightingMode("forwardPlus");
+    CHECK(okName.ok());
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+    rc.compile();
+    CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
+    CHECK(!rc.didFallbackFromHybridLighting());
+
+    rc.enable("clusteredDeferred");
+    CHECK(rc.getLightingMode() == LightingMode::Hybrid);
+    rc.disable("clusteredDeferred");
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
 }
 
 TEST_CASE("renderControl.atmospherePassDependencies") {

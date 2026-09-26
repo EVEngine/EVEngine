@@ -2,7 +2,9 @@
 #include "common/Export.h"
 
 
+#include "common/Result.h"
 #include "graphics/GBuffer.h"
+#include "graphics/LightingMode.h"
 
 #include <string>
 #include <unordered_map>
@@ -27,6 +29,7 @@ class Graphics;
  *   "forward"       — lit forward / clustered mesh draws (default on)
  *   "hair"          — transparent hair pass after opaque (default on)
  *   "clustered"     — prefer clustered forward when light count > 8 (default on)
+ *   "clusteredDeferred" — projection of LightingMode::Hybrid (enum is the source of truth)
  *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
  *   "outline"       — screen-space model outline from depth+normal (implies gbuffer; default off)
  *   "frustumCull"   — conservative bounding-sphere frustum culling during the job-ified
@@ -47,6 +50,12 @@ class Graphics;
  *   "volumetricFog" — froxel media, lighting, integration and composite passes
  *   "fogLocalVolumes" — local volume injection (implies volumetricFog)
  *   "fogTemporal"   — history filtering (implies volumetricFog)
+ *
+ * Lighting mode (enum is authoritative; "clusteredDeferred" is a projection):
+ *   LightingMode::ForwardPlus — today's clustered-forward opaque path (default)
+ *   LightingMode::Hybrid — opaque clustered deferred + transparent Forward+ when the
+ *     deferredLighting pass is available; otherwise compile() falls back observably
+ *     to ForwardPlus (getEffectiveLightingMode() / didFallbackFromHybridLighting())
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.
@@ -69,6 +78,36 @@ public:
     void enable(const std::string &feature);
     void disable(const std::string &feature);
     bool isEnabled(const std::string &feature) const;
+
+    /**
+     * @brief Request the opaque lighting strategy (transparent stays Forward+).
+     * @param mode ForwardPlus or Hybrid.
+     * @return Success. Hybrid may still fall back at compile() until deferred lighting ships.
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setLightingMode(LightingMode mode);
+    /**
+     * @brief Request lighting mode by name: "forwardPlus" / "forward+" / "hybrid".
+     * @return Success, or Unsupported for unknown names (previous mode unchanged).
+     */
+    [[nodiscard]] Result<void> setLightingMode(const std::string &name);
+    /** @brief Return the caller-requested lighting mode (may differ from effective). */
+    LightingMode getLightingMode() const { return lightingMode_; }
+    /**
+     * @brief Return the mode actually compiled into the pass list.
+     * @lifetime Valid after a successful compile(); equals ForwardPlus while dirty.
+     */
+    LightingMode getEffectiveLightingMode() const { return effectiveLightingMode_; }
+    /**
+     * @brief True when deferredLighting can be inserted for Hybrid.
+     * Phase A returns false until the lighting pass is implemented.
+     */
+    bool isDeferredLightingAvailable() const;
+    /**
+     * @brief True after compile() when Hybrid was requested but fell back to ForwardPlus.
+     * Cleared on the next compile that does not need a fallback.
+     */
+    bool didFallbackFromHybridLighting() const { return hybridLightingFallback_; }
 
     /**
      * @brief Set the shared TAA/RTGI/SSR quality preset used by the automatic reflection chain.
@@ -100,14 +139,18 @@ public:
 
 private:
     void setFeature(const std::string &feature, bool enabled);
+    void syncClusteredDeferredFeature();
 
     Graphics *gfx_ = nullptr;
     std::unordered_map<std::string, bool> features_;
     std::vector<std::string> passes_;
     std::string reflectionQuality_ = "high";
     GBuffer gbuffer_;
-    bool dirty_ = true;
-    bool compiled_ = false;
+    LightingMode lightingMode_          = LightingMode::ForwardPlus;
+    LightingMode effectiveLightingMode_ = LightingMode::ForwardPlus;
+    bool hybridLightingFallback_        = false;
+    bool dirty_                         = true;
+    bool compiled_                      = false;
 };
 
 }  // namespace eve::graphics
