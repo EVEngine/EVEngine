@@ -385,6 +385,8 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 - Fullscreen lighting：核心 PBR + CSM + IBL
 - Hybrid：核心 PBR opaque 不再 lit forward；transparent / 扩展特征 opaque 仍 Forward+
 - ClassicScenes：PBR chart、DamagedHelmet；`forwardPlus` vs `hybrid` 容差对比
+- FrameGraph：`deferredLighting` sample(GBuffer+CSM)/write(sceneColor)；
+  JobSystem：`clusterBuild ∥ record(shadow∥gbuffer)` 后再 record lighting
 
 ### 阶段 D — WebGPU parity + 预设
 
@@ -422,6 +424,7 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 4. **自定义 / 扩展 PBR** — 整 draw 留 forward，避免半接通。
 5. **双路径 BRDF** — 强制共享；PBR chart 回归锁外观。
 6. **带宽** — 四 RT 桌面可接受；移动默认 ForwardPlus，不把 Compact 欠采样当默认。
+7. **误并行** — 不得让 lighting 与 gbuffer、透明与 lighting 同层写同一目标。
 
 ## 架构规范核对
 
