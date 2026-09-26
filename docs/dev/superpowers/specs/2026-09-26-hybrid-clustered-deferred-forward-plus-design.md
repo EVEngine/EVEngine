@@ -247,7 +247,76 @@ Hybrid 落地时应：
 | **Post 只读准备** | AO/SSR 可提前准备；composite 到 swapchain 仍有顺序 |
 
 可选进阶（非首期）：`deferredLighting` 改为 per-tile compute，便于 async compute 与
-graphics 重叠（需实测）；额外 depth-pre 与 shadow 同层并行收益也需实测。
+graphics 重叠（需实测）；额外 depth-pre 与 shadow 与同层并行收益也需实测。
+
+### 多 Queue / 「通道」查询与灵活调配（Vulkan）
+
+Vulkan 查询的是 **queue family + 每族 queueCount**，不是抽象的「通道数」：
+
+```text
+vkGetPhysicalDeviceQueueFamilyProperties
+  → family[i].queueFlags  (GRAPHICS | COMPUTE | TRANSFER | …)
+  → family[i].queueCount
+```
+
+VKBuilder 已封装 `QueueType::{graphics, compute, transfer, present}`、
+`get_queue_index` / `get_dedicated_queue`（`vkbuilder.hpp`）。**今日引擎几乎所有 submit
+（含 FrameGraph）都走 `QueueType::graphics`**；dedicated compute/transfer 能力尚未用于
+Hybrid 主管线。
+
+#### 有足够 queue 时，理论上可怎么叠
+
+| 调配 | 条件 | Hybrid 中的候选 |
+|------|------|-----------------|
+| **Async compute** | 独立（或至少可并行的）compute queue；桌面独显常有 | `deferredLighting` / AO / HZB / cluster light assign（若改 GPU）与 **下一段 graphics** 或 **上一帧尾部** 重叠 |
+| **Transfer queue** | dedicated transfer family | 贴图/buffer 上传与 3D 录制重叠（今日多在 graphics 上 `executeImmediately`） |
+| **第二 graphics queue** | 同族 `queueCount ≥ 2` 且实现真并行 | 极少见收益；多数驱动仍串行化同引擎，复杂度高，**不作为 Hybrid 默认** |
+| **Present queue** | 常与 graphics 同族或独立 | 已有 present 路径；与渲染重叠靠 semaphore，不是多画 pass |
+
+资源依赖**不会**因为多了 queue而消失：GBuffer 写完才能 lighting；只是可以把
+「无冲突的另一类工作」放到另一 queue 上，用 **semaphore / timeline** 做跨 queue 同步。
+跨 **queue family** 时还要做 **ownership transfer** barrier（`srcQueueFamilyIndex` /
+`dstQueueFamilyIndex`），今日代码几乎全是 `IGNORED`（单队列假设）。
+
+#### 「灵活调配」建议形态（能力探测，而非写死）
+
+启动时探测并缓存，例如：
+
+```text
+GpuQueuePlan:
+  hasDedicatedCompute : bool
+  hasDedicatedTransfer: bool
+  graphicsQueueCount  : uint
+  preferAsyncLighting : bool   // Hybrid + dedicated compute + 桌面预设
+```
+
+运行时策略：
+
+1. **无 dedicated compute**（很多 iGPU / 移动 / Lavapipe）：全部仍在 graphics；只做同队列内
+   `shadow∥gbuffer` 录制并行 + CPU 流水线重叠。
+2. **有 dedicated compute**：可选把 `deferredLighting`（或 AO/SSR）submit 到 compute queue；
+   graphics 侧 shadow/gbuffer 完成后 signal → compute wait → lighting signal → graphics
+   再画透明/UI。这是真正的 **跨队列流水线**，不是打乱 pass 拓扑。
+3. **有 dedicated transfer**：上传走 transfer；完成后再 release→acquire 到 graphics。
+4. **CI / 软件 Vulkan**：强制单队列路径，保证可测、可回退。
+
+灵活调配 = **按探测结果选 submit 目标**，不是运行时随意打乱依赖边。错误地把 lighting
+和 gbuffer 丢到两个 queue 却不同步，只会得到数据竞争，不会更快。
+
+#### 硬件现实（避免高估）
+
+- **queueCount > 1 ≠ 硬件双引擎**：部分实现只是多条软件队列，背后仍一个计算单元。
+- **移动 TBDR**：多队列收益常很小，带宽与 tile 内存更关键；移动默认仍 `ForwardPlus`。
+- **独显 async compute**：与 graphics 抢同一 CU 时可能 **变慢**（抢占）；需要按场景开关
+  与 GPU vendor 预设，并做帧时对比。
+
+#### 对 Hybrid 阶段的含义
+
+- 首期（A–C）可继续 **单 graphics queue**，先做对依赖正确的 FrameGraph。
+- 阶段 D/E 可选：`GpuQueuePlan` + async compute lighting/AO；契约测试覆盖
+  「有/无 dedicated compute」两种配置。
+- 文档与 HUD：区分 `queueFamily` 探测结果 vs 实测 overlap（否则「查到有 compute」会被
+  误当成已经流水线并行）。
 
 ### 不该并行
 
@@ -447,4 +516,6 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 6. 复用 `ClusteredLight`；新增 `deferredLighting`；不复用 `GraphicsDeferredGraph` 语义名。
 7. **并行**：同帧 GPU 仅 `shadow∥gbuffer`；链式 pass 靠 CPU 录制并行 + cluster build /
    透明准备与 GPU 流水线重叠；跨帧继续双缓冲解耦。
-8. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
+8. **多 Queue**：启动探测 `queueFamily`/`queueCount`（VKBuilder 已有 compute/transfer）；
+   有 dedicated compute 时可选 async lighting/AO；无则单 graphics。灵活调配不等于打乱依赖。
+9. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
