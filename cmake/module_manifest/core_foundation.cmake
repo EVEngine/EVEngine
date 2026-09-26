@@ -111,6 +111,11 @@ eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
                    GROUP minimal 2d 3d web)
+# Indexed emergent rule triggers (watch-key inverted index + deferred activations).
+# Reuses decision::Condition; economy actions go through IEconomy capability.
+eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
+                   DEPS decision
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
                    DEPS schema
                    GROUP minimal 2d 3d web)
