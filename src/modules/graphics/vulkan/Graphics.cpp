@@ -514,33 +514,27 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 phys.features.multiDrawIndirect                       = VK_TRUE;
             }
         }
-        // Optional KHR ray tracing: enable only when the physical device exposes
-        // every required extension AND the matching feature bits. Soft-fail on
-        // Lavapipe / integrated GPUs without RTX so the rest of the device still
-        // boots for CI and portable builds. Mutate extensions_to_enable BEFORE
-        // createDevice() — DeviceBuilder copies that list at construction time.
+        // Optional KHR ray tracing: soft-request extensions via desired list
+        // (already added before select). Probe features here; enable them only
+        // when every required extension is present on the physical device.
+        // extensions_to_enable is private to vk-bootstrap — re-enumerate instead.
         rayTracingCaps_ = RayTracingCaps{};
         vk::PhysicalDeviceBufferDeviceAddressFeatures        rtBdaEnable{};
         vk::PhysicalDeviceAccelerationStructureFeaturesKHR   rtAsEnable{};
         vk::PhysicalDeviceRayTracingPipelineFeaturesKHR      rtPipeEnable{};
         bool                                                 enableRtFeatures = false;
         {
-            const char *kRtExts[] = {
-                VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
-                VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
-                VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
-            };
+            const auto extProps = phys->enumerateDeviceExtensionProperties();
             auto hasExt = [&](const char *name) {
-                return std::find(phys.extensions_to_enable.begin(), phys.extensions_to_enable.end(),
-                                 name) != phys.extensions_to_enable.end();
-            };
-            bool extsOk = true;
-            for (const char *e : kRtExts) {
-                if (!hasExt(e)) {
-                    extsOk = false;
-                    break;
+                for (const auto &p : extProps) {
+                    if (std::strcmp(p.extensionName, name) == 0) return true;
                 }
-            }
+                return false;
+            };
+            const bool extsOk =
+                hasExt(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+                hasExt(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) &&
+                hasExt(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
             const bool api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
             const bool bdaExt =
                 hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
@@ -591,19 +585,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rtPipeEnable.rayTracingPipeline = VK_TRUE;
                 rtPipeEnable.pNext              = &rtAsEnable;
                 enableRtFeatures                = true;
-            } else {
-                // Drop any partially-supported RT extensions so we do not enable
-                // an extension without its feature bits.
-                auto &exts = phys.extensions_to_enable;
-                exts.erase(std::remove_if(exts.begin(), exts.end(),
-                                          [](const std::string &e) {
-                                              return e == VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME ||
-                                                     e == VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME ||
-                                                     e == VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME ||
-                                                     e == VK_KHR_RAY_QUERY_EXTENSION_NAME;
-                                          }),
-                           exts.end());
             }
+            // When features are missing, desired RT extensions may still be
+            // listed on the device; they stay inert without the feature bits.
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();

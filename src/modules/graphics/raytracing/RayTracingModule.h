@@ -6,12 +6,6 @@
 #include "graphics/RayTracingCaps.h"
 
 #include <cstdint>
-#include <memory>
-
-namespace ssq {
-class Class;
-class Table;
-}  // namespace ssq
 
 namespace eve::graphics::raytracing {
 
@@ -28,7 +22,7 @@ namespace eve::graphics::raytracing {
 class EVENGINE_API_WORLD RayTracing : public eve::Module {
 public:
     Module_REG(RayTracing);
-    RayTracing()           = default;
+    RayTracing() = default;
     ~RayTracing() override = default;
 
     /** @brief True when the active Graphics device enabled hardware RT. */
@@ -41,10 +35,7 @@ public:
      * @brief Borrow the process-wide IRayTracing provider, or nullptr when the
      * module is linked but Graphics has not initialized yet.
      */
-    IRayTracing* backend() const;
-
-    static void expose(ssq::Class& cls);
-    void        expose(ssq::Table& table) override;
+    IRayTracing *backend() const;
 };
 
 }  // namespace eve::graphics::raytracing
