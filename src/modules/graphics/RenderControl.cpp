@@ -82,7 +82,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
         enabled)
         features_["gbuffer"] = true;
     if (feature == "rtx" && enabled) {
-        // Prefer hardware RT when available; keep SSR as a soft fallback path
+        // Prefer hardware RT when available; keep SSR as the portable path
         // that RenderSystem3D can still run when IRayTracing is absent.
         features_["gbuffer"] = true;
     }

@@ -11,7 +11,7 @@ namespace eve::graphics {
  *
  * When `available` is false the optional `graphics_raytracing` module still
  * links, but every fallible RT operation returns `StatusCode::Unsupported`.
- * Screen-space reflections remain the portable fallback.
+ * Screen-space reflections remain the portable path when RT is unavailable.
  */
 struct EVENGINE_API_BACKENDS_INLINE RayTracingCaps {
     bool     available                  = false;  ///< Full KHR RT pipeline path usable

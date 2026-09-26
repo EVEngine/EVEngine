@@ -240,7 +240,7 @@ public:
     /**
      * @brief True when the Vulkan device enabled the KHR ray-tracing path.
      * WebGPU and software devices return false; screen-space reflections remain
-     * the portable fallback.
+     * the portable path.
      */
     virtual bool supportsRayTracing() const { return false; }
 

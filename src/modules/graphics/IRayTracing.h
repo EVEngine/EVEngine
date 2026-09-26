@@ -37,7 +37,7 @@ public:
     /**
      * @brief Trace mirror-style reflections into `dest` (RGBA16F, A = hit mask).
      * @param gfx Active Graphics backend (Vulkan).
-     * @param sceneColor Lit scene color to use as a hit fallback sample.
+     * @param sceneColor Lit scene color to sample on a hit when no material is bound.
      * @param hwDepth Hardware depth (D32) matching the scene projection.
      * @param worldNormal World-space normals (RGB).
      * @param dest Output canvas; size drives the launch dimensions.
