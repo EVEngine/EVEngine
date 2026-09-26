@@ -1,5 +1,6 @@
 #include "graphics/RenderSystem3D.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
+#include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
 #include "graphics/AmbientOcclusion.h"
@@ -9,6 +10,7 @@
 #include "graphics/DepthPyramid.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -1358,6 +1360,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     const bool doAO      = rc->isEnabled("ao");
     const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
     const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX     = rc->isEnabled("rtx");
     bool       aoApplied = false;
     auto       applyAO   = [&]() {
         if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
@@ -1387,7 +1390,7 @@ void RenderSystem3D::render(Graphics& gfx) {
         aoApplied = true;
     };
 
-    const bool doReflectionLighting = doRTGI || doSSR;
+    const bool doReflectionLighting = doRTGI || doSSR || doRTX;
     if (doReflectionLighting && defaultCam && gfx.had3DThisFrame()) {
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
@@ -1427,7 +1430,29 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                 }
 
-                if (doSSR) {
+                // Hardware RT reflections (optional module). When unavailable the
+                // capability is null or isAvailable() is false — fall through to SSR.
+                if (doRTX) {
+                    if (auto* rt = eve::cap::query<IRayTracing>()) {
+                        if (rt->isAvailable()) {
+                            ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
+                            Canvas* reflCanvas = ssr->getReflectionCanvas();
+                            if (reflCanvas) {
+                                glm::mat4 invVP = !cams.empty() ? glm::inverse(cams.front().viewProj)
+                                                                : glm::mat4(1.f);
+                                glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+                                auto applied = rt->applyReflections(&gfx, sceneColor, depth,
+                                                                    gb->getNormalTexture(), reflCanvas, invVP, eye);
+                                if (applied.ok())
+                                    ssrTexture = ssr->getReflectionTexture();
+                                else
+                                    applied.ignore();
+                            }
+                        }
+                    }
+                }
+
+                if (doSSR && !ssrTexture) {
                     ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
                     if (ssr->getQuality() != rc->getReflectionQuality()) ssr->setQuality(rc->getReflectionQuality());
                     ssr->setEnabled(true);

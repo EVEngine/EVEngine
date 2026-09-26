@@ -443,6 +443,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
+        // Soft-request KHR ray tracing. Devices without these extensions remain
+        // selectable; supported ones get the extensions into extensions_to_enable.
+        selector.add_desired_extension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME);
         auto phys = selector.select();
         {
             // Record the GPU identity into the crash/error log before any Vulkan
@@ -505,19 +514,116 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 phys.features.multiDrawIndirect                       = VK_TRUE;
             }
         }
+        // Optional KHR ray tracing: enable only when the physical device exposes
+        // every required extension AND the matching feature bits. Soft-fail on
+        // Lavapipe / integrated GPUs without RTX so the rest of the device still
+        // boots for CI and portable builds. Mutate extensions_to_enable BEFORE
+        // createDevice() — DeviceBuilder copies that list at construction time.
+        rayTracingCaps_ = RayTracingCaps{};
+        vk::PhysicalDeviceBufferDeviceAddressFeatures        rtBdaEnable{};
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR   rtAsEnable{};
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR      rtPipeEnable{};
+        bool                                                 enableRtFeatures = false;
+        {
+            const char *kRtExts[] = {
+                VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
+                VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+                VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+            };
+            auto hasExt = [&](const char *name) {
+                return std::find(phys.extensions_to_enable.begin(), phys.extensions_to_enable.end(),
+                                 name) != phys.extensions_to_enable.end();
+            };
+            bool extsOk = true;
+            for (const char *e : kRtExts) {
+                if (!hasExt(e)) {
+                    extsOk = false;
+                    break;
+                }
+            }
+            const bool api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            const bool bdaExt =
+                hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
+            const bool spirv14 =
+                hasExt(VK_KHR_SPIRV_1_4_EXTENSION_NAME) || api12;
+
+            vk::PhysicalDeviceBufferDeviceAddressFeatures bdaFeat{};
+            bdaFeat.sType = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
+            vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeat{};
+            asFeat.sType = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+            asFeat.pNext = &bdaFeat;
+            vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtFeat{};
+            rtFeat.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+            rtFeat.pNext = &asFeat;
+            vk::PhysicalDeviceFeatures2 features2Rt{};
+            features2Rt.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2Rt.pNext = &rtFeat;
+            phys->getFeatures2(&features2Rt);
+
+            const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE &&
+                                    asFeat.accelerationStructure == VK_TRUE &&
+                                    bdaFeat.bufferDeviceAddress == VK_TRUE;
+
+            if (extsOk && bdaExt && spirv14 && featuresOk) {
+                rayTracingCaps_.accelerationStructure = true;
+                rayTracingCaps_.rayTracingPipeline    = true;
+                rayTracingCaps_.bufferDeviceAddress   = true;
+                rayTracingCaps_.available             = true;
+                if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME)) rayTracingCaps_.rayQuery = true;
+
+                vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rtProps{};
+                rtProps.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelinePropertiesKHR;
+                vk::PhysicalDeviceProperties2 props2{};
+                props2.sType = vk::StructureType::ePhysicalDeviceProperties2;
+                props2.pNext = &rtProps;
+                phys->getProperties2(&props2);
+                rayTracingCaps_.shaderGroupHandleSize      = rtProps.shaderGroupHandleSize;
+                rayTracingCaps_.shaderGroupBaseAlignment   = rtProps.shaderGroupBaseAlignment;
+                rayTracingCaps_.shaderGroupHandleAlignment = rtProps.shaderGroupHandleAlignment;
+                rayTracingCaps_.maxRecursionDepth          = rtProps.maxRayRecursionDepth;
+
+                rtBdaEnable.sType               = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
+                rtBdaEnable.bufferDeviceAddress = VK_TRUE;
+                rtAsEnable.sType                 = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+                rtAsEnable.accelerationStructure = VK_TRUE;
+                rtAsEnable.pNext                 = &rtBdaEnable;
+                rtPipeEnable.sType              = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+                rtPipeEnable.rayTracingPipeline = VK_TRUE;
+                rtPipeEnable.pNext              = &rtAsEnable;
+                enableRtFeatures                = true;
+            } else {
+                // Drop any partially-supported RT extensions so we do not enable
+                // an extension without its feature bits.
+                auto &exts = phys.extensions_to_enable;
+                exts.erase(std::remove_if(exts.begin(), exts.end(),
+                                          [](const std::string &e) {
+                                              return e == VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME ||
+                                                     e == VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME ||
+                                                     e == VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME ||
+                                                     e == VK_KHR_RAY_QUERY_EXTENSION_NAME;
+                                          }),
+                           exts.end());
+            }
+        }
+
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
         // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        if (enableRtFeatures) deviceBuilder.add_pNext(&rtPipeEnable);
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+        // Load device-level extension entry points (needed for KHR RT).
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
         eve::recordLogEvent("info", "gpu: logical device created (gpuDriven=" +
                                         std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+                                        ", rayTracing=" +
+                                        std::string(rayTracingCaps_.rayTracingAvailable() ? "on" : "off") +
 #if defined(VKB_ENABLE_VMA)
                                         ", allocator=VMA" +
 #else

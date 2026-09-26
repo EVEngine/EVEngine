@@ -30,6 +30,7 @@
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
 #include "graphics/ISolidRectRenderer.h"
+#include "graphics/RayTracingCaps.h"
 #include "graphics/SurfaceMode.h"
 
 struct aiMesh;
@@ -235,6 +236,16 @@ public:
 
     /** @brief True when the backend can run GPU-driven opaque draws. */
     virtual bool supportsGpuDriven3D() const { return false; }
+
+    /**
+     * @brief True when the Vulkan device enabled the KHR ray-tracing path.
+     * WebGPU and software devices return false; screen-space reflections remain
+     * the portable fallback.
+     */
+    virtual bool supportsRayTracing() const { return false; }
+
+    /** @brief Probed ray-tracing capabilities (empty when unsupported). */
+    virtual RayTracingCaps rayTracingCaps() const { return {}; }
 
     /** @brief Whether the GPU-driven opaque path is currently enabled. */
     virtual bool gpuDrivenEnabled() const { return false; }
