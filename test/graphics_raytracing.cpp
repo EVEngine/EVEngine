@@ -24,9 +24,10 @@ TEST_CASE("graphics.raytracing.capabilityAbsentOrPresent") {
         CHECK(true);  // trimmed build: absence is explicit and OK
         return;
     }
-    // Provider linked: caps snapshot is well-formed even before Graphics init.
+    // Provider linked: querying caps must not throw.
     const RayTracingCaps caps = rt->caps();
-    CHECK(caps.shaderGroupHandleSize == 0u || caps.shaderGroupHandleSize > 0u);
+    (void)caps;
+    CHECK(true);
 }
 
 TEST_CASE("graphics.raytracing.probeAndUnsupportedOps") {
