@@ -1,7 +1,7 @@
 # 混合渲染：Clustered Deferred（不透明）+ Forward+（半透明）
 
 日期：2026-09-26  
-状态：设计（待实施）  
+状态：阶段 A 实施中（`LightingMode` API + `compile()`；deferredLighting GPU 未就绪时 Hybrid 可观察回退）  
 关联：[`3D渲染管线.md`](../../3D渲染管线.md)、[`模块设计.md`](../../模块设计.md)、
 [`ClusteredLight.h`](../../../../src/modules/graphics/ClusteredLight.h)、
 [`PbrSurface.h`](../../../../src/modules/graphics/PbrSurface.h)、
