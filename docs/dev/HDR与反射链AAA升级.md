@@ -16,6 +16,7 @@
 4. 自动曝光、bloom 与最终 tone mapping 在 TAA 后执行一次。
 5. UI 在 tone mapping 后以显示空间合成，避免曝光影响界面颜色。
 6. 环境 cubemap 在上传阶段生成跨面连续的 GGX specular mip 链及 diffuse irradiance。
+7. 可选显示器 HDR present：swapchain 选择 HDR10（PQ）或 scRGB，最终 resolve 按色彩空间编码。
 
 ## 实施阶段
 
@@ -106,6 +107,14 @@
 - [ ] Vulkan compute filter 源码与后端录制已完成：base-mip-only `samplerCube` -> 逐 mip `rgba16f image2DArray`，Hammersley GGX + 最末 mip cosine irradiance、6 face dispatch 与逐 subresource barrier。当前环境同时缺少 `glslc`/`glslangValidator`，embedded SPIR-V 尚未生成；代码以 `__has_include` 守卫，资产缺失时明确返回 unsupported 并禁止 staging publish，不能标记 Vulkan filter 完成。
 - [x] DayNight 逐 texel 天空面会作为 capture far-plane background 写入 HDR face，保留大气渐变、太阳盘、星空与天气方向性；六张纹理进入 revision snapshot，time-sliced capture 不混用不同时刻天空，单色 HDR face 仅作为无纹理 backup。
 - [x] DayNight 的逐 texel face 虽以 RGBA8 缓存，capture 会根据每面中心的线性大气 radiance / tone-mapped texture luminance 自动恢复 HDR 能量；每面 scale 与纹理共同进入 revision snapshot，并可由自定义天空脚本覆盖。
+
+### Phase 6: 显示器 HDR present
+
+- [x] 启用 `VK_EXT_swapchain_colorspace`；按 `DisplayOutputMode` 选择 HDR10（`A2B10G10R10` + `HDR10_ST2084`）或 scRGB（`RGBA16F` + `EXTENDED_SRGB_LINEAR`），并始终保留 SDR UNORM 回退。
+- [x] `Graphics::setDisplayOutputMode` / `setDisplayHdrCalibration` / `queryDisplayOutputSupport` / `isDisplayHdrActive` 暴露请求与实际选中色彩空间；脚本绑定同步。
+- [x] 最终 `scene_tonemap` resolve：SDR 继续 ACES→sRGB；HDR 将 ACES 映射到以纸白为 1 的 display-linear，HDR10 再经 Rec.709→2020 + PQ；UI overlay 在 HDR swapchain 上经同一路径编码。
+- [x] WebGPU 拒绝严格 `hdr10`/`scrgb`（Unsupported），`sdr`/`auto` 保持 SDR。
+- [ ] Windows DXGI HDR 元数据 / Linux 合成器端到端实机验收（需真 HDR 显示器）；软件 Vulkan（Lavapipe）仅验证 API 与 SDR 回退。
 
 ## 不变量
 

@@ -629,6 +629,9 @@ public:
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
     [[nodiscard]] Result<void> setSceneToneMapping(SceneToneMapping mode) override;
     SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
+    [[nodiscard]] Result<void> setDisplayOutputMode(DisplayOutputMode mode) override;
+    [[nodiscard]] Result<void> setDisplayHdrCalibration(float paperWhiteNits, float peakNits) override;
+    [[nodiscard]] Result<DisplayOutputSupport> queryDisplayOutputSupport() const override;
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
     void setSceneColorFilter(const glm::vec3& color) override {
@@ -786,6 +789,7 @@ private:
     struct DecalSetKeyHash;
     struct GBufferSlot;
     void createSwapchainAndPipeline();
+    void applyPreferredSwapchainFormats(vkb::SwapchainBuilder &builder);
     void createTexturedPipeline();
     void createLit2DPipeline();
     void          createGpuParticlePipelines();
@@ -1016,6 +1020,8 @@ private:
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
     SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
+    vk::SurfaceFormatKHR          selectedSurfaceFormat_{vk::Format::eB8G8R8A8Unorm,
+                                                vk::ColorSpaceKHR::eSrgbNonlinear};
     float sceneExposure = 1.f;
     glm::vec3 sceneColorFilter{1.f};
     glm::vec3 sceneLift{0.f};
@@ -1649,7 +1655,7 @@ private:
     };
     std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
-        enum class Effect { Default, SceneColorDistortion };
+        enum class Effect { Default, SceneColorDistortion, DisplayEncode };
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;

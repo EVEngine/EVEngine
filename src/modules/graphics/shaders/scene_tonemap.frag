@@ -24,34 +24,43 @@ vec3 linearToSrgb(vec3 color) {
   return mix(low, high, greaterThan(color, vec3(0.0031308)));
 }
 
-float automaticExposure(sampler2D source) {
-  float logLuminance[16];
-  int sampleIndex = 0;
-  for (int y = 0; y < 4; ++y) {
-    for (int x = 0; x < 4; ++x) {
-      vec2 uv = (vec2(x, y) + vec2(0.5)) * 0.25;
-      vec3 sampleColor = max(texture(source, uv).rgb, vec3(0.0));
-      float luminance = dot(sampleColor, vec3(0.2126, 0.7152, 0.0722));
-      logLuminance[sampleIndex++] = log2(clamp(luminance, 1e-4, 65504.0));
-    }
-  }
-  for (int i = 1; i < 16; ++i) {
-    float value = logLuminance[i];
-    int j = i - 1;
-    while (j >= 0 && logLuminance[j] > value) {
-      logLuminance[j + 1] = logLuminance[j];
-      --j;
-    }
-    logLuminance[j + 1] = value;
-  }
-  float trimmedLogSum = 0.0;
-  for (int i = 2; i < 14; ++i)
-    trimmedLogSum += logLuminance[i];
-  float geometricMean = exp2(trimmedLogSum * (1.0 / 12.0));
-  float packed = round(fragColor.b);
-  float minEV = mod(packed, 256.0) * (1.0 / 8.0) - 16.0;
-  float maxEV = floor(packed * (1.0 / 256.0)) * (1.0 / 8.0) - 16.0;
-  return clamp(0.18 / max(geometricMean, 1e-4), exp2(minEV), exp2(maxEV));
+vec3 rec709ToRec2020(vec3 color) {
+  const mat3 m = mat3(
+      0.6274040, 0.0690970, 0.0163916,
+      0.3292820, 0.9195400, 0.0880132,
+      0.0433136, 0.0113612, 0.8955950);
+  return m * color;
+}
+
+float linearToPq(float v) {
+  v = max(v, 0.0);
+  const float m1 = 2610.0 / 4096.0 / 4.0;
+  const float m2 = 2523.0 / 4096.0 * 128.0;
+  const float c1 = 3424.0 / 4096.0;
+  const float c2 = 2413.0 / 4096.0 * 32.0;
+  const float c3 = 2392.0 / 4096.0 * 32.0;
+  float cp = pow(v, m1);
+  return pow((c1 + c2 * cp) / (1.0 + c3 * cp), m2);
+}
+
+vec3 encodeHdr10(vec3 displayLinear, float paperWhiteNits) {
+  displayLinear = max(displayLinear, vec3(0.0));
+  displayLinear = rec709ToRec2020(displayLinear);
+  const float st2084Max = 10000.0;
+  vec3 normalized = displayLinear * (paperWhiteNits / st2084Max);
+  return vec3(linearToPq(normalized.r), linearToPq(normalized.g),
+              linearToPq(normalized.b));
+}
+
+vec3 acesToDisplayLinear(vec3 color, float peakRatio) {
+  float inv = 1.0 / max(peakRatio, 1e-3);
+  return acesFitted(color * inv) * peakRatio;
+}
+
+void unpackNits(float packed, out float paperWhiteNits, out float peakNits) {
+  float rounded = round(packed);
+  paperWhiteNits = clamp(mod(rounded, 65536.0) * 0.1, 80.0, 400.0);
+  peakNits = clamp(floor(rounded / 65536.0) * 10.0, max(paperWhiteNits, 200.0), 10000.0);
 }
 
 vec3 bloomPrefilter(vec3 color, float threshold) {
@@ -86,9 +95,32 @@ void main() {
   float bloomPacked = mod(round(fragColor.a), 65536.0);
   float bloomIntensity = mod(bloomPacked, 256.0) * (1.0 / 32.0);
   float bloomThreshold = floor(bloomPacked * (1.0 / 256.0)) * (1.0 / 16.0);
+  int displayMode = int(round(fragColor.g));  // 0=SDR, 1=scRGB, 2=HDR10
+  float paperWhiteNits = 200.0;
+  float peakNits = 1000.0;
+  unpackNits(fragColor.b, paperWhiteNits, peakNits);
+  float peakRatio = peakNits / max(paperWhiteNits, 1.0);
+
+  // UI resolve path: SDR overlay already in display-referred 0-1 (paper white).
+  if (fragColor.r < 0.0) {
+    vec3 ui = max(hdr.rgb, vec3(0.0));
+    if (displayMode == 2) ui = encodeHdr10(ui, paperWhiteNits);
+    else if (displayMode == 1) ui = clamp(ui, vec3(0.0), vec3(peakRatio));
+    outColor = vec4(ui, hdr.a);
+    return;
+  }
+
   vec3 bloom = bloomIntensity > 0.0 ? sampleBloom(fragUV, bloomThreshold) : vec3(0.0);
   vec3 linearColor = (hdr.rgb + bloom * bloomIntensity) * exposure;
-  vec3 displayColor = fragColor.r >= 0.5 ? acesFitted(linearColor) : clamp(linearColor, 0.0, 1.0);
-  if (encodeSrgb) displayColor = linearToSrgb(displayColor);
+  vec3 displayColor;
+  if (displayMode == 0) {
+    displayColor = fragColor.r >= 0.5 ? acesFitted(linearColor)
+                                     : clamp(linearColor, 0.0, 1.0);
+    if (encodeSrgb) displayColor = linearToSrgb(displayColor);
+  } else {
+    displayColor = fragColor.r >= 0.5 ? acesToDisplayLinear(linearColor, peakRatio)
+                                     : clamp(linearColor, vec3(0.0), vec3(peakRatio));
+    if (displayMode == 2) displayColor = encodeHdr10(displayColor, paperWhiteNits);
+  }
   outColor = vec4(displayColor, hdr.a);
 }

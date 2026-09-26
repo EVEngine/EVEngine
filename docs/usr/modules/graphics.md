@@ -460,6 +460,25 @@ Bloom、曝光和 HDR 离屏纹理保持各自的职责；二维 UI 不经过此
 设置属于 Graphics 的显示状态，在 graphics/render 线程修改，不持有调用者引用
 或触发回调。非法模式不改变旧值。Vulkan 支持两种模式；其他后端当前仅接受保留
 默认模式的空操作，切换返回 Unsupported，不静默使用不同映射。
+
+### 显示器 HDR（swapchain 输出）
+
+渲染侧 HDR（线性 `RGBA16F` scene color、曝光、Bloom、ACES）与显示器 HDR 是两层。
+下列 API 控制 **present 色彩空间**：
+
+- `gfx.setDisplayOutputMode("sdr" | "auto" | "hdr10" | "scrgb")` → Result。
+  `auto` 优先 HDR10，其次 scRGB，否则 SDR。`hdr10` / `scrgb` 在 Vulkan 上写入偏好并
+  重建 swapchain；表面不支持时软回退到 SDR（不失败）。WebGPU 仅接受 `sdr`/`auto`。
+- `gfx.getDisplayOutputMode()` / `gfx.getActiveDisplayColorSpace()` /
+  `gfx.isDisplayHdrActive()` 区分“请求”与“实际选中”。
+- `gfx.setDisplayHdrCalibration(paperWhiteNits, peakNits)`：纸白默认 200 nits、峰值 1000；
+  用于 HDR10 PQ 与 scRGB 高光上限。
+- `gfx.queryDisplayOutputSupport()` → `{sdr, hdr10, scRgb}`；需要已初始化的窗口 surface。
+
+HDR10 使用 `A2B10G10R10` + `HDR10_ST2084`（PQ）；scRGB 使用 `RGBA16F` +
+`EXTENDED_SRGB_LINEAR`。最终 resolve 在 SDR 上继续 ACES→sRGB，在 HDR 上把 ACES
+映射到以纸白为 1 的 display-linear，再按色彩空间编码。ImGui UI 在 HDR 输出上经
+同一 resolve 编码到纸白。Lavapipe / 无 HDR 显示器环境会保持 SDR。
 # Gaussian scatter bloom
 
 `gfx.setBloomFilter("gaussianScatter", 0.68, 6, 65472.0)` returns a checked Result

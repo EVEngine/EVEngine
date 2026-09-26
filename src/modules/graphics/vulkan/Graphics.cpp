@@ -99,6 +99,8 @@ std::vector<const char*> collectFastInstanceExtensions(const std::vector<vk::Ext
                                                        vk::InstanceCreateFlags*                    flagsOut) {
     std::vector<const char*> exts;
     addIfAvailable(exts, props, "VK_KHR_surface");
+    // Required before surface formats report HDR10 / extended-sRGB color spaces.
+    addIfAvailable(exts, props, "VK_EXT_swapchain_colorspace");
 #if defined(_WIN32)
     addIfAvailable(exts, props, "VK_KHR_win32_surface");
 #elif defined(__ANDROID__)

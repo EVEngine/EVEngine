@@ -6,6 +6,7 @@
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/SolidPipeline.h"
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/DisplayOutputEncoding.h"
 #include "graphics/Light.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -131,9 +132,8 @@ void Graphics::createSwapchainAndPipeline() {
     vkb::SwapchainBuilder swapchainBuilder = device.createSwapchain();
     if (pixelWidth > 0 && pixelHeight > 0)
         swapchainBuilder.set_desired_extent(uint32_t(pixelWidth), uint32_t(pixelHeight));
-    // Prefer UNORM so clear/draw Color floats match getPixel without sRGB encode.
-    swapchainBuilder.set_desired_format(
-        {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear});
+    // Prefer HDR present formats when requested; always keep SDR UNORM fallbacks.
+    applyPreferredSwapchainFormats(swapchainBuilder);
     if (vsyncEnabled) {
         swapchainBuilder.set_desired_present_mode(vk::PresentModeKHR::eMailbox);
         swapchainBuilder.add_fallback_present_mode(vk::PresentModeKHR::eFifo);
@@ -147,6 +147,11 @@ void Graphics::createSwapchainAndPipeline() {
     auto swapRet = swapchainBuilder.set_old_swapchain(swapchain).build();
     swapchain.destroy();
     swapchain = swapRet;
+    if (swapchain.image_format != selectedSurfaceFormat_.format) {
+        // Builder fell through to an unlisted surface format; treat as SDR.
+        activeDisplayColorSpace_ = DisplayColorSpace::Sdr;
+        selectedSurfaceFormat_ = {swapchain.image_format, vk::ColorSpaceKHR::eSrgbNonlinear};
+    }
 
     {
         StartupStage stage("  vulkan: depth image");
@@ -723,8 +728,16 @@ void Graphics::queueUiResolve() {
     auto *slot = currentUiColorSlot();
     if (!slot || !slot->colorTex.gpuHandle) return;
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
-                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    const Color tint =
+        isDisplayHdrActive()
+            ? display::uiResolveTint(activeDisplayColorSpace_ == DisplayColorSpace::Hdr10
+                                         ? display::ActiveColorSpace::Hdr10
+                                         : display::ActiveColorSpace::ScRgb,
+                                     displayPaperWhiteNits_, displayPeakNits_)
+            : Color(1.f, 1.f, 1.f, 1.f);
+    if (isDisplayHdrActive()) resolve.effect = TexturedBatch::Effect::DisplayEncode;
+    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight), tint, 0.f,
+                                  0.f, 1.f, 1.f);
     pendingUiResolve = std::move(resolve);
 }
 
@@ -1538,14 +1551,23 @@ void Graphics::materializeSceneColorResolve() {
     Texture *postProcessed = prepareFinalSceneTexture(src, motion);
     if (postProcessed) {
         // AA and exposure are already applied. Use the final tone-map pipeline;
-        // UNORM swapchains also require explicit linear-to-sRGB encoding.
+        // UNORM SDR swapchains also require explicit linear-to-sRGB encoding.
+        // HDR10/scRGB present paths encode in the resolve shader instead.
         const bool attachmentEncodesSrgb =
-            swapchain.image_format == vk::Format::eB8G8R8A8Srgb || swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
+            swapchain.image_format == vk::Format::eB8G8R8A8Srgb ||
+            swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
         TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
-        resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
-                                      Color(getSceneToneMapping() == SceneToneMapping::Aces ? 1.f : 0.f, 1.f, 1.f,
-                                            attachmentEncodesSrgb ? 0.f : 65536.f),
-                                      0.f, 0.f, 1.f, 1.f);
+        resolve.batch.addTexturedRect(
+            0.f, 0.f, float(width), float(height),
+            display::sceneResolveTint(getSceneToneMapping() == SceneToneMapping::Aces,
+                                      activeDisplayColorSpace_ == DisplayColorSpace::Hdr10
+                                          ? display::ActiveColorSpace::Hdr10
+                                          : (activeDisplayColorSpace_ == DisplayColorSpace::ScRgb
+                                                 ? display::ActiveColorSpace::ScRgb
+                                                 : display::ActiveColorSpace::Sdr),
+                                      attachmentEncodesSrgb, displayPaperWhiteNits_,
+                                      displayPeakNits_),
+            0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }
     solidBatches = std::move(savedSolid);
