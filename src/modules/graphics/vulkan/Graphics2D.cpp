@@ -1454,6 +1454,11 @@ void Graphics::flushToSwapchain() {
             if (!particleDistortionPipeline) return;
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, particleDistortionPipeline);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0, nullptr);
+        } else if (tb.effect == TexturedBatch::Effect::DisplayEncode) {
+            if (!sceneTonemapPipeline) return;
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, sceneTonemapPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1, &texSet, 0,
+                                  nullptr);
         } else if (tb.shader && tb.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
             vk::Pipeline customPipeline =
