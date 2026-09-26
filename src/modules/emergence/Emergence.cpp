@@ -81,6 +81,25 @@ Module_IMPL(Emergence, new Emergence());
 
 void Emergence::expose(ssq::Table& t) {
     const HSQUIRRELVM vm = t.getHandle();
+    auto              asBool  = [](bool value) { return eve::Value(value); };
+    auto              asInt   = [](int value) { return eve::Value(static_cast<std::int64_t>(value)); };
+    auto              staleBool = [&]() {
+        return eve::script::projectResult(
+            vm,
+            eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                              "owned rule engine handle is stale", "engine", {},
+                                                              "emergence")),
+            asBool);
+    };
+    auto staleInt = [&]() {
+        return eve::script::projectResult(
+            vm,
+            eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                             "owned rule engine handle is stale", "engine", {},
+                                                             "emergence")),
+            asInt);
+    };
+
     auto owned = t.addClass<ScriptRuleEngine>(
         "RuleEngine", std::function<ScriptRuleEngine*()>([]() { return nullptr; }), false);
     owned.addFunc("ownership", [](ScriptRuleEngine*) { return std::string("owned"); });
@@ -95,67 +114,49 @@ void Emergence::expose(ssq::Table& t) {
                                                                       "emergence")));
         return eve::script::projectResult(vm, Emergence::release(value->reference));
     });
-    owned.addFunc("replaceCatalogueJson", [vm](ScriptRuleEngine* value, const std::string& json) {
+    owned.addFunc("replaceCatalogueJson", [vm, staleInt, asInt](ScriptRuleEngine* value, const std::string& json) {
         auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                     "owned rule engine handle is stale", "engine", {},
-                                                                     "emergence")));
-        return eve::script::projectResult(vm, view->replaceCatalogueJson(json));
+        if (!view.isBound()) return staleInt();
+        return eve::script::projectResult(vm, view->replaceCatalogueJson(json), asInt);
     });
     owned.addFunc("ruleCount", [](ScriptRuleEngine* value) {
         auto view = resolveOrEmpty(value);
         return view.isBound() ? view->ruleCount() : 0;
     });
-    owned.addFunc("setValue", [vm](ScriptRuleEngine* value, const std::string& key, const std::string& valueJson) {
+    owned.addFunc("setValue", [vm, staleBool, asBool](ScriptRuleEngine* value, const std::string& key,
+                                                      const std::string& valueJson) {
         auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned rule engine handle is stale", "engine", {},
-                                                                      "emergence")));
+        if (!view.isBound()) return staleBool();
         auto parsed = eve::Value::fromJson(valueJson);
-        if (!parsed) return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()));
-        return eve::script::projectResult(vm, view->setValue(key, std::move(parsed).takeValue()));
+        if (!parsed)
+            return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
+        return eve::script::projectResult(vm, view->setValue(key, std::move(parsed).takeValue()), asBool);
     });
-    owned.addFunc("setTag", [vm](ScriptRuleEngine* value, const std::string& tag, bool present) {
+    owned.addFunc("setTag", [vm, staleBool, asBool](ScriptRuleEngine* value, const std::string& tag, bool present) {
         auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned rule engine handle is stale", "engine", {},
-                                                                      "emergence")));
-        return eve::script::projectResult(vm, view->setTag(tag, present));
+        if (!view.isBound()) return staleBool();
+        return eve::script::projectResult(vm, view->setTag(tag, present), asBool);
     });
-    owned.addFunc("setResource", [vm](ScriptRuleEngine* value, const std::string& key, std::int64_t amount) {
+    owned.addFunc("setResource",
+                  [vm, staleBool, asBool](ScriptRuleEngine* value, const std::string& key, std::int64_t amount) {
+                      auto view = resolveOrEmpty(value);
+                      if (!view.isBound()) return staleBool();
+                      return eve::script::projectResult(vm, view->setResource(key, eve::Value(amount)), asBool);
+                  });
+    owned.addFunc("setState", [vm, staleBool, asBool](ScriptRuleEngine* value, const std::string& key,
+                                                      const std::string& valueJson) {
         auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned rule engine handle is stale", "engine", {},
-                                                                      "emergence")));
-        return eve::script::projectResult(vm, view->setResource(key, eve::Value(amount)));
-    });
-    owned.addFunc("setState", [vm](ScriptRuleEngine* value, const std::string& key, const std::string& valueJson) {
-        auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned rule engine handle is stale", "engine", {},
-                                                                      "emergence")));
+        if (!view.isBound()) return staleBool();
         auto parsed = eve::Value::fromJson(valueJson);
-        if (!parsed) return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()));
-        return eve::script::projectResult(vm, view->setState(key, std::move(parsed).takeValue()));
+        if (!parsed)
+            return eve::script::projectResult(vm, eve::Result<bool>::failure(parsed.status()), asBool);
+        return eve::script::projectResult(vm, view->setState(key, std::move(parsed).takeValue()), asBool);
     });
-    owned.addFunc("drain", [vm](ScriptRuleEngine* value, std::int64_t tick) {
+    owned.addFunc("drain", [vm, staleInt, asInt](ScriptRuleEngine* value, std::int64_t tick) {
         auto view = resolveOrEmpty(value);
-        if (!view.isBound())
-            return eve::script::projectResult(
-                vm, eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                     "owned rule engine handle is stale", "engine", {},
-                                                                     "emergence")));
-        return eve::script::projectResult(vm, view->drain(static_cast<std::uint64_t>(std::max<std::int64_t>(0, tick))));
+        if (!view.isBound()) return staleInt();
+        return eve::script::projectResult(
+            vm, view->drain(static_cast<std::uint64_t>(std::max<std::int64_t>(0, tick))), asInt);
     });
     owned.addFunc("activationCount", [](ScriptRuleEngine* value) {
         auto view = resolveOrEmpty(value);

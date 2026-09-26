@@ -230,38 +230,39 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
     };
 
     if (auto r = loadObject("values", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            return store.setValue(key, value), true;
+            (void)store.setValue(key, value);
+            return true;
         });
         !r)
         return r;
     if (auto r = loadObject("tags", [](FactStore& store, const std::string& key, const eve::Value& value) {
             if (!value.isBool()) return false;
-            store.setTag(key, value.asBool());
+            (void)store.setTag(key, value.asBool());
             return true;
         });
         !r)
         return r;
     if (auto r = loadObject("attributes", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            store.setAttribute(key, value);
+            (void)store.setAttribute(key, value);
             return true;
         });
         !r)
         return r;
     if (auto r = loadObject("resources", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            store.setResource(key, value);
+            (void)store.setResource(key, value);
             return true;
         });
         !r)
         return r;
     if (auto r = loadObject("states", [](FactStore& store, const std::string& key, const eve::Value& value) {
-            store.setState(key, value);
+            (void)store.setState(key, value);
             return true;
         });
         !r)
         return r;
     if (auto r = loadObject("authorities", [](FactStore& store, const std::string& key, const eve::Value& value) {
             if (!value.isBool()) return false;
-            store.setAuthority(key, value.asBool());
+            (void)store.setAuthority(key, value.asBool());
             return true;
         });
         !r)
