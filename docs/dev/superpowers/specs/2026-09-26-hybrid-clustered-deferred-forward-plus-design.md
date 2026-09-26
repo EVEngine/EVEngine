@@ -445,4 +445,6 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 4. 扩展特征（clearcoat / anisotropy / 全套 TVE）首期整 draw 留 Forward+，或列入阶段 E。
 5. 可配置：`LightingMode::{ForwardPlus, Hybrid}`，首期默认 ForwardPlus。
 6. 复用 `ClusteredLight`；新增 `deferredLighting`；不复用 `GraphicsDeferredGraph` 语义名。
-7. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
+7. **并行**：同帧 GPU 仅 `shadow∥gbuffer`；链式 pass 靠 CPU 录制并行 + cluster build /
+   透明准备与 GPU 流水线重叠；跨帧继续双缓冲解耦。
+8. 分阶段落地；桌面复杂光效用 Hybrid，移动/CI 用 ForwardPlus。
