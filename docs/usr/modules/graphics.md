@@ -473,6 +473,7 @@ Bloom、曝光和 HDR 离屏纹理保持各自的职责；二维 UI 不经过此
   `gfx.isDisplayHdrActive()` 区分“请求”与“实际选中”。
 - `gfx.setDisplayHdrCalibration(paperWhiteNits, peakNits)`：纸白默认 200 nits、峰值 1000；
   用于 HDR10 PQ 与 scRGB 高光上限。
+  `gfx.getDisplayPaperWhiteNits()` / `gfx.getDisplayPeakNits()` 读取当前校准值。
 - `gfx.queryDisplayOutputSupport()` → `{sdr, hdr10, scRgb}`；需要已初始化的窗口 surface。
 
 HDR10 使用 `A2B10G10R10` + `HDR10_ST2084`（PQ）；scRGB 使用 `RGBA16F` +
