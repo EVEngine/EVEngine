@@ -191,7 +191,7 @@ TEST_CASE("UI.tween.destroyedHostDropsTweens") {
     host->get().meta()->posY = 0.f;
     driver.animateHostPos(handle, 50.f, 50.f, 1000.f, "linear", 0.f, 0.0);
     CHECK_EQ(driver.hostTweenCount(), 1u);
-    host->get().destroy();
+    ecs::DestroyEntity(&host->get());
     CHECK(!ui::UIHost::resolve(handle).has_value());
     driver.tick(500.0);
     CHECK_EQ(driver.hostTweenCount(), 0u);
