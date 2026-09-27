@@ -873,6 +873,13 @@ private:
     void          ensurePresentComposeResources(int width, int height);
     void          destroyPresentComposeResources();
     struct PresentComposeSlot;
+    /**
+     * @brief Active-frame HDR compose slot (color target + sample texture).
+     * @ownership Returned pointer is owned by Graphics; do not delete.
+     * @lifetime Borrowed until the next present-compose recreate, swapchain tear-down,
+     *           or Graphics shutdown. Invalid after destroyPresentComposeResources().
+     * @return Null when compose resources are not allocated.
+     */
     PresentComposeSlot *currentPresentComposeSlot();
     /** @brief Begin/end the HDR compose pass on the present command buffer. */
     bool          beginPresentComposePass();
