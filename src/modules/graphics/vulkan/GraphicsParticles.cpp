@@ -267,6 +267,61 @@ void Graphics::createGpuParticlePipelines() {
     device->destroyShaderModule(frag);
 }
 
+void Graphics::rebuildGpuParticleDrawPipelines(const vkb::BuiltRenderPass &target) {
+    if (!gpuParticleDrawLayout_ || !target) return;
+    auto destroyPipe = [&](vk::Pipeline &p) {
+        if (p) {
+            device->destroyPipeline(p);
+            p = nullptr;
+        }
+    };
+    destroyPipe(gpuParticleAlphaPipeline_);
+    destroyPipe(gpuParticleAdditivePipeline_);
+    destroyPipe(gpuParticlePremultipliedPipeline_);
+    destroyPipe(gpuParticleMultiplyPipeline_);
+    destroyPipe(gpuParticleOpaquePipeline_);
+    const auto vertSpv = std::vector<std::uint32_t>(particle_resident_vert_spv,
+                                                    particle_resident_vert_spv + particle_resident_vert_spv_count);
+    const auto fragSpv = std::vector<std::uint32_t>(particle_resident_frag_spv,
+                                                    particle_resident_frag_spv + particle_resident_frag_spv_count);
+    vk::ShaderModule vert = vkb::PipelineBuilder::createShaderModule(device.instance, vertSpv);
+    vk::ShaderModule frag = vkb::PipelineBuilder::createShaderModule(device.instance, fragSpv);
+    gpuParticleAlphaPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Alpha);
+    gpuParticleAdditivePipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Additive);
+    gpuParticlePremultipliedPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Premultiplied);
+    gpuParticleMultiplyPipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Multiply);
+    gpuParticleOpaquePipeline_ =
+        createParticleDrawPipeline(device, target, gpuParticleDrawLayout_, vert, frag, BlendMode::Opaque);
+    device->destroyShaderModule(vert);
+    device->destroyShaderModule(frag);
+}
+
+void Graphics::ensureHdrGpuParticleDrawPipelines() {
+    if (hdrGpuParticleAlphaPipeline_ || !gpuParticleDrawLayout_ || !hdrOffscreenRenderPass) return;
+    const auto vertSpv = std::vector<std::uint32_t>(particle_resident_vert_spv,
+                                                    particle_resident_vert_spv + particle_resident_vert_spv_count);
+    const auto fragSpv = std::vector<std::uint32_t>(particle_resident_frag_spv,
+                                                    particle_resident_frag_spv + particle_resident_frag_spv_count);
+    vk::ShaderModule vert = vkb::PipelineBuilder::createShaderModule(device.instance, vertSpv);
+    vk::ShaderModule frag = vkb::PipelineBuilder::createShaderModule(device.instance, fragSpv);
+    hdrGpuParticleAlphaPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Alpha);
+    hdrGpuParticleAdditivePipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Additive);
+    hdrGpuParticlePremultipliedPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Premultiplied);
+    hdrGpuParticleMultiplyPipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Multiply);
+    hdrGpuParticleOpaquePipeline_ = createParticleDrawPipeline(
+        device, hdrOffscreenRenderPass, gpuParticleDrawLayout_, vert, frag, BlendMode::Opaque);
+    device->destroyShaderModule(vert);
+    device->destroyShaderModule(frag);
+}
+
 void Graphics::destroyGpuParticleResources() {
     gpuParticleDraws_.clear();
     for (auto& [handle, resource] : gpuParticles_) {
@@ -290,6 +345,11 @@ void Graphics::destroyGpuParticleResources() {
     destroyPipeline(gpuParticlePremultipliedPipeline_);
     destroyPipeline(gpuParticleMultiplyPipeline_);
     destroyPipeline(gpuParticleOpaquePipeline_);
+    destroyPipeline(hdrGpuParticleAlphaPipeline_);
+    destroyPipeline(hdrGpuParticleAdditivePipeline_);
+    destroyPipeline(hdrGpuParticlePremultipliedPipeline_);
+    destroyPipeline(hdrGpuParticleMultiplyPipeline_);
+    destroyPipeline(hdrGpuParticleOpaquePipeline_);
     if (gpuParticleComputeLayout_) device->destroyPipelineLayout(gpuParticleComputeLayout_);
     if (gpuParticleDrawLayout_) device->destroyPipelineLayout(gpuParticleDrawLayout_);
     gpuParticleComputeLayout_ = nullptr;
@@ -530,12 +590,30 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         slot.drawDepthTexture = gpuDepthTexture;
     }
 
-    vk::Pipeline pipeline = gpuParticleAlphaPipeline_;
+    vk::Pipeline pipeline = presentComposeActive_ && hdrGpuParticleAlphaPipeline_
+                                ? hdrGpuParticleAlphaPipeline_
+                                : gpuParticleAlphaPipeline_;
     switch (request.draw.blend) {
-        case BlendMode::Additive: pipeline = gpuParticleAdditivePipeline_; break;
-        case BlendMode::Premultiplied: pipeline = gpuParticlePremultipliedPipeline_; break;
-        case BlendMode::Multiply: pipeline = gpuParticleMultiplyPipeline_; break;
-        case BlendMode::Opaque: pipeline = gpuParticleOpaquePipeline_; break;
+        case BlendMode::Additive:
+            pipeline = presentComposeActive_ && hdrGpuParticleAdditivePipeline_
+                           ? hdrGpuParticleAdditivePipeline_
+                           : gpuParticleAdditivePipeline_;
+            break;
+        case BlendMode::Premultiplied:
+            pipeline = presentComposeActive_ && hdrGpuParticlePremultipliedPipeline_
+                           ? hdrGpuParticlePremultipliedPipeline_
+                           : gpuParticlePremultipliedPipeline_;
+            break;
+        case BlendMode::Multiply:
+            pipeline = presentComposeActive_ && hdrGpuParticleMultiplyPipeline_
+                           ? hdrGpuParticleMultiplyPipeline_
+                           : gpuParticleMultiplyPipeline_;
+            break;
+        case BlendMode::Opaque:
+            pipeline = presentComposeActive_ && hdrGpuParticleOpaquePipeline_
+                           ? hdrGpuParticleOpaquePipeline_
+                           : gpuParticleOpaquePipeline_;
+            break;
         case BlendMode::Alpha:
         default: break;
     }

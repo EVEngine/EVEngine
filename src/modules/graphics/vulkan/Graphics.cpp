@@ -101,6 +101,8 @@ std::vector<const char*> collectFastInstanceExtensions(const std::vector<vk::Ext
                                                        vk::InstanceCreateFlags*                    flagsOut) {
     std::vector<const char*> exts;
     addIfAvailable(exts, props, "VK_KHR_surface");
+    // Required before surface formats report HDR10 / extended-sRGB color spaces.
+    addIfAvailable(exts, props, "VK_EXT_swapchain_colorspace");
 #if defined(_WIN32)
     addIfAvailable(exts, props, "VK_KHR_win32_surface");
 #elif defined(__ANDROID__)
@@ -331,6 +333,8 @@ Graphics::~Graphics() {
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
         if (g->swapchainOpaquePipeline) device->destroyPipeline(g->swapchainOpaquePipeline);
         if (g->offscreenOpaquePipeline) device->destroyPipeline(g->offscreenOpaquePipeline);
+        if (g->hdrOffscreenPipeline) device->destroyPipeline(g->hdrOffscreenPipeline);
+        if (g->hdrOffscreenOpaquePipeline) device->destroyPipeline(g->hdrOffscreenOpaquePipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
         if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
         if (g->mesh3dOffscreenPipeline) device->destroyPipeline(g->mesh3dOffscreenPipeline);
@@ -408,6 +412,18 @@ Graphics::~Graphics() {
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
     if (hdrOffscreenTexPipeline) device->destroyPipeline(hdrOffscreenTexPipeline);
     if (hdrOffscreenOpaqueTexPipeline) device->destroyPipeline(hdrOffscreenOpaqueTexPipeline);
+    if (hdrOffscreenAdditiveTexPipeline) device->destroyPipeline(hdrOffscreenAdditiveTexPipeline);
+    if (hdrOffscreenPremultipliedTexPipeline) device->destroyPipeline(hdrOffscreenPremultipliedTexPipeline);
+    if (hdrOffscreenMultiplyTexPipeline) device->destroyPipeline(hdrOffscreenMultiplyTexPipeline);
+    if (hdrOffscreenSolidPipeline) device->destroyPipeline(hdrOffscreenSolidPipeline);
+    if (hdrOffscreenSolidAlphaPipeline) device->destroyPipeline(hdrOffscreenSolidAlphaPipeline);
+    if (hdrOffscreenAdditiveSolidPipeline) device->destroyPipeline(hdrOffscreenAdditiveSolidPipeline);
+    if (hdrOffscreenPremultipliedSolidPipeline) device->destroyPipeline(hdrOffscreenPremultipliedSolidPipeline);
+    if (hdrOffscreenMultiplySolidPipeline) device->destroyPipeline(hdrOffscreenMultiplySolidPipeline);
+    if (hdrOffscreenLitPipeline) device->destroyPipeline(hdrOffscreenLitPipeline);
+    if (hdrOffscreenTonemapPipeline) device->destroyPipeline(hdrOffscreenTonemapPipeline);
+    if (hdrOffscreenParticleDistortionPipeline) device->destroyPipeline(hdrOffscreenParticleDistortionPipeline);
+    destroyPresentComposeResources();
     if (hdrOffscreenRenderPass) device->destroyRenderPass(hdrOffscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
