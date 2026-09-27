@@ -1365,6 +1365,8 @@ struct GBufOut {
     @location(0) normal: vec4f,
     @location(1) depthColor: vec4f,
     @location(2) albedo: vec4f,
+    @location(3) pbrParams: vec4f,
+    @location(4) emissive: vec4f,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @group(0) @binding(1) var albedoSampler: texture_2d<f32>;
@@ -1381,12 +1383,17 @@ fn fs_main(in: FSIn) -> GBufOut {
     let packedMotion = u32(pc.clip.w + 0.5);
     let motion = (vec2f(f32(packedMotion & 4095u), f32((packedMotion >> 12u) & 4095u)) - 2047.0) / 2047.0;
     let packedTint = u32(pc.clip.z + 0.5);
-    let pbr = ((packedTint >> 18u) & 7u) | (((packedTint >> 21u) & 7u) << 3u);
-    out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbr) / 255.0);
-    out.depthColor = vec4f(vec3f(linear), 1.0);
+    // Phase B packing: tint RGB6 | rough7 | metal7 (matches Vulkan drawMeshGBuffer).
+    let roughness = f32((packedTint >> 18u) & 127u) / 127.0;
+    let metallic = f32((packedTint >> 25u) & 127u) / 127.0;
+    let pbrLegacy = (u32(roughness * 7.0 + 0.5) & 7u) | ((u32(metallic * 7.0 + 0.5) & 7u) << 3u);
+    out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbrLegacy) / 255.0);
+    out.depthColor = vec4f(linear, clamp(motion * 0.5 + 0.5, vec2f(0.0), vec2f(1.0)), 1.0);
     let tint = vec3f(f32(packedTint & 63u), f32((packedTint >> 6u) & 63u),
                      f32((packedTint >> 12u) & 63u)) / 63.0;
     out.albedo = vec4f(textureSample(albedoSampler, mainSamp, in.vUV).rgb * tint, linear);
+    out.pbrParams = vec4f(metallic, roughness, 1.0, 1.0);
+    out.emissive = vec4f(0.0);
     return out;
 }
 )wgsl";
@@ -1408,6 +1415,8 @@ struct GBufOut {
     @location(0) normal: vec4f,
     @location(1) depthColor: vec4f,
     @location(2) albedo: vec4f,
+    @location(3) pbrParams: vec4f,
+    @location(4) emissive: vec4f,
 };
 @group(0) @binding(0) var<uniform> pc: Push;
 @group(0) @binding(1) var albedoTexture: texture_2d<f32>;
@@ -1425,12 +1434,16 @@ fn fs_main(in: FSIn) -> GBufOut {
     let packedMotion = u32(pc.clip.w + 0.5);
     let motion = (vec2f(f32(packedMotion & 4095u), f32((packedMotion >> 12u) & 4095u)) - 2047.0) / 2047.0;
     let packedTint = u32(pc.clip.z + 0.5);
-    let pbr = ((packedTint >> 18u) & 7u) | (((packedTint >> 21u) & 7u) << 3u);
-    out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbr) / 255.0);
-    out.depthColor = vec4f(vec3f(linear), 1.0);
+    let roughness = f32((packedTint >> 18u) & 127u) / 127.0;
+    let metallic = f32((packedTint >> 25u) & 127u) / 127.0;
+    let pbrLegacy = (u32(roughness * 7.0 + 0.5) & 7u) | ((u32(metallic * 7.0 + 0.5) & 7u) << 3u);
+    out.normal = vec4f(in.vNormal * 0.5 + 0.5, f32(pbrLegacy) / 255.0);
+    out.depthColor = vec4f(linear, clamp(motion * 0.5 + 0.5, vec2f(0.0), vec2f(1.0)), 1.0);
     let tint = vec3f(f32(packedTint & 63u), f32((packedTint >> 6u) & 63u),
                      f32((packedTint >> 12u) & 63u)) / 63.0;
     out.albedo = vec4f(sampled.rgb * tint, linear);
+    out.pbrParams = vec4f(metallic, roughness, 1.0, 1.0);
+    out.emissive = vec4f(0.0);
     return out;
 }
 )wgsl";

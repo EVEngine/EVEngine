@@ -272,6 +272,8 @@ TEST_CASE("gbuffer.bufferQueries") {
     CHECK(gb.hasBuffer("albedo"));
     CHECK(gb.getBuffer("depth") == &depth);
     CHECK(!gb.hasBuffer("hwDepth"));
+    CHECK(!gb.hasBuffer("pbrParams"));
+    CHECK(!gb.hasBuffer("emissive"));
     CHECK(gb.getBuffer("missing") == nullptr);
 
     Texture hw;
@@ -279,7 +281,19 @@ TEST_CASE("gbuffer.bufferQueries") {
     CHECK(gb.hasBuffer("hwDepth"));
     CHECK(gb.getHwDepthTexture() == &hw);
     CHECK(gb.getBuffer("hwDepth") == &hw);
+    CHECK(!gb.hasBuffer("pbrParams"));
+
+    Texture pbr, emissive;
+    gb.setTargets(128, 96, &depth, &normal, &albedo, &hw, &pbr, &emissive);
+    CHECK(gb.hasBuffer("pbrParams"));
+    CHECK(gb.hasBuffer("emissive"));
+    CHECK(gb.getPbrParamsTexture() == &pbr);
+    CHECK(gb.getEmissiveTexture() == &emissive);
+    CHECK(gb.getBuffer("pbrParams") == &pbr);
+    CHECK(gb.getBuffer("emissive") == &emissive);
 
     gb.clear();
     CHECK(!gb.isValid());
+    CHECK(!gb.hasBuffer("pbrParams"));
+    CHECK(!gb.hasBuffer("emissive"));
 }

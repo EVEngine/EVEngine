@@ -422,7 +422,8 @@ image::ImageData *Graphics::renderEntityIdMask(
     // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
     if (RenderControl *rc = getRenderControl()) {
         rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
-                                     &slot->albedoTex, &slot->depthTex);
+                                     &slot->albedoTex, &slot->depthTex, &slot->pbrParamsTex,
+                                     &slot->emissiveTex);
     }
     return img;
 }
@@ -438,6 +439,10 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
         src = &slot->normal;
     else if (attachment == "albedo")
         src = &slot->albedo;
+    else if (attachment == "pbrParams")
+        src = &slot->pbrParams;
+    else if (attachment == "emissive")
+        src = &slot->emissive;
     else
         return nullptr;
 

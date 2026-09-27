@@ -772,12 +772,13 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
+    // Phase B: tint RGB6 | rough7 | metal7 (7-bit ≈ 128 levels for deferred PBR params).
     // A float exactly represents every integer through 24 bits. Numeric packing avoids
     // NaN canonicalization and subnormal flush-to-zero corrupting bit-cast payloads.
-    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
-    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
+    const uint32_t rough7 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
     const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
-                                (rough3 << 18) | (metal3 << 21);
+                                (rough7 << 18) | (metal7 << 25);
     auto motion12 = [](float value) {
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
@@ -804,10 +805,10 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
-    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
-    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
+    const uint32_t rough7 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
     const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
-                                (rough3 << 18) | (metal3 << 21);
+                                (rough7 << 18) | (metal7 << 25);
     auto motion12 = [](float value) {
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
@@ -831,9 +832,9 @@ void Graphics::endGBufferPass() {
 
     gbufferPending = true;
     if (renderControl_) {
-        Texture *albedo = &slot->albedoTex;
         renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
-                                                 &slot->normalTex, albedo, &slot->depthTex);
+                                                 &slot->normalTex, &slot->albedoTex, &slot->depthTex,
+                                                 &slot->pbrParamsTex, &slot->emissiveTex);
     }
 }
 

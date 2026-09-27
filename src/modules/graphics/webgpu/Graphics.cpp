@@ -1212,8 +1212,8 @@ void Graphics::createGbufferPipelines() {
     ds.stencilReadMask   = 0;
     ds.stencilWriteMask  = 0;
 
-    WGPUColorTargetState targets[3] = {};
-    for (int i = 0; i < 3; ++i) {
+    WGPUColorTargetState targets[5] = {};
+    for (int i = 0; i < 5; ++i) {
         targets[i].format    = WGPUTextureFormat_RGBA8Unorm;
         targets[i].blend     = nullptr;
         targets[i].writeMask = WGPUColorWriteMask_All;
@@ -1231,7 +1231,7 @@ void Graphics::createGbufferPipelines() {
     WGPUFragmentState fs{};
     fs.module                     = fragModule.Get();
     fs.entryPoint                 = sv("fs_main");
-    fs.targetCount                = 3;
+    fs.targetCount                = 5;
     fs.targets                    = targets;
     pd.fragment                   = &fs;
     pd.primitive.topology         = WGPUPrimitiveTopology_TriangleList;
@@ -3698,7 +3698,8 @@ void Graphics::endGBufferPass() {
     if (renderControl_ && !gbufferSlots.empty()) {
         GbufferSlot& slot = gbufferSlots[currentFrameSlot()];
         renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex, &slot.normalTex,
-                                                 &slot.albedoTex, &slot.depthTex);
+                                                 &slot.albedoTex, &slot.depthTex, &slot.pbrParamsTex,
+                                                 &slot.emissiveTex);
     }
 }
 
@@ -3959,6 +3960,10 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.depthColorView = slot.depthColor.CreateView();
         slot.albedo         = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
         slot.albedoView     = slot.albedo.CreateView();
+        slot.pbrParams      = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        slot.pbrParamsView  = slot.pbrParams.CreateView();
+        slot.emissive       = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        slot.emissiveView   = slot.emissive.CreateView();
         slot.depth          = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&dd));
         slot.depthView      = slot.depth.CreateView();
         slot.visID          = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&visIdDesc));
@@ -3975,6 +3980,12 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoGpu.texture     = slot.albedo;
         slot.albedoGpu.view        = slot.albedoView;
         slot.albedoGpu.sampler     = createLinearSampler(device);
+        slot.pbrParamsGpu.texture  = slot.pbrParams;
+        slot.pbrParamsGpu.view     = slot.pbrParamsView;
+        slot.pbrParamsGpu.sampler  = createLinearSampler(device);
+        slot.emissiveGpu.texture   = slot.emissive;
+        slot.emissiveGpu.view      = slot.emissiveView;
+        slot.emissiveGpu.sampler   = createLinearSampler(device);
         slot.depthGpu.texture      = slot.depth;
         slot.depthGpu.view         = slot.depthView;
         slot.depthGpu.sampler      = createLinearSampler(device);
@@ -3988,6 +3999,12 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoTex.gpuHandle     = &slot.albedoGpu;
         slot.albedoTex.width         = width;
         slot.albedoTex.height        = height;
+        slot.pbrParamsTex.gpuHandle  = &slot.pbrParamsGpu;
+        slot.pbrParamsTex.width      = width;
+        slot.pbrParamsTex.height     = height;
+        slot.emissiveTex.gpuHandle   = &slot.emissiveGpu;
+        slot.emissiveTex.width       = width;
+        slot.emissiveTex.height      = height;
         slot.depthTex.gpuHandle      = &slot.depthGpu;
         slot.depthTex.width          = width;
         slot.depthTex.height         = height;
@@ -4319,10 +4336,11 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         ubo.mvp               = d.mvp;
         ubo.model             = d.model;
         auto           u6     = [](float value) { return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 63.f)); };
-        const uint32_t rough3 = uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 7.f));
-        const uint32_t metal3 = uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 7.f));
+        // Phase B: tint RGB6 | rough7 | metal7 (matches Vulkan drawMeshGBuffer).
+        const uint32_t rough7 = uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 127.f));
+        const uint32_t metal7 = uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 127.f));
         const uint32_t packedTint =
-            u6(d.tint.r) | (u6(d.tint.g) << 6) | (u6(d.tint.b) << 12) | (rough3 << 18) | (metal3 << 21);
+            u6(d.tint.r) | (u6(d.tint.g) << 6) | (u6(d.tint.b) << 12) | (rough7 << 18) | (metal7 << 25);
         auto motion12 = [](float value) {
             return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
         };
@@ -4448,7 +4466,7 @@ void Graphics::submitPendingDeferredPasses() {
     if (gbufferPassPending && !gbufferSlots.empty()) {
         lastGbufferSlot                    = currentFrameSlot();
         GbufferSlot&                  slot = gbufferSlots[lastGbufferSlot];
-        WGPURenderPassColorAttachment colors[3]{};
+        WGPURenderPassColorAttachment colors[5]{};
         for (auto& color : colors) {
             color.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
             color.loadOp     = WGPULoadOp_Clear;
@@ -4456,9 +4474,12 @@ void Graphics::submitPendingDeferredPasses() {
             color.clearValue = {0.f, 0.f, 0.f, 0.f};
         }
         colors[1].clearValue = {1.f, 1.f, 1.f, 1.f};
+        colors[3].clearValue = {0.f, 1.f, 1.f, 1.f};  // metal=0, rough/ao/spec=1
         colors[0].view       = slot.normalView.Get();
         colors[1].view       = slot.depthColorView.Get();
         colors[2].view       = slot.albedoView.Get();
+        colors[3].view       = slot.pbrParamsView.Get();
+        colors[4].view       = slot.emissiveView.Get();
         WGPURenderPassDepthStencilAttachment depth{};
         depth.view            = slot.depthView.Get();
         depth.depthClearValue = 1.f;
@@ -4467,7 +4488,7 @@ void Graphics::submitPendingDeferredPasses() {
         depth.stencilLoadOp   = WGPULoadOp_Undefined;
         depth.stencilStoreOp  = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor descriptor{};
-        descriptor.colorAttachmentCount   = 3;
+        descriptor.colorAttachmentCount   = 5;
         descriptor.colorAttachments       = colors;
         descriptor.depthStencilAttachment = &depth;
         wgpu::RenderPassEncoder pass =
@@ -4743,16 +4764,21 @@ void Graphics::present() {
     if (gbufferPassPending && !gbufferSlots.empty()) {
         lastGbufferSlot                    = currentFrameSlot();
         GbufferSlot&                  slot = gbufferSlots[lastGbufferSlot];
-        WGPURenderPassColorAttachment colorAtts[3]{};
-        for (int i = 0; i < 3; ++i) {
+        WGPURenderPassColorAttachment colorAtts[5]{};
+        for (int i = 0; i < 5; ++i) {
             colorAtts[i].depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
             colorAtts[i].loadOp     = WGPULoadOp_Clear;
             colorAtts[i].storeOp    = WGPUStoreOp_Store;
             colorAtts[i].clearValue = {0.f, 0.f, 0.f, 1.f};
         }
+        // Match Vulkan GBuffer clears: depthColor=1, pbrParams=(0,1,1,1).
+        colorAtts[1].clearValue = {1.f, 1.f, 1.f, 1.f};
+        colorAtts[3].clearValue = {0.f, 1.f, 1.f, 1.f};
         colorAtts[0].view = slot.normalView.Get();
         colorAtts[1].view = slot.depthColorView.Get();
         colorAtts[2].view = slot.albedoView.Get();
+        colorAtts[3].view = slot.pbrParamsView.Get();
+        colorAtts[4].view = slot.emissiveView.Get();
         WGPURenderPassDepthStencilAttachment ds{};
         ds.view              = slot.depthView.Get();
         ds.depthClearValue   = 1.f;
@@ -4762,7 +4788,7 @@ void Graphics::present() {
         ds.stencilLoadOp     = WGPULoadOp_Undefined;
         ds.stencilStoreOp    = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor rp{};
-        rp.colorAttachmentCount   = 3;
+        rp.colorAttachmentCount   = 5;
         rp.colorAttachments       = colorAtts;
         rp.depthStencilAttachment = &ds;
         wgpu::RenderPassEncoder pass =

@@ -15,6 +15,8 @@ layout(set = 0, binding = 1) uniform sampler2D MainTex;
 layout(location = 0) out vec4 outNormal;
 layout(location = 1) out vec4 outDepth;
 layout(location = 2) out vec4 outAlbedo;
+layout(location = 3) out vec4 outPbrParams;
+layout(location = 4) out vec4 outEmissive;
 
 void main() {
     vec3 n = normalize(vWorldNormal);
@@ -27,10 +29,14 @@ void main() {
     uint packedMotion = uint(skinPass.clip.w + 0.5);
     vec2 motion = (vec2(packedMotion & 4095u, (packedMotion >> 12) & 4095u) - 2047.0) / 2047.0;
     uint packedTint = uint(skinPass.clip.z);
-    uint pbr = ((packedTint >> 18) & 7u) | (((packedTint >> 21) & 7u) << 3);
-    outNormal = vec4(n * 0.5 + 0.5, float(pbr) / 255.0);
+    float roughness = float((packedTint >> 18) & 127u) / 127.0;
+    float metallic = float((packedTint >> 25) & 127u) / 127.0;
+    uint pbrLegacy = (uint(roughness * 7.0 + 0.5) & 7u) | ((uint(metallic * 7.0 + 0.5) & 7u) << 3);
+    outNormal = vec4(n * 0.5 + 0.5, float(pbrLegacy) / 255.0);
     outDepth = vec4(linear01, clamp(motion * 0.5 + 0.5, 0.0, 1.0), 1.0);
     vec3 tint = vec3(float(packedTint & 63u), float((packedTint >> 6) & 63u),
                      float((packedTint >> 12) & 63u)) / 63.0;
     outAlbedo = vec4(texture(MainTex, vUV).rgb * tint, linear01);
+    outPbrParams = vec4(metallic, roughness, 1.0, 1.0);
+    outEmissive = vec4(0.0);
 }

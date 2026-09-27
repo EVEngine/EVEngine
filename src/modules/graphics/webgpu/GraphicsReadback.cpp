@@ -262,6 +262,10 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
         src = slot.normal;
     else if (attachment == "albedo")
         src = slot.albedo;
+    else if (attachment == "pbrParams")
+        src = slot.pbrParams;
+    else if (attachment == "emissive")
+        src = slot.emissive;
     else
         return nullptr;
 
@@ -269,6 +273,15 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     if (!copyTextureToCpu(instance, device, queue, src, gbufferWidth, gbufferHeight, rgba)) return nullptr;
     auto *image = new image::ImageData(gbufferWidth, gbufferHeight, "RGBA8");
     std::memcpy(image->getData(), rgba.data(), rgba.size());
+    if (attachment == "depth") {
+        // Mirror Vulkan readback: expose linear depth as grayscale (G/B hold velocity on GPU).
+        auto *pixels = static_cast<uint8_t *>(image->getData());
+        const size_t pixelCount = size_t(gbufferWidth) * size_t(gbufferHeight);
+        for (size_t i = 0; i < pixelCount; ++i) {
+            pixels[i * 4u + 1u] = pixels[i * 4u];
+            pixels[i * 4u + 2u] = pixels[i * 4u];
+        }
+    }
     return image;
 }
 

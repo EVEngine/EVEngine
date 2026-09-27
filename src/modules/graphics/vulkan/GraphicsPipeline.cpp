@@ -509,6 +509,8 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
+        slot.pbrParamsTex.gpuHandle = nullptr;
+        slot.emissiveTex.gpuHandle = nullptr;
         slot.visIDTex.gpuHandle = nullptr;
         slot.visBaryTex.gpuHandle = nullptr;
         slot.depthTex.gpuHandle = nullptr;
@@ -523,6 +525,8 @@ void Graphics::destroyGBufferResources() {
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.depthColorGpu.sampler);
         destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.pbrParamsGpu.sampler);
+        destroySampler(device, slot.emissiveGpu.sampler);
         destroySampler(device, slot.visIDGpu.sampler);
         destroySampler(device, slot.visBaryGpu.sampler);
         destroySampler(device, slot.depthGpu.sampler);
@@ -781,6 +785,8 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         slot.normal = device.createColorTarget(w, h, colorFmt);
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.pbrParams = device.createColorTarget(w, h, colorFmt);
+        slot.emissive = device.createColorTarget(w, h, colorFmt);
         slot.visID = device.createColorTarget(w, h, visIDFmt);
         slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
@@ -791,12 +797,16 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .addSampledColorAttachment(colorFmt)
             .addSampledColorAttachment(colorFmt)
             .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
             .addSampledDepthAttachment(depthFmt)
             .addSubpass(vkb::SubpassBuilder()
                             .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
                             .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
-                            .setDepthStencilAttachment(3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                            .addAttachmentRef(3, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(4, vk::ImageLayout::eColorAttachmentOptimal)
+                            .setDepthStencilAttachment(5, vk::ImageLayout::eDepthStencilAttachmentOptimal))
             // Match the FrameGraph render pass used to record this pipeline:
             // imported G-buffer targets begin undefined and leave sampled, so
             // only the subpass-to-reader dependency is materialized.
@@ -814,7 +824,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         slot.framebuffer = gbufferPass.createFramebuffer(
             device, w, h,
             {slot.normal.asAttachment(), slot.depthColor.asAttachment(), slot.albedo.asAttachment(),
-             slot.depth.asAttachment()});
+             slot.pbrParams.asAttachment(), slot.emissive.asAttachment(), slot.depth.asAttachment()});
     }
 
     auto layoutBuilder = device.createPipelineLayout();
@@ -839,7 +849,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                           .setDynamicStatesViewportScissor()
                           .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                          vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
-                          .setColorAttachmentCount(3)
+                          .setColorAttachmentCount(5)
                           .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
@@ -863,7 +873,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                               vk::CullModeFlagBits::eNone,
                                               vk::FrontFace::eClockwise)
-                               .setColorAttachmentCount(3)
+                               .setColorAttachmentCount(5)
                                .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
@@ -880,6 +890,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                               .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                              vk::CullModeFlagBits::eNone,
                                              vk::FrontFace::eClockwise)
+                              .setColorAttachmentCount(5)
                               .build(gbufferPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_gbuffer_skin_alpha_frag_spv);
     gbufferSkinAlphaPipeline = device.createPipeline()
@@ -892,6 +903,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                                   vk::CullModeFlagBits::eNone,
                                                   vk::FrontFace::eClockwise)
+                                   .setColorAttachmentCount(5)
                                    .build(gbufferPass);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
@@ -915,6 +927,8 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.pbrParamsGpu, slot.pbrParamsTex, slot.pbrParams.imageView());
+        makeSampleTex(slot.emissiveGpu, slot.emissiveTex, slot.emissive.imageView());
         makeSampleTex(slot.visIDGpu, slot.visIDTex, slot.visID.imageView());
         makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());

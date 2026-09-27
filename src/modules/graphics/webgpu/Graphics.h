@@ -1092,7 +1092,7 @@ private:
     std::vector<ShadowMapSlot> shadowMaps;
     int shadowMapSize = ShadowConfig::kMapSize;
 
-    // GBuffer targets.
+    // GBuffer targets (Phase B: 5 color + depth).
     struct GbufferSlot {
         wgpu::Texture normal;
         wgpu::TextureView normalView;
@@ -1100,6 +1100,10 @@ private:
         wgpu::TextureView depthColorView;
         wgpu::Texture albedo;
         wgpu::TextureView albedoView;
+        wgpu::Texture pbrParams;
+        wgpu::TextureView pbrParamsView;
+        wgpu::Texture emissive;
+        wgpu::TextureView emissiveView;
         wgpu::Texture depth;
         wgpu::TextureView depthView;
         wgpu::Texture visID;
@@ -1109,10 +1113,14 @@ private:
         GpuTexture normalGpu;
         GpuTexture depthColorGpu;
         GpuTexture albedoGpu;
+        GpuTexture pbrParamsGpu;
+        GpuTexture emissiveGpu;
         GpuTexture depthGpu;
         Texture normalTex;
         Texture depthColorTex;
         Texture albedoTex;
+        Texture pbrParamsTex;
+        Texture emissiveTex;
         Texture depthTex;
     };
     int gbufferWidth = 0, gbufferHeight = 0;

@@ -443,11 +443,12 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 
 ### 阶段 B — PBR GBuffer（权威布局）+ opaque 材质写出
 
-- 落地四色附 + `pbrParams` / `emissive` API
-- GBuffer fill：轻量 Material **与** `PbrSurface` 核心子集（MR/normal/occlusion/emissive
-  贴图求值后写入）；迁移 SSGI/fog 深度采样
-- ForwardPlus 模式下 opaque 仍走今日 lit forward（GBuffer 仅供 post）
-- 图像审计：各 PBR 附件读回
+- [x] 落地四色附 + `pbrParams` / `emissive` API（Vulkan + WebGPU；vis RP 暂仍独立）
+- [x] GBuffer fill：轻量 Material 写出 metallic/roughness（7-bit pack）+ 默认 occlusion/specular；
+  保留 normal.a 3-bit 与 albedo.a 深度供 SSR/SSGI
+- [ ] ForwardPlus 模式下 opaque 仍走今日 lit forward（GBuffer 仅供 post）— 行为未改
+- [x] 图像审计：`pbrParams` / `emissive` 读回（`graphics.deferredTargets.*`）
+- [ ] GBuffer fill 消费完整 `PbrSurface` 贴图子集（MR/normal/occlusion/emissive 贴图求值）
 
 ### 阶段 C — Clustered deferred PBR lighting（Vulkan 先）
 

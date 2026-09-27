@@ -1418,6 +1418,8 @@ private:
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
+        vkb::ColorTarget pbrParams;  // RGBA8: metallic, roughness, occlusion, specularFactor
+        vkb::ColorTarget emissive;   // RGB emissive (A unused)
         vkb::ColorTarget visID;    // R32G32UI: x = instance, y = pooled index offset
         vkb::ColorTarget visBary;  // R16G16F: barycentric (u, v)
         vkb::DepthTarget depth;
@@ -1426,12 +1428,16 @@ private:
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture pbrParamsGpu{};
+        GpuTexture emissiveGpu{};
         GpuTexture visIDGpu{};
         GpuTexture visBaryGpu{};
         GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture pbrParamsTex{};
+        Texture emissiveTex{};
         Texture visIDTex{};
         Texture visBaryTex{};
         Texture depthTex{};
