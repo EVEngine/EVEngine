@@ -64,7 +64,7 @@ void frustumWorldBounds(const glm::mat4 &invViewProj, glm::vec3 &worldMin, glm::
             }
         }
     }
-    // Degenerate fallback so integrateLocalLights still has a usable box.
+    // Degenerate bounds: give integrateLocalLights a usable default box.
     if (!(worldMin.x < worldMax.x && worldMin.y < worldMax.y && worldMin.z < worldMax.z)) {
         worldMin = glm::vec3(-50.f);
         worldMax = glm::vec3(50.f);
@@ -370,7 +370,7 @@ Result<int> Volumetric::beginOcclusionMapFromSceneLights2D(Graphics *gfx, Canvas
         float sx = 0.f, sy = 0.f;
         worldToScreen2D(cam, d->x, d->y, w, h, sx, sy);
         // Prefer the light's configured radius (world units → screen via zoom);
-        // fall back to defaultRadiusPixels when radius is unset/non-positive.
+        // otherwise use defaultRadiusPixels when radius is unset/non-positive.
         float r = d->radius > 0.f ? d->radius : fallbackR;
         if (cam.valid) r *= cam.zoom;
         r = std::max(r * boost, 1.f);
