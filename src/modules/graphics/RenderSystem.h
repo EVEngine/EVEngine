@@ -128,6 +128,15 @@ public:
     void setTexture(Texture *texture);
     /** @brief Return the assigned texture. */
     Texture *getTexture();
+    /**
+     * @brief Assign an optional tangent-space normal map for the GPU lit2d path.
+     * @param texture Borrowed normal map, or nullptr to clear. Non-null with
+     *        receiveLight and an albedo texture (and no custom shader) selects
+     *        lit2d; otherwise lighting falls back to CPU modulation.
+     */
+    void setNormalTexture(Texture *texture);
+    /** @brief Return the assigned normal map, or nullptr when unlit/flat. */
+    Texture *getNormalTexture();
     /** @brief Assign the borrowed UV quad. */
     void setQuad(Quad *quad);
     /** @brief Return the assigned UV quad. */

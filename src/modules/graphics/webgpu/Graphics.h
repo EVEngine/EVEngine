@@ -333,6 +333,9 @@ public:
                                  float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
+    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w,
+                                      float h, float degrees, float u0, float v0, float u1, float v1,
+                                      const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
 
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
