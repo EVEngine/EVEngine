@@ -196,6 +196,8 @@ public:
 
     std::string getBackendName() const override { return "webgpu"; }
     bool supportsGBufferPost() const override { return true; }
+    bool                    supportsDeferredLighting() const override { return true; }
+    void                    drawDeferredLighting() override;
     bool supportsGpuDriven3D() const override { return true; }
     bool gpuDrivenEnabled() const override { return gpuDrivenEnabled_; }
     void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
@@ -749,6 +751,17 @@ private:
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
     void submitPendingDeferredPasses();
+    void                 createDeferredLightingPipeline();
+    void                 destroyDeferredLightingResources();
+    void                 ensureDeferredLightingClusteredUpload();
+    /** @brief Fullscreen deferred lighting into an open scene-color pass. */
+    void flushDeferredLighting(wgpu::RenderPassEncoder pass);
+    /**
+     * @brief Record pending GBuffer (+ optional AO) into encoder before scene color.
+     * Used when Hybrid deferred lighting must sample a freshly written GBuffer.
+     * @return True when a GBuffer pass was recorded this call.
+     */
+    bool flushGBufferPassInto(wgpu::CommandEncoder& encoder, bool runAo);
     void flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
 
     // UBO arena: one growable uniform buffer per in-flight frame slot.
@@ -865,6 +878,12 @@ private:
     wgpu::BindGroupLayout gbufferSetLayout;
     wgpu::BindGroupLayout decalSetLayout;
     wgpu::BindGroupLayout voxelSetLayout;
+    // Phase D: Hybrid clustered deferred lighting (fullscreen into scene color).
+    wgpu::BindGroupLayout deferredLightingSetLayout;
+    wgpu::PipelineLayout  deferredLightingPipelineLayout;
+    wgpu::RenderPipeline  deferredLightingPipeline;
+    wgpu::Sampler         deferredLightingNearestSampler;
+    bool                  deferredLightingPending_ = false;
 
     // SSAO (screen-space ambient occlusion) resources. The AO pass runs after
     // the G-buffer fill and writes aoTex[aoWriteIndex]; the forward mesh pass

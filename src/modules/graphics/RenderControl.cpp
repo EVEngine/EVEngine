@@ -113,6 +113,30 @@ Result<void> RenderControl::setLightingMode(const std::string& name) {
                                                    "graphics.RenderControl.lightingMode"));
 }
 
+Result<void> RenderControl::applyLightingPreset(LightingPreset preset) {
+    lightingPreset_   = preset;
+    LightingMode mode = LightingMode::ForwardPlus;
+    if (preset == LightingPreset::Desktop && isDeferredLightingAvailable()) mode = LightingMode::Hybrid;
+    return setLightingMode(mode);
+}
+
+Result<void> RenderControl::applyLightingPreset(const std::string& name) {
+    if (name == "desktop") return applyLightingPreset(LightingPreset::Desktop);
+    if (name == "mobile") return applyLightingPreset(LightingPreset::Mobile);
+    if (name == "ci") return applyLightingPreset(LightingPreset::Ci);
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                   "lighting preset must be \"desktop\", \"mobile\", or \"ci\"",
+                                                   "graphics.RenderControl.lightingPreset"));
+}
+
+Result<void> RenderControl::applySuggestedLightingPreset() {
+    auto presetResult = applyLightingPreset(suggestedLightingPreset());
+    if (!presetResult.ok()) return presetResult;
+    auto envMode = lightingModeFromEnv();
+    if (envMode.ok()) return setLightingMode(envMode.value());
+    return presetResult;
+}
+
 void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (!isKnownFeature(feature)) return;
 

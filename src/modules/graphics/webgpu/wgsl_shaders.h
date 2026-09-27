@@ -1720,4 +1720,209 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 }
 )wgsl";
 
+// ---- Hybrid clustered deferred lighting (Phase D WebGPU parity) ------------
+inline const char* kDeferredLightingVertWgsl = R"wgsl(
+struct VSOut {
+    @builtin(position) pos: vec4f,
+};
+@vertex
+fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
+    // Fullscreen triangle in WebGPU NDC (Y-up).
+    var p = vec2f(f32((vid << 1u) & 2u), f32(vid & 2u));
+    var out: VSOut;
+    out.pos = vec4f(p * 2.0 - 1.0, 0.0, 1.0);
+    return out;
+}
+)wgsl";
+
+/**
+ * @brief Clustered deferred lighting fragment — mirrors Vulkan deferred_lighting.frag
+ * (core metallic-roughness PBR + CSM + clustered points).
+ */
+inline const char* kDeferredLightingFragWgsl = R"wgsl(
+struct Light3D {
+    posRadius: vec4f,
+    color: vec4f,
+};
+struct DeferredFrame {
+    invViewProj: mat4x4f,
+    view: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    gridInfo: vec4f,
+    clipInfo: vec4f,
+};
+struct ShadowFrame {
+    lightVP: array<mat4x4f, 3>,
+    splits: vec4f,
+    bias: vec4f,
+    cascadeBias: vec4f,
+    cascadeTexel: vec4f,
+};
+struct FSIn {
+    @builtin(position) fragCoord: vec4f,
+};
+struct FSOut {
+    @location(0) color: vec4f,
+    @builtin(frag_depth) depth: f32,
+};
+
+@group(0) @binding(0) var<uniform> ubo: DeferredFrame;
+@group(0) @binding(1) var gbNormal: texture_2d<f32>;
+@group(0) @binding(2) var gbDepthColor: texture_2d<f32>;
+@group(0) @binding(3) var gbAlbedo: texture_2d<f32>;
+@group(0) @binding(4) var gbPbrParams: texture_2d<f32>;
+@group(0) @binding(5) var gbEmissive: texture_2d<f32>;
+@group(0) @binding(6) var gbHwDepth: texture_depth_2d;
+@group(0) @binding(7) var<storage, read> lights: array<Light3D>;
+@group(0) @binding(8) var<storage, read> clusters: array<vec2u>;
+@group(0) @binding(9) var<storage, read> lightIndices: array<u32>;
+@group(0) @binding(10) var<uniform> shadow: ShadowFrame;
+@group(0) @binding(11) var shadowMap: texture_depth_2d_array;
+@group(0) @binding(12) var nearestSamp: sampler;
+@group(0) @binding(13) var shadowSamp: sampler_comparison;
+
+const PI: f32 = 3.14159265359;
+
+fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
+    let a = max(rough * rough, 0.002);
+    let a2 = a * a;
+    let ndh = max(dot(n, h), 0.0);
+    let denom = (ndh * ndh * (a2 - 1.0) + 1.0);
+    return a2 / max(PI * denom * denom, 1e-4);
+}
+fn geomSchlick(ndv: f32, rough: f32) -> f32 {
+    let r = rough + 1.0;
+    let k = (r * r) / 8.0;
+    return ndv / max(ndv * (1.0 - k) + k, 1e-4);
+}
+fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
+    return geomSchlick(max(dot(n, v), 0.0), rough) * geomSchlick(max(dot(n, l), 0.0), rough);
+}
+fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
+    return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
+}
+fn shadeLight(n: vec3f, v: vec3f, l: vec3f, rad: vec3f, albedo: vec3f, metallic: f32,
+              rough: f32, specularFactor: f32) -> vec3f {
+    let ndl = max(dot(n, l), 0.0);
+    if (ndl <= 0.0) { return vec3f(0.0); }
+    let h = normalize(v + l);
+    let f0 = mix(vec3f(0.04 * specularFactor), albedo, metallic);
+    let ndf = distGGX(n, h, rough);
+    let g = geomSmith(n, v, l, rough);
+    let f = fresnelSchlick(max(dot(h, v), 0.0), f0);
+    let spec = (ndf * g * f) / max(4.0 * max(dot(n, v), 0.0) * ndl, 1e-4);
+    let kd = (vec3f(1.0) - f) * (1.0 - metallic);
+    return (kd * albedo / PI + spec) * rad * ndl;
+}
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
+    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
+    let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
+    let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
+    let depth = ndc.z;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
+        return 1.0;
+    }
+    return textureSampleCompare(shadowMap, shadowSamp, uv, cascade, depth - biasAmt);
+}
+fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, nDotL: f32) -> f32 {
+    if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
+        return 1.0;
+    }
+    var cascade = 2;
+    if (viewDepth < shadow.splits.x) { cascade = 0; }
+    else if (viewDepth < shadow.splits.y) { cascade = 1; }
+    var b = select(shadow.cascadeBias.z,
+                   select(shadow.cascadeBias.y, shadow.cascadeBias.x, cascade == 0),
+                   cascade == 1);
+    if (b < 1e-8) { b = shadow.bias.x; }
+    b = b * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
+    let tw = select(shadow.cascadeTexel.z,
+                    select(shadow.cascadeTexel.y, shadow.cascadeTexel.x, cascade == 0),
+                    cascade == 1);
+    let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(nDotL, 0.2));
+    let vis = sampleShadowCascade(p, cascade, b);
+    return mix(0.04, 1.0, mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0)));
+}
+fn clusterIndex(viewDepth: f32, fragCoord: vec4f) -> u32 {
+    let tilesX = i32(ubo.gridInfo.x + 0.5);
+    let tilesY = i32(ubo.gridInfo.y + 0.5);
+    let slices = i32(ubo.gridInfo.z + 0.5);
+    let nearZ = ubo.clipInfo.x;
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let screenW = max(ubo.clipInfo.z, 1.0);
+    let screenH = max(ubo.clipInfo.w, 1.0);
+    let tx = clamp(i32(floor(fragCoord.x / screenW * f32(tilesX))), 0, tilesX - 1);
+    let ty = clamp(i32(floor(fragCoord.y / screenH * f32(tilesY))), 0, tilesY - 1);
+    let depth = max(viewDepth, nearZ);
+    let sz = clamp(i32(floor((depth - nearZ) / (farZ - nearZ) * f32(slices))), 0, slices - 1);
+    return u32((sz * tilesY + ty) * tilesX + tx);
+}
+
+@fragment
+fn fs_main(in: FSIn) -> FSOut {
+    var out: FSOut;
+    let screenW = max(ubo.clipInfo.z, 1.0);
+    let screenH = max(ubo.clipInfo.w, 1.0);
+    let uv = in.fragCoord.xy / vec2f(screenW, screenH);
+    let dims = vec2i(textureDimensions(gbHwDepth));
+    let px = clamp(vec2i(in.fragCoord.xy), vec2i(0), dims - vec2i(1));
+    let hwZ = textureLoad(gbHwDepth, px, 0);
+    if (hwZ >= 0.9999) {
+        discard;
+    }
+    // WebGPU fragCoord origin is top-left (Y down); NDC is Y-up. GBuffer fill
+    // also mirrors clip Y, so reconstruct with the same WebGPU NDC.
+    let clip = vec4f(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, hwZ, 1.0);
+    let worldH = ubo.invViewProj * clip;
+    let worldPos = worldH.xyz / max(worldH.w, 1e-6);
+
+    var n = normalize(textureSample(gbNormal, nearestSamp, uv).xyz * 2.0 - 1.0);
+    let albedo = textureSample(gbAlbedo, nearestSamp, uv).rgb;
+    let pbr = textureSample(gbPbrParams, nearestSamp, uv);
+    let metallic = clamp(pbr.r, 0.0, 1.0);
+    let roughness = clamp(pbr.g, 0.04, 1.0);
+    let occlusion = clamp(pbr.b, 0.0, 1.0);
+    let specularFactor = clamp(pbr.a, 0.0, 1.0);
+    let emissive = textureSample(gbEmissive, nearestSamp, uv).rgb;
+
+    var v = normalize(ubo.cameraPos.xyz - worldPos);
+    if (dot(n, v) < 0.0) { n = -n; }
+
+    let viewPos = (ubo.view * vec4f(worldPos, 1.0)).xyz;
+    let viewDepth = max(-viewPos.z, 0.0);
+
+    var lo = vec3f(0.0);
+    if (ubo.lightDir.w > 0.5) {
+        let l = normalize(ubo.lightDir.xyz);
+        let nDotL = max(dot(n, l), 0.0);
+        let shadowVis = sampleShadowPCF(worldPos, n, viewDepth, nDotL);
+        lo = lo + shadeLight(n, v, l, ubo.lightColor.rgb, albedo, metallic, roughness, specularFactor) * shadowVis;
+    }
+
+    let ci = clusterIndex(viewDepth, in.fragCoord);
+    let entry = clusters[ci];
+    let count = min(entry.y, 32u);
+    for (var i = 0u; i < count; i = i + 1u) {
+        let li = lightIndices[entry.x + i];
+        let light = lights[li];
+        let toLight = light.posRadius.xyz - worldPos;
+        let dist = length(toLight);
+        let radius = max(light.posRadius.w, 1e-3);
+        if (dist >= radius) { continue; }
+        let l = toLight / max(dist, 1e-4);
+        var atten = 1.0 - smoothstep(radius * 0.8, radius, dist);
+        atten = atten / max(dist * dist, 1e-4);
+        lo = lo + shadeLight(n, v, l, light.color.rgb * atten, albedo, metallic, roughness, specularFactor);
+    }
+
+    let ambient = ubo.ambient.rgb * albedo * (1.0 - metallic) * occlusion;
+    out.color = vec4f(ambient + lo + emissive, 1.0);
+    out.depth = hwZ;
+    return out;
+}
+)wgsl";
+
 }  // namespace eve::graphics::webgpu

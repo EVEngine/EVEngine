@@ -111,6 +111,26 @@ public:
     bool hasHybridLightingFallback() const { return hybridLightingFallback_; }
 
     /**
+     * @brief Apply a platform lighting preset (sets LightingMode; does not lock against later setLightingMode).
+     * @param preset Desktop → Hybrid when deferred available, else ForwardPlus; Mobile/Ci → ForwardPlus.
+     * @return Success.
+     * @thread Render-thread affine.
+     */
+    [[nodiscard]] Result<void> applyLightingPreset(LightingPreset preset);
+    /**
+     * @brief Apply preset by name: "desktop" / "mobile" / "ci".
+     * @return Success, or Unsupported for unknown names.
+     */
+    [[nodiscard]] Result<void> applyLightingPreset(const std::string& name);
+    /**
+     * @brief Apply suggestedLightingPreset(), then optional EVENGINE_LIGHTING_MODE override.
+     * @return Success from the last mode set (preset or env override).
+     */
+    [[nodiscard]] Result<void> applySuggestedLightingPreset();
+    /** @brief Last applied lighting preset (defaults to Desktop before any apply). */
+    LightingPreset getLightingPreset() const { return lightingPreset_; }
+
+    /**
      * @brief Set the shared TAA/RTGI/SSR quality preset used by the automatic reflection chain.
      * @param quality One of "low", "medium", "high" or "ultra"; unknown values use "high".
      */
@@ -149,6 +169,7 @@ private:
     GBuffer gbuffer_;
     LightingMode                          lightingMode_           = LightingMode::ForwardPlus;
     LightingMode                          effectiveLightingMode_  = LightingMode::ForwardPlus;
+    LightingPreset                        lightingPreset_         = LightingPreset::Desktop;
     bool                                  hybridLightingFallback_ = false;
     bool                                  dirty_                  = true;
     bool                                  compiled_               = false;

@@ -257,6 +257,10 @@ RenderControl* Graphics::getRenderControl() {
     if (!renderControl_) {
         renderControl_ = std::make_unique<RenderControl>();
         renderControl_->attach(this);
+        // Phase D: desktop→Hybrid when deferred is available; CI/mobile stay ForwardPlus.
+        // Explicit EVENGINE_LIGHTING_MODE overrides the suggested preset.
+        auto applied = renderControl_->applySuggestedLightingPreset();
+        applied.ignore();
         renderControl_->compile();
     }
     return renderControl_.get();
@@ -625,6 +629,35 @@ void Graphics::expose(ssq::Table& table) {
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
     rctrl.addFunc("isEnabled", &RenderControl::isEnabled);
+    rctrl.addFunc("setLightingMode", [](RenderControl* rc, const std::string& name) -> bool {
+        if (!rc) return false;
+        return rc->setLightingMode(name).ok();
+    });
+    rctrl.addFunc("getLightingMode", [](RenderControl* rc) -> std::string {
+        return rc && rc->getLightingMode() == LightingMode::Hybrid ? "hybrid" : "forwardPlus";
+    });
+    rctrl.addFunc("getEffectiveLightingMode", [](RenderControl* rc) -> std::string {
+        return rc && rc->getEffectiveLightingMode() == LightingMode::Hybrid ? "hybrid" : "forwardPlus";
+    });
+    rctrl.addFunc("isDeferredLightingAvailable", &RenderControl::isDeferredLightingAvailable);
+    rctrl.addFunc("hasHybridLightingFallback", &RenderControl::hasHybridLightingFallback);
+    rctrl.addFunc("applyLightingPreset", [](RenderControl* rc, const std::string& name) -> bool {
+        if (!rc) return false;
+        return rc->applyLightingPreset(name).ok();
+    });
+    rctrl.addFunc("applySuggestedLightingPreset", [](RenderControl* rc) -> bool {
+        if (!rc) return false;
+        return rc->applySuggestedLightingPreset().ok();
+    });
+    rctrl.addFunc("getLightingPreset", [](RenderControl* rc) -> std::string {
+        if (!rc) return "desktop";
+        switch (rc->getLightingPreset()) {
+            case LightingPreset::Mobile: return "mobile";
+            case LightingPreset::Ci: return "ci";
+            case LightingPreset::Desktop:
+            default: return "desktop";
+        }
+    });
     rctrl.addFunc("setReflectionQuality", &RenderControl::setReflectionQuality);
     rctrl.addFunc("getReflectionQuality", &RenderControl::getReflectionQuality);
     rctrl.addFunc("setPostProcessQuality", &RenderControl::setPostProcessQuality);

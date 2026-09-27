@@ -1,7 +1,7 @@
 # 混合渲染：Clustered Deferred（不透明）+ Forward+（半透明）
 
 日期：2026-09-26  
-状态：阶段 C 落地中（Vulkan fullscreen deferred lighting + Hybrid opaque skip Forward+；FrameGraph 录制与 ClassicScenes 对比待补）  
+状态：阶段 D 落地中（WebGPU deferred lighting parity + desktop/CI lighting presets；ClassicScenes / FrameGraph / IBL 对齐仍属后续）  
 关联：[`3D渲染管线.md`](../../3D渲染管线.md)、[`模块设计.md`](../../模块设计.md)、
 [`ClusteredLight.h`](../../../../src/modules/graphics/ClusteredLight.h)、
 [`PbrSurface.h`](../../../../src/modules/graphics/PbrSurface.h)、
@@ -461,9 +461,12 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 
 ### 阶段 D — WebGPU parity + 预设
 
-- WebGPU 同等 GBuffer/lighting
-- 桌面预设可切 Hybrid；CI 保持 ForwardPlus
-- 用户文档更新
+- [x] WebGPU 同等 GBuffer/lighting（`drawDeferredLighting` 挂起，`present` 在 scene-color 前 flush GBuffer 后 fullscreen lighting）
+- [x] 桌面预设可切 Hybrid（`applyLightingPreset` / `applySuggestedLightingPreset`；`EVENGINE_LIGHTING_PRESET` / `EVENGINE_LIGHTING_MODE`）
+- [x] CI / Lavapipe / mobile 保持 ForwardPlus
+- [x] 用户文档与设计勾选更新
+- [ ] ClassicScenes：PBR chart、DamagedHelmet；`forwardPlus` vs `hybrid` 容差对比（跨阶段）
+- [ ] FrameGraph：`deferredLighting` sample/write + JobSystem 并行录制（跨阶段）
 
 ### 阶段 E — 扩展 PBR（可选）
 

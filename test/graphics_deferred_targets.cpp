@@ -85,7 +85,7 @@ TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
     REQUIRE(window->setWindowSettings(settings));
     auto* rc = graphics->getRenderControl();
     REQUIRE(rc != nullptr);
-    // Vulkan reports supportsDeferredLighting; WebGPU Phase D will follow.
+    // Vulkan and WebGPU both report supportsDeferredLighting (Phase C/D).
     if (!graphics->supportsDeferredLighting()) {
         CHECK(!rc->isDeferredLightingAvailable());
         auto ok = rc->setLightingMode(eve::graphics::LightingMode::Hybrid);
@@ -140,4 +140,36 @@ TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
     graphics->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
     graphics->drawDeferredLighting();
     graphics->present();
+}
+
+TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {
+    auto*                       window   = eve::window::Window::create();
+    auto*                       graphics = eve::graphics::Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 64;
+    settings.height = 48;
+    REQUIRE(window->setWindowSettings(settings));
+    auto* rc = graphics->getRenderControl();
+    REQUIRE(rc != nullptr);
+
+    auto ci = rc->applyLightingPreset(eve::graphics::LightingPreset::Ci);
+    CHECK(ci.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Ci);
+    CHECK(rc->getLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+    rc->compile();
+    CHECK(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+    CHECK(!rc->hasPass("deferredLighting"));
+
+    auto desktop = rc->applyLightingPreset("desktop");
+    CHECK(desktop.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
+    if (graphics->supportsDeferredLighting()) {
+        CHECK(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        rc->compile();
+        CHECK(rc->hasPass("deferredLighting"));
+    }
+
+    auto bad = rc->applyLightingPreset("nope");
+    CHECK(!bad.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
 }

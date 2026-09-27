@@ -157,6 +157,28 @@ TEST_CASE("renderControl.lightingModeHybridFallback") {
     CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
 }
 
+TEST_CASE("renderControl.lightingPresetNames") {
+    RenderControl rc;
+    auto          mobile = rc.applyLightingPreset("mobile");
+    CHECK(mobile.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Mobile);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    auto ci = rc.applyLightingPreset(LightingPreset::Ci);
+    CHECK(ci.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Ci);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    // Detached: Desktop cannot promote to Hybrid (no deferred backend).
+    auto desktop = rc.applyLightingPreset("desktop");
+    CHECK(desktop.ok());
+    CHECK(rc.getLightingPreset() == LightingPreset::Desktop);
+    CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
+
+    auto bad = rc.applyLightingPreset("web");
+    CHECK(!bad.ok());
+}
+
 TEST_CASE("renderControl.atmospherePassDependencies") {
     RenderControl rc;
     CHECK(rc.supports("atmosphere"));
