@@ -81,17 +81,11 @@ public:
     [[nodiscard]] const RuleDefinition* find(std::string_view ruleId) const;
 
     /**
-     * @brief Borrow the authoritative fact store.
+     * @brief Borrow the authoritative fact store for read-only inspection.
      * @ownership Borrowed; this engine remains the owner.
      * @lifetime Valid until the engine is destroyed.
      * @thread Owning simulation thread only.
-     */
-    [[nodiscard]] FactStore& facts() noexcept { return facts_; }
-    /**
-     * @brief Borrow the authoritative fact store.
-     * @ownership Borrowed; this engine remains the owner.
-     * @lifetime Valid until the engine is destroyed.
-     * @thread Owning simulation thread only.
+     * @remarks Mutations must go through the mediated `set*` APIs so watchers wake.
      */
     [[nodiscard]] const FactStore& facts() const noexcept { return facts_; }
 
@@ -107,12 +101,22 @@ public:
     [[nodiscard]] eve::Result<bool> setState(std::string key, eve::Value value);
     /** @brief Set an authority fact and wake watchers when it changes. */
     [[nodiscard]] eve::Result<bool> setAuthority(std::string scope, bool granted);
+    /**
+     * @brief Cache a policy evaluation result and wake `policy:<name>` watchers when it changes.
+     * @param name Non-empty policy id matching a `policy_call` condition key.
+     * @param result Owning ConditionResult snapshot.
+     */
+    [[nodiscard]] eve::Result<bool> setPolicy(std::string name, decision::ConditionResult result);
 
     /**
      * @brief Evaluate dirty rules and resolve activations for one simulation tick.
      * @param tick Injected simulation tick used for cooldown and activation metadata.
      * @return Number of activations produced this call (also retained until clearActivations).
      * @remarks Nested drain on the same engine returns PreconditionViolation.
+     * @remarks Within each dirty pass, activations run in `(priority DESC, ruleId ASC)`
+     *          order. Cascaded `fact.set` wakes are evaluated in later passes of the same
+     *          drain. Rising/once/cooldown latches commit only after that activation's
+     *          actions succeed.
      */
     [[nodiscard]] eve::Result<int> drain(std::uint64_t tick);
 

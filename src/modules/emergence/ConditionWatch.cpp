@@ -52,7 +52,15 @@ eve::Result<void> walk(const decision::Condition& condition, std::set<std::strin
             insertUnique(out, makeFactKey(FactDomain::Policy, condition.key()));
             const auto& declaration = condition.scriptDeclaration();
             if (declaration) {
-                for (const auto& dependency : declaration->dependencies) insertUnique(out, dependency);
+                for (const auto& dependency : declaration->dependencies) {
+                    auto parsed = parseFactKey(dependency);
+                    if (!parsed)
+                        return eve::Result<void>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument,
+                            "policy_call dependency must use canonical domain:name fact key form", "dependencies", {},
+                            "emergence.watch"));
+                    insertUnique(out, dependency);
+                }
             }
             if (out.empty() || (declaration && declaration->dependencies.empty() && condition.key().empty())) {
                 return eve::Result<void>::failure(eve::Diagnostic::error(

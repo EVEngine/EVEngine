@@ -81,14 +81,14 @@ void Emergence::expose(ssq::Table& t) {
     const HSQUIRRELVM vm        = t.getHandle();
     auto              asBool    = [](bool value) { return eve::Value(value); };
     auto              asInt     = [](int value) { return eve::Value(static_cast<std::int64_t>(value)); };
-    auto              staleBool = [&]() {
+    auto              staleBool = [vm, asBool]() {
         return eve::script::projectResult(
             vm,
             eve::Result<bool>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "owned rule engine handle is stale", "engine", {}, "emergence")),
             asBool);
     };
-    auto staleInt = [&]() {
+    auto staleInt = [vm, asInt]() {
         return eve::script::projectResult(
             vm,
             eve::Result<int>::failure(eve::Diagnostic::error(

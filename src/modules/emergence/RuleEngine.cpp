@@ -9,6 +9,8 @@
 #include "common/IEmergenceActionHandler.h"
 
 #include <algorithm>
+#include <limits>
+#include <set>
 #include <utility>
 
 namespace eve::emergence {
@@ -20,15 +22,42 @@ eve::Result<T> fail(eve::DiagnosticCode code, const char* message, const char* p
         eve::Diagnostic::error(code, message, path ? path : "", {}, "emergence.rule_engine"));
 }
 
-std::int64_t asInt64(const eve::Value& value, std::int64_t fallback = 0) {
-    if (value.isInt64()) return value.asInt();
-    if (value.isDouble()) return static_cast<std::int64_t>(value.asDouble());
-    return fallback;
-}
-
 const eve::Value* objField(const eve::Value::Object& object, std::string_view name) {
     const auto it = object.find(std::string(name));
     return it == object.end() ? nullptr : &it->second;
+}
+
+bool exactFields(const eve::Value::Object& object, std::initializer_list<std::string_view> allowed) {
+    const std::set<std::string_view> fields(allowed.begin(), allowed.end());
+    for (const auto& [name, unused] : object) {
+        (void)unused;
+        if (!fields.contains(name)) return false;
+    }
+    return true;
+}
+
+eve::Result<std::int64_t> requireInt64(const eve::Value& value, const char* path) {
+    if (!value.isInt64())
+        return fail<std::int64_t>(eve::DiagnosticCode::InvalidArgument, "value must be an integer", path);
+    return eve::Result<std::int64_t>::success(value.asInt());
+}
+
+eve::Result<int> requireInt(const eve::Value& value, const char* path) {
+    auto parsed = requireInt64(value, path);
+    if (!parsed) return eve::Result<int>::failure(parsed.status());
+    const auto raw = parsed.value();
+    if (raw < static_cast<std::int64_t>(std::numeric_limits<int>::min()) ||
+        raw > static_cast<std::int64_t>(std::numeric_limits<int>::max()))
+        return fail<int>(eve::DiagnosticCode::InvalidArgument, "integer out of int range", path);
+    return eve::Result<int>::success(static_cast<int>(raw));
+}
+
+eve::Result<std::uint64_t> requireNonNegativeU64(const eve::Value& value, const char* path) {
+    auto parsed = requireInt64(value, path);
+    if (!parsed) return eve::Result<std::uint64_t>::failure(parsed.status());
+    if (parsed.value() < 0)
+        return fail<std::uint64_t>(eve::DiagnosticCode::InvalidArgument, "value must be non-negative", path);
+    return eve::Result<std::uint64_t>::success(static_cast<std::uint64_t>(parsed.value()));
 }
 
 }  // namespace
@@ -132,7 +161,11 @@ eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
                                                                     "rule id must be a non-empty string", "rules.id",
                                                                     {}, "emergence.rule_engine"));
         rule.id = id->asString();
-        if (const auto* priority = objField(*object, "priority")) rule.priority = static_cast<int>(asInt64(*priority));
+        if (const auto* priority = objField(*object, "priority")) {
+            auto parsed = requireInt(*priority, "rules.priority");
+            if (!parsed) return eve::Result<int>::failure(parsed.status());
+            rule.priority = parsed.value();
+        }
         if (const auto* once = objField(*object, "once")) {
             if (!once->isBool())
                 return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
@@ -140,8 +173,11 @@ eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
                                                                         "emergence.rule_engine"));
             rule.once = once->asBool();
         }
-        if (const auto* cooldown = objField(*object, "cooldownTicks"))
-            rule.cooldownTicks = static_cast<std::uint64_t>(std::max<std::int64_t>(0, asInt64(*cooldown)));
+        if (const auto* cooldown = objField(*object, "cooldownTicks")) {
+            auto parsed = requireNonNegativeU64(*cooldown, "rules.cooldownTicks");
+            if (!parsed) return eve::Result<int>::failure(parsed.status());
+            rule.cooldownTicks = parsed.value();
+        }
         if (const auto* fireMode = objField(*object, "fireMode")) {
             if (!fireMode->isString())
                 return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
@@ -283,6 +319,15 @@ eve::Result<bool> RuleEngine::setAuthority(std::string scope, bool granted) {
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
+eve::Result<bool> RuleEngine::setPolicy(std::string name, decision::ConditionResult result) {
+    if (name.empty()) return fail<bool>(eve::DiagnosticCode::InvalidArgument, "policy name must be non-empty", "name");
+    const std::string wake    = makeFactKey(FactDomain::Policy, name);
+    const bool        changed = facts_.setPolicy(std::move(name), std::move(result)) == FactChange::Changed;
+    if (changed) wakeKey(wake);
+    return eve::Result<bool>::success(changed,
+                                      eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+}
+
 eve::Result<void> RuleEngine::executeOne(const EmergenceAction& action, std::uint64_t /*tick*/) {
     if (action.kind == "fact.set") {
         const auto* object = action.args.getIf<eve::Value::Object>();
@@ -326,14 +371,16 @@ eve::Result<void> RuleEngine::executeOne(const EmergenceAction& action, std::uin
         const auto* amount = objField(*object, "amount");
         if (player == nullptr || type == nullptr || !type->isString() || amount == nullptr)
             return fail(eve::DiagnosticCode::InvalidArgument, "economy action requires player, type, amount", "args");
-        const int playerId = static_cast<int>(asInt64(*player));
-        const int qty      = static_cast<int>(asInt64(*amount));
-        if (qty < 0) return fail(eve::DiagnosticCode::InvalidArgument, "amount must be non-negative", "amount");
+        auto playerId = requireInt(*player, "player");
+        if (!playerId) return eve::Result<void>::failure(playerId.status());
+        auto qty = requireInt(*amount, "amount");
+        if (!qty) return eve::Result<void>::failure(qty.status());
+        if (qty.value() < 0) return fail(eve::DiagnosticCode::InvalidArgument, "amount must be non-negative", "amount");
         if (action.kind == "economy.credit") {
-            economy->credit(playerId, type->asString(), qty);
+            economy->credit(playerId.value(), type->asString(), qty.value());
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
-        if (!economy->debit(playerId, type->asString(), qty))
+        if (!economy->debit(playerId.value(), type->asString(), qty.value()))
             return fail(eve::DiagnosticCode::Conflict, "economy debit rejected", "amount");
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -382,6 +429,14 @@ eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
         ~Guard() { flag = false; }
     } guard{draining_};
 
+    struct PendingFire {
+        Activation    activation;
+        std::uint32_t index         = 0;
+        bool          nowPassed     = false;
+        bool          once          = false;
+        std::uint64_t cooldownTicks = 0;
+    };
+
     // Fixed-point: evaluate current dirty set, execute activations (which may dirty more), repeat.
     constexpr int kMaxPasses = 64;
     for (int pass = 0; pass < kMaxPasses; ++pass) {
@@ -393,7 +448,7 @@ eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
             return rules_[left].id < rules_[right].id;
         });
 
-        std::vector<Activation> pending;
+        std::vector<PendingFire> pending;
         for (const auto index : batch) {
             if (index >= rules_.size()) continue;
             auto&       runtime = runtime_[index];
@@ -408,27 +463,36 @@ eve::Result<int> RuleEngine::drain(std::uint64_t tick) {
                 fire = !runtime.passed && nowPassed;
             else
                 fire = nowPassed;
-            runtime.passed = nowPassed;
-            if (!fire) continue;
-            Activation activation;
-            activation.sequence = nextSequence_++;
-            activation.tick     = tick;
-            activation.ruleId   = rule.id;
-            activation.priority = rule.priority;
-            activation.actions  = rule.actions;
-            pending.push_back(std::move(activation));
-            runtime.fired = true;
-            if (rule.once) runtime.disabled = true;
-            if (rule.cooldownTicks > 0) runtime.cooldownUntil = tick + rule.cooldownTicks;
+            if (!fire) {
+                runtime.passed = nowPassed;
+                continue;
+            }
+            PendingFire entry;
+            entry.activation.sequence = nextSequence_++;
+            entry.activation.tick     = tick;
+            entry.activation.ruleId   = rule.id;
+            entry.activation.priority = rule.priority;
+            entry.activation.actions  = rule.actions;
+            entry.index               = index;
+            entry.nowPassed           = nowPassed;
+            entry.once                = rule.once;
+            entry.cooldownTicks       = rule.cooldownTicks;
+            pending.push_back(std::move(entry));
         }
 
-        for (auto& activation : pending) {
-            auto executed = executeActions(activation.actions, tick);
+        for (std::size_t i = 0; i < pending.size(); ++i) {
+            auto& entry    = pending[i];
+            auto  executed = executeActions(entry.activation.actions, tick);
             if (!executed) {
-                draining_ = false;
+                for (std::size_t j = i; j < pending.size(); ++j) dirty_.insert(pending[j].index);
                 return eve::Result<int>::failure(executed.status());
             }
-            activations_.push_back(std::move(activation));
+            auto& runtime  = runtime_[entry.index];
+            runtime.passed = entry.nowPassed;
+            runtime.fired  = true;
+            if (entry.once) runtime.disabled = true;
+            if (entry.cooldownTicks > 0) runtime.cooldownUntil = tick + entry.cooldownTicks;
+            activations_.push_back(std::move(entry.activation));
             ++produced;
         }
     }
@@ -485,50 +549,70 @@ eve::Result<void> RuleEngine::restoreJson(std::string_view json) {
     if (!parsed) return eve::Result<void>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();
     if (root == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot must be an object");
+    if (!exactFields(*root, {"schema", "version", "facts", "rules"}))
+        return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot contains an unknown field");
     const auto* schema  = objField(*root, "schema");
     const auto* version = objField(*root, "version");
     if (schema == nullptr || !schema->isString() || schema->asString() != "eve.emergence.runtime")
         return fail(eve::DiagnosticCode::InvalidArgument, "unexpected runtime schema", "schema");
     if (version == nullptr || !version->isInt64() || version->asInt() != 1)
         return fail(eve::DiagnosticCode::UnknownVersion, "unsupported runtime version", "version");
+    const auto* factsValue = objField(*root, "facts");
+    const auto* rulesValue = objField(*root, "rules");
+    if (factsValue == nullptr)
+        return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot requires facts", "facts");
+    if (rulesValue == nullptr)
+        return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot requires rules", "rules");
 
-    FactStore nextFacts = facts_;
-    if (const auto* facts = objField(*root, "facts")) {
-        auto encoded = facts->toJson();
+    FactStore nextFacts;
+    {
+        auto encoded = factsValue->toJson();
         if (!encoded) return eve::Result<void>::failure(encoded.status());
         auto restored = nextFacts.restoreJson(encoded.value());
         if (!restored) return restored;
     }
-    std::vector<RuleRuntime> nextRuntime = runtime_;
-    if (const auto* rules = objField(*root, "rules")) {
-        const auto* array = rules->getIf<eve::Value::Array>();
-        if (array == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "rules must be an array", "rules");
-        for (const auto& item : *array) {
-            const auto* object = item.getIf<eve::Value::Object>();
-            if (object == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "rule latch must be an object");
-            const auto* id = objField(*object, "id");
-            if (id == nullptr || !id->isString())
-                return fail(eve::DiagnosticCode::InvalidArgument, "rule latch requires id", "id");
-            auto it = idToIndex_.find(id->asString());
-            if (it == idToIndex_.end())
-                return fail(eve::DiagnosticCode::NotFound, "runtime rule id missing from catalogue", "id");
-            auto& runtime = nextRuntime[it->second];
-            if (const auto* passed = objField(*object, "passed")) {
-                if (!passed->isBool()) return fail(eve::DiagnosticCode::InvalidArgument, "passed must be bool");
-                runtime.passed = passed->asBool();
-            }
-            if (const auto* fired = objField(*object, "fired")) {
-                if (!fired->isBool()) return fail(eve::DiagnosticCode::InvalidArgument, "fired must be bool");
-                runtime.fired = fired->asBool();
-            }
-            if (const auto* disabled = objField(*object, "disabled")) {
-                if (!disabled->isBool()) return fail(eve::DiagnosticCode::InvalidArgument, "disabled must be bool");
-                runtime.disabled = disabled->asBool();
-            }
-            if (const auto* cooldown = objField(*object, "cooldownUntil"))
-                runtime.cooldownUntil = static_cast<std::uint64_t>(std::max<std::int64_t>(0, asInt64(*cooldown)));
-        }
+
+    std::vector<RuleRuntime> nextRuntime(runtime_.size());
+    const auto*              array = rulesValue->getIf<eve::Value::Array>();
+    if (array == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "rules must be an array", "rules");
+    std::unordered_set<std::string> seenIds;
+    for (const auto& item : *array) {
+        const auto* object = item.getIf<eve::Value::Object>();
+        if (object == nullptr) return fail(eve::DiagnosticCode::InvalidArgument, "rule latch must be an object");
+        if (!exactFields(*object, {"id", "passed", "fired", "disabled", "cooldownUntil"}))
+            return fail(eve::DiagnosticCode::InvalidArgument, "rule latch contains an unknown field");
+        const auto* id = objField(*object, "id");
+        if (id == nullptr || !id->isString() || id->asString().empty())
+            return fail(eve::DiagnosticCode::InvalidArgument, "rule latch requires id", "id");
+        if (!seenIds.insert(id->asString()).second)
+            return fail(eve::DiagnosticCode::AlreadyExists, "duplicate rule latch id", "id");
+        auto it = idToIndex_.find(id->asString());
+        if (it == idToIndex_.end())
+            return fail(eve::DiagnosticCode::NotFound, "runtime rule id missing from catalogue", "id");
+        auto&       runtime  = nextRuntime[it->second];
+        const auto* passed   = objField(*object, "passed");
+        const auto* fired    = objField(*object, "fired");
+        const auto* disabled = objField(*object, "disabled");
+        const auto* cooldown = objField(*object, "cooldownUntil");
+        if (passed == nullptr || !passed->isBool())
+            return fail(eve::DiagnosticCode::InvalidArgument, "passed must be bool", "passed");
+        if (fired == nullptr || !fired->isBool())
+            return fail(eve::DiagnosticCode::InvalidArgument, "fired must be bool", "fired");
+        if (disabled == nullptr || !disabled->isBool())
+            return fail(eve::DiagnosticCode::InvalidArgument, "disabled must be bool", "disabled");
+        if (cooldown == nullptr)
+            return fail(eve::DiagnosticCode::InvalidArgument, "cooldownUntil is required", "cooldownUntil");
+        auto cooldownValue = requireNonNegativeU64(*cooldown, "cooldownUntil");
+        if (!cooldownValue) return eve::Result<void>::failure(cooldownValue.status());
+        runtime.passed        = passed->asBool();
+        runtime.fired         = fired->asBool();
+        runtime.disabled      = disabled->asBool();
+        runtime.cooldownUntil = cooldownValue.value();
     }
+    if (seenIds.size() != rules_.size())
+        return fail(eve::DiagnosticCode::InvalidArgument, "runtime snapshot must include every catalogue rule",
+                    "rules");
+
     facts_   = std::move(nextFacts);
     runtime_ = std::move(nextRuntime);
     dirty_.clear();

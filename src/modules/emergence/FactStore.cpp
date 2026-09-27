@@ -2,6 +2,7 @@
 
 #include "common/Diagnostic.h"
 
+#include <set>
 #include <utility>
 
 namespace eve::emergence {
@@ -18,6 +19,86 @@ const char* domainPrefix(FactDomain domain) {
         case FactDomain::Policy: return "policy:";
     }
     return "value:";
+}
+
+const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
+    const auto it = object.find(std::string(name));
+    return it == object.end() ? nullptr : &it->second;
+}
+
+bool exactFields(const eve::Value::Object& object, std::initializer_list<std::string_view> allowed) {
+    const std::set<std::string_view> fields(allowed.begin(), allowed.end());
+    for (const auto& [name, unused] : object) {
+        (void)unused;
+        if (!fields.contains(name)) return false;
+    }
+    return true;
+}
+
+eve::Result<decision::ConditionReasonCode> parseReasonCode(std::string_view text) {
+    using R                                             = decision::ConditionReasonCode;
+    static const std::pair<std::string_view, R> names[] = {
+        {"passed", R::Passed},
+        {"child_failed", R::ChildFailed},
+        {"no_child_passed", R::NoChildPassed},
+        {"negated", R::Negated},
+        {"missing_value", R::MissingValue},
+        {"value_mismatch", R::ValueMismatch},
+        {"tag_missing", R::TagMissing},
+        {"tag_unavailable", R::TagUnavailable},
+        {"attribute_missing", R::AttributeMissing},
+        {"resource_missing", R::ResourceMissing},
+        {"state_missing", R::StateMissing},
+        {"state_mismatch", R::StateMismatch},
+        {"authority_denied", R::AuthorityDenied},
+        {"authority_unavailable", R::AuthorityUnavailable},
+        {"policy_rejected", R::PolicyRejected},
+        {"policy_unavailable", R::PolicyUnavailable},
+        {"invalid_condition", R::InvalidCondition},
+    };
+    for (const auto& [name, code] : names) {
+        if (name == text) return eve::Result<decision::ConditionReasonCode>::success(code);
+    }
+    return eve::Result<decision::ConditionReasonCode>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "unknown condition reason code", "reason", {}, "emergence.fact"));
+}
+
+eve::Result<decision::ConditionResult> decodePolicyResult(const eve::Value& value) {
+    const auto* object = value.getIf<eve::Value::Object>();
+    if (object == nullptr)
+        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "policy result must be an object", {}, {}, "emergence.fact"));
+    if (!exactFields(*object, {"passed", "reason", "evidence", "details"}))
+        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "policy result contains an unknown field", {}, {}, "emergence.fact"));
+    const auto* passed = field(*object, "passed");
+    const auto* reason = field(*object, "reason");
+    if (passed == nullptr || !passed->isBool())
+        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "policy passed must be a boolean", "passed", {}, "emergence.fact"));
+    if (reason == nullptr || !reason->isString())
+        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "policy reason must be a string", "reason", {}, "emergence.fact"));
+    auto code = parseReasonCode(reason->asString());
+    if (!code) return eve::Result<decision::ConditionResult>::failure(code.status());
+    eve::Value evidence;
+    eve::Value details = eve::Value::Object{};
+    if (const auto* evidenceValue = field(*object, "evidence")) evidence = *evidenceValue;
+    if (const auto* detailsValue = field(*object, "details")) details = *detailsValue;
+    if (passed->asBool())
+        return eve::Result<decision::ConditionResult>::success(
+            decision::ConditionResult::success(std::move(evidence), std::move(details)));
+    return eve::Result<decision::ConditionResult>::success(
+        decision::ConditionResult::failed(code.value(), std::move(evidence), std::move(details)));
+}
+
+eve::Value encodePolicyResult(const decision::ConditionResult& result) {
+    eve::Value::Object object;
+    object.emplace("passed", eve::Value(result.passed()));
+    object.emplace("reason", eve::Value(decision::conditionReasonCodeName(result.reasonCode())));
+    object.emplace("evidence", result.evidence());
+    object.emplace("details", result.details());
+    return eve::Value(std::move(object));
 }
 
 }  // namespace
@@ -183,6 +264,8 @@ std::string FactStore::snapshotJson() const {
     for (const auto& [key, value] : states_) states.emplace(key, value);
     eve::Value::Object authorities;
     for (const auto& [key, value] : authorities_) authorities.emplace(key, eve::Value(value));
+    eve::Value::Object policies;
+    for (const auto& [key, value] : policies_) policies.emplace(key, encodePolicyResult(value));
     root.emplace("schema", eve::Value("eve.emergence.facts"));
     root.emplace("version", eve::Value(std::int64_t{1}));
     root.emplace("values", eve::Value(std::move(values)));
@@ -191,6 +274,7 @@ std::string FactStore::snapshotJson() const {
     root.emplace("resources", eve::Value(std::move(resources)));
     root.emplace("states", eve::Value(std::move(states)));
     root.emplace("authorities", eve::Value(std::move(authorities)));
+    root.emplace("policies", eve::Value(std::move(policies)));
     auto encoded = eve::Value(std::move(root)).toJson();
     return encoded ? std::move(encoded).takeValue() : std::string("{}");
 }
@@ -202,8 +286,12 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
     if (object == nullptr)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "fact snapshot must be an object", {}, {}, "emergence.fact"));
-    const auto* schema  = object->find("schema") == object->end() ? nullptr : &object->at("schema");
-    const auto* version = object->find("version") == object->end() ? nullptr : &object->at("version");
+    if (!exactFields(*object, {"schema", "version", "values", "tags", "attributes", "resources", "states",
+                               "authorities", "policies"}))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "fact snapshot contains an unknown field", {}, {}, "emergence.fact"));
+    const auto* schema  = field(*object, "schema");
+    const auto* version = field(*object, "version");
     if (schema == nullptr || !schema->isString() || schema->asString() != "eve.emergence.facts")
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "unexpected fact snapshot schema", "schema", {}, "emergence.fact"));
@@ -212,17 +300,17 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
             eve::DiagnosticCode::UnknownVersion, "unsupported fact snapshot version", "version", {}, "emergence.fact"));
 
     FactStore next;
-    auto      loadObject = [&](const char* field, auto&& setter) -> eve::Result<void> {
-        const auto it = object->find(field);
+    auto      loadObject = [&](const char* fieldName, auto&& setter) -> eve::Result<void> {
+        const auto it = object->find(fieldName);
         if (it == object->end()) return eve::Result<void>::success();
         const auto* map = it->second.getIf<eve::Value::Object>();
         if (map == nullptr)
             return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "fact field must be an object", field, {}, "emergence.fact"));
+                eve::DiagnosticCode::InvalidArgument, "fact field must be an object", fieldName, {}, "emergence.fact"));
         for (const auto& [key, value] : *map) {
             if (!setter(next, key, value))
                 return eve::Result<void>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "invalid fact entry", field, {}, "emergence.fact"));
+                    eve::DiagnosticCode::InvalidArgument, "invalid fact entry", fieldName, {}, "emergence.fact"));
         }
         return eve::Result<void>::success();
     };
@@ -267,6 +355,15 @@ eve::Result<void> FactStore::restoreJson(std::string_view json) {
                             [](FactStore& store, const std::string& key, const eve::Value& value) {
                                 if (!value.isBool()) return false;
                                 (void)store.setAuthority(key, value.asBool());
+                                return true;
+                            });
+        !r)
+        return r;
+    if (auto r = loadObject("policies",
+                            [](FactStore& store, const std::string& key, const eve::Value& value) {
+                                auto decoded = decodePolicyResult(value);
+                                if (!decoded) return false;
+                                (void)store.setPolicy(key, std::move(decoded).takeValue());
                                 return true;
                             });
         !r)

@@ -33,8 +33,11 @@ for (local i = 0; i < engine.activationCount(); i++) {
 
 `RuleEngine` 持有 `FactStore`（规则可见事实）和规则目录。世界系统在状态变化时
 写入 fact（或镜像经济/任务进度），每仿真步调用一次 `drain(tick)`。
+每个 dirty pass 内按 `(priority DESC, ruleId ASC)` 执行；`fact.set` 级联进入后续
+pass。上升沿 / once / cooldown 锁存仅在该次激活的动作全部成功后提交。
 内置动作：`fact.set`、`economy.credit` / `economy.debit`（经 `IEconomy`）。
 其它动作进入激活日志，并由可选的 `IEmergenceActionHandler` 消费。
+策略结果须经 `setPolicy`（C++）写入，勿绕过引擎直接改 FactStore。
 
 ## 目标导向指南
 
