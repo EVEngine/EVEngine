@@ -1,5 +1,6 @@
 #include <memory>
 #include "graphics/Graphics.h"
+#include "graphics/RenderControl.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"

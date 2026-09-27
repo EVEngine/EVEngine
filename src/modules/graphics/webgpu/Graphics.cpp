@@ -32,6 +32,7 @@
 #include <assimp/scene.h>
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -3693,13 +3694,13 @@ void Graphics::drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm:
 
 void Graphics::endGBufferPass() {
     gbufferPassActive = false;
-    // Expose the G-buffer textures (depth/normal/albedo/hwDepth) to RenderControl
-    // so post passes (AO, X-ray scene depth) can sample them this frame.
-    if (renderControl_ && !gbufferSlots.empty()) {
+    // Expose the G-buffer textures (depth/normal/albedo/hwDepth/pbr/emissive) to
+    // RenderControl so post passes (AO, X-ray scene depth) can sample them this frame.
+    if (!gbufferSlots.empty()) {
         GbufferSlot& slot = gbufferSlots[currentFrameSlot()];
-        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex, &slot.normalTex,
-                                                 &slot.albedoTex, &slot.depthTex, &slot.pbrParamsTex,
-                                                 &slot.emissiveTex);
+        getRenderControl()->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex,
+                                                     &slot.normalTex, &slot.albedoTex, &slot.depthTex,
+                                                     &slot.pbrParamsTex, &slot.emissiveTex);
     }
 }
 
@@ -4336,7 +4337,7 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         ubo.mvp               = d.mvp;
         ubo.model             = d.model;
         auto           u6     = [](float value) { return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 63.f)); };
-        // Phase B: tint RGB6 | rough7 | metal7 (matches Vulkan drawMeshGBuffer).
+        // Phase B: tint RGB6 | rough7 | metal7 — bit-cast (exceeds float's 24-bit exact ints).
         const uint32_t rough7 = uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 127.f));
         const uint32_t metal7 = uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 127.f));
         const uint32_t packedTint =
@@ -4345,7 +4346,7 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
             return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
         };
         const uint32_t packedMotion = motion12(d.motion.x) | (motion12(d.motion.y) << 12);
-        ubo.clip                    = glm::vec4(d.nearZ, d.farZ, float(packedTint), float(packedMotion));
+        ubo.clip                    = glm::vec4(d.nearZ, d.farZ, std::bit_cast<float>(packedTint), float(packedMotion));
         if (d.mesh->hasGpuSkinning()) ubo.skinInfo.x = static_cast<float>(d.mesh->getSkinPaletteCount());
         ubo.skinInfo.y = static_cast<float>(d.skinInfluenceLimit);
         const auto skinBuffer = uploadSkinPalette(d.mesh);

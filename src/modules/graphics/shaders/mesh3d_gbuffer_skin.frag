@@ -28,7 +28,7 @@ void main() {
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
     uint packedMotion = uint(skinPass.clip.w + 0.5);
     vec2 motion = (vec2(packedMotion & 4095u, (packedMotion >> 12) & 4095u) - 2047.0) / 2047.0;
-    uint packedTint = uint(skinPass.clip.z);
+    uint packedTint = floatBitsToUint(skinPass.clip.z);
     float roughness = float((packedTint >> 18) & 127u) / 127.0;
     float metallic = float((packedTint >> 25) & 127u) / 127.0;
     uint pbrLegacy = (uint(roughness * 7.0 + 0.5) & 7u) | ((uint(metallic * 7.0 + 0.5) & 7u) << 3);

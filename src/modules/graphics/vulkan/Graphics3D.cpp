@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -772,9 +773,9 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
-    // Phase B: tint RGB6 | rough7 | metal7 (7-bit ≈ 128 levels for deferred PBR params).
-    // A float exactly represents every integer through 24 bits. Numeric packing avoids
-    // NaN canonicalization and subnormal flush-to-zero corrupting bit-cast payloads.
+    // Phase B: tint RGB6 | rough7 | metal7. Payload exceeds the 24-bit exact
+    // integer range of float, so bit-cast through the push constant (shader
+    // reads floatBitsToUint). Motion stays numeric (≤24 bits).
     const uint32_t rough7 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
     const uint32_t metal7 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
     const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
@@ -783,7 +784,7 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
+    d.push.clip = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
@@ -813,7 +814,7 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
+    d.push.clip = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
@@ -826,15 +827,15 @@ void Graphics::endGBufferPass() {
     if (!gbufferPipeline || !gbufferRenderPass || !slot || !slot->framebuffer) {
         gbufferPassDraws.clear();
         gbufferPending = false;
-        if (renderControl_) renderControl_->getGBuffer()->clear();
+        if (RenderControl *rc = getRenderControl()) rc->getGBuffer()->clear();
         return;
     }
 
     gbufferPending = true;
-    if (renderControl_) {
-        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
-                                                 &slot->normalTex, &slot->albedoTex, &slot->depthTex,
-                                                 &slot->pbrParamsTex, &slot->emissiveTex);
+    if (RenderControl *rc = getRenderControl()) {
+        rc->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
+                                     &slot->normalTex, &slot->albedoTex, &slot->depthTex,
+                                     &slot->pbrParamsTex, &slot->emissiveTex);
     }
 }
 

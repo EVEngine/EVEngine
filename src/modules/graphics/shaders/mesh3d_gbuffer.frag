@@ -30,7 +30,7 @@ void main() {
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
     uint packedMotion = uint(pc.clip.w + 0.5);
     vec2 motion = (vec2(packedMotion & 4095u, (packedMotion >> 12) & 4095u) - 2047.0) / 2047.0;
-    uint packedTint = uint(pc.clip.z);
+    uint packedTint = floatBitsToUint(pc.clip.z);
     // Phase B packing: tint RGB6 | rough7 | metal7 (see drawMeshGBuffer).
     float roughness = float((packedTint >> 18) & 127u) / 127.0;
     float metallic = float((packedTint >> 25) & 127u) / 127.0;
