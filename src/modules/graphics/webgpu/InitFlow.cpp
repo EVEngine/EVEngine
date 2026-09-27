@@ -91,7 +91,6 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
     // WebGPU's default maxColorAttachmentBytesPerSample is 32; Dawn/macOS
     // adapters advertise 128 but only grant it when requested here.
     constexpr std::uint32_t requiredColorAttachmentBytes = 40;
-    constexpr std::uint32_t requiredColorAttachments     = 5;
     wgpu::Limits            adapterLimits{};
     if (adapter.GetLimits(&adapterLimits) != wgpu::Status::Success ||
         adapterLimits.maxSampledTexturesPerShaderStage < requiredSampledTextures)
@@ -102,13 +101,10 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
             "WebGPU: adapter maxColorAttachmentBytesPerSample (%u) is below the "
             "GBuffer requirement (%u)",
             adapterLimits.maxColorAttachmentBytesPerSample, requiredColorAttachmentBytes);
-    if (adapterLimits.maxColorAttachments < requiredColorAttachments)
-        throw Exception("WebGPU: adapter maxColorAttachments (%u) is below the GBuffer requirement (%u)",
-                        adapterLimits.maxColorAttachments, requiredColorAttachments);
     WGPULimits requiredLimits                       = WGPU_LIMITS_INIT;
     requiredLimits.maxSampledTexturesPerShaderStage = requiredSampledTextures;
     requiredLimits.maxColorAttachmentBytesPerSample = requiredColorAttachmentBytes;
-    requiredLimits.maxColorAttachments              = requiredColorAttachments;
+    // Leave maxColorAttachments at the WGPU default (8); only raise bytes/sample.
     devDesc.requiredLimits                          = &requiredLimits;
     devDesc.uncapturedErrorCallbackInfo.callback    = [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message,
                                                          void*, void*) {
