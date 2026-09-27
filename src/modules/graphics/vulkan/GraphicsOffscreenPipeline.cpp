@@ -7,6 +7,8 @@
 #include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
+#include "graphics/shaders/particle_distortion_frag_spv.inc"
+#include "graphics/shaders/scene_tonemap_frag_spv.inc"
 namespace eve::graphics::vulkan {
 vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
                                       vk::PipelineLayout layout,
@@ -149,21 +151,54 @@ void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
 }
 
 void Graphics::ensureHdrOffscreenPipelines() {
-    if (hdrOffscreenRenderPass) return;
-    hdrOffscreenRenderPass =
-        device.createRenderPass()
-            .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
-            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
-                0, vk::ImageLayout::eColorAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-
-    auto vert = embeddedSpirv(textured_vert_spv);
-    auto frag = embeddedSpirv(textured_frag_spv);
-    hdrOffscreenTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout);
-    hdrOffscreenOpaqueTexPipeline = createTexturedStylePipeline(
-        vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Opaque);
+    if (!hdrOffscreenRenderPass) {
+        hdrOffscreenRenderPass =
+            device.createRenderPass()
+                .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
+                .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
+                    0, vk::ImageLayout::eColorAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+    }
+    if (!pipelineLayout) pipelineLayout = createPipelineLayout(device);
+    if (!hdrOffscreenSolidPipeline) {
+        hdrOffscreenSolidPipeline =
+            createSolidColorPipeline(device, hdrOffscreenRenderPass, pipelineLayout);
+        hdrOffscreenSolidAlphaPipeline =
+            createSolidColorPipeline(device, hdrOffscreenRenderPass, pipelineLayout, BlendMode::Alpha);
+        hdrOffscreenAdditiveSolidPipeline = createSolidColorPipeline(
+            device, hdrOffscreenRenderPass, pipelineLayout, BlendMode::Additive);
+        hdrOffscreenPremultipliedSolidPipeline = createSolidColorPipeline(
+            device, hdrOffscreenRenderPass, pipelineLayout, BlendMode::Premultiplied);
+        hdrOffscreenMultiplySolidPipeline = createSolidColorPipeline(
+            device, hdrOffscreenRenderPass, pipelineLayout, BlendMode::Multiply);
+    }
+    if (!hdrOffscreenTexPipeline && texPipelineLayout) {
+        auto vert = embeddedSpirv(textured_vert_spv);
+        auto frag = embeddedSpirv(textured_frag_spv);
+        hdrOffscreenTexPipeline = createTexturedStylePipeline(
+            vert, frag, hdrOffscreenRenderPass, texPipelineLayout);
+        hdrOffscreenOpaqueTexPipeline = createTexturedStylePipeline(
+            vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Opaque);
+        hdrOffscreenAdditiveTexPipeline = createTexturedStylePipeline(
+            vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Additive);
+        hdrOffscreenPremultipliedTexPipeline = createTexturedStylePipeline(
+            vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Premultiplied);
+        hdrOffscreenMultiplyTexPipeline = createTexturedStylePipeline(
+            vert, frag, hdrOffscreenRenderPass, texPipelineLayout, BlendMode::Multiply);
+        hdrOffscreenParticleDistortionPipeline = createTexturedStylePipeline(
+            vert, embeddedSpirv(particle_distortion_frag_spv), hdrOffscreenRenderPass, texPipelineLayout,
+            BlendMode::Alpha);
+        hdrOffscreenTonemapPipeline = createTexturedStylePipeline(
+            vert, embeddedSpirv(scene_tonemap_frag_spv), hdrOffscreenRenderPass, texPipelineLayout,
+            BlendMode::Opaque);
+    }
+    if (!hdrOffscreenLitPipeline && lit2dPipelineLayout) {
+        hdrOffscreenLitPipeline = createTexturedStylePipeline(
+            embeddedSpirv(lit2d_vert_spv), embeddedSpirv(lit2d_frag_spv), hdrOffscreenRenderPass,
+            lit2dPipelineLayout);
+    }
+    ensureHdrGpuParticleDrawPipelines();
     for (auto &shader : ownedShaders) ensureShaderHdrOffscreenPipeline(shader.get());
 }
 

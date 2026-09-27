@@ -863,6 +863,22 @@ private:
     void          ensureHdrOffscreenPipelines();
     void          ensureShaderOffscreenPipeline(Shader *shader);
     void          ensureShaderHdrOffscreenPipeline(Shader *shader);
+    /** @brief Destroy present render-pass pipelines so a new swapchain format can rebuild them. */
+    void          destroyPresentGraphicsPipelines();
+    /** @brief Rebuild particle draw pipelines against the given present/compose render pass. */
+    void          rebuildGpuParticleDrawPipelines(const vkb::BuiltRenderPass &target);
+    /** @brief Lazily build particle draw pipelines for the HDR compose render pass. */
+    void          ensureHdrGpuParticleDrawPipelines();
+    /** @brief Ensure the linear HDR compose target used before the final display encode. */
+    void          ensurePresentComposeResources(int width, int height);
+    void          destroyPresentComposeResources();
+    struct PresentComposeSlot;
+    PresentComposeSlot *currentPresentComposeSlot();
+    /** @brief Begin/end the HDR compose pass on the present command buffer. */
+    bool          beginPresentComposePass();
+    void          endPresentComposePass();
+    /** @brief Fullscreen encode of the compose target into the HDR swapchain. */
+    void          encodePresentComposeToSwapchain(vk::CommandBuffer cb);
     vk::Pipeline  createTexturedStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
                                               BlendMode mode = BlendMode::Alpha,
@@ -1019,6 +1035,8 @@ private:
     vk::Pipeline opaqueTexPipeline;
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
+    /** @brief Attachment format the present render pass / pipelines were built for. */
+    vk::Format presentAttachmentFormat_ = vk::Format::eUndefined;
     SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
     vk::SurfaceFormatKHR          selectedSurfaceFormat_{vk::Format::eB8G8R8A8Unorm,
                                                 vk::ColorSpaceKHR::eSrgbNonlinear};
@@ -1059,6 +1077,23 @@ private:
     vk::Pipeline offscreenOpaqueTexPipeline;
     vk::Pipeline hdrOffscreenTexPipeline;
     vk::Pipeline hdrOffscreenOpaqueTexPipeline;
+    vk::Pipeline hdrOffscreenAdditiveTexPipeline;
+    vk::Pipeline hdrOffscreenPremultipliedTexPipeline;
+    vk::Pipeline hdrOffscreenMultiplyTexPipeline;
+    vk::Pipeline hdrOffscreenSolidPipeline;
+    vk::Pipeline hdrOffscreenSolidAlphaPipeline;
+    vk::Pipeline hdrOffscreenAdditiveSolidPipeline;
+    vk::Pipeline hdrOffscreenPremultipliedSolidPipeline;
+    vk::Pipeline hdrOffscreenMultiplySolidPipeline;
+    vk::Pipeline hdrOffscreenLitPipeline;
+    vk::Pipeline hdrOffscreenTonemapPipeline;
+    vk::Pipeline hdrOffscreenParticleDistortionPipeline;
+    vk::Pipeline hdrGpuParticleAlphaPipeline_{};
+    vk::Pipeline hdrGpuParticleAdditivePipeline_{};
+    vk::Pipeline hdrGpuParticlePremultipliedPipeline_{};
+    vk::Pipeline hdrGpuParticleMultiplyPipeline_{};
+    vk::Pipeline hdrGpuParticleOpaquePipeline_{};
+    bool presentComposeActive_ = false;
 
     vk::DescriptorSetLayout mesh3dSetLayout;
     vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
@@ -1636,6 +1671,19 @@ private:
     vk::Pipeline uiTexturePipeline{};
     vk::Pipeline uiTextureOpaquePipeline{};
     UiColorSlot *currentUiColorSlot();
+
+    // Linear HDR compose target: scene + overlays blend in paper-white-relative
+    // display-linear space, then a single fullscreen tonemap encodes to the
+    // HDR10/scRGB swapchain.
+    struct PresentComposeSlot {
+        vkb::ColorTarget color;
+        vk::Framebuffer framebuffer{};
+        GpuTexture colorGpu{};
+        Texture colorTex{};
+    };
+    int presentComposeWidth = 0;
+    int presentComposeHeight = 0;
+    std::vector<PresentComposeSlot> presentComposeSlots;
 
     vkb::Present presentModel;
     vkb::RecordingCmd presentRecording;

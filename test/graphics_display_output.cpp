@@ -62,6 +62,29 @@ TEST_CASE("graphics.displayOutput.resolveTintModes") {
     CHECK(std::abs(ui.g - 1.f) < 1e-5f);
 }
 
+TEST_CASE("graphics.displayOutput.encodeScRgbScalesByPaperWhite") {
+    using eve::graphics::display::encodeScRgb;
+    float r = 1.f, g = 1.f, b = 1.f;
+    encodeScRgb(r, g, b, 200.f, 1000.f);
+    // Paper white must map to 200/80 = 2.5 in scRGB (1.0 = 80 nits).
+    CHECK(std::abs(r - 2.5f) < 1e-4f);
+    CHECK(std::abs(g - 2.5f) < 1e-4f);
+    CHECK(std::abs(b - 2.5f) < 1e-4f);
+
+    r = g = b = 5.f;  // peakRatio = 1000/200 = 5
+    encodeScRgb(r, g, b, 200.f, 1000.f);
+    CHECK(std::abs(r - 12.5f) < 1e-3f);
+}
+
+TEST_CASE("graphics.displayOutput.composeTintUsesMode3") {
+    using eve::graphics::display::isComposeLinearMode;
+    using eve::graphics::display::sceneComposeTint;
+    const Color compose = sceneComposeTint(true, 200.f, 1000.f);
+    CHECK(compose.r >= 0.5f);
+    CHECK(isComposeLinearMode(compose.g));
+    CHECK(compose.a < 1.f);
+}
+
 TEST_CASE("graphics.displayOutput.apiValidation") {
     auto *gfx = Graphics::create();
     REQUIRE(gfx != nullptr);

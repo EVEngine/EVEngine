@@ -112,7 +112,7 @@
 
 - [x] 启用 `VK_EXT_swapchain_colorspace`；按 `DisplayOutputMode` 选择 HDR10（`A2B10G10R10` + `HDR10_ST2084`）或 scRGB（`RGBA16F` + `EXTENDED_SRGB_LINEAR`），并始终保留 SDR UNORM 回退。
 - [x] `Graphics::setDisplayOutputMode` / `setDisplayHdrCalibration` / `queryDisplayOutputSupport` / `isDisplayHdrActive` 暴露请求与实际选中色彩空间；脚本绑定同步。
-- [x] 最终 `scene_tonemap` resolve：SDR 继续 ACES→sRGB；HDR 将 ACES 映射到以纸白为 1 的 display-linear，HDR10 再经 Rec.709→2020 + PQ；UI overlay 在 HDR swapchain 上经同一路径编码。
+- [x] 最终 `scene_tonemap` resolve：SDR 继续 ACES→sRGB；HDR 先 compose（mode 3 纸白相对 display-linear）再一次 encode——HDR10 经 Rec.709→2020 + PQ，scRGB 再乘 `paperWhite/80`；UI/2D overlays 在 compose 目标上线性混合。模式切换重建 present RP/pipelines。
 - [x] WebGPU 拒绝严格 `hdr10`/`scrgb`（Unsupported），`sdr`/`auto` 保持 SDR。
 - [ ] Windows DXGI HDR 元数据 / Linux 合成器端到端实机验收（需真 HDR 显示器）；软件 Vulkan（Lavapipe）仅验证 API 与 SDR 回退。
 

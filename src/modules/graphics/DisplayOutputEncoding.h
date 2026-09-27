@@ -45,7 +45,8 @@ inline void unpackNits(float packed, float &paperWhiteNits, float &peakNits) noe
     clampCalibration(paperWhiteNits, peakNits);
 }
 
-/** @brief Encode the active present mode into the resolve tint G channel. */
+/** @brief Encode the active present mode into the resolve tint G channel.
+ *  @details Shader modes: 0=SDR, 1=scRGB, 2=HDR10, 3=compose-linear (no encode). */
 inline float packActiveMode(ActiveColorSpace space) noexcept {
     switch (space) {
         case ActiveColorSpace::ScRgb:
@@ -58,6 +59,9 @@ inline float packActiveMode(ActiveColorSpace space) noexcept {
     }
 }
 
+/** @brief Tint G value for compose-linear output (paper-white-relative, no OETF). */
+inline float packComposeLinearMode() noexcept { return 3.f; }
+
 /** @brief Decode the present mode from the resolve tint G channel. */
 inline ActiveColorSpace unpackActiveMode(float packed) noexcept {
     const int mode = int(std::round(packed));
@@ -66,11 +70,24 @@ inline ActiveColorSpace unpackActiveMode(float packed) noexcept {
     return ActiveColorSpace::Sdr;
 }
 
+/** @brief True when the tint G channel requests compose-linear (mode 3). */
+inline bool isComposeLinearMode(float packed) noexcept {
+    return int(std::round(packed)) == 3;
+}
+
 /** @brief Build the Color tint used by the final scene present resolve. */
 inline Color sceneResolveTint(bool aces, ActiveColorSpace space, bool attachmentEncodesSrgb,
                               float paperWhiteNits, float peakNits) noexcept {
     const float encodeSrgb = (!attachmentEncodesSrgb && space == ActiveColorSpace::Sdr) ? 65536.f : 0.f;
     return Color(aces ? 1.f : 0.f, packActiveMode(space), packNits(paperWhiteNits, peakNits), encodeSrgb);
+}
+
+/**
+ * @brief Build the Color tint for tonemapping into a linear HDR compose target.
+ * @details Mode 3 skips PQ/scRGB encode so overlays can blend in display-linear space.
+ */
+inline Color sceneComposeTint(bool aces, float paperWhiteNits, float peakNits) noexcept {
+    return Color(aces ? 1.f : 0.f, packComposeLinearMode(), packNits(paperWhiteNits, peakNits), 0.f);
 }
 
 /** @brief Build the Color tint used when compositing SDR UI onto an HDR swapchain. */
@@ -139,6 +156,19 @@ inline void acesToDisplayLinear(float &r, float &g, float &b, float paperWhiteNi
     r = aces(r * inv) * peakRatio;
     g = aces(g * inv) * peakRatio;
     b = aces(b * inv) * peakRatio;
+}
+
+/**
+ * @brief Map paper-white-relative display-linear RGB into scRGB (1.0 = 80 nits).
+ * @param r,g,b Display-linear Rec.709 channels relative to paper white.
+ */
+inline void encodeScRgb(float &r, float &g, float &b, float paperWhiteNits, float peakNits) noexcept {
+    clampCalibration(paperWhiteNits, peakNits);
+    const float peakRatio = peakNits / paperWhiteNits;
+    const float scale = paperWhiteNits / 80.f;
+    r = std::clamp(r, 0.f, peakRatio) * scale;
+    g = std::clamp(g, 0.f, peakRatio) * scale;
+    b = std::clamp(b, 0.f, peakRatio) * scale;
 }
 
 }  // namespace eve::graphics::display

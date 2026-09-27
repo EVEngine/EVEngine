@@ -95,17 +95,19 @@ void main() {
   float bloomPacked = mod(round(fragColor.a), 65536.0);
   float bloomIntensity = mod(bloomPacked, 256.0) * (1.0 / 32.0);
   float bloomThreshold = floor(bloomPacked * (1.0 / 256.0)) * (1.0 / 16.0);
-  int displayMode = int(round(fragColor.g));  // 0=SDR, 1=scRGB, 2=HDR10
+  int displayMode = int(round(fragColor.g));  // 0=SDR, 1=scRGB, 2=HDR10, 3=compose-linear
   float paperWhiteNits = 200.0;
   float peakNits = 1000.0;
   unpackNits(fragColor.b, paperWhiteNits, peakNits);
   float peakRatio = peakNits / max(paperWhiteNits, 1.0);
+  // scRGB numeric 1.0 is 80 nits; scale paper-white-relative values into that space.
+  float scRgbScale = paperWhiteNits / 80.0;
 
   // UI resolve path: SDR overlay already in display-referred 0-1 (paper white).
   if (fragColor.r < 0.0) {
     vec3 ui = max(hdr.rgb, vec3(0.0));
     if (displayMode == 2) ui = encodeHdr10(ui, paperWhiteNits);
-    else if (displayMode == 1) ui = clamp(ui, vec3(0.0), vec3(peakRatio));
+    else if (displayMode == 1) ui = clamp(ui, vec3(0.0), vec3(peakRatio)) * scRgbScale;
     outColor = vec4(ui, hdr.a);
     return;
   }
@@ -120,7 +122,9 @@ void main() {
   } else {
     displayColor = fragColor.r >= 0.5 ? acesToDisplayLinear(linearColor, peakRatio)
                                      : clamp(linearColor, vec3(0.0), vec3(peakRatio));
+    // Mode 3 stays paper-white-relative for the linear compose target.
     if (displayMode == 2) displayColor = encodeHdr10(displayColor, paperWhiteNits);
+    else if (displayMode == 1) displayColor *= scRgbScale;
   }
   outColor = vec4(displayColor, hdr.a);
 }

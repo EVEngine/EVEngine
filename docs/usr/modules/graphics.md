@@ -477,9 +477,11 @@ Bloom、曝光和 HDR 离屏纹理保持各自的职责；二维 UI 不经过此
 - `gfx.queryDisplayOutputSupport()` → `{sdr, hdr10, scRgb}`；需要已初始化的窗口 surface。
 
 HDR10 使用 `A2B10G10R10` + `HDR10_ST2084`（PQ）；scRGB 使用 `RGBA16F` +
-`EXTENDED_SRGB_LINEAR`。最终 resolve 在 SDR 上继续 ACES→sRGB，在 HDR 上把 ACES
-映射到以纸白为 1 的 display-linear，再按色彩空间编码。ImGui UI 在 HDR 输出上经
-同一 resolve 编码到纸白。Lavapipe / 无 HDR 显示器环境会保持 SDR。
+`EXTENDED_SRGB_LINEAR`（数值 1.0 = 80 nits，引擎按 `paperWhite/80` 缩放）。切换
+模式时会按新 attachment format 重建 present render pass 与 pipelines。HDR 路径先在
+线性 compose 目标上合成 scene + 2D/UI overlays（纸白相对 display-linear），再一次
+fullscreen encode 到 swapchain；避免透明 UI 用不透明 encode pipeline 盖住场景，也避免
+overlays 直接写入未编码的 HDR swapchain。Lavapipe / 无 HDR 显示器环境会保持 SDR。
 # Gaussian scatter bloom
 
 `gfx.setBloomFilter("gaussianScatter", 0.68, 6, 65472.0)` returns a checked Result
