@@ -421,9 +421,8 @@ image::ImageData *Graphics::renderEntityIdMask(
     // 上层可通过 getDepthTexture()/getNormalTexture() 读取本次离屏 ID 渲染
     // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
     if (RenderControl *rc = getRenderControl()) {
-        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
-                                     &slot->albedoTex, &slot->depthTex, &slot->pbrParamsTex,
-                                     &slot->emissiveTex);
+        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex, &slot->albedoTex,
+                                     &slot->depthTex, &slot->pbrParamsTex, &slot->emissiveTex);
     }
     return img;
 }

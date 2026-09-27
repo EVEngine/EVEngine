@@ -106,7 +106,7 @@ void Graphics::buildDeferredFrameGraphs() {
                 .colorAttachment(pbrParamsH, vkb::AttachmentOp::clear(clears[3]))
                 .colorAttachment(emissiveH, vkb::AttachmentOp::clear(clears[4]))
                 .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[5]))
-                .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
+                .record([this](vkb::FrameGraphPassContext& ctx) { recordGBufferPassDraws(ctx); });
         }
         graph->compile();
         deferredFrameGraphs_[i] = std::move(graph);

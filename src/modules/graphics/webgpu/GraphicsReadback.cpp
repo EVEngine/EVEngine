@@ -275,7 +275,7 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     std::memcpy(image->getData(), rgba.data(), rgba.size());
     if (attachment == "depth") {
         // Mirror Vulkan readback: expose linear depth as grayscale (G/B hold velocity on GPU).
-        auto *pixels = static_cast<uint8_t *>(image->getData());
+        auto*        pixels     = static_cast<uint8_t*>(image->getData());
         const size_t pixelCount = size_t(gbufferWidth) * size_t(gbufferHeight);
         for (size_t i = 0; i < pixelCount; ++i) {
             pixels[i * 4u + 1u] = pixels[i * 4u];

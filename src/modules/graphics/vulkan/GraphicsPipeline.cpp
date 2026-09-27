@@ -509,8 +509,8 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
-        slot.pbrParamsTex.gpuHandle = nullptr;
-        slot.emissiveTex.gpuHandle = nullptr;
+        slot.pbrParamsTex.gpuHandle  = nullptr;
+        slot.emissiveTex.gpuHandle   = nullptr;
         slot.visIDTex.gpuHandle = nullptr;
         slot.visBaryTex.gpuHandle = nullptr;
         slot.depthTex.gpuHandle = nullptr;
@@ -785,8 +785,8 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         slot.normal = device.createColorTarget(w, h, colorFmt);
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
-        slot.pbrParams = device.createColorTarget(w, h, colorFmt);
-        slot.emissive = device.createColorTarget(w, h, colorFmt);
+        slot.pbrParams  = device.createColorTarget(w, h, colorFmt);
+        slot.emissive   = device.createColorTarget(w, h, colorFmt);
         slot.visID = device.createColorTarget(w, h, visIDFmt);
         slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
@@ -840,17 +840,17 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                mesh3d_gbuffer_frag_spv + mesh3d_gbuffer_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    gbufferPipeline = device.createPipeline()
-                          .useClassicPipeline(vertModule, fragModule)
-                          .setPipelineLayout(gbufferPipelineLayout)
-                          .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                   .addInputBinding<MeshVertex>()
-                                                   .addAttributeDescription<MeshVertex>())
-                          .setDynamicStatesViewportScissor()
-                          .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                                         vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
-                          .setColorAttachmentCount(5)
-                          .build(gbufferPass);
+    gbufferPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(gbufferPipelineLayout)
+            .setVertexInputState(
+                vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setColorAttachmentCount(5)
+            .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
@@ -863,48 +863,45 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                         mesh3d_gbuffer_alpha_frag_spv_count);
     vk::ShaderModule alphaFragModule =
         vkb::PipelineBuilder::createShaderModule(device.instance, alphaFrag);
-    gbufferAlphaPipeline = device.createPipeline()
-                               .useClassicPipeline(alphaVertModule, alphaFragModule)
-                               .setPipelineLayout(gbufferPipelineLayout)
-                               .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                        .addInputBinding<MeshVertex>()
-                                                        .addAttributeDescription<MeshVertex>())
-                               .setDynamicStatesViewportScissor()
-                               .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                                              vk::CullModeFlagBits::eNone,
-                                              vk::FrontFace::eClockwise)
-                               .setColorAttachmentCount(5)
-                               .build(gbufferPass);
+    gbufferAlphaPipeline =
+        device.createPipeline()
+            .useClassicPipeline(alphaVertModule, alphaFragModule)
+            .setPipelineLayout(gbufferPipelineLayout)
+            .setVertexInputState(
+                vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setColorAttachmentCount(5)
+            .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
     auto skinVert = embeddedSpirv(mesh3d_gbuffer_skin_vert_spv);
     auto skinFrag = embeddedSpirv(mesh3d_gbuffer_skin_frag_spv);
-    gbufferSkinPipeline = device.createPipeline()
-                              .useClassicPipeline(skinVert, skinFrag)
-                              .setPipelineLayout(skinPassPipelineLayout)
-                              .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                       .addInputBinding<MeshVertex>()
-                                                       .addAttributeDescription<MeshVertex>())
-                              .setDynamicStatesViewportScissor()
-                              .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                                             vk::CullModeFlagBits::eNone,
-                                             vk::FrontFace::eClockwise)
-                              .setColorAttachmentCount(5)
-                              .build(gbufferPass);
+    gbufferSkinPipeline =
+        device.createPipeline()
+            .useClassicPipeline(skinVert, skinFrag)
+            .setPipelineLayout(skinPassPipelineLayout)
+            .setVertexInputState(
+                vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setColorAttachmentCount(5)
+            .build(gbufferPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_gbuffer_skin_alpha_frag_spv);
-    gbufferSkinAlphaPipeline = device.createPipeline()
-                                   .useClassicPipeline(skinVert, skinAlphaFrag)
-                                   .setPipelineLayout(skinPassPipelineLayout)
-                                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                            .addInputBinding<MeshVertex>()
-                                                            .addAttributeDescription<MeshVertex>())
-                                   .setDynamicStatesViewportScissor()
-                                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                                                  vk::CullModeFlagBits::eNone,
-                                                  vk::FrontFace::eClockwise)
-                                   .setColorAttachmentCount(5)
-                                   .build(gbufferPass);
+    gbufferSkinAlphaPipeline =
+        device.createPipeline()
+            .useClassicPipeline(skinVert, skinAlphaFrag)
+            .setPipelineLayout(skinPassPipelineLayout)
+            .setVertexInputState(
+                vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setColorAttachmentCount(5)
+            .build(gbufferPass);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;

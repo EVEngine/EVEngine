@@ -9,12 +9,31 @@
 namespace eve::graphics {
 namespace {
 
-const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
-                                "forward",   "hair",       "clustered", "clusteredDeferred",
-                                "ao", "gi", "aa", "msaa",
-                                "rtgi",      "taa",        "ssr",      "reflectionChain",
-                                "outline",   "gpuDriven", "visResolve", "frustumCull", "decal",
-                                "atmosphere", "volumetricFog", "fogLocalVolumes", "fogTemporal"};
+const char* kKnownFeatures[] = {"depthTest",
+                                "shadow",
+                                "gbuffer",
+                                "gbufferAlbedo",
+                                "forward",
+                                "hair",
+                                "clustered",
+                                "clusteredDeferred",
+                                "ao",
+                                "gi",
+                                "aa",
+                                "msaa",
+                                "rtgi",
+                                "taa",
+                                "ssr",
+                                "reflectionChain",
+                                "outline",
+                                "gpuDriven",
+                                "visResolve",
+                                "frustumCull",
+                                "decal",
+                                "atmosphere",
+                                "volumetricFog",
+                                "fogLocalVolumes",
+                                "fogTemporal"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -50,9 +69,9 @@ RenderControl::RenderControl() {
     features_["volumetricFog"] = false;
     features_["fogLocalVolumes"] = false;
     features_["fogTemporal"] = false;
-    lightingMode_          = LightingMode::ForwardPlus;
-    effectiveLightingMode_ = LightingMode::ForwardPlus;
-    hybridLightingFallback_ = false;
+    lightingMode_                  = LightingMode::ForwardPlus;
+    effectiveLightingMode_         = LightingMode::ForwardPlus;
+    hybridLightingFallback_        = false;
     dirty_ = true;
     compiled_ = false;
 }
@@ -76,26 +95,26 @@ bool RenderControl::isDeferredLightingAvailable() const {
 
 Result<void> RenderControl::setLightingMode(LightingMode mode) {
     if (mode != LightingMode::ForwardPlus && mode != LightingMode::Hybrid) {
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "unknown LightingMode value", "graphics.RenderControl.lightingMode"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown LightingMode value",
+                                                       "graphics.RenderControl.lightingMode"));
     }
     if (lightingMode_ == mode) return Result<void>::success();
     lightingMode_ = mode;
     syncClusteredDeferredFeature();
     if (mode == LightingMode::Hybrid) {
-        features_["gbuffer"] = true;
+        features_["gbuffer"]       = true;
         features_["gbufferAlbedo"] = true;
     }
     dirty_ = true;
     return Result<void>::success();
 }
 
-Result<void> RenderControl::setLightingMode(const std::string &name) {
+Result<void> RenderControl::setLightingMode(const std::string& name) {
     if (name == "forwardPlus" || name == "forward+") return setLightingMode(LightingMode::ForwardPlus);
     if (name == "hybrid") return setLightingMode(LightingMode::Hybrid);
-    return Result<void>::failure(Diagnostic::error(
-        DiagnosticCode::Unsupported,
-        "lighting mode must be \"forwardPlus\" or \"hybrid\"", "graphics.RenderControl.lightingMode"));
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                   "lighting mode must be \"forwardPlus\" or \"hybrid\"",
+                                                   "graphics.RenderControl.lightingMode"));
 }
 
 void RenderControl::setFeature(const std::string &feature, bool enabled) {
@@ -194,10 +213,9 @@ void RenderControl::setReflectionQuality(const std::string &quality) {
 void RenderControl::compile() {
     passes_.clear();
 
-    const bool wantHybrid = lightingMode_ == LightingMode::Hybrid;
-    const bool gbufferOn =
-        isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi");
-    const bool canHybrid = wantHybrid && isDeferredLightingAvailable() && gbufferOn;
+    const bool wantHybrid   = lightingMode_ == LightingMode::Hybrid;
+    const bool gbufferOn    = isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi");
+    const bool canHybrid    = wantHybrid && isDeferredLightingAvailable() && gbufferOn;
     effectiveLightingMode_  = canHybrid ? LightingMode::Hybrid : LightingMode::ForwardPlus;
     hybridLightingFallback_ = wantHybrid && !canHybrid;
 

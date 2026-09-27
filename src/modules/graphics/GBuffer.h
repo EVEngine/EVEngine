@@ -44,10 +44,16 @@ public:
     Texture *getHwDepthTexture() const { return hwDepth_; }
     Texture *getNormalTexture() const { return normal_; }
     Texture *getAlbedoTexture() const { return albedo_; }
-    /** @brief Metallic/roughness/occlusion/specularFactor (may be null before Phase B backends wire). */
-    Texture *getPbrParamsTexture() const { return pbrParams_; }
-    /** @brief Emissive RGB (may be null before Phase B backends wire). */
-    Texture *getEmissiveTexture() const { return emissive_; }
+    /**
+     * @brief Metallic/roughness/occlusion/specularFactor (may be null before Phase B backends wire).
+     * @lifetime The returned borrowed texture remains valid while this GBuffer owns its attachments.
+     */
+    Texture* getPbrParamsTexture() const { return pbrParams_; }
+    /**
+     * @brief Emissive RGB (may be null before Phase B backends wire).
+     * @lifetime The returned borrowed texture remains valid while this GBuffer owns its attachments.
+     */
+    Texture* getEmissiveTexture() const { return emissive_; }
     /**
      * @brief Packed rigid-object velocity in depth texture G/B (0.5 = zero motion).
      * @lifetime The returned borrowed texture remains valid while this GBuffer owns its attachments.
@@ -63,9 +69,8 @@ public:
      * @param pbrParams Optional metallic/roughness/occlusion/specular target.
      * @param emissive Optional emissive target.
      */
-    void setTargets(int width, int height, Texture *depth, Texture *normal, Texture *albedo,
-                    Texture *hwDepth = nullptr, Texture *pbrParams = nullptr,
-                    Texture *emissive = nullptr);
+    void setTargets(int width, int height, Texture* depth, Texture* normal, Texture* albedo, Texture* hwDepth = nullptr,
+                    Texture* pbrParams = nullptr, Texture* emissive = nullptr);
 
     void clear();
 
@@ -77,8 +82,8 @@ private:
     Texture *hwDepth_ = nullptr;
     Texture *normal_ = nullptr;
     Texture *albedo_ = nullptr;
-    Texture *pbrParams_ = nullptr;
-    Texture *emissive_ = nullptr;
+    Texture*  pbrParams_ = nullptr;
+    Texture*  emissive_  = nullptr;
 };
 
 }  // namespace eve::graphics

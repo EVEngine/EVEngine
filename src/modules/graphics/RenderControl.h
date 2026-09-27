@@ -55,7 +55,7 @@ class Graphics;
  *   LightingMode::ForwardPlus — today's clustered-forward opaque path (default)
  *   LightingMode::Hybrid — opaque clustered deferred + transparent Forward+ when the
  *     deferredLighting pass is available; otherwise compile() falls back observably
- *     to ForwardPlus (getEffectiveLightingMode() / didFallbackFromHybridLighting())
+ *     to ForwardPlus (getEffectiveLightingMode() / hasHybridLightingFallback())
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.
@@ -90,7 +90,7 @@ public:
      * @brief Request lighting mode by name: "forwardPlus" / "forward+" / "hybrid".
      * @return Success, or Unsupported for unknown names (previous mode unchanged).
      */
-    [[nodiscard]] Result<void> setLightingMode(const std::string &name);
+    [[nodiscard]] Result<void> setLightingMode(const std::string& name);
     /** @brief Return the caller-requested lighting mode (may differ from effective). */
     LightingMode getLightingMode() const { return lightingMode_; }
     /**
@@ -104,10 +104,11 @@ public:
      */
     bool isDeferredLightingAvailable() const;
     /**
-     * @brief True after compile() when Hybrid was requested but fell back to ForwardPlus.
-     * Cleared on the next compile that does not need a fallback.
+     * @brief True after compile() when Hybrid was requested but could not run
+     * (deferred lighting unavailable or GBuffer off) and ForwardPlus was used instead.
+     * Cleared on the next compile that keeps the requested Hybrid mode.
      */
-    bool didFallbackFromHybridLighting() const { return hybridLightingFallback_; }
+    bool hasHybridLightingFallback() const { return hybridLightingFallback_; }
 
     /**
      * @brief Set the shared TAA/RTGI/SSR quality preset used by the automatic reflection chain.
@@ -146,11 +147,11 @@ private:
     std::vector<std::string> passes_;
     std::string reflectionQuality_ = "high";
     GBuffer gbuffer_;
-    LightingMode lightingMode_          = LightingMode::ForwardPlus;
-    LightingMode effectiveLightingMode_ = LightingMode::ForwardPlus;
-    bool hybridLightingFallback_        = false;
-    bool dirty_                         = true;
-    bool compiled_                      = false;
+    LightingMode                          lightingMode_           = LightingMode::ForwardPlus;
+    LightingMode                          effectiveLightingMode_  = LightingMode::ForwardPlus;
+    bool                                  hybridLightingFallback_ = false;
+    bool                                  dirty_                  = true;
+    bool                                  compiled_               = false;
 };
 
 }  // namespace eve::graphics

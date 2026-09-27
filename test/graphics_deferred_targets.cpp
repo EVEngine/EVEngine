@@ -31,7 +31,7 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
                                   /*tint*/ 1.f, 1.f, 1.f, /*motion*/ 0.f, 0.f,
                                   /*roughness*/ 0.25f, /*metallic*/ 0.75f);
         graphics->endGBufferPass();
-        auto *gb = graphics->getRenderControl()->getGBuffer();
+        auto* gb = graphics->getRenderControl()->getGBuffer();
         REQUIRE(gb != nullptr);
         REQUIRE(gb->hasBuffer("pbrParams"));
         REQUIRE(gb->hasBuffer("emissive"));

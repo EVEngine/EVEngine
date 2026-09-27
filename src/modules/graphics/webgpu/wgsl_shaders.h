@@ -1348,7 +1348,8 @@ fn vs_main(in: VSIn) -> VSOut {
 }
 )wgsl";
 
-inline const char *kMesh3DGbufferFragWgsl = R"wgsl(
+/** @brief Immutable GBuffer fill WGSL. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DGbufferFragWgsl = R"wgsl(
 struct FSIn {
     @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,
@@ -1398,7 +1399,8 @@ fn fs_main(in: FSIn) -> GBufOut {
 }
 )wgsl";
 
-inline const char *kMesh3DGbufferAlphaFragWgsl = R"wgsl(
+/** @brief Immutable GBuffer alpha-cutout WGSL. @borrowed Static storage; valid for the process lifetime. */
+inline const char* kMesh3DGbufferAlphaFragWgsl = R"wgsl(
 struct FSIn {
     @builtin(position) position: vec4f,
     @location(0) vNormal: vec3f,

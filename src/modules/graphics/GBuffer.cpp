@@ -28,8 +28,8 @@ Texture *GBuffer::getBuffer(const std::string &name) const {
     return nullptr;
 }
 
-void GBuffer::setTargets(int width, int height, Texture *depth, Texture *normal, Texture *albedo,
-                         Texture *hwDepth, Texture *pbrParams, Texture *emissive) {
+void GBuffer::setTargets(int width, int height, Texture* depth, Texture* normal, Texture* albedo, Texture* hwDepth,
+                         Texture* pbrParams, Texture* emissive) {
     width_ = width;
     height_ = height;
     depth_ = depth;
@@ -37,7 +37,7 @@ void GBuffer::setTargets(int width, int height, Texture *depth, Texture *normal,
     normal_ = normal;
     albedo_ = albedo;
     pbrParams_ = pbrParams;
-    emissive_ = emissive;
+    emissive_  = emissive;
 }
 
 void GBuffer::clear() {
@@ -48,7 +48,7 @@ void GBuffer::clear() {
     normal_ = nullptr;
     albedo_ = nullptr;
     pbrParams_ = nullptr;
-    emissive_ = nullptr;
+    emissive_  = nullptr;
 }
 
 }  // namespace eve::graphics

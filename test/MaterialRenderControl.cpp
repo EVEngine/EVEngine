@@ -131,10 +131,11 @@ TEST_CASE("renderControl.lightingModeHybridFallback") {
     CHECK(rc.isDirty());
 
     rc.compile();
-    // Phase A: deferredLighting GPU pass is not available yet — observable fallback.
+    // Phase A: deferredLighting GPU pass is not available yet — Hybrid request
+    // stays on ForwardPlus and is observable via hasHybridLightingFallback().
     CHECK(!rc.isDeferredLightingAvailable());
     CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
-    CHECK(rc.didFallbackFromHybridLighting());
+    CHECK(rc.hasHybridLightingFallback());
     CHECK(!rc.hasPass("deferredLighting"));
     CHECK(rc.hasPass("forward"));
     CHECK(rc.hasPass("gbuffer"));
@@ -148,7 +149,7 @@ TEST_CASE("renderControl.lightingModeHybridFallback") {
     CHECK(rc.getLightingMode() == LightingMode::ForwardPlus);
     rc.compile();
     CHECK(rc.getEffectiveLightingMode() == LightingMode::ForwardPlus);
-    CHECK(!rc.didFallbackFromHybridLighting());
+    CHECK(!rc.hasHybridLightingFallback());
 
     rc.enable("clusteredDeferred");
     CHECK(rc.getLightingMode() == LightingMode::Hybrid);

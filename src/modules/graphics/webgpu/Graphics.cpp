@@ -3698,9 +3698,9 @@ void Graphics::endGBufferPass() {
     // RenderControl so post passes (AO, X-ray scene depth) can sample them this frame.
     if (!gbufferSlots.empty()) {
         GbufferSlot& slot = gbufferSlots[currentFrameSlot()];
-        getRenderControl()->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex,
-                                                     &slot.normalTex, &slot.albedoTex, &slot.depthTex,
-                                                     &slot.pbrParamsTex, &slot.emissiveTex);
+        getRenderControl()->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex, &slot.normalTex,
+                                                     &slot.albedoTex, &slot.depthTex, &slot.pbrParamsTex,
+                                                     &slot.emissiveTex);
     }
 }
 
@@ -4778,8 +4778,8 @@ void Graphics::present() {
         colorAtts[0].view = slot.normalView.Get();
         colorAtts[1].view = slot.depthColorView.Get();
         colorAtts[2].view = slot.albedoView.Get();
-        colorAtts[3].view = slot.pbrParamsView.Get();
-        colorAtts[4].view = slot.emissiveView.Get();
+        colorAtts[3].view       = slot.pbrParamsView.Get();
+        colorAtts[4].view       = slot.emissiveView.Get();
         WGPURenderPassDepthStencilAttachment ds{};
         ds.view              = slot.depthView.Get();
         ds.depthClearValue   = 1.f;
