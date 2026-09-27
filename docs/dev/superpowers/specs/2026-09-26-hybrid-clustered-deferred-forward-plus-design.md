@@ -1,7 +1,7 @@
 # 混合渲染：Clustered Deferred（不透明）+ Forward+（半透明）
 
 日期：2026-09-26  
-状态：阶段 A 实施中（`LightingMode` API + `compile()`；deferredLighting GPU 未就绪时 Hybrid 可观察回退）  
+状态：阶段 C 落地中（Vulkan fullscreen deferred lighting + Hybrid opaque skip Forward+；FrameGraph 录制与 ClassicScenes 对比待补）  
 关联：[`3D渲染管线.md`](../../3D渲染管线.md)、[`模块设计.md`](../../模块设计.md)、
 [`ClusteredLight.h`](../../../../src/modules/graphics/ClusteredLight.h)、
 [`PbrSurface.h`](../../../../src/modules/graphics/PbrSurface.h)、
@@ -452,11 +452,12 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 
 ### 阶段 C — Clustered deferred PBR lighting（Vulkan 先）
 
-- Fullscreen lighting：核心 PBR + CSM + IBL
-- Hybrid：核心 PBR opaque 不再 lit forward；transparent / 扩展特征 opaque 仍 Forward+
-- ClassicScenes：PBR chart、DamagedHelmet；`forwardPlus` vs `hybrid` 容差对比
-- FrameGraph：`deferredLighting` sample(GBuffer+CSM)/write(sceneColor)；
+- [x] Fullscreen lighting：核心 PBR + CSM + clustered lights（IBL/env 绑定留后续对齐前向）
+- [x] Hybrid：核心 PBR opaque 不再 lit forward；transparent / 扩展特征 opaque 仍 Forward+
+- [ ] ClassicScenes：PBR chart、DamagedHelmet；`forwardPlus` vs `hybrid` 容差对比
+- [ ] FrameGraph：`deferredLighting` sample(GBuffer+CSM)/write(sceneColor)；
   JobSystem：`clusterBuild ∥ record(shadow∥gbuffer)` 后再 record lighting
+  （当前：`RenderSystem3D` 在 `begin3DFrame` 后直接 `drawDeferredLighting`）
 
 ### 阶段 D — WebGPU parity + 预设
 
