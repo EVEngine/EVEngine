@@ -1721,6 +1721,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 )wgsl";
 
 // ---- Hybrid clustered deferred lighting (Phase D WebGPU parity) ------------
+/** @brief Immutable deferred-lighting vertex WGSL. @borrowed Static storage; valid for the process lifetime. */
 inline const char* kDeferredLightingVertWgsl = R"wgsl(
 struct VSOut {
     @builtin(position) pos: vec4f,
@@ -1736,8 +1737,9 @@ fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
 )wgsl";
 
 /**
- * @brief Clustered deferred lighting fragment — mirrors Vulkan deferred_lighting.frag
- * (core metallic-roughness PBR + CSM + clustered points).
+ * @brief Immutable clustered deferred lighting fragment WGSL (core metallic-roughness
+ * PBR + CSM + clustered points; mirrors Vulkan deferred_lighting.frag).
+ * @borrowed Static storage; valid for the process lifetime.
  */
 inline const char* kDeferredLightingFragWgsl = R"wgsl(
 struct Light3D {
