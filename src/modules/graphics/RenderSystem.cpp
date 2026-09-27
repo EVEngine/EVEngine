@@ -443,12 +443,11 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             eve::debug::rtBind("texture", "normal");
             if (it.rotation != 0.f) {
                 eve::debug::rtDraw("drawTexturedRectLitUVRotated", "lit2d");
-                gfx.drawTexturedRectLitUVRotated(it.texture, it.normal, centerX, centerY, sw, sh,
-                                                 it.rotation, u0, v0, u1, v1, it.color);
+                gfx.drawTexturedRectLitUVRotated(it.texture, it.normal, centerX, centerY, sw, sh, it.rotation, u0, v0,
+                                                 u1, v1, it.color, it.blend);
             } else {
                 eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
-                gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
-                                          it.color);
+                gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1, it.color, it.blend);
             }
         } else if (it.texture) {
             Color c = it.color;

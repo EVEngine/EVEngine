@@ -948,35 +948,34 @@ void Graphics::ensureFlatNormalTexture() {
     flatNormalTexture = newTexture(1, 1, px);
 }
 
-void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
-                                     float h, float u0, float v0, float u1, float v1,
-                                     const Color &color) {
+void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0,
+                                     float v0, float u1, float v1, const Color &color, BlendMode blend) {
     if (!albedo) {
-        drawSolidRect(x, y, w, h, color);
+        drawSolidRect(x, y, w, h, color, blend);
         return;
     }
     ensureFlatNormalTexture();
     if (!normal) normal = flatNormalTexture;
-    if (litBatches.empty() || litBatches.back().albedo != albedo ||
-        litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
-void Graphics::drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy,
-                                            float w, float h, float degrees, float u0, float v0,
-                                            float u1, float v1, const Color &color) {
+void Graphics::drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                            float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                            BlendMode blend) {
     if (!albedo) {
-        drawSolidRectRotated(cx, cy, w, h, degrees, color);
+        drawSolidRectRotated(cx, cy, w, h, degrees, color, blend);
         return;
     }
     ensureFlatNormalTexture();
     if (!normal) normal = flatNormalTexture;
-    if (litBatches.empty() || litBatches.back().albedo != albedo ||
-        litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
@@ -1046,11 +1045,9 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth, GpuTex
     return bound;
 }
 
-void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline litPipeline,
-                              std::vector<LitBatch> &batches,
-                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex,
-                              bool offscreen) {
-    if (!litPipeline || batches.empty() || !lit2dPipelineLayout) return;
+void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
+                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen) {
+    if (batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
     vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
@@ -1058,6 +1055,8 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
 
     for (auto &lb : batches) {
         if (lb.batch.empty() || !lb.albedo || !lb.albedo->gpuHandle) continue;
+        vk::Pipeline litPipeline = selectLit2DPipeline(lb.blend, offscreen);
+        if (!litPipeline) continue;
         ensureFlatNormalTexture();
         Texture *ntex = lb.normal ? lb.normal : flatNormalTexture;
         if (!ntex || !ntex->gpuHandle) continue;
@@ -1489,8 +1488,7 @@ void Graphics::flushToSwapchain() {
         presentComposeActive_ && hdrOffscreenParticleDistortionPipeline
             ? hdrOffscreenParticleDistortionPipeline
             : particleDistortionPipeline;
-    const vk::Pipeline litPipe =
-        presentComposeActive_ && hdrOffscreenLitPipeline ? hdrOffscreenLitPipeline : lit2dPipeline;
+    const bool litAvailable = lit2dPipeline || (presentComposeActive_ && hdrOffscreenLitPipeline);
 
     auto drawTextured = [&](TexturedBatch &tb, bool toneMapScene = false) {
         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
@@ -1596,10 +1594,10 @@ void Graphics::flushToSwapchain() {
             } else if (sp.kind == OverlayKind::Textured && (texPipeline || hdrOffscreenTexPipeline) &&
                        sp.index < textured.size()) {
                 drawTextured(textured[sp.index]);
-            } else if (sp.kind == OverlayKind::Lit && litPipe && sp.index < lit.size()) {
+            } else if (sp.kind == OverlayKind::Lit && litAvailable && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
-                drawLitBatches(cb, width, height, litPipe, one, texBufs, texBufIndex, false);
+                drawLitBatches(cb, width, height, one, texBufs, texBufIndex, false);
             } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
                 drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }
@@ -1653,8 +1651,7 @@ void Graphics::flushToSwapchain() {
         if (texPipeline || hdrOffscreenTexPipeline) {
             for (auto &tb : textured) drawTextured(tb);
         }
-        if (litPipe) drawLitBatches(cb, width, height, litPipe, lit, texBufs, texBufIndex,
-                                          false);
+        if (litAvailable) drawLitBatches(cb, width, height, lit, texBufs, texBufIndex, false);
     } else {
         for (const auto &sp : spans) {
             if (sp.kind == OverlayKind::Solid && sp.index < solid.size() && sp.vertCount > 0) {
@@ -1676,10 +1673,10 @@ void Graphics::flushToSwapchain() {
                 if (placedScene) {
                     drawEngine3D();
                 }
-            } else if (sp.kind == OverlayKind::Lit && litPipe && sp.index < lit.size()) {
+            } else if (sp.kind == OverlayKind::Lit && litAvailable && sp.index < lit.size()) {
                 std::vector<LitBatch> one;
                 one.push_back(std::move(lit[sp.index]));
-                drawLitBatches(cb, width, height, litPipe, one, texBufs, texBufIndex, false);
+                drawLitBatches(cb, width, height, one, texBufs, texBufIndex, false);
             } else if (sp.kind == OverlayKind::GpuParticles && sp.index < gpuParticleDraws.size()) {
                 drawGpuParticleRequest(cb, gpuParticleDraws[sp.index]);
             }

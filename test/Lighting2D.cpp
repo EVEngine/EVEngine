@@ -309,13 +309,14 @@ TEST_CASE("Lighting2D.setNormalTextureEnablesLitPathAndRotation") {
     sp->sprite()->canvas = rt;
     sp->sprite()->visible = true;
 
-    auto *light = Light2D::createLight("point");
+    // Directional light has no distance falloff, so a brightness gap between
+    // equal-distance samples must come from rotated normals — not attenuation.
+    auto *light = Light2D::createLight("dir");
     light->setCanvas(rt);
     // After 90° clockwise rotation, the map's +X bias faces screen +Y (down).
-    // Place the light below the sprite so the lower half should be brighter.
-    light->setPosition(64.f, 110.f);
-    light->setColor(1.f, 1.f, 1.f, 3.f);
-    light->setRadius(120.f);
+    // Light from below → lower half should be brighter.
+    light->setDirection(0.f, 1.f);
+    light->setColor(1.f, 1.f, 1.f, 1.5f);
     light->setEnabled(true);
 
     RenderSystem::render(*gfx);
@@ -327,6 +328,207 @@ TEST_CASE("Lighting2D.setNormalTextureEnablesLitPathAndRotation") {
     sp->setNormalTexture(nullptr);
     CHECK(sp->getNormalTexture() == nullptr);
     sp->sprite()->visible = false;
+    light->setEnabled(false);
+    cam->data()->active = false;
+    win->close();
+}
+
+/**
+ * Pack a biased normal into a corner of a large atlas so UV derivatives are
+ * tiny. The lit2d det singularity must be scale-aware or atlas tiles fall back
+ * to the flat-Z path and lose the left/right bias.
+ */
+static Texture *makeAtlasBiasedNormal(Graphics *gfx, int atlasW, int atlasH, int tileX, int tileY, int tileW,
+                                      int tileH) {
+    std::vector<uint8_t> px(size_t(atlasW) * size_t(atlasH) * 4);
+    for (int y = 0; y < atlasH; ++y) {
+        for (int x = 0; x < atlasW; ++x) {
+            size_t i  = (size_t(y) * size_t(atlasW) + size_t(x)) * 4;
+            px[i + 0] = 128;
+            px[i + 1] = 128;
+            px[i + 2] = 255;
+            px[i + 3] = 255;
+        }
+    }
+    for (int y = 0; y < tileH; ++y) {
+        for (int x = 0; x < tileW; ++x) {
+            size_t i  = (size_t(tileY + y) * size_t(atlasW) + size_t(tileX + x)) * 4;
+            float  nx = (x < tileW / 2) ? -0.7f : 0.7f;
+            float  ny = 0.f;
+            float  nz = 0.7f;
+            px[i + 0] = uint8_t((nx * 0.5f + 0.5f) * 255.f);
+            px[i + 1] = uint8_t((ny * 0.5f + 0.5f) * 255.f);
+            px[i + 2] = uint8_t((nz * 0.5f + 0.5f) * 255.f);
+            px[i + 3] = 255;
+        }
+    }
+    eve::image::ImageData imageData(atlasW, atlasH, "RGBA8");
+    std::memcpy(imageData.getData(), px.data(), px.size());
+    return gfx->newTexture(&imageData);
+}
+
+static Texture *makeAtlasSolid(Graphics *gfx, int atlasW, int atlasH, int tileX, int tileY, int tileW, int tileH,
+                               uint8_t r, uint8_t g, uint8_t b) {
+    std::vector<uint8_t> px(size_t(atlasW) * size_t(atlasH) * 4, 0);
+    for (int y = 0; y < tileH; ++y) {
+        for (int x = 0; x < tileW; ++x) {
+            size_t i  = (size_t(tileY + y) * size_t(atlasW) + size_t(tileX + x)) * 4;
+            px[i + 0] = r;
+            px[i + 1] = g;
+            px[i + 2] = b;
+            px[i + 3] = 255;
+        }
+    }
+    eve::image::ImageData imageData(atlasW, atlasH, "RGBA8");
+    std::memcpy(imageData.getData(), px.data(), px.size());
+    return gfx->newTexture(&imageData);
+}
+
+TEST_CASE("Lighting2D.atlasUvNormalMapKeepsSideBias") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    eve::window::WindowSettings s;
+    s.width    = 320;
+    s.height   = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newCanvas(128, 64);
+    REQUIRE(rt != nullptr);
+
+    auto *cam           = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x      = 64.f;
+    cam->data()->y      = 32.f;
+    cam->data()->zoom   = 1.f;
+    cam->setAmbient(0.08f, 0.08f, 0.08f);
+    cam->data()->r = 0.f;
+    cam->data()->g = 0.f;
+    cam->data()->b = 0.f;
+    cam->data()->a = 1.f;
+
+    constexpr int kAtlas = 1024;
+    constexpr int kTile  = 32;
+    Texture      *albedo = makeAtlasSolid(gfx, kAtlas, kAtlas, 0, 0, kTile, kTile, 220, 220, 220);
+    Texture      *normal = makeAtlasBiasedNormal(gfx, kAtlas, kAtlas, 0, 0, kTile, kTile);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(normal != nullptr);
+    Quad *tile = gfx->newQuad(0, 0, kTile, kTile);
+    REQUIRE(tile != nullptr);
+
+    auto *sp             = Renderable2D::create();
+    sp->transform()->x   = 32.f;
+    sp->transform()->y   = 8.f;
+    sp->sprite()->width  = 64.f;
+    sp->sprite()->height = 48.f;
+    sp->setTexture(albedo);
+    sp->setNormalTexture(normal);
+    sp->setQuad(tile);  // tiny UV span → exercises scale-aware det
+    sp->setReceiveLight(true);
+    sp->sprite()->canvas  = rt;
+    sp->sprite()->visible = true;
+
+    auto *light = Light2D::createLight("dir");
+    light->setCanvas(rt);
+    light->setDirection(1.f, 0.f);
+    light->setColor(1.f, 1.f, 1.f, 1.5f);
+    light->setEnabled(true);
+
+    RenderSystem::render(*gfx);
+
+    float leftL  = luma(rt->getPixel(42, 32));
+    float rightL = luma(rt->getPixel(86, 32));
+    CHECK(rightL > leftL + 0.05f);
+
+    sp->sprite()->visible = false;
+    light->setEnabled(false);
+    cam->data()->active = false;
+    win->close();
+}
+
+TEST_CASE("Lighting2D.additiveBlendBrightensOverClear") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    eve::window::WindowSettings s;
+    s.width    = 320;
+    s.height   = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newCanvas(64, 64);
+    REQUIRE(rt != nullptr);
+
+    auto *cam           = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x      = 32.f;
+    cam->data()->y      = 32.f;
+    cam->data()->zoom   = 1.f;
+    cam->setAmbient(0.f, 0.f, 0.f);
+    // Non-black clear so additive and alpha produce distinguishable results.
+    cam->data()->r = 0.25f;
+    cam->data()->g = 0.1f;
+    cam->data()->b = 0.1f;
+    cam->data()->a = 1.f;
+
+    Texture              *albedo    = makeSolidTexture(gfx, 8, 8, 255, 255, 255);
+    const uint8_t         flatPx[4] = {128, 128, 255, 255};
+    eve::image::ImageData flatImage(1, 1, "RGBA8");
+    std::memcpy(flatImage.getData(), flatPx, 4);
+    Texture *flat = gfx->newTexture(&flatImage);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(flat != nullptr);
+
+    auto *alphaSp             = Renderable2D::create();
+    alphaSp->transform()->x   = 4.f;
+    alphaSp->transform()->y   = 20.f;
+    alphaSp->sprite()->width  = 24.f;
+    alphaSp->sprite()->height = 24.f;
+    alphaSp->setTexture(albedo);
+    alphaSp->setNormalTexture(flat);
+    alphaSp->setReceiveLight(true);
+    alphaSp->setBlend("alpha");
+    alphaSp->setColor(0.4f, 0.4f, 0.4f, 0.5f);
+    alphaSp->sprite()->canvas  = rt;
+    alphaSp->sprite()->visible = true;
+
+    auto *addSp             = Renderable2D::create();
+    addSp->transform()->x   = 36.f;
+    addSp->transform()->y   = 20.f;
+    addSp->sprite()->width  = 24.f;
+    addSp->sprite()->height = 24.f;
+    addSp->setTexture(albedo);
+    addSp->setNormalTexture(flat);
+    addSp->setReceiveLight(true);
+    addSp->setBlend("additive");
+    addSp->setColor(0.4f, 0.4f, 0.4f, 0.5f);
+    addSp->sprite()->canvas  = rt;
+    addSp->sprite()->visible = true;
+
+    auto *light = Light2D::createLight("dir");
+    light->setCanvas(rt);
+    light->setDirection(0.f, 1.f);
+    light->setColor(1.f, 1.f, 1.f, 1.f);
+    light->setEnabled(true);
+
+    RenderSystem::render(*gfx);
+
+    Color alphaPx = rt->getPixel(16, 32);
+    Color addPx   = rt->getPixel(48, 32);
+    // Additive over a non-black clear keeps more of the destination red channel
+    // than alpha blend (src*a + dst*(1-a)), which darkens the clear.
+    CHECK(addPx.r > alphaPx.r + 0.05f);
+    CHECK(luma(addPx) > luma(alphaPx) + 0.03f);
+
+    alphaSp->sprite()->visible = false;
+    addSp->sprite()->visible   = false;
     light->setEnabled(false);
     cam->data()->active = false;
     win->close();

@@ -770,17 +770,18 @@ public:
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
-    virtual void drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
-                                       float v0, float u1, float v1, const Color& color) = 0;
+    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0,
+                                       float v0, float u1, float v1, const Color &color,
+                                       BlendMode blend = BlendMode::Alpha) = 0;
 
     /**
      * @brief Lit 2D draw rotated `degrees` clockwise (screen Y-down) around (cx, cy).
      * Fragment tangent frame is rebuilt from screen/UV derivatives so normal maps
      * stay aligned with the rotated albedo.
      */
-    virtual void drawTexturedRectLitUVRotated(Texture* albedo, Texture* normal, float cx, float cy, float w, float h,
-                                              float degrees, float u0, float v0, float u1, float v1,
-                                              const Color& color) = 0;
+    virtual void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                              float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                              BlendMode blend = BlendMode::Alpha) = 0;
 
     /** @brief Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;

@@ -333,11 +333,11 @@ public:
     void drawTexturedRectShader5(Texture *color, Texture *depth, Texture *motion, Texture *extra,
                                  Texture *specular, Shader *shader, float x, float y, float w,
                                  float h, const Color &tint) override;
-    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
-                               float u0, float v0, float u1, float v1, const Color &color) override;
-    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w,
-                                      float h, float degrees, float u0, float v0, float u1, float v1,
-                                      const Color &color) override;
+    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0,
+                               float u1, float v1, const Color &color, BlendMode blend = BlendMode::Alpha) override;
+    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                      float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                      BlendMode blend = BlendMode::Alpha) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
 
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
@@ -584,6 +584,7 @@ public:
     struct LitBatch {
         Texture *albedo = nullptr;
         Texture *normal = nullptr;
+        BlendMode blend  = BlendMode::Alpha;
         Batcher batch;
     };
 
@@ -675,7 +676,7 @@ private:
     void createMesh3DPipelines();
     wgpu::RenderPipeline get2DColorPipeline(BlendMode blend, bool offscreen);
     wgpu::RenderPipeline get2DTexturedPipeline(BlendMode blend, bool offscreen);
-    wgpu::RenderPipeline get2DLitPipeline(bool offscreen);
+    wgpu::RenderPipeline get2DLitPipeline(BlendMode blend, bool offscreen);
     wgpu::RenderPipeline getMesh3DPipeline(BlendMode blend, bool depthWrite, bool doubleSided, bool canvasTarget);
     void createMesh3DClusteredPipeline();
     void createShadowPipelines();
@@ -948,6 +949,10 @@ private:
     wgpu::RenderPipeline decalPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
     wgpu::RenderPipeline lit2dPipeline;
+    wgpu::RenderPipeline                                    lit2dAdditivePipeline;
+    wgpu::RenderPipeline                                    lit2dPremultipliedPipeline;
+    wgpu::RenderPipeline                                    lit2dMultiplyPipeline;
+    wgpu::RenderPipeline                                    lit2dOpaquePipeline;
     // RGBA8Unorm (offscreen canvas / scene) variants of the 2D pipelines.
     wgpu::RenderPipeline offscreenColorPipeline;
     wgpu::RenderPipeline offscreenTexturedPipeline;
@@ -962,6 +967,10 @@ private:
     wgpu::RenderPipeline hdrOffscreenTexturedPipeline;
     wgpu::RenderPipeline hdrOffscreenTexturedOpaquePipeline;
     wgpu::RenderPipeline offscreenLitPipeline;
+    wgpu::RenderPipeline offscreenLitAdditivePipeline;
+    wgpu::RenderPipeline offscreenLitPremultipliedPipeline;
+    wgpu::RenderPipeline offscreenLitMultiplyPipeline;
+    wgpu::RenderPipeline offscreenLitOpaquePipeline;
     // Fullscreen quad used to composite the scene color into the swapchain.
     wgpu::Buffer fullscreenQuadVb;
     wgpu::Buffer toneMapQuadVb;

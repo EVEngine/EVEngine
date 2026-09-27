@@ -213,8 +213,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                  sp.index < lit.size()) {
                                             std::vector<LitBatch> one;
                                             one.push_back(std::move(lit[sp.index]));
-                                            drawLitBatches(cb, vw, vh, offscreenLitPipeline, one,
-                                                           texBufs, texBufIndex, true);
+                                            drawLitBatches(cb, vw, vh, one, texBufs, texBufIndex, true);
                                         }
                                     }
                                 } else {
@@ -225,8 +224,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     }
                                     for (auto &tb : textured) drawOffscreenTextured(tb);
                                     if (offscreenLitPipeline)
-                                        drawLitBatches(cb, vw, vh, offscreenLitPipeline, lit, texBufs,
-                                                       texBufIndex, true);
+                                        drawLitBatches(cb, vw, vh, lit, texBufs, texBufIndex, true);
                                 }
 
                                 cb.endRenderPass();

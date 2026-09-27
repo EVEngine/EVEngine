@@ -388,7 +388,15 @@ Graphics::~Graphics() {
     }
     clusteredStorages.clear();
     if (lit2dPipeline) device->destroyPipeline(lit2dPipeline);
+    if (lit2dAdditivePipeline) device->destroyPipeline(lit2dAdditivePipeline);
+    if (lit2dPremultipliedPipeline) device->destroyPipeline(lit2dPremultipliedPipeline);
+    if (lit2dMultiplyPipeline) device->destroyPipeline(lit2dMultiplyPipeline);
+    if (lit2dOpaquePipeline) device->destroyPipeline(lit2dOpaquePipeline);
     if (offscreenLitPipeline) device->destroyPipeline(offscreenLitPipeline);
+    if (offscreenLitAdditivePipeline) device->destroyPipeline(offscreenLitAdditivePipeline);
+    if (offscreenLitPremultipliedPipeline) device->destroyPipeline(offscreenLitPremultipliedPipeline);
+    if (offscreenLitMultiplyPipeline) device->destroyPipeline(offscreenLitMultiplyPipeline);
+    if (offscreenLitOpaquePipeline) device->destroyPipeline(offscreenLitOpaquePipeline);
     if (lit2dPipelineLayout) device->destroyPipelineLayout(lit2dPipelineLayout);
     lit2dSetLayoutUnique.reset();
     for (auto& m : lit2dSets) m.clear();
@@ -417,6 +425,10 @@ Graphics::~Graphics() {
     if (hdrOffscreenPremultipliedSolidPipeline) device->destroyPipeline(hdrOffscreenPremultipliedSolidPipeline);
     if (hdrOffscreenMultiplySolidPipeline) device->destroyPipeline(hdrOffscreenMultiplySolidPipeline);
     if (hdrOffscreenLitPipeline) device->destroyPipeline(hdrOffscreenLitPipeline);
+    if (hdrOffscreenLitAdditivePipeline) device->destroyPipeline(hdrOffscreenLitAdditivePipeline);
+    if (hdrOffscreenLitPremultipliedPipeline) device->destroyPipeline(hdrOffscreenLitPremultipliedPipeline);
+    if (hdrOffscreenLitMultiplyPipeline) device->destroyPipeline(hdrOffscreenLitMultiplyPipeline);
+    if (hdrOffscreenLitOpaquePipeline) device->destroyPipeline(hdrOffscreenLitOpaquePipeline);
     if (hdrOffscreenTonemapPipeline) device->destroyPipeline(hdrOffscreenTonemapPipeline);
     if (hdrOffscreenParticleDistortionPipeline) device->destroyPipeline(hdrOffscreenParticleDistortionPipeline);
     destroyPresentComposeResources();
