@@ -75,3 +75,69 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         graphics->present();
     }
 }
+
+TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
+    auto*                       window   = eve::window::Window::create();
+    auto*                       graphics = eve::graphics::Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 160;
+    settings.height = 120;
+    REQUIRE(window->setWindowSettings(settings));
+    auto* rc = graphics->getRenderControl();
+    REQUIRE(rc != nullptr);
+    // Vulkan reports supportsDeferredLighting; WebGPU Phase D will follow.
+    if (!graphics->supportsDeferredLighting()) {
+        CHECK(!rc->isDeferredLightingAvailable());
+        auto ok = rc->setLightingMode(eve::graphics::LightingMode::Hybrid);
+        CHECK(ok.ok());
+        rc->compile();
+        CHECK(rc->hasHybridLightingFallback());
+        CHECK(!rc->hasPass("deferredLighting"));
+        return;
+    }
+    CHECK(rc->isDeferredLightingAvailable());
+    auto ok = rc->setLightingMode(eve::graphics::LightingMode::Hybrid);
+    CHECK(ok.ok());
+    rc->compile();
+    CHECK(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::Hybrid);
+    CHECK(!rc->hasHybridLightingFallback());
+    CHECK(rc->hasPass("deferredLighting"));
+    CHECK(rc->hasPass("gbuffer"));
+    CHECK(rc->hasPass("forward"));
+    CHECK(!rc->isEnabled("msaa"));
+    // Pass order: shadow → gbuffer → deferredLighting → forward
+    int shadowIdx = -1, gbIdx = -1, defIdx = -1, fwdIdx = -1;
+    for (int i = 0; i < rc->getPassCount(); ++i) {
+        const std::string n = rc->getPassName(i);
+        if (n == "shadow") shadowIdx = i;
+        if (n == "gbuffer") gbIdx = i;
+        if (n == "deferredLighting") defIdx = i;
+        if (n == "forward") fwdIdx = i;
+    }
+    CHECK(shadowIdx >= 0);
+    CHECK(gbIdx > shadowIdx);
+    CHECK(defIdx > gbIdx);
+    CHECK(fwdIdx > defIdx);
+
+    // Smoke: GBuffer fill + deferred lighting into an open scene-color pass.
+    const float    positions[] = {-1, -1, 0.5f, 1, -1, 0.5f, 1, 1, 0.5f, -1, 1, 0.5f};
+    const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
+    const float    uvs[]       = {0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
+    auto*          mesh        = graphics->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t red[]   = {220, 40, 40, 255};
+    auto*         texture = graphics->newTexture(1, 1, red);
+    REQUIRE(texture != nullptr);
+    graphics->beginGBufferPass(160, 120);
+    graphics->drawMeshGBuffer(mesh, glm::mat4(1), glm::mat4(1), 0.1f, 100.f, texture, 1.f, 1.f, 1.f, 0.f, 0.f, 0.4f,
+                              0.1f);
+    graphics->endGBufferPass();
+    graphics->begin3DFrame();
+    graphics->setMesh3DViewProj(glm::mat4(1));
+    graphics->setMesh3DView(glm::mat4(1));
+    graphics->setMesh3DClip(0.1f, 100.f);
+    graphics->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+    graphics->drawDeferredLighting();
+    graphics->present();
+}

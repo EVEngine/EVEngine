@@ -87,11 +87,7 @@ void RenderControl::syncClusteredDeferredFeature() {
     features_["clusteredDeferred"] = lightingMode_ == LightingMode::Hybrid;
 }
 
-bool RenderControl::isDeferredLightingAvailable() const {
-    // Phase A: pass wiring only. The clustered deferred lighting GPU pass is not
-    // implemented yet; Hybrid compile() falls back observably to ForwardPlus.
-    return false;
-}
+bool RenderControl::isDeferredLightingAvailable() const { return gfx_ != nullptr && gfx_->supportsDeferredLighting(); }
 
 Result<void> RenderControl::setLightingMode(LightingMode mode) {
     if (mode != LightingMode::ForwardPlus && mode != LightingMode::Hybrid) {
@@ -218,6 +214,10 @@ void RenderControl::compile() {
     const bool canHybrid    = wantHybrid && isDeferredLightingAvailable() && gbufferOn;
     effectiveLightingMode_  = canHybrid ? LightingMode::Hybrid : LightingMode::ForwardPlus;
     hybridLightingFallback_ = wantHybrid && !canHybrid;
+
+    // Phase C: deferred lighting samples 1x GBuffer into scene color. MSAA scene
+    // color would need resolve-before-light; force MSAA off while Hybrid is live.
+    if (canHybrid) features_["msaa"] = false;
 
     if (isEnabled("shadow")) passes_.push_back("shadow");
     if (gbufferOn || canHybrid) passes_.push_back("gbuffer");

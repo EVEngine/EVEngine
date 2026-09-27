@@ -100,7 +100,7 @@ public:
     LightingMode getEffectiveLightingMode() const { return effectiveLightingMode_; }
     /**
      * @brief True when deferredLighting can be inserted for Hybrid.
-     * Phase A returns false until the lighting pass is implemented.
+     * Requires an attached Graphics backend that implements supportsDeferredLighting().
      */
     bool isDeferredLightingAvailable() const;
     /**

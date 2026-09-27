@@ -557,6 +557,7 @@ void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
     sceneColorHistoryValid = false;
     if (device.instance) device->waitIdle();
+    destroyDeferredLightingResources();
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
@@ -1319,6 +1320,10 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.color.imageView());
+
+    // Hybrid deferred lighting targets the scene-color render pass; rebuild when
+    // the pass (format/samples/extent) changes.
+    createDeferredLightingPipeline();
 }
 
 bool Graphics::beginSceneColorRenderPass() {
