@@ -34,12 +34,14 @@
 #endif
 
 #include "common/BootWarmup.h"
+#include "common/Capability.h"
 #include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/IRayTracing.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -302,6 +304,8 @@ Graphics::~Graphics() {
         return;
     }
     device->waitIdle();
+    // Drop optional RT resources while the logical device is still valid.
+    if (auto* rt = eve::cap::query<eve::graphics::IRayTracing>()) rt->detachFromGraphics();
     destroyPbrResources();
     deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
@@ -519,9 +523,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         // when every required extension is present on the physical device.
         // extensions_to_enable is private to vk-bootstrap — re-enumerate instead.
         rayTracingCaps_ = RayTracingCaps{};
-        vk::PhysicalDeviceBufferDeviceAddressFeatures      rtBdaEnable{};
         vk::PhysicalDeviceAccelerationStructureFeaturesKHR rtAsEnable{};
         vk::PhysicalDeviceRayTracingPipelineFeaturesKHR    rtPipeEnable{};
+        vk::PhysicalDeviceRayQueryFeaturesKHR              rtQueryEnable{};
         bool                                               enableRtFeatures = false;
         {
             const auto extProps = phys->enumerateDeviceExtensionProperties();
@@ -551,6 +555,17 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             features2Rt.pNext = &rtFeat;
             phys->getFeatures2(&features2Rt);
 
+            vk::PhysicalDeviceRayQueryFeaturesKHR rqFeat{};
+            rqFeat.sType = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+            if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME)) {
+                // Probe rayQuery separately so its feature struct is not required
+                // on devices that only expose the acceleration-structure path.
+                vk::PhysicalDeviceFeatures2 features2Rq{};
+                features2Rq.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2Rq.pNext = &rqFeat;
+                phys->getFeatures2(&features2Rq);
+            }
+
             const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE && asFeat.accelerationStructure == VK_TRUE &&
                                     bdaFeat.bufferDeviceAddress == VK_TRUE;
 
@@ -559,7 +574,8 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rayTracingCaps_.rayTracingPipeline    = true;
                 rayTracingCaps_.bufferDeviceAddress   = true;
                 rayTracingCaps_.available             = true;
-                if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME)) rayTracingCaps_.rayQuery = true;
+                if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME) && rqFeat.rayQuery == VK_TRUE)
+                    rayTracingCaps_.rayQuery = true;
 
                 vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rtProps{};
                 rtProps.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelinePropertiesKHR;
@@ -572,26 +588,34 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rayTracingCaps_.shaderGroupHandleAlignment = rtProps.shaderGroupHandleAlignment;
                 rayTracingCaps_.maxRecursionDepth          = rtProps.maxRayRecursionDepth;
 
-                rtBdaEnable.sType                = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
-                rtBdaEnable.bufferDeviceAddress  = VK_TRUE;
+                // VUID-02830: do not chain VkPhysicalDeviceBufferDeviceAddressFeatures
+                // alongside VkPhysicalDeviceVulkan12Features. Enable BDA via the 1.2
+                // feature struct below; only AS / RT pipeline / optional rayQuery here.
                 rtAsEnable.sType                 = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
                 rtAsEnable.accelerationStructure = VK_TRUE;
-                rtAsEnable.pNext                 = &rtBdaEnable;
                 rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
                 rtPipeEnable.rayTracingPipeline  = VK_TRUE;
                 rtPipeEnable.pNext               = &rtAsEnable;
-                enableRtFeatures                 = true;
+                if (rayTracingCaps_.rayQuery) {
+                    rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+                    rtQueryEnable.rayQuery = VK_TRUE;
+                    rtAsEnable.pNext       = &rtQueryEnable;
+                }
+                enableRtFeatures = true;
             }
             // When features are missing, desired RT extensions may still be
             // listed on the device; they stay inert without the feature bits.
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
-        if (enableRtFeatures) deviceBuilder.add_pNext(&rtPipeEnable);
+        if (enableRtFeatures) {
+            vk12Enable.bufferDeviceAddress = VK_TRUE;
+            deviceBuilder.add_pNext(&rtPipeEnable);
+        }
         deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         // Load device-level extension entry points (needed for KHR RT).

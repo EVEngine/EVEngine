@@ -15,6 +15,7 @@
 namespace eve::graphics {
 class Canvas;
 class Graphics;
+class Mesh;
 class Texture;
 }  // namespace eve::graphics
 
@@ -105,14 +106,18 @@ public:
 
     [[nodiscard]] Result<void> applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                 Texture* worldNormal, Canvas* dest, const glm::mat4& invViewProj,
-                                                const glm::vec3& eyeWorld) override;
+                                                const glm::mat4& viewProj, const glm::vec3& eyeWorld) override;
 
     [[nodiscard]] Result<void> rebuildScene() override;
 
     [[nodiscard]] Result<uint32_t> addTriangleMesh(const float* positionsXYZ, int vertexCount, const uint32_t* indices,
                                                    int indexCount, const glm::mat4& transform) override;
 
+    [[nodiscard]] Result<uint32_t> addMesh(Mesh* mesh, const glm::mat4& transform) override;
+
     void clearScene() override;
+
+    void detachFromGraphics() override { detachDevice(); }
 
     /**
      * @brief Bind to the live Vulkan Graphics device (call after init).
@@ -135,11 +140,32 @@ public:
 
 private:
     [[nodiscard]] Result<void> ensurePipeline();
+    [[nodiscard]] Result<void> ensureSampler();
+    [[nodiscard]] Result<void> ensureOutputImage(uint32_t width, uint32_t height);
     [[nodiscard]] Result<void> ensureDescriptorSets(vk::ImageView outputView, vk::ImageView sceneView,
                                                     vk::ImageView depthView, vk::ImageView normalView);
     [[nodiscard]] Result<void> buildBlas(TriangleMeshRecord& mesh);
     [[nodiscard]] Result<void> buildTlas();
     [[nodiscard]] Result<void> createShaderBindingTable();
+
+    /** @brief Device-local RGBA16F storage target for traceRays (HDR canvases lack STORAGE usage). */
+    struct StorageColorImage : vkb::GenericImage {
+        void allocate(vkb::Device& device, uint32_t width, uint32_t height) {
+            vk::ImageCreateInfo info{};
+            info.imageType     = vk::ImageType::e2D;
+            info.format        = vk::Format::eR16G16B16A16Sfloat;
+            info.extent        = vk::Extent3D{width, height, 1};
+            info.mipLevels     = 1;
+            info.arrayLayers   = 1;
+            info.samples       = vk::SampleCountFlagBits::e1;
+            info.tiling        = vk::ImageTiling::eOptimal;
+            info.usage         = vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc |
+                                 vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
+            info.sharingMode   = vk::SharingMode::eExclusive;
+            info.initialLayout = vk::ImageLayout::eUndefined;
+            create(device, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
+        }
+    };
 
     vkb::Device*    device_ = nullptr;
     vk::CommandPool uploadPool_{};
@@ -154,6 +180,11 @@ private:
     vk::Pipeline            pipeline_{};
     vk::DescriptorPool      descriptorPool_{};
     vk::DescriptorSet       descriptorSet_{};
+    vk::Sampler             sampler_{};
+
+    StorageColorImage outputImage_{};
+    uint32_t          outputWidth_  = 0;
+    uint32_t          outputHeight_ = 0;
 
     DeviceAddressBuffer               sbtBuffer_;
     vk::StridedDeviceAddressRegionKHR raygenRegion_{};
@@ -167,6 +198,7 @@ private:
 
     struct PushConstants {
         glm::mat4 invViewProj;
+        glm::mat4 viewProj;
         glm::vec4 eye;  // xyz = eye, w unused
     };
 };

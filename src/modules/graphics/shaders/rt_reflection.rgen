@@ -9,6 +9,7 @@ layout(binding = 4) uniform sampler2D worldNormal;
 
 layout(push_constant) uniform PushConstants {
     mat4 invViewProj;
+    mat4 viewProj;
     vec4 eye; // xyz
 } pc;
 
@@ -26,9 +27,8 @@ void main() {
         return;
     }
 
-    // Reconstruct world position from depth (Vulkan RH + ZO, NDC y down-ish via UV).
+    // Reconstruct world position from depth (Vulkan RH + ZO).
     vec2 ndc = uv * 2.0 - 1.0;
-    // Vulkan clip space y is inverted relative to OpenGL; match engine RH+ZO convention.
     vec4 clip = vec4(ndc.x, ndc.y, depth, 1.0);
     vec4 worldH = pc.invViewProj * clip;
     vec3 worldPos = worldH.xyz / max(worldH.w, 1e-6);
@@ -44,8 +44,21 @@ void main() {
     traceRayEXT(topLevelAS, rayFlags, 0xFF, 0, 0, 0, worldPos, tMin, R, tMax, 0);
 
     if (payload.a > 0.5) {
-        // Hit: sample scene color at the projected hit (payload.rgb = approx radiance).
-        imageStore(outImage, pixel, vec4(payload.rgb, 1.0));
+        // Reproject the hit into the lit scene color (mirror reflection).
+        vec4 hitClip = pc.viewProj * vec4(payload.xyz, 1.0);
+        if (hitClip.w <= 1e-5) {
+            imageStore(outImage, pixel, vec4(0.0));
+            return;
+        }
+        vec3 hitNdc = hitClip.xyz / hitClip.w;
+        vec2 hitUv = hitNdc.xy * 0.5 + 0.5;
+        if (hitUv.x < 0.0 || hitUv.x > 1.0 || hitUv.y < 0.0 || hitUv.y > 1.0 || hitNdc.z < 0.0 ||
+            hitNdc.z > 1.0) {
+            imageStore(outImage, pixel, vec4(0.0));
+            return;
+        }
+        vec3 radiance = texture(sceneColor, hitUv).rgb;
+        imageStore(outImage, pixel, vec4(radiance, 1.0));
     } else {
         imageStore(outImage, pixel, vec4(0.0));
     }

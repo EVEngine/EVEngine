@@ -2,6 +2,7 @@
 #include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
@@ -1430,28 +1431,62 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                 }
 
-                // Hardware RT reflections (optional module). When unavailable the
-                // capability is null or isAvailable() is false — fall through to SSR.
+                // Hardware RT reflections (optional module). Prefer RTX when
+                // available; fall through to SSR on NoOp / failure / absent provider.
                 if (doRTX) {
                     if (auto* rt = eve::cap::query<IRayTracing>()) {
                         if (rt->isAvailable()) {
                             ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
                             Canvas*                reflCanvas = ssr->getReflectionCanvas();
                             if (reflCanvas) {
-                                glm::mat4 invVP = !cams.empty() ? glm::inverse(cams.front().viewProj) : glm::mat4(1.f);
-                                glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
-                                auto applied = rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
-                                                                    reflCanvas, invVP, eye);
-                                if (applied.ok())
-                                    ssrTexture = ssr->getReflectionTexture();
-                                else
-                                    applied.ignore();
+                                // Switching canvas ends the open scene-color pass so RT
+                                // can sample the finished frame on the present CB.
+                                Canvas* prevCanvas = gfx.getCanvas();
+                                gfx.setCanvas(reflCanvas);
+
+                                rt->clearScene();
+                                constexpr size_t kMaxRtMeshes = 64;
+                                size_t           registered   = 0;
+                                for (const CulledItem* item : opaque) {
+                                    if (!item || !item->mesh || registered >= kMaxRtMeshes) continue;
+                                    auto added = rt->addMesh(item->mesh, item->model);
+                                    if (added.ok()) {
+                                        ++registered;
+                                        (void)added.value();
+                                    } else {
+                                        added.ignore();
+                                    }
+                                }
+                                bool produced = false;
+                                if (registered > 0) {
+                                    auto rebuilt = rt->rebuildScene();
+                                    if (rebuilt.ok()) {
+                                        glm::mat4 viewProj = !cams.empty() ? cams.front().viewProj : glm::mat4(1.f);
+                                        glm::mat4 invVP    = glm::inverse(viewProj);
+                                        glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+                                        auto      applied =
+                                            rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
+                                                                 reflCanvas, invVP, viewProj, eye);
+                                        if (applied.ok() && applied.code() != eve::StatusCode::NoOp) {
+                                            ssrTexture = ssr->getReflectionTexture();
+                                            produced   = true;
+                                        } else {
+                                            applied.ignore();
+                                        }
+                                    } else {
+                                        rebuilt.ignore();
+                                    }
+                                }
+                                (void)produced;
+                                gfx.setCanvas(prevCanvas);
                             }
                         }
                     }
                 }
 
-                if (doSSR && !ssrTexture) {
+                // Portable SSR path: explicit ssr/reflectionChain, or RTX requested
+                // but hardware did not produce a usable reflection texture.
+                if ((doSSR || doRTX) && !ssrTexture) {
                     ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
                     if (ssr->getQuality() != rc->getReflectionQuality()) ssr->setQuality(rc->getReflectionQuality());
                     ssr->setEnabled(true);

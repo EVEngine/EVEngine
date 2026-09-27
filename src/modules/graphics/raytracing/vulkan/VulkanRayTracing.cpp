@@ -4,17 +4,22 @@
 #include "common/Diagnostic.h"
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "common/Status.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "graphics/shaders/rt_reflection_rchit_spv.inc"
 #include "graphics/shaders/rt_reflection_rgen_spv.inc"
 #include "graphics/shaders/rt_reflection_rmiss_spv.inc"
+#include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <vector>
 
 namespace eve::graphics::raytracing {
 namespace {
@@ -172,7 +177,6 @@ VulkanRayTracing& vulkanRayTracing() {
 VulkanRayTracing::~VulkanRayTracing() { detachDevice(); }
 
 Result<void> VulkanRayTracing::ensureAttached() {
-    if (device_ && caps_.rayTracingAvailable()) return Result<void>::success();
     auto* base = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!base) base = eve::graphics::Graphics::create();
     auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(base);
@@ -180,7 +184,10 @@ Result<void> VulkanRayTracing::ensureAttached() {
         if (vg) caps_ = vg->rayTracingCaps();
         return unsupported("ensureAttached");
     }
-    attachDevice(&vg->getDevice(), vg->rayTracingCaps(), vg->getUploadPool(),
+    vkb::Device* current = &vg->getDevice();
+    // Rebind whenever Graphics rebuilt the logical device (pointer identity).
+    if (device_ == current && caps_.rayTracingAvailable()) return Result<void>::success();
+    attachDevice(current, vg->rayTracingCaps(), vg->getUploadPool(),
                  vg->getDevice().getQueue(vkb::QueueType::graphics));
     if (!isAvailable()) return unsupported("ensureAttached");
     return Result<void>::success();
@@ -217,6 +224,7 @@ void VulkanRayTracing::detachDevice() {
         if (pipelineLayout_) (*device_)->destroyPipelineLayout(pipelineLayout_, device_->allocation_callbacks);
         if (setLayout_) (*device_)->destroyDescriptorSetLayout(setLayout_, device_->allocation_callbacks);
         if (descriptorPool_) (*device_)->destroyDescriptorPool(descriptorPool_, device_->allocation_callbacks);
+        if (sampler_) (*device_)->destroySampler(sampler_, device_->allocation_callbacks);
         if (raygenModule_) (*device_)->destroyShaderModule(raygenModule_, device_->allocation_callbacks);
         if (missModule_) (*device_)->destroyShaderModule(missModule_, device_->allocation_callbacks);
         if (closestHitModule_) (*device_)->destroyShaderModule(closestHitModule_, device_->allocation_callbacks);
@@ -226,9 +234,13 @@ void VulkanRayTracing::detachDevice() {
     setLayout_        = vk::DescriptorSetLayout{};
     descriptorPool_   = vk::DescriptorPool{};
     descriptorSet_    = vk::DescriptorSet{};
+    sampler_          = vk::Sampler{};
     raygenModule_     = vk::ShaderModule{};
     missModule_       = vk::ShaderModule{};
     closestHitModule_ = vk::ShaderModule{};
+    outputImage_      = StorageColorImage{};
+    outputWidth_      = 0;
+    outputHeight_     = 0;
     sbtBuffer_.release();
     raygenRegion_   = vk::StridedDeviceAddressRegionKHR{};
     missRegion_     = vk::StridedDeviceAddressRegionKHR{};
@@ -275,6 +287,54 @@ Result<uint32_t> VulkanRayTracing::addTriangleMesh(const float* positionsXYZ, in
     const uint32_t id = uint32_t(meshes_.size());
     meshes_.push_back(std::move(mesh));
     return Result<uint32_t>::success(id);
+}
+
+Result<uint32_t> VulkanRayTracing::addMesh(Mesh* mesh, const glm::mat4& transform) {
+    if (auto attached = ensureAttached(); !attached.ok()) return Result<uint32_t>::failure(attached.status());
+    if (!mesh || !mesh->gpuHandle)
+        return Result<uint32_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "addMesh: null mesh or missing GPU handle", "graphics.raytracing"));
+    auto* gpu = static_cast<eve::graphics::vulkan::GpuMesh*>(mesh->gpuHandle);
+    if (gpu->vertexCount < 3 || gpu->indexCount < 3 || (gpu->indexCount % 3u) != 0)
+        return Result<uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "addMesh: invalid geometry", "graphics.raytracing"));
+
+    auto& vb = eve::graphics::vulkan::meshDrawVertices(*gpu);
+    if (!vb.buffer)
+        return Result<uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "addMesh: empty vertex buffer", "graphics.raytracing"));
+
+    std::vector<float> positions(size_t(gpu->vertexCount) * 3u);
+    {
+        void*       mapped = vb.map();
+        const auto* verts  = static_cast<const eve::graphics::vulkan::MeshVertex*>(mapped);
+        for (uint32_t i = 0; i < gpu->vertexCount; ++i) {
+            positions[size_t(i) * 3u + 0u] = verts[i].pos.x;
+            positions[size_t(i) * 3u + 1u] = verts[i].pos.y;
+            positions[size_t(i) * 3u + 2u] = verts[i].pos.z;
+        }
+        vb.unmap();
+    }
+
+    std::vector<uint32_t> indices(gpu->indexCount);
+    if (!gpu->cpuIndices.empty() && gpu->cpuIndices.size() >= gpu->indexCount) {
+        std::copy_n(gpu->cpuIndices.begin(), gpu->indexCount, indices.begin());
+    } else {
+        auto& ib = eve::graphics::vulkan::meshDrawIndices(*gpu);
+        if (!ib.buffer)
+            return Result<uint32_t>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "addMesh: empty index buffer", "graphics.raytracing"));
+        void* mapped = ib.map();
+        if (gpu->indexType == vk::IndexType::eUint16) {
+            const auto* src = static_cast<const uint16_t*>(mapped);
+            for (uint32_t i = 0; i < gpu->indexCount; ++i) indices[i] = src[i];
+        } else {
+            std::memcpy(indices.data(), mapped, size_t(gpu->indexCount) * sizeof(uint32_t));
+        }
+        ib.unmap();
+    }
+
+    return addTriangleMesh(positions.data(), int(gpu->vertexCount), indices.data(), int(gpu->indexCount), transform);
 }
 
 Result<void> VulkanRayTracing::buildBlas(TriangleMeshRecord& mesh) {
@@ -629,22 +689,10 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
     writes[1].descriptorType  = vk::DescriptorType::eStorageImage;
     writes[1].pImageInfo      = &outInfo;
 
-    // Use a default nearest sampler from the device via a temporary immutable-less sampler.
-    // Graphics white texture's sampler is not accessible; create a local sampler.
-    static thread_local vk::Sampler s_sampler{};
-    if (!s_sampler) {
-        vk::SamplerCreateInfo sci{};
-        sci.magFilter    = vk::Filter::eNearest;
-        sci.minFilter    = vk::Filter::eNearest;
-        sci.mipmapMode   = vk::SamplerMipmapMode::eNearest;
-        sci.addressModeU = vk::SamplerAddressMode::eClampToEdge;
-        sci.addressModeV = vk::SamplerAddressMode::eClampToEdge;
-        sci.addressModeW = vk::SamplerAddressMode::eClampToEdge;
-        s_sampler        = (*device_)->createSampler(sci, device_->allocation_callbacks);
-    }
+    if (auto r = ensureSampler(); !r.ok()) return r;
 
     vk::DescriptorImageInfo sceneInfo{};
-    sceneInfo.sampler         = s_sampler;
+    sceneInfo.sampler         = sampler_;
     sceneInfo.imageView       = sceneView;
     sceneInfo.imageLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
     writes[2].dstSet          = descriptorSet_;
@@ -654,7 +702,7 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
     writes[2].pImageInfo      = &sceneInfo;
 
     vk::DescriptorImageInfo depthInfo{};
-    depthInfo.sampler         = s_sampler;
+    depthInfo.sampler         = sampler_;
     depthInfo.imageView       = depthView;
     depthInfo.imageLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
     writes[3].dstSet          = descriptorSet_;
@@ -664,7 +712,7 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
     writes[3].pImageInfo      = &depthInfo;
 
     vk::DescriptorImageInfo normalInfo{};
-    normalInfo.sampler        = s_sampler;
+    normalInfo.sampler        = sampler_;
     normalInfo.imageView      = normalView;
     normalInfo.imageLayout    = vk::ImageLayout::eShaderReadOnlyOptimal;
     writes[4].dstSet          = descriptorSet_;
@@ -677,14 +725,39 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
     return Result<void>::success();
 }
 
+Result<void> VulkanRayTracing::ensureSampler() {
+    if (sampler_) return Result<void>::success();
+    if (!device_) return unsupported("ensureSampler");
+    vk::SamplerCreateInfo sci{};
+    sci.magFilter    = vk::Filter::eNearest;
+    sci.minFilter    = vk::Filter::eNearest;
+    sci.mipmapMode   = vk::SamplerMipmapMode::eNearest;
+    sci.addressModeU = vk::SamplerAddressMode::eClampToEdge;
+    sci.addressModeV = vk::SamplerAddressMode::eClampToEdge;
+    sci.addressModeW = vk::SamplerAddressMode::eClampToEdge;
+    sampler_         = (*device_)->createSampler(sci, device_->allocation_callbacks);
+    return Result<void>::success();
+}
+
+Result<void> VulkanRayTracing::ensureOutputImage(uint32_t width, uint32_t height) {
+    if (!device_) return unsupported("ensureOutputImage");
+    if (width == 0 || height == 0) return invalidArg("ensureOutputImage", "zero extent");
+    if (outputImage_.image() && outputWidth_ == width && outputHeight_ == height) return Result<void>::success();
+    outputImage_  = StorageColorImage{};
+    outputWidth_  = width;
+    outputHeight_ = height;
+    outputImage_.allocate(*device_, width, height);
+    return Result<void>::success();
+}
+
 Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                 Texture* worldNormal, Canvas* dest, const glm::mat4& invViewProj,
-                                                const glm::vec3& eyeWorld) {
+                                                const glm::mat4& viewProj, const glm::vec3& eyeWorld) {
     if (auto attached = ensureAttached(); !attached.ok()) return attached;
     if (!gfx || !sceneColor || !hwDepth || !worldNormal || !dest)
         return invalidArg("applyReflections", "null argument");
     if (meshes_.empty() || !tlas_.handle) {
-        // Empty scene: clear destination to transparent (SSR can fill).
+        // Empty scene: no usable RT output — callers must fall through to SSR.
         return Result<void>::success(Status::success(StatusCode::NoOp));
     }
 
@@ -693,20 +766,22 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
 
     if (auto r = ensurePipeline(); !r.ok()) return r;
 
-    // Resolve texture image views through the vulkan Texture gpuHandle.
     auto textureView = [](Texture* tex) -> vk::ImageView {
         if (!tex || !tex->gpuHandle) return {};
         auto* img = static_cast<eve::graphics::vulkan::GpuTexture*>(tex->gpuHandle);
         return img->imageView();
     };
 
-    // Destination must be a storage-capable image. Offscreen canvases in this
-    // engine are typically sampled color attachments; for the first cut we
-    // require the caller to pass a canvas whose color target can be transitioned
-    // to GENERAL. When the view cannot be resolved, fail loudly.
     Texture* destTex = dest->getTexture();
     if (!destTex) return failed("applyReflections", "destination canvas has no texture");
-    const vk::ImageView outView    = textureView(destTex);
+    auto* destCanvas = dynamic_cast<eve::graphics::vulkan::OffscreenCanvas*>(dest);
+    if (!destCanvas) return failed("applyReflections", "destination must be an OffscreenCanvas");
+
+    const uint32_t width  = uint32_t(dest->getWidth());
+    const uint32_t height = uint32_t(dest->getHeight());
+    if (auto r = ensureOutputImage(width, height); !r.ok()) return r;
+
+    const vk::ImageView outView    = outputImage_.imageView();
     const vk::ImageView sceneView  = textureView(sceneColor);
     const vk::ImageView depthView  = textureView(hwDepth);
     const vk::ImageView normalView = textureView(worldNormal);
@@ -717,24 +792,43 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
 
     PushConstants push{};
     push.invViewProj = invViewProj;
+    push.viewProj    = viewProj;
     push.eye         = glm::vec4(eyeWorld, 0.f);
 
-    auto cmd = (*device_)->allocateCommandBuffers({uploadPool_, vk::CommandBufferLevel::ePrimary, 1}).front();
-    cmd.begin({vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
-    cmd.bindPipeline(vk::PipelineBindPoint::eRayTracingKHR, pipeline_);
-    cmd.bindDescriptorSets(vk::PipelineBindPoint::eRayTracingKHR, pipelineLayout_, 0, descriptorSet_, {});
-    cmd.pushConstants(pipelineLayout_, vk::ShaderStageFlagBits::eRaygenKHR, 0, sizeof(PushConstants), &push);
-    const uint32_t width  = uint32_t(dest->getWidth());
-    const uint32_t height = uint32_t(dest->getHeight());
-    cmd.traceRaysKHR(raygenRegion_, missRegion_, hitRegion_, callableRegion_, width, height, 1);
-    cmd.end();
+    auto record = [&](vk::CommandBuffer cmd) {
+        outputImage_.setLayout(cmd, vk::ImageLayout::eGeneral);
 
-    vk::SubmitInfo submit{};
-    submit.commandBufferCount = 1;
-    submit.pCommandBuffers    = &cmd;
-    graphicsQueue_.submit(submit, vk::Fence{});
-    graphicsQueue_.waitIdle();
-    (*device_)->freeCommandBuffers(uploadPool_, cmd);
+        vk::MemoryBarrier memBarrier{};
+        memBarrier.srcAccessMask =
+            vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+        memBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eShaderWrite;
+        cmd.pipelineBarrier(
+            vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eLateFragmentTests,
+            vk::PipelineStageFlagBits::eRayTracingShaderKHR, {}, memBarrier, {}, {});
+
+        cmd.bindPipeline(vk::PipelineBindPoint::eRayTracingKHR, pipeline_);
+        cmd.bindDescriptorSets(vk::PipelineBindPoint::eRayTracingKHR, pipelineLayout_, 0, descriptorSet_, {});
+        cmd.pushConstants(pipelineLayout_, vk::ShaderStageFlagBits::eRaygenKHR, 0, sizeof(PushConstants), &push);
+        cmd.traceRaysKHR(raygenRegion_, missRegion_, hitRegion_, callableRegion_, width, height, 1);
+
+        // Copy RT storage result into the reflection canvas for composite sampling.
+        outputImage_.setLayout(cmd, vk::ImageLayout::eTransferSrcOptimal);
+        destCanvas->colorImage().setLayout(cmd, vk::ImageLayout::eTransferDstOptimal);
+        vk::ImageCopy region{};
+        region.srcSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+        region.dstSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+        region.extent         = vk::Extent3D{width, height, 1};
+        cmd.copyImage(outputImage_.image(), vk::ImageLayout::eTransferSrcOptimal, destCanvas->colorImage().image(),
+                      vk::ImageLayout::eTransferDstOptimal, region);
+        destCanvas->colorImage().setLayout(cmd, vk::ImageLayout::eShaderReadOnlyOptimal);
+    };
+
+    if (vkGfx->canRecordPostSceneGpuWork()) {
+        record(vkGfx->postSceneCommandBuffer());
+    } else {
+        vkGfx->waitForSharedGpuResources();
+        vkb::executeImmediately(device_->instance, uploadPool_, graphicsQueue_, record);
+    }
     return Result<void>::success();
 }
 

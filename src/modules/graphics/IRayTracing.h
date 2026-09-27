@@ -10,6 +10,7 @@ namespace eve::graphics {
 
 class Canvas;
 class Graphics;
+class Mesh;
 class Texture;
 
 /**
@@ -42,13 +43,16 @@ public:
      * @param worldNormal World-space normals (RGB).
      * @param dest Output canvas; size drives the launch dimensions.
      * @param invViewProj Inverse view-projection (RH + ZO) for primary rays.
+     * @param viewProj View-projection used to reproject hit points into scene color.
      * @param eyeWorld Camera eye in world space.
-     * @return Unsupported when RT is unavailable; Failed on GPU errors.
+     * @return Unsupported when RT is unavailable; NoOp when the TLAS is empty;
+     *         Failed on GPU errors. Callers must treat NoOp as "no usable output".
      * @ownership All pointers are borrowed for the call; none are retained.
      */
     [[nodiscard]] virtual Result<void> applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                         Texture* worldNormal, Canvas* dest,
-                                                        const glm::mat4& invViewProj, const glm::vec3& eyeWorld) = 0;
+                                                        const glm::mat4& invViewProj, const glm::mat4& viewProj,
+                                                        const glm::vec3& eyeWorld) = 0;
 
     /**
      * @brief Rebuild the TLAS from meshes previously registered with the scene.
@@ -68,8 +72,21 @@ public:
                                                            const uint32_t* indices, int indexCount,
                                                            const glm::mat4& transform) = 0;
 
+    /**
+     * @brief Register a GPU Mesh already uploaded by Graphics.
+     * @ownership `mesh` is borrowed for the call; vertex/index bytes are copied.
+     * @lifetime `mesh` and its gpuHandle must remain valid through this call.
+     */
+    [[nodiscard]] virtual Result<uint32_t> addMesh(Mesh* mesh, const glm::mat4& transform) = 0;
+
     /** @brief Drop every registered mesh and acceleration structure. */
     virtual void clearScene() = 0;
+
+    /**
+     * @brief Release device-owned RT resources before Graphics destroys the device.
+     * @thread Render thread only; safe when never attached.
+     */
+    virtual void detachFromGraphics() {}
 };
 
 }  // namespace eve::graphics
