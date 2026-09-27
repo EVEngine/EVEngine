@@ -529,6 +529,8 @@ void Graphics::expose(ssq::Table& table) {
     sprite2d.addFunc("getHeight", &Renderable2D::getHeight);
     sprite2d.addFunc("setTexture", &Renderable2D::setTexture);
     sprite2d.addFunc("getTexture", &Renderable2D::getTexture);
+    sprite2d.addFunc("setNormalTexture", &Renderable2D::setNormalTexture);
+    sprite2d.addFunc("getNormalTexture", &Renderable2D::getNormalTexture);
     sprite2d.addFunc("setQuad", &Renderable2D::setQuad);
     sprite2d.addFunc("getQuad", &Renderable2D::getQuad);
     sprite2d.addFunc("setColor", &Renderable2D::setColor);

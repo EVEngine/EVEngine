@@ -132,14 +132,44 @@ struct Lighting2D {
 @group(0) @binding(1) var normalTex: texture_2d<f32>;
 @group(0) @binding(2) var mainSamp: sampler;
 @group(0) @binding(4) var<uniform> u: Lighting2D;
+
+fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
+    var mapN = mapSample * 2.0 - vec3f(1.0);
+    mapN.z = max(mapN.z, 0.05);
+    let N = vec3f(0.0, 0.0, 1.0);
+    let dp1 = vec3f(dpdx(logical), 0.0);
+    let dp2 = vec3f(dpdy(logical), 0.0);
+    let duv1 = dpdx(uv);
+    let duv2 = dpdy(uv);
+    let det = duv1.x * duv2.y - duv2.x * duv1.y;
+    if (abs(det) < 1e-6) {
+        return normalize(vec3f(mapN.xy, mapN.z));
+    }
+    let invDet = 1.0 / det;
+    var T = (dp1 * duv2.y - dp2 * duv1.y) * invDet;
+    var B = (dp2 * duv1.x - dp1 * duv2.x) * invDet;
+    T = T - N * dot(N, T);
+    let tLen = length(T);
+    let bLen = length(B);
+    if (tLen < 1e-4 || bLen < 1e-4) {
+        return normalize(vec3f(mapN.xy, mapN.z));
+    }
+    T = T / tLen;
+    B = normalize(B - N * dot(N, B) - T * dot(T, B));
+    if (abs(dot(T, B)) > 0.35) {
+        return normalize(vec3f(mapN.xy, mapN.z));
+    }
+    return normalize(mat3x3f(T, B, N) * mapN);
+}
+
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
     let base = textureSample(albedoTex, mainSamp, in.uv) * in.color;
-    let normalSample = textureSample(normalTex, mainSamp, in.uv).xyz * 2.0 - 1.0;
-    let normal = normalize(vec3f(normalSample.xy, max(normalSample.z, 0.05)));
     // WebGPU upload flips clip-space Y; undo it for the engine's Y-down logical coordinates.
     let logicalNdc = vec2f(in.ndc.x, -in.ndc.y);
     let logical = (logicalNdc * 0.5 + 0.5) * u.lightInfo.yz;
+    let normalSample = textureSample(normalTex, mainSamp, in.uv).xyz;
+    let normal = applyNormalMap2D(normalSample, logical, in.uv);
     var lit = u.ambient.rgb;
     let count = i32(u.lightInfo.x + 0.5);
     for (var i = 0; i < 8; i = i + 1) {

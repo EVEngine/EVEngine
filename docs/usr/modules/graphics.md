@@ -32,19 +32,22 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 ```squirrel
 local sprite = gfx.newSprite2D();
 sprite.setTexture(sheet.getTexture());
+sprite.setNormalTexture(normalMap); // optional; enables GPU lit2d with Light2D
 sprite.setQuad(quad);
 sprite.setPosition(400, 270);
 sprite.setScale(2.0, 2.0);
 sprite.setRotation(30.0); // degree, rotate around rect center
 sprite.setAnchor(0.25, 0.75); // normalized rotation pivot
 sprite.setFlip(true, false);  // mirror UV without negative scale
+sprite.setReceiveLight(true);
 sprite.setBlend("alpha"); // alpha | premultiplied | additive | multiply
 
 // eve_render: clear/draw background first, then submit all live Sprite2D objects
 gfx.renderSprites();
 ```
 
-`Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion 等属性。
+`Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion、normalTexture 等属性。
+当 `setReceiveLight(true)` 且同时设置了 albedo（`setTexture`）与切线空间法线贴图（`setNormalTexture`）、且未挂自定义 2D shader 时，走 GPU `lit2d` 路径，与 `Light2D`（point/dir，每 canvas 最多 8 盏）和 `Camera2D.setAmbient` 配合；只有 albedo 时则为 CPU 近似调制。旋转精灵时 lit2d 会按屏幕/UV 导数重建切线帧，法线贴图随几何一起旋转。
 裁边动画通常由 `SpriteAnim.bindSprite(sprite)` 自动调用 `setFrameLayout`，无需游戏代码逐帧修正偏移。
 不再使用时调用 `destroy()`；`renderSprites()` 是聚合提交接口，不要再把同一精灵加入另一条 2D 队列，以免重复绘制。
 
@@ -347,7 +350,7 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 - 字体：`newFont()`、`setFont()`、`getFont()`、`drawText()`、`print()`、`getAscent()`、`getBaseline()`、`hasGlyph()`
 - `AlphaMask`：`newAlphaMask()`、`setThreshold()`、`getThreshold()`、`setSoftness()`、`getSoftness()`、`setInverted()`、`getInverted()`
 - `MapFog`：`newMapFog()`、`update()`、`setTime()`、`getTime()`、`setCloudTexture()`、`getCloudTexture()`、`setMaskTexture()`、`getMaskTexture()`、`setCloudTiling()`、`setCloudSpeed()`、`setDistort()`、`setDistortFix()`、`setFogColor()`、`setFogAlpha()`、`setEdgeSoftness()`、`setShadowEnabled()`、`setShadow()`、`setSelectStrength()`、`setDissolveScale()`、`setCloudMix()`、`setCloudDensity()`、`getCloudTileA()`、`getCloudTileB()`、`getFogAlpha()`、`getShadowEnabled()`、`makeCloudTexture()`、`draw()`（大地图迷雾：双层云 + mask R/G/B）
-- `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
+- `Sprite2D`：`setPosition()`、`getX()`、`getY()`、`setRotation()`、`getRotation()`、`setScale()`、`getScaleX()`、`getScaleY()`、`setSize()`、`getWidth()`、`getHeight()`、`setTexture()`、`getTexture()`、`setNormalTexture()`、`getNormalTexture()`、`setQuad()`、`getQuad()`、`setColor()`、`setLayer()`、`getLayer()`、`setVisible()`、`getVisible()`、`setReceiveLight()`、`getReceiveLight()`、`setBlend()`、`getBlend()`、`setAnchor()`、`getAnchorX()`、`getAnchorY()`、`setFlip()`、`getFlipX()`、`getFlipY()`、`setFrameLayout()`、`setCastOcclusion()`、`getCastOcclusion()`、`destroy()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
 - `FogVolume`：`setShape/getShape`、`setPosition`、`setSize`、`setExtinction/getExtinction`、`setAlbedo`、`setEmissive`、`setAnisotropy/getAnisotropy`、`setEdgeFalloff/getEdgeFalloff`。`setNoise(amount, scale, seed)` 可加入确定性的世界空间密度变化，`getNoiseAmount/getNoiseScale/getNoiseSeed` 返回当前设置；调用 `Volumetric.setCamera()` 后，通过 `injectFroxelLocalVolume(volume)` 按当前视锥注入 froxel 网格。
 - `Volumetric` froxel：`configureFroxelGrid`、`clearFroxelGrid`、

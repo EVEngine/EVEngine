@@ -965,6 +965,23 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
+void Graphics::drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy,
+                                            float w, float h, float degrees, float u0, float v0,
+                                            float u1, float v1, const Color &color) {
+    if (!albedo) {
+        drawSolidRectRotated(cx, cy, w, h, degrees, color);
+        return;
+    }
+    ensureFlatNormalTexture();
+    if (!normal) normal = flatNormalTexture;
+    if (litBatches.empty() || litBatches.back().albedo != albedo ||
+        litBatches.back().normal != normal) {
+        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    }
+    litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1);
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
+}
+
 vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
     ASSERT(albedo != nullptr);
     ASSERT(normal != nullptr);

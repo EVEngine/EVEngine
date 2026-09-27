@@ -41,6 +41,8 @@ float Renderable2D::getWidth() { return sprite()->width; }
 float Renderable2D::getHeight() { return sprite()->height; }
 void Renderable2D::setTexture(Texture *texture) { sprite()->texture = texture; }
 Texture *Renderable2D::getTexture() { return sprite()->texture; }
+void Renderable2D::setNormalTexture(Texture *texture) { sprite()->normalTexture = texture; }
+Texture *Renderable2D::getNormalTexture() { return sprite()->normalTexture; }
 void Renderable2D::setQuad(Quad *quad) { sprite()->quad = quad; }
 Quad *Renderable2D::getQuad() { return sprite()->quad; }
 void Renderable2D::setColor(float r, float g, float b, float a) {
@@ -439,9 +441,15 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
         } else if (it.litPath) {
             eve::debug::rtBind("texture", "albedo");
             eve::debug::rtBind("texture", "normal");
-            eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
-            gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
-                                      it.color);
+            if (it.rotation != 0.f) {
+                eve::debug::rtDraw("drawTexturedRectLitUVRotated", "lit2d");
+                gfx.drawTexturedRectLitUVRotated(it.texture, it.normal, centerX, centerY, sw, sh,
+                                                 it.rotation, u0, v0, u1, v1, it.color);
+            } else {
+                eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
+                gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
+                                          it.color);
+            }
         } else if (it.texture) {
             Color c = it.color;
             if (it.receiveLight && !it.normal)
