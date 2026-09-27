@@ -7,10 +7,12 @@
 #include "ui/NinePatch.h"
 #include "ui/UIBackend.h"
 #include "ui/UIHost.h"
+#include "ui/UiTween.h"
 #include "ui/Widget.h"
 
 #include <SDL2/SDL.h>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -452,13 +454,76 @@ public:
     /** Host window size as a fraction of the display (0..1). */
     void setHostPercent(float w, float h);
     /**
-     * Animate the selected host's window position (px) from its current value
-     * to the target x and y over durationMs; zero jumps immediately. Driven by wall clock
-     * inside beginFrameAndRender().
+     * @brief Animate the selected host's window position (px).
+     * @param x Target posX in pixels.
+     * @param y Target posY in pixels.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep"; see evaluateUiEase).
+     * @param delayMs Delay before the first sample moves.
+     * @note Retrigger replaces any prior pos tween on the same host. Driven by
+     *       the presentation clock inside beginFrameAndRender() / tickTweens().
      */
-    void animateHostPos(float x, float y, float durationMs);
-    /** @brief Smoothly animates one retained node's transient opacity without rebuilding its tree. */
-    void animateItemOpacity(const std::string &id, float opacity, float durationMs);
+    void animateHostPos(float x, float y, float durationMs, const std::string &ease = "smoothstep",
+                        float delayMs = 0.f);
+    /**
+     * @brief Animate the selected host's explicit window size (px).
+     * @param w Target width.
+     * @param h Target height.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateHostSize(float w, float h, float durationMs, const std::string &ease = "smoothstep",
+                         float delayMs = 0.f);
+    /**
+     * @brief Animate the selected host's overlay background alpha.
+     * @param alpha Target alpha clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateHostOverlayAlpha(float alpha, float durationMs,
+                                 const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /**
+     * @brief Smoothly animates one retained node's transient opacity without rebuilding its tree.
+     * @param id Node id on the selected host.
+     * @param opacity Target opacity clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateItemOpacity(const std::string &id, float opacity, float durationMs,
+                            const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /**
+     * @brief Animate one node's absolute placement offset (marks the node absolute).
+     * @param id Node id on the selected host.
+     * @param x Target posX.
+     * @param y Target posY.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateItemPos(const std::string &id, float x, float y, float durationMs,
+                        const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /** @brief Cancel pending host-level tweens on the selected host. */
+    void cancelHostTweens();
+    /**
+     * @brief Cancel pending item tweens on the selected host.
+     * @param id Node id; empty cancels every item tween on the host.
+     */
+    void cancelItemTweens(const std::string &id = "");
+    /** @brief Cancel every pending tween on the selected host. */
+    void cancelAllTweens();
+    /**
+     * @brief Advance pending UI tweens using an explicit clock (ms).
+     * @param nowMs Monotonic presentation clock in milliseconds.
+     * @note beginFrameAndRender() calls this with the wall clock; tests inject time here.
+     */
+    void tickTweens(double nowMs);
+    /** @brief Number of pending host tweens (diagnostics / tests). */
+    std::size_t getHostTweenCount() const;
+    /** @brief Number of pending item tweens (diagnostics / tests). */
+    std::size_t getItemTweenCount() const;
     /** @brief Returns the id of the clicked widget since the last frame (or ""). */
     std::string consumeClick();
     /** @brief Returns the id of the changed widget since the last frame (or ""). */
@@ -690,26 +755,7 @@ private:
     std::vector<ScriptHandler> scriptHandlers_;
     void fireScriptHandlers(const UIEvent &ev);
 
-    struct HostTween {
-        UIHostHandle host{};
-        float fromX = 0.f;
-        float fromY = 0.f;
-        float toX = 0.f;
-        float toY = 0.f;
-        double startMs = 0.0;
-        double durationMs = 0.0;
-    };
-    struct ItemTween {
-        UIHostHandle host{};
-        std::string nodeId;
-        float from = 1.f;
-        float to = 1.f;
-        double startMs = 0.0;
-        double durationMs = 0.0;
-    };
-    std::vector<HostTween> hostTweens_;
-    std::vector<ItemTween> itemTweens_;
-    void updateHostTweens();
+    UiTweenDriver tweens_;
     ssq::Object callPickHandler();
     void callScenePickHandler(const std::string &nodeId);
     std::unique_ptr<Inspector> inspector_;

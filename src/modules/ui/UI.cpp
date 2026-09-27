@@ -49,7 +49,6 @@
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -453,62 +452,18 @@ void UI::beginFrameAndRender() {
     if (!isBackendReady()) {
         if (!initBackend()) return;
     }
-    updateHostTweens();
+    tickTweens(uiTweenWallClockMs());
     if (inspector_ && inspector_->isOpen()) inspector_->sync();
     if (databasePanel_ && databasePanel_->isOpen()) databasePanel_->sync();
     backend_->newFrame();
     UISystem::render();
 }
 
-void UI::updateHostTweens() {
-    if (hostTweens_.empty() && itemTweens_.empty()) return;
-    const double now =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    for (auto &t : hostTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto         m       = host->get().meta();
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            m->hasPos = true;
-            m->posX = t.toX;
-            m->posY = t.toY;
-            t.host    = {};  // done; removed below
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);  // smoothstep
-        m->hasPos = true;
-        m->posX = t.fromX + (t.toX - t.fromX) * ease;
-        m->posY = t.fromY + (t.toY - t.fromY) * ease;
-    }
-    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-                      hostTweens_.end());
-    for (auto &t : itemTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto node = host->get().findById(t.nodeId);
-        if (!node) {
-            t.host = {};
-            continue;
-        }
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            node->get().opacity = t.to;
-            t.host = {};
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);
-        node->get().opacity = t.from + (t.to - t.from) * ease;
-    }
-    itemTweens_.erase(
-        std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                       [](const ItemTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-        itemTweens_.end());
-}
+void UI::tickTweens(double nowMs) { tweens_.tick(nowMs); }
+
+std::size_t UI::getHostTweenCount() const { return tweens_.hostTweenCount(); }
+
+std::size_t UI::getItemTweenCount() const { return tweens_.itemTweenCount(); }
 
 void UI::dispatchEvents() {
     // Copy before dispatch: UISystem::dispatchEvents() consumes the pending list.
@@ -1603,22 +1558,23 @@ void UI::setHostPercent(float w, float h) {
     m->percentH = h;
 }
 
-void UI::animateHostPos(float x, float y, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto      m = host->get().meta();
-    HostTween t;
-    t.host = selected_;
-    t.fromX = m->hasPos ? m->posX : 0.f;
-    t.fromY = m->hasPos ? m->posY : 0.f;
-    t.toX = x;
-    t.toY = y;
-    t.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    t.durationMs = std::max(0.0, double(durationMs));
-    m->hasPos = true;
-    hostTweens_.push_back(t);
+void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease,
+                        float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostPos(selected_, x, y, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease,
+                         float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostSize(selected_, w, h, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease,
+                                 float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs,
+                                    uiTweenWallClockMs());
 }
 
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
@@ -1665,31 +1621,33 @@ std::string UI::defineStyleClass(const std::string &name, const std::string &par
     return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
 }
 
-void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto node = host->get().findById(id);
-    if (!node) return;
-    itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                                    [&](const ItemTween &t) {
-                                        return t.host.table == selected_.table &&
-                                               t.host.type == selected_.type &&
-                                               t.host.id == selected_.id &&
-                                               t.host.generation == selected_.generation &&
-                                               t.nodeId == id;
-                                    }),
-                      itemTweens_.end());
-    ItemTween tween;
-    tween.host = selected_;
-    tween.nodeId = id;
-    tween.from = node->get().opacity;
-    tween.to = std::clamp(opacity, 0.f, 1.f);
-    tween.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    tween.durationMs = std::max(0.0, double(durationMs));
-    if (tween.durationMs <= 0.0) node->get().opacity = tween.to;
-    else itemTweens_.push_back(std::move(tween));
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs,
+                            const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    (void)tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs,
+                                     uiTweenWallClockMs());
+}
+
+void UI::animateItemPos(const std::string &id, float x, float y, float durationMs,
+                        const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    (void)tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs,
+                                 uiTweenWallClockMs());
+}
+
+void UI::cancelHostTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelHost(selected_);
+}
+
+void UI::cancelItemTweens(const std::string &id) {
+    if (!resolveSelected()) return;
+    tweens_.cancelItem(selected_, id);
+}
+
+void UI::cancelAllTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelAll(selected_);
 }
 
 std::string UI::setStyleClassColor(const std::string &name, const std::string &property, float r,
@@ -2744,7 +2702,16 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
     cls.addFunc("animateHostPos", &UI::animateHostPos);
+    cls.addFunc("animateHostSize", &UI::animateHostSize);
+    cls.addFunc("animateHostOverlayAlpha", &UI::animateHostOverlayAlpha);
     cls.addFunc("animateItemOpacity", &UI::animateItemOpacity);
+    cls.addFunc("animateItemPos", &UI::animateItemPos);
+    cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);
+    cls.addFunc("cancelItemTweens", &UI::cancelItemTweens);
+    cls.addFunc("cancelAllTweens", &UI::cancelAllTweens);
+    cls.addFunc("tickTweens", &UI::tickTweens);
+    cls.addFunc("getHostTweenCount", &UI::getHostTweenCount);
+    cls.addFunc("getItemTweenCount", &UI::getItemTweenCount);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
     cls.addFunc("dragDropSupport", &UI::dragDropSupport);
