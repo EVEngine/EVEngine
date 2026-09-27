@@ -212,7 +212,7 @@ struct DeferredLightingUBO {
     glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
 };
-static_assert(sizeof(DeferredLightingUBO) == 192, "DeferredLightingUBO must match std140 shader");
+static_assert(sizeof(DeferredLightingUBO) == 224, "DeferredLightingUBO must match std140 shader");
 
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};

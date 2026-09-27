@@ -22,9 +22,9 @@ std::vector<uint32_t> embeddedSpirv(const uint32_t* words, size_t count) {
 void Graphics::destroyDeferredLightingResources() {
     destroyPipeline(device, deferredLightingPipeline);
     destroyPipelineLayout(device, deferredLightingPipelineLayout);
-    deferredLightingSetLayout = {};
+    deferredLightingSetLayout = vk::DescriptorSetLayout{};
     deferredLightingSetLayoutUnique.reset();
-    deferredLightingSet = {};
+    deferredLightingSet = vk::DescriptorSet{};
     deferredLightingUbo.release();
     if (deferredLightingSampler) {
         device->destroySampler(deferredLightingSampler);
