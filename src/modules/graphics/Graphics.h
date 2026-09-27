@@ -1246,6 +1246,16 @@ public:
     virtual void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) = 0;
     /** @brief Final display mapping; None preserves linear color before display encoding. */
     enum class SceneToneMapping { None, Aces };
+    /** @brief Requested swapchain present preference. */
+    enum class DisplayOutputMode { Sdr, Auto, Hdr10, ScRgb };
+    /** @brief Color space actually selected for the live swapchain. */
+    enum class DisplayColorSpace { Sdr, ScRgb, Hdr10 };
+    /** @brief Surface present formats the current device/window can offer. */
+    struct DisplayOutputSupport {
+        bool sdr = true;
+        bool hdr10 = false;
+        bool scRgb = false;
+    };
     /** @brief Set final scene display mapping on the graphics/render thread.
      * @details Graphics owns the value
      * until destruction. No input references or callbacks
@@ -1258,6 +1268,39 @@ public:
     [[nodiscard]] virtual Result<void> setSceneToneMapping(SceneToneMapping mode);
     /** @brief Return the current final display mapping; graphics/render thread only. */
     virtual SceneToneMapping getSceneToneMapping() const { return SceneToneMapping::Aces; }
+    /**
+     * @brief Request a present color space on the graphics/render thread.
+     * @details Stores the preference and dirties the swapchain. Auto selects
+     * HDR10, then scRGB, then SDR. Strict Hdr10/ScRgb still soft-fall back to
+     * SDR when the surface cannot offer that pair; inspect
+     * `getActiveDisplayColorSpace()` / `isDisplayHdrActive()` after present
+     * rebuild. WebGPU currently accepts only Sdr/Auto (always SDR).
+     * @return Success, InvalidArgument, or Unsupported without partial mutation.
+     */
+    [[nodiscard]] virtual Result<void> setDisplayOutputMode(DisplayOutputMode mode);
+    /** @brief Return the requested present preference. */
+    virtual DisplayOutputMode getDisplayOutputMode() const;
+    /**
+     * @brief Set paper-white and peak luminance used by HDR present encoding.
+     * @param paperWhiteNits Display-referred luminance of UI/SDR white (80-400).
+     * @param peakNits Maximum highlight luminance (max(paperWhite,200)-10000).
+     * @return Success or InvalidArgument; values are clamped into range.
+     */
+    [[nodiscard]] virtual Result<void> setDisplayHdrCalibration(float paperWhiteNits, float peakNits);
+    /** @brief Paper-white luminance in nits for HDR present encoding. */
+    virtual float getDisplayPaperWhiteNits() const;
+    /** @brief Peak luminance in nits for HDR present encoding. */
+    virtual float getDisplayPeakNits() const;
+    /** @brief Color space of the live swapchain after the last rebuild. */
+    virtual DisplayColorSpace getActiveDisplayColorSpace() const;
+    /** @brief True when the live swapchain is scRGB or HDR10. */
+    virtual bool isDisplayHdrActive() const;
+    /**
+     * @brief Query which present formats the current surface can offer.
+     * @details Requires an initialized windowed backend with a live surface.
+     * Headless and unsupported backends return only `sdr=true`.
+     */
+    [[nodiscard]] virtual Result<DisplayOutputSupport> queryDisplayOutputSupport() const;
     /** @brief Set linear exposure multiplier used by the final scene tone-map resolve. */
     virtual void setSceneExposure(float exposure) = 0;
     /** @brief Current linear manual exposure multiplier. */
@@ -2045,6 +2088,10 @@ protected:
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
     int presentationVSyncCount_=1;
+    DisplayOutputMode displayOutputMode_ = DisplayOutputMode::Sdr;
+    DisplayColorSpace activeDisplayColorSpace_ = DisplayColorSpace::Sdr;
+    float displayPaperWhiteNits_ = 200.f;
+    float displayPeakNits_ = 1000.f;
     bool graphicsActive = true;
     int msaaSamples = 4;
     PresentOverlayFn presentOverlayFn_ = nullptr;
