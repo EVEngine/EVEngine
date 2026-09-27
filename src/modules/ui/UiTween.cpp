@@ -153,7 +153,7 @@ void UiTweenDriver::applyHost(UiHostTween &t, float k) {
         t.host = {};
         return;
     }
-    auto *m = host->get().meta();
+    auto m = host->get().meta();
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
     case UiHostTweenTarget::Pos:
@@ -201,7 +201,7 @@ void UiTweenDriver::animateHostPos(UIHostHandle host, float x, float y, float du
                                    const std::string &ease, float delayMs, double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
-    auto *m = resolved->get().meta();
+    auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Pos);
     UiHostTween t;
     t.host = host;
@@ -227,7 +227,7 @@ void UiTweenDriver::animateHostSize(UIHostHandle host, float w, float h, float d
                                     const std::string &ease, float delayMs, double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
-    auto *m = resolved->get().meta();
+    auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Size);
     UiHostTween t;
     t.host = host;
@@ -254,7 +254,7 @@ void UiTweenDriver::animateHostOverlayAlpha(UIHostHandle host, float alpha, floa
                                             double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
-    auto *m = resolved->get().meta();
+    auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::OverlayAlpha);
     UiHostTween t;
     t.host = host;
