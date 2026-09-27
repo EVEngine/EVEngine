@@ -1365,7 +1365,7 @@ void Graphics::flushToSwapchain() {
 
     // HDR present: compose scene + overlays in paper-white-relative linear space,
     // then encode once into the swapchain. SDR (and the rare already-open 3D
-    // fallback) keep drawing directly into the present pass.
+    // path) keep drawing directly into the present pass.
     const bool useHdrCompose =
         isDisplayHdrActive() && (hasScenePath || !continue3D) && !swapchainPassOpen;
     if (useHdrCompose) {

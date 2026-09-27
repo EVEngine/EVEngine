@@ -818,7 +818,7 @@ void Graphics::queueUiResolve() {
     auto *slot = currentUiColorSlot();
     if (!slot || !slot->colorTex.gpuHandle) return;
     // HDR present always composites UI in paper-white-relative linear space on
-    // the compose target (or, on the rare already-open swapchain fallback, draws
+    // the compose target (or, on the rare already-open swapchain path, draws
     // ImGui directly). Never bind the opaque DisplayEncode path here — it would
     // replace transparent texels with the UI clear color.
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
@@ -1639,7 +1639,8 @@ void Graphics::materializeSceneColorResolve() {
         // AA and exposure are already applied. Use the final tone-map pipeline;
         // UNORM SDR swapchains also require explicit linear-to-sRGB encoding.
         // HDR compose keeps paper-white-relative linear; the final encode pass
-        // applies PQ/scRGB. Direct HDR present (rare fallback) encodes here.
+        // applies PQ/scRGB. Direct HDR present (rare already-open swapchain path)
+        // encodes here.
         const bool composeLinear = isDisplayHdrActive();
         const bool attachmentEncodesSrgb =
             !composeLinear && (swapchain.image_format == vk::Format::eB8G8R8A8Srgb ||
