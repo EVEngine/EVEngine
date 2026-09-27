@@ -81,7 +81,8 @@ float screenSpaceShadow(vec2 startUV, float startDepth, vec2 lightUV, int steps)
     float blocker = expected - d;
     if (blocker > 0.002 && d + 0.003 < startDepth) {
       // Soften with distance from the first blocker (penumbra).
-      penumbra = min(penumbra, smoothstep(0.03, 0.0, blocker));
+      // smoothstep edges must be ascending; invert for "softer as blocker grows".
+      penumbra = min(penumbra, 1.0 - smoothstep(0.0, 0.03, blocker));
       shadow *= mix(0.12, 0.55, penumbra);
       if (shadow < 0.08) break;
     }
@@ -121,10 +122,9 @@ void main() {
   float maxDist = length(ray);
   vec3 rayDir = ray / max(maxDist, 1e-5);
 
-  // Spatial dither offsets the first step to break banding without extra push slots.
+  // Spatial dither offsets sample centers to break banding without extra push slots.
   float jitter = hash12(fragUV * vec2(917.0, 613.0) + vec2(density, fogAmount));
   float stepLen = maxDist / float(samples);
-  vec3 pos = camPos + rayDir * stepLen * jitter;
   float transmittance = 1.0;
   vec3 scatter = vec3(0.0);
 
@@ -132,8 +132,10 @@ void main() {
 
   for (int i = 0; i < 64; ++i) {
     if (i >= samples) break;
-    pos += rayDir * stepLen;
+    // Sample at the jittered center of each stratum; clamp so we never march past endPos.
     float t = (float(i) + jitter) / float(samples);
+    if (t > 1.0) break;
+    vec3 pos = camPos + rayDir * (t * maxDist);
 
     vec2 sampleUV = mix(vec2(0.5), fragUV, clamp(t, 0.0, 1.0));
     vec4 clip = viewProj * vec4(pos, 1.0);

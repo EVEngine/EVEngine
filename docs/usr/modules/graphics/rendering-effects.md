@@ -83,9 +83,8 @@ hair.setHair(true)   // Material/标志会带上双面、透明排序等发卡�
   调整云层；线性深度输入通过 `renderClouds` 或 `renderCloudsTo` 渲染，
   `getCloudShader` 可用于高级参数检查与调试。
 
-发光体代理：`eve.createEmissiveLight2D` / `eve.createEmissiveLight3D`（或
-`Light*.createEmissiveProxy`）创建 `volumetricOnly` 点光——只进体积通道、跳过表面光照；
-表面自发光仍用 PBR `emissive` + bloom。
+发光体代理：`eve.createEmissiveLight2D` / `eve.createEmissiveLight3D` 创建
+`volumetricOnly` 点光——只进体积通道、跳过表面光照；表面自发光仍用 PBR `emissive` + bloom。
 
 细节见 [`体积光模块设计.md`](../../../dev/体积光模块设计.md)。
 

@@ -309,6 +309,37 @@ TEST_CASE("volumetric.collectAndDriveSceneLights3D") {
     win->close();
 }
 
+TEST_CASE("volumetric.froxelSceneLightsValidateBoundsAndRankProxies") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol);
+    vol->setMode("froxel");
+    vol->setCamera(0.f, 2.f, 6.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 55.f, 1.777f, 0.1f, 40.f);
+    vol->configureFroxelGrid(4, 4, 8, 0.1f, 40.f);
+    vol->clearFroxelGrid();
+    vol->injectFroxelHeightFog(0.04f, 0.8f, 0.85f, 0.95f, 0.f, 0.2f, -4.f, 8.f);
+
+    auto badBounds = vol->integrateFroxelFromSceneLights(0.02f, 0.02f, 0.03f, glm::vec3(5.f),
+                                                         glm::vec3(1.f), 4);
+    CHECK(!badBounds.ok());
+
+    REQUIRE(vol->injectEmissiveLightProxy(0.f, 1.f, -2.f, 1.f, 0.2f, 0.05f, 5.f, 8.f).ok());
+    // Fill the budget with weak scene lights; the strong proxy must still win a slot.
+    for (int i = 0; i < 4; ++i) {
+        auto *weak = Light3D::createEmissiveProxy(float(i) * 2.f, 0.f, 0.f, 0.1f, 0.1f, 0.1f, 0.2f,
+                                                  2.f);
+        (void)weak;
+    }
+    auto ok = vol->integrateFroxelFromSceneLights(0.02f, 0.02f, 0.03f, glm::vec3(-10.f),
+                                                  glm::vec3(10.f), 4);
+    REQUIRE(ok.ok());
+    const glm::vec4 sample = vol->getAtmosphereVolume()->sampleIntegrated(0.5f, 0.5f, 8.f);
+    CHECK(sample.r > sample.b);
+    win->close();
+}
+
 TEST_CASE("volumetric.froxelIntegratesEmissiveProxyAndSceneLights") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
@@ -351,6 +382,7 @@ TEST_CASE("volumetric.occlusionFromSceneLights2D") {
     REQUIRE(vol);
 
     Canvas *occ = gfx->newCanvas(128, 72);
+    Canvas *shafts = gfx->newCanvas(128, 72);
     gfx->setCanvas(occ);
 
     auto *a = Light2D::createEmissiveProxy(20.f, 20.f, 1.f, 0.8f, 0.4f, 1.f, 40.f);
@@ -365,6 +397,10 @@ TEST_CASE("volumetric.occlusionFromSceneLights2D") {
     CHECK(occ->getPixel(20, 20).r > 0.3f);
     CHECK(occ->getPixel(100, 50).r > 0.3f);
 
+    // Scatter into a separate canvas — sampling the active canvas texture is invalid.
+    gfx->setCanvas(shafts);
+    auto aliased = vol->scatterFromSceneLights2D(gfx, shafts->getTexture(), nullptr);
+    CHECK(!aliased.ok());
     auto passes = vol->scatterFromSceneLights2D(gfx, occ->getTexture(), nullptr);
     REQUIRE(passes.ok());
     CHECK(passes.value() == 2);

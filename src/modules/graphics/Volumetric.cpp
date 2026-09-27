@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <vector>
 
@@ -773,9 +774,25 @@ void Volumetric::integrateFroxel(float lightR, float lightG, float lightB, float
     if (!pendingEmissiveProxies_.empty()) {
         const glm::vec3 ambient(std::max(lightR, 0.f), std::max(lightG, 0.f),
                                 std::max(lightB, 0.f));
-        // Approximate world bounds from the active camera near/far and a generous XY span.
-        const glm::vec3 worldMin(-farZ_, -farZ_, -farZ_);
-        const glm::vec3 worldMax(farZ_, farZ_, farZ_);
+        // Reconstruct a camera-frustum AABB from invViewProj so proxies track the view.
+        glm::vec3 worldMin(std::numeric_limits<float>::max());
+        glm::vec3 worldMax(std::numeric_limits<float>::lowest());
+        for (float ndcZ : {0.f, 1.f}) {
+            for (float x : {-1.f, 1.f}) {
+                for (float y : {-1.f, 1.f}) {
+                    const glm::vec4 h = invViewProj_ * glm::vec4(x, y, ndcZ, 1.f);
+                    if (!(std::fabs(h.w) > 1e-6f)) continue;
+                    const glm::vec3 p = glm::vec3(h) / h.w;
+                    if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z)) continue;
+                    worldMin = glm::min(worldMin, p);
+                    worldMax = glm::max(worldMax, p);
+                }
+            }
+        }
+        if (!(worldMin.x < worldMax.x && worldMin.y < worldMax.y && worldMin.z < worldMax.z)) {
+            worldMin = glm::vec3(-farZ_);
+            worldMax = glm::vec3(farZ_);
+        }
         atmosphereVolume_->integrateLocalLights(pendingEmissiveProxies_, worldMin, worldMax,
                                                 ambient * std::max(phaseScale, 0.f));
         clearPendingEmissiveProxies();

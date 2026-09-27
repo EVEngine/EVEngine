@@ -249,7 +249,8 @@ public:
 
     /**
      * @brief Multi-pass screenspace scatter: one radial blur per volumetric Light2D.
-     * Additive-ish SrcAlpha compositing builds multi-source god rays.
+     * Uses additive blending so overlapping shafts accumulate. The occlusion texture
+     * must not be the active canvas's color target (Vulkan/WebGPU feedback rule).
      * @return Number of scatter passes executed.
      */
     [[nodiscard]] Result<int> scatterFromSceneLights2D(Graphics *gfx, Texture *occlusion,
