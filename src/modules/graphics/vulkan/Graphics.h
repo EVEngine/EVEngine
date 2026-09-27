@@ -202,6 +202,18 @@ struct SkinPassUBO {
 };
 static_assert(sizeof(SkinPassUBO) == 160, "SkinPassUBO must match std140 shaders");
 
+struct DeferredLightingUBO {
+    glm::mat4 invViewProj{1.f};
+    glm::mat4 view{1.f};
+    glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};
+    glm::vec4 lightColor{1.f, 1.f, 1.f, 0.f};
+    glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.f};
+    glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
+    glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};
+    glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
+};
+static_assert(sizeof(DeferredLightingUBO) == 224, "DeferredLightingUBO must match std140 shader");
+
 struct Mesh3DClusteredUBO {
     glm::mat4 mvp{1.f};
     glm::mat4 model{1.f};
@@ -374,6 +386,8 @@ public:
     bool supportsGpuDriven3D() const override {
         return gpuDrivenCaps_.gpuDrivenAvailable();
     }
+    bool supportsDeferredLighting() const override { return true; }
+    void drawDeferredLighting() override;
     bool gpuDrivenEnabled() const override {
         return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenAvailable();
     }
@@ -804,6 +818,8 @@ private:
     void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
+    void                                                   createDeferredLightingPipeline();
+    void                                                   destroyDeferredLightingResources();
     void createVoxelRectPipeline();
     vk::Pipeline buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
                                         vk::SampleCountFlagBits samples);
@@ -1347,6 +1363,14 @@ private:
     vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
     vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
     vk::Pipeline resolveVisPipeline = nullptr;
+    // Phase C: Hybrid clustered deferred lighting (fullscreen into scene color).
+    vk::DescriptorSetLayout       deferredLightingSetLayout{};
+    vk::UniqueDescriptorSetLayout deferredLightingSetLayoutUnique;
+    vk::PipelineLayout            deferredLightingPipelineLayout{};
+    vk::Pipeline                  deferredLightingPipeline{};
+    vkb::GenericBuffer            deferredLightingUbo{};
+    vk::DescriptorSet             deferredLightingSet{};
+    vk::Sampler                   deferredLightingSampler{};
     void createMesh3DGpuDrivenPipeline();
     /** @brief Per-frame set0 (dynamic Frame UBO + shadow ring offsets). */
     struct GpuDrivenFrameSet0 {
@@ -1466,6 +1490,8 @@ private:
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
+        vkb::ColorTarget pbrParams;  // RGBA8: metallic, roughness, occlusion, specularFactor
+        vkb::ColorTarget emissive;   // RGB emissive (A unused)
         vkb::ColorTarget visID;    // R32G32UI: x = instance, y = pooled index offset
         vkb::ColorTarget visBary;  // R16G16F: barycentric (u, v)
         vkb::DepthTarget depth;
@@ -1474,12 +1500,16 @@ private:
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture       pbrParamsGpu{};
+        GpuTexture       emissiveGpu{};
         GpuTexture visIDGpu{};
         GpuTexture visBaryGpu{};
         GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture          pbrParamsTex{};
+        Texture          emissiveTex{};
         Texture visIDTex{};
         Texture visBaryTex{};
         Texture depthTex{};

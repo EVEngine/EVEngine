@@ -52,6 +52,8 @@ SHADERS = [
     ("resolve_vis.vert", "vert"),
     ("resolve_vis.frag", "frag"),
     ("mesh3d_toon.vert", "vert"),
+    ("deferred_lighting.vert", "vert"),
+    ("deferred_lighting.frag", "frag"),
 ]
 
 

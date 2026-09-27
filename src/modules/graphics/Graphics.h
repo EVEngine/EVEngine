@@ -233,6 +233,16 @@ public:
     // Backends without the GPU-driven path (WebGPU, software) return false and
     // RenderSystem3D falls back to the legacy per-draw path.
 
+    /** @brief True when the backend can run Hybrid clustered deferred lighting. */
+    virtual bool supportsDeferredLighting() const { return false; }
+
+    /**
+     * @brief Fullscreen deferred lighting into the open scene-color pass.
+     * Samples GBuffer + clustered lights + CSM. No-op when unsupported or no GBuffer.
+     * Call after begin3DFrame with view/lighting/shadows/clustered state already set.
+     */
+    virtual void drawDeferredLighting() {}
+
     /** @brief True when the backend can run GPU-driven opaque draws. */
     virtual bool supportsGpuDriven3D() const { return false; }
 
