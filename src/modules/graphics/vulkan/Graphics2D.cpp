@@ -421,8 +421,8 @@ image::ImageData *Graphics::renderEntityIdMask(
     // 上层可通过 getDepthTexture()/getNormalTexture() 读取本次离屏 ID 渲染
     // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
     if (RenderControl *rc = getRenderControl()) {
-        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
-                                     &slot->albedoTex, &slot->depthTex);
+        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex, &slot->albedoTex,
+                                     &slot->depthTex, &slot->pbrParamsTex, &slot->emissiveTex);
     }
     return img;
 }
@@ -438,6 +438,10 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
         src = &slot->normal;
     else if (attachment == "albedo")
         src = &slot->albedo;
+    else if (attachment == "pbrParams")
+        src = &slot->pbrParams;
+    else if (attachment == "emissive")
+        src = &slot->emissive;
     else
         return nullptr;
 
@@ -958,6 +962,23 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
         litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy,
+                                            float w, float h, float degrees, float u0, float v0,
+                                            float u1, float v1, const Color &color) {
+    if (!albedo) {
+        drawSolidRectRotated(cx, cy, w, h, degrees, color);
+        return;
+    }
+    ensureFlatNormalTexture();
+    if (!normal) normal = flatNormalTexture;
+    if (litBatches.empty() || litBatches.back().albedo != albedo ||
+        litBatches.back().normal != normal) {
+        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    }
+    litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 

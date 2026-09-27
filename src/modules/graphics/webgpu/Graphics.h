@@ -196,6 +196,8 @@ public:
 
     std::string getBackendName() const override { return "webgpu"; }
     bool supportsGBufferPost() const override { return true; }
+    bool                    supportsDeferredLighting() const override { return true; }
+    void                    drawDeferredLighting() override;
     bool supportsGpuDriven3D() const override { return true; }
     bool gpuDrivenEnabled() const override { return gpuDrivenEnabled_; }
     void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
@@ -333,6 +335,9 @@ public:
                                  float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
+    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w,
+                                      float h, float degrees, float u0, float v0, float u1, float v1,
+                                      const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
 
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
@@ -749,6 +754,17 @@ private:
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
     void submitPendingDeferredPasses();
+    void                 createDeferredLightingPipeline();
+    void                 destroyDeferredLightingResources();
+    void                 ensureDeferredLightingClusteredUpload();
+    /** @brief Fullscreen deferred lighting into an open scene-color pass. */
+    void flushDeferredLighting(wgpu::RenderPassEncoder pass);
+    /**
+     * @brief Record pending GBuffer (+ optional AO) into encoder before scene color.
+     * Used when Hybrid deferred lighting must sample a freshly written GBuffer.
+     * @return True when a GBuffer pass was recorded this call.
+     */
+    bool flushGBufferPassInto(wgpu::CommandEncoder& encoder, bool runAo);
     void flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
 
     // UBO arena: one growable uniform buffer per in-flight frame slot.
@@ -865,6 +881,12 @@ private:
     wgpu::BindGroupLayout gbufferSetLayout;
     wgpu::BindGroupLayout decalSetLayout;
     wgpu::BindGroupLayout voxelSetLayout;
+    // Phase D: Hybrid clustered deferred lighting (fullscreen into scene color).
+    wgpu::BindGroupLayout deferredLightingSetLayout;
+    wgpu::PipelineLayout  deferredLightingPipelineLayout;
+    wgpu::RenderPipeline  deferredLightingPipeline;
+    wgpu::Sampler         deferredLightingNearestSampler;
+    bool                  deferredLightingPending_ = false;
 
     // SSAO (screen-space ambient occlusion) resources. The AO pass runs after
     // the G-buffer fill and writes aoTex[aoWriteIndex]; the forward mesh pass
@@ -1092,7 +1114,7 @@ private:
     std::vector<ShadowMapSlot> shadowMaps;
     int shadowMapSize = ShadowConfig::kMapSize;
 
-    // GBuffer targets.
+    // GBuffer targets (Phase B: 5 color + depth).
     struct GbufferSlot {
         wgpu::Texture normal;
         wgpu::TextureView normalView;
@@ -1100,6 +1122,10 @@ private:
         wgpu::TextureView depthColorView;
         wgpu::Texture albedo;
         wgpu::TextureView albedoView;
+        wgpu::Texture     pbrParams;
+        wgpu::TextureView pbrParamsView;
+        wgpu::Texture     emissive;
+        wgpu::TextureView emissiveView;
         wgpu::Texture depth;
         wgpu::TextureView depthView;
         wgpu::Texture visID;
@@ -1109,10 +1135,14 @@ private:
         GpuTexture normalGpu;
         GpuTexture depthColorGpu;
         GpuTexture albedoGpu;
+        GpuTexture        pbrParamsGpu;
+        GpuTexture        emissiveGpu;
         GpuTexture depthGpu;
         Texture normalTex;
         Texture depthColorTex;
         Texture albedoTex;
+        Texture           pbrParamsTex;
+        Texture           emissiveTex;
         Texture depthTex;
     };
     int gbufferWidth = 0, gbufferHeight = 0;

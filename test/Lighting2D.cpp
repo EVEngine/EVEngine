@@ -208,9 +208,9 @@ TEST_CASE("Lighting2D.normalMapLitSideBrighter") {
     sp->transform()->y = 8.f;
     sp->sprite()->width = 64.f;
     sp->sprite()->height = 48.f;
-    sp->sprite()->texture = albedo;
-    sp->sprite()->normalTexture = normal;
-    sp->sprite()->receiveLight = true;
+    sp->setTexture(albedo);
+    sp->setNormalTexture(normal);
+    sp->setReceiveLight(true);
     sp->sprite()->canvas = rt;
     sp->sprite()->visible = true;
 
@@ -262,4 +262,72 @@ TEST_CASE("Lighting2D.createLightTypesAndAmbient") {
     pt->setEnabled(false);
     dir->setEnabled(false);
     cam->data()->active = false;
+}
+
+TEST_CASE("Lighting2D.setNormalTextureEnablesLitPathAndRotation") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    eve::window::WindowSettings s;
+    s.width = 320;
+    s.height = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newCanvas(128, 64);
+    REQUIRE(rt != nullptr);
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x = 64.f;
+    cam->data()->y = 32.f;
+    cam->data()->zoom = 1.f;
+    cam->setAmbient(0.08f, 0.08f, 0.08f);
+    cam->data()->r = 0.f;
+    cam->data()->g = 0.f;
+    cam->data()->b = 0.f;
+    cam->data()->a = 1.f;
+
+    Texture *albedo = makeSolidTexture(gfx, 32, 32, 220, 220, 220);
+    Texture *normal = makeBiasedNormal(gfx, 32, 32);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(normal != nullptr);
+
+    auto *sp = Renderable2D::create();
+    sp->setPosition(64.f, 32.f);
+    sp->setSize(48.f, 48.f);
+    sp->setAnchor(0.5f, 0.5f);
+    sp->setTexture(albedo);
+    CHECK(sp->getNormalTexture() == nullptr);
+    sp->setNormalTexture(normal);
+    CHECK(sp->getNormalTexture() == normal);
+    sp->setReceiveLight(true);
+    sp->setRotation(90.f);
+    sp->sprite()->canvas = rt;
+    sp->sprite()->visible = true;
+
+    auto *light = Light2D::createLight("point");
+    light->setCanvas(rt);
+    // After 90° clockwise rotation, the map's +X bias faces screen +Y (down).
+    // Place the light below the sprite so the lower half should be brighter.
+    light->setPosition(64.f, 110.f);
+    light->setColor(1.f, 1.f, 1.f, 3.f);
+    light->setRadius(120.f);
+    light->setEnabled(true);
+
+    RenderSystem::render(*gfx);
+
+    float topL = luma(rt->getPixel(64, 18));
+    float botL = luma(rt->getPixel(64, 46));
+    CHECK(botL > topL + 0.04f);
+
+    sp->setNormalTexture(nullptr);
+    CHECK(sp->getNormalTexture() == nullptr);
+    sp->sprite()->visible = false;
+    light->setEnabled(false);
+    cam->data()->active = false;
+    win->close();
 }

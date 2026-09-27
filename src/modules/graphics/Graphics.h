@@ -234,6 +234,16 @@ public:
     // Backends without the GPU-driven path (WebGPU, software) return false and
     // RenderSystem3D falls back to the legacy per-draw path.
 
+    /** @brief True when the backend can run Hybrid clustered deferred lighting. */
+    virtual bool supportsDeferredLighting() const { return false; }
+
+    /**
+     * @brief Fullscreen deferred lighting into the open scene-color pass.
+     * Samples GBuffer + clustered lights + CSM. No-op when unsupported or no GBuffer.
+     * Call after begin3DFrame with view/lighting/shadows/clustered state already set.
+     */
+    virtual void drawDeferredLighting() {}
+
     /** @brief True when the backend can run GPU-driven opaque draws. */
     virtual bool supportsGpuDriven3D() const { return false; }
 
@@ -773,6 +783,15 @@ public:
      */
     virtual void drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
                                        float v0, float u1, float v1, const Color& color) = 0;
+
+    /**
+     * @brief Lit 2D draw rotated `degrees` clockwise (screen Y-down) around (cx, cy).
+     * Fragment tangent frame is rebuilt from screen/UV derivatives so normal maps
+     * stay aligned with the rotated albedo.
+     */
+    virtual void drawTexturedRectLitUVRotated(Texture* albedo, Texture* normal, float cx, float cy, float w, float h,
+                                              float degrees, float u0, float v0, float u1, float v1,
+                                              const Color& color) = 0;
 
     /** @brief Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
