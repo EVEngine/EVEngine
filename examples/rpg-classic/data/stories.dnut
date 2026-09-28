@@ -1,7 +1,3 @@
-# RPG story dialect (L1 dnut_interpreter + rpg vocabulary).
-# Dialogue conversations stay in village-dialogue.dnut; both dialects may
-# coexist in one file once the dialogue frontend skips `story` blocks.
-
 story forest.arrival {
     dialogue id=story.forest.arrival
     wait 0.35
