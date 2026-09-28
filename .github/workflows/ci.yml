@@ -586,10 +586,10 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold NDK build can consume almost the entire 45-minute build-step budget
-    # before Gradle packages the finished native library. Keep the step timeout
-    # below as the hang guard while leaving enough job budget for setup/cleanup.
-    timeout-minutes: 90
+    # Cold NDK + Gradle packaging regularly lands near the old 60-minute
+    # build-step ceiling (sccache ~30% hit). Keep the step timeout as the hang
+    # guard while leaving job budget for setup/cleanup after a long build.
+    timeout-minutes: 110
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -647,7 +647,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 60
+        timeout-minutes: 80
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -656,7 +656,6 @@ jobs:
             JAVA_HOME="$JAVA_HOME" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
-
       - name: Report C/C++ compilation cache
         if: always()
         continue-on-error: true
