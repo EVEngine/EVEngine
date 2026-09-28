@@ -8,8 +8,9 @@ layout(set = 0, binding = 0) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 1) uniform sampler2D normalSampler;
 
 struct Light2D {
-  vec4 posRadius; // xy = point pos OR direction; w = radius (0 => directional)
+  vec4 posRadius; // xy = point/spot pos OR direction; w = radius (0 => directional)
   vec4 color;     // rgb * intensity
+  vec4 spot;      // xy = beam dir; z/w = cos(outer/inner); z <= -1.5 => no cone
 };
 
 layout(set = 0, binding = 2) uniform Lighting2D {
@@ -66,14 +67,33 @@ void main() {
     vec3 lightCol = L.color.rgb;
     float contrib = 0.0;
     if (L.posRadius.w <= 0.0) {
-      // Directional: xy is light direction toward the surface (or from light).
-      vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
-      contrib = max(dot(N, Ld), 0.0);
+      // Zero-range spots must not fall through as directional (position ≠ beam dir).
+      if (L.spot.z > -1.5) {
+        contrib = 0.0;
+      } else {
+        // Directional: xy is light direction toward the surface (or from light).
+        vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
+        contrib = max(dot(N, Ld), 0.0);
+      }
     } else {
       vec2 toL = L.posRadius.xy - logical;
       float dist = length(toL);
       float atten = clamp(1.0 - dist / max(L.posRadius.w, 1.0), 0.0, 1.0);
       atten *= atten;
+      if (L.spot.z > -1.5) {
+        vec2 fromL = logical - L.posRadius.xy;
+        float fl = length(fromL);
+        float spotAtten = 1.0;
+        if (fl > 1e-4) {
+          vec2 beam = L.spot.xy;
+          float beamLen = length(beam);
+          if (beamLen > 1e-6)
+            spotAtten = smoothstep(L.spot.z, L.spot.w, dot(fromL / fl, beam / beamLen));
+          else
+            spotAtten = 0.0;
+        }
+        atten *= spotAtten;
+      }
       vec3 Ld = normalize(vec3(toL, L.posRadius.w * 0.35));
       contrib = max(dot(N, Ld), 0.0) * atten;
     }
