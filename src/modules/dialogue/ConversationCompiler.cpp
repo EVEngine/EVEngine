@@ -1,70 +1,65 @@
 #include "dialogue/ConversationCompiler.h"
+
+#include "dialogue/DialogueSequence.h"
 #include "dialogue/DnutParser.h"
 
 #include <algorithm>
-#include <cctype>
-#include <charconv>
 #include <deque>
-#include <sstream>
-#include <unordered_map>
+#include <string>
 #include <unordered_set>
+#include <utility>
 
 namespace eve::dialogue {
 namespace {
 
 std::string csv(std::string value) {
-    size_t pos = 0;
-    while ((pos = value.find('"', pos)) != std::string::npos) {
-        value.insert(pos, 1, '"');
-        pos += 2;
+    std::size_t position = 0;
+    while ((position = value.find('"', position)) != std::string::npos) {
+        value.insert(position, 1, '"');
+        position += 2;
     }
     return '"' + value + '"';
 }
 
 }  // namespace
 
-eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
-    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
-    auto compiled = compileDnutDocument(source, path, diagnostics);
-    if (!compiled) return eve::Result<std::vector<ConversationAsset>>::failure(compiled.status());
-    DnutDocument document = std::move(compiled).takeValue();
-    return eve::Result<std::vector<ConversationAsset>>::success(std::move(document.conversations));
-}
-
 eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const std::string& path,
                                               std::vector<ConversationDiagnostic>& diagnostics) {
     auto parsed = parseDnutDocument(source, path, diagnostics);
-    if (!parsed) {
-        return eve::Result<DnutDocument>::failure(parsed.status());
-    }
+    if (!parsed.ok()) return eve::Result<DnutDocument>::failure(parsed.status());
     DnutDocument document = std::move(parsed).takeValue();
     auto linted = lintConversations(document.conversations, path, diagnostics);
-    if (!linted) return eve::Result<DnutDocument>::failure(linted.status());
+    if (!linted.ok()) return eve::Result<DnutDocument>::failure(linted.status());
     return eve::Result<DnutDocument>::success(std::move(document));
 }
 
-eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
+eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>& assets,
+                                    const std::string& path,
                                     std::vector<ConversationDiagnostic>& diagnostics) {
-    bool valid = true;
+    bool                            valid = true;
     std::unordered_set<std::string> assetIds;
+    eve::dnut::StepKindRegistry     registry;
+    auto registered = registerDialogueSequenceSteps(registry);
+    if (!registered.ok()) return registered;
+
     for (const auto& asset : assets) {
         if (!assetIds.insert(asset.id).second) {
             diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
                                    "duplicate conversation id '" + asset.id + "'", "DuplicateAssetId",
-                                   asset.sourceColumn,
-                                   asset.id});
+                                   asset.sourceColumn, asset.id});
             valid = false;
         }
-        auto validated = asset.validate();
-        if (!validated) {
+        auto validated = validateDialogueSequenceAsset(asset, registry);
+        if (!validated.ok()) {
             diagnostics.push_back(
-                {ConversationDiagnostic::Severity::Error, path, asset.sourceLine, validated.status().describe(),
-                 "InvalidConversation", asset.sourceColumn, asset.id});
+                {ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
+                 validated.status().describe(), "InvalidConversation", asset.sourceColumn, asset.id});
             valid = false;
             continue;
         }
+
         std::unordered_set<std::string> reached;
-        std::deque<std::string> pending{asset.entry};
+        std::deque<std::string>         pending{asset.entry};
         while (!pending.empty()) {
             const std::string id = pending.front();
             pending.pop_front();
@@ -72,35 +67,40 @@ eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets
             const auto* node = asset.findNode(id);
             if (!node) continue;
             if (!node->next.empty()) pending.push_back(node->next);
-            if (!node->returnNode.empty()) pending.push_back(node->returnNode);
-            for (const auto& route : node->routes) pending.push_back(route.second);
+            if (node->type == "call") {
+                const std::string returnNode = sequencePayloadString(*node, "return");
+                if (!returnNode.empty()) pending.push_back(returnNode);
+            }
+            for (const auto& route : node->routes) pending.push_back(route.target);
         }
-        for (const auto& node : asset.nodes) {
-            if (reached.find(node.id) == reached.end())
+        for (const auto& node : asset.nodes)
+            if (!reached.contains(node.id))
                 diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, node.sourceLine,
-                                       "conversation '" + asset.id + "': unreachable node '" +
-                                           node.id + "'",
+                                       "conversation '" + asset.id + "': unreachable node '" + node.id + "'",
                                        "UnreachableNode", node.sourceColumn, asset.id + "/" + node.id});
-        }
 
         std::unordered_set<std::string> canExit;
         for (const auto& node : asset.nodes)
-            if (node.kind == ConversationAsset::Node::Kind::End) canExit.insert(node.id);
+            if (node.type == "end") canExit.insert(node.id);
         bool changed = true;
         while (changed) {
             changed = false;
             for (const auto& node : asset.nodes) {
                 if (canExit.contains(node.id)) continue;
-                bool exits = (!node.next.empty() && canExit.contains(node.next)) ||
-                             (!node.returnNode.empty() && canExit.contains(node.returnNode));
-                for (const auto& route : node.routes) exits = exits || canExit.contains(route.second);
+                bool exits = !node.next.empty() && canExit.contains(node.next);
+                if (node.type == "call") {
+                    const std::string returnNode = sequencePayloadString(node, "return");
+                    exits = exits || (!returnNode.empty() && canExit.contains(returnNode));
+                }
+                for (const auto& route : node.routes) exits = exits || canExit.contains(route.target);
                 if (exits) changed = canExit.insert(node.id).second;
             }
         }
         bool allReachableHaveOutgoing = true;
         for (const auto& node : asset.nodes) {
             if (!reached.contains(node.id) || canExit.contains(node.id)) continue;
-            if (node.next.empty() && node.returnNode.empty() && node.routes.empty()) {
+            const bool hasReturn = node.type == "call" && !sequencePayloadString(node, "return").empty();
+            if (node.next.empty() && !hasReturn && node.routes.empty()) {
                 allReachableHaveOutgoing = false;
                 break;
             }
@@ -123,16 +123,17 @@ eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets
     return eve::Result<void>::success();
 }
 
-std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets) {
-    std::string out = "conversation_id,node_id,i18n_key,speaker,source_text,voice\r\n";
-    for (const auto& asset : assets) {
+std::string exportConversationLocalizationCsv(const std::vector<eve::dnut::SequenceAsset>& assets) {
+    std::string output = "conversation_id,node_id,i18n_key,speaker,source_text,voice\r\n";
+    for (const auto& asset : assets)
         for (const auto& node : asset.nodes) {
-            if (node.kind != ConversationAsset::Node::Kind::Line) continue;
-            out += csv(asset.id) + ',' + csv(node.id) + ',' + csv(node.i18nKey) + ',' +
-                   csv(node.speaker) + ',' + csv(node.text) + ',' + csv(node.voice) + "\r\n";
+            if (node.type != "line") continue;
+            output += csv(asset.id) + ',' + csv(node.id) + ',' + csv(sequencePayloadString(node, "i18n")) + ',' +
+                      csv(sequencePayloadString(node, "speaker")) + ',' +
+                      csv(sequencePayloadString(node, "text")) + ',' +
+                      csv(sequencePayloadString(node, "voice")) + "\r\n";
         }
-    }
-    return out;
+    return output;
 }
 
 }  // namespace eve::dialogue

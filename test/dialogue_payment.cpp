@@ -2,6 +2,7 @@
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/DialogueFlow.h"
 #include "dialogue/DialoguePayment.h"
+#include "dialogue/DialogueSequence.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "statepatch/StateAccessAdapter.h"
 #include "statepatch/StatePatch.h"
@@ -115,19 +116,22 @@ TEST_CASE("dialoguePayment.choiceUsesTheSameAtomicFacade") {
     eve::statepatch::Store                       store;
     eve::statepatch::StatePatchStateAdapter      state(store);
 
-    eve::dialogue::ConversationAsset asset;
+    eve::dnut::SequenceAsset asset;
     asset.id    = "dialogue.payment-choice";
     asset.entry = "choice";
-    eve::dialogue::ConversationAsset::Node choice;
+    eve::dnut::SequenceNode choice;
     choice.id   = "choice";
-    choice.kind = eve::dialogue::ConversationAsset::Node::Kind::Choice;
-    choice.routes.emplace_back("buy", "end");
-    choice.routes.front().payment = PaymentSpec{5, 2};
-    choice.routes.front().stateMutations.push_back(
-        StateMutation{"actor", "accepted", Value(true), eve::MutationKind::Set, true});
-    eve::dialogue::ConversationAsset::Node end;
+    choice.type = "choice";
+    choice.routes.push_back({"buy", {}, "end"});
+    choice.routes.front().payload.set("payment", PaymentSpec{5, 2}.toValue());
+    const std::array<StateMutation, 1> choiceMutations{{
+        StateMutation{"actor", "accepted", Value(true), eve::MutationKind::Set, true},
+    }};
+    choice.routes.front().payload.set(
+        "stateMutations", eve::dialogue::encodeSequenceStateMutations(choiceMutations));
+    eve::dnut::SequenceNode end;
     end.id      = "end";
-    end.kind    = eve::dialogue::ConversationAsset::Node::Kind::End;
+    end.type    = "end";
     asset.nodes = {choice, end};
     eve::dialogue::ConversationDocument document(asset);
 

@@ -1,4 +1,5 @@
 #include "dialogue/ConversationLocalization.h"
+#include "dialogue/DialogueSequence.h"
 
 #include <cerrno>
 #include <cstdlib>
@@ -59,8 +60,9 @@ std::string quote(std::string value) {
     return '"' + value + '"';
 }
 
-std::string stableKey(const ConversationAsset& asset, const ConversationAsset::Node& node) {
-    return node.i18nKey.empty() ? asset.id + "." + node.id : node.i18nKey;
+std::string stableKey(const eve::dnut::SequenceAsset& asset, const eve::dnut::SequenceNode& node) {
+    const std::string key = sequencePayloadString(node, "i18n");
+    return key.empty() ? asset.id + "." + node.id : key;
 }
 
 std::string mapKey(const std::string& key, const std::string& locale) { return locale + '\x1f' + key; }
@@ -156,33 +158,35 @@ double ConversationLocalizationCatalog::resolveDuration(const std::string& key, 
     return entry ? entry->duration : 0.0;
 }
 
-std::string ConversationLocalizationCatalog::exportMissingCsv(const std::vector<ConversationAsset>& assets,
-                                                              const std::string&                    locale) const {
+std::string ConversationLocalizationCatalog::exportMissingCsv(
+    const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const {
     std::string out = "conversation_id,node_id,i18n_key,locale,source_text,translation\r\n";
     for (const auto& asset : assets)
         for (const auto& node : asset.nodes) {
-            if (node.kind != ConversationAsset::Node::Kind::Line) continue;
+            if (node.type != "line") continue;
             const std::string key   = stableKey(asset, node);
             const auto*       entry = find(key, locale);
             if (entry && !entry->text.empty()) continue;
             out += quote(asset.id) + ',' + quote(node.id) + ',' + quote(key) + ',' + quote(locale) + ',' +
-                   quote(node.text) + ",\"\"\r\n";
+                   quote(sequencePayloadString(node, "text")) + ",\"\"\r\n";
         }
     return out;
 }
 
-std::string ConversationLocalizationCatalog::exportVoiceRecordingCsv(const std::vector<ConversationAsset>& assets,
-                                                                     const std::string& locale) const {
+std::string ConversationLocalizationCatalog::exportVoiceRecordingCsv(
+    const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const {
     std::string out =
         "conversation_id,node_id,i18n_key,locale,speaker,source_text,translation,voice,status,duration\r\n";
     for (const auto& asset : assets)
         for (const auto& node : asset.nodes) {
-            if (node.kind != ConversationAsset::Node::Kind::Line) continue;
+            if (node.type != "line") continue;
             const std::string key   = stableKey(asset, node);
             const auto*       entry = find(key, locale);
             out += quote(asset.id) + ',' + quote(node.id) + ',' + quote(key) + ',' + quote(locale) + ',' +
-                   quote(node.speaker) + ',' + quote(node.text) + ',' + quote(entry ? entry->text : std::string{}) +
-                   ',' + quote(entry && !entry->voice.empty() ? entry->voice : node.voice) + ',' +
+                   quote(sequencePayloadString(node, "speaker")) + ',' +
+                   quote(sequencePayloadString(node, "text")) + ',' +
+                   quote(entry ? entry->text : std::string{}) + ',' +
+                   quote(entry && !entry->voice.empty() ? entry->voice : sequencePayloadString(node, "voice")) + ',' +
                    quote(entry ? entry->status : std::string{}) + ',' +
                    quote(entry && entry->duration > 0.0 ? std::to_string(entry->duration) : std::string{}) + "\r\n";
         }

@@ -1,8 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "dialogue/Conversation.h"
-#include "dialogue/ConversationCompiler.h"
+#include "dialogue/DialogueSequence.h"
+#include "dnut_interpreter/DnutCompiler.h"
+#include "dnut_interpreter/SequenceRuntime.h"
 #include "i18n/I18n.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
@@ -43,24 +44,26 @@ std::string readClassicContent(const std::filesystem::path& root, const char* na
     return source.str();
 }
 
-const eve::dialogue::ConversationAsset* findConversation(const std::vector<eve::dialogue::ConversationAsset>& assets,
-                                                         const std::string&                                   id) {
+const eve::dnut::SequenceAsset* findConversation(const std::vector<eve::dnut::SequenceAsset>& assets,
+                                                 const std::string&                            id) {
     for (const auto& asset : assets)
         if (asset.id == id) return &asset;
     return nullptr;
 }
 
-void acceptQuestThroughDialogue(const std::vector<eve::dialogue::ConversationAsset>& assets,
+void acceptQuestThroughDialogue(const std::vector<eve::dnut::SequenceAsset>& assets,
                                 const std::string& conversationId, eve::rpg::Tracker& tracker,
                                 const std::string& questId) {
     const auto* conversation = findConversation(assets, conversationId);
     REQUIRE(conversation != nullptr);
-    eve::dialogue::ConversationRunner runner;
-    std::string                       error;
-    REQUIRE(runner.startChecked(conversation, eve::StateValue::object()).ok());
-    REQUIRE(runner.advanceChecked().ok());
+    eve::dnut::StepKindRegistry registry;
+    eve::dialogue::registerDialogueSequenceSteps(registry).expect("dialogue sequence vocabulary");
+    eve::dnut::SequenceRuntime runner;
+    runner.setStepRegistry(&registry);
+    REQUIRE(runner.start(conversation).ok());
+    REQUIRE(runner.advance().ok());
     REQUIRE_EQ(runner.currentNodeId(), std::string("decision"));
-    REQUIRE(runner.selectChecked("accept").ok());
+    REQUIRE(runner.select("accept").ok());
     REQUIRE(tracker.activate(questId));
 }
 
@@ -125,12 +128,12 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     auto shopCatalogue = eve::rpg::ShopCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "shop.json"));
     REQUIRE(shopCatalogue.ok());
 
-    std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    auto compiled = eve::dialogue::compileDnutConversations(
-        readClassicContent(contentRoot, "village-dialogue.dnut"), "village-dialogue.dnut", diagnostics);
-    REQUIRE(compiled.ok());
-    auto conversations = std::move(compiled).takeValue();
-    REQUIRE(diagnostics.empty());
+    eve::dnut::StepKindRegistry dialogueRegistry;
+    eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
+    auto compiled = eve::dnut::compileDnutConversations(
+        readClassicContent(contentRoot, "village-dialogue.dnut"), "village-dialogue.dnut", dialogueRegistry);
+    REQUIRE(!compiled.hasErrors());
+    auto conversations = std::move(compiled.assets);
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);
     localization->clear();
@@ -138,7 +141,8 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     REQUIRE(localized.ok());
     for (const auto& conversation : conversations)
         for (const auto& node : conversation.nodes)
-            if (!node.i18nKey.empty()) REQUIRE(localization->hasInLanguage("zh-CN", node.i18nKey));
+            if (const auto* key = node.payload.find("i18n"); key && key->isString())
+                REQUIRE(localization->hasInLanguage("zh-CN", key->asString()));
 
     eve::rpg::GameState gameState;
     gameState.setVariable("gold", 0.0);
