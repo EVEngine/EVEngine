@@ -140,6 +140,10 @@ void Graphics::destroyPresentGraphicsPipelines() {
     destroyPipe(particleDistortionPipeline);
     destroyPipe(sceneTonemapPipeline);
     destroyPipe(lit2dPipeline);
+    destroyPipe(lit2dAdditivePipeline);
+    destroyPipe(lit2dPremultipliedPipeline);
+    destroyPipe(lit2dMultiplyPipeline);
+    destroyPipe(lit2dOpaquePipeline);
     destroyPipe(gpuParticleAlphaPipeline_);
     destroyPipe(gpuParticleAdditivePipeline_);
     destroyPipe(gpuParticlePremultipliedPipeline_);
@@ -261,9 +265,17 @@ void Graphics::createSwapchainAndPipeline() {
             vert, embeddedSpirv(scene_tonemap_frag_spv), renderpass, texPipelineLayout,
             BlendMode::Opaque);
         if (lit2dPipelineLayout) {
-            lit2dPipeline = createTexturedStylePipeline(embeddedSpirv(lit2d_vert_spv),
-                                                        embeddedSpirv(lit2d_frag_spv), renderpass,
-                                                        lit2dPipelineLayout);
+            auto lvert    = embeddedSpirv(lit2d_vert_spv);
+            auto lfrag    = embeddedSpirv(lit2d_frag_spv);
+            lit2dPipeline = createTexturedStylePipeline(lvert, lfrag, renderpass, lit2dPipelineLayout);
+            lit2dAdditivePipeline =
+                createTexturedStylePipeline(lvert, lfrag, renderpass, lit2dPipelineLayout, BlendMode::Additive);
+            lit2dPremultipliedPipeline =
+                createTexturedStylePipeline(lvert, lfrag, renderpass, lit2dPipelineLayout, BlendMode::Premultiplied);
+            lit2dMultiplyPipeline =
+                createTexturedStylePipeline(lvert, lfrag, renderpass, lit2dPipelineLayout, BlendMode::Multiply);
+            lit2dOpaquePipeline =
+                createTexturedStylePipeline(lvert, lfrag, renderpass, lit2dPipelineLayout, BlendMode::Opaque);
         }
         rebuildGpuParticleDrawPipelines(renderpass);
         for (auto &shader : ownedShaders) {
@@ -447,6 +459,40 @@ void Graphics::createLit2DPipeline() {
     auto vert = embeddedSpirv(lit2d_vert_spv);
     auto frag = embeddedSpirv(lit2d_frag_spv);
     lit2dPipeline = createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout);
+    lit2dAdditivePipeline =
+        createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout, BlendMode::Additive);
+    lit2dPremultipliedPipeline =
+        createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout, BlendMode::Premultiplied);
+    lit2dMultiplyPipeline =
+        createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout, BlendMode::Multiply);
+    lit2dOpaquePipeline = createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout, BlendMode::Opaque);
+}
+
+vk::Pipeline Graphics::selectLit2DPipeline(BlendMode blend, bool offscreen, bool hdr) const {
+    auto pick = [](BlendMode mode, vk::Pipeline alpha, vk::Pipeline additive, vk::Pipeline premultiplied,
+                   vk::Pipeline multiply, vk::Pipeline opaque) -> vk::Pipeline {
+        switch (mode) {
+            case BlendMode::Additive: return additive ? additive : alpha;
+            case BlendMode::Premultiplied: return premultiplied ? premultiplied : alpha;
+            case BlendMode::Multiply: return multiply ? multiply : alpha;
+            case BlendMode::Opaque: return opaque ? opaque : alpha;
+            case BlendMode::Alpha:
+            default: return alpha;
+        }
+    };
+    // HDR canvas flush and HDR present-compose both target hdrOffscreenRenderPass.
+    if ((offscreen && hdr) || (!offscreen && presentComposeActive_)) {
+        vk::Pipeline pipe =
+            pick(blend, hdrOffscreenLitPipeline, hdrOffscreenLitAdditivePipeline, hdrOffscreenLitPremultipliedPipeline,
+                 hdrOffscreenLitMultiplyPipeline, hdrOffscreenLitOpaquePipeline);
+        if (pipe) return pipe;
+    }
+    if (offscreen) {
+        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
+                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
+    }
+    return pick(blend, lit2dPipeline, lit2dAdditivePipeline, lit2dPremultipliedPipeline, lit2dMultiplyPipeline,
+                lit2dOpaquePipeline);
 }
 
 void Graphics::createMesh3DPipeline() {

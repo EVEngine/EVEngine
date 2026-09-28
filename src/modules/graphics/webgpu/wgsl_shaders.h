@@ -142,7 +142,10 @@ fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
     let duv1 = dpdx(uv);
     let duv2 = dpdy(uv);
     let det = duv1.x * duv2.y - duv2.x * duv1.y;
-    if (abs(det) < 1e-6) {
+    // Scale-aware singularity: |det| / (|duv1||duv2|) ≈ |sin θ| of the UV basis.
+    // Absolute 1e-6 rejects ordinary atlas regions (e.g. 32px in a 1024 atlas).
+    let uvScale = length(duv1) * length(duv2);
+    if (uvScale < 1e-20 || abs(det) < uvScale * 1e-3) {
         return normalize(vec3f(mapN.xy, mapN.z));
     }
     let invDet = 1.0 / det;
