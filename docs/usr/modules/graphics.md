@@ -49,7 +49,7 @@ gfx.renderSprites();
 `Sprite2D` 还提供 size、color、layer、visible、receiveLight、castOcclusion、normalTexture 等属性。
 当 `setReceiveLight(true)` 且同时设置了 albedo（`setTexture`）与切线空间法线贴图（`setNormalTexture`）、且未挂自定义 2D shader 时，走 GPU `lit2d` 路径，与 `Light2D`（`point` / `dir` / `spot`，每 canvas 最多 8 盏）和 `Camera2D.setAmbient` 配合；只有 albedo 时则为 CPU 近似调制。旋转精灵时 lit2d 会按屏幕/UV 导数重建切线帧，法线贴图随几何一起旋转。
 
-手电式聚光：`setType("spot")`，用 `setPosition` + `setDirection` 对准光束，`setRadius` 控制射程，`setSpotAngle(degrees)` 为外半角（整锥 ≈ 2×半角），`setSpotSoftness(0..1)` 控制边缘软硬。Tilemap 需 `layer.setReceiveLight(true)` 才会受光（默认关闭以保持旧图不受影响）；有纹理的格子走 lit2d（缺法线时用平坦法线）。
+手电式聚光：`setType("spot")`，用 `setPosition` + `setDirection` 对准光束，`setRadius` 控制射程，`setSpotAngle(degrees)` 为外半角（整锥 ≈ 2×半角），`setSpotSoftness(0..1)` 控制边缘软硬；可用 `getSpotAngle()` / `getSpotSoftness()` 读取。Tilemap 需 `layer.setReceiveLight(true)` 才会受光（默认关闭以保持旧图不受影响）；有纹理的格子走 lit2d（缺法线时用平坦法线）。
 
 ```squirrel
 local flash = eve.Light2D();
@@ -349,7 +349,7 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 
 - `bakeMeshMorph()`、`newMeshFromArrays()`、`updateMeshVertices()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
 - `drawSolidRect()`、`drawTexturedRect()`、`drawTexturedRectRotated()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getEyeX()`、`getEyeY()`、`getEyeZ()`、`getFov()`、`getHeight()`、`getMorphCount()`
-- `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
+- `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getSpotAngle()`、`getSpotSoftness()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`、`getIndexCount()`
 - `getTargetX()`、`getTargetY()`、`getTargetZ()`、`getVolumetric()`、`getVolumetricIntensity()`、`getVolumetricOnly()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newGroomInstance()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshShaderVF()`、`newMeshSphere()`、`newQuad()`、`newShader()`
