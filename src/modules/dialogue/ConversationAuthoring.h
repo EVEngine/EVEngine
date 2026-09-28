@@ -96,7 +96,21 @@ public:
     std::string getDiagnosticMessage(int index) const;
 
 private:
-    eve::dnut::SequenceNode*       findNode(const std::string& nodeId);
+    /**
+     * @brief Locate a mutable node by id inside `asset_`.
+     * @return Borrowed pointer into `asset_.nodes`, or nullptr when absent.
+     * @ownership Borrowed; this document owns the node storage.
+     * @lifetime Valid until this document is destroyed or `asset_.nodes` is
+     *           structurally mutated.
+     */
+    eve::dnut::SequenceNode* findNode(const std::string& nodeId);
+    /**
+     * @brief Locate a read-only node by id inside `asset_`.
+     * @return Borrowed pointer into `asset_.nodes`, or nullptr when absent.
+     * @ownership Borrowed; this document owns the node storage.
+     * @lifetime Valid until this document is destroyed or `asset_.nodes` is
+     *           structurally mutated.
+     */
     const eve::dnut::SequenceNode* findNode(const std::string& nodeId) const;
     bool                           fail(const std::string& message);
 
