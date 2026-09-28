@@ -234,6 +234,12 @@ Squirrel 侧对象若必须存在，用轻量 handle wrapper（只持 `MotionHan
 - 内建 binder：`Sprite2D` 变换、Scene 节点 local TRS、Avatar 参数（替换硬编码 pull）
 - 回调：`onComplete` / `onCancel`（文档标明脚本闭包分配；C++ 用函数指针 + userData）
 - 测试：`test/animation_motion.cpp` 过程隔离用例
+- **UI 便利补间（并行路径）**：`UiTweenDriver` 覆盖 host pos/size/overlay-alpha 与 item
+  opacity/pos，带 ease/delay/replace/cancel；由 `UI::beginFrameAndRender` 自动泵。
+- **UI Motion sinks（可选桥接）**：`UiMotionSinks.*` 实现 `IMotionVec2Sink` /
+  `IMotionFloatSink`；`ui` 声明 `OPTIONAL_DEPS animation`，无 animation 时排除该 TU。
+  契约测：`test/ui_motion_bind.cpp`（provider 在）+ `UI.tween.conveniencePathIndependentOfAnimation`
+  （provider 不创建 Animation）。
 
 ### Phase 2 — Sequence + Ease 扩展 ✅ 已落地（本分支）
 

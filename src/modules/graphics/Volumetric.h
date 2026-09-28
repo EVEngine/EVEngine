@@ -249,8 +249,10 @@ public:
 
     /**
      * @brief Multi-pass screenspace scatter: one radial blur per volumetric Light2D.
-     * Uses additive blending so overlapping shafts accumulate. The occlusion texture
-     * must not be the active canvas's color target (Vulkan/WebGPU feedback rule).
+     * Uses additive blending so overlapping shafts accumulate. Spot lights upload their
+     * beam direction and cos(outer/inner) so shafts are masked to the flashlight cone;
+     * point lights leave the cone off (full radial). The occlusion texture must not be
+     * the active canvas's color target (Vulkan/WebGPU feedback rule).
      * @return Number of scatter passes executed.
      */
     [[nodiscard]] Result<int> scatterFromSceneLights2D(Graphics *gfx, Texture *occlusion,

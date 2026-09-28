@@ -39,6 +39,7 @@ eve_declare_module(NAME graphics_raytracing DIR graphics/raytracing LAYER 4
                    GROUP 3d)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    DEPS platform_event filesystem graphics image property_access timer window
+                   OPTIONAL_DEPS animation
                    THIRDPARTY sdl2 poco
                    GROUP minimal 2d 3d web)
 # The public Physics facade retains its interactive presentation dependencies;
