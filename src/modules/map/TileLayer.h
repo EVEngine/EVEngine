@@ -334,7 +334,7 @@ public:
     bool isVisible();
     /**
      * @brief Enable Light2D shading for this layer's tiles.
-     * @param receive When true, textured tiles use the lit2d path (flat normal fallback).
+     * @param receive When true, textured tiles use the lit2d path with a flat normal.
      */
     void setReceiveLight(bool receive);
     /** @brief Whether this layer's tiles receive Light2D. */
