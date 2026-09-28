@@ -4,7 +4,9 @@
 #include "common/Time.h"
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -36,42 +38,63 @@ bool readString(const Value::Object& object, const char* name, std::string& outp
     return true;
 }
 
-bool readDouble(const Value::Object& object, const char* name, double& output) {
+/** @brief Absent → nullopt; present invalid → diagnostic; present valid → value. */
+Result<std::optional<double>> optionalDouble(const Value::Object& object, const char* name, std::string_view path) {
     const auto* value = field(object, name);
-    if (const auto* number = value ? value->getIf<double>() : nullptr) {
-        output = *number;
-        return std::isfinite(output);
+    if (!value) return Result<std::optional<double>>::success(std::nullopt);
+    if (const auto* number = value->getIf<double>()) {
+        if (!std::isfinite(*number))
+            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+        return Result<std::optional<double>>::success(*number);
     }
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        output = static_cast<double>(*integer);
-        return std::isfinite(output);
+    if (const auto* integer = value->getIf<std::int64_t>()) {
+        const double converted = static_cast<double>(*integer);
+        if (!std::isfinite(converted))
+            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+        return Result<std::optional<double>>::success(converted);
     }
-    return false;
+    return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected number", path);
 }
 
-bool readInt(const Value::Object& object, const char* name, int& output) {
+Result<std::optional<int>> optionalInt(const Value::Object& object, const char* name, std::string_view path) {
     const auto* value = field(object, name);
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max()) return false;
-        output = static_cast<int>(*integer);
-        return true;
+    if (!value) return Result<std::optional<int>>::success(std::nullopt);
+    if (const auto* integer = value->getIf<std::int64_t>()) {
+        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+        return Result<std::optional<int>>::success(static_cast<int>(*integer));
     }
-    if (const auto* number = value ? value->getIf<double>() : nullptr) {
-        if (!std::isfinite(*number) || *number != std::floor(*number)) return false;
+    if (const auto* number = value->getIf<double>()) {
+        if (!std::isfinite(*number) || *number != std::floor(*number))
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
         if (*number < static_cast<double>(std::numeric_limits<int>::min()) ||
             *number > static_cast<double>(std::numeric_limits<int>::max()))
-            return false;
-        output = static_cast<int>(*number);
-        return true;
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+        return Result<std::optional<int>>::success(static_cast<int>(*number));
     }
-    return false;
+    return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+}
+
+Result<void> assignOptionalDouble(const Value::Object& object, const char* name, double& dest, std::string_view path) {
+    auto value = optionalDouble(object, name, path);
+    if (!value.ok()) return Result<void>::failure(value.status());
+    if (value.value().has_value()) dest = *value.value();
+    return Result<void>::success();
+}
+
+Result<void> assignOptionalInt(const Value::Object& object, const char* name, int& dest, std::string_view path) {
+    auto value = optionalInt(object, name, path);
+    if (!value.ok()) return Result<void>::failure(value.status());
+    if (value.value().has_value()) dest = *value.value();
+    return Result<void>::success();
 }
 
 Result<Duration> readSeconds(const Value::Object& object, const char* name, std::string_view path) {
-    double seconds = 0.0;
-    if (!readDouble(object, name, seconds) || seconds <= 0.0)
+    auto seconds = optionalDouble(object, name, path);
+    if (!seconds.ok()) return Result<Duration>::failure(seconds.status());
+    if (!seconds.value().has_value() || !(*seconds.value() > 0.0))
         return failT<Duration>(DiagnosticCode::InvalidArgument, "Expected positive seconds", path);
-    auto duration = Duration::fromSeconds(seconds);
+    auto duration = Duration::fromSeconds(*seconds.value());
     if (!duration.ok()) return Result<Duration>::failure(duration.status());
     return Result<Duration>::success(duration.value());
 }
@@ -168,17 +191,47 @@ Result<CarrierMotionOp> decodeMotionOp(const Value& value, std::string path) {
     auto kind = parseMotionKind(kindText, path + ".kind");
     if (!kind.ok()) return Result<CarrierMotionOp>::failure(kind.status());
     op.kind = kind.value();
-    (void)readDouble(*object, "gravity", op.gravity);
-    (void)readDouble(*object, "maxTurnRateDegrees", op.maxTurnRateDegrees);
-    if (op.maxTurnRateDegrees == 0.0) (void)readDouble(*object, "turnRate", op.maxTurnRateDegrees);
-    (void)readDouble(*object, "acceleration", op.acceleration);
-    (void)readDouble(*object, "avoidLookAhead", op.avoidLookAhead);
-    (void)readDouble(*object, "avoidStrength", op.avoidStrength);
-    (void)readDouble(*object, "avoidRadiusPadding", op.avoidRadiusPadding);
-    (void)readDouble(*object, "curveAmplitude", op.curveAmplitude);
-    if (op.curveAmplitude == 0.0) (void)readDouble(*object, "amplitude", op.curveAmplitude);
-    (void)readDouble(*object, "curveFrequencyHz", op.curveFrequencyHz);
-    if (op.curveFrequencyHz == 0.0) (void)readDouble(*object, "frequency", op.curveFrequencyHz);
+    if (auto assigned = assignOptionalDouble(*object, "gravity", op.gravity, path + ".gravity"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned =
+            assignOptionalDouble(*object, "maxTurnRateDegrees", op.maxTurnRateDegrees, path + ".maxTurnRateDegrees");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (op.maxTurnRateDegrees == 0.0) {
+        if (auto assigned = assignOptionalDouble(*object, "turnRate", op.maxTurnRateDegrees, path + ".turnRate");
+            !assigned)
+            return Result<CarrierMotionOp>::failure(assigned.status());
+    }
+    if (auto assigned = assignOptionalDouble(*object, "acceleration", op.acceleration, path + ".acceleration");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "avoidLookAhead", op.avoidLookAhead, path + ".avoidLookAhead");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "avoidStrength", op.avoidStrength, path + ".avoidStrength");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned =
+            assignOptionalDouble(*object, "avoidRadiusPadding", op.avoidRadiusPadding, path + ".avoidRadiusPadding");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "curveAmplitude", op.curveAmplitude, path + ".curveAmplitude");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (op.curveAmplitude == 0.0) {
+        if (auto assigned = assignOptionalDouble(*object, "amplitude", op.curveAmplitude, path + ".amplitude");
+            !assigned)
+            return Result<CarrierMotionOp>::failure(assigned.status());
+    }
+    if (auto assigned =
+            assignOptionalDouble(*object, "curveFrequencyHz", op.curveFrequencyHz, path + ".curveFrequencyHz");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (op.curveFrequencyHz == 0.0) {
+        if (auto assigned = assignOptionalDouble(*object, "frequency", op.curveFrequencyHz, path + ".frequency");
+            !assigned)
+            return Result<CarrierMotionOp>::failure(assigned.status());
+    }
     return Result<CarrierMotionOp>::success(op);
 }
 
@@ -198,20 +251,35 @@ Result<CarrierTrigger> decodeTrigger(const Value& value, std::string path) {
     auto kind = parseTriggerKind(kindText, path + ".kind");
     if (!kind.ok()) return Result<CarrierTrigger>::failure(kind.status());
     trigger.kind = kind.value();
-    double fuse = 0.0;
-    if (readDouble(*object, "fuse", fuse) || readDouble(*object, "seconds", fuse)) {
-        auto duration = Duration::fromSeconds(fuse);
+
+    auto fuseField = optionalDouble(*object, "fuse", path + ".fuse");
+    if (!fuseField.ok()) return Result<CarrierTrigger>::failure(fuseField.status());
+    auto secondsField = optionalDouble(*object, "seconds", path + ".seconds");
+    if (!secondsField.ok()) return Result<CarrierTrigger>::failure(secondsField.status());
+    const auto fuseSeconds = fuseField.value().has_value() ? fuseField.value() : secondsField.value();
+    if (fuseSeconds.has_value()) {
+        auto duration = Duration::fromSeconds(*fuseSeconds);
         if (!duration.ok()) return Result<CarrierTrigger>::failure(duration.status());
         trigger.fuse = duration.value();
     }
-    double interval = 0.0;
-    if (readDouble(*object, "interval", interval)) {
-        auto duration = Duration::fromSeconds(interval);
+
+    auto intervalField = optionalDouble(*object, "interval", path + ".interval");
+    if (!intervalField.ok()) return Result<CarrierTrigger>::failure(intervalField.status());
+    if (intervalField.value().has_value()) {
+        auto duration = Duration::fromSeconds(*intervalField.value());
         if (!duration.ok()) return Result<CarrierTrigger>::failure(duration.status());
         trigger.interval = duration.value();
     }
-    (void)readDouble(*object, "proximityRadius", trigger.proximityRadius);
-    if (trigger.proximityRadius == 0.0) (void)readDouble(*object, "radius", trigger.proximityRadius);
+
+    if (auto assigned =
+            assignOptionalDouble(*object, "proximityRadius", trigger.proximityRadius, path + ".proximityRadius");
+        !assigned)
+        return Result<CarrierTrigger>::failure(assigned.status());
+    if (trigger.proximityRadius == 0.0) {
+        if (auto assigned = assignOptionalDouble(*object, "radius", trigger.proximityRadius, path + ".radius");
+            !assigned)
+            return Result<CarrierTrigger>::failure(assigned.status());
+    }
     return Result<CarrierTrigger>::success(trigger);
 }
 
@@ -231,13 +299,26 @@ Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
         if (!on.ok()) return Result<CarrierImpact>::failure(on.status());
         impact.on = on.value();
     }
-    (void)readDouble(*object, "damage", impact.damage);
-    (void)readDouble(*object, "splashRadius", impact.splashRadius);
-    if (impact.splashRadius == 0.0) (void)readDouble(*object, "radius", impact.splashRadius);
-    (void)readInt(*object, "pierceCount", impact.pierceCount);
-    if (impact.pierceCount == 0) (void)readInt(*object, "count", impact.pierceCount);
-    (void)readInt(*object, "bounceCount", impact.bounceCount);
-    (void)readDouble(*object, "restitution", impact.restitution);
+    if (auto assigned = assignOptionalDouble(*object, "damage", impact.damage, path + ".damage"); !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "splashRadius", impact.splashRadius, path + ".splashRadius");
+        !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (impact.splashRadius == 0.0) {
+        if (auto assigned = assignOptionalDouble(*object, "radius", impact.splashRadius, path + ".radius"); !assigned)
+            return Result<CarrierImpact>::failure(assigned.status());
+    }
+    if (auto assigned = assignOptionalInt(*object, "pierceCount", impact.pierceCount, path + ".pierceCount"); !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (impact.pierceCount == 0) {
+        if (auto assigned = assignOptionalInt(*object, "count", impact.pierceCount, path + ".count"); !assigned)
+            return Result<CarrierImpact>::failure(assigned.status());
+    }
+    if (auto assigned = assignOptionalInt(*object, "bounceCount", impact.bounceCount, path + ".bounceCount"); !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "restitution", impact.restitution, path + ".restitution");
+        !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
     (void)readString(*object, "damageType", impact.damageType);
     (void)readString(*object, "element", impact.element);
     if (const auto* child = field(*object, "childRecipeId")) {
@@ -247,6 +328,9 @@ Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
                 return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "Invalid childRecipeId",
                                             path + ".childRecipeId");
             impact.childRecipeId = std::move(*parsed);
+        } else if (!child->isNull()) {
+            return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "childRecipeId must be a string",
+                                        path + ".childRecipeId");
         }
     }
     return Result<CarrierImpact>::success(impact);
@@ -262,33 +346,47 @@ Result<CarrierRecipe> decodePreset(const Value::Object& object) {
     if (!lifetime.ok()) return Result<CarrierRecipe>::failure(lifetime.status());
     recipe.lifetime = lifetime.value();
 
-    if (!readDouble(object, "speed", recipe.speed) || recipe.speed <= 0.0)
+    auto speedField = optionalDouble(object, "speed", "speed");
+    if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
+    if (!speedField.value().has_value() || !(*speedField.value() > 0.0))
         return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Preset requires positive speed", "speed");
+    recipe.speed = *speedField.value();
 
     double damage = 0.0;
-    (void)readDouble(object, "damage", damage);
+    if (auto assigned = assignOptionalDouble(object, "damage", damage, "damage"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
     std::string damageType;
     std::string element;
     (void)readString(object, "damageType", damageType);
     (void)readString(object, "element", element);
 
-    double gravity = 0.0;
-    double homing  = 0.0;
+    double gravity    = 0.0;
+    double homing     = 0.0;
     double accelerate = 0.0;
-    (void)readDouble(object, "gravity", gravity);
-    (void)readDouble(object, "homing", homing);
-    if (homing == 0.0) (void)readDouble(object, "maxTurnRateDegrees", homing);
-    (void)readDouble(object, "accelerate", accelerate);
+    if (auto assigned = assignOptionalDouble(object, "gravity", gravity, "gravity"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(object, "homing", homing, "homing"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
+    if (homing == 0.0) {
+        if (auto assigned = assignOptionalDouble(object, "maxTurnRateDegrees", homing, "maxTurnRateDegrees"); !assigned)
+            return Result<CarrierRecipe>::failure(assigned.status());
+    }
+    if (auto assigned = assignOptionalDouble(object, "accelerate", accelerate, "accelerate"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
 
     int pierce = 0;
     int bounce = 0;
-    (void)readInt(object, "pierce", pierce);
-    (void)readInt(object, "bounce", bounce);
+    if (auto assigned = assignOptionalInt(object, "pierce", pierce, "pierce"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
+    if (auto assigned = assignOptionalInt(object, "bounce", bounce, "bounce"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
 
-    double fuse = 0.0;
+    double fuse   = 0.0;
     double splash = 0.0;
-    (void)readDouble(object, "fuse", fuse);
-    (void)readDouble(object, "splash", splash);
+    if (auto assigned = assignOptionalDouble(object, "fuse", fuse, "fuse"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(object, "splash", splash, "splash"); !assigned)
+        return Result<CarrierRecipe>::failure(assigned.status());
 
     std::string motionPreset = "linear";
     (void)readString(object, "motion", motionPreset);
@@ -388,8 +486,11 @@ Result<CarrierRecipe> decodeFull(const Value::Object& object) {
     if (!lifetime.ok()) return Result<CarrierRecipe>::failure(lifetime.status());
     recipe.lifetime = lifetime.value();
 
-    if (!readDouble(object, "speed", recipe.speed) || recipe.speed <= 0.0)
+    auto speedField = optionalDouble(object, "speed", "speed");
+    if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
+    if (!speedField.value().has_value() || !(*speedField.value() > 0.0))
         return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Recipe requires positive speed", "speed");
+    recipe.speed = *speedField.value();
 
     const auto* motion = field(object, "motion");
     if (!motion) motion = field(object, "motionOps");

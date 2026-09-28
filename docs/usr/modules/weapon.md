@@ -139,7 +139,7 @@ pool.clearTargets();
 | `configurePool(capacity)` | 空池时调整容量（1..1048576）。 |
 | `registerRecipe(table)` / `registerRecipeJson(json)` | 注册预设或完整配方（脚本路径拒绝 `avoidBody`）。 |
 | `compileFragments(fragments)` / `compileFragmentsJson(json)` | 编译片段栈并注册；返回 recipeId / volley 信息。 |
-| `cast(...)` / `castAtTarget(...)` / `castJson(...)` | 编译 + 注册 + 生成；含 homing/proximity 时必须 `castAtTarget`。 |
+| `cast(...)` / `castAtTarget(...)` / `castJson(...)` | 编译 + 注册 + 生成；含 homing/proximity 时必须 `castAtTarget`。每次 cast 会分配唯一 `recipeId`，避免覆盖飞行中的载体配方。 |
 | `spawn(recipeId,x,y,z,dx,dy,dz)` / `spawnAtTarget(...)` / `spawnVolley(...)` | 按已注册配方生成一枚或多枚载体。 |
 | `update(seconds)` | 推进整池；始终使用脚本 hit/target 探针（可为空）。 |
 | `addHitTarget(...)` / `clearHitTargets()` | 注册或清空圆形命中目标。 |

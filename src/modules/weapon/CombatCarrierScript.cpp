@@ -462,12 +462,17 @@ private:
 
     [[nodiscard]] Result<Value> spawnPlan(const SpellCastPlan& plan, double x, double y, double z, double dx, double dy,
                                           double dz, std::int64_t targetId, std::int64_t targetGeneration) {
-        if (plan.volley.has_value()) {
-            return spawnVolley(plan.recipe.id.format(), x, y, z, dx, dy, dz, plan.volley->count,
-                               plan.volley->pattern == CarrierVolleyPattern::Ring ? "ring" : "fan",
-                               plan.volley->spreadDegrees, targetId, targetGeneration);
+        auto spawned = plan.volley.has_value()
+                           ? spawnVolley(plan.recipe.id.format(), x, y, z, dx, dy, dz, plan.volley->count,
+                                         plan.volley->pattern == CarrierVolleyPattern::Ring ? "ring" : "fan",
+                                         plan.volley->spreadDegrees, targetId, targetGeneration)
+                           : spawn(plan.recipe.id.format(), x, y, z, dx, dy, dz, targetId, targetGeneration);
+        if (!spawned.ok()) return spawned;
+        Value owned = std::move(spawned).takeValue();
+        if (auto* object = owned.getIf<Value::Object>()) {
+            object->emplace("recipeId", Value(plan.recipe.id.format()));
         }
-        return spawn(plan.recipe.id.format(), x, y, z, dx, dy, dz, targetId, targetGeneration);
+        return Result<Value>::success(std::move(owned));
     }
 
     CombatCarrierRuntime  runtime_;

@@ -7,6 +7,8 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cmath>
+
 TEST_CASE("combatCarrierScript.castAtTargetReportsHitEvents") {
     ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
     auto    eve = vm.addTable("eve");
@@ -68,4 +70,43 @@ TEST_CASE("combatCarrierScript.castAtTargetReportsHitEvents") {
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));
     CHECK(!vm.find("oversized").toTable().get<bool>("ok"));
     CHECK(!vm.find("avoidBody").toTable().get<bool>("ok"));
+}
+
+TEST_CASE("combatCarrierScript.castUniquifiesRecipeIds") {
+    ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
+    auto    eve = vm.addTable("eve");
+    eve::script::exposeResultBindings(eve);
+    eve::weapon::Weapon::expose(eve);
+    vm.run(vm.compileSource(R"(
+        weapon <- eve.Weapon();
+        pool <- weapon.newCarrierRuntime(16).value;
+        first <- pool.cast([
+            { kind = "damage", add = 1 },
+            { kind = "projectile", id = "spell:bolt", speed = 10, damage = 5, lifetime = 2 }
+        ], 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        second <- pool.cast([
+            { kind = "damage", multiply = 3 },
+            { kind = "projectile", id = "spell:bolt", speed = 10, damage = 5, lifetime = 2 }
+        ], 0.0, 1.0, 0.0, 1.0, 0.0, 0.0);
+        pool.addHitTarget(1, 1, 5.0, 0.0, 0.0, 0.6);
+        pool.addHitTarget(2, 1, 5.0, 1.0, 0.0, 0.6);
+        frame <- pool.update(0.5);
+        firstRecipe <- first.value.recipeId;
+        secondRecipe <- second.value.recipeId;
+        eventCount <- frame.value.eventCount;
+        dmgA <- frame.value.events[0].damage;
+        dmgB <- frame.value.events[1].damage;
+    )"));
+    CHECK(vm.find("first").toTable().get<bool>("ok"));
+    CHECK(vm.find("second").toTable().get<bool>("ok"));
+    CHECK(vm.find("frame").toTable().get<bool>("ok"));
+    CHECK(vm.find("firstRecipe").toString() != vm.find("secondRecipe").toString());
+    CHECK(vm.find("eventCount").toInt() >= 2);
+    const double dmgA = vm.find("dmgA").toFloat();
+    const double dmgB = vm.find("dmgB").toFloat();
+    // First cast: 5+1=6; second: 5*3=15. Both must survive independently.
+    const bool sawSix     = std::fabs(dmgA - 6.0) < 1e-6 || std::fabs(dmgB - 6.0) < 1e-6;
+    const bool sawFifteen = std::fabs(dmgA - 15.0) < 1e-6 || std::fabs(dmgB - 15.0) < 1e-6;
+    CHECK(sawSix);
+    CHECK(sawFifteen);
 }

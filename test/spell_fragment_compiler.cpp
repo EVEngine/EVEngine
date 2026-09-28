@@ -33,6 +33,23 @@ TEST_CASE("carrierRecipeCodec.decodesPresetAndRoundTripsFullForm") {
     CHECK_EQ(again.value().impacts.size(), recipe.value().impacts.size());
 }
 
+TEST_CASE("carrierRecipeCodec.rejectsMalformedOptionalNumbers") {
+    auto badGravity = eve::Value::fromJson(R"({
+        "id":"spell:bad","lifetime":1.0,"speed":5.0,"gravity":"heavy"
+    })");
+    REQUIRE(badGravity.ok());
+    CHECK(!eve::weapon::decodeCarrierRecipe(badGravity.value()).ok());
+
+    auto badMotion = eve::Value::fromJson(R"({
+        "id":"spell:bad2","lifetime":1.0,"speed":5.0,
+        "motion":[{"kind":"homing","maxTurnRateDegrees":"fast"},"linear"],
+        "triggers":["onExpire"],
+        "impacts":[{"kind":"release","on":"onExpire"}]
+    })");
+    REQUIRE(badMotion.ok());
+    CHECK(!eve::weapon::decodeCarrierRecipe(badMotion.value()).ok());
+}
+
 TEST_CASE("spellFragmentCompiler.appliesModifiersBeforeProjectile") {
     auto parsed = eve::Value::fromJson(R"([
         {"kind":"fan","count":3,"spread":30},
