@@ -6,12 +6,11 @@ using namespace eve;
 using namespace eve::dialogue;
 
 TEST_CASE("dialogueText.parametersFallbackAndTransforms") {
-    StateValue bindings = StateValue::object();
-    REQUIRE(bindings.setPath("speaker.name", StateValue::string("mara")));
-    REQUIRE(bindings.setPath("listener.name", StateValue::string("Iris")));
-    REQUIRE(bindings.setPath("location.name", StateValue::string("harbor")));
-    StateValue locals = StateValue::object();
-    REQUIRE(locals.setPath("speaker.name", StateValue::string("local mara")));
+    Value bindings =
+        Value::Object{{"speaker", Value::Object{{"name", Value("mara")}}},
+                      {"listener", Value::Object{{"name", Value("Iris")}}},
+                      {"location", Value::Object{{"name", Value("harbor")}}}};
+    Value locals = Value::Object{{"speaker", Value::Object{{"name", Value("local mara")}}}};
     ConversationTextRenderer renderer;
     CHECK(renderer.render("{speaker.name|capitalize} greets {listener.name} at {location.name|upper}.", bindings,
                           locals) == "Local mara greets Iris at HARBOR.");
@@ -23,7 +22,7 @@ TEST_CASE("dialogueText.stateDrivenCharacterTone") {
     ConversationTextRenderer renderer;
     renderer.addToneRule("speaker.tired", "... ", " ...", "Good", "Fine");
     renderer.addToneRule("speaker.formal", "Captain, ", {}, {}, {});
-    StateValue values = StateValue::object();
+    Value values = Value::Object{};
     CHECK(renderer.render("Good morning.", values, values, [](const std::string& expression) {
         return expression == "speaker.tired";
     }) == "... Fine morning. ...");
