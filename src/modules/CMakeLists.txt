@@ -152,6 +152,15 @@ if(NOT _has_ui_editor_bridge)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# Retained UI keeps its own presentation tweens (UiTween.cpp). Motion push
+# binders include animation headers and are omitted when animation is trimmed.
+eve_module_enabled(animation _has_animation_ui_bridge)
+if(NOT _has_animation_ui_bridge)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};UiMotionSinks.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 eve_module_enabled(decal _has_decal_editor_bridge)
 if(NOT _has_decal_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
