@@ -62,6 +62,10 @@ Shader *createScreenspaceShader(Graphics *gfx) {
     sh->declareFloat("time");
     sh->declareFloat("compositeMode");
     sh->declareFloat("intensity");
+    sh->declareFloat("spotDx");
+    sh->declareFloat("spotDy");
+    sh->declareFloat("spotCosOuter");
+    sh->declareFloat("spotCosInner");
 
     sh->sendFloat("lightX", 0.5f);
     sh->sendFloat("lightY", 0.35f);
@@ -81,6 +85,11 @@ Shader *createScreenspaceShader(Graphics *gfx) {
     sh->sendFloat("time", 0.f);
     sh->sendFloat("compositeMode", 0.f);
     sh->sendFloat("intensity", 1.f);
+    // Spot cone off by default (matches lit2d sentinel cos <= -1.5).
+    sh->sendFloat("spotDx", 0.f);
+    sh->sendFloat("spotDy", -1.f);
+    sh->sendFloat("spotCosOuter", -2.f);
+    sh->sendFloat("spotCosInner", -2.f);
     return sh;
 }
 

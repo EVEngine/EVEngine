@@ -409,6 +409,55 @@ TEST_CASE("volumetric.occlusionFromSceneLights2D") {
     win->close();
 }
 
+TEST_CASE("volumetric.spotConeScatter2D") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 128, 128);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol);
+    vol->setQuality("medium");
+    vol->setFloat("dustAmount", 0.f);
+    vol->setFloat("fogAmount", 0.f);
+    vol->setFloat("exposure", 0.55f);
+    vol->setIntensity(1.5f);
+
+    Canvas *occ = gfx->newCanvas(128, 128);
+    Canvas *shafts = gfx->newCanvas(128, 128);
+    gfx->setCanvas(occ);
+
+    // Narrow flashlight at top-center aiming +Y (down the canvas).
+    auto *spot = Light2D::createLight("spot");
+    spot->setPosition(64.f, 24.f);
+    spot->setDirection(0.f, 1.f);
+    spot->setColor(1.f, 1.f, 1.f, 2.f);
+    spot->setRadius(90.f);
+    spot->setSpotAngle(18.f);
+    spot->setSpotSoftness(0.2f);
+    spot->setVolumetric(true);
+    spot->setVolumetricIntensity(1.f);
+    spot->setCanvas(nullptr);
+
+    auto begun = vol->beginOcclusionMapFromSceneLights2D(gfx, nullptr, 14.f);
+    REQUIRE(begun.ok());
+    CHECK(begun.value() == 1);
+    CHECK(vol->getFloat("spotCosOuter") > -1.5f);
+    CHECK(std::fabs(vol->getFloat("spotDy") - 1.f) < 1e-4f);
+
+    gfx->setCanvas(shafts);
+    auto passes = vol->scatterFromSceneLights2D(gfx, occ->getTexture(), nullptr);
+    REQUIRE(passes.ok());
+    CHECK(passes.value() == 1);
+
+    // In-beam (below light) should be brighter than a side sample at similar distance.
+    const float inBeam = luma(shafts->getPixel(64, 70));
+    const float side = luma(shafts->getPixel(110, 24));
+    CHECK(inBeam > 0.02f);
+    CHECK(inBeam > side * 2.5f);
+
+    gfx->setCanvas(nullptr);
+    win->close();
+}
+
 TEST_CASE("volumetric.modeAndRayMarchQuality") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
