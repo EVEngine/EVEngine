@@ -9,8 +9,8 @@ namespace {
 
 template <class T = void>
 eve::Result<T> payloadFailure(std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {}, "dialogue.sequence"));
+    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
+                                                          std::move(path), {}, "dialogue.sequence"));
 }
 
 std::string mutationKindName(eve::MutationKind kind) {
@@ -58,8 +58,8 @@ eve::Result<eve::StateMutation> decodeMutation(const eve::Value& value, std::siz
     else if (kind->asString() == "addNumber")
         mutation.kind = eve::MutationKind::AddNumber;
     else
-        return payloadFailure<eve::StateMutation>(
-            "unsupported state mutation kind '" + kind->asString() + "'", path + ".kind");
+        return payloadFailure<eve::StateMutation>("unsupported state mutation kind '" + kind->asString() + "'",
+                                                  path + ".kind");
 
     const bool needsValue = mutation.kind == eve::MutationKind::Set || mutation.kind == eve::MutationKind::AddNumber;
     if (needsValue && !rawValue)
@@ -126,14 +126,13 @@ eve::Result<std::vector<eve::StateMutation>> decodeSequenceStateMutations(const 
     const eve::Value* values = payload.find("stateMutations");
     if (!values) return eve::Result<std::vector<eve::StateMutation>>::success({});
     if (!values->isArray())
-        return payloadFailure<std::vector<eve::StateMutation>>(
-            "stateMutations must be an array", "payload.stateMutations");
+        return payloadFailure<std::vector<eve::StateMutation>>("stateMutations must be an array",
+                                                               "payload.stateMutations");
     std::vector<eve::StateMutation> mutations;
     mutations.reserve(values->arraySize());
     for (std::size_t index = 0; index < values->arraySize(); ++index) {
         auto mutation = decodeMutation(values->at(index), index);
-        if (!mutation.ok())
-            return eve::Result<std::vector<eve::StateMutation>>::failure(mutation.status());
+        if (!mutation.ok()) return eve::Result<std::vector<eve::StateMutation>>::failure(mutation.status());
         mutations.push_back(std::move(mutation).takeValue());
     }
     return eve::Result<std::vector<eve::StateMutation>>::success(std::move(mutations));
@@ -162,35 +161,34 @@ eve::Result<void> registerDialogueSequenceSteps(eve::dnut::StepKindRegistry& reg
     using eve::dnut::StepKindDescriptor;
     using eve::dnut::StepShape;
 
-    auto line = candidate.registerStep(
-        StepKindDescriptor{"line", "Line", "dialogue", StepShape::Await,
-                           {StepField{"speaker", StepFieldType::String, false},
-                            StepField{"text", StepFieldType::String, false},
-                            StepField{"pool", StepFieldType::String, false},
-                            StepField{"i18n", StepFieldType::String, false},
-                            StepField{"voice", StepFieldType::String, false},
-                            StepField{"expression", StepFieldType::String, false}}});
+    auto line = candidate.registerStep(StepKindDescriptor{
+        "line",
+        "Line",
+        "dialogue",
+        StepShape::Await,
+        {StepField{"speaker", StepFieldType::String, false}, StepField{"text", StepFieldType::String, false},
+         StepField{"pool", StepFieldType::String, false}, StepField{"i18n", StepFieldType::String, false},
+         StepField{"voice", StepFieldType::String, false}, StepField{"expression", StepFieldType::String, false}}});
     if (!line.ok()) return line;
     auto choice = candidate.registerStep(
         StepKindDescriptor{"choice", "Choice", "dialogue", StepShape::Await, {}, validateChoice});
     if (!choice.ok()) return choice;
-    auto command = candidate.registerStep(
-        StepKindDescriptor{"command", "Command", "dialogue", StepShape::Await,
-                           {StepField{"name", StepFieldType::String, false},
-                            StepField{"target", StepFieldType::String, false},
-                            StepField{"kind", StepFieldType::String, false},
-                            StepField{"arguments", StepFieldType::Any, false},
-                            StepField{"payment", StepFieldType::Any, false},
-                            StepField{"stateMutations", StepFieldType::Any, false},
-                            StepField{"resultLocal", StepFieldType::String, false},
-                            StepField{"result", StepFieldType::String, false}},
-                           validateCommand});
+    auto command = candidate.registerStep(StepKindDescriptor{
+        "command",
+        "Command",
+        "dialogue",
+        StepShape::Await,
+        {StepField{"name", StepFieldType::String, false}, StepField{"target", StepFieldType::String, false},
+         StepField{"kind", StepFieldType::String, false}, StepField{"arguments", StepFieldType::Any, false},
+         StepField{"payment", StepFieldType::Any, false}, StepField{"stateMutations", StepFieldType::Any, false},
+         StepField{"resultLocal", StepFieldType::String, false}, StepField{"result", StepFieldType::String, false}},
+        validateCommand});
     if (!command.ok()) return command;
     registry = std::move(candidate);
     return eve::Result<void>::success();
 }
 
-eve::Result<void> validateDialogueSequenceAsset(const eve::dnut::SequenceAsset& asset,
+eve::Result<void> validateDialogueSequenceAsset(const eve::dnut::SequenceAsset&    asset,
                                                 const eve::dnut::StepKindRegistry& registry) {
     auto graph = asset.validate();
     if (!graph.ok()) return graph;
@@ -199,13 +197,11 @@ eve::Result<void> validateDialogueSequenceAsset(const eve::dnut::SequenceAsset& 
             auto validated = registry.validate(node);
             if (!validated.ok()) return validated;
         }
-        if (node.type != "command" &&
-            (node.payload.find("payment") || node.payload.find("stateMutations")))
+        if (node.type != "command" && (node.payload.find("payment") || node.payload.find("stateMutations")))
             return payloadFailure("payment and stateMutations are valid only on command nodes",
                                   "nodes." + node.id + ".payload");
         for (const auto& route : node.routes)
-            if (node.type != "choice" &&
-                (route.payload.find("payment") || route.payload.find("stateMutations")))
+            if (node.type != "choice" && (route.payload.find("payment") || route.payload.find("stateMutations")))
                 return payloadFailure("payment and stateMutations are valid only on choice routes",
                                       "nodes." + node.id + ".routes");
     }
@@ -214,19 +210,18 @@ eve::Result<void> validateDialogueSequenceAsset(const eve::dnut::SequenceAsset& 
 
 eve::Result<CommandRequest> decodeDialogueCommandRequest(const eve::dnut::SequenceCommandRequest& request) {
     CommandRequest decoded;
-    decoded.requestId = request.requestId;
-    decoded.name      = request.name;
-    decoded.arguments = request.arguments;
-    decoded.bindings  = request.bindings;
-    decoded.locals    = request.locals;
+    decoded.requestId      = request.requestId;
+    decoded.name           = request.name;
+    decoded.arguments      = request.arguments;
+    decoded.bindings       = request.bindings;
+    decoded.locals         = request.locals;
     const eve::Value* kind = request.payload.find("kind");
-    decoded.kind = kind && kind->isString() && kind->asString() == "gameplay"
-                       ? CommandRequestKind::GameplayAction
-                       : CommandRequestKind::Operation;
+    decoded.kind = kind && kind->isString() && kind->asString() == "gameplay" ? CommandRequestKind::GameplayAction
+                                                                              : CommandRequestKind::Operation;
     auto payment = decodeSequencePayment(request.payload);
     if (!payment.ok()) return eve::Result<CommandRequest>::failure(payment.status());
     decoded.payment = std::move(payment).takeValue();
-    auto mutations = decodeSequenceStateMutations(request.payload);
+    auto mutations  = decodeSequenceStateMutations(request.payload);
     if (!mutations.ok()) return eve::Result<CommandRequest>::failure(mutations.status());
     decoded.stateMutations = std::move(mutations).takeValue();
     return eve::Result<CommandRequest>::success(std::move(decoded));

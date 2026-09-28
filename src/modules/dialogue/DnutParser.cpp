@@ -51,7 +51,7 @@ public:
 
     std::pair<std::string, DataValue> parse() {
         expectKeyword("pool");
-        const std::string poolId = expectIdentifier("pool name");
+        const std::string poolId   = expectIdentifier("pool name");
         long long         noRepeat = -1;
         while (isIdentifier("noRepeat")) {
             advance();
@@ -91,9 +91,7 @@ private:
         const std::size_t position = index_ < tokens_.size() ? index_ : tokens_.size() - 1;
         return tokens_[position];
     }
-    bool atEnd() const {
-        return index_ >= end_ || cur().kind == eve::dnut::DnutTokenKind::EndOfFile;
-    }
+    bool                 atEnd() const { return index_ >= end_ || cur().kind == eve::dnut::DnutTokenKind::EndOfFile; }
     eve::dnut::DnutToken advance() {
         const auto token = cur();
         if (!atEnd()) ++index_;
@@ -105,10 +103,8 @@ private:
     bool isIdentifier(const char* text) const {
         return cur().kind == eve::dnut::DnutTokenKind::Identifier && cur().text == text;
     }
-    [[noreturn]] void fail(std::string message) const {
-        throw PoolParseError(cur(), std::move(message));
-    }
-    void expectKeyword(const char* text) {
+    [[noreturn]] void fail(std::string message) const { throw PoolParseError(cur(), std::move(message)); }
+    void              expectKeyword(const char* text) {
         if (!isIdentifier(text)) fail("expected '" + std::string(text) + "'");
         advance();
     }
@@ -126,13 +122,10 @@ private:
             advance();
             if (cur().kind != eve::dnut::DnutTokenKind::Number) fail("'-' must be followed by a number");
             DataValue value = numberValue(advance().text);
-            return value.isInt64() ? DataValue::integer(-value.asInt())
-                                   : DataValue::number(-value.asDouble());
+            return value.isInt64() ? DataValue::integer(-value.asInt()) : DataValue::number(-value.asDouble());
         }
-        if (cur().kind == eve::dnut::DnutTokenKind::String)
-            return DataValue::string(advance().text);
-        if (cur().kind == eve::dnut::DnutTokenKind::Number)
-            return numberValue(advance().text);
+        if (cur().kind == eve::dnut::DnutTokenKind::String) return DataValue::string(advance().text);
+        if (cur().kind == eve::dnut::DnutTokenKind::Number) return numberValue(advance().text);
         if (isIdentifier("true")) {
             advance();
             return DataValue::boolean(true);
@@ -146,8 +139,7 @@ private:
 
     DataValue parseComparison() {
         const std::string variable = expectIdentifier("a condition variable");
-        if (cur().kind != eve::dnut::DnutTokenKind::Punctuator)
-            fail("expected a comparison operator");
+        if (cur().kind != eve::dnut::DnutTokenKind::Punctuator) fail("expected a comparison operator");
         const std::string operation = advance().text;
         std::string       mapped;
         if (operation == "==")
@@ -164,9 +156,8 @@ private:
             mapped = "le";
         else
             fail("unsupported comparison operator '" + operation + "'");
-        return DataValue::object({{"var", DataValue::string(variable)},
-                                  {"op", DataValue::string(mapped)},
-                                  {"value", parseLiteral()}});
+        return DataValue::object(
+            {{"var", DataValue::string(variable)}, {"op", DataValue::string(mapped)}, {"value", parseLiteral()}});
     }
 
     DataValue parseNot() {
@@ -191,8 +182,7 @@ private:
             if (DataValue* all = left.find("all"); all && all->isArray())
                 all->pushBack(std::move(right));
             else
-                left = DataValue::object(
-                    {{"all", DataValue::array({std::move(left), std::move(right)})}});
+                left = DataValue::object({{"all", DataValue::array({std::move(left), std::move(right)})}});
         }
         return left;
     }
@@ -205,8 +195,7 @@ private:
             if (DataValue* any = left.find("any"); any && any->isArray())
                 any->pushBack(std::move(right));
             else
-                left = DataValue::object(
-                    {{"any", DataValue::array({std::move(left), std::move(right)})}});
+                left = DataValue::object({{"any", DataValue::array({std::move(left), std::move(right)})}});
         }
         return left;
     }
@@ -220,7 +209,7 @@ private:
                 while (!isPunct(")")) {
                     const std::string key = expectIdentifier("a metadata key");
                     expectPunct("=");
-                    DataValue value = parseLiteral();
+                    DataValue         value  = parseLiteral();
                     const std::string scalar = scalarToString(value);
                     if (scalar.empty() && !value.isString()) fail("metadata values must be scalar");
                     metadata.emplace(key, DataValue::string(scalar));
@@ -238,8 +227,7 @@ private:
                 expectPunct("[");
                 std::vector<DataValue> tags;
                 while (!isPunct("]")) {
-                    if (cur().kind != eve::dnut::DnutTokenKind::String)
-                        fail("tag values must be quoted strings");
+                    if (cur().kind != eve::dnut::DnutTokenKind::String) fail("tag values must be quoted strings");
                     tags.push_back(DataValue::string(advance().text));
                     if (isPunct(","))
                         advance();
@@ -251,14 +239,13 @@ private:
                 continue;
             }
             expectPunct("=");
-            if (name != "weight" && name != "i18n" && name != "id")
-                fail("unknown pool line attribute '" + name + "'");
+            if (name != "weight" && name != "i18n" && name != "id") fail("unknown pool line attribute '" + name + "'");
             out.emplace(name, parseLiteral());
         }
     }
 
     DataValue parseLine(const std::string& poolId, int lineIndex, const DataValue* inheritedCondition) {
-        const int sourceLine = cur().line;
+        const int   sourceLine = cur().line;
         std::string speaker;
         if (isPunct("-")) {
             advance();
@@ -289,29 +276,31 @@ private:
     std::size_t                              index_;
 };
 
-void addError(std::vector<ConversationDiagnostic>& diagnostics, const std::string& path,
-              int line, int column, std::string message, std::string code = "DnutParseError") {
-    diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, line,
+void addError(std::vector<ConversationDiagnostic>& diagnostics, const std::string& path, int line, int column,
+              std::string message, std::string code = "DnutParseError") {
+    diagnostics.push_back({ConversationDiagnostic::Severity::Error,
+                           path,
+                           line,
                            path + ":" + std::to_string(line) + ": " + message,
-                           std::move(code), column, {}});
+                           std::move(code),
+                           column,
+                           {}});
 }
 
 bool validateEnvelope(const std::vector<eve::dnut::DnutToken>& tokens, const std::string& path,
                       std::vector<ConversationDiagnostic>& diagnostics, DnutDocument& document) {
-    if (tokens.size() < 5 || tokens[0].kind != eve::dnut::DnutTokenKind::Identifier ||
-        tokens[0].text != "schema" || tokens[1].kind != eve::dnut::DnutTokenKind::String ||
-        tokens[2].kind != eve::dnut::DnutTokenKind::Identifier || tokens[2].text != "version" ||
-        tokens[3].kind != eve::dnut::DnutTokenKind::Number) {
+    if (tokens.size() < 5 || tokens[0].kind != eve::dnut::DnutTokenKind::Identifier || tokens[0].text != "schema" ||
+        tokens[1].kind != eve::dnut::DnutTokenKind::String || tokens[2].kind != eve::dnut::DnutTokenKind::Identifier ||
+        tokens[2].text != "version" || tokens[3].kind != eve::dnut::DnutTokenKind::Number) {
         const auto& token = tokens.front();
-        addError(diagnostics, path, token.line, token.column,
-                 "expected schema \"eve.dnut\" and version 1");
+        addError(diagnostics, path, token.line, token.column, "expected schema \"eve.dnut\" and version 1");
         return false;
     }
     document.schema  = tokens[1].text;
     document.version = static_cast<int>(std::strtol(tokens[3].text.c_str(), nullptr, 10));
     if (document.schema != "eve.dnut" || document.version != DnutDocument::CurrentVersion) {
-        addError(diagnostics, path, tokens[0].line, tokens[0].column,
-                 "unsupported dnut schema or version", "UnsupportedSchemaVersion");
+        addError(diagnostics, path, tokens[0].line, tokens[0].column, "unsupported dnut schema or version",
+                 "UnsupportedSchemaVersion");
         return false;
     }
     return true;
@@ -322,34 +311,31 @@ bool validateEnvelope(const std::vector<eve::dnut::DnutToken>& tokens, const std
 eve::Result<DnutDocument> parseDnutDocument(const std::string& source, const std::string& path,
                                             std::vector<ConversationDiagnostic>& diagnostics) {
     DnutDocument document;
-    auto tokensResult = eve::dnut::lexDnut(source, path);
+    auto         tokensResult = eve::dnut::lexDnut(source, path);
     if (!tokensResult.ok()) {
-        const eve::Diagnostic* error = tokensResult.error();
-        int line = 1;
-        int column = 1;
+        const eve::Diagnostic* error  = tokensResult.error();
+        int                    line   = 1;
+        int                    column = 1;
         if (error)
             for (const auto& [key, value] : error->details()) {
                 if (key == "line") line = std::atoi(value.c_str());
                 if (key == "column") column = std::atoi(value.c_str());
             }
         addError(diagnostics, path, line, column, error ? error->message() : "could not lex dnut");
-        return eve::Result<DnutDocument>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
     }
     std::vector<eve::dnut::DnutToken> tokens = std::move(tokensResult).takeValue();
     if (!validateEnvelope(tokens, path, diagnostics, document))
-        return eve::Result<DnutDocument>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
-                                   diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
 
     auto blocksResult = eve::dnut::scanDnutBlocks(tokens, path);
     if (!blocksResult.ok()) {
         const eve::Diagnostic* error = blocksResult.error();
         addError(diagnostics, path, 1, 1, error ? error->message() : "could not scan dnut blocks");
-        return eve::Result<DnutDocument>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
     }
 
     DataValue::Object pools;
@@ -361,34 +347,33 @@ eve::Result<DnutDocument> parseDnutDocument(const std::string& source, const std
                     throw PoolParseError(tokens[block.beginToken], "duplicate pool id '" + id + "'");
                 pools.emplace(std::move(id), std::move(pool));
             } else if (block.kind != "conversation" && block.kind != "story") {
-                throw PoolParseError(tokens[block.beginToken],
-                                     "unknown top-level block '" + block.kind + "'");
+                throw PoolParseError(tokens[block.beginToken], "unknown top-level block '" + block.kind + "'");
             }
         }
     } catch (const PoolParseError& error) {
         addError(diagnostics, path, error.line, error.column, error.what());
-        return eve::Result<DnutDocument>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
     }
     document.poolRoot = DataValue::object({{"pools", DataValue::object(std::move(pools))}});
 
     eve::dnut::StepKindRegistry registry;
-    auto registered = registerDialogueSequenceSteps(registry);
-    if (!registered.ok())
-        return eve::Result<DnutDocument>::failure(registered.status());
-    eve::dnut::DnutCompileOutput compiled =
-        eve::dnut::compileDnutConversations(source, path, registry);
+    auto                        registered = registerDialogueSequenceSteps(registry);
+    if (!registered.ok()) return eve::Result<DnutDocument>::failure(registered.status());
+    eve::dnut::DnutCompileOutput compiled = eve::dnut::compileDnutConversations(source, path, registry);
     for (const auto& diagnostic : compiled.diagnostics)
         diagnostics.push_back({diagnostic.severity == eve::dnut::DnutSeverity::Error
                                    ? ConversationDiagnostic::Severity::Error
                                    : ConversationDiagnostic::Severity::Warning,
-                               diagnostic.path, diagnostic.line, diagnostic.message,
-                               "DnutParseError", diagnostic.column, {}});
+                               diagnostic.path,
+                               diagnostic.line,
+                               diagnostic.message,
+                               "DnutParseError",
+                               diagnostic.column,
+                               {}});
     if (compiled.hasErrors())
-        return eve::Result<DnutDocument>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
     document.conversations = std::move(compiled.assets);
     return eve::Result<DnutDocument>::success(std::move(document));
 }

@@ -36,13 +36,11 @@ StepKindRegistry dialogueRegistry() {
 
 SequenceAsset makeGreeting() {
     SequenceAsset asset;
-    asset.id    = "common.greeting";
+    asset.id            = "common.greeting";
     asset.entry = "decide";
-    asset.parameters = {SequenceParameter{"speaker"}, SequenceParameter{"listener"},
-                        SequenceParameter{"location"}};
+    asset.parameters    = {SequenceParameter{"speaker"}, SequenceParameter{"listener"}, SequenceParameter{"location"}};
     SequenceNode decide = node("decide", "branch");
-    decide.routes = {route("friendly", "friendly", eve::Value("speaker.mood == happy")),
-                     route("formal", "formal")};
+    decide.routes = {route("friendly", "friendly", eve::Value("speaker.mood == happy")), route("formal", "formal")};
     SequenceNode friendly = node("friendly", "line", "end");
     friendly.payload.set("speaker", eve::Value("speaker"));
     friendly.payload.set("pool", eve::Value("greeting.friendly"));
@@ -84,16 +82,15 @@ TEST_CASE("dialogueConversation.typedDefaultsAndExcessBindings") {
 }
 
 TEST_CASE("dialogueConversation.parameterizedRuntime") {
-    SequenceAsset      asset = makeGreeting();
-    StepKindRegistry   registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceAsset    asset    = makeGreeting();
+    StepKindRegistry registry = dialogueRegistry();
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
     runtime.setConditionEvaluator([&runtime](const eve::Value& expression) {
         const eve::Value* speaker = runtime.bindings().find("speaker");
-        const eve::Value* mood = speaker ? speaker->find("mood") : nullptr;
-        const bool passed = expression.isString() &&
-                            expression.asString() == "speaker.mood == happy" &&
-                            mood && mood->isString() && mood->asString() == "happy";
+        const eve::Value* mood    = speaker ? speaker->find("mood") : nullptr;
+        const bool        passed  = expression.isString() && expression.asString() == "speaker.mood == happy" && mood &&
+                            mood->isString() && mood->asString() == "happy";
         return SequenceConditionOutcome{passed, passed ? "" : "false", {}};
     });
     eve::Value bindings = eve::Value::Object{};
@@ -109,9 +106,9 @@ TEST_CASE("dialogueConversation.parameterizedRuntime") {
 }
 
 TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
-    SequenceAsset    asset = makeGreeting();
+    SequenceAsset    asset    = makeGreeting();
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
     eve::Value bindings = eve::Value::Object{};
     bindings.set("speaker", eve::Value::Object{});
@@ -128,7 +125,7 @@ TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
 }
 
 TEST_CASE("dialogueConversation.validation") {
-    SequenceAsset asset = makeGreeting();
+    SequenceAsset asset   = makeGreeting();
     asset.nodes.back().id = "friendly";
     auto invalid = asset.validate();
     CHECK(!invalid.ok());
@@ -136,13 +133,12 @@ TEST_CASE("dialogueConversation.validation") {
 }
 
 TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
-    SequenceAsset    asset = makeGreeting();
+    SequenceAsset    asset    = makeGreeting();
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
-    runtime.setConditionEvaluator([](const eve::Value&) {
-        return SequenceConditionOutcome{false, "failed", "expression failed"};
-    });
+    runtime.setConditionEvaluator(
+        [](const eve::Value&) { return SequenceConditionOutcome{false, "failed", "expression failed"}; });
     eve::Value bindings = eve::Value::Object{};
     bindings.set("speaker", eve::Value::Object{});
     bindings.set("listener", eve::Value::Object{});
@@ -154,14 +150,14 @@ TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
 
 TEST_CASE("dialogueConversation.callStackStateRoundtripUsesPayloadReturn") {
     SequenceAsset child;
-    child.id    = "common.child";
+    child.id               = "common.child";
     child.entry = "line";
     SequenceNode childLine = node("line", "line", "end");
     childLine.payload.set("text", eve::Value("hello"));
     child.nodes = {childLine, node("end", "end")};
 
     SequenceAsset parent;
-    parent.id    = "scene.parent";
+    parent.id         = "scene.parent";
     parent.entry = "call";
     SequenceNode call = node("call", "call");
     call.payload.set("target", eve::Value(child.id));
@@ -176,7 +172,7 @@ TEST_CASE("dialogueConversation.callStackStateRoundtripUsesPayloadReturn") {
         return nullptr;
     };
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime original;
+    SequenceRuntime  original;
     original.setStepRegistry(&registry);
     original.setAssetResolver(resolve);
     CHECK(original.start(&parent).ok());
@@ -197,7 +193,7 @@ TEST_CASE("dialogueConversation.callStackStateRoundtripUsesPayloadReturn") {
 
 TEST_CASE("dialogueConversation.commandsAndEvents") {
     SequenceAsset asset;
-    asset.id    = "scene.command";
+    asset.id             = "scene.command";
     asset.entry = "calculate";
     SequenceNode command = node("calculate", "command", "line");
     command.payload.set("name", eve::Value("economy.quote"));
@@ -205,8 +201,8 @@ TEST_CASE("dialogueConversation.commandsAndEvents") {
     asset.nodes = {command, node("line", "line", "end"), node("end", "end")};
 
     std::vector<SequenceRuntime::EventKind> events;
-    StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    StepKindRegistry                        registry = dialogueRegistry();
+    SequenceRuntime                         runtime;
     runtime.setStepRegistry(&registry);
     runtime.setEventSink([&](const SequenceRuntime::Event& event) { events.push_back(event.kind); });
     runtime.registerCommand("economy.quote", [](const SequenceCommandRequest&) {
@@ -222,7 +218,7 @@ TEST_CASE("dialogueConversation.commandsAndEvents") {
 
 TEST_CASE("dialogueConversation.asyncCommandDualResumeAndRestore") {
     SequenceAsset asset;
-    asset.id    = "scene.wait-command";
+    asset.id             = "scene.wait-command";
     asset.entry = "animate";
     SequenceNode command = node("animate", "command", "end");
     command.payload.set("name", eve::Value("animation.play"));
@@ -230,7 +226,7 @@ TEST_CASE("dialogueConversation.asyncCommandDualResumeAndRestore") {
     asset.nodes = {command, node("end", "end")};
 
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
     runtime.registerCommand("animation.play", [](const SequenceCommandRequest&) {
         SequenceCommandResponse response;
@@ -248,9 +244,7 @@ TEST_CASE("dialogueConversation.asyncCommandDualResumeAndRestore") {
 
     SequenceRuntime restored;
     restored.setStepRegistry(&registry);
-    restored.setAssetResolver([&](const std::string& id) {
-        return id == asset.id ? &asset : nullptr;
-    });
+    restored.setAssetResolver([&](const std::string& id) { return id == asset.id ? &asset : nullptr; });
     REQUIRE(restored.restoreState(saved).ok());
     REQUIRE(restored.lastCommandRequest() != nullptr);
     CHECK_EQ(restored.lastCommandRequest()->requestId, requestId);
@@ -266,14 +260,14 @@ TEST_CASE("dialogueConversation.asyncCommandDualResumeAndRestore") {
 
 TEST_CASE("dialogueConversation.transactionalSelectionStableDiagnostics") {
     SequenceAsset asset;
-    asset.id    = "scene.choice";
+    asset.id            = "scene.choice";
     asset.entry = "choice";
     SequenceNode choice = node("choice", "choice");
     choice.routes.push_back(route("yes", "end"));
     asset.nodes = {choice, node("end", "end")};
 
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
     REQUIRE(runtime.start(&asset).ok());
     auto missing = runtime.selectRouteForTransaction("missing");
@@ -289,8 +283,8 @@ TEST_CASE("dialogueConversation.transactionalSelectionStableDiagnostics") {
 
 TEST_CASE("dialogueConversation.transactionalSelectionRestoresAfterRouteFailure") {
     SequenceAsset asset;
-    asset.id    = "scene.choice-rollback";
-    asset.entry = "choice";
+    asset.id            = "scene.choice-rollback";
+    asset.entry         = "choice";
     SequenceNode choice = node("choice", "choice");
     choice.routes.push_back(route("broken", "command"));
     SequenceNode command = node("command", "command", "end");
@@ -298,7 +292,7 @@ TEST_CASE("dialogueConversation.transactionalSelectionRestoresAfterRouteFailure"
     asset.nodes = {choice, command, node("end", "end")};
 
     StepKindRegistry registry = dialogueRegistry();
-    SequenceRuntime runtime;
+    SequenceRuntime  runtime;
     runtime.setStepRegistry(&registry);
     REQUIRE(runtime.start(&asset).ok());
     auto failed = runtime.selectRouteForTransaction("broken");

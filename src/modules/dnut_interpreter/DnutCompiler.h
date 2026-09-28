@@ -66,7 +66,8 @@ struct EVENGINE_API_PLATFORM DnutCompileOutput {
  *        `command` descriptors and validators.
  * @return Owned sequence assets and diagnostics.
  */
-[[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnutConversations(
-    std::string_view source, const std::string& path, const StepKindRegistry& registry);
+[[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnutConversations(std::string_view        source,
+                                                                               const std::string&      path,
+                                                                               const StepKindRegistry& registry);
 
 }  // namespace eve::dnut

@@ -26,8 +26,8 @@ eve::Result<std::unordered_map<std::string, double>> parseNumbers(const eve::Val
     return eve::Result<std::unordered_map<std::string, double>>::success(std::move(result));
 }
 
-eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const eve::Value *value,
-                                                                      const std::string &path) {
+eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const eve::Value  *value,
+                                                                       const std::string &path) {
     if (!value || !value->isObject())
         return eve::Result<std::unordered_map<std::string, std::string>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));

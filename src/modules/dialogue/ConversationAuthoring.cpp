@@ -1,7 +1,7 @@
 #include "dialogue/ConversationAuthoring.h"
 
-#include "dialogue/DialogueSequence.h"
 #include "dialogue/ConversationToolchain.h"
+#include "dialogue/DialogueSequence.h"
 
 #include <algorithm>
 #include <array>
@@ -15,15 +15,13 @@ namespace {
 using Field = std::pair<const char*, const char*>;
 
 bool isKnownType(const std::string& type) {
-    static constexpr std::array<const char*, 7> types{
-        "line", "branch", "choice", "call", "command", "wait", "end"};
+    static constexpr std::array<const char*, 7> types{"line", "branch", "choice", "call", "command", "wait", "end"};
     return std::find(types.begin(), types.end(), type) != types.end();
 }
 
 const std::vector<Field>& fieldsFor(const std::string& type) {
-    static const std::vector<Field> line{{"next", "node"},    {"speaker", "string"},
-                                         {"text", "multiline"}, {"pool", "asset"},
-                                         {"i18n", "string"},  {"voice", "asset"},
+    static const std::vector<Field> line{{"next", "node"},        {"speaker", "string"}, {"text", "multiline"},
+                                         {"pool", "asset"},       {"i18n", "string"},    {"voice", "asset"},
                                          {"expression", "string"}};
     static const std::vector<Field> branch;
     static const std::vector<Field> choice;
@@ -53,8 +51,7 @@ ConversationDocument::ConversationDocument(std::string id) {
     asset_.nodes.push_back(std::move(end));
 }
 
-ConversationDocument::ConversationDocument(eve::dnut::SequenceAsset asset)
-    : asset_(std::move(asset)) {}
+ConversationDocument::ConversationDocument(eve::dnut::SequenceAsset asset) : asset_(std::move(asset)) {}
 
 bool ConversationDocument::fail(const std::string& message) {
     failureMessage_ = message;
@@ -92,14 +89,11 @@ bool ConversationDocument::setEntry(const std::string& nodeId) {
     return true;
 }
 
-int ConversationDocument::getParameterCount() const {
-    return static_cast<int>(asset_.parameters.size());
-}
+int ConversationDocument::getParameterCount() const { return static_cast<int>(asset_.parameters.size()); }
 
 std::string ConversationDocument::getParameter(int index) const {
-    return index >= 0 && index < getParameterCount()
-               ? asset_.parameters[static_cast<std::size_t>(index)].name
-               : std::string{};
+    return index >= 0 && index < getParameterCount() ? asset_.parameters[static_cast<std::size_t>(index)].name
+                                                     : std::string{};
 }
 
 bool ConversationDocument::addParameter(const std::string& name) {
@@ -123,14 +117,10 @@ bool ConversationDocument::removeParameter(const std::string& name) {
 int ConversationDocument::getNodeCount() const { return static_cast<int>(asset_.nodes.size()); }
 
 std::string ConversationDocument::getNodeId(int index) const {
-    return index >= 0 && index < getNodeCount()
-               ? asset_.nodes[static_cast<std::size_t>(index)].id
-               : std::string{};
+    return index >= 0 && index < getNodeCount() ? asset_.nodes[static_cast<std::size_t>(index)].id : std::string{};
 }
 
-bool ConversationDocument::hasNode(const std::string& nodeId) const {
-    return findNode(nodeId) != nullptr;
-}
+bool ConversationDocument::hasNode(const std::string& nodeId) const { return findNode(nodeId) != nullptr; }
 
 bool ConversationDocument::addNode(const std::string& nodeId, const std::string& kind) {
     if (nodeId.empty()) return fail("node ID must not be empty");
@@ -146,8 +136,7 @@ bool ConversationDocument::addNode(const std::string& nodeId, const std::string&
 
 bool ConversationDocument::removeNode(const std::string& nodeId) {
     const auto found =
-        std::find_if(asset_.nodes.begin(), asset_.nodes.end(),
-                     [&](const auto& node) { return node.id == nodeId; });
+        std::find_if(asset_.nodes.begin(), asset_.nodes.end(), [&](const auto& node) { return node.id == nodeId; });
     if (found == asset_.nodes.end()) return false;
     asset_.nodes.erase(found);
     if (asset_.entry == nodeId) asset_.entry.clear();
@@ -196,22 +185,17 @@ std::string ConversationDocument::getFieldName(const std::string& nodeId, int in
     const auto* node = findNode(nodeId);
     if (!node) return {};
     const auto& fields = fieldsFor(node->type);
-    return index >= 0 && index < static_cast<int>(fields.size())
-               ? fields[static_cast<std::size_t>(index)].first
-               : "";
+    return index >= 0 && index < static_cast<int>(fields.size()) ? fields[static_cast<std::size_t>(index)].first : "";
 }
 
 std::string ConversationDocument::getFieldKind(const std::string& nodeId, int index) const {
     const auto* node = findNode(nodeId);
     if (!node) return {};
     const auto& fields = fieldsFor(node->type);
-    return index >= 0 && index < static_cast<int>(fields.size())
-               ? fields[static_cast<std::size_t>(index)].second
-               : "";
+    return index >= 0 && index < static_cast<int>(fields.size()) ? fields[static_cast<std::size_t>(index)].second : "";
 }
 
-std::string ConversationDocument::getField(const std::string& nodeId,
-                                           const std::string& field) const {
+std::string ConversationDocument::getField(const std::string& nodeId, const std::string& field) const {
     const auto* node = findNode(nodeId);
     if (!node) return {};
     if (field == "next") return node->next;
@@ -224,8 +208,7 @@ std::string ConversationDocument::getField(const std::string& nodeId,
     return value->isString() ? value->asString() : std::string{};
 }
 
-bool ConversationDocument::setField(const std::string& nodeId, const std::string& field,
-                                    const std::string& value) {
+bool ConversationDocument::setField(const std::string& nodeId, const std::string& field, const std::string& value) {
     auto* node = findNode(nodeId);
     if (!node) return fail("node not found: " + nodeId);
     if (field == "next") {
@@ -274,12 +257,10 @@ std::string ConversationDocument::getRouteTarget(const std::string& nodeId, int 
                : std::string{};
 }
 
-bool ConversationDocument::addRoute(const std::string& nodeId, const std::string& label,
-                                    const std::string& target) {
+bool ConversationDocument::addRoute(const std::string& nodeId, const std::string& label, const std::string& target) {
     auto* node = findNode(nodeId);
     if (!node) return fail("node not found: " + nodeId);
-    if (node->type != "branch" && node->type != "choice")
-        return fail("routes require a branch or choice node");
+    if (node->type != "branch" && node->type != "choice") return fail("routes require a branch or choice node");
     eve::dnut::SequenceRoute route;
     route.label  = label;
     route.target = target;
@@ -288,8 +269,8 @@ bool ConversationDocument::addRoute(const std::string& nodeId, const std::string
     return true;
 }
 
-bool ConversationDocument::setRoute(const std::string& nodeId, int index,
-                                    const std::string& label, const std::string& target) {
+bool ConversationDocument::setRoute(const std::string& nodeId, int index, const std::string& label,
+                                    const std::string& target) {
     auto* node = findNode(nodeId);
     if (!node || index < 0 || index >= static_cast<int>(node->routes.size())) return false;
     auto& route  = node->routes[static_cast<std::size_t>(index)];
@@ -312,34 +293,27 @@ bool ConversationDocument::validate() {
     return valid;
 }
 
-int ConversationDocument::getDiagnosticCount() const {
-    return static_cast<int>(diagnostics_.size());
-}
+int ConversationDocument::getDiagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
 
 std::string ConversationDocument::getDiagnosticSeverity(int index) const {
     if (index < 0 || index >= getDiagnosticCount()) return {};
-    return diagnostics_[static_cast<std::size_t>(index)].severity ==
-                   ConversationDiagnostic::Severity::Error
+    return diagnostics_[static_cast<std::size_t>(index)].severity == ConversationDiagnostic::Severity::Error
                ? "error"
                : "warning";
 }
 
 std::string ConversationDocument::getDiagnosticPath(int index) const {
-    return index >= 0 && index < getDiagnosticCount()
-               ? diagnostics_[static_cast<std::size_t>(index)].path
-               : std::string{};
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<std::size_t>(index)].path
+                                                      : std::string{};
 }
 
 int ConversationDocument::getDiagnosticLine(int index) const {
-    return index >= 0 && index < getDiagnosticCount()
-               ? diagnostics_[static_cast<std::size_t>(index)].line
-               : 0;
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<std::size_t>(index)].line : 0;
 }
 
 std::string ConversationDocument::getDiagnosticMessage(int index) const {
-    return index >= 0 && index < getDiagnosticCount()
-               ? diagnostics_[static_cast<std::size_t>(index)].message
-               : std::string{};
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<std::size_t>(index)].message
+                                                      : std::string{};
 }
 
 }  // namespace eve::dialogue

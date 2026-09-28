@@ -14,8 +14,8 @@ namespace eve::dialogue {
 
 /** @brief Validate references and report unreachable nodes. */
 [[nodiscard]] eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                                  const std::string& path,
-                                                  std::vector<ConversationDiagnostic>& diagnostics);
+                                                  const std::string&                           path,
+                                                  std::vector<ConversationDiagnostic>&         diagnostics);
 
 /** @brief Export stable line IDs and localization keys as RFC4180 CSV. */
 EVENGINE_API_ORCHESTRATION std::string exportConversationLocalizationCsv(

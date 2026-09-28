@@ -127,8 +127,7 @@ TEST_CASE("dialoguePayment.choiceUsesTheSameAtomicFacade") {
     const std::array<StateMutation, 1> choiceMutations{{
         StateMutation{"actor", "accepted", Value(true), eve::MutationKind::Set, true},
     }};
-    choice.routes.front().payload.set(
-        "stateMutations", eve::dialogue::encodeSequenceStateMutations(choiceMutations));
+    choice.routes.front().payload.set("stateMutations", eve::dialogue::encodeSequenceStateMutations(choiceMutations));
     eve::dnut::SequenceNode end;
     end.id      = "end";
     end.type    = "end";

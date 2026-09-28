@@ -45,15 +45,14 @@ std::string readClassicContent(const std::filesystem::path& root, const char* na
 }
 
 const eve::dnut::SequenceAsset* findConversation(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                                 const std::string&                            id) {
+                                                 const std::string&                           id) {
     for (const auto& asset : assets)
         if (asset.id == id) return &asset;
     return nullptr;
 }
 
-void acceptQuestThroughDialogue(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                const std::string& conversationId, eve::rpg::Tracker& tracker,
-                                const std::string& questId) {
+void acceptQuestThroughDialogue(const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& conversationId,
+                                eve::rpg::Tracker& tracker, const std::string& questId) {
     const auto* conversation = findConversation(assets, conversationId);
     REQUIRE(conversation != nullptr);
     eve::dnut::StepKindRegistry registry;
@@ -119,8 +118,8 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     auto tactics =
         eve::rpg::BattleTacticsCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "battle-tactics.json"));
     REQUIRE(tactics.ok());
-    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(
-        readClassicContent(contentRoot, "stories.dnut"), "stories.dnut");
+    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(readClassicContent(contentRoot, "stories.dnut"),
+                                                                      "stories.dnut");
     REQUIRE(stories.ok());
     REQUIRE_EQ(stories.value(), 1);
     REQUIRE_EQ(eve::rpg::EncounterCatalogue::memberCount("slime.forest"), 2);
@@ -130,10 +129,10 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
 
     eve::dnut::StepKindRegistry dialogueRegistry;
     eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
-    auto compiled = eve::dnut::compileDnutConversations(
-        readClassicContent(contentRoot, "village-dialogue.dnut"), "village-dialogue.dnut", dialogueRegistry);
+    auto compiled = eve::dnut::compileDnutConversations(readClassicContent(contentRoot, "village-dialogue.dnut"),
+                                                        "village-dialogue.dnut", dialogueRegistry);
     REQUIRE(!compiled.hasErrors());
-    auto conversations = std::move(compiled.assets);
+    auto  conversations = std::move(compiled.assets);
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);
     localization->clear();
@@ -196,8 +195,7 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     CHECK_EQ(resumedArrival.getStepKind(), std::string("wait"));
     REQUIRE(resumedArrival.advance().ok());
     CHECK_EQ(resumedArrival.getStepKind(), std::string("message"));
-    CHECK_EQ(resumedArrival.getStepPayload().find("text")->asString(),
-             std::string("gameplayLog.story.recorded"));
+    CHECK_EQ(resumedArrival.getStepPayload().find("text")->asString(), std::string("gameplayLog.story.recorded"));
     REQUIRE(resumedArrival.advance().ok());
     CHECK(!resumedArrival.isActive());
     CHECK(gameState.hasSelfVariable("story.forest.arrival", "completed"));

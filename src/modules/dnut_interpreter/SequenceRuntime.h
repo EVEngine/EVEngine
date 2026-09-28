@@ -37,7 +37,7 @@ struct SequenceCommandRequest {
     eve::Value  bindings  = eve::Value::Object{};
     eve::Value  locals    = eve::Value::Object{};
     /** @brief Complete owning command payload for domain-specific decoding. */
-    eve::Value  payload   = eve::Value::Object{};
+    eve::Value payload = eve::Value::Object{};
 };
 
 /** @brief Structured response returned by a generic command handler. */
@@ -228,9 +228,7 @@ public:
         return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr;
     }
     /** @brief Stable id of the blocked command, or an empty string. */
-    [[nodiscard]] const std::string& pendingCommandRequestId() const noexcept {
-        return pendingCommandRequestId_;
-    }
+    [[nodiscard]] const std::string& pendingCommandRequestId() const noexcept { return pendingCommandRequestId_; }
     /**
      * @brief Last evaluated condition outcome.
      * @return Borrowed nullable pointer owned by this runtime.
@@ -250,30 +248,30 @@ private:
 
     /** @brief Owning in-process snapshot used to roll back one failed transition. */
     struct ExecutionState {
-        const SequenceAsset* asset = nullptr;
-        std::string          nodeId;
-        eve::Value           bindings = eve::Value::Object{};
-        eve::Value           locals   = eve::Value::Object{};
-        bool                 blocked = false;
-        bool                 waitingStep = false;
-        bool                 waitingCommand = false;
-        std::vector<Frame>   callStack;
-        eve::Value           lastStepResult;
-        std::optional<SequenceCommandRequest> lastCommandRequest;
-        std::string          pendingCommandRequestId;
-        std::uint64_t        commandSequence = 1;
+        const SequenceAsset*                    asset = nullptr;
+        std::string                             nodeId;
+        eve::Value                              bindings       = eve::Value::Object{};
+        eve::Value                              locals         = eve::Value::Object{};
+        bool                                    blocked        = false;
+        bool                                    waitingStep    = false;
+        bool                                    waitingCommand = false;
+        std::vector<Frame>                      callStack;
+        eve::Value                              lastStepResult;
+        std::optional<SequenceCommandRequest>   lastCommandRequest;
+        std::string                             pendingCommandRequestId;
+        std::uint64_t                           commandSequence = 1;
         std::optional<SequenceConditionOutcome> lastConditionResult;
     };
 
-    [[nodiscard]] ExecutionState captureExecutionState() const;
-    void restoreExecutionState(ExecutionState state);
+    [[nodiscard]] ExecutionState    captureExecutionState() const;
+    void                            restoreExecutionState(ExecutionState state);
     [[nodiscard]] eve::Result<void> runUntilBlockedImpl();
     [[nodiscard]] eve::Result<void> enter(const std::string& nodeId);
     [[nodiscard]] eve::Result<void> fail(eve::DiagnosticCode code, std::string message, std::string path = {});
     /** @brief Evaluate `node`'s routes and return the selected target or `node.next`. */
     [[nodiscard]] eve::Result<std::string> evaluateRoute(const SequenceNode& node);
-    [[nodiscard]] eve::Result<void> selectImpl(std::string_view routeLabel);
-    [[nodiscard]] eve::Result<void> resumeCommandImpl(std::string_view requestId, eve::Value result);
+    [[nodiscard]] eve::Result<void>        selectImpl(std::string_view routeLabel);
+    [[nodiscard]] eve::Result<void>        resumeCommandImpl(std::string_view requestId, eve::Value result);
     void emit(EventKind kind, const SequenceNode* node = nullptr, const std::string& detail = {}) const;
 
     const SequenceAsset*    asset_ = nullptr;
@@ -282,19 +280,19 @@ private:
     eve::Value              locals_   = eve::Value::Object{};
     bool                    blocked_   = false;
     bool                    waitingStep_ = false;
-    bool                    waitingCommand_ = false;
+    bool                                                    waitingCommand_ = false;
     std::vector<Frame>      callStack_;
     AssetResolver           assetResolver_;
     ConditionEvaluator      conditionEvaluator_;
     const StepKindRegistry* registry_ = nullptr;
     std::unordered_map<std::string, SequenceCommandHandler> commandHandlers_;
-    SequenceCommandHandler commandDispatcher_;
+    SequenceCommandHandler                                  commandDispatcher_;
     void*                   hostContext_ = nullptr;
     EventSink               eventSink_;
     eve::Value              lastStepResult_;
-    std::optional<SequenceCommandRequest> lastCommandRequest_;
-    std::string             pendingCommandRequestId_;
-    std::uint64_t           commandSequence_ = 1;
+    std::optional<SequenceCommandRequest>                   lastCommandRequest_;
+    std::string                                             pendingCommandRequestId_;
+    std::uint64_t                                           commandSequence_ = 1;
     std::optional<SequenceConditionOutcome> lastConditionResult_;
     /** @brief Message of the most recent failure, used to restore state after a rollback. */
     std::string             failureText_;

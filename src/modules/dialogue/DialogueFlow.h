@@ -241,7 +241,7 @@ public:
     [[nodiscard]] eve::Result<void> setExpressionEvaluatorChecked(ssq::Object fn);
     void clearExpressionEvaluator();
 
-    [[nodiscard]] eve::Result<StateValue> captureStateChecked() const;
+    [[nodiscard]] eve::Result<StateValue>  captureStateChecked() const;
     [[nodiscard]] eve::Result<void> restoreStateChecked(const StateValue& in);
     [[nodiscard]] eve::Result<std::string> captureStateJsonChecked() const;
     [[nodiscard]] eve::Result<void> restoreStateJsonChecked(const std::string& json);
@@ -279,21 +279,21 @@ private:
     int loadDnutImpl(const std::string& source, const std::string& sourceId);
     int reloadDnutImpl(const std::string& source, const std::string& sourceId);
     int loadDnutFileImpl(const std::string& path);
-    [[nodiscard]] eve::Result<int> mergeImported(std::vector<eve::dnut::SequenceAsset> imported);
-    const eve::dnut::SequenceAsset* find(const std::string& id) const;
+    [[nodiscard]] eve::Result<int>        mergeImported(std::vector<eve::dnut::SequenceAsset> imported);
+    const eve::dnut::SequenceAsset*       find(const std::string& id) const;
     [[nodiscard]] eve::Result<StateValue> evaluate(const std::string& expression, const StateValue& bindings,
                                                    const StateValue& locals);
     CommandResponse dispatchCommand(const CommandRequest& request);
-    void            updateRuntimeCommandDispatcher();
+    void                                  updateRuntimeCommandDispatcher();
     std::string     nextTransactionId(const char* purpose);
 
-    std::vector<eve::dnut::SequenceAsset>                    assets_;
+    std::vector<eve::dnut::SequenceAsset>                            assets_;
     std::vector<ConversationDiagnostic>                       diagnostics_;
-    eve::dnut::StepKindRegistry                               stepRegistry_;
-    eve::dnut::SequenceRuntime                                runner_;
+    eve::dnut::StepKindRegistry                                      stepRegistry_;
+    eve::dnut::SequenceRuntime                                       runner_;
     DialogueStateContext                                      stateContext_;
     std::function<eve::decision::ConditionResult(const eve::Value&)> configuredConditionEvaluator_;
-    std::optional<eve::decision::ConditionResult>             lastConditionResult_;
+    std::optional<eve::decision::ConditionResult>                    lastConditionResult_;
     CommandRequestHandler                                     operationRequestHandler_;
     CommandRequestHandler                                     gameplayActionHandler_;
     IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;

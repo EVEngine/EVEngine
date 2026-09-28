@@ -8,7 +8,7 @@
 using namespace eve::dialogue;
 
 TEST_CASE("dialogueCompiler.singleParserMixedDocumentAndStrictSchema") {
-    const std::string source = R"(
+    const std::string                   source = R"(
 schema "eve.dnut"
 version 1
 pool greeting {
@@ -38,7 +38,7 @@ conversation greeting.scene entry=end {
 }
 
 TEST_CASE("dialogueCompiler.parameterizedExpressionsAndLocalization") {
-    const std::string source = R"DNUT(
+    const std::string           source = R"DNUT(
 schema "eve.dnut"
 version 1
 conversation common.greeting version=3 entry=decide {

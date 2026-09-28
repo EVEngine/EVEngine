@@ -70,22 +70,16 @@ private:
         const std::size_t position = index_ < tokens_.size() ? index_ : tokens_.size() - 1;
         return tokens_[position];
     }
-    bool atEnd() const { return index_ >= end_ || cur().kind == DnutTokenKind::EndOfFile; }
+    bool      atEnd() const { return index_ >= end_ || cur().kind == DnutTokenKind::EndOfFile; }
     DnutToken advance() {
         const DnutToken token = cur();
         if (!atEnd()) ++index_;
         return token;
     }
-    bool isPunct(const char* text) const {
-        return cur().kind == DnutTokenKind::Punctuator && cur().text == text;
-    }
-    bool isIdentifier(const char* text) const {
-        return cur().kind == DnutTokenKind::Identifier && cur().text == text;
-    }
-    [[noreturn]] void fail(std::string message) const {
-        throw ConversationParseError(cur(), std::move(message));
-    }
-    void expectPunct(const char* text) {
+    bool isPunct(const char* text) const { return cur().kind == DnutTokenKind::Punctuator && cur().text == text; }
+    bool isIdentifier(const char* text) const { return cur().kind == DnutTokenKind::Identifier && cur().text == text; }
+    [[noreturn]] void fail(std::string message) const { throw ConversationParseError(cur(), std::move(message)); }
+    void              expectPunct(const char* text) {
         if (!isPunct(text)) fail("expected '" + std::string(text) + "'");
         advance();
     }
@@ -109,8 +103,7 @@ private:
             advance();
             if (cur().kind != DnutTokenKind::Number) fail("'-' must be followed by a number");
             eve::Value value = numberValue(advance().text);
-            return value.isInt64() ? eve::Value::integer(-value.asInt())
-                                   : eve::Value::number(-value.asDouble());
+            return value.isInt64() ? eve::Value::integer(-value.asInt()) : eve::Value::number(-value.asDouble());
         }
         if (cur().kind == DnutTokenKind::String) return eve::Value::string(advance().text);
         if (cur().kind == DnutTokenKind::Number) return numberValue(advance().text);
@@ -145,7 +138,7 @@ private:
     }
 
     SequenceParameter parseParameter() {
-        const DnutToken declaration = advance();
+        const DnutToken   declaration = advance();
         SequenceParameter parameter;
         parameter.sourceLine   = declaration.line;
         parameter.sourceColumn = declaration.column;
@@ -190,7 +183,7 @@ private:
 
     SequenceRoute parseRoute() {
         const DnutToken declaration = advance();
-        SequenceRoute route;
+        SequenceRoute   route;
         route.sourceLine   = declaration.line;
         route.sourceColumn = declaration.column;
         route.label        = expectIdentifier("a stable route id");
@@ -225,7 +218,7 @@ private:
 
     SequenceNode parseNode() {
         const DnutToken declaration = advance();
-        SequenceNode node;
+        SequenceNode    node;
         node.sourceLine   = declaration.line;
         node.sourceColumn = declaration.column;
         node.id           = expectIdentifier("a node id");
@@ -275,8 +268,8 @@ private:
     std::size_t                   index_;
 };
 
-void appendResultFailure(DnutCompileOutput& output, const std::string& path,
-                         const eve::Diagnostic* diagnostic, const char* defaultMessage) {
+void appendResultFailure(DnutCompileOutput& output, const std::string& path, const eve::Diagnostic* diagnostic,
+                         const char* defaultMessage) {
     int line   = 0;
     int column = 0;
     if (diagnostic) {
@@ -297,8 +290,7 @@ bool validateDocumentEnvelope(const std::vector<DnutToken>& tokens, const std::s
         tokens[3].kind != DnutTokenKind::Number || std::strtol(tokens[3].text.c_str(), nullptr, 10) != 1) {
         const DnutToken& token = tokens.empty() ? DnutToken{} : tokens.front();
         output.diagnostics.push_back(
-            {DnutSeverity::Error, path, token.line, token.column,
-             "expected schema \"eve.dnut\" and version 1"});
+            {DnutSeverity::Error, path, token.line, token.column, "expected schema \"eve.dnut\" and version 1"});
         return false;
     }
     return true;
@@ -309,7 +301,7 @@ bool validateDocumentEnvelope(const std::vector<DnutToken>& tokens, const std::s
 DnutCompileOutput compileDnutConversations(std::string_view source, const std::string& path,
                                            const StepKindRegistry& registry) {
     DnutCompileOutput output;
-    auto tokensResult = lexDnut(source, path);
+    auto              tokensResult = lexDnut(source, path);
     if (!tokensResult.ok()) {
         appendResultFailure(output, path, tokensResult.error(), "could not lex the document");
         return output;
@@ -330,15 +322,13 @@ DnutCompileOutput compileDnutConversations(std::string_view source, const std::s
             SequenceAsset asset = ConversationBlockParser(tokens, block).parse();
             bool          valid = true;
             if (!assetIds.insert(asset.id).second) {
-                output.diagnostics.push_back(
-                    {DnutSeverity::Error, path, asset.sourceLine, asset.sourceColumn,
-                     "duplicate conversation id '" + asset.id + "'"});
+                output.diagnostics.push_back({DnutSeverity::Error, path, asset.sourceLine, asset.sourceColumn,
+                                              "duplicate conversation id '" + asset.id + "'"});
                 valid = false;
             }
             if (auto graph = asset.validate(); !graph.ok()) {
-                output.diagnostics.push_back(
-                    {DnutSeverity::Error, path, asset.sourceLine, asset.sourceColumn,
-                     graph.error() ? graph.error()->message() : "invalid conversation graph"});
+                output.diagnostics.push_back({DnutSeverity::Error, path, asset.sourceLine, asset.sourceColumn,
+                                              graph.error() ? graph.error()->message() : "invalid conversation graph"});
                 valid = false;
             }
             for (const auto& node : asset.nodes) {
@@ -353,8 +343,7 @@ DnutCompileOutput compileDnutConversations(std::string_view source, const std::s
             }
             if (valid) output.assets.push_back(std::move(asset));
         } catch (const ConversationParseError& error) {
-            output.diagnostics.push_back(
-                {DnutSeverity::Error, path, error.line, error.column, error.what()});
+            output.diagnostics.push_back({DnutSeverity::Error, path, error.line, error.column, error.what()});
         }
     }
     return output;

@@ -7,12 +7,10 @@
 namespace eve::dnut {
 namespace {
 
-eve::Result<std::vector<DnutBlock>> scanFailure(const std::string& path, const DnutToken& token,
-                                                std::string message) {
-    return eve::Result<std::vector<DnutBlock>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message), path,
-                               {{"line", std::to_string(token.line)}, {"column", std::to_string(token.column)}},
-                               "dnut.block-scanner"));
+eve::Result<std::vector<DnutBlock>> scanFailure(const std::string& path, const DnutToken& token, std::string message) {
+    return eve::Result<std::vector<DnutBlock>>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::ParseError, std::move(message), path,
+        {{"line", std::to_string(token.line)}, {"column", std::to_string(token.column)}}, "dnut.block-scanner"));
 }
 
 bool isPunct(const DnutToken& token, const char* text) {
@@ -21,13 +19,11 @@ bool isPunct(const DnutToken& token, const char* text) {
 
 }  // namespace
 
-eve::Result<std::vector<DnutBlock>> scanDnutBlocks(const std::vector<DnutToken>& tokens,
-                                                   const std::string&            path) {
+eve::Result<std::vector<DnutBlock>> scanDnutBlocks(const std::vector<DnutToken>& tokens, const std::string& path) {
     std::vector<DnutBlock> blocks;
     if (tokens.empty())
-        return eve::Result<std::vector<DnutBlock>>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "dnut token buffer is empty", path, {},
-                                   "dnut.block-scanner"));
+        return eve::Result<std::vector<DnutBlock>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "dnut token buffer is empty", path, {}, "dnut.block-scanner"));
 
     std::size_t index = 0;
     while (index < tokens.size() && tokens[index].kind != DnutTokenKind::EndOfFile) {
@@ -59,8 +55,7 @@ eve::Result<std::vector<DnutBlock>> scanDnutBlocks(const std::vector<DnutToken>&
             (tokens[index].kind == DnutTokenKind::Identifier || tokens[index].kind == DnutTokenKind::String))
             block.id = tokens[index].text;
 
-        while (index < tokens.size() && tokens[index].kind != DnutTokenKind::EndOfFile &&
-               !isPunct(tokens[index], "{"))
+        while (index < tokens.size() && tokens[index].kind != DnutTokenKind::EndOfFile && !isPunct(tokens[index], "{"))
             ++index;
         if (index >= tokens.size() || tokens[index].kind == DnutTokenKind::EndOfFile)
             return scanFailure(path, keyword, "top-level block '" + block.kind + "' requires '{'");
@@ -80,8 +75,7 @@ eve::Result<std::vector<DnutBlock>> scanDnutBlocks(const std::vector<DnutToken>&
             }
             ++index;
         }
-        if (block.endToken == 0)
-            return scanFailure(path, keyword, "unterminated top-level block '" + block.kind + "'");
+        if (block.endToken == 0) return scanFailure(path, keyword, "unterminated top-level block '" + block.kind + "'");
     }
     return eve::Result<std::vector<DnutBlock>>::success(std::move(blocks));
 }

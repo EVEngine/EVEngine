@@ -33,13 +33,12 @@ eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const s
     return eve::Result<DnutDocument>::success(std::move(document));
 }
 
-eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                    const std::string& path,
+eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& path,
                                     std::vector<ConversationDiagnostic>& diagnostics) {
     bool                            valid = true;
     std::unordered_set<std::string> assetIds;
     eve::dnut::StepKindRegistry     registry;
-    auto registered = registerDialogueSequenceSteps(registry);
+    auto                            registered = registerDialogueSequenceSteps(registry);
     if (!registered.ok()) return registered;
 
     for (const auto& asset : assets) {
@@ -51,9 +50,8 @@ eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>&
         }
         auto validated = validateDialogueSequenceAsset(asset, registry);
         if (!validated.ok()) {
-            diagnostics.push_back(
-                {ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
-                 validated.status().describe(), "InvalidConversation", asset.sourceColumn, asset.id});
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
+                                   validated.status().describe(), "InvalidConversation", asset.sourceColumn, asset.id});
             valid = false;
             continue;
         }
@@ -90,7 +88,7 @@ eve::Result<void> lintConversations(const std::vector<eve::dnut::SequenceAsset>&
                 bool exits = !node.next.empty() && canExit.contains(node.next);
                 if (node.type == "call") {
                     const std::string returnNode = sequencePayloadString(node, "return");
-                    exits = exits || (!returnNode.empty() && canExit.contains(returnNode));
+                    exits                        = exits || (!returnNode.empty() && canExit.contains(returnNode));
                 }
                 for (const auto& route : node.routes) exits = exits || canExit.contains(route.target);
                 if (exits) changed = canExit.insert(node.id).second;
@@ -129,9 +127,8 @@ std::string exportConversationLocalizationCsv(const std::vector<eve::dnut::Seque
         for (const auto& node : asset.nodes) {
             if (node.type != "line") continue;
             output += csv(asset.id) + ',' + csv(node.id) + ',' + csv(sequencePayloadString(node, "i18n")) + ',' +
-                      csv(sequencePayloadString(node, "speaker")) + ',' +
-                      csv(sequencePayloadString(node, "text")) + ',' +
-                      csv(sequencePayloadString(node, "voice")) + "\r\n";
+                      csv(sequencePayloadString(node, "speaker")) + ',' + csv(sequencePayloadString(node, "text")) +
+                      ',' + csv(sequencePayloadString(node, "voice")) + "\r\n";
         }
     return output;
 }

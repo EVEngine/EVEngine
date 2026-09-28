@@ -251,8 +251,7 @@ TEST_CASE("rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes") 
 
     eve::dnut::StepKindRegistry dialogueRegistry;
     eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
-    auto compiled =
-        eve::dnut::compileDnutConversations(source.str(), dialoguePath.string(), dialogueRegistry);
+    auto compiled = eve::dnut::compileDnutConversations(source.str(), dialoguePath.string(), dialogueRegistry);
     REQUIRE(!compiled.hasErrors());
     auto assets = std::move(compiled.assets);
     CHECK_EQ(assets.size(), std::size_t(9));
@@ -350,10 +349,10 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
 
     eve::dnut::StepKindRegistry dialogueRegistry;
     eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
-    auto compiled = eve::dnut::compileDnutConversations(
-        readFile(root / "village-dialogue.dnut"), "village-dialogue.dnut", dialogueRegistry);
+    auto compiled = eve::dnut::compileDnutConversations(readFile(root / "village-dialogue.dnut"),
+                                                        "village-dialogue.dnut", dialogueRegistry);
     REQUIRE(!compiled.hasErrors());
-    auto assets = std::move(compiled.assets);
+    auto  assets       = std::move(compiled.assets);
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);
     localization->clear();

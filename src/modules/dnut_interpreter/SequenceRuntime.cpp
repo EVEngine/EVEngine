@@ -137,9 +137,7 @@ void SequenceRuntime::registerCommand(std::string name, SequenceCommandHandler h
     if (!name.empty() && handler) commandHandlers_[std::move(name)] = std::move(handler);
 }
 
-void SequenceRuntime::unregisterCommand(std::string_view name) {
-    commandHandlers_.erase(std::string(name));
-}
+void SequenceRuntime::unregisterCommand(std::string_view name) { commandHandlers_.erase(std::string(name)); }
 
 eve::Result<void> SequenceRuntime::start(const SequenceAsset* asset, eve::Value bindings) {
     if (!asset) return fail(eve::DiagnosticCode::InvalidArgument, "sequence: null asset", "asset");
@@ -177,8 +175,7 @@ eve::Result<void> SequenceRuntime::start(const SequenceAsset* asset, eve::Value 
             }
         if (!declared)
             return fail(eve::DiagnosticCode::InvalidArgument,
-                        "sequence '" + asset->id + "': undeclared binding '" + key + "'",
-                        "bindings." + key);
+                        "sequence '" + asset->id + "': undeclared binding '" + key + "'", "bindings." + key);
     }
 
     ExecutionState before = captureExecutionState();
@@ -186,7 +183,7 @@ eve::Result<void> SequenceRuntime::start(const SequenceAsset* asset, eve::Value 
     lastConditionResult_.reset();
     lastStepResult_ = eve::Value{};
     asset_       = asset;
-    bindings_    = std::move(resolvedBindings);
+    bindings_       = std::move(resolvedBindings);
     locals_      = eve::Value::Object{};
     callStack_.clear();
     blocked_     = false;
@@ -233,8 +230,8 @@ eve::Result<std::string> SequenceRuntime::evaluateRoute(const SequenceNode& node
         SequenceConditionOutcome outcome = conditionEvaluator_(route.condition);
         lastConditionResult_             = outcome;
         if (!outcome.error.empty())
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, outcome.error, "condition", {}, "dnut.runtime"));
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, outcome.error, "condition", {}, "dnut.runtime"));
         if (outcome.passed) return eve::Result<std::string>::success(route.target);
     }
     return eve::Result<std::string>::success(node.next);
@@ -345,9 +342,9 @@ eve::Result<void> SequenceRuntime::runUntilBlockedImpl() {
             request.name      = name->asString();
             if (const eve::Value* arguments = node->payload.find("arguments"); arguments && arguments->isObject())
                 request.arguments = *arguments;
-            request.bindings = bindings_;
-            request.locals   = locals_;
-            request.payload  = node->payload;
+            request.bindings    = bindings_;
+            request.locals      = locals_;
+            request.payload     = node->payload;
             lastCommandRequest_ = request;
             SequenceCommandResponse response =
                 named != commandHandlers_.end() ? named->second(request) : commandDispatcher_(request);
@@ -406,7 +403,7 @@ eve::Result<void> SequenceRuntime::advance() {
     if (node->type == "choice")
         return fail(eve::DiagnosticCode::PreconditionViolation,
                     "sequence: select a choice route instead of advancing", "advance");
-    ExecutionState before = captureExecutionState();
+    ExecutionState    before = captureExecutionState();
     const std::string next = node->next;
     waitingStep_           = false;
     if (auto entered = enter(next); !entered.ok()) {
@@ -418,9 +415,7 @@ eve::Result<void> SequenceRuntime::advance() {
     return ran;
 }
 
-eve::Result<void> SequenceRuntime::select(std::string_view routeLabel) {
-    return selectImpl(routeLabel);
-}
+eve::Result<void> SequenceRuntime::select(std::string_view routeLabel) { return selectImpl(routeLabel); }
 
 eve::Result<void> SequenceRuntime::selectRouteForTransaction(std::string_view routeLabel) {
     return selectImpl(routeLabel);
@@ -440,8 +435,7 @@ eve::Result<void> SequenceRuntime::selectImpl(std::string_view routeLabel) {
                             "sequence: choice condition requires an evaluator", "route.condition");
             SequenceConditionOutcome outcome = conditionEvaluator_(route.condition);
             lastConditionResult_             = outcome;
-            if (!outcome.error.empty())
-                return fail(eve::DiagnosticCode::Failed, outcome.error, "route.condition");
+            if (!outcome.error.empty()) return fail(eve::DiagnosticCode::Failed, outcome.error, "route.condition");
             if (!outcome.passed)
                 return fail(eve::DiagnosticCode::Conflict,
                             "sequence: choice condition rejected (" +
@@ -506,11 +500,11 @@ eve::Result<void> SequenceRuntime::resumeCommand(std::string_view requestId, eve
 eve::Result<void> SequenceRuntime::resumeCommandImpl(std::string_view requestId, eve::Value result) {
     const SequenceNode* node = currentNode();
     if (!node || !blocked_ || !waitingCommand_ || node->type != "command")
-        return fail(eve::DiagnosticCode::DialogueNotWaitingForCommand,
-                    "sequence: runtime is not waiting for a command", "command");
+        return fail(eve::DiagnosticCode::DialogueNotWaitingForCommand, "sequence: runtime is not waiting for a command",
+                    "command");
     if (requestId.empty() || requestId != pendingCommandRequestId_)
-        return fail(eve::DiagnosticCode::Conflict,
-                    "sequence: command request id is stale or does not match", "command.requestId");
+        return fail(eve::DiagnosticCode::Conflict, "sequence: command request id is stale or does not match",
+                    "command.requestId");
 
     ExecutionState before = captureExecutionState();
 
@@ -518,9 +512,9 @@ eve::Result<void> SequenceRuntime::resumeCommandImpl(std::string_view requestId,
     if (!resultLocal) resultLocal = node->payload.find("result");
     if (resultLocal && resultLocal->isString() && !resultLocal->asString().empty())
         locals_.set(resultLocal->asString(), result);
-    lastStepResult_         = std::move(result);
-    blocked_                = false;
-    waitingCommand_         = false;
+    lastStepResult_ = std::move(result);
+    blocked_        = false;
+    waitingCommand_ = false;
     pendingCommandRequestId_.clear();
 
     std::string error;
@@ -533,8 +527,8 @@ eve::Result<void> SequenceRuntime::resumeCommandImpl(std::string_view requestId,
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     restoreExecutionState(std::move(before));
-    return fail(eve::DiagnosticCode::Failed,
-                error.empty() ? "sequence: command resume failed" : std::move(error), "command");
+    return fail(eve::DiagnosticCode::Failed, error.empty() ? "sequence: command resume failed" : std::move(error),
+                "command");
 }
 
 eve::Result<void> SequenceRuntime::captureState(eve::Value& out) const {
@@ -564,8 +558,8 @@ eve::Result<void> SequenceRuntime::restoreState(const eve::Value& in) {
     const eve::Value* schemaVersion = in.find("schemaVersion");
     if (!schema || !schema->isString() || schema->asString() != SaveSchema || !schemaVersion ||
         !schemaVersion->isInt64() || schemaVersion->asInt() != SaveVersion)
-        return fail(eve::DiagnosticCode::UnknownVersion,
-                    "sequence: unsupported runtime save schema or version", "state.schemaVersion");
+        return fail(eve::DiagnosticCode::UnknownVersion, "sequence: unsupported runtime save schema or version",
+                    "state.schemaVersion");
     const eve::Value* active = in.find("active");
     if (!active || !active->isBool())
         return fail(eve::DiagnosticCode::InvalidArgument, "sequence: runtime state is missing 'active'", "state");
@@ -633,8 +627,7 @@ eve::Result<void> SequenceRuntime::restoreState(const eve::Value& in) {
     const eve::Value* commandSequence  = in.find("commandSequence");
     if (!pendingRequestId || !pendingRequestId->isString() || !commandSequence || !commandSequence->isInt64() ||
         commandSequence->asInt() < 1)
-        return fail(eve::DiagnosticCode::InvalidArgument,
-                    "sequence: pending command state is malformed", "state");
+        return fail(eve::DiagnosticCode::InvalidArgument, "sequence: pending command state is malformed", "state");
     const bool restoredWaitingCommand = waitingCommand && waitingCommand->asBool();
     if (restoredWaitingCommand != !pendingRequestId->asString().empty())
         return fail(eve::DiagnosticCode::InvalidArgument,
@@ -643,8 +636,8 @@ eve::Result<void> SequenceRuntime::restoreState(const eve::Value& in) {
         return fail(eve::DiagnosticCode::NotFound, "sequence: saved node '" + nodeId + "' is missing", "state.node");
     const SequenceNode* restoredNode = restoredAsset->findNode(nodeId);
     if (restoredWaitingCommand && (!restoredNode || restoredNode->type != "command"))
-        return fail(eve::DiagnosticCode::InvalidArgument,
-                    "sequence: pending command cursor is not a command node", "state.node");
+        return fail(eve::DiagnosticCode::InvalidArgument, "sequence: pending command cursor is not a command node",
+                    "state.node");
 
     asset_       = restoredAsset;
     nodeId_      = std::move(nodeId);
@@ -652,24 +645,23 @@ eve::Result<void> SequenceRuntime::restoreState(const eve::Value& in) {
     locals_      = *savedLocals;
     blocked_     = blocked->asBool();
     waitingStep_ = waitingStep && waitingStep->asBool();
-    waitingCommand_ = restoredWaitingCommand;
+    waitingCommand_          = restoredWaitingCommand;
     pendingCommandRequestId_ = pendingRequestId->asString();
-    commandSequence_ = static_cast<std::uint64_t>(commandSequence->asInt());
+    commandSequence_         = static_cast<std::uint64_t>(commandSequence->asInt());
     callStack_   = std::move(restoredStack);
     failureText_.clear();
     lastCommandRequest_.reset();
     if (waitingCommand_) {
         SequenceCommandRequest request;
-        request.requestId = pendingCommandRequestId_;
+        request.requestId      = pendingCommandRequestId_;
         const eve::Value* name = restoredNode->payload.find("name");
         if (!name) name = restoredNode->payload.find("target");
         request.name = name && name->isString() ? name->asString() : std::string{};
-        if (const eve::Value* arguments = restoredNode->payload.find("arguments");
-            arguments && arguments->isObject())
+        if (const eve::Value* arguments = restoredNode->payload.find("arguments"); arguments && arguments->isObject())
             request.arguments = *arguments;
-        request.bindings = bindings_;
-        request.locals   = locals_;
-        request.payload  = restoredNode->payload;
+        request.bindings    = bindings_;
+        request.locals      = locals_;
+        request.payload     = restoredNode->payload;
         lastCommandRequest_ = std::move(request);
         emit(EventKind::Blocked, restoredNode, "command");
     }

@@ -24,10 +24,9 @@ public:
     std::string resolveVoice(const std::string& key, const std::string& locale, const std::string& fallback) const;
     std::string resolveStatus(const std::string& key, const std::string& locale) const;
     double      resolveDuration(const std::string& key, const std::string& locale) const;
-    std::string exportMissingCsv(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                 const std::string& locale) const;
+    std::string exportMissingCsv(const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const;
     std::string exportVoiceRecordingCsv(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                        const std::string& locale) const;
+                                        const std::string&                           locale) const;
     void        clear() { entries_.clear(); }
 
 private:

@@ -47,7 +47,7 @@ struct SequenceRoute {
     std::string label;
     eve::Value  condition;
     std::string target;
-    eve::Value  payload = eve::Value::Object{};
+    eve::Value  payload      = eve::Value::Object{};
     int         sourceLine   = 0;
     int         sourceColumn = 0;
 };
@@ -79,8 +79,8 @@ struct EVENGINE_API_PLATFORM SequenceAsset {
     std::string              entry;
     std::vector<SequenceParameter> parameters;
     std::vector<SequenceNode> nodes;
-    int                      sourceLine   = 0;
-    int                      sourceColumn = 0;
+    int                            sourceLine   = 0;
+    int                            sourceColumn = 0;
 
     /**
      * @brief Find one node by its stable identifier.

@@ -124,8 +124,7 @@ SequenceAsset makeFacadeAsset() {
     SequenceNode branch;
     branch.id   = "branch";
     branch.type = "branch";
-    branch.routes.push_back(
-        {"custom", Value::Object{{"policy", Value("facade.test")}}, "operation"});
+    branch.routes.push_back({"custom", Value::Object{{"policy", Value("facade.test")}}, "operation"});
     branch.routes.push_back({"else", {}, "end"});
 
     SequenceNode operation;
@@ -321,7 +320,7 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
     CHECK(mutation.lastCount == 1);
     CHECK(mutation.lastContext.transactionId == "tx-facade");
 
-    SequenceAsset asset        = makeFacadeAsset();
+    SequenceAsset     asset    = makeFacadeAsset();
     auto*             document = new eve::dialogue::ConversationDocument(asset);
     CHECK(flow.applyDocumentChecked(document).ok());
     delete document;

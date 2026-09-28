@@ -129,8 +129,7 @@ eve::Result<void> dialogueFailure(eve::DiagnosticCode code, std::string message,
 
 class DialogueSelectionParticipant final : public eve::transaction::ITransactionParticipant {
 public:
-    DialogueSelectionParticipant(eve::dnut::SequenceRuntime& runner, std::string routeId,
-                                 eve::Value before)
+    DialogueSelectionParticipant(eve::dnut::SequenceRuntime& runner, std::string routeId, eve::Value before)
         : runner_(runner), routeId_(std::move(routeId)), before_(std::move(before)) {}
 
     [[nodiscard]] std::string_view  name() const noexcept override { return "dialogue.choice"; }
@@ -151,7 +150,7 @@ public:
         auto selected = runner_.selectRouteForTransaction(routeId_);
         if (!selected.ok()) {
             std::string error = selected.status().describe();
-            auto restored = runner_.restoreState(before_);
+            auto        restored = runner_.restoreState(before_);
             if (!restored && error.empty()) error = restored.status().describe();
             return dialogueFailure(eve::DiagnosticCode::Failed,
                                    error.empty() ? "dialogue choice selection failed" : error, "route");
@@ -263,18 +262,17 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
             auto evaluated = evaluate(specification.asString(), toDialogueStateValue(runner_.bindings()),
                                       toDialogueStateValue(runner_.locals()));
             if (!evaluated.ok())
-                return eve::dnut::SequenceConditionOutcome{
-                    false, "expression_failed", evaluated.status().describe()};
+                return eve::dnut::SequenceConditionOutcome{false, "expression_failed", evaluated.status().describe()};
             StateValue value = std::move(evaluated).takeValue();
             if (!value.isBool())
-                return eve::dnut::SequenceConditionOutcome{
-                    false, "expression_type", "dialogue expression did not return bool"};
+                return eve::dnut::SequenceConditionOutcome{false, "expression_type",
+                                                           "dialogue expression did not return bool"};
             return eve::dnut::SequenceConditionOutcome{value.asBool(), value.asBool() ? "" : "expression_false", {}};
         }
         eve::decision::ConditionResult result = configuredConditionEvaluator_
                                                     ? configuredConditionEvaluator_(specification)
                                                     : stateContext_.evaluate(specification);
-        lastConditionResult_ = result;
+        lastConditionResult_                  = result;
         return eve::dnut::SequenceConditionOutcome{
             result.passed(), std::string(eve::decision::conditionReasonCodeName(result.reasonCode())), {}};
     });
@@ -283,19 +281,19 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
 }
 
 void DialogueFlow::updateRuntimeCommandDispatcher() {
-    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ ||
-        stateMutationProvider_ || manualCommandMode_) {
+    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_ ||
+        manualCommandMode_) {
         runner_.setCommandDispatcher([this](const eve::dnut::SequenceCommandRequest& request) {
             eve::dnut::SequenceCommandResponse response;
-            auto decoded = decodeDialogueCommandRequest(request);
+            auto                               decoded = decodeDialogueCommandRequest(request);
             if (!decoded.ok()) {
                 response.status = eve::dnut::SequenceCommandResponse::Status::Failed;
                 response.error  = decoded.status().describe();
                 return response;
             }
             CommandResponse domain = dispatchCommand(std::move(decoded).takeValue());
-            response.value = std::move(domain.value);
-            response.error = std::move(domain.error);
+            response.value         = std::move(domain.value);
+            response.error         = std::move(domain.error);
             if (domain.status == CommandResponse::Status::Blocked)
                 response.status = eve::dnut::SequenceCommandResponse::Status::Blocked;
             else if (domain.status == CommandResponse::Status::Failed)
@@ -448,7 +446,7 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
         }
         activeState = std::move(captured).takeValue();
     }
-    std::vector<eve::dnut::SequenceAsset> previous = assets_;
+    std::vector<eve::dnut::SequenceAsset> previous             = assets_;
     auto candidatePoolSources = sourcePools_;
     candidatePoolSources[path] = std::move(document.poolRoot);
     DataValue candidatePoolWorkspace;
@@ -540,13 +538,11 @@ eve::Result<void> DialogueFlow::lintAllChecked() {
         for (const auto& node : asset.nodes) {
             const std::string assetPath = asset.id + "/" + node.id;
             if (node.type == "line") {
-                if (!sequencePayloadString(node, "text").empty() &&
-                    sequencePayloadString(node, "i18n").empty())
+                if (!sequencePayloadString(node, "text").empty() && sequencePayloadString(node, "i18n").empty())
                     diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
                                             node.sourceLine, "line has display text but no localization key",
                                             "MissingLocalizationReference", node.sourceColumn, assetPath});
-                if (!sequencePayloadString(node, "speaker").empty() &&
-                    sequencePayloadString(node, "voice").empty())
+                if (!sequencePayloadString(node, "speaker").empty() && sequencePayloadString(node, "voice").empty())
                     diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
                                             node.sourceLine, "spoken line has no voice reference",
                                             "MissingVoiceReference", node.sourceColumn, assetPath});
@@ -555,15 +551,15 @@ eve::Result<void> DialogueFlow::lintAllChecked() {
                 for (const auto& route : node.routes)
                     if (!sequenceRoutePayloadString(route, "text").empty() &&
                         sequenceRoutePayloadString(route, "i18n").empty())
-                        diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
-                                                route.sourceLine, "choice route has display text but no localization key",
-                                                "MissingLocalizationReference", route.sourceColumn,
-                                                assetPath + "/" + route.label});
+                        diagnostics_.push_back(
+                            {ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>", route.sourceLine,
+                             "choice route has display text but no localization key", "MissingLocalizationReference",
+                             route.sourceColumn, assetPath + "/" + route.label});
             }
             if (node.type != "command") continue;
-            auto payment = decodeSequencePayment(node.payload);
-            auto mutations = decodeSequenceStateMutations(node.payload);
-            const bool paymentOk = payment.ok();
+            auto       payment     = decodeSequencePayment(node.payload);
+            auto       mutations   = decodeSequenceStateMutations(node.payload);
+            const bool paymentOk   = payment.ok();
             const bool mutationsOk = mutations.ok();
             if (!paymentOk || !mutationsOk) {
                 diagnostics_.push_back({ConversationDiagnostic::Severity::Error, "<dialogue-workspace>",
@@ -572,14 +568,12 @@ eve::Result<void> DialogueFlow::lintAllChecked() {
                 valid = false;
                 continue;
             }
-            const PaymentSpec decodedPayment = std::move(payment).takeValue();
+            const PaymentSpec                     decodedPayment   = std::move(payment).takeValue();
             const std::vector<eve::StateMutation> decodedMutations = std::move(mutations).takeValue();
-            const bool transactional = !decodedPayment.empty() || !decodedMutations.empty();
-            const bool gameplay =
-                sequencePayloadString(node, "kind") == "gameplay";
-            const bool legacyHandler = !gameplay
-                                           ? static_cast<bool>(operationRequestHandler_)
-                                           : static_cast<bool>(gameplayActionHandler_);
+            const bool                            transactional = !decodedPayment.empty() || !decodedMutations.empty();
+            const bool                            gameplay      = sequencePayloadString(node, "kind") == "gameplay";
+            const bool                            legacyHandler =
+                !gameplay ? static_cast<bool>(operationRequestHandler_) : static_cast<bool>(gameplayActionHandler_);
             bool handled = false;
             if (!transactional)
                 handled = legacyHandler || manualCommandMode_ || static_cast<bool>(commandParticipantFactory_);
@@ -785,8 +779,7 @@ eve::Result<int> DialogueFlow::validateLocalization(const eve::i18n::I18n& local
             if (key.empty()) continue;
             if (!localization.hasInLanguage(locale, key))
                 return eve::Result<int>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::NotFound,
-                    "dialogue localization key is missing from the exact locale: " + key,
+                    eve::DiagnosticCode::NotFound, "dialogue localization key is missing from the exact locale: " + key,
                     "dialogue." + asset.id + "." + node.id + ".i18n", {}, "dialogue.localization"));
             ++validated;
         }
@@ -905,10 +898,9 @@ eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     if (!paymentResult.ok()) return eve::Result<void>::failure(paymentResult.status());
     auto mutationResult = decodeSequenceStateMutations(route->payload);
     if (!mutationResult.ok()) return eve::Result<void>::failure(mutationResult.status());
-    PaymentSpec payment = std::move(paymentResult).takeValue();
+    PaymentSpec                     payment   = std::move(paymentResult).takeValue();
     std::vector<eve::StateMutation> mutations = std::move(mutationResult).takeValue();
-    if (payment.empty() && mutations.empty())
-        return runner_.selectRouteForTransaction(routeId);
+    if (payment.empty() && mutations.empty()) return runner_.selectRouteForTransaction(routeId);
     if (!stateMutationProvider_ && !mutations.empty()) {
         return dialogueFailure(eve::DiagnosticCode::Unsupported,
                                "dialogue choice state mutations require a StatePatch-compatible provider",
@@ -916,7 +908,7 @@ eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     }
 
     eve::Value before;
-    auto captured = runner_.captureState(before);
+    auto       captured = runner_.captureState(before);
     if (!captured.ok()) return eve::Result<void>::failure(captured.status());
     DialogueSelectionParticipant                            selection(runner_, routeId, std::move(before));
     std::unique_ptr<DialogueStateMutationParticipant>       state;
@@ -1015,9 +1007,9 @@ std::string DialogueFlow::getNodeKind() const {
     return node ? node->type : std::string{};
 }
 
-#define EVE_FLOW_NODE_STRING(method, field)                         \
-    std::string DialogueFlow::method() const {                      \
-        const auto* node = runner_.currentNode();                   \
+#define EVE_FLOW_NODE_STRING(method, field)                                \
+    std::string DialogueFlow::method() const {                             \
+        const auto* node = runner_.currentNode();                          \
         return node ? sequencePayloadString(*node, field) : std::string{}; \
     }
 EVE_FLOW_NODE_STRING(getSpeaker, "speaker")
@@ -1029,11 +1021,9 @@ std::string DialogueFlow::getText() {
     const auto* node = runner_.currentNode();
     if (!node) return {};
     const std::string localized =
-        localization_.resolveText(sequencePayloadString(*node, "i18n"), locale_,
-                                  sequencePayloadString(*node, "text"));
+        localization_.resolveText(sequencePayloadString(*node, "i18n"), locale_, sequencePayloadString(*node, "text"));
     return textRenderer_.render(localized, runner_.bindings(), runner_.locals(), [this](const std::string& rule) {
-        auto result = evaluate(rule, toDialogueStateValue(runner_.bindings()),
-                               toDialogueStateValue(runner_.locals()));
+        auto result = evaluate(rule, toDialogueStateValue(runner_.bindings()), toDialogueStateValue(runner_.locals()));
         if (!result) {
             failureMessage_ = result.status().describe();
             return false;
@@ -1057,8 +1047,7 @@ std::string DialogueFlow::getVoiceStatus() const {
 
 float DialogueFlow::getVoiceDuration() const {
     const auto* node = runner_.currentNode();
-    return node ? static_cast<float>(
-                      localization_.resolveDuration(sequencePayloadString(*node, "i18n"), locale_))
+    return node ? static_cast<float>(localization_.resolveDuration(sequencePayloadString(*node, "i18n"), locale_))
                 : 0.0F;
 }
 
@@ -1133,7 +1122,7 @@ std::string DialogueFlow::getRouteText(int index) const {
     const auto* node = runner_.currentNode();
     if (!node || index < 0 || static_cast<size_t>(index) >= node->routes.size()) return {};
     const auto& route = node->routes[static_cast<size_t>(index)];
-    const std::string text = sequenceRoutePayloadString(route, "text");
+    const std::string text  = sequenceRoutePayloadString(route, "text");
     return localization_.resolveText(sequenceRoutePayloadString(route, "i18n"), locale_,
                                      text.empty() ? route.label : text);
 }
@@ -1149,7 +1138,7 @@ eve::Result<void> DialogueFlow::restoreStateChecked(const StateValue& in) {
 
 eve::Result<StateValue> DialogueFlow::captureStateChecked() const {
     eve::Value captured;
-    auto result = runner_.captureState(captured);
+    auto       result = runner_.captureState(captured);
     if (!result.ok()) return eve::Result<StateValue>::failure(result.status());
     return eve::Result<StateValue>::success(toDialogueStateValue(captured));
 }

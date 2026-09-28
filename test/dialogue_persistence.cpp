@@ -83,8 +83,8 @@ TEST_CASE("dialoguePersistence.migratesCurrentAndCallFrames") {
 
 TEST_CASE("dialoguePersistence.rejectsLegacyUnversionedState") {
     eve::dnut::SequenceRuntime runner;
-    Value                      legacy = Value::Object{{"active", Value(false)}};
-    auto rejected = runner.restoreState(legacy);
+    Value                      legacy   = Value::Object{{"active", Value(false)}};
+    auto                       rejected = runner.restoreState(legacy);
     CHECK(!rejected.ok());
     CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
 }

@@ -56,7 +56,7 @@ std::string assetIdFromPath(const std::string& path) {
 
 bool parseLink(const std::string& text, std::string& label, std::string& target) {
     if (text.size() < 4 || text.substr(0, 2) != "[[" || text.substr(text.size() - 2) != "]]") return false;
-    const std::string body = trim(text.substr(2, text.size() - 4));
+    const std::string body  = trim(text.substr(2, text.size() - 4));
     std::size_t       split = body.find("->");
     std::size_t       width = 2;
     if (split == std::string::npos) {
@@ -82,8 +82,7 @@ bool parseLink(const std::string& text, std::string& label, std::string& target)
 
 std::string commandArgument(const std::string& text, const std::string& command) {
     const std::string prefix = "<<" + command;
-    if (text.rfind(prefix, 0) != 0 || text.size() < prefix.size() + 2 ||
-        text.substr(text.size() - 2) != ">>")
+    if (text.rfind(prefix, 0) != 0 || text.size() < prefix.size() + 2 || text.substr(text.size() - 2) != ">>")
         return {};
     return trim(text.substr(prefix.size(), text.size() - prefix.size() - 2));
 }
@@ -91,9 +90,8 @@ std::string commandArgument(const std::string& text, const std::string& command)
 void consumeLineTags(std::string& text, eve::dnut::SequenceNode& node) {
     std::size_t tag = text.find(" #");
     while (tag != std::string::npos) {
-        const std::size_t end = text.find(' ', tag + 2);
-        const std::string value =
-            text.substr(tag + 2, end == std::string::npos ? std::string::npos : end - tag - 2);
+        const std::size_t end   = text.find(' ', tag + 2);
+        const std::string value = text.substr(tag + 2, end == std::string::npos ? std::string::npos : end - tag - 2);
         if (value.rfind("line:", 0) == 0) node.payload.set("i18n", eve::Value::string(value.substr(5)));
         if (value.rfind("voice:", 0) == 0) node.payload.set("voice", eve::Value::string(value.substr(6)));
         text.erase(tag, end == std::string::npos ? std::string::npos : end - tag);
@@ -102,9 +100,8 @@ void consumeLineTags(std::string& text, eve::dnut::SequenceNode& node) {
     text = trim(text);
 }
 
-void addDiagnostic(std::vector<ConversationDiagnostic>& diagnostics,
-                   ConversationDiagnostic::Severity severity, const std::string& path, int line,
-                   const std::string& message) {
+void addDiagnostic(std::vector<ConversationDiagnostic>& diagnostics, ConversationDiagnostic::Severity severity,
+                   const std::string& path, int line, const std::string& message) {
     diagnostics.push_back({severity, path, line, message});
 }
 
@@ -115,16 +112,12 @@ eve::dnut::SequenceRoute route(std::string label, std::string target) {
     return value;
 }
 
-bool isSequential(const std::string& type) {
-    return type == "line" || type == "command" || type == "wait";
-}
+bool isSequential(const std::string& type) { return type == "line" || type == "command" || type == "wait"; }
 
 bool buildAsset(const std::vector<Passage>& passages, const std::string& path,
-                std::vector<eve::dnut::SequenceAsset>& assets,
-                std::vector<ConversationDiagnostic>& diagnostics) {
+                std::vector<eve::dnut::SequenceAsset>& assets, std::vector<ConversationDiagnostic>& diagnostics) {
     if (passages.empty()) {
-        addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Error, path, 0,
-                      "no dialogue passages found");
+        addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Error, path, 0, "no dialogue passages found");
         return false;
     }
     eve::dnut::SequenceAsset asset;
@@ -141,7 +134,7 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path,
         std::size_t                          index = 0;
         for (std::size_t bodyIndex = 0; bodyIndex < passage.body.size();) {
             const auto& [lineNumber, raw] = passage.body[bodyIndex];
-            const std::string text = trim(raw);
+            const std::string text        = trim(raw);
             if (text.empty() || text == "---" || text == "===") {
                 ++bodyIndex;
                 continue;
@@ -206,8 +199,8 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path,
                 } else {
                     node.payload.set("text", eve::Value::string(lineText));
                     if (lineText.find("[[") != std::string::npos)
-                        addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Warning, path,
-                                      lineNumber, "inline passage links are imported as text");
+                        addDiagnostic(diagnostics, ConversationDiagnostic::Severity::Warning, path, lineNumber,
+                                      "inline passage links are imported as text");
                 }
             }
             nodes.push_back(std::move(node));
@@ -267,28 +260,26 @@ std::vector<Passage> parseYarnPassages(const std::string& source) {
 }  // namespace
 
 eve::Result<std::vector<eve::dnut::SequenceAsset>> importYarnConversation(
-    const std::string& source, const std::string& path,
-    std::vector<ConversationDiagnostic>& diagnostics) {
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
     std::vector<eve::dnut::SequenceAsset> assets;
     if (!buildAsset(parseYarnPassages(source), path, assets, diagnostics)) {
         const std::string message = diagnostics.empty() ? "Yarn import failed" : diagnostics.front().message;
-        return eve::Result<std::vector<eve::dnut::SequenceAsset>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.yarn"));
+        return eve::Result<std::vector<eve::dnut::SequenceAsset>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.yarn"));
     }
     return eve::Result<std::vector<eve::dnut::SequenceAsset>>::success(std::move(assets));
 }
 
 eve::Result<std::vector<eve::dnut::SequenceAsset>> importTweeConversation(
-    const std::string& source, const std::string& path,
-    std::vector<ConversationDiagnostic>& diagnostics) {
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
     std::vector<Passage> passages;
     Passage              current;
     for (const auto& [number, raw] : splitLines(source)) {
         const std::string text = trim(raw);
         if (text.rfind("::", 0) == 0) {
             if (!current.title.empty()) passages.push_back(std::move(current));
-            current       = {};
-            current.title = trim(text.substr(2));
+            current                = {};
+            current.title          = trim(text.substr(2));
             const std::size_t tags = current.title.find(" [");
             if (tags != std::string::npos) current.title = trim(current.title.substr(0, tags));
             current.line = number;
@@ -305,8 +296,8 @@ eve::Result<std::vector<eve::dnut::SequenceAsset>> importTweeConversation(
     std::vector<eve::dnut::SequenceAsset> assets;
     if (!buildAsset(passages, path, assets, diagnostics)) {
         const std::string message = diagnostics.empty() ? "Twee import failed" : diagnostics.front().message;
-        return eve::Result<std::vector<eve::dnut::SequenceAsset>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.twee"));
+        return eve::Result<std::vector<eve::dnut::SequenceAsset>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.twee"));
     }
     return eve::Result<std::vector<eve::dnut::SequenceAsset>>::success(std::move(assets));
 }

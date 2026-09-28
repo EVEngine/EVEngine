@@ -78,8 +78,7 @@ eve::Result<void> SequenceAsset::validate() const {
                                 "nodes." + node.id + ".payload");
         for (const auto& route : node.routes) {
             if (!route.payload.isObject())
-                return assetFailure(eve::DiagnosticCode::InvariantViolation,
-                                    "sequence route payload must be an object",
+                return assetFailure(eve::DiagnosticCode::InvariantViolation, "sequence route payload must be an object",
                                     "nodes." + node.id + ".routes");
         }
     }

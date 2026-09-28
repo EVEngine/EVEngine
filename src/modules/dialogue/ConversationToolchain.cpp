@@ -19,8 +19,8 @@ void rewriteNodeReference(std::string& reference, const std::string& oldId, cons
 }  // namespace
 
 eve::Result<void> lintConversationWorkspace(const std::vector<eve::dnut::SequenceAsset>& assets,
-                                            const std::string& label,
-                                            std::vector<ConversationDiagnostic>& diagnostics) {
+                                            const std::string&                           label,
+                                            std::vector<ConversationDiagnostic>&         diagnostics) {
     const size_t                    diagnosticsBegin = diagnostics.size();
     auto                            linted           = lintConversations(assets, label, diagnostics);
     bool                            valid            = linted.ok();
@@ -39,9 +39,8 @@ eve::Result<void> lintConversationWorkspace(const std::vector<eve::dnut::Sequenc
                 valid = false;
                 continue;
             }
-            const auto target = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate) {
-                return candidate.id == targetId;
-            });
+            const auto        target    = std::find_if(assets.begin(), assets.end(),
+                                                       [&](const auto& candidate) { return candidate.id == targetId; });
             const eve::Value* arguments = node.payload.find("arguments");
             for (const auto& parameter : target->parameters) {
                 if (parameter.required && (!arguments || !arguments->find(parameter.name))) {
@@ -80,8 +79,7 @@ eve::Result<void> lintConversationWorkspace(const std::vector<eve::dnut::Sequenc
     return eve::Result<void>::success();
 }
 
-eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>& assets,
-                                          const std::string& oldId,
+eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& oldId,
                                           const std::string& newId) {
     if (oldId.empty() || newId.empty()) return renameFailure("conversation IDs must not be empty", oldId);
     auto source = std::find_if(assets.begin(), assets.end(), [&](const auto& asset) { return asset.id == oldId; });
@@ -97,8 +95,7 @@ eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>&
     return eve::Result<void>::success();
 }
 
-eve::Result<void> renameConversationNode(std::vector<eve::dnut::SequenceAsset>& assets,
-                                         const std::string& assetId,
+eve::Result<void> renameConversationNode(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& assetId,
                                          const std::string& oldId, const std::string& newId) {
     if (oldId.empty() || newId.empty()) return renameFailure("node IDs must not be empty", assetId);
     auto asset = std::find_if(assets.begin(), assets.end(), [&](const auto& item) { return item.id == assetId; });

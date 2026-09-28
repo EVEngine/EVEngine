@@ -158,8 +158,8 @@ double ConversationLocalizationCatalog::resolveDuration(const std::string& key, 
     return entry ? entry->duration : 0.0;
 }
 
-std::string ConversationLocalizationCatalog::exportMissingCsv(
-    const std::vector<eve::dnut::SequenceAsset>& assets, const std::string& locale) const {
+std::string ConversationLocalizationCatalog::exportMissingCsv(const std::vector<eve::dnut::SequenceAsset>& assets,
+                                                              const std::string& locale) const {
     std::string out = "conversation_id,node_id,i18n_key,locale,source_text,translation\r\n";
     for (const auto& asset : assets)
         for (const auto& node : asset.nodes) {
@@ -183,9 +183,8 @@ std::string ConversationLocalizationCatalog::exportVoiceRecordingCsv(
             const std::string key   = stableKey(asset, node);
             const auto*       entry = find(key, locale);
             out += quote(asset.id) + ',' + quote(node.id) + ',' + quote(key) + ',' + quote(locale) + ',' +
-                   quote(sequencePayloadString(node, "speaker")) + ',' +
-                   quote(sequencePayloadString(node, "text")) + ',' +
-                   quote(entry ? entry->text : std::string{}) + ',' +
+                   quote(sequencePayloadString(node, "speaker")) + ',' + quote(sequencePayloadString(node, "text")) +
+                   ',' + quote(entry ? entry->text : std::string{}) + ',' +
                    quote(entry && !entry->voice.empty() ? entry->voice : sequencePayloadString(node, "voice")) + ',' +
                    quote(entry ? entry->status : std::string{}) + ',' +
                    quote(entry && entry->duration > 0.0 ? std::to_string(entry->duration) : std::string{}) + "\r\n";
