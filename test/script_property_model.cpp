@@ -27,6 +27,10 @@ class ModelHero extends ModelBase {
     alive = true
     tags = ["player", "hero"]
     stats = { armor = 3 }
+    </ editor = "color" />
+    tint = [1.0, 0.5, 0.25, 1.0]
+    </ editor = "vec2" />
+    size = [2.0, 3.0]
 }
 )SQ";
 
@@ -67,7 +71,8 @@ TEST_CASE("property_access.reflection_builds_shared_schema_and_structured_values
     auto tagsRef = model.schema().find("tags");
     REQUIRE(tagsRef.has_value());
     const PropertyDescriptor *tags = &tagsRef->get();
-    CHECK(hasFlag(tags->flags, PropertyFlag::ReadOnly));
+    CHECK(!hasFlag(tags->flags, PropertyFlag::ReadOnly));
+    CHECK(static_cast<int>(tags->kind) == static_cast<int>(PropertyKind::Array));
     const std::optional<Value> tagValue = model.read("tags");
     REQUIRE(tagValue.has_value());
     const Value::Array *tagArray = tagValue->getIf<Value::Array>();
@@ -79,6 +84,15 @@ TEST_CASE("property_access.reflection_builds_shared_schema_and_structured_values
     const Value::Object *stats = statsValue->getIf<Value::Object>();
     REQUIRE(stats != nullptr);
     CHECK(stats->contains("armor"));
+
+    auto tintRef = model.schema().find("tint");
+    REQUIRE(tintRef.has_value());
+    CHECK(static_cast<int>(tintRef->get().kind) == static_cast<int>(PropertyKind::Color));
+    CHECK(!hasFlag(tintRef->get().flags, PropertyFlag::ReadOnly));
+
+    auto sizeRef = model.schema().find("size");
+    REQUIRE(sizeRef.has_value());
+    CHECK(static_cast<int>(sizeRef->get().kind) == static_cast<int>(PropertyKind::Vec2));
 }
 
 TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
@@ -100,7 +114,25 @@ TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
     CHECK(!model.write("hp", Value(101.0)).accepted);
     CHECK(!model.write("hp", Value("fast")).accepted);
     CHECK_EQ(runtime.readProperty(hero, "hp").asFloat(), 42.0);
-    CHECK(!model.write("tags", Value(Value::Array{})).accepted);
+
+    Value::Array tags = {Value(std::string("player")), Value(std::string("elite"))};
+    CHECK(model.write("tags", Value(tags)).accepted);
+    CHECK_EQ(runtime.arraySize(hero, "tags"), static_cast<std::size_t>(2));
+    CHECK_EQ(runtime.arrayGet(hero, "tags", 1).asString(), std::string("elite"));
+
+    Value::Array tint = {Value(0.1), Value(0.2), Value(0.3), Value(0.4)};
+    CHECK(model.write("tint", Value(tint)).accepted);
+    CHECK_EQ(runtime.arrayGet(hero, "tint", 2).asFloat(), 0.3);
+
+    Value::Array badTint = {Value(0.1), Value(0.2)};
+    CHECK(!model.write("tint", Value(badTint)).accepted);
+
+    Value::Object stats;
+    stats.emplace("armor", Value(std::int64_t(9)));
+    stats.emplace("resist", Value(1.5));
+    CHECK(model.write("stats", Value(stats)).accepted);
+    CHECK_EQ(runtime.tableGet(hero, "stats", "armor").asInt(), static_cast<std::int64_t>(9));
+    CHECK_EQ(runtime.tableGet(hero, "stats", "resist").asFloat(), 1.5);
 
     ReflectedValue external;
     external.kind = ReflectedValueKind::Bool;
@@ -124,13 +156,13 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
 
     auto hpRef   = model.schema().find("hp");
     auto jobRef  = model.schema().find("job");
-    auto tagsRef = model.schema().find("tags");
+    auto tintRef = model.schema().find("tint");
     REQUIRE(hpRef.has_value());
     REQUIRE(jobRef.has_value());
-    REQUIRE(tagsRef.has_value());
+    REQUIRE(tintRef.has_value());
     const PropertyDescriptor *hp   = &hpRef->get();
     const PropertyDescriptor *job  = &jobRef->get();
-    const PropertyDescriptor *tags = &tagsRef->get();
+    const PropertyDescriptor *tint = &tintRef->get();
 
     const auto sharedType  = validatePropertyValue(*hp, Value("fast"));
     const auto runtimeType = model.write("hp", Value("fast"));
@@ -167,10 +199,11 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
     CHECK_EQ(sharedChoice.code, std::string("property_access.property.choice"));
     CHECK_EQ(runtimeChoice.code, std::string("property_access.script.choice"));
 
-    const auto sharedReadOnly  = validatePropertyValue(*tags, Value(Value::Array{}));
-    const auto runtimeReadOnly = model.write("tags", Value(Value::Array{}));
-    CHECK(!sharedReadOnly.accepted);
-    CHECK(!runtimeReadOnly.accepted);
-    CHECK_EQ(sharedReadOnly.code, std::string("property_access.property.read-only"));
-    CHECK_EQ(runtimeReadOnly.code, std::string("property_access.script.read-only"));
+    Value::Array badArity = {Value(1.0), Value(2.0)};
+    const auto sharedArity  = validatePropertyValue(*tint, Value(badArity));
+    const auto runtimeArity = model.write("tint", Value(badArity));
+    CHECK(!sharedArity.accepted);
+    CHECK(!runtimeArity.accepted);
+    CHECK_EQ(sharedArity.code, std::string("property_access.property.arity"));
+    CHECK_EQ(runtimeArity.code, std::string("property_access.script.arity"));
 }

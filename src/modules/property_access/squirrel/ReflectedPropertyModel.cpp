@@ -10,8 +10,12 @@ namespace {
 using eve::Value;
 
 PropertyKind propertyKind(const ReflectedMember &member) {
-    if (member.attrString("editor") == "combo" && !member.attrOptions("options").empty())
-        return PropertyKind::Enum;
+    const std::string editor = member.attrString("editor");
+    if (editor == "combo" && !member.attrOptions("options").empty()) return PropertyKind::Enum;
+    if (editor == "color") return PropertyKind::Color;
+    if (editor == "vec2") return PropertyKind::Vec2;
+    if (editor == "vec3") return PropertyKind::Vec3;
+    if (editor == "vec4") return PropertyKind::Vec4;
     switch (member.value.kind) {
         case ReflectedValueKind::Bool: return PropertyKind::Bool;
         case ReflectedValueKind::Integer: return PropertyKind::Integer;
@@ -24,6 +28,31 @@ PropertyKind propertyKind(const ReflectedMember &member) {
         case ReflectedValueKind::Other: return PropertyKind::ReadOnlyText;
     }
     return PropertyKind::Auto;
+}
+
+bool editableKind(PropertyKind kind) {
+    switch (kind) {
+        case PropertyKind::Bool:
+        case PropertyKind::Integer:
+        case PropertyKind::Number:
+        case PropertyKind::String:
+        case PropertyKind::Enum:
+        case PropertyKind::Color:
+        case PropertyKind::Vec2:
+        case PropertyKind::Vec3:
+        case PropertyKind::Vec4:
+        case PropertyKind::Array:
+        case PropertyKind::Map:
+        case PropertyKind::Struct:
+        case PropertyKind::Action:
+        case PropertyKind::AssetRef:
+            return true;
+        case PropertyKind::ObjectRef:
+        case PropertyKind::ReadOnlyText:
+        case PropertyKind::Auto:
+            return false;
+    }
+    return false;
 }
 
 bool scalar(ReflectedValueKind kind) {
@@ -47,10 +76,9 @@ std::string ownerClass(const Runtime &runtime, const std::string &className,
     return className;
 }
 
-PropertyFlag propertyFlags(const ReflectedMember &member) {
+PropertyFlag propertyFlags(const ReflectedMember &member, PropertyKind kind) {
     PropertyFlag flags = PropertyFlag::Runtime;
-    if (!scalar(member.value.kind) || member.attrBool("read_only") ||
-        member.attrBool("readonly"))
+    if (!editableKind(kind) || member.attrBool("read_only") || member.attrBool("readonly"))
         flags = flags | PropertyFlag::ReadOnly;
     if (member.attrBool("advanced")) flags = flags | PropertyFlag::Advanced;
     if (member.attrBool("editor_only")) flags = flags | PropertyFlag::EditorOnly;
@@ -77,6 +105,16 @@ ReflectedValue toReflectedValue(const Value &value) {
     return result;
 }
 
+Value scalarValue(const ReflectedValue &value) {
+    switch (value.kind) {
+        case ReflectedValueKind::Bool: return Value(value.boolean);
+        case ReflectedValueKind::Integer: return Value(value.integer);
+        case ReflectedValueKind::Float: return Value(value.floating);
+        case ReflectedValueKind::String: return Value(value.text);
+        default: return {};
+    }
+}
+
 const char *scriptValidationCode(const std::string &sharedCode) {
     if (sharedCode == "property_access.property.read-only") return "property_access.script.read-only";
     if (sharedCode == "property_access.property.type") return "property_access.script.type";
@@ -84,6 +122,7 @@ const char *scriptValidationCode(const std::string &sharedCode) {
     if (sharedCode == "property_access.property.finite") return "property_access.script.finite";
     if (sharedCode == "property_access.property.minimum") return "property_access.script.minimum";
     if (sharedCode == "property_access.property.maximum") return "property_access.script.maximum";
+    if (sharedCode == "property_access.property.arity") return "property_access.script.arity";
     return "property_access.script.validation";
 }
 
@@ -118,12 +157,12 @@ void ReflectedPropertyModel::rebuildSchema() {
     for (const ReflectedMember &member : runtime_->reflectInstance(instance_)) {
         if (member.method) continue;
         PropertyDescriptor descriptor;
-        descriptor.path        = member.name;
-        descriptor.displayName = member.attrString("label", member.name);
-        descriptor.description = member.attrString("tooltip", member.attrString("description"));
-        descriptor.category    = member.attrString("category", ownerClass(*runtime_, schema_.typeId, member.name));
-        descriptor.kind        = propertyKind(member);
-        descriptor.flags       = propertyFlags(member);
+        descriptor.path         = member.name;
+        descriptor.displayName  = member.attrString("label", member.name);
+        descriptor.description  = member.attrString("tooltip", member.attrString("description"));
+        descriptor.category     = member.attrString("category", ownerClass(*runtime_, schema_.typeId, member.name));
+        descriptor.kind         = propertyKind(member);
+        descriptor.flags        = propertyFlags(member, descriptor.kind);
         descriptor.defaultValue = convertValue(member.name, member.value);
         descriptor.numeric.minimum =
             member.findAttribute("min") ? std::optional<double>(member.attrFloat("min")) : std::nullopt;
@@ -152,17 +191,10 @@ Value ReflectedPropertyModel::convertValue(const std::string &path, const Reflec
             result.reserve(count);
             for (std::size_t index = 0; index < count; ++index) {
                 const ReflectedValue entry = runtime_->arrayGet(instance_, path, index);
-                if (scalar(entry.kind)) {
-                    switch (entry.kind) {
-                        case ReflectedValueKind::Bool: result.emplace_back(entry.boolean); break;
-                        case ReflectedValueKind::Integer: result.emplace_back(entry.integer); break;
-                        case ReflectedValueKind::Float: result.emplace_back(entry.floating); break;
-                        case ReflectedValueKind::String: result.emplace_back(entry.text); break;
-                        default: break;
-                    }
-                } else {
+                if (scalar(entry.kind))
+                    result.push_back(scalarValue(entry));
+                else
                     result.emplace_back();
-                }
             }
             return Value(std::move(result));
         }
@@ -170,13 +202,10 @@ Value ReflectedPropertyModel::convertValue(const std::string &path, const Reflec
             Value::Object result;
             for (const std::string &key : runtime_->tableKeys(instance_, path)) {
                 const ReflectedValue entry = runtime_->tableGet(instance_, path, key);
-                switch (entry.kind) {
-                    case ReflectedValueKind::Bool: result.emplace(key, Value(entry.boolean)); break;
-                    case ReflectedValueKind::Integer: result.emplace(key, Value(entry.integer)); break;
-                    case ReflectedValueKind::Float: result.emplace(key, Value(entry.floating)); break;
-                    case ReflectedValueKind::String: result.emplace(key, Value(entry.text)); break;
-                    default: result.emplace(key, Value()); break;
-                }
+                if (scalar(entry.kind))
+                    result.emplace(key, scalarValue(entry));
+                else
+                    result.emplace(key, Value());
             }
             return Value(std::move(result));
         }
@@ -201,11 +230,55 @@ WriteResult ReflectedPropertyModel::write(const std::string &path, const Value &
     const WriteResult validation = validatePropertyValue(descriptor->get(), value);
     if (!validation.accepted) return validationFailure(validation);
 
-    ReflectedValue reflected = toReflectedValue(value);
-    if (reflected.empty())
-        return WriteResult::reject("property_access.script.type", "Unsupported property value type");
-    if (!runtime_->writeProperty(instance_, path, reflected))
-        return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+    const PropertyKind kind = descriptor->get().kind;
+    if (kind == PropertyKind::Array || kind == PropertyKind::Color || kind == PropertyKind::Vec2 ||
+        kind == PropertyKind::Vec3 || kind == PropertyKind::Vec4) {
+        const auto *items = value.getIf<Value::Array>();
+        if (!items)
+            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        std::size_t current = runtime_->arraySize(instance_, path);
+        while (current > items->size()) {
+            if (!runtime_->arrayRemove(instance_, path, current - 1))
+                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+            --current;
+        }
+        for (std::size_t index = 0; index < items->size(); ++index) {
+            const ReflectedValue reflected = toReflectedValue((*items)[index]);
+            if (reflected.empty())
+                return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+            if (index < current) {
+                if (!runtime_->arraySet(instance_, path, index, reflected))
+                    return WriteResult::reject("property_access.script.write",
+                                               "Runtime rejected the property write");
+            } else if (!runtime_->arrayAppend(instance_, path, reflected)) {
+                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+            }
+        }
+    } else if (kind == PropertyKind::Map || kind == PropertyKind::Struct) {
+        const auto *fields = value.getIf<Value::Object>();
+        if (!fields)
+            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        const std::vector<std::string> existing = runtime_->tableKeys(instance_, path);
+        for (const std::string &key : existing) {
+            if (fields->find(key) != fields->end()) continue;
+            if (!runtime_->tableRemove(instance_, path, key))
+                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+        }
+        for (const auto &[key, entry] : *fields) {
+            const ReflectedValue reflected = toReflectedValue(entry);
+            if (reflected.empty())
+                return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+            if (!runtime_->tableSet(instance_, path, key, reflected))
+                return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+        }
+    } else {
+        ReflectedValue reflected = toReflectedValue(value);
+        if (reflected.empty())
+            return WriteResult::reject("property_access.script.type", "Unsupported property value type");
+        if (!runtime_->writeProperty(instance_, path, reflected))
+            return WriteResult::reject("property_access.script.write", "Runtime rejected the property write");
+    }
+
     const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
     const auto  found   = cachedValues_.find(path);
     if (found == cachedValues_.end() || found->second != applied) emit(path, applied);

@@ -13,8 +13,9 @@ namespace eve::property_access {
  * @brief Adapts one live Squirrel instance to the renderer-independent property model.
  *
  * Reflection metadata defines the schema while Runtime owns all reads and writes.
- * Scalar properties are editable; arrays, tables and nested instances are exposed
- * as read-only structured values for generic views and automation.
+ * Scalars, enums, Color/Vec composites (`editor="color"|"vec2"|"vec3"|"vec4"`),
+ * arrays and tables are editable through `write()`. Nested instances stay
+ * ObjectRef (class-name string) and read-only — hosts navigate them separately.
  *
  * This adapter is compiled with `property_access` but is not part of the L0
  * contract: `PropertyAccess.h` stays free of the script runtime. Include this
