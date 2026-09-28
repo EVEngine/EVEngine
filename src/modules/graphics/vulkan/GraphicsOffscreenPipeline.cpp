@@ -131,6 +131,14 @@ void Graphics::ensureOffscreenPipelines() {
         auto lfrag = embeddedSpirv(lit2d_frag_spv);
         offscreenLitPipeline =
             createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout);
+        offscreenLitAdditivePipeline =
+            createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout, BlendMode::Additive);
+        offscreenLitPremultipliedPipeline = createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass,
+                                                                        lit2dPipelineLayout, BlendMode::Premultiplied);
+        offscreenLitMultiplyPipeline =
+            createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout, BlendMode::Multiply);
+        offscreenLitOpaquePipeline =
+            createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout, BlendMode::Opaque);
     }
 
     // Lazily create offscreen pipelines for any custom shaders already loaded.
@@ -194,9 +202,18 @@ void Graphics::ensureHdrOffscreenPipelines() {
             BlendMode::Opaque);
     }
     if (!hdrOffscreenLitPipeline && lit2dPipelineLayout) {
-        hdrOffscreenLitPipeline = createTexturedStylePipeline(
-            embeddedSpirv(lit2d_vert_spv), embeddedSpirv(lit2d_frag_spv), hdrOffscreenRenderPass,
-            lit2dPipelineLayout);
+        auto lvert = embeddedSpirv(lit2d_vert_spv);
+        auto lfrag = embeddedSpirv(lit2d_frag_spv);
+        hdrOffscreenLitPipeline =
+            createTexturedStylePipeline(lvert, lfrag, hdrOffscreenRenderPass, lit2dPipelineLayout);
+        hdrOffscreenLitAdditivePipeline =
+            createTexturedStylePipeline(lvert, lfrag, hdrOffscreenRenderPass, lit2dPipelineLayout, BlendMode::Additive);
+        hdrOffscreenLitPremultipliedPipeline = createTexturedStylePipeline(
+            lvert, lfrag, hdrOffscreenRenderPass, lit2dPipelineLayout, BlendMode::Premultiplied);
+        hdrOffscreenLitMultiplyPipeline =
+            createTexturedStylePipeline(lvert, lfrag, hdrOffscreenRenderPass, lit2dPipelineLayout, BlendMode::Multiply);
+        hdrOffscreenLitOpaquePipeline =
+            createTexturedStylePipeline(lvert, lfrag, hdrOffscreenRenderPass, lit2dPipelineLayout, BlendMode::Opaque);
     }
     ensureHdrGpuParticleDrawPipelines();
     for (auto &shader : ownedShaders) ensureShaderHdrOffscreenPipeline(shader.get());

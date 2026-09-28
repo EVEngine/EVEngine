@@ -912,7 +912,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 }
 
 wgpu::RenderPipeline make2DLitPipeline(wgpu::Device& dev, wgpu::PipelineLayout layout, WGPUTextureFormat format,
-                                       bool blend) {
+                                       BlendMode blend) {
     wgpu::VertexAttribute attrs[3] = {};
     attrs[0].format                = wgpu::VertexFormat::Float32x2;
     attrs[0].offset                = 0;
@@ -928,9 +928,7 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device& dev, wgpu::PipelineLayout l
     b.vertexLayout(32, wgpu::VertexStepMode::Vertex, attrs, 3);
     b.shader(makeWgslModule(dev, kLit2DVertWgsl), "vs_main", makeWgslModule(dev, kLit2DFragWgsl), "fs_main");
     b.layout(layout);
-    // Lit pipeline always uses alpha blending; `blend` currently true in all
-    // call sites, so map to Alpha (or Opaque when disabled).
-    b.colorTarget(format, blend ? BlendMode::Alpha : BlendMode::Opaque);
+    b.colorTarget(format, blend);
     return b.build(dev);
 }
 
@@ -952,7 +950,12 @@ void Graphics::create2DPipelines() {
     colorOpaquePipeline      = make2DColorPipeline(device, surfaceFormat, BlendMode::Opaque);
     texturedOpaquePipeline   = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque);
     sceneTonemapPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque, true);
-    lit2dPipeline        = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, true);
+    lit2dPipeline            = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Alpha);
+    lit2dAdditivePipeline    = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Additive);
+    lit2dPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Premultiplied);
+    lit2dMultiplyPipeline = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Multiply);
+    lit2dOpaquePipeline   = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque);
 
     offscreenColorPipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Alpha);
     offscreenTexturedPipeline =
@@ -974,7 +977,26 @@ void Graphics::create2DPipelines() {
         make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Alpha);
     hdrOffscreenTexturedOpaquePipeline =
         make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Opaque);
-    offscreenLitPipeline = make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, true);
+    offscreenLitPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Alpha);
+    offscreenLitAdditivePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Additive);
+    offscreenLitPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Premultiplied);
+    offscreenLitMultiplyPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
+    offscreenLitOpaquePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Opaque);
+    hdrOffscreenLitPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Alpha);
+    hdrOffscreenLitAdditivePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Additive);
+    hdrOffscreenLitPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Premultiplied);
+    hdrOffscreenLitMultiplyPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Multiply);
+    hdrOffscreenLitOpaquePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Opaque);
 }
 
 wgpu::RenderPipeline Graphics::get2DColorPipeline(BlendMode blend, bool offscreen) {
@@ -1001,8 +1023,32 @@ wgpu::RenderPipeline Graphics::get2DTexturedPipeline(BlendMode blend, bool offsc
     }
 }
 
-wgpu::RenderPipeline Graphics::get2DLitPipeline(bool offscreen) {
-    return offscreen ? offscreenLitPipeline : lit2dPipeline;
+wgpu::RenderPipeline Graphics::get2DLitPipeline(BlendMode blend, WGPUTextureFormat format) {
+    const bool hdr       = format == WGPUTextureFormat_RGBA16Float;
+    const bool offscreen = hdr || uint32_t(format) != uint32_t(surfaceFormat);
+    auto       pick      = [](BlendMode mode, wgpu::RenderPipeline alpha, wgpu::RenderPipeline additive,
+                   wgpu::RenderPipeline premultiplied, wgpu::RenderPipeline multiply,
+                   wgpu::RenderPipeline opaque) -> wgpu::RenderPipeline {
+        switch (mode) {
+            case BlendMode::Additive: return additive;
+            case BlendMode::Premultiplied: return premultiplied;
+            case BlendMode::Multiply: return multiply;
+            case BlendMode::Opaque: return opaque;
+            case BlendMode::Alpha:
+            default: return alpha;
+        }
+    };
+    if (hdr) {
+        return pick(blend, hdrOffscreenLitPipeline, hdrOffscreenLitAdditivePipeline,
+                    hdrOffscreenLitPremultipliedPipeline, hdrOffscreenLitMultiplyPipeline,
+                    hdrOffscreenLitOpaquePipeline);
+    }
+    if (offscreen) {
+        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
+                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
+    }
+    return pick(blend, lit2dPipeline, lit2dAdditivePipeline, lit2dPremultipliedPipeline, lit2dMultiplyPipeline,
+                lit2dOpaquePipeline);
 }
 
 void Graphics::createMesh3DPipelines() {
@@ -3084,27 +3130,29 @@ void Graphics::drawTexturedRectShader5(Texture* color, Texture* depth, Texture* 
 }
 
 void Graphics::drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
-                                     float v0, float u1, float v1, const Color& color) {
+                                     float v0, float u1, float v1, const Color& color, BlendMode blend) {
     if (!albedo) {
-        drawSolidRect(x, y, w, h, color);
+        drawSolidRect(x, y, w, h, color, blend);
         return;
     }
-    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, false);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
 void Graphics::drawTexturedRectLitUVRotated(Texture* albedo, Texture* normal, float cx, float cy, float w, float h,
-                                            float degrees, float u0, float v0, float u1, float v1,
-                                            const Color& color) {
+                                            float degrees, float u0, float v0, float u1, float v1, const Color& color,
+                                            BlendMode blend) {
     if (!albedo) {
-        drawSolidRectRotated(cx, cy, w, h, degrees, color);
+        drawSolidRectRotated(cx, cy, w, h, degrees, color, blend);
         return;
     }
-    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, false);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
@@ -3304,9 +3352,10 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
     queue.WriteBuffer(arena.buffer, vtxOffset, data.data(), bytes);
 
     GpuTexture* albedoGpu = gpuForTextureOrWhite(lb.albedo);
-    // Match Vulkan lit2d: null normal → flat +Z, not white (which decodes as a tilted map).
+    // Null / missing normal → flat +Z (128,128,255), not white (which is a
+    // bright wrong normal and washes out lit sprites without a map).
     GpuTexture* normalGpu = gpuForTexture(lb.normal);
-    if (!normalGpu) normalGpu = flatNormalTexture;
+    if (!normalGpu) normalGpu = flatNormalTexture ? flatNormalTexture : whiteTexture;
 
     auto& uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 512);
@@ -3315,7 +3364,7 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
 
     wgpu::BindGroup      bg         = makeTex2DBindGroup(albedoGpu, normalGpu);
     uint32_t             offsets[1] = {uboOffset};
-    wgpu::RenderPipeline pipe       = get2DLitPipeline(uint32_t(format) != uint32_t(surfaceFormat));
+    wgpu::RenderPipeline pipe       = get2DLitPipeline(lb.blend, format);
     if (!pipe) return;
     pass.SetPipeline(pipe);
     pass.SetBindGroup(0, bg, 1, offsets);
