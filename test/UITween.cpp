@@ -26,6 +26,26 @@ ui::UINode *findNode(ui::UIHost *host, const std::string &id) {
 
 }  // namespace
 
+TEST_CASE("UI.tween.conveniencePathIndependentOfAnimation") {
+    // Provider-absent contract: presentation tweens must not require Animation.
+    ui::UI *uimod = ui::UI::create();
+    REQUIRE(ui::UIHost::resolve(
+                uimod->mountAs("no-anim", ui::window("T", {ui::button("Go", "go")}, "root")))
+                .has_value());
+    ui::UIHost *current = resolveHost(uimod->current());
+    REQUIRE(current != nullptr);
+
+    uimod->animateHostPos(40.f, 80.f, 0.f, "outQuad");
+    uimod->animateItemOpacity("go", 0.5f, 0.f, "linear");
+    CHECK(std::abs(current->meta()->posX - 40.f) < 1e-4f);
+    CHECK(std::abs(current->meta()->posY - 80.f) < 1e-4f);
+    ui::UINode *go = findNode(current, "go");
+    REQUIRE(go != nullptr);
+    CHECK(std::abs(go->opacity - 0.5f) < 1e-5f);
+    CHECK_EQ(uimod->getHostTweenCount(), 0u);
+    CHECK_EQ(uimod->getItemTweenCount(), 0u);
+}
+
 TEST_CASE("UI.tween.easeKinds") {
     CHECK(std::abs(ui::evaluateUiEase(0.f, "linear") - 0.f) < 1e-5f);
     CHECK(std::abs(ui::evaluateUiEase(1.f, "linear") - 1.f) < 1e-5f);

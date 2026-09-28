@@ -279,8 +279,20 @@ ImGui 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/Im
 `durationMs <= 0` 且无 delay 时立即跳到终点；再次对同一属性调用会替换未完成的补间。
 `cancelHostTweens()` / `cancelItemTweens(id)` / `cancelAllTweens()` 取消选中宿主上的待定补间。
 缓动名与 Motion/Math 对齐（`smoothstep` 为默认，另有 linear、Quad/Cubic/Sine/Expo、Back/Elastic/Bounce）；
-未知名称按 linear 处理。需要 delay、loops、Sequence、Punch 时仍用 `eve.Animation()` 的 Motion/Tween，
-再把采样值写回 UI。
+未知名称按 linear 处理。
+
+需要 loops / Sequence / Punch，或与 `SimulationStep` 同拍时，用 `eve.Animation()` 的 Motion
+经 UI 侧 sink 推送写回（animation 模块启用时编译 `UiMotionSinks`）：
+
+```cpp
+UiHostPosSink posSink(hostHandle);
+UiNodeOpacitySink opacitySink(hostHandle, "panel");
+anim->motionVec2({0,0}, {120,60}, 0.35f).ease("outQuad").bind(posSink);
+anim->motion(0.f, 1.f, 0.25f).ease("outCubic").bind(opacitySink);
+anim->advance(step);  // 与游戏时钟同泵
+```
+
+无 animation 的裁剪构建仍保留上方 `animate*` 便利路径；sink 桥接 TU 会被排除。
 
 `getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
 `getAccessibilitySnapshot()` 输出语义节点的 role/name/description、enabled 与 focused 状态，
