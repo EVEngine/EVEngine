@@ -20,15 +20,17 @@ bool isKnownType(const std::string& type) {
 }
 
 const std::vector<Field>& fieldsFor(const std::string& type) {
+    // Authoring / editor field names stay stable; setField maps them onto the
+    // SequenceAsset payload keys used by L1 dialogue vocabulary.
     static const std::vector<Field> line{{"next", "node"},        {"speaker", "string"}, {"text", "multiline"},
-                                         {"pool", "asset"},       {"i18n", "string"},    {"voice", "asset"},
+                                         {"pool", "asset"},       {"i18nKey", "string"}, {"voice", "asset"},
                                          {"expression", "string"}};
     static const std::vector<Field> branch;
     static const std::vector<Field> choice;
     static const std::vector<Field> call{
-        {"target", "asset"}, {"return", "node"}, {"next", "node"}, {"arguments", "json"}};
+        {"target", "asset"}, {"returnNode", "node"}, {"next", "node"}, {"arguments", "json"}};
     static const std::vector<Field> command{
-        {"name", "string"}, {"resultLocal", "string"}, {"next", "node"}, {"arguments", "json"}};
+        {"target", "string"}, {"expression", "string"}, {"next", "node"}, {"arguments", "json"}};
     static const std::vector<Field> wait{{"next", "node"}};
     static const std::vector<Field> end;
     if (type == "line") return line;
@@ -38,6 +40,13 @@ const std::vector<Field>& fieldsFor(const std::string& type) {
     if (type == "command") return command;
     if (type == "wait") return wait;
     return end;
+}
+
+/** @brief Map an authoring field name onto the SequenceAsset payload key. */
+std::string payloadKeyForField(const std::string& field) {
+    if (field == "i18nKey") return "i18n";
+    if (field == "returnNode") return "return";
+    return field;
 }
 
 }  // namespace
@@ -153,7 +162,7 @@ bool ConversationDocument::removeNode(const std::string& nodeId) {
 
 bool ConversationDocument::renameNode(const std::string& oldId, const std::string& newId) {
     std::vector<eve::dnut::SequenceAsset> assets{asset_};
-    auto renamed = renameConversationNode(assets, asset_.id, oldId, newId);
+    auto                                  renamed = renameConversationNode(assets, asset_.id, oldId, newId);
     if (!renamed.ok()) {
         failureMessage_ = renamed.status().describe();
         return false;
@@ -199,7 +208,8 @@ std::string ConversationDocument::getField(const std::string& nodeId, const std:
     const auto* node = findNode(nodeId);
     if (!node) return {};
     if (field == "next") return node->next;
-    const eve::Value* value = node->payload.find(field);
+    const std::string key   = payloadKeyForField(field);
+    const eve::Value* value = node->payload.find(key);
     if (!value) return {};
     if (field == "arguments") {
         auto json = value->toJson();
@@ -232,7 +242,7 @@ bool ConversationDocument::setField(const std::string& nodeId, const std::string
             }
         }
         if (!known) return fail("unknown node field: " + field);
-        node->payload.set(field, eve::Value::string(value));
+        node->payload.set(payloadKeyForField(field), eve::Value::string(value));
     }
     failureMessage_.clear();
     return true;
