@@ -19,10 +19,10 @@
 #include "rpg/RPG.h"
 #include "rpg/RPGActor.h"
 #include "rpg/RPGSaveSession.h"
+#include "rpg/RpgDialect.h"
 #include "rpg/ShopCatalogue.h"
 #include "rpg/ShopTransaction.h"
 #include "rpg/Skill.h"
-#include "rpg/StoryEvent.h"
 #include "rpg/Tracker.h"
 #include "rpg/WorldInteraction.h"
 #include "rpg/WorldState.h"
@@ -116,10 +116,10 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     auto tactics =
         eve::rpg::BattleTacticsCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "battle-tactics.json"));
     REQUIRE(tactics.ok());
-    auto storyEvents =
-        eve::rpg::StoryEventCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "story-events.json"));
-    REQUIRE(storyEvents.ok());
-    REQUIRE_EQ(storyEvents.value(), 1);
+    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(
+        readClassicContent(contentRoot, "stories.dnut"), "stories.dnut");
+    REQUIRE(stories.ok());
+    REQUIRE_EQ(stories.value(), 1);
     REQUIRE_EQ(eve::rpg::EncounterCatalogue::memberCount("slime.forest"), 2);
     REQUIRE_EQ(eve::inventory::ItemRegistry::loadFromJson(readClassicContent(contentRoot, "items.json")), 3);
     auto shopCatalogue = eve::rpg::ShopCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "shop.json"));
@@ -172,26 +172,33 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     equipment.defineSlot("weapon");
     equipment.defineSlot("armor");
 
-    eve::rpg::StoryEventSession arrival;
-    REQUIRE(arrival.begin("forest.arrival", &gameState).ok());
+    eve::rpg::RpgStorySession arrival;
+    REQUIRE(arrival.begin("forest.arrival", &gameState, &party, &bag, &equipment).ok());
     REQUIRE_EQ(arrival.getStepKind(), std::string("dialogue"));
-    REQUIRE(findConversation(conversations, arrival.getReference()) != nullptr);
-    REQUIRE(arrival.advance(&gameState).ok());
+    CHECK_EQ(arrival.getStepPayload().find("id")->asString(), std::string("story.forest.arrival"));
+    REQUIRE(findConversation(conversations, "story.forest.arrival") != nullptr);
+    REQUIRE(arrival.advance().ok());
     REQUIRE_EQ(arrival.getStepKind(), std::string("wait"));
+    CHECK(gameState.hasSelfString("story.forest.arrival", "cursor"));
     eve::rpg::RPGSaveSession eventSave;
     eventSave.bindParty(gameState, tracker, party, bag, equipment);
-    REQUIRE(eventSave.setContentVersion("rpg-classic.content.v9").ok());
+    REQUIRE(eventSave.setContentVersion("rpg-classic.content.v10").ok());
     auto eventCheckpoint = eventSave.snapshotJson();
     REQUIRE(eventCheckpoint.ok());
-    REQUIRE(arrival.advance(&gameState).ok());
+    REQUIRE(arrival.advance().ok());
     REQUIRE(eventSave.restoreSnapshotJson(eventCheckpoint.value()).ok());
-    eve::rpg::StoryEventSession resumedArrival;
-    REQUIRE(resumedArrival.begin("forest.arrival", &gameState).ok());
-    CHECK_EQ(resumedArrival.getStepIndex(), 1);
-    REQUIRE(resumedArrival.advance(&gameState).ok());
+    eve::rpg::RpgStorySession resumedArrival;
+    REQUIRE(resumedArrival.begin("forest.arrival", &gameState, &party, &bag, &equipment).ok());
+    CHECK_EQ(resumedArrival.getStepKind(), std::string("wait"));
+    REQUIRE(resumedArrival.advance().ok());
     CHECK_EQ(resumedArrival.getStepKind(), std::string("message"));
-    REQUIRE(resumedArrival.advance(&gameState).ok());
-    CHECK(resumedArrival.isFinished());
+    CHECK_EQ(resumedArrival.getStepPayload().find("text")->asString(),
+             std::string("gameplayLog.story.recorded"));
+    REQUIRE(resumedArrival.advance().ok());
+    CHECK(!resumedArrival.isActive());
+    CHECK(gameState.hasSelfVariable("story.forest.arrival", "completed"));
+    CHECK_EQ(gameState.getSelfVariable("story.forest.arrival", "completed"), 1.0);
+    CHECK(!gameState.hasSelfString("story.forest.arrival", "cursor"));
 
     acceptQuestThroughDialogue(conversations, "village.elder.offer", tracker, "quest.slayer");
     winEncounter(party, *hero, *companion, tracker, gameState, "village", "slime_west", "slime.west");
@@ -233,7 +240,7 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
 
     eve::rpg::RPGSaveSession save;
     save.bindParty(gameState, tracker, party, bag, equipment);
-    REQUIRE(save.setContentVersion("rpg-classic.content.v9").ok());
+    REQUIRE(save.setContentVersion("rpg-classic.content.v10").ok());
     auto checkpoint = save.snapshotJson();
     REQUIRE(checkpoint.ok());
 
@@ -265,5 +272,7 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     companion->release();
     eve::inventory::ItemRegistry::clear();
     eve::rpg::QuestRegistry::clear();
-    eve::rpg::StoryEventCatalogue::clear();
+    eve::rpg::EncounterCatalogue::clear();
+    eve::rpg::SkillRegistry::clear();
+    eve::rpg::RpgStoryCatalogue::clear();
 }

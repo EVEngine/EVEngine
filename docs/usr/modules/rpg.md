@@ -349,7 +349,21 @@ while (session.isActive()) {
   结构化失败并保持游标，不会静默跳过。
 - **完成事实**：不可重复的 story 完成后把 `story.<id>.completed` 写进 `GameState`，
   再次 `begin` 会失败；`repeatable` story 每次重新开始。
+- **中断游标**：每次挂起后，会话把 `captureState` JSON 写入
+  `GameState` 的 scoped string `story.<id>.cursor`。下次 `begin` 若发现该字符串，
+  会恢复到同一挂起点（含 `blocked`/`waitingStep`），因此 F5 存档可续播对话或 `wait`。
+  故事完成后清除 `cursor`。显式 `captureState` / `restoreState` 仍留给需要自管 blob 的宿主。
 - **快照**：`begin` 时快照整份目录，热替换不会让活动会话悬空。
+- **与对话方言共存**：对话前端会跳过顶层 `story` 块；RPG 编译器会跳过
+  `pool`/`conversation`。同一 `.dnut` 文件可混写两种方言，但装载仍走两个入口
+  （`replaceStoriesFromDnut` 与 `DialogueFlow.loadFromDnut`）。conversation/pool
+  尚未迁入 L1 词法/运行时——那是后续增量，不是第二套 story 语法。
+
+### 产品示例
+
+`examples/rpg-classic` 已用 `data/stories.dnut` + `RpgStorySession` 驱动雾林抵达剧情，
+宿主循环见 `presentStoryStep()`（dialogue / wait / message / move / camera）。
+JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` story。
 
 ## 常见问题
 
@@ -430,7 +444,11 @@ while (session.isActive()) {
 显式目标属于本场战斗且阵营符合 `self` / `enemySingle` 规则。失败返回结构化 Result 且不会污染待行动队列。
 `setAction()` 是保留旧调用形状的兼容门面。
 
-**GameState：** `addVariable()`、`clear()`、`getSelfVariable()`、`getVariable()`、`hasSelfVariable()`、`isSwitchOn()`、`restoreSnapshotJson()`、`setSelfVariable()`、`setSwitch()`、`setVariable()`、`snapshotJson()`、`switchOff()`、`switchOn()`
+**GameState：** `addVariable()`、`clear()`、`clearSelfString()`、`getSelfString()`、`getSelfVariable()`、`getVariable()`、`hasSelfString()`、`hasSelfVariable()`、`isSwitchOn()`、`restoreSnapshotJson()`、`setSelfString()`、`setSelfVariable()`、`setSwitch()`、`setVariable()`、`snapshotJson()`、`switchOff()`、`switchOn()`
+
+`GameState.snapshotJson()` 生成 schema 为 `eve.rpg.game-state`、版本为 1 的确定性 JSON；
+除开关、数值变量与 scoped 数值外，还可选序列化 `selfStrings`（scoped 字符串事实，供
+`.dnut` story 游标等非数值载荷使用）。缺失的 `selfStrings` 在恢复时视为空。
 
 **RPGWorldState：** `consumeObject()`、`isObjectConsumed()`、`resetObject()`。这是借用 `GameState` 的
 类型化适配器，不是第二份状态；map/object ID 必须非空、至多 256 字节且不含控制字符。consume/reset
@@ -438,7 +456,6 @@ while (session.isActive()) {
 
 **成长读档：** `RPGActor.restoreProgression()` 会校验等级、当前经验与升级阈值，并在失败时保持原成长状态不变；它不会伪造升级事件。
 
-`GameState.snapshotJson()` 生成 schema 为 `eve.rpg.game-state`、版本为 1 的确定性 JSON；
 `restoreSnapshotJson()` 会先校验完整候选再原子替换，未知版本或字段类型错误不会清空当前状态。
 版本 1 忽略未知字段，为后续兼容扩展保留空间。
 
@@ -470,7 +487,8 @@ while (session.isActive()) {
 `clearBattleTactics()` 用于显式卸载目录。
 
 剧情事件使用 `replaceStoryEventsFromJson(json)` 严格发布 schema 为 `eve.rpg.story-events`、版本为 1
-的内容文档。每个事件包含稳定 ID、`repeatable` 策略和 1–128 个有序展示步骤；步骤类型为
+的内容文档。**这是兼容旧线性 JSON 路径的门面**；新产品与 `examples/rpg-classic` 应使用
+`.dnut` RPG 方言（`replaceStoriesFromDnut` / `newStorySession`）。每个事件包含稳定 ID、`repeatable` 策略和 1–128 个有序展示步骤；步骤类型为
 `dialogue`、`message`、`wait`、`move`、`camera`，统一携带 `reference`、`actorId`、`x/y` 和
 `duration` 字段，并按类型严格校验字段组合。未知 schema/version、未知字段、重复 ID、非有限坐标或
 非法时长会拒绝整批替换并保留旧目录。`getStoryEventCount()` / `hasStoryEvent(id)` 查询已提交内容，
