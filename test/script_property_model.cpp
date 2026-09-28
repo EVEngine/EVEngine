@@ -5,6 +5,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <cmath>
 #include <limits>
 #include <string>
 #include <vector>
@@ -122,7 +123,7 @@ TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
 
     Value::Array tint = {Value(0.1), Value(0.2), Value(0.3), Value(0.4)};
     CHECK(model.write("tint", Value(tint)).accepted);
-    CHECK_EQ(runtime.arrayGet(hero, "tint", 2).asFloat(), 0.3);
+    CHECK(std::fabs(runtime.arrayGet(hero, "tint", 2).asFloat() - 0.3f) < 1e-5f);
 
     Value::Array badTint = {Value(0.1), Value(0.2)};
     CHECK(!model.write("tint", Value(badTint)).accepted);

@@ -62,6 +62,9 @@ bool scalar(ReflectedValueKind kind) {
 
 std::string ownerClass(const Runtime &runtime, const std::string &className,
                        const std::string &memberName) {
+    // Prefer the most-base class that still declares the member so inherited
+    // fields group under their defining class even when the leaf also lists them.
+    std::string owner;
     std::string current = className;
     while (!current.empty()) {
         const ReflectedClass *reflected = runtime.reflectedClass(current);
@@ -70,10 +73,10 @@ std::string ownerClass(const Runtime &runtime, const std::string &className,
                                         [&memberName](const ReflectedMember &member) {
                                             return member.name == memberName;
                                         });
-        if (found != reflected->members.end()) return current;
+        if (found != reflected->members.end()) owner = current;
         current = reflected->base;
     }
-    return className;
+    return owner.empty() ? className : owner;
 }
 
 PropertyFlag propertyFlags(const ReflectedMember &member, PropertyKind kind) {
