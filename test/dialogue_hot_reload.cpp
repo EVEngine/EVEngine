@@ -99,7 +99,7 @@ node end end
 }
 
 TEST_CASE("dialogueHotReload.loadReleasesDroppedConversationOwnership") {
-    DialogueFlow flow;
+    DialogueFlow      flow;
     const std::string first = R"(
 schema "eve.dnut"
 version 1
