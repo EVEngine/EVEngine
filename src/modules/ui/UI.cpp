@@ -1558,23 +1558,19 @@ void UI::setHostPercent(float w, float h) {
     m->percentH = h;
 }
 
-void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease,
-                        float delayMs) {
+void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease, float delayMs) {
     if (!resolveSelected()) return;
     tweens_.animateHostPos(selected_, x, y, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
-void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease,
-                         float delayMs) {
+void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease, float delayMs) {
     if (!resolveSelected()) return;
     tweens_.animateHostSize(selected_, w, h, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
-void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease,
-                                 float delayMs) {
+void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease, float delayMs) {
     if (!resolveSelected()) return;
-    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs,
-                                    uiTweenWallClockMs());
+    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
@@ -1621,18 +1617,19 @@ std::string UI::defineStyleClass(const std::string &name, const std::string &par
     return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
 }
 
-void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs,
-                            const std::string &ease, float delayMs) {
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs, const std::string &ease,
+                            float delayMs) {
     if (!resolveSelected()) return;
-    (void)tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs,
-                                     uiTweenWallClockMs());
+    // Script-facing facade: missing hosts/nodes are no-ops (same as other UI setters).
+    tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemOpacity: host/node unavailable");
 }
 
-void UI::animateItemPos(const std::string &id, float x, float y, float durationMs,
-                        const std::string &ease, float delayMs) {
+void UI::animateItemPos(const std::string &id, float x, float y, float durationMs, const std::string &ease,
+                        float delayMs) {
     if (!resolveSelected()) return;
-    (void)tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs,
-                                 uiTweenWallClockMs());
+    tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemPos: host/node unavailable");
 }
 
 void UI::cancelHostTweens() {

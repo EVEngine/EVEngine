@@ -1,5 +1,7 @@
 #include "ui/UiTween.h"
 
+#include "common/Diagnostic.h"
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -32,13 +34,11 @@ float sampleProgress(double nowMs, double startMs, double delayMs, double durati
 
 float evaluateUiEase(float t, const char *kind) {
     t = clamp01(t);
-    if (!kind || kind[0] == '\0' || std::strcmp(kind, "smoothstep") == 0)
-        return t * t * (3.f - 2.f * t);
+    if (!kind || kind[0] == '\0' || std::strcmp(kind, "smoothstep") == 0) return t * t * (3.f - 2.f * t);
     if (std::strcmp(kind, "linear") == 0) return t;
     if (std::strcmp(kind, "inQuad") == 0) return t * t;
     if (std::strcmp(kind, "outQuad") == 0) return 1.f - (1.f - t) * (1.f - t);
-    if (std::strcmp(kind, "inOutQuad") == 0)
-        return t < 0.5f ? 2.f * t * t : 1.f - std::pow(-2.f * t + 2.f, 2.f) * 0.5f;
+    if (std::strcmp(kind, "inOutQuad") == 0) return t < 0.5f ? 2.f * t * t : 1.f - std::pow(-2.f * t + 2.f, 2.f) * 0.5f;
     if (std::strcmp(kind, "inCubic") == 0) return t * t * t;
     if (std::strcmp(kind, "outCubic") == 0) return 1.f - std::pow(1.f - t, 3.f);
     if (std::strcmp(kind, "inOutCubic") == 0)
@@ -51,8 +51,7 @@ float evaluateUiEase(float t, const char *kind) {
     if (std::strcmp(kind, "inOutExpo") == 0) {
         if (t <= 0.f) return 0.f;
         if (t >= 1.f) return 1.f;
-        return t < 0.5f ? std::pow(2.f, 20.f * t - 10.f) * 0.5f
-                        : (2.f - std::pow(2.f, -20.f * t + 10.f)) * 0.5f;
+        return t < 0.5f ? std::pow(2.f, 20.f * t - 10.f) * 0.5f : (2.f - std::pow(2.f, -20.f * t + 10.f)) * 0.5f;
     }
 
     constexpr float backS = 1.70158f;
@@ -73,23 +72,18 @@ float evaluateUiEase(float t, const char *kind) {
 
     if (std::strcmp(kind, "inElastic") == 0) {
         if (t <= 0.f || t >= 1.f) return t;
-        return -std::pow(2.f, 10.f * t - 10.f) *
-               std::sin((t * 10.f - 10.75f) * (2.f * float(M_PI) / 3.f));
+        return -std::pow(2.f, 10.f * t - 10.f) * std::sin((t * 10.f - 10.75f) * (2.f * float(M_PI) / 3.f));
     }
     if (std::strcmp(kind, "outElastic") == 0) {
         if (t <= 0.f || t >= 1.f) return t;
-        return std::pow(2.f, -10.f * t) *
-                   std::sin((t * 10.f - 0.75f) * (2.f * float(M_PI) / 3.f)) +
-               1.f;
+        return std::pow(2.f, -10.f * t) * std::sin((t * 10.f - 0.75f) * (2.f * float(M_PI) / 3.f)) + 1.f;
     }
     if (std::strcmp(kind, "inOutElastic") == 0) {
         if (t <= 0.f || t >= 1.f) return t;
         if (t < 0.5f) {
-            return -0.5f * std::pow(2.f, 20.f * t - 10.f) *
-                   std::sin((20.f * t - 11.125f) * (2.f * float(M_PI) / 4.5f));
+            return -0.5f * std::pow(2.f, 20.f * t - 10.f) * std::sin((20.f * t - 11.125f) * (2.f * float(M_PI) / 4.5f));
         }
-        return std::pow(2.f, -20.f * t + 10.f) *
-                   std::sin((20.f * t - 11.125f) * (2.f * float(M_PI) / 4.5f)) * 0.5f +
+        return std::pow(2.f, -20.f * t + 10.f) * std::sin((20.f * t - 11.125f) * (2.f * float(M_PI) / 4.5f)) * 0.5f +
                1.f;
     }
 
@@ -111,8 +105,7 @@ float evaluateUiEase(float t, const char *kind) {
     if (std::strcmp(kind, "inBounce") == 0) return 1.f - outBounce(1.f - t);
     if (std::strcmp(kind, "outBounce") == 0) return outBounce(t);
     if (std::strcmp(kind, "inOutBounce") == 0) {
-        return t < 0.5f ? (1.f - outBounce(1.f - 2.f * t)) * 0.5f
-                        : (1.f + outBounce(2.f * t - 1.f)) * 0.5f;
+        return t < 0.5f ? (1.f - outBounce(1.f - 2.f * t)) * 0.5f : (1.f + outBounce(2.f * t - 1.f)) * 0.5f;
     }
 
     // Unknown kind: linear (documented; avoids throwing on script typos).
@@ -120,9 +113,7 @@ float evaluateUiEase(float t, const char *kind) {
 }
 
 double uiTweenWallClockMs() {
-    return std::chrono::duration<double, std::milli>(
-               std::chrono::steady_clock::now().time_since_epoch())
-        .count();
+    return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 
 bool UiTweenDriver::sameHost(UIHostHandle a, UIHostHandle b) noexcept {
@@ -130,19 +121,16 @@ bool UiTweenDriver::sameHost(UIHostHandle a, UIHostHandle b) noexcept {
 }
 
 void UiTweenDriver::replaceHost(UIHostHandle host, UiHostTweenTarget target) {
-    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [&](const UiHostTween &t) {
-                                         return sameHost(t.host, host) && t.target == target;
-                                     }),
-                      hostTweens_.end());
+    hostTweens_.erase(
+        std::remove_if(hostTweens_.begin(), hostTweens_.end(),
+                       [&](const UiHostTween &t) { return sameHost(t.host, host) && t.target == target; }),
+        hostTweens_.end());
 }
 
-void UiTweenDriver::replaceItem(UIHostHandle host, const std::string &id,
-                                UiItemTweenTarget target) {
+void UiTweenDriver::replaceItem(UIHostHandle host, const std::string &id, UiItemTweenTarget target) {
     itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
                                      [&](const UiItemTween &t) {
-                                         return sameHost(t.host, host) && t.nodeId == id &&
-                                                t.target == target;
+                                         return sameHost(t.host, host) && t.nodeId == id && t.target == target;
                                      }),
                       itemTweens_.end());
 }
@@ -153,22 +141,20 @@ void UiTweenDriver::applyHost(UiHostTween &t, float k) {
         t.host = {};
         return;
     }
-    auto m = host->get().meta();
+    auto        m    = host->get().meta();
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
-    case UiHostTweenTarget::Pos:
-        m->hasPos = true;
-        m->posX = t.fromX + (t.toX - t.fromX) * ease;
-        m->posY = t.fromY + (t.toY - t.fromY) * ease;
-        break;
-    case UiHostTweenTarget::Size:
-        m->hasSize = true;
-        m->sizeX = t.fromX + (t.toX - t.fromX) * ease;
-        m->sizeY = t.fromY + (t.toY - t.fromY) * ease;
-        break;
-    case UiHostTweenTarget::OverlayAlpha:
-        m->overlayBgAlpha = t.fromX + (t.toX - t.fromX) * ease;
-        break;
+        case UiHostTweenTarget::Pos:
+            m->hasPos = true;
+            m->posX   = t.fromX + (t.toX - t.fromX) * ease;
+            m->posY   = t.fromY + (t.toY - t.fromY) * ease;
+            break;
+        case UiHostTweenTarget::Size:
+            m->hasSize = true;
+            m->sizeX   = t.fromX + (t.toX - t.fromX) * ease;
+            m->sizeY   = t.fromY + (t.toY - t.fromY) * ease;
+            break;
+        case UiHostTweenTarget::OverlayAlpha: m->overlayBgAlpha = t.fromX + (t.toX - t.fromX) * ease; break;
     }
 }
 
@@ -183,38 +169,36 @@ void UiTweenDriver::applyItem(UiItemTween &t, float k) {
         t.host = {};
         return;
     }
-    auto &n = node->get();
+    auto       &n    = node->get();
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
-    case UiItemTweenTarget::Opacity:
-        n.opacity = t.fromX + (t.toX - t.fromX) * ease;
-        break;
-    case UiItemTweenTarget::Pos:
-        n.absolute = true;
-        n.posX = t.fromX + (t.toX - t.fromX) * ease;
-        n.posY = t.fromY + (t.toY - t.fromY) * ease;
-        break;
+        case UiItemTweenTarget::Opacity: n.opacity = t.fromX + (t.toX - t.fromX) * ease; break;
+        case UiItemTweenTarget::Pos:
+            n.absolute = true;
+            n.posX     = t.fromX + (t.toX - t.fromX) * ease;
+            n.posY     = t.fromY + (t.toY - t.fromY) * ease;
+            break;
     }
 }
 
-void UiTweenDriver::animateHostPos(UIHostHandle host, float x, float y, float durationMs,
-                                   const std::string &ease, float delayMs, double nowMs) {
+void UiTweenDriver::animateHostPos(UIHostHandle host, float x, float y, float durationMs, const std::string &ease,
+                                   float delayMs, double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
     auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Pos);
     UiHostTween t;
-    t.host = host;
-    t.target = UiHostTweenTarget::Pos;
-    t.fromX = m->hasPos ? m->posX : 0.f;
-    t.fromY = m->hasPos ? m->posY : 0.f;
-    t.toX = x;
-    t.toY = y;
-    t.startMs = nowMs;
+    t.host       = host;
+    t.target     = UiHostTweenTarget::Pos;
+    t.fromX      = m->hasPos ? m->posX : 0.f;
+    t.fromY      = m->hasPos ? m->posY : 0.f;
+    t.toX        = x;
+    t.toY        = y;
+    t.startMs    = nowMs;
     t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs = std::max(0.0, double(delayMs));
-    t.ease = normalizeEase(ease);
-    m->hasPos = true;
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
+    m->hasPos    = true;
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         m->posX = t.toX;
         m->posY = t.toY;
@@ -223,24 +207,24 @@ void UiTweenDriver::animateHostPos(UIHostHandle host, float x, float y, float du
     hostTweens_.push_back(std::move(t));
 }
 
-void UiTweenDriver::animateHostSize(UIHostHandle host, float w, float h, float durationMs,
-                                    const std::string &ease, float delayMs, double nowMs) {
+void UiTweenDriver::animateHostSize(UIHostHandle host, float w, float h, float durationMs, const std::string &ease,
+                                    float delayMs, double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
     auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Size);
     UiHostTween t;
-    t.host = host;
-    t.target = UiHostTweenTarget::Size;
-    t.fromX = m->hasSize ? m->sizeX : 0.f;
-    t.fromY = m->hasSize ? m->sizeY : 0.f;
-    t.toX = w;
-    t.toY = h;
-    t.startMs = nowMs;
+    t.host       = host;
+    t.target     = UiHostTweenTarget::Size;
+    t.fromX      = m->hasSize ? m->sizeX : 0.f;
+    t.fromY      = m->hasSize ? m->sizeY : 0.f;
+    t.toX        = w;
+    t.toY        = h;
+    t.startMs    = nowMs;
     t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs = std::max(0.0, double(delayMs));
-    t.ease = normalizeEase(ease);
-    m->hasSize = true;
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
+    m->hasSize   = true;
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         m->sizeX = t.toX;
         m->sizeY = t.toY;
@@ -249,22 +233,21 @@ void UiTweenDriver::animateHostSize(UIHostHandle host, float w, float h, float d
     hostTweens_.push_back(std::move(t));
 }
 
-void UiTweenDriver::animateHostOverlayAlpha(UIHostHandle host, float alpha, float durationMs,
-                                            const std::string &ease, float delayMs,
-                                            double nowMs) {
+void UiTweenDriver::animateHostOverlayAlpha(UIHostHandle host, float alpha, float durationMs, const std::string &ease,
+                                            float delayMs, double nowMs) {
     auto resolved = UIHost::resolve(host);
     if (!resolved) return;
     auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::OverlayAlpha);
     UiHostTween t;
-    t.host = host;
-    t.target = UiHostTweenTarget::OverlayAlpha;
-    t.fromX = m->overlayBgAlpha;
-    t.toX = std::clamp(alpha, 0.f, 1.f);
-    t.startMs = nowMs;
+    t.host       = host;
+    t.target     = UiHostTweenTarget::OverlayAlpha;
+    t.fromX      = m->overlayBgAlpha;
+    t.toX        = std::clamp(alpha, 0.f, 1.f);
+    t.startMs    = nowMs;
     t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs = std::max(0.0, double(delayMs));
-    t.ease = normalizeEase(ease);
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         m->overlayBgAlpha = t.toX;
         return;
@@ -272,68 +255,79 @@ void UiTweenDriver::animateHostOverlayAlpha(UIHostHandle host, float alpha, floa
     hostTweens_.push_back(std::move(t));
 }
 
-bool UiTweenDriver::animateItemOpacity(UIHostHandle host, const std::string &id, float opacity,
-                                       float durationMs, const std::string &ease, float delayMs,
-                                       double nowMs) {
+eve::Result<void> UiTweenDriver::animateItemOpacity(UIHostHandle host, const std::string &id, float opacity,
+                                                    float durationMs, const std::string &ease, float delayMs,
+                                                    double nowMs) {
     auto resolved = UIHost::resolve(host);
-    if (!resolved) return false;
+    if (!resolved) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "UiTweenDriver.animateItemOpacity: host handle is stale"));
+    }
     auto node = resolved->get().findById(id);
-    if (!node) return false;
+    if (!node) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "UiTweenDriver.animateItemOpacity: node '" + id + "' not found"));
+    }
     replaceItem(host, id, UiItemTweenTarget::Opacity);
     UiItemTween t;
-    t.host = host;
-    t.nodeId = id;
-    t.target = UiItemTweenTarget::Opacity;
-    t.fromX = node->get().opacity;
-    t.toX = std::clamp(opacity, 0.f, 1.f);
-    t.startMs = nowMs;
+    t.host       = host;
+    t.nodeId     = id;
+    t.target     = UiItemTweenTarget::Opacity;
+    t.fromX      = node->get().opacity;
+    t.toX        = std::clamp(opacity, 0.f, 1.f);
+    t.startMs    = nowMs;
     t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs = std::max(0.0, double(delayMs));
-    t.ease = normalizeEase(ease);
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         node->get().opacity = t.toX;
-        return true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     itemTweens_.push_back(std::move(t));
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool UiTweenDriver::animateItemPos(UIHostHandle host, const std::string &id, float x, float y,
-                                   float durationMs, const std::string &ease, float delayMs,
-                                   double nowMs) {
+eve::Result<void> UiTweenDriver::animateItemPos(UIHostHandle host, const std::string &id, float x, float y,
+                                                float durationMs, const std::string &ease, float delayMs,
+                                                double nowMs) {
     auto resolved = UIHost::resolve(host);
-    if (!resolved) return false;
+    if (!resolved) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                 "UiTweenDriver.animateItemPos: host handle is stale"));
+    }
     auto node = resolved->get().findById(id);
-    if (!node) return false;
+    if (!node) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "UiTweenDriver.animateItemPos: node '" + id + "' not found"));
+    }
     replaceItem(host, id, UiItemTweenTarget::Pos);
-    auto &n = node->get();
+    auto       &n = node->get();
     UiItemTween t;
-    t.host = host;
-    t.nodeId = id;
-    t.target = UiItemTweenTarget::Pos;
-    t.fromX = n.posX;
-    t.fromY = n.posY;
-    t.toX = x;
-    t.toY = y;
-    t.startMs = nowMs;
+    t.host       = host;
+    t.nodeId     = id;
+    t.target     = UiItemTweenTarget::Pos;
+    t.fromX      = n.posX;
+    t.fromY      = n.posY;
+    t.toX        = x;
+    t.toY        = y;
+    t.startMs    = nowMs;
     t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs = std::max(0.0, double(delayMs));
-    t.ease = normalizeEase(ease);
-    n.absolute = true;
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
+    n.absolute   = true;
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         n.posX = t.toX;
         n.posY = t.toY;
-        return true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     itemTweens_.push_back(std::move(t));
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void UiTweenDriver::cancelHost(UIHostHandle host) {
-    hostTweens_.erase(
-        std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                       [&](const UiHostTween &t) { return sameHost(t.host, host); }),
-        hostTweens_.end());
+    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
+                                     [&](const UiHostTween &t) { return sameHost(t.host, host); }),
+                      hostTweens_.end());
 }
 
 void UiTweenDriver::cancelItem(UIHostHandle host, const std::string &id) {
@@ -364,9 +358,7 @@ void UiTweenDriver::tick(double nowMs) {
         if (k >= 1.f) t.host = {};
     }
     hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const UiHostTween &t) {
-                                         return !UIHost::resolve(t.host).has_value();
-                                     }),
+                                     [](const UiHostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
                       hostTweens_.end());
 
     for (auto &t : itemTweens_) {
@@ -380,9 +372,7 @@ void UiTweenDriver::tick(double nowMs) {
         if (k >= 1.f) t.host = {};
     }
     itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                                     [](const UiItemTween &t) {
-                                         return !UIHost::resolve(t.host).has_value();
-                                     }),
+                                     [](const UiItemTween &t) { return !UIHost::resolve(t.host).has_value(); }),
                       itemTweens_.end());
 }
 

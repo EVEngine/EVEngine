@@ -11,10 +11,10 @@
 #include "ui/Widget.h"
 
 #include <SDL2/SDL.h>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -482,8 +482,8 @@ public:
      * @param ease Ease kind (default "smoothstep").
      * @param delayMs Delay before the first sample moves.
      */
-    void animateHostOverlayAlpha(float alpha, float durationMs,
-                                 const std::string &ease = "smoothstep", float delayMs = 0.f);
+    void animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease = "smoothstep",
+                                 float delayMs = 0.f);
     /**
      * @brief Smoothly animates one retained node's transient opacity without rebuilding its tree.
      * @param id Node id on the selected host.
@@ -755,7 +755,7 @@ private:
     std::vector<ScriptHandler> scriptHandlers_;
     void fireScriptHandlers(const UIEvent &ev);
 
-    UiTweenDriver tweens_;
+    UiTweenDriver                  tweens_;
     ssq::Object callPickHandler();
     void callScenePickHandler(const std::string &nodeId);
     std::unique_ptr<Inspector> inspector_;

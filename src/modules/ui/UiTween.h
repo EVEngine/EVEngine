@@ -10,6 +10,7 @@
  * Animation module pump and typed sinks); both can coexist.
  */
 
+#include "common/Result.h"
 #include "ui/UIHost.h"
 
 #include <cstdint>
@@ -30,44 +31,44 @@ namespace eve::ui {
 
 /** @brief Host window property driven by a vec2 or float tween. */
 enum class UiHostTweenTarget : std::uint8_t {
-    Pos = 0,           ///< Meta.posX / posY (px)
-    Size = 1,          ///< Meta.sizeX / sizeY (px)
+    Pos          = 0,  ///< Meta.posX / posY (px)
+    Size         = 1,  ///< Meta.sizeX / sizeY (px)
     OverlayAlpha = 2,  ///< Meta.overlayBgAlpha
 };
 
 /** @brief Retained-node property driven by a float or vec2 tween. */
 enum class UiItemTweenTarget : std::uint8_t {
     Opacity = 0,  ///< UINode.opacity (transient)
-    Pos = 1,      ///< UINode.posX / posY (absolute placement)
+    Pos     = 1,  ///< UINode.posX / posY (absolute placement)
 };
 
 /** @brief One host-level tween slot. */
 struct UiHostTween {
-    UIHostHandle host{};
-    UiHostTweenTarget target = UiHostTweenTarget::Pos;
-    float fromX = 0.f;
-    float fromY = 0.f;
-    float toX = 0.f;
-    float toY = 0.f;
-    double startMs = 0.0;
-    double durationMs = 0.0;
-    double delayMs = 0.0;
-    std::string ease = "smoothstep";
+    UIHostHandle      host{};
+    UiHostTweenTarget target     = UiHostTweenTarget::Pos;
+    float             fromX      = 0.f;
+    float             fromY      = 0.f;
+    float             toX        = 0.f;
+    float             toY        = 0.f;
+    double            startMs    = 0.0;
+    double            durationMs = 0.0;
+    double            delayMs    = 0.0;
+    std::string       ease       = "smoothstep";
 };
 
 /** @brief One item-level tween slot scoped to a host + node id. */
 struct UiItemTween {
-    UIHostHandle host{};
-    std::string nodeId;
-    UiItemTweenTarget target = UiItemTweenTarget::Opacity;
-    float fromX = 0.f;
-    float fromY = 0.f;
-    float toX = 0.f;
-    float toY = 0.f;
-    double startMs = 0.0;
-    double durationMs = 0.0;
-    double delayMs = 0.0;
-    std::string ease = "smoothstep";
+    UIHostHandle      host{};
+    std::string       nodeId;
+    UiItemTweenTarget target     = UiItemTweenTarget::Opacity;
+    float             fromX      = 0.f;
+    float             fromY      = 0.f;
+    float             toX        = 0.f;
+    float             toY        = 0.f;
+    double            startMs    = 0.0;
+    double            durationMs = 0.0;
+    double            delayMs    = 0.0;
+    std::string       ease       = "smoothstep";
 };
 
 /**
@@ -86,8 +87,8 @@ public:
      * @param delayMs Delay before the first sample moves.
      * @param nowMs Clock sample used as the tween start.
      */
-    void animateHostPos(UIHostHandle host, float x, float y, float durationMs,
-                        const std::string &ease, float delayMs, double nowMs);
+    void animateHostPos(UIHostHandle host, float x, float y, float durationMs, const std::string &ease, float delayMs,
+                        double nowMs);
 
     /**
      * @brief Animate selected-host explicit window size.
@@ -99,8 +100,8 @@ public:
      * @param delayMs Delay before the first sample moves.
      * @param nowMs Clock sample used as the tween start.
      */
-    void animateHostSize(UIHostHandle host, float w, float h, float durationMs,
-                         const std::string &ease, float delayMs, double nowMs);
+    void animateHostSize(UIHostHandle host, float w, float h, float durationMs, const std::string &ease, float delayMs,
+                         double nowMs);
 
     /**
      * @brief Animate selected-host overlay background alpha.
@@ -111,8 +112,8 @@ public:
      * @param delayMs Delay before the first sample moves.
      * @param nowMs Clock sample used as the tween start.
      */
-    void animateHostOverlayAlpha(UIHostHandle host, float alpha, float durationMs,
-                                 const std::string &ease, float delayMs, double nowMs);
+    void animateHostOverlayAlpha(UIHostHandle host, float alpha, float durationMs, const std::string &ease,
+                                 float delayMs, double nowMs);
 
     /**
      * @brief Animate one node's transient opacity.
@@ -123,11 +124,11 @@ public:
      * @param ease Ease kind (default smoothstep).
      * @param delayMs Delay before the first sample moves.
      * @param nowMs Clock sample used as the tween start.
-     * @return false when the node id is missing on the host.
+     * @return Applied on success; StaleHandle when `host` is invalid; NotFound when `id` is missing.
      */
-    [[nodiscard]] bool animateItemOpacity(UIHostHandle host, const std::string &id, float opacity,
-                                          float durationMs, const std::string &ease, float delayMs,
-                                          double nowMs);
+    [[nodiscard]] eve::Result<void> animateItemOpacity(UIHostHandle host, const std::string &id, float opacity,
+                                                       float durationMs, const std::string &ease, float delayMs,
+                                                       double nowMs);
 
     /**
      * @brief Animate one absolute node's placement offset.
@@ -139,12 +140,12 @@ public:
      * @param ease Ease kind (default smoothstep).
      * @param delayMs Delay before the first sample moves.
      * @param nowMs Clock sample used as the tween start.
-     * @return false when the node id is missing on the host.
+     * @return Applied on success; StaleHandle when `host` is invalid; NotFound when `id` is missing.
      * @note Marks the node absolute so the offset is honored by layout.
      */
-    [[nodiscard]] bool animateItemPos(UIHostHandle host, const std::string &id, float x, float y,
-                                      float durationMs, const std::string &ease, float delayMs,
-                                      double nowMs);
+    [[nodiscard]] eve::Result<void> animateItemPos(UIHostHandle host, const std::string &id, float x, float y,
+                                                   float durationMs, const std::string &ease, float delayMs,
+                                                   double nowMs);
 
     /** @brief Cancel every pending host tween for `host`. */
     void cancelHost(UIHostHandle host);
@@ -168,10 +169,10 @@ public:
     [[nodiscard]] std::size_t itemTweenCount() const noexcept { return itemTweens_.size(); }
 
 private:
-    void replaceHost(UIHostHandle host, UiHostTweenTarget target);
-    void replaceItem(UIHostHandle host, const std::string &id, UiItemTweenTarget target);
-    void applyHost(UiHostTween &t, float k);
-    void applyItem(UiItemTween &t, float k);
+    void        replaceHost(UIHostHandle host, UiHostTweenTarget target);
+    void        replaceItem(UIHostHandle host, const std::string &id, UiItemTweenTarget target);
+    void        applyHost(UiHostTween &t, float k);
+    void        applyItem(UiItemTween &t, float k);
     static bool sameHost(UIHostHandle a, UIHostHandle b) noexcept;
 
     std::vector<UiHostTween> hostTweens_;
