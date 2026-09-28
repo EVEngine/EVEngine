@@ -1,5 +1,6 @@
 #include <memory>
 #include "graphics/Graphics.h"
+#include "graphics/RenderControl.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
@@ -26,8 +27,14 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
     REQUIRE(texture != nullptr);
     for (int size : {64, 96}) {
         graphics->beginGBufferPass(size, size);
-        graphics->drawMeshGBuffer(mesh, glm::mat4(1), glm::mat4(1), 0.1f, 100.f, texture);
+        graphics->drawMeshGBuffer(mesh, glm::mat4(1), glm::mat4(1), 0.1f, 100.f, texture,
+                                  /*tint*/ 1.f, 1.f, 1.f, /*motion*/ 0.f, 0.f,
+                                  /*roughness*/ 0.25f, /*metallic*/ 0.75f);
         graphics->endGBufferPass();
+        auto* gb = graphics->getRenderControl()->getGBuffer();
+        REQUIRE(gb != nullptr);
+        REQUIRE(gb->hasBuffer("pbrParams"));
+        REQUIRE(gb->hasBuffer("emissive"));
         std::unique_ptr<eve::image::ImageData> image(graphics->readGBufferToImageData("albedo"));
         REQUIRE(image != nullptr);
         REQUIRE_EQ(image->getWidth(), size);
@@ -36,6 +43,25 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         REQUIRE(pixels[center] > 247);
         REQUIRE(pixels[center + 1] < 8);
         REQUIRE(pixels[center + 2] < 8);
+
+        std::unique_ptr<eve::image::ImageData> pbr(graphics->readGBufferToImageData("pbrParams"));
+        REQUIRE(pbr != nullptr);
+        const auto* pbrPx = static_cast<const uint8_t*>(pbr->getData());
+        // R=metallic≈0.75, G=roughness≈0.25, B=occlusion=1, A=specular=1
+        REQUIRE(pbrPx[center] > 170);
+        REQUIRE(pbrPx[center] < 210);
+        REQUIRE(pbrPx[center + 1] > 50);
+        REQUIRE(pbrPx[center + 1] < 80);
+        REQUIRE(pbrPx[center + 2] > 247);
+        REQUIRE(pbrPx[center + 3] > 247);
+
+        std::unique_ptr<eve::image::ImageData> emissive(graphics->readGBufferToImageData("emissive"));
+        REQUIRE(emissive != nullptr);
+        const auto* emPx = static_cast<const uint8_t*>(emissive->getData());
+        REQUIRE(emPx[center] < 8);
+        REQUIRE(emPx[center + 1] < 8);
+        REQUIRE(emPx[center + 2] < 8);
+
         graphics->begin3DFrame();
         graphics->present();
         // Removing all geometry must still execute the clear-only pass.
@@ -48,4 +74,102 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         graphics->begin3DFrame();
         graphics->present();
     }
+}
+
+TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
+    auto*                       window   = eve::window::Window::create();
+    auto*                       graphics = eve::graphics::Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 160;
+    settings.height = 120;
+    REQUIRE(window->setWindowSettings(settings));
+    auto* rc = graphics->getRenderControl();
+    REQUIRE(rc != nullptr);
+    // Vulkan and WebGPU both report supportsDeferredLighting (Phase C/D).
+    if (!graphics->supportsDeferredLighting()) {
+        CHECK(!rc->isDeferredLightingAvailable());
+        auto ok = rc->setLightingMode(eve::graphics::LightingMode::Hybrid);
+        CHECK(ok.ok());
+        rc->compile();
+        CHECK(rc->hasHybridLightingFallback());
+        CHECK(!rc->hasPass("deferredLighting"));
+        return;
+    }
+    CHECK(rc->isDeferredLightingAvailable());
+    auto ok = rc->setLightingMode(eve::graphics::LightingMode::Hybrid);
+    CHECK(ok.ok());
+    rc->compile();
+    CHECK(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::Hybrid);
+    CHECK(!rc->hasHybridLightingFallback());
+    CHECK(rc->hasPass("deferredLighting"));
+    CHECK(rc->hasPass("gbuffer"));
+    CHECK(rc->hasPass("forward"));
+    CHECK(!rc->isEnabled("msaa"));
+    // Pass order: shadow → gbuffer → deferredLighting → forward
+    int shadowIdx = -1, gbIdx = -1, defIdx = -1, fwdIdx = -1;
+    for (int i = 0; i < rc->getPassCount(); ++i) {
+        const std::string n = rc->getPassName(i);
+        if (n == "shadow") shadowIdx = i;
+        if (n == "gbuffer") gbIdx = i;
+        if (n == "deferredLighting") defIdx = i;
+        if (n == "forward") fwdIdx = i;
+    }
+    CHECK(shadowIdx >= 0);
+    CHECK(gbIdx > shadowIdx);
+    CHECK(defIdx > gbIdx);
+    CHECK(fwdIdx > defIdx);
+
+    // Smoke: GBuffer fill + deferred lighting into an open scene-color pass.
+    const float    positions[] = {-1, -1, 0.5f, 1, -1, 0.5f, 1, 1, 0.5f, -1, 1, 0.5f};
+    const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
+    const float    uvs[]       = {0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
+    auto*          mesh        = graphics->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t red[]   = {220, 40, 40, 255};
+    auto*         texture = graphics->newTexture(1, 1, red);
+    REQUIRE(texture != nullptr);
+    graphics->beginGBufferPass(160, 120);
+    graphics->drawMeshGBuffer(mesh, glm::mat4(1), glm::mat4(1), 0.1f, 100.f, texture, 1.f, 1.f, 1.f, 0.f, 0.f, 0.4f,
+                              0.1f);
+    graphics->endGBufferPass();
+    graphics->begin3DFrame();
+    graphics->setMesh3DViewProj(glm::mat4(1));
+    graphics->setMesh3DView(glm::mat4(1));
+    graphics->setMesh3DClip(0.1f, 100.f);
+    graphics->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+    graphics->drawDeferredLighting();
+    graphics->present();
+}
+
+TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {
+    auto*                       window   = eve::window::Window::create();
+    auto*                       graphics = eve::graphics::Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 64;
+    settings.height = 48;
+    REQUIRE(window->setWindowSettings(settings));
+    auto* rc = graphics->getRenderControl();
+    REQUIRE(rc != nullptr);
+
+    auto ci = rc->applyLightingPreset(eve::graphics::LightingPreset::Ci);
+    CHECK(ci.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Ci);
+    CHECK(rc->getLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+    rc->compile();
+    CHECK(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+    CHECK(!rc->hasPass("deferredLighting"));
+
+    auto desktop = rc->applyLightingPreset("desktop");
+    CHECK(desktop.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
+    if (graphics->supportsDeferredLighting()) {
+        CHECK(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        rc->compile();
+        CHECK(rc->hasPass("deferredLighting"));
+    }
+
+    auto bad = rc->applyLightingPreset("nope");
+    CHECK(!bad.ok());
+    CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
 }

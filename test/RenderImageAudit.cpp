@@ -1224,7 +1224,7 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
     const float ox = 80.f, oy = 60.f, cw = 120.f, ch = 90.f;
     for (int i = 0; i < 4; ++i) {
         packed[i] = makeSprite(cells[i], ox + float(i % 2) * cw, oy + float(i / 2) * ch, cw, ch, false);
-        packed[i]->sprite()->normalTexture = flatN;
+        packed[i]->setNormalTexture(flatN);
     }
     auditGpuFrame(gfx, "composite", "sprites_over_3d", bg);
 

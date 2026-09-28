@@ -586,12 +586,11 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold/low-cache NDK build (PR READ_ONLY sccache) can spend ~58-60 minutes
-    # on ninja alone before Gradle packages the APK (~2-3 minutes more). The
-    # former 60-minute step guard timed out at 1498/1499 with zero compile
-    # errors. Keep the step timeout as the hang guard while leaving enough job
-    # budget for setup/cleanup.
-    timeout-minutes: 105
+    # Cold NDK rebuilds (PR sccache is READ_ONLY; graphics header churn →
+    # ~55-60 min of C++) leave little room for Gradle packaging of the ~2GB
+    # debug libmain.so. Keep the build-step timeout as the hang guard while
+    # leaving job budget for setup/cleanup beyond that step.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -649,7 +648,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 75
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \

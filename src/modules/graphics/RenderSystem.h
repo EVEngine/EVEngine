@@ -128,6 +128,22 @@ public:
     void setTexture(Texture *texture);
     /** @brief Return the assigned texture. */
     Texture *getTexture();
+    /**
+     * @brief Assign an optional tangent-space normal map for the GPU lit2d path.
+     * @param texture Borrowed normal map, or nullptr to clear. Non-null with
+     *        receiveLight and an albedo texture (and no custom shader) selects
+     *        lit2d; otherwise lighting falls back to CPU modulation.
+     * @ownership `texture` remains owned by the caller (typically Graphics); this
+     *            sprite only borrows it and never deletes it.
+     * @lifetime Must remain valid while assigned, or until cleared / the sprite is destroyed.
+     */
+    void setNormalTexture(Texture *texture);
+    /**
+     * @brief Return the assigned normal map, or nullptr when unlit/flat.
+     * @ownership Returns a borrowed Texture*; the caller must not delete it.
+     * @lifetime Valid until `setNormalTexture` replaces or clears it, or the sprite is destroyed.
+     */
+    Texture *getNormalTexture();
     /** @brief Assign the borrowed UV quad. */
     void setQuad(Quad *quad);
     /** @brief Return the assigned UV quad. */
