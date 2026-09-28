@@ -253,12 +253,16 @@ public:
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
         bool lockPos = true;       // false: initial position only; user may move/persist it
+        /** @brief When true, renderer applies pos with Always for this frame (tween/Motion). */
+        bool  animDrivePos = false;
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
         bool lockSize = true;      // false: initial size only; user may resize/persist it
+        /** @brief When true, renderer applies size with Always for this frame (tween/Motion). */
+        bool         animDriveSize = false;
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
