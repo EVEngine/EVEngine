@@ -145,16 +145,21 @@ void UiTweenDriver::applyHost(UiHostTween &t, float k) {
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
         case UiHostTweenTarget::Pos:
-            m->hasPos = true;
-            m->posX   = t.fromX + (t.toX - t.fromX) * ease;
-            m->posY   = t.fromY + (t.toY - t.fromY) * ease;
+            m->hasPos       = true;
+            m->animDrivePos = true;
+            m->posX         = t.fromX + (t.toX - t.fromX) * ease;
+            m->posY         = t.fromY + (t.toY - t.fromY) * ease;
             break;
         case UiHostTweenTarget::Size:
-            m->hasSize = true;
-            m->sizeX   = t.fromX + (t.toX - t.fromX) * ease;
-            m->sizeY   = t.fromY + (t.toY - t.fromY) * ease;
+            m->hasSize       = true;
+            m->animDriveSize = true;
+            m->sizeX         = t.fromX + (t.toX - t.fromX) * ease;
+            m->sizeY         = t.fromY + (t.toY - t.fromY) * ease;
             break;
-        case UiHostTweenTarget::OverlayAlpha: m->overlayBgAlpha = t.fromX + (t.toX - t.fromX) * ease; break;
+        case UiHostTweenTarget::OverlayAlpha:
+            // Back/Elastic can overshoot; keep retained alpha in [0,1].
+            m->overlayBgAlpha = std::clamp(t.fromX + (t.toX - t.fromX) * ease, 0.f, 1.f);
+            break;
     }
 }
 
@@ -172,7 +177,7 @@ void UiTweenDriver::applyItem(UiItemTween &t, float k) {
     auto       &n    = node->get();
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
-        case UiItemTweenTarget::Opacity: n.opacity = t.fromX + (t.toX - t.fromX) * ease; break;
+        case UiItemTweenTarget::Opacity: n.opacity = std::clamp(t.fromX + (t.toX - t.fromX) * ease, 0.f, 1.f); break;
         case UiItemTweenTarget::Pos:
             n.absolute = true;
             n.posX     = t.fromX + (t.toX - t.fromX) * ease;
@@ -188,17 +193,18 @@ void UiTweenDriver::animateHostPos(UIHostHandle host, float x, float y, float du
     auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Pos);
     UiHostTween t;
-    t.host       = host;
-    t.target     = UiHostTweenTarget::Pos;
-    t.fromX      = m->hasPos ? m->posX : 0.f;
-    t.fromY      = m->hasPos ? m->posY : 0.f;
-    t.toX        = x;
-    t.toY        = y;
-    t.startMs    = nowMs;
-    t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs    = std::max(0.0, double(delayMs));
-    t.ease       = normalizeEase(ease);
-    m->hasPos    = true;
+    t.host          = host;
+    t.target        = UiHostTweenTarget::Pos;
+    t.fromX         = m->hasPos ? m->posX : 0.f;
+    t.fromY         = m->hasPos ? m->posY : 0.f;
+    t.toX           = x;
+    t.toY           = y;
+    t.startMs       = nowMs;
+    t.durationMs    = std::max(0.0, double(durationMs));
+    t.delayMs       = std::max(0.0, double(delayMs));
+    t.ease          = normalizeEase(ease);
+    m->hasPos       = true;
+    m->animDrivePos = true;
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         m->posX = t.toX;
         m->posY = t.toY;
@@ -214,17 +220,18 @@ void UiTweenDriver::animateHostSize(UIHostHandle host, float w, float h, float d
     auto m = resolved->get().meta();
     replaceHost(host, UiHostTweenTarget::Size);
     UiHostTween t;
-    t.host       = host;
-    t.target     = UiHostTweenTarget::Size;
-    t.fromX      = m->hasSize ? m->sizeX : 0.f;
-    t.fromY      = m->hasSize ? m->sizeY : 0.f;
-    t.toX        = w;
-    t.toY        = h;
-    t.startMs    = nowMs;
-    t.durationMs = std::max(0.0, double(durationMs));
-    t.delayMs    = std::max(0.0, double(delayMs));
-    t.ease       = normalizeEase(ease);
-    m->hasSize   = true;
+    t.host           = host;
+    t.target         = UiHostTweenTarget::Size;
+    t.fromX          = m->hasSize ? m->sizeX : 0.f;
+    t.fromY          = m->hasSize ? m->sizeY : 0.f;
+    t.toX            = w;
+    t.toY            = h;
+    t.startMs        = nowMs;
+    t.durationMs     = std::max(0.0, double(durationMs));
+    t.delayMs        = std::max(0.0, double(delayMs));
+    t.ease           = normalizeEase(ease);
+    m->hasSize       = true;
+    m->animDriveSize = true;
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         m->sizeX = t.toX;
         m->sizeY = t.toY;

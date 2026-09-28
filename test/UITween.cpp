@@ -29,9 +29,8 @@ ui::UINode *findNode(ui::UIHost *host, const std::string &id) {
 TEST_CASE("UI.tween.conveniencePathIndependentOfAnimation") {
     // Provider-absent contract: presentation tweens must not require Animation.
     ui::UI *uimod = ui::UI::create();
-    REQUIRE(ui::UIHost::resolve(
-                uimod->mountAs("no-anim", ui::window("T", {ui::button("Go", "go")}, "root")))
-                .has_value());
+    REQUIRE(
+        ui::UIHost::resolve(uimod->mountAs("no-anim", ui::window("T", {ui::button("Go", "go")}, "root"))).has_value());
     ui::UIHost *current = resolveHost(uimod->current());
     REQUIRE(current != nullptr);
 
@@ -61,8 +60,8 @@ TEST_CASE("UI.tween.easeKinds") {
 
 TEST_CASE("UI.tween.hostPosDurationZeroAndMid") {
     ui::UI *uimod = ui::UI::create();
-    REQUIRE(ui::UIHost::resolve(uimod->mountAs("tween-pos", ui::window("T", {ui::text("x", "x")}, "root")))
-                .has_value());
+    REQUIRE(
+        ui::UIHost::resolve(uimod->mountAs("tween-pos", ui::window("T", {ui::text("x", "x")}, "root"))).has_value());
     ui::UIHost *current = resolveHost(uimod->current());
     REQUIRE(current != nullptr);
 
@@ -111,8 +110,8 @@ TEST_CASE("UI.tween.hostPosReplaceAndCancel") {
 
 TEST_CASE("UI.tween.hostSizeAndOverlayAlpha") {
     ui::UI *uimod = ui::UI::create();
-    REQUIRE(ui::UIHost::resolve(uimod->mountAs("tween-size", ui::window("T", {ui::text("x", "x")}, "root")))
-                .has_value());
+    REQUIRE(
+        ui::UIHost::resolve(uimod->mountAs("tween-size", ui::window("T", {ui::text("x", "x")}, "root"))).has_value());
     ui::UIHost *current = resolveHost(uimod->current());
     REQUIRE(current != nullptr);
 
@@ -157,13 +156,13 @@ TEST_CASE("UI.tween.itemOpacityAndPos") {
 
 TEST_CASE("UI.tween.driverMidSampleLinear") {
     ui::UiTweenDriver driver;
-    auto handle = ui::UIHost::createHost("driver-mid");
-    auto host = ui::UIHost::resolve(handle);
+    auto              handle = ui::UIHost::createHost("driver-mid");
+    auto              host   = ui::UIHost::resolve(handle);
     REQUIRE(host.has_value());
     host->get().setTree(ui::window("W", {ui::text("hi", "hi")}, "root"));
     host->get().meta()->hasPos = true;
-    host->get().meta()->posX = 0.f;
-    host->get().meta()->posY = 0.f;
+    host->get().meta()->posX   = 0.f;
+    host->get().meta()->posY   = 0.f;
 
     driver.animateHostPos(handle, 100.f, 50.f, 1000.f, "linear", 0.f, 0.0);
     CHECK_EQ(driver.hostTweenCount(), 1u);
@@ -183,13 +182,13 @@ TEST_CASE("UI.tween.driverMidSampleLinear") {
 
 TEST_CASE("UI.tween.delayHoldsFrom") {
     ui::UiTweenDriver driver;
-    auto handle = ui::UIHost::createHost("driver-delay");
-    auto host = ui::UIHost::resolve(handle);
+    auto              handle = ui::UIHost::createHost("driver-delay");
+    auto              host   = ui::UIHost::resolve(handle);
     REQUIRE(host.has_value());
     host->get().setTree(ui::window("W", {ui::text("hi", "hi")}, "root"));
     host->get().meta()->hasPos = true;
-    host->get().meta()->posX = 10.f;
-    host->get().meta()->posY = 20.f;
+    host->get().meta()->posX   = 10.f;
+    host->get().meta()->posY   = 20.f;
 
     driver.animateHostPos(handle, 110.f, 120.f, 1000.f, "linear", 200.f, 0.0);
     driver.tick(100.0);
@@ -202,17 +201,84 @@ TEST_CASE("UI.tween.delayHoldsFrom") {
 
 TEST_CASE("UI.tween.destroyedHostDropsTweens") {
     ui::UiTweenDriver driver;
-    auto handle = ui::UIHost::createHost("driver-drop");
-    auto host = ui::UIHost::resolve(handle);
+    auto              handle = ui::UIHost::createHost("driver-drop");
+    auto              host   = ui::UIHost::resolve(handle);
     REQUIRE(host.has_value());
     host->get().setTree(ui::window("W", {ui::text("hi", "hi")}, "root"));
     host->get().meta()->hasPos = true;
-    host->get().meta()->posX = 0.f;
-    host->get().meta()->posY = 0.f;
+    host->get().meta()->posX   = 0.f;
+    host->get().meta()->posY   = 0.f;
     driver.animateHostPos(handle, 50.f, 50.f, 1000.f, "linear", 0.f, 0.0);
     CHECK_EQ(driver.hostTweenCount(), 1u);
     ecs::DestroyEntity(&host->get());
     CHECK(!ui::UIHost::resolve(handle).has_value());
     driver.tick(500.0);
     CHECK_EQ(driver.hostTweenCount(), 0u);
+}
+
+TEST_CASE("UI.tween.movableHostGetsAnimDriveOverride") {
+    ui::UI *uimod = ui::UI::create();
+    REQUIRE(ui::UIHost::resolve(uimod->mountAs("tween-movable", ui::window("T", {ui::text("x", "x")}, "root")))
+                .has_value());
+    ui::UIHost *current = resolveHost(uimod->current());
+    REQUIRE(current != nullptr);
+    uimod->setHostMovable(true);
+    uimod->setHostResizable(true);
+    CHECK(!current->meta()->lockPos);
+    CHECK(!current->meta()->lockSize);
+
+    uimod->animateHostPos(40.f, 60.f, 1000.f, "linear");
+    uimod->animateHostSize(200.f, 100.f, 1000.f, "linear");
+    CHECK(current->meta()->animDrivePos);
+    CHECK(current->meta()->animDriveSize);
+    // User movable/resizable preference is preserved.
+    CHECK(!current->meta()->lockPos);
+    CHECK(!current->meta()->lockSize);
+
+    const double t0 = ui::uiTweenWallClockMs();
+    uimod->tickTweens(t0 + 500.0);
+    CHECK(current->meta()->animDrivePos);
+    CHECK(current->meta()->animDriveSize);
+    CHECK(current->meta()->posX > 0.f);
+    CHECK(current->meta()->sizeX > 0.f);
+}
+
+TEST_CASE("UI.tween.overshootEaseClampsAlphaAndOpacity") {
+    ui::UiTweenDriver driver;
+    auto              handle = ui::UIHost::createHost("tween-clamp");
+    auto              host   = ui::UIHost::resolve(handle);
+    REQUIRE(host.has_value());
+    host->get().setTree(ui::window("W", {ui::button("Go", "go")}, "root"));
+    host->get().meta()->overlayBgAlpha = 1.f;
+
+    // outBack overshoots past 1; fading 1→0 must not store a negative alpha.
+    REQUIRE(ui::evaluateUiEase(0.9f, "outBack") > 1.f);
+    driver.animateHostOverlayAlpha(handle, 0.f, 1000.f, "outBack", 0.f, 0.0);
+    driver.tick(900.0);
+    CHECK(host->get().meta()->overlayBgAlpha >= 0.f);
+    CHECK(host->get().meta()->overlayBgAlpha <= 1.f);
+
+    auto go = host->get().findById("go");
+    REQUIRE(go.has_value());
+    go->get().opacity = 1.f;
+    driver.animateItemOpacity(handle, "go", 0.f, 1000.f, "outBack", 0.f, 0.0).expect("opacity tween");
+    driver.tick(900.0);
+    CHECK(go->get().opacity >= 0.f);
+    CHECK(go->get().opacity <= 1.f);
+}
+
+TEST_CASE("UI.tween.gridChildPosMarksAbsolute") {
+    ui::UI *uimod = ui::UI::create();
+    REQUIRE(
+        ui::UIHost::resolve(
+            uimod->mountAs("tween-grid",
+                           ui::window("T", {ui::grid(2, {ui::button("A", "a"), ui::button("B", "b")}, "g")}, "root")))
+            .has_value());
+    ui::UINode *a = findNode(resolveHost(uimod->current()), "a");
+    REQUIRE(a != nullptr);
+    CHECK(!a->absolute);
+    uimod->animateItemPos("a", 12.f, 24.f, 0.f);
+    CHECK(a->absolute);
+    CHECK(std::abs(a->posX - 12.f) < 1e-4f);
+    CHECK(std::abs(a->posY - 24.f) < 1e-4f);
 }

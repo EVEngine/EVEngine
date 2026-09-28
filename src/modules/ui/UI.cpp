@@ -38,8 +38,9 @@
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <SDL2/SDL_events.h>
+#include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
@@ -57,6 +58,129 @@
 
 namespace eve::ui {
 namespace {
+
+UI *uiFromStack(HSQUIRRELVM vm) {
+    UI *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self) return nullptr;
+    return self;
+}
+
+std::string optionalEase(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return "smoothstep";
+    const SQChar *ease = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, idx, &ease)) || !ease) return "smoothstep";
+    return ease;
+}
+
+float optionalDelay(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return 0.f;
+    SQFloat delay = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, idx, &delay))) return 0.f;
+    return float(delay);
+}
+
+/** Script: animateHostPos(x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostPos expects (x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &x)) || SQ_FAILED(sq_getfloat(vm, 3, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostPos expects float x/y/durationMs");
+    self->animateHostPos(float(x), float(y), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostSize(w, h, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostSize(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostSize expects (w, h, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat w = 0.f, h = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &w)) || SQ_FAILED(sq_getfloat(vm, 3, &h)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostSize expects float w/h/durationMs");
+    self->animateHostSize(float(w), float(h), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostOverlayAlpha(alpha, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostOverlayAlpha(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 3 || n > 5)
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects (alpha, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat alpha = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &alpha)) || SQ_FAILED(sq_getfloat(vm, 3, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects float alpha/durationMs");
+    self->animateHostOverlayAlpha(float(alpha), float(durationMs), optionalEase(vm, 4, n), optionalDelay(vm, 5, n));
+    return 0;
+}
+
+/** Script: animateItemOpacity(id, opacity, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemOpacity(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6)
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (id, opacity, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id      = nullptr;
+    SQFloat       opacity = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &opacity)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (string id, float opacity, float durationMs)");
+    self->animateItemOpacity(id ? id : "", float(opacity), float(durationMs), optionalEase(vm, 5, n),
+                             optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateItemPos(id, x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 5 || n > 7)
+        return sq_throwerror(vm, "UI.animateItemPos expects (id, x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id = nullptr;
+    SQFloat       x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &x)) || SQ_FAILED(sq_getfloat(vm, 4, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 5, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemPos expects (string id, float x/y/durationMs)");
+    self->animateItemPos(id ? id : "", float(x), float(y), float(durationMs), optionalEase(vm, 6, n),
+                         optionalDelay(vm, 7, n));
+    return 0;
+}
+
+/** Script: cancelItemTweens([id]). */
+SQInteger sqCancelItemTweens(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 1 || n > 2) return sq_throwerror(vm, "UI.cancelItemTweens expects ([id])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    if (n < 2) {
+        self->cancelItemTweens("");
+        return 0;
+    }
+    const SQChar *id = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id))) return sq_throwerror(vm, "UI.cancelItemTweens id must be a string");
+    self->cancelItemTweens(id ? id : "");
+    return 0;
+}
+
+void addOptionalTweenFunc(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                          const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
 
 std::string jsonQuoted(const std::string &value) {
     std::string out = "\"";
@@ -2698,13 +2822,15 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
-    cls.addFunc("animateHostPos", &UI::animateHostPos);
-    cls.addFunc("animateHostSize", &UI::animateHostSize);
-    cls.addFunc("animateHostOverlayAlpha", &UI::animateHostOverlayAlpha);
-    cls.addFunc("animateItemOpacity", &UI::animateItemOpacity);
-    cls.addFunc("animateItemPos", &UI::animateItemPos);
+    // Trailing ease/delay (and cancelItemTweens id) are optional in script; C++
+    // defaults do not reach Squirrel through member-function pointers.
+    addOptionalTweenFunc(cls, "animateHostPos", sqAnimateHostPos, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostSize", sqAnimateHostSize, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostOverlayAlpha", sqAnimateHostOverlayAlpha, 3, _SC("xffsf"));
+    addOptionalTweenFunc(cls, "animateItemOpacity", sqAnimateItemOpacity, 4, _SC("xsffsf"));
+    addOptionalTweenFunc(cls, "animateItemPos", sqAnimateItemPos, 5, _SC("xsfffsf"));
     cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);
-    cls.addFunc("cancelItemTweens", &UI::cancelItemTweens);
+    addOptionalTweenFunc(cls, "cancelItemTweens", sqCancelItemTweens, 1, _SC("xs"));
     cls.addFunc("cancelAllTweens", &UI::cancelAllTweens);
     cls.addFunc("tickTweens", &UI::tickTweens);
     cls.addFunc("getHostTweenCount", &UI::getHostTweenCount);

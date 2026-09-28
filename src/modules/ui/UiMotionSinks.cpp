@@ -8,8 +8,8 @@ namespace eve::ui {
 namespace {
 
 eve::Result<void> staleHost(const char *sink) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::StaleHandle, std::string(sink) + ".write: host handle is stale"));
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string(sink) + ".write: host handle is stale"));
 }
 
 eve::Result<void> missingNode(const char *sink, const std::string &id) {
@@ -22,20 +22,22 @@ eve::Result<void> missingNode(const char *sink, const std::string &id) {
 eve::Result<void> UiHostPosSink::write(eve::animation::MotionVec2 value) {
     auto host = UIHost::resolve(host_);
     if (!host) return staleHost("UiHostPosSink");
-    auto m = host->get().meta();
-    m->hasPos = true;
-    m->posX = value.x;
-    m->posY = value.y;
+    auto m          = host->get().meta();
+    m->hasPos       = true;
+    m->animDrivePos = true;
+    m->posX         = value.x;
+    m->posY         = value.y;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> UiHostSizeSink::write(eve::animation::MotionVec2 value) {
     auto host = UIHost::resolve(host_);
     if (!host) return staleHost("UiHostSizeSink");
-    auto m = host->get().meta();
-    m->hasSize = true;
-    m->sizeX = value.x;
-    m->sizeY = value.y;
+    auto m           = host->get().meta();
+    m->hasSize       = true;
+    m->animDriveSize = true;
+    m->sizeX         = value.x;
+    m->sizeY         = value.y;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -60,10 +62,10 @@ eve::Result<void> UiNodePosSink::write(eve::animation::MotionVec2 value) {
     if (!host) return staleHost("UiNodePosSink");
     auto node = host->get().findById(nodeId_);
     if (!node) return missingNode("UiNodePosSink", nodeId_);
-    auto &n = node->get();
+    auto &n    = node->get();
     n.absolute = true;
-    n.posX = value.x;
-    n.posY = value.y;
+    n.posX     = value.x;
+    n.posY     = value.y;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
