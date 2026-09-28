@@ -987,6 +987,16 @@ void Graphics::create2DPipelines() {
         make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
     offscreenLitOpaquePipeline =
         make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Opaque);
+    hdrOffscreenLitPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Alpha);
+    hdrOffscreenLitAdditivePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Additive);
+    hdrOffscreenLitPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Premultiplied);
+    hdrOffscreenLitMultiplyPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Multiply);
+    hdrOffscreenLitOpaquePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Opaque);
 }
 
 wgpu::RenderPipeline Graphics::get2DColorPipeline(BlendMode blend, bool offscreen) {
@@ -1013,16 +1023,32 @@ wgpu::RenderPipeline Graphics::get2DTexturedPipeline(BlendMode blend, bool offsc
     }
 }
 
-wgpu::RenderPipeline Graphics::get2DLitPipeline(BlendMode blend, bool offscreen) {
-    switch (blend) {
-        case BlendMode::Additive: return offscreen ? offscreenLitAdditivePipeline : lit2dAdditivePipeline;
-        case BlendMode::Premultiplied:
-            return offscreen ? offscreenLitPremultipliedPipeline : lit2dPremultipliedPipeline;
-        case BlendMode::Multiply: return offscreen ? offscreenLitMultiplyPipeline : lit2dMultiplyPipeline;
-        case BlendMode::Opaque: return offscreen ? offscreenLitOpaquePipeline : lit2dOpaquePipeline;
-        case BlendMode::Alpha:
-        default: return offscreen ? offscreenLitPipeline : lit2dPipeline;
+wgpu::RenderPipeline Graphics::get2DLitPipeline(BlendMode blend, WGPUTextureFormat format) {
+    const bool hdr       = format == WGPUTextureFormat_RGBA16Float;
+    const bool offscreen = hdr || uint32_t(format) != uint32_t(surfaceFormat);
+    auto       pick      = [](BlendMode mode, wgpu::RenderPipeline alpha, wgpu::RenderPipeline additive,
+                   wgpu::RenderPipeline premultiplied, wgpu::RenderPipeline multiply,
+                   wgpu::RenderPipeline opaque) -> wgpu::RenderPipeline {
+        switch (mode) {
+            case BlendMode::Additive: return additive;
+            case BlendMode::Premultiplied: return premultiplied;
+            case BlendMode::Multiply: return multiply;
+            case BlendMode::Opaque: return opaque;
+            case BlendMode::Alpha:
+            default: return alpha;
+        }
+    };
+    if (hdr) {
+        return pick(blend, hdrOffscreenLitPipeline, hdrOffscreenLitAdditivePipeline,
+                    hdrOffscreenLitPremultipliedPipeline, hdrOffscreenLitMultiplyPipeline,
+                    hdrOffscreenLitOpaquePipeline);
     }
+    if (offscreen) {
+        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
+                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
+    }
+    return pick(blend, lit2dPipeline, lit2dAdditivePipeline, lit2dPremultipliedPipeline, lit2dMultiplyPipeline,
+                lit2dOpaquePipeline);
 }
 
 void Graphics::createMesh3DPipelines() {
@@ -3338,8 +3364,7 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
 
     wgpu::BindGroup      bg         = makeTex2DBindGroup(albedoGpu, normalGpu);
     uint32_t             offsets[1] = {uboOffset};
-    const bool           offscreen  = uint32_t(format) != uint32_t(surfaceFormat);
-    wgpu::RenderPipeline pipe       = get2DLitPipeline(lb.blend, offscreen);
+    wgpu::RenderPipeline pipe       = get2DLitPipeline(lb.blend, format);
     if (!pipe) return;
     pass.SetPipeline(pipe);
     pass.SetBindGroup(0, bg, 1, offsets);

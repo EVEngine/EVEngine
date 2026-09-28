@@ -468,7 +468,7 @@ void Graphics::createLit2DPipeline() {
     lit2dOpaquePipeline = createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout, BlendMode::Opaque);
 }
 
-vk::Pipeline Graphics::selectLit2DPipeline(BlendMode blend, bool offscreen) const {
+vk::Pipeline Graphics::selectLit2DPipeline(BlendMode blend, bool offscreen, bool hdr) const {
     auto pick = [](BlendMode mode, vk::Pipeline alpha, vk::Pipeline additive, vk::Pipeline premultiplied,
                    vk::Pipeline multiply, vk::Pipeline opaque) -> vk::Pipeline {
         switch (mode) {
@@ -480,15 +480,16 @@ vk::Pipeline Graphics::selectLit2DPipeline(BlendMode blend, bool offscreen) cons
             default: return alpha;
         }
     };
-    if (offscreen) {
-        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
-                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
-    }
-    if (presentComposeActive_) {
+    // HDR canvas flush and HDR present-compose both target hdrOffscreenRenderPass.
+    if ((offscreen && hdr) || (!offscreen && presentComposeActive_)) {
         vk::Pipeline pipe =
             pick(blend, hdrOffscreenLitPipeline, hdrOffscreenLitAdditivePipeline, hdrOffscreenLitPremultipliedPipeline,
                  hdrOffscreenLitMultiplyPipeline, hdrOffscreenLitOpaquePipeline);
         if (pipe) return pipe;
+    }
+    if (offscreen) {
+        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
+                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
     }
     return pick(blend, lit2dPipeline, lit2dAdditivePipeline, lit2dPremultipliedPipeline, lit2dMultiplyPipeline,
                 lit2dOpaquePipeline);

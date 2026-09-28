@@ -1046,7 +1046,8 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth, GpuTex
 }
 
 void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
-                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen) {
+                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen,
+                              bool hdr) {
     if (batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
@@ -1055,7 +1056,7 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::v
 
     for (auto &lb : batches) {
         if (lb.batch.empty() || !lb.albedo || !lb.albedo->gpuHandle) continue;
-        vk::Pipeline litPipeline = selectLit2DPipeline(lb.blend, offscreen);
+        vk::Pipeline litPipeline = selectLit2DPipeline(lb.blend, offscreen, hdr);
         if (!litPipeline) continue;
         ensureFlatNormalTexture();
         Texture *ntex = lb.normal ? lb.normal : flatNormalTexture;

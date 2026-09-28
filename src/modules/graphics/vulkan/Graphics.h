@@ -958,7 +958,8 @@ private:
     void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
     void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
-                                 std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen);
+                                 std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen,
+                                 bool hdr = false);
     vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth,
                               GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
@@ -1819,8 +1820,8 @@ private:
     vk::Pipeline                  offscreenLitPremultipliedPipeline;
     vk::Pipeline                  offscreenLitMultiplyPipeline;
     vk::Pipeline                  offscreenLitOpaquePipeline;
-    /** @brief Select lit2d pipeline for the active pass (swapchain / offscreen / HDR compose). */
-    vk::Pipeline                    selectLit2DPipeline(BlendMode blend, bool offscreen) const;
+    /** @brief Select lit2d pipeline for swapchain / offscreen / HDR canvas / HDR compose. */
+    vk::Pipeline                    selectLit2DPipeline(BlendMode blend, bool offscreen, bool hdr = false) const;
     std::vector<vkb::GenericBuffer> lighting2dUboSlots;  // per swapchain frame slot
     vkb::GenericBuffer offscreenLighting2dUbo;           // synchronous offscreen path
     Lighting2DUBO lighting2dFrame{};

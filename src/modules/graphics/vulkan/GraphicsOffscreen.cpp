@@ -202,6 +202,8 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     cb.draw(count, 1, begin, 0);
                                 };
 
+                                const bool litOk =
+                                    canvas->isHDR() ? bool(hdrOffscreenLitPipeline) : bool(offscreenLitPipeline);
                                 if (!spans.empty()) {
                                     for (const auto &sp : spans) {
                                         if (sp.kind == OverlayKind::Solid)
@@ -209,11 +211,11 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                         else if (sp.kind == OverlayKind::Textured &&
                                                  sp.index < textured.size())
                                             drawOffscreenTextured(textured[sp.index]);
-                                        else if (sp.kind == OverlayKind::Lit && offscreenLitPipeline &&
-                                                 sp.index < lit.size()) {
+                                        else if (sp.kind == OverlayKind::Lit && litOk && sp.index < lit.size()) {
                                             std::vector<LitBatch> one;
                                             one.push_back(std::move(lit[sp.index]));
-                                            drawLitBatches(cb, vw, vh, one, texBufs, texBufIndex, true);
+                                            drawLitBatches(cb, vw, vh, one, texBufs, texBufIndex, true,
+                                                           canvas->isHDR());
                                         }
                                     }
                                 } else {
@@ -223,8 +225,8 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                           uint32_t(solid[i].batch.vertices().size()));
                                     }
                                     for (auto &tb : textured) drawOffscreenTextured(tb);
-                                    if (offscreenLitPipeline)
-                                        drawLitBatches(cb, vw, vh, lit, texBufs, texBufIndex, true);
+                                    if (litOk)
+                                        drawLitBatches(cb, vw, vh, lit, texBufs, texBufIndex, true, canvas->isHDR());
                                 }
 
                                 cb.endRenderPass();

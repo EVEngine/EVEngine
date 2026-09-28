@@ -676,7 +676,7 @@ private:
     void createMesh3DPipelines();
     wgpu::RenderPipeline get2DColorPipeline(BlendMode blend, bool offscreen);
     wgpu::RenderPipeline get2DTexturedPipeline(BlendMode blend, bool offscreen);
-    wgpu::RenderPipeline get2DLitPipeline(BlendMode blend, bool offscreen);
+    wgpu::RenderPipeline get2DLitPipeline(BlendMode blend, WGPUTextureFormat format);
     wgpu::RenderPipeline getMesh3DPipeline(BlendMode blend, bool depthWrite, bool doubleSided, bool canvasTarget);
     void createMesh3DClusteredPipeline();
     void createShadowPipelines();
@@ -971,6 +971,11 @@ private:
     wgpu::RenderPipeline offscreenLitPremultipliedPipeline;
     wgpu::RenderPipeline offscreenLitMultiplyPipeline;
     wgpu::RenderPipeline offscreenLitOpaquePipeline;
+    wgpu::RenderPipeline hdrOffscreenLitPipeline;
+    wgpu::RenderPipeline hdrOffscreenLitAdditivePipeline;
+    wgpu::RenderPipeline hdrOffscreenLitPremultipliedPipeline;
+    wgpu::RenderPipeline hdrOffscreenLitMultiplyPipeline;
+    wgpu::RenderPipeline hdrOffscreenLitOpaquePipeline;
     // Fullscreen quad used to composite the scene color into the swapchain.
     wgpu::Buffer fullscreenQuadVb;
     wgpu::Buffer toneMapQuadVb;

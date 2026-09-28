@@ -533,3 +533,81 @@ TEST_CASE("Lighting2D.additiveBlendBrightensOverClear") {
     cam->data()->active = false;
     win->close();
 }
+
+TEST_CASE("Lighting2D.hdrCanvasLitBlendDoesNotCrash") {
+    // HDR canvases reject pixel readback; this is a pipeline-compat smoke test:
+    // lit Alpha + Additive must bind HDR lit pipelines (not RGBA8 offscreen).
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    eve::window::WindowSettings s;
+    s.width    = 320;
+    s.height   = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newHDRCanvas(64, 64);
+    REQUIRE(rt != nullptr);
+
+    auto *cam           = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x      = 32.f;
+    cam->data()->y      = 32.f;
+    cam->data()->zoom   = 1.f;
+    cam->setAmbient(0.1f, 0.1f, 0.1f);
+    cam->data()->r = 0.f;
+    cam->data()->g = 0.f;
+    cam->data()->b = 0.f;
+    cam->data()->a = 1.f;
+
+    Texture              *albedo    = makeSolidTexture(gfx, 8, 8, 255, 255, 255);
+    const uint8_t         flatPx[4] = {128, 128, 255, 255};
+    eve::image::ImageData flatImage(1, 1, "RGBA8");
+    std::memcpy(flatImage.getData(), flatPx, 4);
+    Texture *flat = gfx->newTexture(&flatImage);
+    REQUIRE(albedo != nullptr);
+    REQUIRE(flat != nullptr);
+
+    auto *alphaSp             = Renderable2D::create();
+    alphaSp->transform()->x   = 4.f;
+    alphaSp->transform()->y   = 20.f;
+    alphaSp->sprite()->width  = 24.f;
+    alphaSp->sprite()->height = 24.f;
+    alphaSp->setTexture(albedo);
+    alphaSp->setNormalTexture(flat);
+    alphaSp->setReceiveLight(true);
+    alphaSp->setBlend("alpha");
+    alphaSp->sprite()->canvas  = rt;
+    alphaSp->sprite()->visible = true;
+
+    auto *addSp             = Renderable2D::create();
+    addSp->transform()->x   = 36.f;
+    addSp->transform()->y   = 20.f;
+    addSp->sprite()->width  = 24.f;
+    addSp->sprite()->height = 24.f;
+    addSp->setTexture(albedo);
+    addSp->setNormalTexture(flat);
+    addSp->setReceiveLight(true);
+    addSp->setBlend("additive");
+    addSp->sprite()->canvas  = rt;
+    addSp->sprite()->visible = true;
+
+    auto *light = Light2D::createLight("dir");
+    light->setCanvas(rt);
+    light->setDirection(0.f, 1.f);
+    light->setColor(1.f, 1.f, 1.f, 1.f);
+    light->setEnabled(true);
+
+    // Must complete without Vulkan/WebGPU pipeline-format mismatch.
+    RenderSystem::render(*gfx);
+    CHECK(true);
+
+    alphaSp->sprite()->visible = false;
+    addSp->sprite()->visible   = false;
+    light->setEnabled(false);
+    cam->data()->active = false;
+    win->close();
+}
