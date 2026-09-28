@@ -7,8 +7,9 @@ struct FSIn{@location(0) color:vec4f,@location(1) uv:vec2f};struct U{data:array<
 fn p(i:u32)->f32{return u.data[i/4u][i%4u];}fn tex(uv:vec2f)->vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}
 )wgsl";
 inline constexpr const char *kVolScreen=R"wgsl(
+fn spotAtten(uv:vec2f,light:vec2f,beam:vec2f,cosO:f32,cosI:f32)->f32{if cosO<=-1.5{return 1.0;}let fromL=uv-light;let fl=length(fromL);if fl<=1e-4{return 1.0;}let bl=length(beam);if bl<=1e-6{return 0.0;}return smoothstep(cosO,cosI,dot(fromL/fl,beam/bl));}
 @fragment fn fs_main(i:FSIn)->@location(0)vec4f{let light=vec2f(p(0),p(1));let count=i32(clamp(p(6),1,96));let delta=(i.uv-light)*p(4)/f32(count);var uv=i.uv;var illum=vec3f(0);var decay=1.0;
-for(var q=0;q<96;q++){if q>=count{break;}uv-=delta;illum+=tex(uv).rgb*decay*p(5);decay*=p(3);}let fog=vec3f(p(9),p(10),p(11))*max(p(8),0);let shaft=vec3f(p(12),p(13),p(14));let rgb=(illum*shaft*p(2)+fog)*max(p(17),0);return vec4f(rgb,clamp(max(rgb.r,max(rgb.g,rgb.b)),0,1))*i.color;}
+for(var q=0;q<96;q++){if q>=count{break;}uv-=delta;illum+=tex(uv).rgb*decay*p(5);decay*=p(3);}let fog=vec3f(p(9),p(10),p(11))*max(p(8),0);let shaft=vec3f(p(12),p(13),p(14));var rgb=(illum*shaft*p(2)+fog)*max(p(17),0);rgb*=spotAtten(i.uv,light,vec2f(p(18),p(19)),p(20),p(21));return vec4f(rgb,clamp(max(rgb.r,max(rgb.g,rgb.b)),0,1))*i.color;}
 )wgsl";
 inline constexpr const char *kVolRay=R"wgsl(
 fn hg(c:f32,g:f32)->f32{let g2=g*g;return (1-g2)/(12.566*pow(max(1e-4,1+g2-2*g*c),1.5));}

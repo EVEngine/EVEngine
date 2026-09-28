@@ -13,6 +13,8 @@
 // 15 time
 // 16 compositeMode          — 0 = shafts-only (alpha=luma), 1 = add onto scene
 // 17 intensity
+// 18 spotDx, 19 spotDy      — beam dir in UV/screen space (unit)
+// 20 spotCosOuter, 21 spotCosInner — cos half-angles; outer <= -1.5 => no cone
 
 layout(location = 0) in vec4 fragColor;
 layout(location = 1) in vec2 fragUV;
@@ -28,6 +30,17 @@ float hash12(vec2 p) {
 
 float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 
+// Match lit2d: attenuate by angle from beam axis (outer/inner cosines).
+float spotConeAtten(vec2 uv, vec2 lightPos, vec2 beam, float cosOuter, float cosInner) {
+  if (cosOuter <= -1.5) return 1.0;
+  vec2 fromL = uv - lightPos;
+  float fl = length(fromL);
+  if (fl <= 1e-4) return 1.0;
+  float beamLen = length(beam);
+  if (beamLen <= 1e-6) return 0.0;
+  return smoothstep(cosOuter, cosInner, dot(fromL / fl, beam / beamLen));
+}
+
 void main() {
   vec2 lightPos = vec2(u.data[0], u.data[1]);
   float exposure = u.data[2];
@@ -42,6 +55,9 @@ void main() {
   float time = u.data[15];
   float compositeMode = u.data[16];
   float intensity = u.data[17];
+  vec2 spotBeam = vec2(u.data[18], u.data[19]);
+  float spotCosOuter = u.data[20];
+  float spotCosInner = u.data[21];
 
   vec2 uv = fragUV;
   // Temporal/spatial dither on the first sample breaks radial banding.
@@ -78,6 +94,9 @@ void main() {
   // Slight temporal shimmer so haze is not a static disc.
   fog *= 0.92 + 0.08 * n2;
   scatter += fogColor * fog;
+
+  // Spot cone: zero shafts outside the flashlight beam (point lights leave this off).
+  scatter *= spotConeAtten(uv, lightPos, spotBeam, spotCosOuter, spotCosInner);
 
   vec3 scene = texture(MainTex, uv).rgb * fragColor.rgb;
 

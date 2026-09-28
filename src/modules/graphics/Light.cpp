@@ -1,5 +1,7 @@
 #include "graphics/Light.h"
 
+#include <algorithm>
+
 namespace eve::graphics {
 
 Light2D *Light2D::createLight(const std::string &type) {
@@ -24,7 +26,7 @@ Light2D *Light2D::createEmissiveProxy(float x, float y, float r, float g, float 
 
 void Light2D::setType(const std::string &type) {
     auto d = data();
-    if (type == "dir" || type == "point")
+    if (type == "dir" || type == "point" || type == "spot")
         d->type = type;
     else
         d->type = "point";
@@ -58,6 +60,16 @@ void Light2D::setColor(float r, float g, float b, float intensity) {
 
 void Light2D::setRadius(float radius) { data()->radius = radius > 0.f ? radius : 0.f; }
 float Light2D::getRadius() { return data()->radius; }
+
+void Light2D::setSpotAngle(float degrees) {
+    data()->spotAngleDeg = std::clamp(degrees, 0.1f, 89.f);
+}
+float Light2D::getSpotAngle() { return data()->spotAngleDeg; }
+
+void Light2D::setSpotSoftness(float softness) {
+    data()->spotSoftness = std::clamp(softness, 0.f, 1.f);
+}
+float Light2D::getSpotSoftness() { return data()->spotSoftness; }
 
 void Light2D::setEnabled(bool enabled) { data()->enabled = enabled; }
 bool Light2D::isEnabled() { return data()->enabled; }

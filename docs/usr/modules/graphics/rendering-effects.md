@@ -83,7 +83,7 @@ hair.setHair(true)   // Material/标志会带上双面、透明排序等发卡�
 
 `vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与 `resolutionFor`。
 
-- **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`。多光源：`Light2D.setVolumetric(true)` 后用 `beginOcclusionMapFromSceneLights2D` / `scatterFromSceneLights2D`。
+- **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`。多光源：`Light2D.setVolumetric(true)` 后用 `beginOcclusionMapFromSceneLights2D` / `scatterFromSceneLights2D`。`spot` 灯的体积光柱按 `setDirection` / `setSpotAngle` / `setSpotSoftness` 裁成锥形（与 lit2d 表面锥一致）；`point` 仍为全向径向。
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`；可用 `driveFromLight3D` / `driveFromPrimarySceneLight3D` 自动写入光向与屏坐标，`setAnisotropy` 控制双叶 HG。
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 - **froxel**：`configureFroxelGrid` → `clearFroxelGrid` →

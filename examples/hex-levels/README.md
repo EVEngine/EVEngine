@@ -53,7 +53,7 @@ make run/linux-debug GAME=examples/hex-levels
 | `width` / `height` | 地图尺寸 |
 | `lootTable` | 掉落表 |
 | `fov` | 算法 / 半径 / 感知 / 朝向锥 / cornerPeek |
-| `light` | 点光半径与颜色 |
+| `light` | 点光/聚光（`type`: `point`/`spot`）半径、颜色；`spot` 另有 `spotAngle`/`spotSoftness`/`dir` |
 | `cellCost` | 绕路代价条带 |
 | `enable.*` | 功能开关 |
 
