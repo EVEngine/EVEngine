@@ -31,6 +31,12 @@ eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
                    GROUP 2d 3d web)
+# Optional Vulkan KHR ray-tracing satellite (BLAS/TLAS + reflections). Soft-fails
+# when the GPU lacks the extensions; excluded from web / 2d / minimal profiles.
+eve_declare_module(NAME graphics_raytracing DIR graphics/raytracing LAYER 4
+                   SCRIPT RayTracing SLOT rayTracing
+                   DEPS graphics
+                   GROUP 3d)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    DEPS platform_event filesystem graphics image property_access timer window
                    THIRDPARTY sdl2 poco

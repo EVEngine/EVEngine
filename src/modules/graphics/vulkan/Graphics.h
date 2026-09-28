@@ -22,6 +22,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
+#include "graphics/RayTracingCaps.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
@@ -367,6 +368,11 @@ public:
 
     /** @brief Capabilities probed at device creation; empty when unavailable. */
     const GpuDrivenCaps &gpuDrivenCaps() const { return gpuDrivenCaps_; }
+
+    /** @brief Hardware ray-tracing capabilities probed at device creation. */
+    const RayTracingCaps& rayTracingCapsRef() const { return rayTracingCaps_; }
+    RayTracingCaps        rayTracingCaps() const override { return rayTracingCaps_; }
+    bool                  supportsRayTracing() const override { return rayTracingCaps_.rayTracingAvailable(); }
 
     /** @brief Per-frame arena for the current swapchain frame slot. */
     FrameArena &currentFrameArena();
@@ -750,6 +756,17 @@ public:
 
     vkb::Device &getDevice() { return device; }
     vk::CommandPool getUploadPool() const { return uploadPool; }
+    /**
+     * @brief True when the present command buffer is open and the scene-color
+     * pass has ended, so post-scene GPU work (e.g. ray tracing) can record into
+     * the same frame stream.
+     */
+    bool canRecordPostSceneGpuWork() const { return bool(presentRecording) && !sceneColorPassOpen; }
+    /**
+     * @brief Borrow the open present command buffer for post-scene recording.
+     * @pre canRecordPostSceneGpuWork() is true.
+     */
+    vk::CommandBuffer&          postSceneCommandBuffer() { return currentPresentCb(); }
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     const vkb::BuiltRenderPass &getOffscreenRenderPass(bool hdr = false) const {
@@ -1269,6 +1286,7 @@ private:
 
     // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
     GpuDrivenCaps gpuDrivenCaps_{};
+    RayTracingCaps          rayTracingCaps_{};
     std::vector<FrameArena> frameArenas_;
 
     vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};

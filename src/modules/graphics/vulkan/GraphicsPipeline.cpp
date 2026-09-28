@@ -1604,10 +1604,9 @@ void Graphics::queueSceneColorResolve() {
     // Still build the AA/Bloom/Exposure resolve when a script called
     // drawScene3D (sceneColorComposited). autoScene skips the implicit
     // fullscreen blit; present replaces the script's scene-color span.
-    const bool reflectionPasses = renderControl_ &&
-                                  (renderControl_->isEnabled("rtgi") ||
-                                   renderControl_->isEnabled("ssr") ||
-                                   renderControl_->isEnabled("reflectionChain"));
+    const bool reflectionPasses =
+        renderControl_ && (renderControl_->isEnabled("rtgi") || renderControl_->isEnabled("ssr") ||
+                           renderControl_->isEnabled("rtx") || renderControl_->isEnabled("reflectionChain"));
     if (reflectionPasses) {
         auto *slot = currentSceneColorSlot();
         auto *snapshot = dynamic_cast<OffscreenCanvas *>(
