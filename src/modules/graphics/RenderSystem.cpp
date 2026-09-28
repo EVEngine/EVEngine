@@ -236,7 +236,8 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
                 ly = (d->y - cam.y) * z + float(viewH) * 0.5f;
                 lr = d->radius * z;
             }
-            g.posRadius = glm::vec4(lx, ly, 0.f, lr);
+            // Spot keeps cone metadata even at radius 0 so shaders/CPU can reject the
+            // directional branch (w<=0 alone is the dir discriminator for point/dir).
             if (d->type == "spot") {
                 float dx = d->dx, dy = d->dy;
                 const float len = std::sqrt(dx * dx + dy * dy);
@@ -251,6 +252,7 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
                 light2dSpotCosines(d->spotAngleDeg, d->spotSoftness, cosOuter, cosInner);
                 g.spot = glm::vec4(dx, dy, cosOuter, cosInner);
             }
+            g.posRadius = glm::vec4(lx, ly, 0.f, lr);
         } else {
             float dx = d->dx, dy = d->dy;
             const float len = std::sqrt(dx * dx + dy * dy);
@@ -275,8 +277,11 @@ Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lig
         const auto &L = ubo.lights[i];
         glm::vec3 col(L.color.r, L.color.g, L.color.b);
         if (L.posRadius.w <= 0.f) {
-            // Directional: approximate as constant contribution for unlit sprites.
-            lit += col * 0.65f;
+            // Zero-range spots contribute nothing; do not treat position as a dir vector.
+            if (L.spot.z <= -1.5f) {
+                // Directional: approximate as constant contribution for unlit sprites.
+                lit += col * 0.65f;
+            }
         } else {
             const float dx = L.posRadius.x - cx;
             const float dy = L.posRadius.y - cy;

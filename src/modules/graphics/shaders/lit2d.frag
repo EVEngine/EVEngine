@@ -64,9 +64,14 @@ void main() {
     vec3 lightCol = L.color.rgb;
     float contrib = 0.0;
     if (L.posRadius.w <= 0.0) {
-      // Directional: xy is light direction toward the surface (or from light).
-      vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
-      contrib = max(dot(N, Ld), 0.0);
+      // Zero-range spots must not fall through as directional (position ≠ beam dir).
+      if (L.spot.z > -1.5) {
+        contrib = 0.0;
+      } else {
+        // Directional: xy is light direction toward the surface (or from light).
+        vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
+        contrib = max(dot(N, Ld), 0.0);
+      }
     } else {
       vec2 toL = L.posRadius.xy - logical;
       float dist = length(toL);

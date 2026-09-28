@@ -273,6 +273,64 @@ TEST_CASE("Lighting2D.createLightTypesAndAmbient") {
     cam->data()->active = false;
 }
 
+TEST_CASE("Lighting2D.zeroRadiusSpotDoesNotActAsDirectional") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    eve::window::WindowSettings s;
+    s.width = 320;
+    s.height = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newCanvas(64, 64);
+    REQUIRE(rt != nullptr);
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x = 32.f;
+    cam->data()->y = 32.f;
+    cam->data()->zoom = 1.f;
+    cam->setAmbient(0.05f, 0.05f, 0.05f);
+    cam->data()->r = 0.f;
+    cam->data()->g = 0.f;
+    cam->data()->b = 0.f;
+    cam->data()->a = 1.f;
+
+    Texture *albedo = makeSolidTexture(gfx, 8, 8, 255, 255, 255);
+    auto *sp = Renderable2D::create();
+    sp->transform()->x = 20.f;
+    sp->transform()->y = 20.f;
+    sp->sprite()->width = 24.f;
+    sp->sprite()->height = 24.f;
+    sp->sprite()->texture = albedo;
+    sp->sprite()->receiveLight = true;
+    sp->sprite()->canvas = rt;
+    sp->sprite()->visible = true;
+
+    auto *light = Light2D::createLight("spot");
+    light->setCanvas(rt);
+    light->setPosition(8.f, 8.f);
+    light->setDirection(1.f, 0.f);
+    light->setColor(1.f, 1.f, 1.f, 4.f);
+    light->setRadius(0.f);  // must not become a directional light
+    light->setSpotAngle(25.f);
+    light->setEnabled(true);
+
+    RenderSystem::render(*gfx);
+    float L = luma(rt->getPixel(32, 32));
+    // Ambient-only: a mispacked directional would push luma well above ambient.
+    CHECK(L < 0.15f);
+
+    sp->sprite()->visible = false;
+    light->setEnabled(false);
+    cam->data()->active = false;
+    win->close();
+}
+
 TEST_CASE("Lighting2D.spotLightBrightensAlongBeam") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();

@@ -195,19 +195,28 @@ function applyLevelBootConfig() {
         cam.setZoom(1.0);
         camZoom = 1.0;
     }
-    if ("light" in meta && torchLight != null) {
-        local L = meta.light;
-        if ("radius" in L) torchLight.setRadius(L.radius);
-        if ("color" in L && L.color.len() >= 4)
-            torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
-        if ("type" in L) {
-            if (L.type == "spot" || L.type == "point" || L.type == "dir")
-                torchLight.setType(L.type);
+    if (torchLight != null) {
+        // Reset every boot so a prior spot level cannot leak into the next.
+        torchLight.setType("point");
+        torchLight.setColor(1.0, 0.78, 0.45, 2.0);
+        torchLight.setRadius(160.0);
+        torchLight.setSpotAngle(30.0);
+        torchLight.setSpotSoftness(0.35);
+        torchLight.setDirection(1.0, 0.0);
+        if ("light" in meta) {
+            local L = meta.light;
+            if ("radius" in L) torchLight.setRadius(L.radius);
+            if ("color" in L && L.color.len() >= 4)
+                torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
+            if ("type" in L) {
+                if (L.type == "spot" || L.type == "point" || L.type == "dir")
+                    torchLight.setType(L.type);
+            }
+            if ("spotAngle" in L) torchLight.setSpotAngle(L.spotAngle);
+            if ("spotSoftness" in L) torchLight.setSpotSoftness(L.spotSoftness);
+            if ("dir" in L && L.dir.len() >= 2)
+                torchLight.setDirection(L.dir[0], L.dir[1]);
         }
-        if ("spotAngle" in L) torchLight.setSpotAngle(L.spotAngle);
-        if ("spotSoftness" in L) torchLight.setSpotSoftness(L.spotSoftness);
-        if ("dir" in L && L.dir.len() >= 2)
-            torchLight.setDirection(L.dir[0], L.dir[1]);
     }
     if ("cellCost" in meta) {
         cellCostValue = meta.cellCost.cost;

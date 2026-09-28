@@ -3304,7 +3304,9 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
     queue.WriteBuffer(arena.buffer, vtxOffset, data.data(), bytes);
 
     GpuTexture* albedoGpu = gpuForTextureOrWhite(lb.albedo);
-    GpuTexture* normalGpu = gpuForTextureOrWhite(lb.normal);
+    // Match Vulkan lit2d: null normal → flat +Z, not white (which decodes as a tilted map).
+    GpuTexture* normalGpu = gpuForTexture(lb.normal);
+    if (!normalGpu) normalGpu = flatNormalTexture;
 
     auto& uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 512);

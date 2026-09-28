@@ -178,8 +178,13 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let l = u.lights[i];
         var contribution = 0.0;
         if (l.posRadius.w <= 0.0) {
-            let lightDirection = normalize(vec3f(l.posRadius.xy, 0.35));
-            contribution = max(dot(normal, lightDirection), 0.0);
+            // Zero-range spots must not fall through as directional (position ≠ beam dir).
+            if (l.spot.z > -1.5) {
+                contribution = 0.0;
+            } else {
+                let lightDirection = normalize(vec3f(l.posRadius.xy, 0.35));
+                contribution = max(dot(normal, lightDirection), 0.0);
+            }
         } else {
             let toLight = l.posRadius.xy - logical;
             let distance = length(toLight);
