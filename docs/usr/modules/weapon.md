@@ -96,6 +96,58 @@ weapon.mountAimAt(turret, 35.0, 5.0);
 
 事件索引只在下一次结构修改或 `clearEvents()` 前有效。建议 update 后统一消费，再清空。
 
+## 战斗载体与技能片段
+
+`CombatCarrierRuntime` 是脚本拥有的确定性投射物池：配方由弹道算子、触发器与
+效果组合而成。可用预设 table/JSON 注册，也可用 Noita 风格片段数组一次
+`compileFragments` / `cast`（修正片段在前，投射物片段在后）。
+
+```squirrel
+local weapon = eve.Weapon();
+local created = weapon.newCarrierRuntime(64);
+// 或 weapon.newCarrierRuntimeDefault() —— 默认容量 256
+local pool = created.value;   // ownership = "owned"
+pool.ownership();             // "owned"
+pool.configurePool(64);
+
+pool.registerRecipe({
+  id = "spell:shell", lifetime = 2.0, speed = 12.0,
+  damage = 10, element = "fire", homing = 90, pierce = 1
+});
+// 等价：pool.registerRecipeJson(jsonString)
+
+pool.cast([
+  { kind = "fan", count = 5, spread = 40 },
+  { kind = "homing", turnRate = 120 },
+  { kind = "projectile", id = "spell:bolt", speed = 14, damage = 8, lifetime = 2, element = "arcane" }
+], px, py, pz, dx, dy, dz);
+// castAtTarget(..., targetId, targetGeneration) / castJson(json, ...)
+// compileFragments(fragments) / compileFragmentsJson(json) 只编译并注册，不生成
+
+pool.addHitTarget(enemyId, enemyGen, ex, ey, ez, 0.5);
+pool.setTargetPosition(enemyId, enemyGen, ex, ey, ez);
+local frame = pool.update(dt);   // Result：events / eventCount / activeCount
+pool.clearHitTargets();
+pool.clearTargets();
+```
+
+| API | 说明 |
+|---|---|
+| `newCarrierRuntime(capacity)` / `newCarrierRuntimeDefault()` | 创建脚本拥有的 `CombatCarrierRuntime`（Result.value）。 |
+| `ownership()` / `capacity()` / `activeCount()` | 查询所有权标记、池容量与存活载体数。 |
+| `configurePool(capacity)` | 空池时调整容量（1..1048576）。 |
+| `registerRecipe(table)` / `registerRecipeJson(json)` | 注册预设或完整配方。 |
+| `compileFragments(fragments)` / `compileFragmentsJson(json)` | 编译片段栈并注册；返回 recipeId / volley 信息。 |
+| `cast(...)` / `castAtTarget(...)` / `castJson(...)` | 编译 + 注册 + 生成（可选齐射与制导目标）。 |
+| `spawn(recipeId,x,y,z,dx,dy,dz)` / `spawnAtTarget(...)` / `spawnVolley(...)` | 按已注册配方生成一枚或多枚载体。 |
+| `update(seconds)` | 推进整池；有 OnHit/Homing 时使用已注册的 hit/target 探针。 |
+| `addHitTarget(...)` / `clearHitTargets()` | 注册或清空圆形命中目标。 |
+| `setTargetPosition(...)` / `clearTargets()` | 注册或清空制导目标位置。 |
+
+载体事件（`frame.value.events`）携带 damage / element / 位置 / targetId；Weapon 不结算
+生命值——把事件交给 combat / settlement 等权威 owner。片段 `kind` 与配方字段见
+`docs/dev/战斗载体与投射物行为组合框架.md`。
+
 ## 生命周期与确定性
 
 - 定义先注册、实例后创建；热重载定义时应在安全点重建依赖的实例。
