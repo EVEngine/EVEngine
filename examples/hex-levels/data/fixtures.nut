@@ -97,9 +97,12 @@ LEVEL_CATALOG <- {
             radius = 5
         },
         light = {
-            type = "point",
-            radius = 140,
-            color = [1.0, 0.75, 0.45, 2.2]
+            type = "spot",
+            radius = 180,
+            spotAngle = 28,
+            spotSoftness = 0.4,
+            dir = [1.0, 0.0],
+            color = [1.0, 0.85, 0.55, 2.6]
         },
         enable = {
             path = true,
@@ -386,6 +389,14 @@ LEVEL_CATALOG <- {
             radius = 5,
             facingDeg = 0,
             halfAngle = 40
+        },
+        light = {
+            type = "spot",
+            radius = 170,
+            spotAngle = 32,
+            spotSoftness = 0.35,
+            dir = [1.0, 0.0],
+            color = [1.0, 0.9, 0.65, 2.4]
         },
         enable = {
             path = true,

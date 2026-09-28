@@ -702,12 +702,20 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
 
         // Apply light boot config when present.
         if (auto light = lv->getObject("light")) {
-            auto *lamp = eve::graphics::Light2D::createLight("point");
+            std::string lightType = "point";
+            if (light->has("type")) lightType = light->getValue<std::string>("type");
+            auto *lamp = eve::graphics::Light2D::createLight(lightType);
+            CHECK_EQ(lamp->getType(), lightType);
             const float radius = light->has("radius")
                                      ? float(light->getValue<double>("radius"))
                                      : 120.f;
             lamp->setRadius(radius);
             CHECK(std::fabs(lamp->getRadius() - radius) < 1e-3f);
+            if (light->has("spotAngle")) {
+                lamp->setSpotAngle(float(light->getValue<double>("spotAngle")));
+                CHECK(std::fabs(lamp->getSpotAngle() -
+                                float(light->getValue<double>("spotAngle"))) < 1e-3f);
+            }
             if (light->has("count")) CHECK(light->getValue<int>("count") >= 1);
             lamp->setEnabled(false);
         }
@@ -732,7 +740,9 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         } else if (id == 3) {
             auto light = lv->getObject("light");
             REQUIRE(light);
-            CHECK(std::fabs(float(light->getValue<double>("radius")) - 140.f) < 1e-3f);
+            CHECK_EQ(light->getValue<std::string>("type"), std::string("spot"));
+            CHECK(std::fabs(float(light->getValue<double>("radius")) - 180.f) < 1e-3f);
+            CHECK(std::fabs(float(light->getValue<double>("spotAngle")) - 28.f) < 1e-3f);
         } else if (id == 7) {
             auto cc = lv->getObject("cellCost");
             REQUIRE(cc);
