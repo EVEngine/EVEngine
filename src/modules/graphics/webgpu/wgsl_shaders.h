@@ -122,6 +122,7 @@ struct FSIn {
 struct Light2D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f, // xy = beam dir; z/w = cos(outer/inner); z <= -1.5 => no cone
 };
 struct Lighting2D {
     ambient: vec4f,   // rgb ambient
@@ -184,6 +185,21 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
             let distance = length(toLight);
             var attenuation = clamp(1.0 - distance / max(l.posRadius.w, 1.0), 0.0, 1.0);
             attenuation *= attenuation;
+            if (l.spot.z > -1.5) {
+                let fromLight = logical - l.posRadius.xy;
+                let fl = length(fromLight);
+                var spotAttenuation = 1.0;
+                if (fl > 1e-4) {
+                    let beamLen = length(l.spot.xy);
+                    if (beamLen > 1e-6) {
+                        let cosTheta = dot(fromLight / fl, l.spot.xy / beamLen);
+                        spotAttenuation = smoothstep(l.spot.z, l.spot.w, cosTheta);
+                    } else {
+                        spotAttenuation = 0.0;
+                    }
+                }
+                attenuation *= spotAttenuation;
+            }
             let lightDirection = normalize(vec3f(toLight, l.posRadius.w * 0.35));
             contribution = max(dot(normal, lightDirection), 0.0) * attenuation;
         }

@@ -226,6 +226,7 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
         const auto *d = lights[i].data;
         Light2DGpu &g = ubo.lights[i];
         g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
+        g.spot = glm::vec4(0.f, 0.f, -2.f, -2.f);
         if (lights[i].isPoint) {
             float lx = d->x, ly = d->y;
             float lr = d->radius;
@@ -236,6 +237,20 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
                 lr = d->radius * z;
             }
             g.posRadius = glm::vec4(lx, ly, 0.f, lr);
+            if (d->type == "spot") {
+                float dx = d->dx, dy = d->dy;
+                const float len = std::sqrt(dx * dx + dy * dy);
+                if (len > 1e-6f) {
+                    dx /= len;
+                    dy /= len;
+                } else {
+                    dx = 0.f;
+                    dy = -1.f;
+                }
+                float cosOuter = 0.f, cosInner = 0.f;
+                light2dSpotCosines(d->spotAngleDeg, d->spotSoftness, cosOuter, cosInner);
+                g.spot = glm::vec4(dx, dy, cosOuter, cosInner);
+            }
         } else {
             float dx = d->dx, dy = d->dy;
             const float len = std::sqrt(dx * dx + dy * dy);
@@ -269,6 +284,25 @@ Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lig
             float atten = 1.f - dist / std::max(L.posRadius.w, 1.f);
             if (atten < 0.f) atten = 0.f;
             atten *= atten;
+            if (L.spot.z > -1.5f) {
+                const float fx = cx - L.posRadius.x;
+                const float fy = cy - L.posRadius.y;
+                const float fl = std::sqrt(fx * fx + fy * fy);
+                float spotAtten = 1.f;
+                if (fl > 1e-4f) {
+                    const float beamLen =
+                        std::sqrt(L.spot.x * L.spot.x + L.spot.y * L.spot.y);
+                    if (beamLen > 1e-6f) {
+                        const float cosTheta = (fx * L.spot.x + fy * L.spot.y) / (fl * beamLen);
+                        const float t = (cosTheta - L.spot.z) / std::max(L.spot.w - L.spot.z, 1e-4f);
+                        spotAtten = std::clamp(t, 0.f, 1.f);
+                        spotAtten = spotAtten * spotAtten * (3.f - 2.f * spotAtten);
+                    } else {
+                        spotAtten = 0.f;
+                    }
+                }
+                atten *= spotAtten;
+            }
             lit += col * atten;
         }
     }

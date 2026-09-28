@@ -415,6 +415,10 @@ void Graphics::expose(ssq::Table& table) {
     light.addFunc("setColor", &Light2D::setColor);
     light.addFunc("setRadius", &Light2D::setRadius);
     light.addFunc("getRadius", &Light2D::getRadius);
+    light.addFunc("setSpotAngle", &Light2D::setSpotAngle);
+    light.addFunc("getSpotAngle", &Light2D::getSpotAngle);
+    light.addFunc("setSpotSoftness", &Light2D::setSpotSoftness);
+    light.addFunc("getSpotSoftness", &Light2D::getSpotSoftness);
     light.addFunc("setEnabled", &Light2D::setEnabled);
     light.addFunc("isEnabled", &Light2D::isEnabled);
     light.addFunc("setVolumetric", &Light2D::setVolumetric);

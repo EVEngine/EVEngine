@@ -172,6 +172,11 @@ public:
         graphics::Camera2D *camera = nullptr;
         int layer = 0;
         bool visible = true;
+        /**
+         * @brief When true, tiles receive Light2D (GPU lit2d with flat normals, or
+         * CPU modulate when drawn without a texture). Default false keeps legacy unlit maps.
+         */
+        bool receiveLight = false;
         Color tint{1.f, 1.f, 1.f, 1.f};
         /** @brief World-size multiplier for atlas-pixel visuals (UV unchanged). */
         float visualScaleX = 1.f;
@@ -327,6 +332,13 @@ public:
 
     void setVisible(bool visible);
     bool isVisible();
+    /**
+     * @brief Enable Light2D shading for this layer's tiles.
+     * @param receive When true, textured tiles use the lit2d path (flat normal fallback).
+     */
+    void setReceiveLight(bool receive);
+    /** @brief Whether this layer's tiles receive Light2D. */
+    bool getReceiveLight();
 
     void setTint(float r, float g, float b, float a = 1.f);
 

@@ -5,7 +5,9 @@
 #include "common/ECS.h"
 #include "zeroerr/assert.h"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <string>
 #include <glm/glm.hpp>
@@ -14,10 +16,30 @@ namespace eve::graphics {
 
 class Canvas;
 
+/**
+ * @brief Convert spot angle/softness into GPU cosines (outer < inner).
+ * @param angleDeg Outer half-angle in degrees.
+ * @param softness Penumbra in [0, 1].
+ * @param[out] cosOuter Cosine of the outer half-angle.
+ * @param[out] cosInner Cosine of the softened inner half-angle.
+ */
+inline void light2dSpotCosines(float angleDeg, float softness, float &cosOuter, float &cosInner) {
+    constexpr float kPi = 3.14159265358979323846f;
+    const float outerDeg = std::clamp(angleDeg, 0.1f, 89.f);
+    const float soft = std::clamp(softness, 0.f, 1.f);
+    const float outerRad = outerDeg * (kPi / 180.f);
+    const float innerRad = outerRad * (1.f - soft);
+    cosOuter = std::cos(outerRad);
+    cosInner = std::cos(innerRad);
+    if (cosInner < cosOuter + 1e-4f) cosInner = cosOuter + 1e-4f;
+}
+
 /** @brief GPU light packing for lit2d (std140-friendly). */
 struct Light2DGpu {
-    glm::vec4 posRadius{0.f};  // xy = point pos or direction; w = radius (0 => directional)
+    glm::vec4 posRadius{0.f};  // xy = point/spot pos or dir; w = radius (0 => directional)
     glm::vec4 color{0.f};      // rgb * intensity
+    /** @brief Spot cone: xy = beam dir; z/w = cos(outer/inner half-angle). z <= -1.5 => off. */
+    glm::vec4 spot{0.f, 0.f, -2.f, -2.f};
 };
 
 struct Lighting2DUBO {
@@ -29,7 +51,7 @@ struct Lighting2DUBO {
 
 /**
  * @brief Declarative 2D light. Collected by RenderSystem (max 8 per canvas/frame).
- * type: "point" | "dir" (≤15 chars).
+ * type: "point" | "dir" | "spot" (≤15 chars).
  */
 class EVENGINE_API_BACKENDS Light2D : public ecs::Entity {
 public:
@@ -46,6 +68,10 @@ public:
         float r = 1.f, g = 1.f, b = 1.f;
         float intensity = 1.f;
         float radius = 200.f;
+        /** @brief Spot outer half-angle in degrees (flashlight cone aperture / 2). */
+        float spotAngleDeg = 30.f;
+        /** @brief Spot penumbra: 0 = hard edge, 1 = soft falloff from axis to rim. */
+        float spotSoftness = 0.35f;
         bool enabled = true;
         /** @brief Contribute as volumetric shaft source when collecting occlusion maps. */
         bool volumetric = false;
@@ -91,6 +117,21 @@ public:
     void setColor(float r, float g, float b, float intensity = 1.f);
     void setRadius(float radius);
     float getRadius();
+
+    /**
+     * @brief Outer half-angle of a spot cone in degrees (clamped to (0, 89]).
+     * @param degrees Half-angle; full flashlight aperture is 2× this value.
+     */
+    void setSpotAngle(float degrees);
+    /** @brief Current outer half-angle in degrees. */
+    float getSpotAngle();
+    /**
+     * @brief Softness of the spot penumbra in [0, 1].
+     * @param softness 0 keeps a hard rim; 1 widens the inner falloff to the axis.
+     */
+    void setSpotSoftness(float softness);
+    /** @brief Current spot softness in [0, 1]. */
+    float getSpotSoftness();
 
     void setEnabled(bool enabled);
     bool isEnabled();
