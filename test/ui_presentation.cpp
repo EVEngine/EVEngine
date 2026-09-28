@@ -7,6 +7,7 @@
 #include "ui/UIHost.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -180,22 +181,30 @@ TEST_CASE("ui.presentation.generated_view_binds_two_way") {
     REQUIRE(tag0 != nullptr);
     REQUIRE_GE(tintR->handlerText, 1u);
     host->tree()->textHandlers[tintR->handlerText - 1]("0.25");
-    REQUIRE(model.read("visual.tint").has_value());
-    const Value::Array *tint = model.read("visual.tint")->getIf<Value::Array>();
+    // Keep optional Values alive: getIf returns a pointer into the optional storage.
+    const std::optional<Value> tintValue = model.read("visual.tint");
+    REQUIRE(tintValue.has_value());
+    const Value::Array *tint = tintValue->getIf<Value::Array>();
     REQUIRE(tint != nullptr);
     CHECK_EQ(numericValueApprox((*tint)[0]), 0.25);
 
     REQUIRE_GE(sizeX->handlerText, 1u);
     host->tree()->textHandlers[sizeX->handlerText - 1]("8");
-    const Value::Array *size = model.read("visual.size")->getIf<Value::Array>();
+    const std::optional<Value> sizeValue = model.read("visual.size");
+    REQUIRE(sizeValue.has_value());
+    const Value::Array *size = sizeValue->getIf<Value::Array>();
     REQUIRE(size != nullptr);
     CHECK_EQ(numericValueApprox((*size)[0]), 8.0);
 
     REQUIRE_GE(tag0->handlerText, 1u);
     host->tree()->textHandlers[tag0->handlerText - 1]("hero");
-    const Value::Array *tags = model.read("state.tags")->getIf<Value::Array>();
+    const std::optional<Value> tagsValue = model.read("state.tags");
+    REQUIRE(tagsValue.has_value());
+    const Value::Array *tags = tagsValue->getIf<Value::Array>();
     REQUIRE(tags != nullptr);
-    CHECK_EQ(*(*tags)[0].getIf<std::string>(), std::string("hero"));
+    const std::string *tag0Text = (*tags)[0].getIf<std::string>();
+    REQUIRE(tag0Text != nullptr);
+    CHECK_EQ(*tag0Text, std::string("hero"));
 }
 
 TEST_CASE("ui.presentation.component_tracks_model_revision") {
