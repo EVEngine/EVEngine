@@ -125,7 +125,7 @@ eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
 eve_declare_module(NAME game_event LAYER 0 SCRIPT GameEvent SLOT game_event
                    DEPS schema
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME settlement LIB EVSettlement LAYER 0
+eve_declare_module(NAME settlement LIB EVSettlement LAYER 0 SCRIPT Settlement SLOT settlement
                    DEPS effects game_event
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
@@ -142,12 +142,12 @@ eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
 # Data-oriented NPC AI orchestration. Domain adapters provide navigation,
 # animation, combat and smart-object tasks without making the core depend on
 # those higher-level modules.
-eve_declare_module(NAME npc_ai LAYER 1
+eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi SLOT npc_ai
                    GROUP minimal 2d 3d web)
 # Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
 # the core depends on sensing/decision values but never on a gameplay domain.
-eve_declare_module(NAME action LIB EVAction LAYER 1
+eve_declare_module(NAME action LIB EVAction LAYER 1 SCRIPT Action SLOT action
                    DEPS decision sensing tags transaction
                    GROUP minimal 2d 3d web)
 # `.dnut` authored-sequence language. Owns the shared lexer, the registry-driven

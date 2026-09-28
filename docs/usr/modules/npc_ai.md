@@ -1,9 +1,33 @@
 # NPC AI
 
+**脚本入口：** `eve.NpcAi()`（槽位 `npc_ai`）
+
 The `npc_ai` module is EVEngine's data-oriented orchestration runtime for authored
 NPC behavior. It combines a hierarchical state tree with typed blackboards,
 event-driven perception, bounded scheduling, task providers and reservable Smart
 Objects. It intentionally does not introduce a universal actor base class.
+
+## Squirrel 快速开始
+
+```squirrel
+local npc = eve.NpcAi();
+local created = npc.newWorld(2048, 128);
+assert(created.ok && created.value.ownership() == "owned");
+local world = created.value;
+assert(world.registerBehavior(behaviorJson).ok);
+local agent = world.createAgent("guard").value;
+world.setBlackboardString(agent, "enemy", "player");
+world.signal(agent, "enemy_seen");
+local tick = world.tick(1, 1.0 / 60.0, 64, 8);
+local snap = world.snapshot(agent);
+```
+
+`newWorld(traceCapacity, maxMemoriesPerAgent)` 返回脚本 GC 拥有的 `NpcAiWorld`。
+`registerBehavior` / `validateBehavior` 接受 BehaviorDefinition JSON（`id`、
+`schemaVersion`、`initialState`、`blackboardSchema`、`states`）。Agent 以打包
+`int64` handle 表示；`isAgentStale` 与销毁后的 `snapshot` 失败用于检测失效。
+`ITaskService` 仍只能在 C++ 注册——无任务 provider 时，含 task 的行为会在 admission
+失败；脚本仍可驱动信号 / 黑板 / 感知路径。
 
 ## Behavior runtime
 
