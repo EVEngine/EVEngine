@@ -5,10 +5,12 @@
 #include "weapon/CarrierRecipeCodec.h"
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::weapon {
 namespace {
@@ -37,149 +39,164 @@ bool readString(const Value::Object& object, const char* name, std::string& outp
     return true;
 }
 
-bool readDouble(const Value::Object& object, const char* name, double& output) {
+Result<std::optional<double>> optionalDouble(const Value::Object& object, const char* name, std::string_view path) {
     const auto* value = field(object, name);
-    if (const auto* number = value ? value->getIf<double>() : nullptr) {
-        output = *number;
-        return std::isfinite(output);
+    if (!value) return Result<std::optional<double>>::success(std::nullopt);
+    if (const auto* number = value->getIf<double>()) {
+        if (!std::isfinite(*number))
+            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+        return Result<std::optional<double>>::success(*number);
     }
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        output = static_cast<double>(*integer);
-        return std::isfinite(output);
+    if (const auto* integer = value->getIf<std::int64_t>()) {
+        const double converted = static_cast<double>(*integer);
+        if (!std::isfinite(converted))
+            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+        return Result<std::optional<double>>::success(converted);
     }
-    return false;
+    return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected number", path);
 }
 
-bool readInt(const Value::Object& object, const char* name, int& output) {
+Result<std::optional<int>> optionalInt(const Value::Object& object, const char* name, std::string_view path) {
     const auto* value = field(object, name);
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max()) return false;
-        output = static_cast<int>(*integer);
-        return true;
+    if (!value) return Result<std::optional<int>>::success(std::nullopt);
+    if (const auto* integer = value->getIf<std::int64_t>()) {
+        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+        return Result<std::optional<int>>::success(static_cast<int>(*integer));
     }
-    if (const auto* number = value ? value->getIf<double>() : nullptr) {
-        if (!std::isfinite(*number) || *number != std::floor(*number)) return false;
+    if (const auto* number = value->getIf<double>()) {
+        if (!std::isfinite(*number) || *number != std::floor(*number))
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
         if (*number < static_cast<double>(std::numeric_limits<int>::min()) ||
             *number > static_cast<double>(std::numeric_limits<int>::max()))
-            return false;
-        output = static_cast<int>(*number);
-        return true;
+            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+        return Result<std::optional<int>>::success(static_cast<int>(*number));
     }
-    return false;
+    return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+}
+
+enum class ArithKind : std::uint8_t { Add, Multiply };
+
+struct ArithOp {
+    ArithKind kind  = ArithKind::Add;
+    double    value = 0.0;
+};
+
+[[nodiscard]] double applyArith(double base, const std::vector<ArithOp>& ops) {
+    double result = base;
+    for (const auto& op : ops) {
+        if (op.kind == ArithKind::Add)
+            result += op.value;
+        else
+            result *= op.value;
+    }
+    return result;
 }
 
 struct ModifierStack {
-    double speedMultiply     = 1.0;
-    double speedAdd          = 0.0;
-    double damageMultiply    = 1.0;
-    double damageAdd         = 0.0;
-    double lifetimeMultiply  = 1.0;
-    double lifetimeAdd       = 0.0;
-    double gravity           = 0.0;
-    double homing            = 0.0;
-    double accelerate        = 0.0;
-    double swayAmplitude     = 0.0;
-    double swayFrequency     = 0.0;
-    double helixAmplitude    = 0.0;
-    double helixFrequency    = 0.0;
-    int    pierce            = 0;
-    int    bounce            = 0;
-    double restitution       = 1.0;
-    double splash            = 0.0;
-    double fuse              = 0.0;
-    std::string element;
-    std::string damageType;
+    std::vector<ArithOp>             speedOps;
+    std::vector<ArithOp>             damageOps;
+    std::vector<ArithOp>             lifetimeOps;
+    double                           gravity        = 0.0;
+    double                           homing         = 0.0;
+    double                           accelerate     = 0.0;
+    double                           swayAmplitude  = 0.0;
+    double                           swayFrequency  = 0.0;
+    double                           helixAmplitude = 0.0;
+    double                           helixFrequency = 0.0;
+    int                              pierce         = 0;
+    int                              bounce         = 0;
+    double                           restitution    = 1.0;
+    double                           splash         = 0.0;
+    double                           fuse           = 0.0;
+    std::string                      element;
+    std::string                      damageType;
     std::optional<CarrierVolleySpec> volley;
 };
 
 Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, std::string_view kind,
                            std::string path) {
     if (kind == "homing") {
-        double turn = 90.0;
-        if (!readDouble(object, "turnRate", turn) && !readDouble(object, "maxTurnRateDegrees", turn))
-            return fail(DiagnosticCode::InvalidArgument, "homing requires turnRate", path);
-        if (turn <= 0.0) return fail(DiagnosticCode::InvalidArgument, "homing turnRate must be positive", path);
+        auto turnRate = optionalDouble(object, "turnRate", path + ".turnRate");
+        if (!turnRate.ok()) return Result<void>::failure(turnRate.status());
+        auto alt = optionalDouble(object, "maxTurnRateDegrees", path + ".maxTurnRateDegrees");
+        if (!alt.ok()) return Result<void>::failure(alt.status());
+        const double turn = turnRate.value().value_or(alt.value().value_or(90.0));
+        if (!(turn > 0.0)) return fail(DiagnosticCode::InvalidArgument, "homing turnRate must be positive", path);
         stack.homing = turn;
         return Result<void>::success();
     }
     if (kind == "gravity") {
-        double gravity = 9.8;
-        (void)readDouble(object, "gravity", gravity);
-        if (gravity < 0.0) return fail(DiagnosticCode::InvalidArgument, "gravity must be non-negative", path);
-        stack.gravity = gravity;
+        auto gravity = optionalDouble(object, "gravity", path + ".gravity");
+        if (!gravity.ok()) return Result<void>::failure(gravity.status());
+        const double value = gravity.value().value_or(9.8);
+        if (value < 0.0) return fail(DiagnosticCode::InvalidArgument, "gravity must be non-negative", path);
+        stack.gravity = value;
         return Result<void>::success();
     }
     if (kind == "accelerate") {
-        double acceleration = 0.0;
-        if (!readDouble(object, "acceleration", acceleration) || acceleration < 0.0)
+        auto acceleration = optionalDouble(object, "acceleration", path + ".acceleration");
+        if (!acceleration.ok()) return Result<void>::failure(acceleration.status());
+        if (!acceleration.value().has_value() || *acceleration.value() < 0.0)
             return fail(DiagnosticCode::InvalidArgument, "accelerate requires non-negative acceleration", path);
-        stack.accelerate = acceleration;
+        stack.accelerate = *acceleration.value();
         return Result<void>::success();
     }
-    if (kind == "sway") {
-        if (!readDouble(object, "amplitude", stack.swayAmplitude) &&
-            !readDouble(object, "curveAmplitude", stack.swayAmplitude))
-            return fail(DiagnosticCode::InvalidArgument, "sway requires amplitude", path);
-        if (!readDouble(object, "frequency", stack.swayFrequency) &&
-            !readDouble(object, "curveFrequencyHz", stack.swayFrequency))
-            stack.swayFrequency = 2.0;
+    if (kind == "sway" || kind == "helix") {
+        auto amplitude = optionalDouble(object, "amplitude", path + ".amplitude");
+        if (!amplitude.ok()) return Result<void>::failure(amplitude.status());
+        auto altAmp = optionalDouble(object, "curveAmplitude", path + ".curveAmplitude");
+        if (!altAmp.ok()) return Result<void>::failure(altAmp.status());
+        const auto amp = amplitude.value().has_value() ? amplitude.value() : altAmp.value();
+        if (!amp.has_value() || *amp < 0.0)
+            return fail(DiagnosticCode::InvalidArgument, "curve fragment requires non-negative amplitude", path);
+        auto frequency = optionalDouble(object, "frequency", path + ".frequency");
+        if (!frequency.ok()) return Result<void>::failure(frequency.status());
+        auto altFreq = optionalDouble(object, "curveFrequencyHz", path + ".curveFrequencyHz");
+        if (!altFreq.ok()) return Result<void>::failure(altFreq.status());
+        const double freq = frequency.value().value_or(altFreq.value().value_or(2.0));
+        if (!(freq > 0.0)) return fail(DiagnosticCode::InvalidArgument, "curve frequency must be positive", path);
+        if (kind == "sway") {
+            stack.swayAmplitude = *amp;
+            stack.swayFrequency = freq;
+        } else {
+            stack.helixAmplitude = *amp;
+            stack.helixFrequency = freq;
+        }
         return Result<void>::success();
     }
-    if (kind == "helix") {
-        if (!readDouble(object, "amplitude", stack.helixAmplitude) &&
-            !readDouble(object, "curveAmplitude", stack.helixAmplitude))
-            return fail(DiagnosticCode::InvalidArgument, "helix requires amplitude", path);
-        if (!readDouble(object, "frequency", stack.helixFrequency) &&
-            !readDouble(object, "curveFrequencyHz", stack.helixFrequency))
-            stack.helixFrequency = 2.0;
+    if (kind == "pierce" || kind == "bounce") {
+        auto count = optionalInt(object, "count", path + ".count");
+        if (!count.ok()) return Result<void>::failure(count.status());
+        const int value = count.value().value_or(1);
+        if (value <= 0) return fail(DiagnosticCode::InvalidArgument, "count must be positive", path);
+        if (kind == "pierce") {
+            stack.pierce = value;
+        } else {
+            stack.bounce     = value;
+            auto restitution = optionalDouble(object, "restitution", path + ".restitution");
+            if (!restitution.ok()) return Result<void>::failure(restitution.status());
+            if (restitution.value().has_value()) {
+                if (*restitution.value() < 0.0)
+                    return fail(DiagnosticCode::InvalidArgument, "restitution must be non-negative", path);
+                stack.restitution = *restitution.value();
+            }
+        }
         return Result<void>::success();
     }
-    if (kind == "pierce") {
-        int count = 1;
-        (void)readInt(object, "count", count);
-        if (count <= 0) return fail(DiagnosticCode::InvalidArgument, "pierce count must be positive", path);
-        stack.pierce = count;
-        return Result<void>::success();
-    }
-    if (kind == "bounce") {
-        int count = 1;
-        (void)readInt(object, "count", count);
-        if (count <= 0) return fail(DiagnosticCode::InvalidArgument, "bounce count must be positive", path);
-        stack.bounce = count;
-        (void)readDouble(object, "restitution", stack.restitution);
-        return Result<void>::success();
-    }
-    if (kind == "damage") {
-        double add = 0.0;
-        double multiply = 1.0;
-        const bool hasAdd = readDouble(object, "add", add);
-        const bool hasMul = readDouble(object, "multiply", multiply);
-        if (!hasAdd && !hasMul)
-            return fail(DiagnosticCode::InvalidArgument, "damage requires add and/or multiply", path);
-        if (hasAdd) stack.damageAdd += add;
-        if (hasMul) stack.damageMultiply *= multiply;
-        return Result<void>::success();
-    }
-    if (kind == "speed") {
-        double add = 0.0;
-        double multiply = 1.0;
-        const bool hasAdd = readDouble(object, "add", add);
-        const bool hasMul = readDouble(object, "multiply", multiply);
-        if (!hasAdd && !hasMul)
-            return fail(DiagnosticCode::InvalidArgument, "speed requires add and/or multiply", path);
-        if (hasAdd) stack.speedAdd += add;
-        if (hasMul) stack.speedMultiply *= multiply;
-        return Result<void>::success();
-    }
-    if (kind == "lifetime") {
-        double add = 0.0;
-        double multiply = 1.0;
-        const bool hasAdd = readDouble(object, "add", add);
-        const bool hasMul = readDouble(object, "multiply", multiply);
-        if (!hasAdd && !hasMul)
-            return fail(DiagnosticCode::InvalidArgument, "lifetime requires add and/or multiply", path);
-        if (hasAdd) stack.lifetimeAdd += add;
-        if (hasMul) stack.lifetimeMultiply *= multiply;
+    if (kind == "damage" || kind == "speed" || kind == "lifetime") {
+        auto add = optionalDouble(object, "add", path + ".add");
+        if (!add.ok()) return Result<void>::failure(add.status());
+        auto multiply = optionalDouble(object, "multiply", path + ".multiply");
+        if (!multiply.ok()) return Result<void>::failure(multiply.status());
+        if (!add.value().has_value() && !multiply.value().has_value())
+            return fail(DiagnosticCode::InvalidArgument, "modifier requires add and/or multiply", path);
+        auto& ops = (kind == "damage") ? stack.damageOps : (kind == "speed") ? stack.speedOps : stack.lifetimeOps;
+        // Preserve fragment order: add keys then multiply keys as written is ambiguous in objects,
+        // so apply add before multiply when both are present in one fragment; separate fragments
+        // retain left-to-right order across the sequence.
+        if (add.value().has_value()) ops.push_back({ArithKind::Add, *add.value()});
+        if (multiply.value().has_value()) ops.push_back({ArithKind::Multiply, *multiply.value()});
         return Result<void>::success();
     }
     if (kind == "element") {
@@ -193,124 +210,163 @@ Result<void> applyModifier(ModifierStack& stack, const Value::Object& object, st
         return Result<void>::success();
     }
     if (kind == "splash") {
-        double radius = 0.0;
-        if (!readDouble(object, "radius", radius) && !readDouble(object, "splash", radius))
-            return fail(DiagnosticCode::InvalidArgument, "splash requires radius", path);
-        if (radius <= 0.0) return fail(DiagnosticCode::InvalidArgument, "splash radius must be positive", path);
-        stack.splash = radius;
+        auto radius = optionalDouble(object, "radius", path + ".radius");
+        if (!radius.ok()) return Result<void>::failure(radius.status());
+        auto alt = optionalDouble(object, "splash", path + ".splash");
+        if (!alt.ok()) return Result<void>::failure(alt.status());
+        const auto value = radius.value().has_value() ? radius.value() : alt.value();
+        if (!value.has_value() || !(*value > 0.0))
+            return fail(DiagnosticCode::InvalidArgument, "splash requires positive radius", path);
+        stack.splash = *value;
         return Result<void>::success();
     }
     if (kind == "fuse") {
-        double seconds = 0.0;
-        if (!readDouble(object, "seconds", seconds) && !readDouble(object, "fuse", seconds))
-            return fail(DiagnosticCode::InvalidArgument, "fuse requires seconds", path);
-        if (seconds <= 0.0) return fail(DiagnosticCode::InvalidArgument, "fuse seconds must be positive", path);
-        stack.fuse = seconds;
-        double splash = 0.0;
-        if (readDouble(object, "splash", splash) || readDouble(object, "radius", splash)) stack.splash = splash;
+        auto seconds = optionalDouble(object, "seconds", path + ".seconds");
+        if (!seconds.ok()) return Result<void>::failure(seconds.status());
+        auto alt = optionalDouble(object, "fuse", path + ".fuse");
+        if (!alt.ok()) return Result<void>::failure(alt.status());
+        const auto value = seconds.value().has_value() ? seconds.value() : alt.value();
+        if (!value.has_value() || !(*value > 0.0))
+            return fail(DiagnosticCode::InvalidArgument, "fuse requires positive seconds", path);
+        stack.fuse  = *value;
+        auto splash = optionalDouble(object, "splash", path + ".splash");
+        if (!splash.ok()) return Result<void>::failure(splash.status());
+        auto splashAlt = optionalDouble(object, "radius", path + ".radius");
+        if (!splashAlt.ok()) return Result<void>::failure(splashAlt.status());
+        if (splash.value().has_value())
+            stack.splash = *splash.value();
+        else if (splashAlt.value().has_value())
+            stack.splash = *splashAlt.value();
         return Result<void>::success();
     }
     if (kind == "fan" || kind == "multicast" || kind == "ring") {
         CarrierVolleySpec volley;
         volley.pattern = (kind == "ring") ? CarrierVolleyPattern::Ring : CarrierVolleyPattern::Fan;
-        if (!readInt(object, "count", volley.count) || volley.count < 1)
+        auto count     = optionalInt(object, "count", path + ".count");
+        if (!count.ok()) return Result<void>::failure(count.status());
+        if (!count.value().has_value() || *count.value() < 1)
             return fail(DiagnosticCode::InvalidArgument, "volley requires positive count", path);
-        (void)readDouble(object, "spread", volley.spreadDegrees);
-        if (volley.pattern == CarrierVolleyPattern::Fan) (void)readDouble(object, "spreadDegrees", volley.spreadDegrees);
-        stack.volley = volley;
+        volley.count = *count.value();
+        auto spread  = optionalDouble(object, "spread", path + ".spread");
+        if (!spread.ok()) return Result<void>::failure(spread.status());
+        auto spreadAlt = optionalDouble(object, "spreadDegrees", path + ".spreadDegrees");
+        if (!spreadAlt.ok()) return Result<void>::failure(spreadAlt.status());
+        volley.spreadDegrees = spread.value().value_or(spreadAlt.value().value_or(0.0));
+        stack.volley         = volley;
         return Result<void>::success();
     }
     return fail(DiagnosticCode::InvalidArgument, "Unknown fragment kind", path + ".kind");
 }
 
 Result<CarrierRecipe> buildProjectile(const Value::Object& object, const ModifierStack& stack, std::string path) {
-    Value::Object preset = object;
+    if (field(object, "triggers") || field(object, "impacts") || field(object, "motionOps") ||
+        (field(object, "motion") && field(object, "motion")->isArray())) {
+        return failT<CarrierRecipe>(
+            DiagnosticCode::Unsupported,
+            "Projectile fragments must use preset fields, not full-form motion/triggers/impacts", path);
+    }
+
     std::string id;
     if (!readString(object, "id", id) || id.empty())
         return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile requires id", path + ".id");
 
-    double speed = 10.0;
-    (void)readDouble(object, "speed", speed);
-    speed = speed * stack.speedMultiply + stack.speedAdd;
+    auto speedField = optionalDouble(object, "speed", path + ".speed");
+    if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
+    double speed = applyArith(speedField.value().value_or(10.0), stack.speedOps);
     if (!(speed > 0.0) || !std::isfinite(speed))
         return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile speed must be positive", path + ".speed");
 
-    double lifetime = 2.0;
-    (void)readDouble(object, "lifetime", lifetime);
-    lifetime = lifetime * stack.lifetimeMultiply + stack.lifetimeAdd;
+    auto lifetimeField = optionalDouble(object, "lifetime", path + ".lifetime");
+    if (!lifetimeField.ok()) return Result<CarrierRecipe>::failure(lifetimeField.status());
+    double lifetime = applyArith(lifetimeField.value().value_or(2.0), stack.lifetimeOps);
     if (!(lifetime > 0.0) || !std::isfinite(lifetime))
         return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "projectile lifetime must be positive",
                                     path + ".lifetime");
 
-    double damage = 0.0;
-    (void)readDouble(object, "damage", damage);
-    damage = damage * stack.damageMultiply + stack.damageAdd;
+    auto damageField = optionalDouble(object, "damage", path + ".damage");
+    if (!damageField.ok()) return Result<CarrierRecipe>::failure(damageField.status());
+    double damage = applyArith(damageField.value().value_or(0.0), stack.damageOps);
 
-    preset["id"] = Value(id);
-    preset["speed"] = Value(speed);
+    ModifierStack merged     = stack;
+    auto          seedDouble = [&](const char* name, double& dest) -> Result<void> {
+        auto value = optionalDouble(object, name, std::string(path) + "." + name);
+        if (!value.ok()) return Result<void>::failure(value.status());
+        if (dest <= 0.0 && value.value().has_value()) dest = *value.value();
+        return Result<void>::success();
+    };
+    if (auto seeded = seedDouble("homing", merged.homing); !seeded)
+        return Result<CarrierRecipe>::failure(seeded.status());
+    if (auto seeded = seedDouble("maxTurnRateDegrees", merged.homing); !seeded)
+        return Result<CarrierRecipe>::failure(seeded.status());
+    if (auto seeded = seedDouble("gravity", merged.gravity); !seeded)
+        return Result<CarrierRecipe>::failure(seeded.status());
+    if (auto seeded = seedDouble("accelerate", merged.accelerate); !seeded)
+        return Result<CarrierRecipe>::failure(seeded.status());
+
+    std::string motionPreset;
+    (void)readString(object, "motion", motionPreset);
+    if (motionPreset == "homing" && merged.homing <= 0.0) merged.homing = 90.0;
+    if (motionPreset == "ballistic" && merged.gravity <= 0.0) merged.gravity = 9.8;
+
+    auto pierceField = optionalInt(object, "pierce", path + ".pierce");
+    if (!pierceField.ok()) return Result<CarrierRecipe>::failure(pierceField.status());
+    if (merged.pierce <= 0 && pierceField.value().has_value()) merged.pierce = *pierceField.value();
+    auto bounceField = optionalInt(object, "bounce", path + ".bounce");
+    if (!bounceField.ok()) return Result<CarrierRecipe>::failure(bounceField.status());
+    if (merged.bounce <= 0 && bounceField.value().has_value()) merged.bounce = *bounceField.value();
+
+    Value::Object preset;
+    preset["id"]       = Value(id);
+    preset["speed"]    = Value(speed);
     preset["lifetime"] = Value(lifetime);
-    preset["damage"] = Value(damage);
-    if (stack.gravity > 0.0) preset["gravity"] = Value(stack.gravity);
-    if (stack.homing > 0.0) preset["homing"] = Value(stack.homing);
-    if (stack.accelerate > 0.0) preset["accelerate"] = Value(stack.accelerate);
-    if (stack.pierce > 0) preset["pierce"] = Value(static_cast<std::int64_t>(stack.pierce));
-    if (stack.bounce > 0) preset["bounce"] = Value(static_cast<std::int64_t>(stack.bounce));
-    if (stack.fuse > 0.0) preset["fuse"] = Value(stack.fuse);
-    if (stack.splash > 0.0) preset["splash"] = Value(stack.splash);
+    preset["damage"]   = Value(damage);
+    if (merged.gravity > 0.0) preset["gravity"] = Value(merged.gravity);
+    if (merged.homing > 0.0) preset["homing"] = Value(merged.homing);
+    if (merged.accelerate > 0.0) preset["accelerate"] = Value(merged.accelerate);
+    if (merged.pierce > 0) preset["pierce"] = Value(static_cast<std::int64_t>(merged.pierce));
+    if (merged.bounce > 0) preset["bounce"] = Value(static_cast<std::int64_t>(merged.bounce));
+    if (merged.fuse > 0.0) preset["fuse"] = Value(merged.fuse);
+    if (merged.splash > 0.0) preset["splash"] = Value(merged.splash);
 
     std::string element;
     std::string damageType;
     (void)readString(object, "element", element);
     (void)readString(object, "damageType", damageType);
-    if (!stack.element.empty()) element = stack.element;
-    if (!stack.damageType.empty()) damageType = stack.damageType;
+    if (!merged.element.empty()) element = merged.element;
+    if (!merged.damageType.empty()) damageType = merged.damageType;
     if (!element.empty()) preset["element"] = Value(element);
     if (!damageType.empty()) preset["damageType"] = Value(damageType);
 
     auto recipe = decodeCarrierRecipe(Value(std::move(preset)));
     if (!recipe.ok()) return recipe;
-
-    // Overlay curve motion ops that the preset form does not express.
     CarrierRecipe built = std::move(recipe).takeValue();
-    std::vector<CarrierMotionOp> motion;
-    if (stack.homing > 0.0) {
-        CarrierMotionOp op;
-        op.kind               = CarrierMotionOpKind::SteerHoming;
-        op.maxTurnRateDegrees = stack.homing;
-        motion.push_back(op);
-    }
-    if (stack.gravity > 0.0) {
-        CarrierMotionOp op;
-        op.kind    = CarrierMotionOpKind::ApplyGravity;
-        op.gravity = stack.gravity;
-        motion.push_back(op);
-    }
-    if (stack.accelerate > 0.0) {
-        CarrierMotionOp op;
-        op.kind         = CarrierMotionOpKind::Accelerate;
-        op.acceleration = stack.accelerate;
-        motion.push_back(op);
-    }
-    if (stack.swayAmplitude > 0.0) {
-        CarrierMotionOp op;
-        op.kind             = CarrierMotionOpKind::CurveSway;
-        op.curveAmplitude   = stack.swayAmplitude;
-        op.curveFrequencyHz = stack.swayFrequency > 0.0 ? stack.swayFrequency : 2.0;
-        motion.push_back(op);
-    }
-    if (stack.helixAmplitude > 0.0) {
-        CarrierMotionOp op;
-        op.kind             = CarrierMotionOpKind::CurveHelix;
-        op.curveAmplitude   = stack.helixAmplitude;
-        op.curveFrequencyHz = stack.helixFrequency > 0.0 ? stack.helixFrequency : 2.0;
-        motion.push_back(op);
-    }
-    motion.push_back({CarrierMotionOpKind::IntegrateLinear});
-    built.motionOps = std::move(motion);
 
-    if (stack.bounce > 0) {
+    // Preserve preset motion from decode; only inject curve ops that presets cannot express.
+    if (merged.swayAmplitude > 0.0 || merged.helixAmplitude > 0.0) {
+        std::vector<CarrierMotionOp> motion = built.motionOps;
+        // Insert curve ops before the final IntegrateLinear.
+        if (!motion.empty() && motion.back().kind == CarrierMotionOpKind::IntegrateLinear) motion.pop_back();
+        if (merged.swayAmplitude > 0.0) {
+            CarrierMotionOp op;
+            op.kind             = CarrierMotionOpKind::CurveSway;
+            op.curveAmplitude   = merged.swayAmplitude;
+            op.curveFrequencyHz = merged.swayFrequency > 0.0 ? merged.swayFrequency : 2.0;
+            motion.push_back(op);
+        }
+        if (merged.helixAmplitude > 0.0) {
+            CarrierMotionOp op;
+            op.kind             = CarrierMotionOpKind::CurveHelix;
+            op.curveAmplitude   = merged.helixAmplitude;
+            op.curveFrequencyHz = merged.helixFrequency > 0.0 ? merged.helixFrequency : 2.0;
+            motion.push_back(op);
+        }
+        motion.push_back({CarrierMotionOpKind::IntegrateLinear});
+        built.motionOps = std::move(motion);
+    }
+
+    if (merged.bounce > 0) {
         for (auto& impact : built.impacts) {
-            if (impact.kind == CarrierImpactKind::Bounce) impact.restitution = stack.restitution;
+            if (impact.kind == CarrierImpactKind::Bounce) impact.restitution = merged.restitution;
         }
     }
 

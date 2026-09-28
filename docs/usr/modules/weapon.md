@@ -116,12 +116,13 @@ pool.registerRecipe({
 });
 // 等价：pool.registerRecipeJson(jsonString)
 
-pool.cast([
+// Homing / proximity 必须用 castAtTarget 提供正目标 id；普通投射物可用 cast。
+pool.castAtTarget([
   { kind = "fan", count = 5, spread = 40 },
   { kind = "homing", turnRate = 120 },
   { kind = "projectile", id = "spell:bolt", speed = 14, damage = 8, lifetime = 2, element = "arcane" }
-], px, py, pz, dx, dy, dz);
-// castAtTarget(..., targetId, targetGeneration) / castJson(json, ...)
+], px, py, pz, dx, dy, dz, enemyId, enemyGen);
+// cast(...) / castJson(json, ...) —— 无制导目标时使用
 // compileFragments(fragments) / compileFragmentsJson(json) 只编译并注册，不生成
 
 pool.addHitTarget(enemyId, enemyGen, ex, ey, ez, 0.5);
@@ -136,16 +137,17 @@ pool.clearTargets();
 | `newCarrierRuntime(capacity)` / `newCarrierRuntimeDefault()` | 创建脚本拥有的 `CombatCarrierRuntime`（Result.value）。 |
 | `ownership()` / `capacity()` / `activeCount()` | 查询所有权标记、池容量与存活载体数。 |
 | `configurePool(capacity)` | 空池时调整容量（1..1048576）。 |
-| `registerRecipe(table)` / `registerRecipeJson(json)` | 注册预设或完整配方。 |
+| `registerRecipe(table)` / `registerRecipeJson(json)` | 注册预设或完整配方（脚本路径拒绝 `avoidBody`）。 |
 | `compileFragments(fragments)` / `compileFragmentsJson(json)` | 编译片段栈并注册；返回 recipeId / volley 信息。 |
-| `cast(...)` / `castAtTarget(...)` / `castJson(...)` | 编译 + 注册 + 生成（可选齐射与制导目标）。 |
+| `cast(...)` / `castAtTarget(...)` / `castJson(...)` | 编译 + 注册 + 生成；含 homing/proximity 时必须 `castAtTarget`。 |
 | `spawn(recipeId,x,y,z,dx,dy,dz)` / `spawnAtTarget(...)` / `spawnVolley(...)` | 按已注册配方生成一枚或多枚载体。 |
-| `update(seconds)` | 推进整池；有 OnHit/Homing 时使用已注册的 hit/target 探针。 |
+| `update(seconds)` | 推进整池；始终使用脚本 hit/target 探针（可为空）。 |
 | `addHitTarget(...)` / `clearHitTargets()` | 注册或清空圆形命中目标。 |
 | `setTargetPosition(...)` / `clearTargets()` | 注册或清空制导目标位置。 |
 
-载体事件（`frame.value.events`）携带 damage / element / 位置 / targetId；Weapon 不结算
-生命值——把事件交给 combat / settlement 等权威 owner。片段 `kind` 与配方字段见
+载体事件（`frame.value.events`）携带 `trigger` / `impact` / `damage` / `element` /
+位置 / `nx,ny,nz` / `sourceId` / `targetId`；Weapon 不结算生命值——把事件交给
+combat / settlement 等权威 owner。片段 `kind` 与配方字段见
 `docs/dev/战斗载体与投射物行为组合框架.md`。
 
 ## 生命周期与确定性

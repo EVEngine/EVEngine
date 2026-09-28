@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -114,11 +115,36 @@ Value encodeHandle(CarrierHandle handle) {
     return Value(std::move(object));
 }
 
+const char* triggerKindName(CarrierTriggerKind kind) {
+    switch (kind) {
+        case CarrierTriggerKind::OnExpire: return "onExpire";
+        case CarrierTriggerKind::OnFuse: return "onFuse";
+        case CarrierTriggerKind::OnInterval: return "onInterval";
+        case CarrierTriggerKind::OnHit: return "onHit";
+        case CarrierTriggerKind::OnProximity: return "onProximity";
+    }
+    return "onExpire";
+}
+
+const char* impactKindName(CarrierImpactKind kind) {
+    switch (kind) {
+        case CarrierImpactKind::EmitHit: return "emitHit";
+        case CarrierImpactKind::Splash: return "splash";
+        case CarrierImpactKind::Pierce: return "pierce";
+        case CarrierImpactKind::Bounce: return "bounce";
+        case CarrierImpactKind::Release: return "release";
+        case CarrierImpactKind::SpawnChild: return "spawnChild";
+    }
+    return "release";
+}
+
 Value encodeEvent(const CarrierEvent& event) {
     Value::Object object;
     object.emplace("slot", Value(static_cast<std::int64_t>(event.carrier.slot)));
     object.emplace("generation", Value(static_cast<std::int64_t>(event.carrier.generation)));
     object.emplace("recipeId", Value(event.recipeId.format()));
+    object.emplace("trigger", Value(std::string(triggerKindName(event.trigger))));
+    object.emplace("impact", Value(std::string(impactKindName(event.impact))));
     object.emplace("damage", Value(event.damage));
     object.emplace("splashRadius", Value(event.splashRadius));
     object.emplace("damageType", Value(event.damageType));
@@ -126,6 +152,11 @@ Value encodeEvent(const CarrierEvent& event) {
     object.emplace("x", Value(event.position.x));
     object.emplace("y", Value(event.position.y));
     object.emplace("z", Value(event.position.z));
+    object.emplace("nx", Value(event.normal.x));
+    object.emplace("ny", Value(event.normal.y));
+    object.emplace("nz", Value(event.normal.z));
+    object.emplace("sourceId", Value(static_cast<std::int64_t>(event.source.id)));
+    object.emplace("sourceGeneration", Value(static_cast<std::int64_t>(event.source.generation)));
     object.emplace("targetId", Value(static_cast<std::int64_t>(event.target.id)));
     object.emplace("targetGeneration", Value(static_cast<std::int64_t>(event.target.generation)));
     return Value(std::move(object));
@@ -180,6 +211,14 @@ public:
         auto recipe = decodeCarrierRecipe(value);
         if (!recipe.ok()) return Result<Value>::failure(recipe.status());
         CarrierRecipe owned = std::move(recipe).takeValue();
+        for (const auto& op : owned.motionOps) {
+            if (op.kind == CarrierMotionOpKind::SteerAvoidBody) {
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported,
+                    "SteerAvoidBody recipes are not supported by the script carrier runtime; omit avoidBody or use C++",
+                    "motion", {}, "weapon.carrier.squirrel"));
+            }
+        }
         const std::string id = owned.id.format();
         auto registered = runtime_.registerRecipe(owned);
         if (!registered) return Result<Value>::failure(registered.status());
@@ -210,9 +249,28 @@ public:
                                           double dz, std::int64_t targetId, std::int64_t targetGeneration) {
         auto plan = compileSpellFragments(fragments);
         if (!plan.ok()) return Result<Value>::failure(plan.status());
-        auto registered = registerPlan(plan.value());
+        SpellCastPlan owned      = std::move(plan).takeValue();
+        auto          uniquified = uniquifyRecipeId(owned.recipe.id);
+        if (!uniquified.ok()) return Result<Value>::failure(uniquified.status());
+        owned.recipe.id = uniquified.value();
+
+        bool needsTarget = false;
+        for (const auto& op : owned.recipe.motionOps) {
+            if (op.kind == CarrierMotionOpKind::SteerHoming) needsTarget = true;
+        }
+        for (const auto& trigger : owned.recipe.triggers) {
+            if (trigger.kind == CarrierTriggerKind::OnProximity) needsTarget = true;
+        }
+        if (needsTarget && targetId <= 0) {
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "Homing/proximity casts require castAtTarget with a positive target id", "target", {},
+                                  "weapon.carrier.squirrel"));
+        }
+
+        auto registered = registerPlan(owned);
         if (!registered.ok()) return registered;
-        return spawnPlan(plan.value(), x, y, z, dx, dy, dz, targetId, targetGeneration);
+        return spawnPlan(owned, x, y, z, dx, dy, dz, targetId, targetGeneration);
     }
 
     [[nodiscard]] Result<Value> castJson(const std::string& json, double x, double y, double z, double dx, double dy,
@@ -222,6 +280,26 @@ public:
         return castValue(parsed.value(), x, y, z, dx, dy, dz, targetId, targetGeneration);
     }
 
+    [[nodiscard]] static Result<void> validateHandleParts(std::int64_t id, std::int64_t generation,
+                                                          std::string_view path) {
+        if (id < 0 || generation < 0 || static_cast<std::uint64_t>(id) > std::numeric_limits<std::uint32_t>::max() ||
+            static_cast<std::uint64_t>(generation) > std::numeric_limits<std::uint32_t>::max()) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "handle id/generation must fit in uint32", std::string(path),
+                                                           {}, "weapon.carrier.squirrel"));
+        }
+        return Result<void>::success();
+    }
+
+    [[nodiscard]] static Result<void> validatePoint(double x, double y, double z, std::string_view path) {
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "coordinates must be finite", std::string(path), {},
+                                                           "weapon.carrier.squirrel"));
+        }
+        return Result<void>::success();
+    }
+
     [[nodiscard]] Result<Value> spawn(const std::string& recipeId, double x, double y, double z, double dx, double dy,
                                       double dz, std::int64_t targetId, std::int64_t targetGeneration) {
         auto id = LogicalId::parse(recipeId);
@@ -229,10 +307,14 @@ public:
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "recipe id must be namespace:name", "recipeId", {},
                                                             "weapon.carrier.squirrel"));
+        if (auto point = validatePoint(x, y, z, "position"); !point) return Result<Value>::failure(point.status());
+        if (auto point = validatePoint(dx, dy, dz, "direction"); !point) return Result<Value>::failure(point.status());
         CarrierSpawnRequest request;
         request.position  = {x, y, z};
         request.direction = {dx, dy, dz};
         if (targetId > 0) {
+            auto handle = validateHandleParts(targetId, targetGeneration, "target");
+            if (!handle) return Result<Value>::failure(handle.status());
             ecs::EntityHandle target;
             target.id         = static_cast<std::uint32_t>(targetId);
             target.generation = static_cast<std::uint32_t>(targetGeneration);
@@ -254,6 +336,8 @@ public:
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "recipe id must be namespace:name", "recipeId", {},
                                                             "weapon.carrier.squirrel"));
+        if (auto point = validatePoint(x, y, z, "position"); !point) return Result<Value>::failure(point.status());
+        if (auto point = validatePoint(dx, dy, dz, "direction"); !point) return Result<Value>::failure(point.status());
         CarrierVolleySpec volley;
         volley.count         = static_cast<int>(count);
         volley.spreadDegrees = spread;
@@ -263,6 +347,8 @@ public:
         request.position  = {x, y, z};
         request.direction = {dx, dy, dz};
         if (targetId > 0) {
+            auto handle = validateHandleParts(targetId, targetGeneration, "target");
+            if (!handle) return Result<Value>::failure(handle.status());
             ecs::EntityHandle target;
             target.id         = static_cast<std::uint32_t>(targetId);
             target.generation = static_cast<std::uint32_t>(targetGeneration);
@@ -282,9 +368,9 @@ public:
     [[nodiscard]] Result<Value> update(double seconds) {
         auto delta = Duration::fromSeconds(seconds);
         if (!delta.ok()) return Result<Value>::failure(delta.status());
-        const IProjectileTargetProvider* targets = targets_.empty() ? nullptr : &targets_;
-        const ICarrierHitProbe*          hits    = hits_.empty() ? nullptr : &hits_;
-        auto frame = runtime_.update(delta.value(), targets, hits, nullptr);
+        // Always supply script probes: empty lists are valid "no contacts / no targets"
+        // answers. Passing nullptr rejects any live OnHit/Homing recipe.
+        auto frame = runtime_.update(delta.value(), &targets_, &hits_, nullptr);
         if (!frame.ok()) return Result<Value>::failure(frame.status());
         lastFrame_ = frame.value();
         Value encoded = encodeFrame(lastFrame_);
@@ -296,10 +382,14 @@ public:
 
     [[nodiscard]] Result<Value> addHitTarget(std::int64_t id, std::int64_t generation, double x, double y, double z,
                                              double radius) {
-        if (id < 0 || generation < 0 || !(radius > 0.0) || !std::isfinite(radius))
+        auto handle = validateHandleParts(id, generation, "target");
+        if (!handle) return Result<Value>::failure(handle.status());
+        auto point = validatePoint(x, y, z, "target");
+        if (!point) return Result<Value>::failure(point.status());
+        if (!(radius > 0.0) || !std::isfinite(radius))
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "hit target requires non-negative ids and positive radius",
-                                                            "target", {}, "weapon.carrier.squirrel"));
+                                                            "hit target requires positive finite radius", "radius", {},
+                                                            "weapon.carrier.squirrel"));
         ScriptCircleHitProbe::Target target;
         target.id.id         = static_cast<std::uint32_t>(id);
         target.id.generation = static_cast<std::uint32_t>(generation);
@@ -318,10 +408,10 @@ public:
 
     [[nodiscard]] Result<Value> setTargetPosition(std::int64_t id, std::int64_t generation, double x, double y,
                                                   double z) {
-        if (id < 0 || generation < 0)
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "target ids must be non-negative", "target", {},
-                                                            "weapon.carrier.squirrel"));
+        auto handle = validateHandleParts(id, generation, "target");
+        if (!handle) return Result<Value>::failure(handle.status());
+        auto point = validatePoint(x, y, z, "target");
+        if (!point) return Result<Value>::failure(point.status());
         ecs::EntityHandle target;
         target.id         = static_cast<std::uint32_t>(id);
         target.generation = static_cast<std::uint32_t>(generation);
@@ -341,7 +431,26 @@ public:
     [[nodiscard]] std::int64_t capacity() const noexcept { return static_cast<std::int64_t>(runtime_.capacity()); }
 
 private:
+    [[nodiscard]] Result<LogicalId> uniquifyRecipeId(const LogicalId& base) {
+        ++castSeq_;
+        const std::string uniqueName = std::string(base.name()) + "-c" + std::to_string(castSeq_);
+        auto              parsed     = LogicalId::fromParts(base.namespaceName(), uniqueName);
+        if (!parsed.has_value())
+            return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "unable to allocate unique cast recipe id", "recipeId",
+                                                                {}, "weapon.carrier.squirrel"));
+        return Result<LogicalId>::success(std::move(*parsed));
+    }
+
     [[nodiscard]] Result<Value> registerPlan(SpellCastPlan plan) {
+        for (const auto& op : plan.recipe.motionOps) {
+            if (op.kind == CarrierMotionOpKind::SteerAvoidBody) {
+                return Result<Value>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported,
+                                      "SteerAvoidBody recipes are not supported by the script carrier runtime",
+                                      "motion", {}, "weapon.carrier.squirrel"));
+            }
+        }
         for (const auto& dependent : plan.dependentRecipes) {
             auto registered = runtime_.registerRecipe(dependent);
             if (!registered) return Result<Value>::failure(registered.status());
@@ -365,6 +474,7 @@ private:
     ScriptTargetProvider  targets_;
     ScriptCircleHitProbe  hits_;
     CarrierFrame          lastFrame_{};
+    std::uint64_t         castSeq_ = 0;
 };
 
 ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {

@@ -69,3 +69,73 @@ TEST_CASE("spellFragmentCompiler.rejectsModifierAfterProjectile") {
     auto plan = eve::weapon::compileSpellFragments(parsed.value());
     CHECK(!plan.ok());
 }
+
+TEST_CASE("spellFragmentCompiler.preservesProjectileLocalHomingPreset") {
+    auto parsed = eve::Value::fromJson(R"([
+        {"kind":"projectile","id":"spell:seeker","speed":10,"damage":1,"lifetime":2,"homing":45}
+    ])");
+    REQUIRE(parsed.ok());
+    auto plan = eve::weapon::compileSpellFragments(parsed.value());
+    REQUIRE(plan.ok());
+    bool foundHoming = false;
+    for (const auto& op : plan.value().recipe.motionOps) {
+        if (op.kind == eve::weapon::CarrierMotionOpKind::SteerHoming) {
+            CHECK(std::fabs(op.maxTurnRateDegrees - 45.0) < 1e-9);
+            foundHoming = true;
+        }
+    }
+    CHECK(foundHoming);
+}
+
+TEST_CASE("spellFragmentCompiler.appliesDamageOpsLeftToRight") {
+    auto addThenMul = eve::Value::fromJson(R"([
+        {"kind":"damage","add":10},
+        {"kind":"damage","multiply":2},
+        {"kind":"projectile","id":"spell:a","speed":1,"damage":5,"lifetime":1}
+    ])");
+    REQUIRE(addThenMul.ok());
+    auto planA = eve::weapon::compileSpellFragments(addThenMul.value());
+    REQUIRE(planA.ok());
+    // ((5+10)*2) = 30
+    double damageA = 0.0;
+    for (const auto& impact : planA.value().recipe.impacts) {
+        if (impact.kind == eve::weapon::CarrierImpactKind::EmitHit) damageA = impact.damage;
+    }
+    CHECK(std::fabs(damageA - 30.0) < 1e-9);
+
+    auto mulThenAdd = eve::Value::fromJson(R"([
+        {"kind":"damage","multiply":2},
+        {"kind":"damage","add":10},
+        {"kind":"projectile","id":"spell:b","speed":1,"damage":5,"lifetime":1}
+    ])");
+    REQUIRE(mulThenAdd.ok());
+    auto planB = eve::weapon::compileSpellFragments(mulThenAdd.value());
+    REQUIRE(planB.ok());
+    // ((5*2)+10) = 20
+    double damageB = 0.0;
+    for (const auto& impact : planB.value().recipe.impacts) {
+        if (impact.kind == eve::weapon::CarrierImpactKind::EmitHit) damageB = impact.damage;
+    }
+    CHECK(std::fabs(damageB - 20.0) < 1e-9);
+}
+
+TEST_CASE("spellFragmentCompiler.rejectsMalformedProjectileNumbers") {
+    auto parsed = eve::Value::fromJson(R"([
+        {"kind":"projectile","id":"spell:bad","speed":"fast","damage":1,"lifetime":1}
+    ])");
+    REQUIRE(parsed.ok());
+    auto plan = eve::weapon::compileSpellFragments(parsed.value());
+    CHECK(!plan.ok());
+}
+
+TEST_CASE("spellFragmentCompiler.rejectsFullFormProjectileFragments") {
+    auto parsed = eve::Value::fromJson(R"([
+        {"kind":"damage","add":1},
+        {"kind":"projectile","id":"spell:full","speed":1,"lifetime":1,
+         "motion":["linear"],"triggers":["onExpire"],
+         "impacts":[{"kind":"release","on":"onExpire"}]}
+    ])");
+    REQUIRE(parsed.ok());
+    auto plan = eve::weapon::compileSpellFragments(parsed.value());
+    CHECK(!plan.ok());
+}
