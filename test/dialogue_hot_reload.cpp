@@ -98,6 +98,36 @@ node end end
     CHECK(!flow.hasConversation("shared.id"));
 }
 
+TEST_CASE("dialogueHotReload.loadReleasesDroppedConversationOwnership") {
+    DialogueFlow flow;
+    const std::string first = R"(
+schema "eve.dnut"
+version 1
+conversation keep.me entry=end { node end end }
+conversation drop.me entry=end { node end end }
+)";
+    REQUIRE(flow.loadDnutChecked(first, "owner.dnut").ok());
+    CHECK(flow.hasConversation("keep.me"));
+    CHECK(flow.hasConversation("drop.me"));
+
+    const std::string second = R"(
+schema "eve.dnut"
+version 1
+conversation keep.me entry=end { node end end }
+)";
+    REQUIRE(flow.loadDnutChecked(second, "owner.dnut").ok());
+    CHECK(flow.hasConversation("keep.me"));
+    CHECK(!flow.hasConversation("drop.me"));
+
+    const std::string reclaim = R"(
+schema "eve.dnut"
+version 1
+conversation drop.me entry=end { node end end }
+)";
+    REQUIRE(flow.loadDnutChecked(reclaim, "other.dnut").ok());
+    CHECK(flow.hasConversation("drop.me"));
+}
+
 TEST_CASE("dialogueHotReload.commitsPoolsAndConversationsAsOneWorkspace") {
     DialogueFlow flow;
     Dialogue* dialogue = Dialogue::create();

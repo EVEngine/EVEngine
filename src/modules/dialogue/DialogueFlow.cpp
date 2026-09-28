@@ -372,6 +372,8 @@ int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& pat
         else
             *it = std::move(asset);
     }
+    if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end())
+        for (const auto& id : old->second) assetSources_.erase(id);
     sourceTexts_[path] = source;
     sourcePools_         = std::move(candidatePoolSources);
     sourceAssets_[path] = std::move(compiledIds);
