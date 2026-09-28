@@ -31,9 +31,11 @@ TEST_CASE("npcAiScript.worldOwnsSignalAndBlackboardAgents") {
         stale <- world.isAgentStale(agent);
         afterDestroy <- world.snapshot(agent);
         activeState <- snap.value.activeState;
+        ownership <- world.ownership();
     )"));
     CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("world").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("ownership").toString(), std::string("owned"));
     CHECK(vm.find("registered").toTable().get<bool>("ok"));
     CHECK(vm.find("validated").toTable().get<bool>("ok"));
     CHECK(vm.find("agentResult").toTable().get<bool>("ok"));

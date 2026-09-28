@@ -29,6 +29,9 @@ tick / delta，不读取墙钟。所有易失败方法返回统一 Result 投影
 
 | 方法 | 说明 |
 | --- | --- |
+| `getName` | 模块名 `"Action"` |
+| `newRuntime` | 创建脚本拥有的 `ActionRuntime`（Result + `ownership`） |
+| `ownership` | 运行时代理所有权标记，恒为 `"owned"` |
 | `registerAbilityJson` / `replaceAbilityJson` | 解码 `eve.action.ability` schema v2 并注册/热替换 |
 | `registerTimelineAbility` / `replaceTimelineAbility` | 与 Combat 同形的 timeline 注册入口 |
 | `grantAbility` / `revokeAbility` / `abilityGrant` | grant 生命周期与快照 |

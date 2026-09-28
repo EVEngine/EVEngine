@@ -34,7 +34,7 @@ TEST_CASE("settlementScript.runtimeOwnsRulesAndLedger") {
         created <- settlement.newRuntime();
         runtime <- created.value;
         configured <- runtime.configureRulesJson(eve.rulesJson());
-        validated <- runtime.validateRulesJson(eve.rulesJson());)
+        validated <- runtime.validateRulesJson(eve.rulesJson());
         source <- "01020304-0506-0708-890a-0b0c0d0e0f10";
         target <- "11121314-1516-1718-991a-1b1c1d1e1f20";
         upserted <- runtime.upsertResource(target, "hp", 100.0, 100.0);
@@ -46,9 +46,11 @@ TEST_CASE("settlementScript.runtimeOwnsRulesAndLedger") {
         current <- after.value.current;
         disposition <- settled.value.disposition;
         ruleCount <- runtime.ruleCount();
+        ownership <- runtime.ownership();
     )"));
     CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("runtime").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("ownership").toString(), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK(vm.find("validated").toTable().get<bool>("ok"));
     CHECK(vm.find("upserted").toTable().get<bool>("ok"));

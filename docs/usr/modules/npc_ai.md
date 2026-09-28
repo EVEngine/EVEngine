@@ -22,10 +22,14 @@ local tick = world.tick(1, 1.0 / 60.0, 64, 8);
 local snap = world.snapshot(agent);
 ```
 
-`newWorld(traceCapacity, maxMemoriesPerAgent)` 返回脚本 GC 拥有的 `NpcAiWorld`。
+模块提供 `getName`；`newWorld(traceCapacity, maxMemoriesPerAgent)` 返回脚本 GC
+拥有的 `NpcAiWorld`（`ownership` 恒为 `"owned"`）。
 `registerBehavior` / `validateBehavior` 接受 BehaviorDefinition JSON（`id`、
 `schemaVersion`、`initialState`、`blackboardSchema`、`states`）。Agent 以打包
-`int64` handle 表示；`isAgentStale` 与销毁后的 `snapshot` 失败用于检测失效。
+`int64` handle 表示；`createAgent` / `destroyAgent` / `isAgentStale` 与销毁后的
+`snapshot` / `snapshotJson` 失败用于检测失效。黑板写入用类型化 setter：
+`setBlackboardBool` / `setBlackboardInt` / `setBlackboardNumber` /
+`setBlackboardString`。感知用 `remember` / `forget`，调度用 `tick` / `signal`。
 `ITaskService` 仍只能在 C++ 注册——无任务 provider 时，含 task 的行为会在 admission
 失败；脚本仍可驱动信号 / 黑板 / 感知路径。
 

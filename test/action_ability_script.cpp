@@ -43,7 +43,7 @@ TEST_CASE("actionScript.runtimeOwnsAbilityLifecycle") {
         action <- eve.Action();
         created <- action.newRuntime();
         runtime <- created.value;
-        registered <- runtime.registerAbilityJson(eve.abilityJson());)
+        registered <- runtime.registerAbilityJson(eve.abilityJson());
         granted <- runtime.grantAbility("fighter:player", "ability:light-attack");
         grantId <- granted.value.grantId;
         activated <- runtime.activateAbility(grantId, 1);
@@ -62,9 +62,11 @@ TEST_CASE("actionScript.runtimeOwnsAbilityLifecycle") {
         readySeconds <- ready.value.cooldownSeconds;
         matchCount <- matched.value.len();
         foundPhase <- found.value.phase;
+        ownership <- runtime.ownership();
     )"));
     CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("runtime").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("ownership").toString(), std::string("owned"));
     CHECK(vm.find("registered").toTable().get<bool>("ok"));
     CHECK(vm.find("granted").toTable().get<bool>("ok"));
     CHECK(vm.find("activated").toTable().get<bool>("ok"));

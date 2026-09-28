@@ -84,10 +84,12 @@ EveScript 可把完整规则文档写成一个字符串，交给现有玩法对�
 编译失败都会保留上一份规则。Tactics 的 settlement policy 由游戏侧 C++ 持有，因此当前通过同一个
 `configureJson` 解析规则后调用 `TacticsSettlementRuntime::configureSettlementRules`。
 
-另外，`eve.Settlement()`（槽位 `settlement`）提供协议级脚本门面：
-`newRuntime()` 返回脚本拥有的 `SettlementRuntime`，可 `configureRulesJson` /
-`validateRulesJson` / `rulesCanonicalJson` / `rulesDigest`，并用
-`upsertResource` + `settle(...)` 在**脚本自有 ledger**上跑 damage/heal/spend/gain。
+另外，`eve.Settlement()`（槽位 `settlement`）提供协议级脚本门面（`getName` /
+`newRuntime`）。`newRuntime()` 返回脚本拥有的 `SettlementRuntime`
+（`ownership` 恒为 `"owned"`），可 `configureRulesJson` /
+`validateRulesJson` / `rulesCanonicalJson` / `rulesDigest` / `ruleCount`，并用
+`upsertResource` / `getResource` / `removeResource` / `clearResources` +
+`settle(...)` 在**脚本自有 ledger**上跑 damage/heal/spend/gain。
 该 ledger **不会**写入 RPG/Combat/RTS/Card 的域状态；生产玩法仍应走各自的
 `configureSettlementRulesJson` 与域 policy。
 
