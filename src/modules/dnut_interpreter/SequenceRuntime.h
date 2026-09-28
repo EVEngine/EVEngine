@@ -191,9 +191,9 @@ public:
     void registerCommand(std::string name, SequenceCommandHandler handler);
     /** @brief Remove a named generic command handler. */
     void unregisterCommand(std::string_view name);
-    /** @brief Install the fallback command dispatcher used after named lookup. */
+    /** @brief Install the catch-all command dispatcher used after named lookup. */
     void setCommandDispatcher(SequenceCommandHandler dispatcher) { commandDispatcher_ = std::move(dispatcher); }
-    /** @brief Remove the fallback command dispatcher. */
+    /** @brief Remove the catch-all command dispatcher. */
     void clearCommandDispatcher() { commandDispatcher_ = {}; }
     /**
      * @brief Install the opaque consumer context forwarded to every step handler.

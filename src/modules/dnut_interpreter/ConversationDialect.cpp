@@ -276,7 +276,7 @@ private:
 };
 
 void appendResultFailure(DnutCompileOutput& output, const std::string& path,
-                         const eve::Diagnostic* diagnostic, const char* fallback) {
+                         const eve::Diagnostic* diagnostic, const char* defaultMessage) {
     int line   = 0;
     int column = 0;
     if (diagnostic) {
@@ -286,7 +286,7 @@ void appendResultFailure(DnutCompileOutput& output, const std::string& path,
         }
     }
     output.diagnostics.push_back(
-        {DnutSeverity::Error, path, line, column, diagnostic ? diagnostic->message() : fallback});
+        {DnutSeverity::Error, path, line, column, diagnostic ? diagnostic->message() : defaultMessage});
 }
 
 bool validateDocumentEnvelope(const std::vector<DnutToken>& tokens, const std::string& path,
