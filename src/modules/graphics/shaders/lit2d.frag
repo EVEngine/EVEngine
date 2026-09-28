@@ -32,7 +32,10 @@ vec3 applyNormalMap2D(vec3 mapSample, vec2 logical, vec2 uv) {
   vec2 duv1 = dFdx(uv);
   vec2 duv2 = dFdy(uv);
   float det = duv1.x * duv2.y - duv2.x * duv1.y;
-  if (abs(det) < 1e-6)
+  // Scale-aware singularity: |det| / (|duv1||duv2|) ≈ |sin θ| of the UV basis.
+  // Absolute 1e-6 rejects ordinary atlas regions (e.g. 32px in a 1024 atlas).
+  float uvScale = length(duv1) * length(duv2);
+  if (uvScale < 1e-20 || abs(det) < uvScale * 1e-3)
     return normalize(vec3(mapN.xy, mapN.z));
   float invDet = 1.0 / det;
   vec3 T = (dp1 * duv2.y - dp2 * duv1.y) * invDet;

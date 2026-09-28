@@ -536,11 +536,11 @@ public:
         Texture *displacement, float cx, float cy, float w, float h, float degrees, float u0,
         float v0, float u1, float v1, float strengthPixels, float opacity,
         bool rotatedUV = false) override;
-    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
-                               float u0, float v0, float u1, float v1, const Color &color) override;
-    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w,
-                                      float h, float degrees, float u0, float v0, float u1, float v1,
-                                      const Color &color) override;
+    void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0,
+                               float u1, float v1, const Color &color, BlendMode blend = BlendMode::Alpha) override;
+    void drawTexturedRectLitUVRotated(Texture *albedo, Texture *normal, float cx, float cy, float w, float h,
+                                      float degrees, float u0, float v0, float u1, float v1, const Color &color,
+                                      BlendMode blend = BlendMode::Alpha) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
@@ -807,6 +807,7 @@ public:
     struct LitBatch {
         Texture *albedo = nullptr;
         Texture *normal = nullptr;
+        BlendMode blend  = BlendMode::Alpha;
         Batcher batch;
     };
 
@@ -973,9 +974,9 @@ private:
     void noteTexturedOverlay(Texture *tex, uint32_t batchIndex);
     void noteLitOverlay(uint32_t batchIndex);
     void clear2DBatches();
-    void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
-                                 std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
-                                 size_t &texBufIndex, bool offscreen);
+    void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, std::vector<LitBatch> &batches,
+                                 std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex, bool offscreen,
+                                 bool hdr = false);
     vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth,
                               GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
@@ -1129,6 +1130,10 @@ private:
     vk::Pipeline hdrOffscreenPremultipliedSolidPipeline;
     vk::Pipeline hdrOffscreenMultiplySolidPipeline;
     vk::Pipeline hdrOffscreenLitPipeline;
+    vk::Pipeline         hdrOffscreenLitAdditivePipeline;
+    vk::Pipeline         hdrOffscreenLitPremultipliedPipeline;
+    vk::Pipeline         hdrOffscreenLitMultiplyPipeline;
+    vk::Pipeline         hdrOffscreenLitOpaquePipeline;
     vk::Pipeline hdrOffscreenTonemapPipeline;
     vk::Pipeline hdrOffscreenParticleDistortionPipeline;
     vk::Pipeline hdrGpuParticleAlphaPipeline_{};
@@ -1824,7 +1829,17 @@ private:
     vk::UniqueDescriptorSetLayout lit2dSetLayoutUnique;
     vk::PipelineLayout lit2dPipelineLayout;
     vk::Pipeline lit2dPipeline;
+    vk::Pipeline                  lit2dAdditivePipeline;
+    vk::Pipeline                  lit2dPremultipliedPipeline;
+    vk::Pipeline                  lit2dMultiplyPipeline;
+    vk::Pipeline                  lit2dOpaquePipeline;
     vk::Pipeline offscreenLitPipeline;
+    vk::Pipeline                  offscreenLitAdditivePipeline;
+    vk::Pipeline                  offscreenLitPremultipliedPipeline;
+    vk::Pipeline                  offscreenLitMultiplyPipeline;
+    vk::Pipeline                  offscreenLitOpaquePipeline;
+    /** @brief Select lit2d pipeline for swapchain / offscreen / HDR canvas / HDR compose. */
+    vk::Pipeline                    selectLit2DPipeline(BlendMode blend, bool offscreen, bool hdr = false) const;
     std::vector<vkb::GenericBuffer> lighting2dUboSlots;  // per swapchain frame slot
     vkb::GenericBuffer offscreenLighting2dUbo;           // synchronous offscreen path
     Lighting2DUBO lighting2dFrame{};
