@@ -1,7 +1,13 @@
-# FLOOR LAB — 程序化地板纹理
+# FLOOR LAB — 程序化地板纹理（完整 PBR）
 
-通过参数组合生成木地板、花纹地砖与各类瓷砖贴图，无需外部图片资源。
-配方为 `tex.floor.wood` 与 `tex.floor.tile`，同一套参数在示例 UI 中可实时调节。
+通过参数组合生成木地板、花纹地砖与各类瓷砖的完整 PBR 套图，无需外部图片资源。
+配方：
+
+- Albedo：`tex.floor.wood` / `tex.floor.tile`
+- PBR：`pbr.floor.wood` / `pbr.floor.tile`（albedo + normal + roughness + metallic + height + AO）
+
+示例 UI 调用 `generatePbrMaterial`，把 albedo / normal / height 绑到 `Material`，并设置
+scalar roughness / metallic 与 parallax。
 
 ## 运行
 
@@ -23,17 +29,18 @@ make run/<platform>-debug GAME=examples/procedural-textures
 
 ## 配方参数
 
-### `tex.floor.wood`
+### `tex.floor.wood` / `pbr.floor.wood`
 
 - `layout`: `planks` / `staggered` / `herringbone` / `chevron` / `parquet` / `basket` / `diagonal` / `ladder` / `finger` / `versailles`
 - `tone`: `oak` / `walnut` / `pine` / `cherry` / `ebony` / `ash` / `maple` / `teak`
 - `rows`, `cols`, `gap`, `grain`, `warp`, `wear`, `stain`, `bevel`
+- PBR: `roughnessLow`, `roughnessHigh`, `metallic`, `normalStrength`, `aoStrength`, `heightStrength`
 
-### `tex.floor.tile`
+### `tex.floor.tile` / `pbr.floor.tile`
 
 - `pattern`: `square` / `checker` / `diamond` / `hex` / `subway` / `brick` / `stack` / `mosaic` / `basket` / `herringbone` / `octagon` / `fishscale` / `scallop` / `pinwheel` / `windmill` / `star` / `moroccan` / `cobble` / `arabesque` / `terrazzo`
 - `palette`: `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` / `mosaic` / `subway` / `encaustic` / `jade` / `cobalt`
 - `tilesX`, `tilesY`, `grout`, `bevel`, `glaze`, `wear`, `speckles`, `motif`
+- PBR: 同上；釉面越高，板面粗糙度越低
 
-脚本侧用 `procgen.generateTexture(recipeId, params, gfx)` 生成可平铺贴图，
-`generateNormalImage` 可从同一参数得到法线预览。
+脚本侧用 `procgen.generatePbrMaterial(recipeId, params)` 生成完整套图。

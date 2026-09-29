@@ -3,6 +3,7 @@
 #include "image/ImageData.h"
 #include "procgen/ParamSchema.h"
 #include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include <algorithm>
@@ -11,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::procgen {
 namespace {
@@ -28,6 +30,122 @@ struct Rgb {
 Rgb mix(Rgb a, Rgb b, float t) {
     t = std::clamp(t, 0.f, 1.f);
     return {a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t};
+}
+
+float mixf(float a, float b, float t) {
+    t = std::clamp(t, 0.f, 1.f);
+    return a + (b - a) * t;
+}
+
+/** Shared albedo + displacement bake used by both tex.* and pbr.floor.* recipes. */
+struct FloorBake {
+    std::unique_ptr<image::ImageData> albedo;
+    std::vector<float>                height;
+    bool                              seamless = true;
+    int                               w        = 0;
+    int                               h        = 0;
+};
+
+struct FloorPbrDefaults {
+    float roughnessLow   = 0.55f;
+    float roughnessHigh  = 0.85f;
+    float metallic       = 0.f;
+    float normalStrength = 4.f;
+    float aoStrength     = 1.f;
+    float heightStrength = 1.f;
+};
+
+void appendPbrParams(RecipeDescriptor& schema, const FloorPbrDefaults& d) {
+    schema.params.push_back(
+        ParamDescriptor::floating("roughnessLow", "Low Roughness", d.roughnessLow, 0.f, 1.f, 0.01f));
+    schema.params.push_back(
+        ParamDescriptor::floating("roughnessHigh", "High Roughness", d.roughnessHigh, 0.f, 1.f, 0.01f));
+    schema.params.push_back(ParamDescriptor::floating("metallic", "Metallic", d.metallic, 0.f, 1.f, 0.01f));
+    schema.params.push_back(
+        ParamDescriptor::floating("normalStrength", "Normal Strength", d.normalStrength, 0.01f, 32.f, 0.05f));
+    schema.params.push_back(
+        ParamDescriptor::floating("aoStrength", "AO Strength", d.aoStrength, 0.f, 5.f, 0.05f));
+    schema.params.push_back(
+        ParamDescriptor::floating("heightStrength", "Height Strength", d.heightStrength, 0.f, 16.f, 0.05f));
+}
+
+FloorPbrDefaults woodPbrDefaults() {
+    // Low height (grooves) → rough; high height (plank face) → smoother.
+    return {0.70f, 0.38f, 0.02f, 6.f, 1.25f, 1.15f};
+}
+
+FloorPbrDefaults tilePbrDefaults() {
+    // Grout is rough; glazed tile faces are smoother.
+    return {0.78f, 0.28f, 0.0f, 5.5f, 1.4f, 1.05f};
+}
+
+std::unique_ptr<PbrTextureSet> assembleFloorPbr(FloorBake bake, const Params& params,
+                                                const FloorPbrDefaults& defaults, std::string& error) {
+    if (!bake.albedo || bake.height.size() != size_t(bake.w) * size_t(bake.h)) {
+        error = "floor bake missing albedo or height";
+        return {};
+    }
+    const int   w        = bake.w;
+    const int   h        = bake.h;
+    const bool  seamless = bake.seamless;
+    const float roughnessLow =
+        std::clamp(params.getFloat("roughnessLow", defaults.roughnessLow), 0.f, 1.f);
+    const float roughnessHigh =
+        std::clamp(params.getFloat("roughnessHigh", defaults.roughnessHigh), 0.f, 1.f);
+    const float metallic = std::clamp(params.getFloat("metallic", defaults.metallic), 0.f, 1.f);
+    const float normalStrength =
+        std::max(0.01f, params.getFloat("normalStrength", defaults.normalStrength));
+    const float aoStrength = std::clamp(params.getFloat("aoStrength", defaults.aoStrength), 0.f, 5.f);
+    const float heightStrength =
+        std::max(0.f, params.getFloat("heightStrength", defaults.heightStrength));
+
+    auto set    = std::make_unique<PbrTextureSet>();
+    set->albedo = bake.albedo.release();
+    set->normal = heightToNormalImage(bake.height, w, h, normalStrength, seamless).release();
+    if (!set->normal) {
+        error = "floor normal generation failed";
+        return {};
+    }
+
+    std::vector<float> rough(size_t(w * h));
+    std::vector<float> heightMap(size_t(w * h));
+    std::vector<float> ao(size_t(w * h));
+    const int          r = std::max(1, std::min(w, h) / 64);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const size_t i  = size_t(y) * size_t(w) + size_t(x);
+            const float  hh = bake.height[i];
+            rough[i]        = roughnessLow + (roughnessHigh - roughnessLow) * hh;
+            heightMap[i]    = std::clamp(0.5f + (hh - 0.5f) * heightStrength, 0.f, 1.f);
+
+            float sum = 0.f;
+            int   cnt = 0;
+            for (int dy = -r; dy <= r; ++dy) {
+                for (int dx = -r; dx <= r; ++dx) {
+                    int xx = x + dx, yy = y + dy;
+                    if (seamless) {
+                        xx = ((xx % w) + w) % w;
+                        yy = ((yy % h) + h) % h;
+                    } else {
+                        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+                    }
+                    sum += bake.height[size_t(yy) * size_t(w) + size_t(xx)];
+                    ++cnt;
+                }
+            }
+            const float local = cnt > 0 ? sum / float(cnt) : hh;
+            ao[i] = std::clamp(1.f - aoStrength * std::max(0.f, local - hh), 0.f, 1.f);
+        }
+    }
+    set->roughness = grayscaleImage(rough, w, h).release();
+    set->metallic  = grayscaleImage(std::vector<float>(size_t(w * h), metallic), w, h).release();
+    set->height    = grayscaleImage(heightMap, w, h).release();
+    set->ao        = grayscaleImage(ao, w, h).release();
+    if (!set->roughness || !set->metallic || !set->height || !set->ao) {
+        error = "floor PBR map allocation failed";
+        return {};
+    }
+    return set;
 }
 
 Rgb toneToRgb(std::string_view tone) {
@@ -343,24 +461,43 @@ Rgb shadeWood(const WoodOpts& opts, const PlankCell& cell, float grain, const No
     return col;
 }
 
-std::unique_ptr<image::ImageData> makeWoodImage(const Params& params, std::string& error) {
+float woodDisplacement(const WoodOpts& opts, const PlankCell& cell, float grain, const NoiseField& n, float u,
+                       float v) {
+    if (cell.inGap) {
+        const float grit = n.valueNoise(u * 36.f, v * 36.f);
+        return 0.08f + grit * 0.05f;
+    }
+    const float bevelAmt = smoothstep(0.f, opts.bevel + 1e-4f, cell.edge);
+    const float micro    = grain * 0.22f + n.fbm(u * 5.5f + float(cell.idX), v * 1.8f + float(cell.idY), 2) * 0.06f;
+    const float scratch =
+        smoothstep(0.78f, 0.95f, n.valueNoise(u * 18.f + float(cell.idX), v * 3.2f + float(cell.idY))) *
+        opts.wear * 0.08f;
+    return mixf(0.20f, 0.62f + micro - scratch, 0.28f + 0.72f * bevelAmt);
+}
+
+FloorBake bakeWoodFloor(const Params& params, std::string& error) {
+    FloorBake bake;
     const int w = std::clamp(params.getWidth() > 0 ? params.getWidth() : 256, 8, 4096);
     const int h = std::clamp(params.getHeight() > 0 ? params.getHeight() : 256, 8, 4096);
     if (w > 4096 || h > 4096) {
         error = "texture size too large (max 4096)";
-        return nullptr;
+        return bake;
     }
     const WoodOpts opts = woodFromParams(params);
     NoiseField     n;
-    n.seed = params.getSeed();
+    n.seed              = params.getSeed();
     const bool seamless = params.getInt("seamless", 1) != 0;
     if (seamless) {
         n.periodX = std::max(1, opts.cols);
         n.periodY = std::max(1, opts.rows);
     }
 
-    auto img = std::make_unique<image::ImageData>(w, h, "RGBA8");
-    const int px = opts.pixelSize;
+    bake.w        = w;
+    bake.h        = h;
+    bake.seamless = seamless;
+    bake.height.assign(size_t(w) * size_t(h), 0.5f);
+    bake.albedo   = std::make_unique<image::ImageData>(w, h, "RGBA8");
+    const int px  = opts.pixelSize;
     for (int y = 0; y < h; ++y) {
         const int by = (y / px) * px;
         for (int x = 0; x < w; ++x) {
@@ -372,7 +509,7 @@ std::unique_ptr<image::ImageData> makeWoodImage(const Params& params, std::strin
             float     grainU = u;
             float     grainV = v;
             if (opts.layout == "herringbone" || opts.layout == "chevron") {
-                cell = sampleHerringbone(u, v, opts.rows, opts.cols, opts.gap);
+                cell   = sampleHerringbone(u, v, opts.rows, opts.cols, opts.gap);
                 grainU = (u + v) * 0.5f;
                 grainV = (u - v) * 0.5f + 0.5f;
             } else if (opts.layout == "parquet" || opts.layout == "basket") {
@@ -410,10 +547,17 @@ std::unique_ptr<image::ImageData> makeWoodImage(const Params& params, std::strin
                 col.g             = std::floor(col.g * bands) / bands;
                 col.b             = std::floor(col.b * bands) / bands;
             }
-            writePixel(*img, x, y, col);
+            writePixel(*bake.albedo, x, y, col);
+            bake.height[size_t(y) * size_t(w) + size_t(x)] =
+                woodDisplacement(opts, cell, grain, n, u, v);
         }
     }
-    return img;
+    return bake;
+}
+
+std::unique_ptr<image::ImageData> makeWoodImage(const Params& params, std::string& error) {
+    FloorBake bake = bakeWoodFloor(params, error);
+    return std::move(bake.albedo);
 }
 
 struct TileCell {
@@ -859,23 +1003,53 @@ Rgb shadeTile(const TileOpts& opts, const TileCell& cell, const NoiseField& n, f
     return mix(grout, body, 0.35f + 0.65f * bevelAmt);
 }
 
-std::unique_ptr<image::ImageData> makeTileImage(const Params& params, std::string& error) {
+float tileDisplacement(const TileOpts& opts, const TileCell& cell, const NoiseField& n, float u, float v) {
+    if (cell.inGrout) {
+        const float grit = n.valueNoise(u * 40.f, v * 40.f);
+        return 0.10f + grit * 0.06f;
+    }
+    const float bevelAmt  = smoothstep(0.f, opts.bevel + 1e-4f, cell.edge);
+    const float glazeLift = opts.glaze * 0.10f;
+    const float wearDip =
+        (1.f - cell.edge) * opts.wear * 0.06f +
+        smoothstep(0.7f, 0.92f, n.valueNoise(u * 14.f, v * 14.f)) * opts.wear * 0.04f;
+    float hh = mixf(0.26f, 0.70f + glazeLift - wearDip, 0.30f + 0.70f * bevelAmt);
+    if (opts.motif > 0.05f) {
+        const float dx = cell.localU - 0.5f;
+        const float dy = cell.localV - 0.5f;
+        float       m  = 0.f;
+        if (opts.pattern == "diamond" || opts.pattern == "star") {
+            m = 1.f - (std::fabs(dx) + std::fabs(dy)) * 1.6f;
+        } else if (opts.pattern == "square" || opts.pattern == "checker" || opts.pattern == "octagon") {
+            m = 1.f - std::sqrt(dx * dx + dy * dy) * 2.2f;
+        }
+        if (m > 0.15f && m < 0.55f) hh -= opts.motif * 0.04f;
+    }
+    return std::clamp(hh, 0.f, 1.f);
+}
+
+FloorBake bakeTileFloor(const Params& params, std::string& error) {
+    FloorBake bake;
     const int w = std::clamp(params.getWidth() > 0 ? params.getWidth() : 256, 8, 4096);
     const int h = std::clamp(params.getHeight() > 0 ? params.getHeight() : 256, 8, 4096);
     if (w > 4096 || h > 4096) {
         error = "texture size too large (max 4096)";
-        return nullptr;
+        return bake;
     }
     const TileOpts opts = tileFromParams(params);
     NoiseField     n;
-    n.seed = params.getSeed();
+    n.seed              = params.getSeed();
     const bool seamless = params.getInt("seamless", 1) != 0;
     if (seamless) {
         n.periodX = std::max(1, opts.tilesX);
         n.periodY = std::max(1, opts.tilesY);
     }
 
-    auto img = std::make_unique<image::ImageData>(w, h, "RGBA8");
+    bake.w        = w;
+    bake.h        = h;
+    bake.seamless = seamless;
+    bake.height.assign(size_t(w) * size_t(h), 0.5f);
+    bake.albedo  = std::make_unique<image::ImageData>(w, h, "RGBA8");
     const int px = opts.pixelSize;
     for (int y = 0; y < h; ++y) {
         const int by = (y / px) * px;
@@ -932,10 +1106,16 @@ std::unique_ptr<image::ImageData> makeTileImage(const Params& params, std::strin
                 col.g             = std::floor(col.g * bands) / bands;
                 col.b             = std::floor(col.b * bands) / bands;
             }
-            writePixel(*img, x, y, col);
+            writePixel(*bake.albedo, x, y, col);
+            bake.height[size_t(y) * size_t(w) + size_t(x)] = tileDisplacement(opts, cell, n, u, v);
         }
     }
-    return img;
+    return bake;
+}
+
+std::unique_ptr<image::ImageData> makeTileImage(const Params& params, std::string& error) {
+    FloorBake bake = bakeTileFloor(params, error);
+    return std::move(bake.albedo);
 }
 
 std::unique_ptr<image::ImageData> woodRecipe(const Params& params, std::string& error) {
@@ -1019,9 +1199,62 @@ eve::Result<std::unique_ptr<image::ImageData>> generateTileFloorTexture(const Pa
     return eve::Result<std::unique_ptr<image::ImageData>>::success(std::move(img));
 }
 
+eve::Result<std::unique_ptr<PbrTextureSet>> generateWoodFloorPbr(const Params& params) {
+    std::string error;
+    FloorBake   bake = bakeWoodFloor(params, error);
+    auto        set  = assembleFloorPbr(std::move(bake), params, woodPbrDefaults(), error);
+    if (!set) {
+        return eve::Result<std::unique_ptr<PbrTextureSet>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   error.empty() ? "wood floor PBR generation failed" : error, "recipe"));
+    }
+    return eve::Result<std::unique_ptr<PbrTextureSet>>::success(std::move(set));
+}
+
+eve::Result<std::unique_ptr<PbrTextureSet>> generateTileFloorPbr(const Params& params) {
+    std::string error;
+    FloorBake   bake = bakeTileFloor(params, error);
+    FloorPbrDefaults defaults = tilePbrDefaults();
+    // Glaze pushes the high-end roughness toward polish.
+    const float glaze = std::clamp(params.getFloat("glaze", 0.35f), 0.f, 1.f);
+    defaults.roughnessHigh = mixf(0.48f, 0.18f, glaze);
+    auto set = assembleFloorPbr(std::move(bake), params, defaults, error);
+    if (!set) {
+        return eve::Result<std::unique_ptr<PbrTextureSet>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   error.empty() ? "tile floor PBR generation failed" : error, "recipe"));
+    }
+    return eve::Result<std::unique_ptr<PbrTextureSet>>::success(std::move(set));
+}
+
 void registerFloorTextureRecipes(TextureRecipeRegistry& registry) {
     registry.registerRecipe(woodDescriptor(), woodRecipe);
     registry.registerRecipe(tileDescriptor(), tileRecipe);
+}
+
+void registerFloorPbrRecipes(PbrRecipeRegistry& registry) {
+    RecipeDescriptor woodSchema = woodDescriptor();
+    woodSchema.id               = "pbr.floor.wood";
+    woodSchema.displayName      = "Wood Floor PBR";
+    woodSchema.category         = "Material";
+    appendPbrParams(woodSchema, woodPbrDefaults());
+    registry.registerPbrRecipe(std::move(woodSchema), [](const Params& params, std::string& error) {
+        FloorBake bake = bakeWoodFloor(params, error);
+        return assembleFloorPbr(std::move(bake), params, woodPbrDefaults(), error);
+    });
+
+    RecipeDescriptor tileSchema = tileDescriptor();
+    tileSchema.id               = "pbr.floor.tile";
+    tileSchema.displayName      = "Floor Tile PBR";
+    tileSchema.category         = "Material";
+    appendPbrParams(tileSchema, tilePbrDefaults());
+    registry.registerPbrRecipe(std::move(tileSchema), [](const Params& params, std::string& error) {
+        FloorBake        bake     = bakeTileFloor(params, error);
+        FloorPbrDefaults defaults = tilePbrDefaults();
+        const float      glaze    = std::clamp(params.getFloat("glaze", 0.35f), 0.f, 1.f);
+        defaults.roughnessHigh    = mixf(0.48f, 0.18f, glaze);
+        return assembleFloorPbr(std::move(bake), params, defaults, error);
+    });
 }
 
 }  // namespace eve::procgen

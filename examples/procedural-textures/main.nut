@@ -1,6 +1,6 @@
 // FLOOR LAB — parametric procedural floor textures.
-// Combines tex.floor.wood + tex.floor.tile recipes into a live gallery:
-// wood planks / herringbone / parquet and ceramic tile patterns via params.
+// Combines pbr.floor.wood + pbr.floor.tile recipes into a live gallery:
+// wood planks / herringbone / parquet and ceramic tile patterns with full PBR maps.
 
 persist floorLab = {
     camera = null,
@@ -8,6 +8,8 @@ persist floorLab = {
     preview = null,
     albedo = null,
     normal = null,
+    height = null,
+    material = null,
     seed = 1847,
     size = 256,
     mode = 0, // 0 wood, 1 tile
@@ -72,6 +74,10 @@ function indexOf(list, value) {
 }
 
 function recipeId() {
+    return floorLab.mode == 0 ? "pbr.floor.wood" : "pbr.floor.tile"
+}
+
+function albedoRecipeId() {
     return floorLab.mode == 0 ? "tex.floor.wood" : "tex.floor.tile"
 }
 
@@ -99,6 +105,12 @@ function applyParams(p) {
         p.setFloat("wear", floorLab.wear)
         p.setFloat("stain", floorLab.stain)
         p.setFloat("bevel", 0.08)
+        p.setFloat("roughnessLow", 0.70)
+        p.setFloat("roughnessHigh", 0.38)
+        p.setFloat("metallic", 0.02)
+        p.setFloat("normalStrength", 6.0)
+        p.setFloat("aoStrength", 1.25)
+        p.setFloat("heightStrength", 1.15)
     } else {
         p.setString("pattern", TILE_PATTERNS[floorLab.patternIndex])
         p.setString("palette", TILE_PALETTES[floorLab.paletteIndex])
@@ -110,6 +122,12 @@ function applyParams(p) {
         p.setFloat("wear", floorLab.wear)
         p.setFloat("speckles", floorLab.speckles)
         p.setFloat("motif", floorLab.motif)
+        p.setFloat("roughnessLow", 0.78)
+        p.setFloat("roughnessHigh", 0.48 - floorLab.glaze * 0.30)
+        p.setFloat("metallic", 0.0)
+        p.setFloat("normalStrength", 5.5)
+        p.setFloat("aoStrength", 1.4)
+        p.setFloat("heightStrength", 1.05)
     }
 }
 
@@ -125,39 +143,55 @@ function rebuildTextures() {
     local p = paramsResult.value
     applyParams(p)
 
-    local texResult = procgen.generateTexture(recipeId(), p, gfx)
-    if (!texResult.ok) {
+    local matResult = procgen.generatePbrMaterial(recipeId(), p)
+    if (!matResult.ok) {
         if (floorLab.uiReady) {
             ui.select("lab")
-            ui.setText("status", "TEX FAIL: " + texResult.status.summary)
+            ui.setText("status", "PBR FAIL: " + matResult.status.summary)
         }
         return
     }
-    floorLab.albedo = texResult.value
+    local maps = matResult.value
+    floorLab.albedo = gfx.newTexture(maps.getAlbedo(), true, true)
+    floorLab.normal = gfx.newTexture(maps.getNormal(), true, true)
+    floorLab.height = gfx.newTexture(maps.getHeight(), true, true)
 
-    local normalResult = procgen.generateNormalImage(recipeId(), p)
-    if (normalResult.ok) {
-        floorLab.normal = gfx.newTexture(normalResult.value, true, true)
-    } else {
-        floorLab.normal = null
-    }
+    local metallic = p.getFloat("metallic", 0.0)
+    local roughness = (p.getFloat("roughnessLow", 0.5) + p.getFloat("roughnessHigh", 0.8)) * 0.5
+    local parallax = p.getFloat("heightStrength", 1.0) * 0.022
+
+    floorLab.material = gfx.newMaterial()
+    floorLab.material.setAlbedoTexture(floorLab.albedo)
+    floorLab.material.setNormalTexture(floorLab.normal)
+    floorLab.material.setHeightTexture(floorLab.height)
+    floorLab.material.setMetallic(metallic)
+    floorLab.material.setRoughness(roughness)
+    floorLab.material.setParallax(parallax, 8.0, 24.0)
+    maps.destroy()
 
     if (floorLab.preview != null) {
+        floorLab.preview.setMaterial(floorLab.material)
         floorLab.preview.setTexture(floorLab.albedo)
-        if (floorLab.normal != null) floorLab.preview.setNormalTexture(floorLab.normal)
-        floorLab.preview.setRoughness(floorLab.mode == 0 ? 0.55 : 0.35)
+        floorLab.preview.setNormalTexture(floorLab.normal)
+        floorLab.preview.setHeightTexture(floorLab.height)
+        floorLab.preview.setMetallic(metallic)
+        floorLab.preview.setRoughness(roughness)
     }
 
     foreach (tile in floorLab.tiles) {
         if (tile == null) continue
+        tile.setMaterial(floorLab.material)
         tile.setTexture(floorLab.albedo)
-        if (floorLab.normal != null) tile.setNormalTexture(floorLab.normal)
+        tile.setNormalTexture(floorLab.normal)
+        tile.setHeightTexture(floorLab.height)
+        tile.setMetallic(metallic)
+        tile.setRoughness(roughness)
     }
 
     if (floorLab.uiReady) {
         ui.select("lab")
         ui.setText("recipe", recipeId())
-        ui.setText("status", statusLabel() + "  seed=" + floorLab.seed)
+        ui.setText("status", statusLabel() + "  seed=" + floorLab.seed + "  (" + albedoRecipeId() + ")")
     }
 }
 

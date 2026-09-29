@@ -3,6 +3,7 @@
 
 #include "procgen/Params.h"
 #include "procgen/texture/FloorTextures.h"
+#include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "image/ImageData.h"
@@ -130,4 +131,62 @@ TEST_CASE("procgen.floorTextures.resultApiAndDefaults") {
     REQUIRE(TextureRecipeRegistry::instance().applyDefaults("tex.floor.tile", filled));
     CHECK_EQ(filled.getString("pattern", ""), std::string("square"));
     CHECK_EQ(filled.getString("palette", ""), std::string("ceramic"));
+}
+
+TEST_CASE("procgen.floorTextures.pbr.fullMapSet") {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    REQUIRE(PbrRecipeRegistry::instance().has("pbr.floor.wood"));
+    REQUIRE(PbrRecipeRegistry::instance().has("pbr.floor.tile"));
+
+    Params wood;
+    wood.setSeed(11);
+    wood.setSize(48, 48);
+    wood.setString("layout", "herringbone");
+    wood.setString("tone", "walnut");
+    wood.setInt("rows", 6);
+    wood.setInt("cols", 6);
+    wood.setInt("seamless", 1);
+
+    std::string err;
+    auto        woodSet = PbrRecipeRegistry::instance().generate("pbr.floor.wood", wood, err);
+    REQUIRE(static_cast<bool>(woodSet));
+    REQUIRE(woodSet->albedo != nullptr);
+    REQUIRE(woodSet->normal != nullptr);
+    REQUIRE(woodSet->roughness != nullptr);
+    REQUIRE(woodSet->metallic != nullptr);
+    REQUIRE(woodSet->height != nullptr);
+    REQUIRE(woodSet->ao != nullptr);
+    CHECK_EQ(woodSet->albedo->getWidth(), 48);
+    CHECK_EQ(woodSet->normal->getWidth(), 48);
+    CHECK_EQ(woodSet->height->getFormat(), std::string("RGBA8"));
+
+    auto woodResult = generateWoodFloorPbr(wood);
+    REQUIRE(woodResult.ok());
+    REQUIRE(static_cast<bool>(woodResult.value()));
+    CHECK(woodResult.value()->albedo != nullptr && woodResult.value()->ao != nullptr);
+
+    Params tile;
+    tile.setSeed(22);
+    tile.setSize(40, 40);
+    tile.setString("pattern", "octagon");
+    tile.setString("palette", "encaustic");
+    tile.setFloat("glaze", 0.55f);
+    tile.setInt("seamless", 1);
+
+    auto tileSet = PbrRecipeRegistry::instance().generate("pbr.floor.tile", tile, err);
+    REQUIRE(static_cast<bool>(tileSet));
+    REQUIRE(tileSet->albedo != nullptr);
+    REQUIRE(tileSet->normal != nullptr);
+    REQUIRE(tileSet->roughness != nullptr);
+    REQUIRE(tileSet->metallic != nullptr);
+    REQUIRE(tileSet->height != nullptr);
+    REQUIRE(tileSet->ao != nullptr);
+
+    Params defaults;
+    defaults.setSize(16, 16);
+    REQUIRE(PbrRecipeRegistry::instance().applyDefaults("pbr.floor.wood", defaults));
+    CHECK_EQ(defaults.getString("layout", ""), std::string("planks"));
+    CHECK(defaults.getFloat("normalStrength", 0.f) > 0.f);
+    REQUIRE(PbrRecipeRegistry::instance().applyDefaults("pbr.floor.tile", defaults));
+    CHECK_EQ(defaults.getString("pattern", ""), std::string("square"));
 }
