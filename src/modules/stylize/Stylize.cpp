@@ -1,5 +1,6 @@
 #include "stylize/Stylize.h"
 
+#include "stylize/AttackVfxRuntime.h"
 #include "stylize/ImageStylize.h"
 #include "stylize/MeshEffect.h"
 #include "stylize/MeshEffectRenderer.h"
@@ -94,6 +95,10 @@ std::unique_ptr<SkillMeshEffect> Stylize::createSkillMeshEffect(SkillMeshEffectK
 
 eve::Result<std::unique_ptr<MeshVfxAssetInstance>> Stylize::createMeshVfxAssetInstance(const MeshVfxAsset& asset) {
     return MeshVfxAssetInstance::create(asset);
+}
+
+std::unique_ptr<AttackVfxRuntime> Stylize::createAttackVfxRuntime() {
+    return std::make_unique<AttackVfxRuntime>();
 }
 
 void Stylize::expose(ssq::Table &table) {
