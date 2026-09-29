@@ -218,6 +218,37 @@ local texture = textureResult.value;
 `prototypeTextureDescriptors()` 枚举，并以 `generatePrototypeTexture()` 生成 owning
 RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。
 
+## 程序化地板纹理（木地板 / 瓷砖）
+
+`tex.floor.wood` 与 `tex.floor.tile` 用参数排列组合生成可平铺地板贴图，无需外部图片。
+示例见 `examples/procedural-textures`。
+
+木地板 `layout` 支持 `planks` / `staggered` / `herringbone` / `chevron` / `parquet` /
+`basket`；`tone` 支持 `oak` / `walnut` / `pine` / `cherry` / `ebony` / `ash`。
+其余常用旋钮：`rows`、`cols`、`gap`、`grain`、`warp`、`wear`、`stain`、`bevel`。
+
+瓷砖 `pattern` 支持 `square` / `checker` / `diamond` / `hex` / `subway` / `mosaic` /
+`basket` / `herringbone`；`palette` 支持 `ceramic` / `terracotta` / `slate` /
+`porcelain` / `marble` / `black` / `mosaic` / `subway`。其余常用旋钮：`tilesX`、
+`tilesY`、`grout`、`bevel`、`glaze`、`wear`、`speckles`、`motif`。
+
+```squirrel
+local textureParamsResult = gen.newParams();
+if (!textureParamsResult.ok) throw textureParamsResult.status.summary;
+local tp = textureParamsResult.value;
+tp.setSize(256, 256);
+tp.setString("layout", "herringbone");
+tp.setString("tone", "walnut");
+tp.setInt("rows", 8);
+tp.setInt("cols", 8);
+tp.setFloat("gap", 0.035);
+local textureResult = gen.generateTexture("tex.floor.wood", tp, gfx);
+if (!textureResult.ok) throw textureResult.status.summary;
+```
+
+C++ 可用 `generateWoodFloorTexture()` / `generateTileFloorTexture()` 获得带结构化诊断的
+owning `ImageData`；注册入口为 `registerFloorTextureRecipes()`。
+
 ### Params 的类型与尺寸语义
 
 `Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、
