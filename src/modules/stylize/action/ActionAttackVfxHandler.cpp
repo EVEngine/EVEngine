@@ -1,7 +1,7 @@
 #include "action/ActionAttackVfxBlock.h"
 #include "action/ActionNotifyRegistry.h"
 #include "common/Capability.h"
-#include "common/ModuleManager.h"
+#include "common/Module.h"
 #include "filesystem/Filesystem.h"
 #include "stylize/action/StylizeAction.h"
 #include "stylize/AttackVfxRecipe.h"
@@ -25,7 +25,7 @@ eve::stylize::AttackVfxRuntime* moduleRuntime() {
 
 eve::Result<eve::LogicalId> ensureRecipe(eve::stylize::AttackVfxRuntime& runtime,
                                          const eve::action::ActionAttackVfxBinding& binding) {
-    if (!binding.recipeId.empty()) {
+    if (binding.recipeId.isValid()) {
         if (!runtime.findRecipe(binding.recipeId))
             return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::NotFound, "AttackVfx recipeId is not registered", "recipeId"));
@@ -184,7 +184,7 @@ public:
                 ++it;
                 continue;
             }
-            auto stopped = runtime->stop(it->handle, eve::stylize::AttackVfxStopMode::StopEmitting);
+            auto stopped = runtime->stop(it->handle, eve::stylize::AttackVfxStopMode::ClearImmediately);
             if (!stopped) return eve::Result<void>::failure(stopped.status());
             it = transients_.erase(it);
             changed = true;

@@ -62,7 +62,7 @@ struct AttackVfxRuntime::Impl {
         return Result<AttackVfxInstanceState*>::success(&*slot.state);
     }
 
-    const AttackVfxInstanceState* resolve(AttackVfxHandle handle) const {
+    const AttackVfxInstanceState* peek(AttackVfxHandle handle) const noexcept {
         if (handle.slot >= slots.size()) return nullptr;
         const auto& slot = slots[handle.slot];
         if (!slot.state || slot.generation != handle.generation) return nullptr;
@@ -372,7 +372,7 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
 
     auto& slot = impl_->slots[freeSlot];
     slot.state = std::move(state);
-    slot.phaseLayers.assign(recipe.phases.size());
+    slot.phaseLayers.assign(recipe.phases.size(), Impl::LivePhase{});
     impl_->armTimedPhases(*slot.state);
 
     AttackVfxFrame bootstrap;
@@ -492,7 +492,7 @@ Result<AttackVfxFrame> AttackVfxRuntime::stop(AttackVfxHandle handle, AttackVfxS
 }
 
 std::optional<AttackVfxInstanceState> AttackVfxRuntime::inspect(AttackVfxHandle handle) const {
-    const auto* state = impl_->resolve(handle);
+    const auto* state = impl_->peek(handle);
     if (!state) return std::nullopt;
     return *state;
 }

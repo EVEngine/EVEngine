@@ -1,5 +1,5 @@
 #include "common/Capability.h"
-#include "common/ModuleManager.h"
+#include "common/Module.h"
 #include "particles/ParticleEffect.h"
 #include "particles/Particles.h"
 #include "particles/ParticlesCapabilities.h"

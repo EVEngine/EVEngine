@@ -71,7 +71,7 @@ TEST_CASE("stylize.action.attack_vfx binding validates recipe xor uri") {
         {{"uri", std::string("json:") + kMinimalRecipe}, {"lifetimeSeconds", 0.4}},
         eve::action::ActionAttackVfxShape::Instant);
     REQUIRE(ok.ok());
-    REQUIRE(ok.value().recipeId.empty());
+    REQUIRE(!ok.value().recipeId.isValid());
     REQUIRE(!ok.value().uri.empty());
 }
 

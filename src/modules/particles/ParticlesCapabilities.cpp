@@ -9,6 +9,7 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleEffect.h"
 #include "particles/Particles.h"
+#include "particles/ParticlesCapabilities.h"
 
 #include <algorithm>
 #include <cmath>
