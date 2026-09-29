@@ -20,7 +20,8 @@ TEST_CASE("procgen.floorTextures.wood.reproducibleLayouts") {
     TextureRecipeRegistry::instance().registerBuiltins();
     REQUIRE(TextureRecipeRegistry::instance().has("tex.floor.wood"));
 
-    const char* layouts[] = {"planks", "staggered", "herringbone", "chevron", "parquet", "basket"};
+    const char* layouts[] = {"planks", "staggered", "herringbone", "chevron", "parquet",
+                             "basket", "diagonal",  "ladder",      "finger",  "versailles"};
     for (const char* layout : layouts) {
         Params p;
         p.setSeed(42);
@@ -48,8 +49,10 @@ TEST_CASE("procgen.floorTextures.tile.reproduciblePatterns") {
     TextureRecipeRegistry::instance().registerBuiltins();
     REQUIRE(TextureRecipeRegistry::instance().has("tex.floor.tile"));
 
-    const char* patterns[] = {"square", "checker", "diamond", "hex", "subway",
-                              "mosaic", "basket",  "herringbone"};
+    const char* patterns[] = {"square",   "checker", "diamond",   "hex",        "subway",
+                              "brick",    "stack",   "mosaic",    "basket",     "herringbone",
+                              "octagon",  "fishscale", "pinwheel", "star",      "cobble",
+                              "arabesque", "terrazzo", "scallop",  "windmill",  "moroccan"};
     for (const char* pattern : patterns) {
         Params p;
         p.setSeed(17);

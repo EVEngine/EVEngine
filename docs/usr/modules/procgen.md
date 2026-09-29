@@ -224,12 +224,15 @@ RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build
 示例见 `examples/procedural-textures`。
 
 木地板 `layout` 支持 `planks` / `staggered` / `herringbone` / `chevron` / `parquet` /
-`basket`；`tone` 支持 `oak` / `walnut` / `pine` / `cherry` / `ebony` / `ash`。
+`basket` / `diagonal` / `ladder` / `finger` / `versailles`；`tone` 支持 `oak` / `walnut` /
+`pine` / `cherry` / `ebony` / `ash` / `maple` / `teak`。
 其余常用旋钮：`rows`、`cols`、`gap`、`grain`、`warp`、`wear`、`stain`、`bevel`。
 
-瓷砖 `pattern` 支持 `square` / `checker` / `diamond` / `hex` / `subway` / `mosaic` /
-`basket` / `herringbone`；`palette` 支持 `ceramic` / `terracotta` / `slate` /
-`porcelain` / `marble` / `black` / `mosaic` / `subway`。其余常用旋钮：`tilesX`、
+瓷砖 `pattern` 支持 `square` / `checker` / `diamond` / `hex` / `subway` / `brick` /
+`stack` / `mosaic` / `basket` / `herringbone` / `octagon` / `fishscale` / `scallop` /
+`pinwheel` / `windmill` / `star` / `moroccan` / `cobble` / `arabesque` / `terrazzo`；
+`palette` 支持 `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` /
+`mosaic` / `subway` / `encaustic` / `jade` / `cobalt`。其余常用旋钮：`tilesX`、
 `tilesY`、`grout`、`bevel`、`glaze`、`wear`、`speckles`、`motif`。
 
 ```squirrel

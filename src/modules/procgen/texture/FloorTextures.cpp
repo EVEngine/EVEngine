@@ -36,6 +36,8 @@ Rgb toneToRgb(std::string_view tone) {
     if (tone == "cherry") return {0.52f, 0.24f, 0.16f};
     if (tone == "ebony") return {0.14f, 0.10f, 0.08f};
     if (tone == "ash") return {0.62f, 0.56f, 0.46f};
+    if (tone == "maple") return {0.78f, 0.62f, 0.38f};
+    if (tone == "teak") return {0.48f, 0.32f, 0.16f};
     return {0.55f, 0.38f, 0.20f};  // oak
 }
 
@@ -47,6 +49,9 @@ Rgb paletteColorA(std::string_view palette) {
     if (palette == "black") return {0.12f, 0.12f, 0.14f};
     if (palette == "mosaic") return {0.78f, 0.62f, 0.42f};
     if (palette == "subway") return {0.92f, 0.93f, 0.94f};
+    if (palette == "encaustic") return {0.86f, 0.78f, 0.62f};
+    if (palette == "jade") return {0.42f, 0.62f, 0.52f};
+    if (palette == "cobalt") return {0.22f, 0.38f, 0.68f};
     return {0.82f, 0.78f, 0.72f};  // ceramic
 }
 
@@ -58,6 +63,9 @@ Rgb paletteColorB(std::string_view palette) {
     if (palette == "black") return {0.72f, 0.72f, 0.74f};
     if (palette == "mosaic") return {0.42f, 0.52f, 0.48f};
     if (palette == "subway") return {0.78f, 0.82f, 0.86f};
+    if (palette == "encaustic") return {0.62f, 0.28f, 0.22f};
+    if (palette == "jade") return {0.78f, 0.86f, 0.74f};
+    if (palette == "cobalt") return {0.90f, 0.86f, 0.72f};
     return {0.68f, 0.64f, 0.58f};
 }
 
@@ -66,6 +74,9 @@ Rgb groutRgb(std::string_view palette) {
     if (palette == "slate") return {0.18f, 0.20f, 0.22f};
     if (palette == "porcelain") return {0.72f, 0.74f, 0.76f};
     if (palette == "black") return {0.35f, 0.35f, 0.36f};
+    if (palette == "encaustic") return {0.58f, 0.50f, 0.40f};
+    if (palette == "jade") return {0.32f, 0.40f, 0.36f};
+    if (palette == "cobalt") return {0.48f, 0.50f, 0.56f};
     return {0.55f, 0.52f, 0.48f};
 }
 
@@ -226,6 +237,82 @@ PlankCell sampleParquet(float u, float v, int rows, int cols, float gap) {
     return cell;
 }
 
+PlankCell sampleDiagonal(float u, float v, int rows, int cols, float gap) {
+    // 45-degree diagonal planks.
+    const float sx = (u + v) * 0.5f * float(cols);
+    const float sy = (u - v + 1.f) * 0.5f * float(rows);
+    const int   ix = int(std::floor(sx));
+    const int   iy = int(std::floor(sy));
+    const float fu = sx - float(ix);
+    const float fv = sy - float(iy);
+    PlankCell cell;
+    cell.idX    = ix;
+    cell.idY    = iy;
+    cell.localU = fu;
+    cell.localV = fv;
+    const float edge = std::min(std::min(fu, 1.f - fu), std::min(fv, 1.f - fv));
+    cell.inGap       = edge < gap;
+    cell.edge        = cell.inGap ? 0.f : smoothstep(gap, gap + 0.08f, edge);
+    return cell;
+}
+
+PlankCell sampleLadder(float u, float v, int rows, int cols, float gap) {
+    // Ladder / finger parquet: horizontal bands of short vertical strips.
+    const float bandF = v * float(std::max(1, rows));
+    const int   band  = int(std::floor(bandF));
+    const float fv    = bandF - float(band);
+    const float stripF = u * float(std::max(1, cols * 2));
+    const int   strip  = int(std::floor(stripF));
+    const float fu     = stripF - float(strip);
+    PlankCell cell;
+    cell.idX    = strip;
+    cell.idY    = band;
+    cell.localU = fu;
+    cell.localV = fv;
+    const float edgeU = std::min(fu, 1.f - fu);
+    const float edgeV = std::min(fv, 1.f - fv);
+    const float edge  = std::min(edgeU, edgeV);
+    cell.inGap        = edge < gap;
+    cell.edge         = cell.inGap ? 0.f : smoothstep(gap, gap + 0.08f, edge);
+    return cell;
+}
+
+PlankCell sampleVersailles(float u, float v, int rows, int cols, float gap) {
+    // Versailles parquet: square modules with a framed cross of planks.
+    const float mx = u * float(std::max(1, cols / 2));
+    const float my = v * float(std::max(1, rows / 2));
+    const int   ix = int(std::floor(mx));
+    const int   iy = int(std::floor(my));
+    const float fx = mx - float(ix);
+    const float fy = my - float(iy);
+    // Distance to module frame and to the central cross arms.
+    const float frame = std::min(std::min(fx, 1.f - fx), std::min(fy, 1.f - fy));
+    const float arm   = std::min(std::fabs(fx - 0.5f), std::fabs(fy - 0.5f));
+    const bool  onArm = arm < 0.12f;
+    const bool  onFrame = frame < 0.10f;
+    PlankCell cell;
+    cell.idX = ix * 8 + (onArm ? 1 : 0) + (onFrame ? 2 : 0);
+    cell.idY = iy;
+    if (onFrame) {
+        cell.localU = frame / 0.10f;
+        cell.localV = (std::fabs(fx - 0.5f) < std::fabs(fy - 0.5f)) ? fy : fx;
+    } else if (onArm) {
+        const bool horiz = std::fabs(fy - 0.5f) < std::fabs(fx - 0.5f);
+        cell.localU      = horiz ? fx : fy;
+        cell.localV      = horiz ? (fy - 0.5f + 0.12f) / 0.24f : (fx - 0.5f + 0.12f) / 0.24f;
+    } else {
+        // Corner filler planks oriented by quadrant.
+        const bool horiz = ((fx < 0.5f) == (fy < 0.5f));
+        cell.localU      = horiz ? fx : fy;
+        cell.localV      = horiz ? fy : fx;
+        cell.idX += 4;
+    }
+    const float edge = onFrame ? frame : (onArm ? arm : std::min(frame, arm));
+    cell.inGap       = edge < gap * 0.7f;
+    cell.edge        = cell.inGap ? 0.f : smoothstep(gap * 0.7f, gap * 0.7f + 0.08f, edge);
+    return cell;
+}
+
 Rgb shadeWood(const WoodOpts& opts, const PlankCell& cell, float grain, const NoiseField& n, float u, float v) {
     Rgb base = toneToRgb(opts.tone);
     // Per-plank tone variation.
@@ -286,11 +373,22 @@ std::unique_ptr<image::ImageData> makeWoodImage(const Params& params, std::strin
             float     grainV = v;
             if (opts.layout == "herringbone" || opts.layout == "chevron") {
                 cell = sampleHerringbone(u, v, opts.rows, opts.cols, opts.gap);
-                // Align grain with diagonal plank direction.
                 grainU = (u + v) * 0.5f;
                 grainV = (u - v) * 0.5f + 0.5f;
             } else if (opts.layout == "parquet" || opts.layout == "basket") {
                 cell   = sampleParquet(u, v, opts.rows, opts.cols, opts.gap);
+                grainU = cell.localU;
+                grainV = cell.localV;
+            } else if (opts.layout == "diagonal") {
+                cell   = sampleDiagonal(u, v, opts.rows, opts.cols, opts.gap);
+                grainU = (u + v) * 0.5f;
+                grainV = (u - v) * 0.5f + 0.5f;
+            } else if (opts.layout == "ladder" || opts.layout == "finger") {
+                cell   = sampleLadder(u, v, opts.rows, opts.cols, opts.gap);
+                grainU = cell.localV;
+                grainV = cell.localU;
+            } else if (opts.layout == "versailles") {
+                cell   = sampleVersailles(u, v, opts.rows, opts.cols, opts.gap);
                 grainU = cell.localU;
                 grainV = cell.localV;
             } else {
@@ -482,43 +580,261 @@ TileCell sampleBasketTile(float u, float v, int tilesX, int tilesY, float grout)
     return c;
 }
 
+TileCell sampleOctagon(float u, float v, int tilesX, int tilesY, float grout) {
+    // Classic octagon field with small diamond/square inserts at corners.
+    const float sx = u * float(tilesX);
+    const float sy = v * float(tilesY);
+    const int   ix = int(std::floor(sx));
+    const int   iy = int(std::floor(sy));
+    const float fx = sx - float(ix);
+    const float fy = sy - float(iy);
+    // Manhattanish clipped square → octagon: cut corners where |fx-0.5|+|fy-0.5| is large.
+    const float manhattan = std::fabs(fx - 0.5f) + std::fabs(fy - 0.5f);
+    const bool  insert    = manhattan > 0.68f;
+    TileCell    c;
+    if (insert) {
+        // Map to nearest corner insert cell.
+        const int cx = ix + (fx > 0.5f ? 1 : 0);
+        const int cy = iy + (fy > 0.5f ? 1 : 0);
+        c.idX        = cx * 2 + 1;
+        c.idY        = cy * 2 + 1;
+        c.localU     = std::fmod(fx + 0.5f, 1.f);
+        c.localV     = std::fmod(fy + 0.5f, 1.f);
+        c.colorAlt   = 1;
+        const float e = std::min(std::min(c.localU, 1.f - c.localU), std::min(c.localV, 1.f - c.localV));
+        c.inGrout     = e < grout * 1.1f;
+        c.edge        = c.inGrout ? 0.f : smoothstep(grout, grout + 0.08f, e);
+    } else {
+        c.idX      = ix * 2;
+        c.idY      = iy * 2;
+        c.localU   = fx;
+        c.localV   = fy;
+        c.colorAlt = 0;
+        const float box = std::min(std::min(fx, 1.f - fx), std::min(fy, 1.f - fy));
+        const float cut = 0.68f - manhattan;
+        const float e   = std::min(box, cut);
+        c.inGrout       = e < grout;
+        c.edge          = c.inGrout ? 0.f : smoothstep(grout, grout + 0.08f, e);
+    }
+    return c;
+}
+
+TileCell sampleFishscale(float u, float v, int tilesX, int tilesY, float grout) {
+    // Overlapping half-drop circular scales.
+    const float sx = u * float(tilesX);
+    const float sy = v * float(tilesY);
+    const int   row = int(std::floor(sy));
+    const float off = (row & 1) ? 0.5f : 0.f;
+    const float colF = sx + off;
+    const int   col  = int(std::floor(colF));
+    float       best = 1e9f;
+    int         bx = col, by = row;
+    for (int oy = -1; oy <= 1; ++oy) {
+        for (int ox = -1; ox <= 1; ++ox) {
+            const int   cy = row + oy;
+            const float o  = (cy & 1) ? 0.5f : 0.f;
+            const int   cx = int(std::floor(sx + o)) + ox;
+            const float px = float(cx) + 0.5f - o;
+            const float py = float(cy) + 0.55f;
+            const float dx = (sx - px);
+            const float dy = (sy - py) * 1.15f;
+            const float d  = std::sqrt(dx * dx + dy * dy);
+            if (d < best) {
+                best = d;
+                bx   = cx;
+                by   = cy;
+            }
+        }
+    }
+    TileCell c;
+    c.idX      = bx;
+    c.idY      = by;
+    c.localU   = 0.5f + (sx - (float(bx) + 0.5f - ((by & 1) ? 0.5f : 0.f)));
+    c.localV   = best;
+    c.colorAlt = (bx + by) & 1;
+    c.inGrout  = best > 0.52f - grout * 0.35f;
+    c.edge     = c.inGrout ? 0.f : smoothstep(0.52f - grout * 0.35f - 0.08f, 0.52f - grout * 0.35f, best);
+    // Invert edge so center of scale is high.
+    if (!c.inGrout) c.edge = 1.f - c.edge;
+    (void)tilesY;
+    return c;
+}
+
+TileCell samplePinwheel(float u, float v, int tilesX, int tilesY, float grout) {
+    // Pinwheel / windmill: four right triangles around a center square.
+    const float sx = u * float(std::max(1, tilesX / 2));
+    const float sy = v * float(std::max(1, tilesY / 2));
+    const int   ix = int(std::floor(sx));
+    const int   iy = int(std::floor(sy));
+    const float fx = sx - float(ix);
+    const float fy = sy - float(iy);
+    TileCell c;
+    c.idX = ix;
+    c.idY = iy;
+    // Center square.
+    if (fx > 0.3f && fx < 0.7f && fy > 0.3f && fy < 0.7f) {
+        c.localU   = (fx - 0.3f) / 0.4f;
+        c.localV   = (fy - 0.3f) / 0.4f;
+        c.colorAlt = 0;
+        const float e = std::min(std::min(c.localU, 1.f - c.localU), std::min(c.localV, 1.f - c.localV));
+        c.inGrout     = e < grout;
+        c.edge        = c.inGrout ? 0.f : smoothstep(grout, grout + 0.08f, e);
+        return c;
+    }
+    // Four triangular blades classified by diagonal.
+    int blade = 0;
+    if (fy < fx && fy < 1.f - fx)
+        blade = 0;  // bottom
+    else if (fy >= fx && fy < 1.f - fx)
+        blade = 1;  // left-ish → right of bottom-left diagonal
+    else if (fy >= 1.f - fx && fy >= fx)
+        blade = 2;  // top
+    else
+        blade = 3;
+    c.idX += blade * 17;
+    c.colorAlt = 1 + (blade & 1);
+    c.localU   = fx;
+    c.localV   = fy;
+    const float diagDist = std::min(std::fabs(fy - fx), std::fabs(fy - (1.f - fx)));
+    const float box      = std::min(std::min(fx, 1.f - fx), std::min(fy, 1.f - fy));
+    const float e        = std::min(diagDist, box);
+    c.inGrout            = e < grout * 0.85f;
+    c.edge               = c.inGrout ? 0.f : smoothstep(grout * 0.85f, grout * 0.85f + 0.08f, e);
+    return c;
+}
+
+TileCell sampleStar(float u, float v, int tilesX, int tilesY, float grout) {
+    // Simplified Moroccan 8-point star lattice on a square grid.
+    const float sx = u * float(tilesX);
+    const float sy = v * float(tilesY);
+    const int   ix = int(std::floor(sx));
+    const int   iy = int(std::floor(sy));
+    const float fx = sx - float(ix) - 0.5f;
+    const float fy = sy - float(iy) - 0.5f;
+    const float ax = std::fabs(fx);
+    const float ay = std::fabs(fy);
+    // Star body: diamond (manhattan) mixed with axis-aligned square.
+    const float diamond = ax + ay;
+    const float square  = std::max(ax, ay);
+    const float star    = std::min(diamond * 0.92f, square * 1.35f);
+    TileCell    c;
+    c.idX      = ix;
+    c.idY      = iy;
+    c.localU   = fx + 0.5f;
+    c.localV   = fy + 0.5f;
+    c.colorAlt = (diamond < 0.55f) ? 0 : 1;
+    c.inGrout  = star > 0.62f - grout * 0.4f;
+    c.edge     = c.inGrout ? 0.f : smoothstep(0.f, 0.12f, 0.62f - grout * 0.4f - star);
+    return c;
+}
+
+TileCell sampleCobble(float u, float v, int tilesX, int tilesY, float grout, const NoiseField& n) {
+    // Rounded cobblestones via voronoi with circular falloff.
+    TileCell base = sampleMosaic(u, v, tilesX, tilesY, grout * 1.4f, n);
+    const float sx = u * float(tilesX);
+    const float sy = v * float(tilesY);
+    const float px = float(base.idX) + n.hash01(base.idX, base.idY);
+    const float py = float(base.idY) + n.hash01(base.idX * 7 + 3, base.idY * 13 + 5);
+    const float dx = sx - px;
+    const float dy = sy - py;
+    const float d  = std::sqrt(dx * dx + dy * dy);
+    base.localU    = dx + 0.5f;
+    base.localV    = dy + 0.5f;
+    base.inGrout   = d > 0.42f - grout * 0.25f;
+    base.edge      = base.inGrout ? 0.f : smoothstep(0.f, 0.12f, 0.42f - grout * 0.25f - d);
+    return base;
+}
+
+TileCell sampleArabesque(float u, float v, int tilesX, int tilesY, float grout) {
+    // Interlocking scalloped arabesque: circle packing with half-offset rows.
+    const float sx = u * float(tilesX);
+    const float sy = v * float(tilesY);
+    const int   row = int(std::floor(sy));
+    const float off = (row & 1) ? 0.5f : 0.f;
+    float       best = 1e9f;
+    int         bx = 0, by = row;
+    for (int oy = -1; oy <= 1; ++oy) {
+        for (int ox = -1; ox <= 1; ++ox) {
+            const int   cy = row + oy;
+            const float o  = (cy & 1) ? 0.5f : 0.f;
+            const int   cx = int(std::floor(sx + o)) + ox;
+            const float px = float(cx) + 0.5f - o;
+            const float py = float(cy) + 0.5f;
+            const float dx = sx - px;
+            const float dy = sy - py;
+            const float d  = std::sqrt(dx * dx + dy * dy);
+            if (d < best) {
+                best = d;
+                bx   = cx;
+                by   = cy;
+            }
+        }
+    }
+    TileCell c;
+    c.idX      = bx;
+    c.idY      = by;
+    c.localU   = 0.5f;
+    c.localV   = best;
+    c.colorAlt = (bx + by) & 1;
+    // Petal edge via radial rings.
+    const float ring = std::fabs(std::sin(best * 6.28318f * 1.5f));
+    c.inGrout        = best > 0.48f - grout * 0.3f || ring < grout * 1.8f;
+    c.edge           = c.inGrout ? 0.f : smoothstep(0.f, 0.1f, 0.48f - best) * (0.4f + 0.6f * ring);
+    (void)off;
+    return c;
+}
+
 Rgb shadeTile(const TileOpts& opts, const TileCell& cell, const NoiseField& n, float u, float v) {
     Rgb a = paletteColorA(opts.palette);
     Rgb b = paletteColorB(opts.palette);
     Rgb body;
-    if (opts.pattern == "checker") {
+    if (opts.pattern == "checker" || opts.pattern == "pinwheel" || opts.pattern == "windmill") {
         body = (cell.colorAlt == 0) ? a : b;
-    } else if (opts.pattern == "mosaic") {
+    } else if (opts.pattern == "mosaic" || opts.pattern == "cobble" || opts.pattern == "terrazzo") {
         const float t = n.hash01(cell.idX * 3 + 1, cell.idY * 5 + 2);
         body          = mix(a, b, t);
+    } else if (opts.pattern == "star" || opts.pattern == "octagon") {
+        body = (cell.colorAlt == 0) ? a : mix(a, b, 0.65f);
     } else {
         const float tileVar = n.hash01(cell.idX + 11, cell.idY + 19) * 0.12f - 0.06f;
         body                = a;
         body.r              = std::clamp(body.r + tileVar, 0.f, 1.f);
         body.g              = std::clamp(body.g + tileVar, 0.f, 1.f);
         body.b              = std::clamp(body.b + tileVar * 0.8f, 0.f, 1.f);
-        // Optional secondary tint for patterned ceramics.
-        if (opts.motif > 0.01f && opts.pattern != "square" && opts.pattern != "subway") {
+        if (opts.motif > 0.01f && opts.pattern != "square" && opts.pattern != "subway" &&
+            opts.pattern != "stack") {
             body = mix(body, b, opts.motif * 0.35f * float(cell.colorAlt));
         }
     }
 
-    // Decorative motif: concentric / diamond inset on ceramic faces.
-    if (!cell.inGrout && opts.motif > 0.05f &&
-        (opts.pattern == "square" || opts.pattern == "checker" || opts.pattern == "diamond")) {
+    // Decorative motif: concentric / diamond / star inset on ceramic faces.
+    if (!cell.inGrout && opts.motif > 0.05f) {
         const float dx = cell.localU - 0.5f;
         const float dy = cell.localV - 0.5f;
         float       m  = 0.f;
-        if (opts.pattern == "diamond") {
+        if (opts.pattern == "diamond" || opts.pattern == "star") {
             m = 1.f - (std::fabs(dx) + std::fabs(dy)) * 1.6f;
-        } else {
+        } else if (opts.pattern == "square" || opts.pattern == "checker" || opts.pattern == "octagon") {
             m = 1.f - std::sqrt(dx * dx + dy * dy) * 2.2f;
+        } else if (opts.pattern == "arabesque") {
+            m = 1.f - cell.localV * 1.8f;
         }
-        m = smoothstep(0.15f, 0.55f, m) * opts.motif;
-        body = mix(body, b, m * 0.55f);
-        // Thin motif ring.
-        const float ring = smoothstep(0.02f, 0.f, std::fabs(m - 0.45f));
-        body             = mix(body, mix(a, b, 0.7f), ring * opts.motif * 0.4f);
+        if (m > 0.f) {
+            m    = smoothstep(0.15f, 0.55f, m) * opts.motif;
+            body = mix(body, b, m * 0.55f);
+            const float ring = smoothstep(0.02f, 0.f, std::fabs(m - 0.45f));
+            body             = mix(body, mix(a, b, 0.7f), ring * opts.motif * 0.4f);
+        }
+    }
+
+    // Terrazzo chips: high-frequency multi-hue flecks.
+    if (opts.pattern == "terrazzo" && !cell.inGrout) {
+        const float chip = n.valueNoise(u * 48.f + float(cell.idX), v * 48.f + float(cell.idY));
+        const float chip2 =
+            n.valueNoise(u * 31.f + 4.f + float(cell.idY), v * 31.f + 2.f + float(cell.idX));
+        if (chip > 0.72f) body = mix(body, b, 0.55f + opts.speckles * 0.3f);
+        if (chip2 > 0.80f) body = mix(body, Rgb{0.92f, 0.90f, 0.86f}, 0.45f);
+        if (chip < 0.18f) body = mix(body, Rgb{0.25f, 0.24f, 0.22f}, 0.35f);
     }
 
     // Speckles / glaze mottling.
@@ -573,14 +889,15 @@ std::unique_ptr<image::ImageData> makeTileImage(const Params& params, std::strin
                 cell = sampleDiamond(u, v, opts.tilesX, opts.tilesY, opts.grout);
             } else if (opts.pattern == "hex") {
                 cell = sampleHex(u, v, opts.tilesX, opts.tilesY, opts.grout);
-            } else if (opts.pattern == "subway") {
+            } else if (opts.pattern == "subway" || opts.pattern == "brick") {
                 cell = sampleSubway(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "stack") {
+                cell = sampleSquare(u, v, opts.tilesX, opts.tilesY, opts.grout);
             } else if (opts.pattern == "mosaic") {
                 cell = sampleMosaic(u, v, opts.tilesX, opts.tilesY, opts.grout, n);
             } else if (opts.pattern == "basket" || opts.pattern == "basketweave") {
                 cell = sampleBasketTile(u, v, opts.tilesX, opts.tilesY, opts.grout);
             } else if (opts.pattern == "herringbone") {
-                // Reuse herringbone lattice as tile layout.
                 const PlankCell p = sampleHerringbone(u, v, opts.tilesY, opts.tilesX, opts.grout);
                 cell.idX          = p.idX;
                 cell.idY          = p.idY;
@@ -589,6 +906,20 @@ std::unique_ptr<image::ImageData> makeTileImage(const Params& params, std::strin
                 cell.edge         = p.edge;
                 cell.inGrout      = p.inGap;
                 cell.colorAlt     = (p.idX + p.idY) & 1;
+            } else if (opts.pattern == "octagon") {
+                cell = sampleOctagon(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "fishscale" || opts.pattern == "scallop") {
+                cell = sampleFishscale(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "pinwheel" || opts.pattern == "windmill") {
+                cell = samplePinwheel(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "star" || opts.pattern == "moroccan") {
+                cell = sampleStar(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "cobble") {
+                cell = sampleCobble(u, v, opts.tilesX, opts.tilesY, opts.grout, n);
+            } else if (opts.pattern == "arabesque") {
+                cell = sampleArabesque(u, v, opts.tilesX, opts.tilesY, opts.grout);
+            } else if (opts.pattern == "terrazzo") {
+                cell = sampleSquare(u, v, opts.tilesX, opts.tilesY, opts.grout * 0.35f);
             } else {
                 // square / checker / ceramic default
                 cell = sampleSquare(u, v, opts.tilesX, opts.tilesY, opts.grout);
@@ -619,9 +950,11 @@ RecipeDescriptor woodDescriptor() {
     RecipeDescriptor schema =
         RecipeDescriptor::grid("tex.floor.wood", "Wood Floor", "Floor", 8, 8, 4096, 4096);
     schema.params.push_back(ParamDescriptor::choice(
-        "layout", "Layout", "planks", {"planks", "staggered", "herringbone", "chevron", "parquet", "basket"}));
-    schema.params.push_back(
-        ParamDescriptor::choice("tone", "Wood Tone", "oak", {"oak", "walnut", "pine", "cherry", "ebony", "ash"}));
+        "layout", "Layout", "planks",
+        {"planks", "staggered", "herringbone", "chevron", "parquet", "basket", "diagonal", "ladder", "finger",
+         "versailles"}));
+    schema.params.push_back(ParamDescriptor::choice(
+        "tone", "Wood Tone", "oak", {"oak", "walnut", "pine", "cherry", "ebony", "ash", "maple", "teak"}));
     schema.params.push_back(ParamDescriptor::integer("rows", "Plank Rows", 6, 1, 64));
     schema.params.push_back(ParamDescriptor::integer("cols", "Plank Columns", 4, 1, 64));
     schema.params.push_back(ParamDescriptor::floating("gap", "Groove Width", 0.04f, 0.f, 0.35f, 0.005f));
@@ -641,10 +974,13 @@ RecipeDescriptor tileDescriptor() {
         RecipeDescriptor::grid("tex.floor.tile", "Floor Tile", "Floor", 8, 8, 4096, 4096);
     schema.params.push_back(ParamDescriptor::choice(
         "pattern", "Pattern", "square",
-        {"square", "checker", "diamond", "hex", "subway", "mosaic", "basket", "basketweave", "herringbone"}));
+        {"square", "checker", "diamond", "hex", "subway", "brick", "stack", "mosaic", "basket", "basketweave",
+         "herringbone", "octagon", "fishscale", "scallop", "pinwheel", "windmill", "star", "moroccan", "cobble",
+         "arabesque", "terrazzo"}));
     schema.params.push_back(ParamDescriptor::choice(
         "palette", "Palette", "ceramic",
-        {"ceramic", "terracotta", "slate", "porcelain", "marble", "black", "mosaic", "subway"}));
+        {"ceramic", "terracotta", "slate", "porcelain", "marble", "black", "mosaic", "subway", "encaustic", "jade",
+         "cobalt"}));
     schema.params.push_back(ParamDescriptor::integer("tilesX", "Tiles X", 4, 1, 64));
     schema.params.push_back(ParamDescriptor::integer("tilesY", "Tiles Y", 4, 1, 64));
     schema.params.push_back(ParamDescriptor::floating("grout", "Grout Width", 0.06f, 0.f, 0.4f, 0.005f));

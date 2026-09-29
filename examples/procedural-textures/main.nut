@@ -34,22 +34,32 @@ persist floorLab = {
     tabWasDown = false,
 }
 
-WOOD_LAYOUTS <- ["planks", "staggered", "herringbone", "chevron", "parquet", "basket"]
-WOOD_TONES <- ["oak", "walnut", "pine", "cherry", "ebony", "ash"]
-TILE_PATTERNS <- ["square", "checker", "diamond", "hex", "subway", "mosaic", "basket", "herringbone"]
-TILE_PALETTES <- ["ceramic", "terracotta", "slate", "porcelain", "marble", "black", "mosaic", "subway"]
+WOOD_LAYOUTS <- ["planks", "staggered", "herringbone", "chevron", "parquet", "basket", "diagonal", "ladder", "versailles"]
+WOOD_TONES <- ["oak", "walnut", "pine", "cherry", "ebony", "ash", "maple", "teak"]
+TILE_PATTERNS <- ["square", "checker", "diamond", "hex", "subway", "brick", "stack", "mosaic", "basket", "herringbone", "octagon", "fishscale", "pinwheel", "star", "cobble", "arabesque", "terrazzo"]
+TILE_PALETTES <- ["ceramic", "terracotta", "slate", "porcelain", "marble", "black", "mosaic", "subway", "encaustic", "jade", "cobalt"]
 
 PRESETS <- [
     { mode = 0, layout = "planks", tone = "oak", rows = 6, cols = 4, gap = 0.04, grain = 8.0, wear = 0.2, stain = 0.1, label = "Oak planks" },
     { mode = 0, layout = "herringbone", tone = "walnut", rows = 8, cols = 8, gap = 0.035, grain = 10.0, wear = 0.3, stain = 0.25, label = "Walnut herringbone" },
     { mode = 0, layout = "parquet", tone = "cherry", rows = 8, cols = 8, gap = 0.045, grain = 7.0, wear = 0.22, stain = 0.18, label = "Cherry parquet" },
     { mode = 0, layout = "staggered", tone = "pine", rows = 5, cols = 3, gap = 0.05, grain = 6.5, wear = 0.35, stain = 0.05, label = "Pine staggered" },
+    { mode = 0, layout = "diagonal", tone = "maple", rows = 7, cols = 7, gap = 0.04, grain = 9.0, wear = 0.2, stain = 0.08, label = "Maple diagonal" },
+    { mode = 0, layout = "ladder", tone = "teak", rows = 6, cols = 5, gap = 0.035, grain = 8.5, wear = 0.28, stain = 0.2, label = "Teak ladder" },
+    { mode = 0, layout = "versailles", tone = "oak", rows = 8, cols = 8, gap = 0.04, grain = 7.5, wear = 0.18, stain = 0.12, label = "Oak Versailles" },
     { mode = 1, pattern = "square", palette = "ceramic", tilesX = 4, tilesY = 4, grout = 0.06, glaze = 0.4, motif = 0.5, speckles = 0.12, label = "Ceramic square" },
     { mode = 1, pattern = "checker", palette = "black", tilesX = 6, tilesY = 6, grout = 0.05, glaze = 0.25, motif = 0.0, speckles = 0.08, label = "Checker marble" },
     { mode = 1, pattern = "diamond", palette = "porcelain", tilesX = 5, tilesY = 5, grout = 0.055, glaze = 0.45, motif = 0.7, speckles = 0.1, label = "Porcelain diamond" },
     { mode = 1, pattern = "hex", palette = "terracotta", tilesX = 6, tilesY = 6, grout = 0.07, glaze = 0.3, motif = 0.2, speckles = 0.2, label = "Terracotta hex" },
     { mode = 1, pattern = "subway", palette = "subway", tilesX = 5, tilesY = 8, grout = 0.045, glaze = 0.5, motif = 0.0, speckles = 0.05, label = "Subway tile" },
     { mode = 1, pattern = "mosaic", palette = "mosaic", tilesX = 7, tilesY = 7, grout = 0.08, glaze = 0.35, motif = 0.4, speckles = 0.25, label = "Stone mosaic" },
+    { mode = 1, pattern = "octagon", palette = "encaustic", tilesX = 5, tilesY = 5, grout = 0.05, glaze = 0.4, motif = 0.55, speckles = 0.1, label = "Encaustic octagon" },
+    { mode = 1, pattern = "fishscale", palette = "jade", tilesX = 6, tilesY = 6, grout = 0.04, glaze = 0.55, motif = 0.25, speckles = 0.12, label = "Jade fishscale" },
+    { mode = 1, pattern = "pinwheel", palette = "cobalt", tilesX = 6, tilesY = 6, grout = 0.05, glaze = 0.35, motif = 0.2, speckles = 0.08, label = "Cobalt pinwheel" },
+    { mode = 1, pattern = "star", palette = "encaustic", tilesX = 5, tilesY = 5, grout = 0.045, glaze = 0.4, motif = 0.7, speckles = 0.1, label = "Moroccan star" },
+    { mode = 1, pattern = "cobble", palette = "slate", tilesX = 6, tilesY = 6, grout = 0.09, glaze = 0.15, motif = 0.0, speckles = 0.3, label = "Slate cobble" },
+    { mode = 1, pattern = "arabesque", palette = "porcelain", tilesX = 5, tilesY = 5, grout = 0.04, glaze = 0.5, motif = 0.65, speckles = 0.08, label = "Porcelain arabesque" },
+    { mode = 1, pattern = "terrazzo", palette = "marble", tilesX = 3, tilesY = 3, grout = 0.02, glaze = 0.45, motif = 0.0, speckles = 0.55, label = "Marble terrazzo" },
 ]
 
 persist presetIndex = 0

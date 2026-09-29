@@ -17,7 +17,7 @@ make run/<platform>-debug GAME=examples/procedural-textures
 | `Tab` / **Mode** | 在木地板与瓷砖模式间切换 |
 | **Layout / Pattern** | 循环木地板排版或瓷砖花纹 |
 | **Tone / Palette** | 循环木材色调或瓷砖调色板 |
-| **Next preset** | 在内置预设间切换（橡木拼板、人字拼、棋盘砖、六角砖等） |
+| **Next preset** | 在内置预设间切换（凡尔赛拼花、八边形、鱼鳞、摩洛哥星等） |
 | 滑条 | 调节排数 / 缝隙 / 木纹 / 勾缝 / 釉面 / 磨损等 |
 | **Pause rotation** | 暂停转台 |
 
@@ -25,14 +25,14 @@ make run/<platform>-debug GAME=examples/procedural-textures
 
 ### `tex.floor.wood`
 
-- `layout`: `planks` / `staggered` / `herringbone` / `chevron` / `parquet` / `basket`
-- `tone`: `oak` / `walnut` / `pine` / `cherry` / `ebony` / `ash`
+- `layout`: `planks` / `staggered` / `herringbone` / `chevron` / `parquet` / `basket` / `diagonal` / `ladder` / `finger` / `versailles`
+- `tone`: `oak` / `walnut` / `pine` / `cherry` / `ebony` / `ash` / `maple` / `teak`
 - `rows`, `cols`, `gap`, `grain`, `warp`, `wear`, `stain`, `bevel`
 
 ### `tex.floor.tile`
 
-- `pattern`: `square` / `checker` / `diamond` / `hex` / `subway` / `mosaic` / `basket` / `herringbone`
-- `palette`: `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` / `mosaic` / `subway`
+- `pattern`: `square` / `checker` / `diamond` / `hex` / `subway` / `brick` / `stack` / `mosaic` / `basket` / `herringbone` / `octagon` / `fishscale` / `scallop` / `pinwheel` / `windmill` / `star` / `moroccan` / `cobble` / `arabesque` / `terrazzo`
+- `palette`: `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` / `mosaic` / `subway` / `encaustic` / `jade` / `cobalt`
 - `tilesX`, `tilesY`, `grout`, `bevel`, `glaze`, `wear`, `speckles`, `motif`
 
 脚本侧用 `procgen.generateTexture(recipeId, params, gfx)` 生成可平铺贴图，
