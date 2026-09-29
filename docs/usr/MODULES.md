@@ -47,6 +47,9 @@
 - [PixelWorld Catalog 编辑器](modules/pixelworld_editor.md)：可挂载的材质浏览、属性、反应与相变规则事务式编辑面板。
 - [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、以及拖尾轨迹（`AnimTrail`）。
 - [攀爬与跑酷](modules/climbing.md)：前方障碍/顶部落点探测、确定性动作选择，以及受 Physics 胶囊体约束的 vault / mantle 执行。
+- [行动与 Ability 协议](modules/action.md)：脚本拥有的 `ActionRuntime` / `AbilityRuntime`；grant、冷却、激活与直接 action 提交。
+- [通用结算](modules/settlement.md)：确定性结算管线与规则文档；脚本 ledger runtime 与各玩法域 `configureSettlementRulesJson`。
+- [NPC AI](modules/npc_ai.md)：层级状态树、黑板、感知记忆与确定性调度的脚本世界入口。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [卡牌游戏工具](modules/cardgame.md)：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。
