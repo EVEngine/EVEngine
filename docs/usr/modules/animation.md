@@ -475,7 +475,25 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 
 ### 做 UI 滑入动画
 
-创建 Tween，给 `x` 设置 from/to，选择 `outQuad`，调用 `start()`；每帧 `anim.update(dt)` 后读取 `tween.get("x")` 更新 UI 位置。
+常见滑入/淡入优先用 UI 自带补间（由 `beginFrameAndRender` 自动推进，无需 Animation 泵）：
+
+```squirrel
+ui.select("hud");
+ui.animateHostPos(40, 80, 350, "outQuad");
+ui.animateItemOpacity("panel", 1.0, 250, "outCubic");
+```
+
+需要与 `SimulationStep` 同拍、Sequence / loops / Punch 时，用 Motion + UI sink
+（`ui/UiMotionSinks.h`：`UiHostPosSink` / `UiHostSizeSink` / `UiHostOverlayAlphaSink` /
+`UiNodeOpacitySink` / `UiNodePosSink`）。sink 由 UI 拥有实现，animation 不 include UI：
+
+```cpp
+UiHostPosSink sink(hostHandle);
+anim->motionVec2({0,0}, {200,0}, 0.4f).ease("outQuad").bind(sink);
+anim->advance(step);
+```
+
+仍可用旧的 Tween pull：`tween.get("x")` 后手动 `setHostPos`。
 
 ### 做 2D 角色走路帧动画
 

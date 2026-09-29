@@ -137,6 +137,35 @@ void collectVolumetricLights2D(Canvas *canvasFilter, std::vector<PackedVol2D> &o
                      [](const PackedVol2D &a, const PackedVol2D &b) { return a.score > b.score; });
 }
 
+/** @brief Upload Light2D spot cone into screenspace volumetric push constants. */
+void uploadSpotCone2D(Volumetric *vol, const Light2D::Data *d) {
+    if (!vol) return;
+    if (!d || d->type != "spot") {
+        vol->setFloat("spotDx", 0.f);
+        vol->setFloat("spotDy", -1.f);
+        vol->setFloat("spotCosOuter", -2.f);
+        vol->setFloat("spotCosInner", -2.f);
+        return;
+    }
+    float dx = d->dx;
+    float dy = d->dy;
+    const float len = std::sqrt(dx * dx + dy * dy);
+    if (len > 1e-6f) {
+        dx /= len;
+        dy /= len;
+    } else {
+        dx = 0.f;
+        dy = -1.f;
+    }
+    float cosOuter = -2.f;
+    float cosInner = -2.f;
+    light2dSpotCosines(d->spotAngleDeg, d->spotSoftness, cosOuter, cosInner);
+    vol->setFloat("spotDx", dx);
+    vol->setFloat("spotDy", dy);
+    vol->setFloat("spotCosOuter", cosOuter);
+    vol->setFloat("spotCosInner", cosInner);
+}
+
 void sendShadowAnisotropy(Shader *rayShader, float shadowSteps, float anisotropy) {
     if (!rayShader || !rayShader->hasUniform("shadowAnisoPack")) return;
     rayShader->sendFloat("shadowAnisoPack", packShadowAnisotropy(shadowSteps, anisotropy));
@@ -362,6 +391,7 @@ Result<int> Volumetric::beginOcclusionMapFromSceneLights2D(Graphics *gfx, Canvas
     setShaftColor(std::max(primary->r, 0.f), std::max(primary->g, 0.f),
                   std::max(primary->b, 0.f));
     setIntensity(std::max(primary->intensity, 0.f) * std::max(primary->volumetricIntensity, 0.f));
+    uploadSpotCone2D(this, primary);
 
     int drawn = 0;
     for (const PackedVol2D &pl : lights) {
@@ -412,6 +442,7 @@ Result<int> Volumetric::scatterFromSceneLights2D(Graphics *gfx, Texture *occlusi
         setLightScreenPos(sx, sy, w, h);
         setShaftColor(std::max(d->r, 0.f), std::max(d->g, 0.f), std::max(d->b, 0.f));
         setIntensity(std::max(d->intensity, 0.f) * std::max(d->volumetricIntensity, 0.f));
+        uploadSpotCone2D(this, d);
         // Additive so overlapping multipass shafts accumulate instead of SrcAlpha-suppressing.
         gfx->drawTexturedRectShaderUV(occlusion, getShader(), 0.f, 0.f, w, h, 0.f, 0.f, 1.f, 1.f,
                                       Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);

@@ -8,8 +8,9 @@ layout(set = 0, binding = 0) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 1) uniform sampler2D normalSampler;
 
 struct Light2D {
-  vec4 posRadius; // xy = point pos OR direction; w = radius (0 => directional)
+  vec4 posRadius; // xy = point/spot pos OR direction; w = radius (0 => directional)
   vec4 color;     // rgb * intensity
+  vec4 spot;      // xy = beam dir; z/w = cos(outer/inner); z <= -1.5 => no cone
 };
 
 layout(set = 0, binding = 2) uniform Lighting2D {
@@ -32,7 +33,10 @@ vec3 applyNormalMap2D(vec3 mapSample, vec2 logical, vec2 uv) {
   vec2 duv1 = dFdx(uv);
   vec2 duv2 = dFdy(uv);
   float det = duv1.x * duv2.y - duv2.x * duv1.y;
-  if (abs(det) < 1e-6)
+  // Scale-aware singularity: |det| / (|duv1||duv2|) ≈ |sin θ| of the UV basis.
+  // Absolute 1e-6 rejects ordinary atlas regions (e.g. 32px in a 1024 atlas).
+  float uvScale = length(duv1) * length(duv2);
+  if (uvScale < 1e-20 || abs(det) < uvScale * 1e-3)
     return normalize(vec3(mapN.xy, mapN.z));
   float invDet = 1.0 / det;
   vec3 T = (dp1 * duv2.y - dp2 * duv1.y) * invDet;
@@ -63,14 +67,33 @@ void main() {
     vec3 lightCol = L.color.rgb;
     float contrib = 0.0;
     if (L.posRadius.w <= 0.0) {
-      // Directional: xy is light direction toward the surface (or from light).
-      vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
-      contrib = max(dot(N, Ld), 0.0);
+      // Zero-range spots must not fall through as directional (position ≠ beam dir).
+      if (L.spot.z > -1.5) {
+        contrib = 0.0;
+      } else {
+        // Directional: xy is light direction toward the surface (or from light).
+        vec3 Ld = normalize(vec3(L.posRadius.xy, 0.35));
+        contrib = max(dot(N, Ld), 0.0);
+      }
     } else {
       vec2 toL = L.posRadius.xy - logical;
       float dist = length(toL);
       float atten = clamp(1.0 - dist / max(L.posRadius.w, 1.0), 0.0, 1.0);
       atten *= atten;
+      if (L.spot.z > -1.5) {
+        vec2 fromL = logical - L.posRadius.xy;
+        float fl = length(fromL);
+        float spotAtten = 1.0;
+        if (fl > 1e-4) {
+          vec2 beam = L.spot.xy;
+          float beamLen = length(beam);
+          if (beamLen > 1e-6)
+            spotAtten = smoothstep(L.spot.z, L.spot.w, dot(fromL / fl, beam / beamLen));
+          else
+            spotAtten = 0.0;
+        }
+        atten *= spotAtten;
+      }
       vec3 Ld = normalize(vec3(toL, L.posRadius.w * 0.35));
       contrib = max(dot(N, Ld), 0.0) * atten;
     }

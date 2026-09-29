@@ -122,6 +122,7 @@ struct FSIn {
 struct Light2D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f, // xy = beam dir; z/w = cos(outer/inner); z <= -1.5 => no cone
 };
 struct Lighting2D {
     ambient: vec4f,   // rgb ambient
@@ -142,7 +143,10 @@ fn applyNormalMap2D(mapSample: vec3f, logical: vec2f, uv: vec2f) -> vec3f {
     let duv1 = dpdx(uv);
     let duv2 = dpdy(uv);
     let det = duv1.x * duv2.y - duv2.x * duv1.y;
-    if (abs(det) < 1e-6) {
+    // Scale-aware singularity: |det| / (|duv1||duv2|) ≈ |sin θ| of the UV basis.
+    // Absolute 1e-6 rejects ordinary atlas regions (e.g. 32px in a 1024 atlas).
+    let uvScale = length(duv1) * length(duv2);
+    if (uvScale < 1e-20 || abs(det) < uvScale * 1e-3) {
         return normalize(vec3f(mapN.xy, mapN.z));
     }
     let invDet = 1.0 / det;
@@ -177,13 +181,33 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let l = u.lights[i];
         var contribution = 0.0;
         if (l.posRadius.w <= 0.0) {
-            let lightDirection = normalize(vec3f(l.posRadius.xy, 0.35));
-            contribution = max(dot(normal, lightDirection), 0.0);
+            // Zero-range spots must not fall through as directional (position ≠ beam dir).
+            if (l.spot.z > -1.5) {
+                contribution = 0.0;
+            } else {
+                let lightDirection = normalize(vec3f(l.posRadius.xy, 0.35));
+                contribution = max(dot(normal, lightDirection), 0.0);
+            }
         } else {
             let toLight = l.posRadius.xy - logical;
             let distance = length(toLight);
             var attenuation = clamp(1.0 - distance / max(l.posRadius.w, 1.0), 0.0, 1.0);
             attenuation *= attenuation;
+            if (l.spot.z > -1.5) {
+                let fromLight = logical - l.posRadius.xy;
+                let fl = length(fromLight);
+                var spotAttenuation = 1.0;
+                if (fl > 1e-4) {
+                    let beamLen = length(l.spot.xy);
+                    if (beamLen > 1e-6) {
+                        let cosTheta = dot(fromLight / fl, l.spot.xy / beamLen);
+                        spotAttenuation = smoothstep(l.spot.z, l.spot.w, cosTheta);
+                    } else {
+                        spotAttenuation = 0.0;
+                    }
+                }
+                attenuation *= spotAttenuation;
+            }
             let lightDirection = normalize(vec3f(toLight, l.posRadius.w * 0.35));
             contribution = max(dot(normal, lightDirection), 0.0) * attenuation;
         }

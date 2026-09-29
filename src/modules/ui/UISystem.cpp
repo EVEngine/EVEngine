@@ -638,11 +638,16 @@ void walkGrid(UIHost *host, UIHost::Tree *tree, UINode &grid) {
     const float gridW = grid.sizeX > 0.f ? grid.sizeX : avail.x;
     const float contentW = std::max(0.f, gridW - grid.paddingL - grid.paddingR);
     std::vector<int> kids;
+    std::vector<int>          absKids;
     std::vector<GridItemSpec> specs;
     for (int c = grid.firstChild; c >= 0; c = tree->nodes[size_t(c)].nextSibling) {
         if (c >= int(tree->nodes.size())) break;
         UINode &child = tree->nodes[size_t(c)];
-        if (!child.visible || child.absolute) continue;
+        if (!child.visible) continue;
+        if (child.absolute) {
+            absKids.push_back(c);
+            continue;
+        }
         kids.push_back(c);
         GridItemSpec spec;
         spec.basisW = child.measuredW;
@@ -688,6 +693,30 @@ void walkGrid(UIHost *host, UIHost::Tree *tree, UINode &grid) {
         child.sizeX = oldX;
         child.sizeY = oldY;
         if (rect.w > 0.f) ImGui::PopItemWidth();
+    }
+    // Absolutely placed children are excluded from grid flow; draw on top (Flex parity).
+    for (int c : absKids) {
+        UINode &child = tree->nodes[size_t(c)];
+        float   w     = child.percentW > 0.f ? child.percentW * gridW : child.measuredW;
+        float   h     = child.percentH > 0.f ? child.percentH * gridH : child.measuredH;
+        if (child.sizeX > 0.f) w = child.sizeX;
+        if (child.sizeY > 0.f) h = child.sizeY;
+        if (child.minSizeX > 0.f) w = std::max(w, child.minSizeX);
+        if (child.minSizeY > 0.f) h = std::max(h, child.minSizeY);
+        if (child.maxSizeX > 0.f) w = std::min(w, child.maxSizeX);
+        if (child.maxSizeY > 0.f) h = std::min(h, child.maxSizeY);
+        const float x = child.anchorX * gridW + child.posX - child.anchorX * w;
+        const float y = child.anchorY * gridH + child.posY - child.anchorY * h;
+        ImGui::SetCursorScreenPos(ImVec2(origin.x + x, origin.y + y));
+        const float oldX = child.sizeX;
+        const float oldY = child.sizeY;
+        child.sizeX      = w;
+        child.sizeY      = h;
+        if (w > 0.f) ImGui::PushItemWidth(w);
+        walkNode(host, tree, c);
+        child.sizeX = oldX;
+        child.sizeY = oldY;
+        if (w > 0.f) ImGui::PopItemWidth();
     }
     if (clipped) ImGui::PopClipRect();
     ImGui::SetCursorScreenPos(flowEnd);
@@ -811,17 +840,16 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             // a second time (a centered window moves half its width left).
             const float x = host->meta()->anchorX * display.x + host->meta()->posX;
             const float y = host->meta()->anchorY * display.y + host->meta()->posY;
-            ImGui::SetNextWindowPos(ImVec2(x, y),
-                                    host->meta()->lockPos ? ImGuiCond_Always
-                                                          : ImGuiCond_FirstUseEver,
+            const bool  drivePos = host->meta()->lockPos || host->meta()->animDrivePos;
+            ImGui::SetNextWindowPos(ImVec2(x, y), drivePos ? ImGuiCond_Always : ImGuiCond_FirstUseEver,
                                     ImVec2(host->meta()->pivotX, host->meta()->pivotY));
             if (host->meta()->lockPos) flags |= ImGuiWindowFlags_NoMove;
             if (winW <= 0.f && winH <= 0.f) flags |= ImGuiWindowFlags_AlwaysAutoResize;
         }
         if (winW > 0.f || winH > 0.f) {
-            ImGui::SetNextWindowSize(
-                ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f),
-                host && host->meta()->lockSize ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
+            const bool driveSize = host && (host->meta()->lockSize || host->meta()->animDriveSize);
+            ImGui::SetNextWindowSize(ImVec2(winW > 0.f ? winW : -1.f, winH > 0.f ? winH : -1.f),
+                                     driveSize ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
         } else if (n.measuredW > 0.f || n.measuredH > 0.f) {
             // Real measured size → stable auto-resize instead of ImGui's guess.
             ImGui::SetNextWindowContentSize(ImVec2(n.measuredW, n.measuredH));
@@ -1780,6 +1808,12 @@ void UISystem::render() {
         if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
         const auto w1 = std::chrono::steady_clock::now();
         g_stats.walkMs += std::chrono::duration<double, std::milli>(w1 - w0).count();
+    }
+    // Animation overrides are one-frame: Motion/tweens re-assert them before the
+    // next render. Clearing here restores movable/resizable hosts after the sample.
+    for (auto &item : items) {
+        item.meta->animDrivePos  = false;
+        item.meta->animDriveSize = false;
     }
 }
 
