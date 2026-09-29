@@ -54,8 +54,8 @@ class StyleRecipe;
 class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
-    Stylize() = default;
-    ~Stylize() override = default;
+    Stylize();
+    ~Stylize() override;
 
     int         getStyleCount() const;
     std::string getStyleId(int index) const;

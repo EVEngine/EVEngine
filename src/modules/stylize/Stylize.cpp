@@ -20,7 +20,13 @@
 
 namespace eve::stylize {
 
+void registerStylizeAttackVfxExecutors();
+void unregisterStylizeAttackVfxExecutors();
+
 Module_IMPL(Stylize, new Stylize());
+
+Stylize::Stylize() { registerStylizeAttackVfxExecutors(); }
+Stylize::~Stylize() { unregisterStylizeAttackVfxExecutors(); }
 
 int Stylize::getStyleCount() const { return styleCount(); }
 
