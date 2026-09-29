@@ -213,14 +213,20 @@ void Inspector::rebuildPropertyModel() {
             std::make_unique<property_access::ReflectedPropertyModel>(*rt, *instance);
 }
 
+PropertyViewOptions Inspector::propertyViewOptions() {
+    PropertyViewOptions options;
+    options.idPrefix = "prop_";
+    options.showAdvanced = true;
+    options.showEditorOnly = true;
+    options.groupCategories = false;
+    options.onStructureChange = [this]() { rebuildHost(); };
+    return options;
+}
+
 WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                                      const ReflectedMember& member,
                                      const ReflectedValue& value,
-                                     const ssq::Object& instance) {
-    if (value.kind == ReflectedValueKind::Array)
-        return arrayWidget(ownerClass, member, instance);
-    if (value.kind == ReflectedValueKind::Table)
-        return tableWidget(ownerClass, member, instance);
+                                     const ssq::Object& /*instance*/) {
     if (value.kind == ReflectedValueKind::Instance) {
         const std::string openId = "open_" + ownerClass + "_" + member.name;
         return button("open " + member.name + "##" + openId, openId,
@@ -236,167 +242,8 @@ WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                           openNested(nestedClass, nested);
                       });
     }
-    if (propertyModel_) {
-        PropertyViewOptions options;
-        options.idPrefix = "prop_";
-        options.showAdvanced = true;
-        options.showEditorOnly = true;
-        options.groupCategories = false;
-        return buildPropertyField(*propertyModel_, member.name, options);
-    }
+    if (propertyModel_) return buildPropertyField(*propertyModel_, member.name, propertyViewOptions());
     return text(member.name + " = " + valueText(value), "prop_" + member.name);
-}
-
-WidgetDesc Inspector::arrayWidget(const std::string& ownerClass,
-                                  const ReflectedMember& member,
-                                  const ssq::Object& instance) {
-    Runtime* rt = runtime();
-    if (!rt) return text(member.name + " = array", "arr_" + ownerClass + "_" + member.name);
-    const size_t size = rt->arraySize(instance, member.name);
-    const std::string base = "arr_" + ownerClass + "_" + member.name;
-    std::vector<WidgetDesc> rows;
-    for (size_t i = 0; i < size; ++i) {
-        const ReflectedValue value = rt->arrayGet(instance, member.name, i);
-        const std::string elementId = base + "_" + std::to_string(i);
-        const std::string elementLabel =
-            member.name + "[" + std::to_string(i) + "]##" + elementId;
-        WidgetDesc cell;
-        if (value.kind == ReflectedValueKind::Bool) {
-            cell = checkbox(elementLabel, value.asBool(), elementId,
-                            [this, name = member.name, i](bool v) {
-                                ReflectedValue out;
-                                out.kind = ReflectedValueKind::Bool;
-                                out.boolean = v;
-                                if (Runtime* rt = runtime()) {
-                                    if (const ssq::Object* inst = currentInstance())
-                                        rt->arraySet(*inst, name, i, out);
-                                }
-                            });
-        } else if (value.kind == ReflectedValueKind::Array ||
-                   value.kind == ReflectedValueKind::Table ||
-                   value.kind == ReflectedValueKind::Instance ||
-                   value.kind == ReflectedValueKind::None ||
-                   value.kind == ReflectedValueKind::Other) {
-            cell = text(member.name + "[" + std::to_string(i) + "] = element",
-                        elementId);
-        } else {
-            cell = inputText(elementLabel, valueText(value), elementId,
-                             [this, name = member.name, i](
-                                 const std::string& text) {
-                                 ReflectedValue out;
-                                 out.kind = ReflectedValueKind::String;
-                                 out.text = text;
-                                 if (Runtime* rt = runtime()) {
-                                     if (const ssq::Object* inst = currentInstance())
-                                         rt->arraySet(*inst, name, i, out);
-                                 }
-                             });
-        }
-        rows.push_back(row(
-            {std::move(cell),
-             button("x##" + elementId + "_del", elementId + "_del",
-                    [this, name = member.name, i]() {
-                        if (Runtime* rt = runtime()) {
-                            if (const ssq::Object* inst = currentInstance())
-                                rt->arrayRemove(*inst, name, i);
-                        }
-                        rebuildHost();
-                    })},
-            elementId + "_row"));
-    }
-    rows.push_back(
-        row({button("+##" + base + "_add", base + "_add",
-                    [this, name = member.name]() {
-                        if (Runtime* rt = runtime()) {
-                            if (const ssq::Object* inst = currentInstance()) {
-                                ReflectedValue out;
-                                out.kind = ReflectedValueKind::String;
-                                rt->arrayAppend(*inst, name, out);
-                            }
-                        }
-                        rebuildHost();
-                    })},
-            base + "_addrow"));
-    return collapsingHeader(
-        member.name + " (array[" + std::to_string(size) + "])##" + base,
-        std::move(rows), base, false);
-}
-
-WidgetDesc Inspector::tableWidget(const std::string& ownerClass,
-                                  const ReflectedMember& member,
-                                  const ssq::Object& instance) {
-    Runtime* rt = runtime();
-    if (!rt) return text(member.name + " = table", "tbl_" + ownerClass + "_" + member.name);
-    const std::string base = "tbl_" + ownerClass + "_" + member.name;
-    const std::vector<std::string> keys = rt->tableKeys(instance, member.name);
-    std::vector<WidgetDesc> rows;
-    for (const std::string& key : keys) {
-        const ReflectedValue value = rt->tableGet(instance, member.name, key);
-        const std::string elementId = base + "_" + key;
-        const std::string elementLabel = key + "##" + elementId;
-        WidgetDesc cell;
-        if (value.kind == ReflectedValueKind::Bool) {
-            cell = checkbox(elementLabel, value.asBool(), elementId,
-                            [this, name = member.name, key](bool v) {
-                                ReflectedValue out;
-                                out.kind = ReflectedValueKind::Bool;
-                                out.boolean = v;
-                                if (Runtime* rt = runtime()) {
-                                    if (const ssq::Object* inst = currentInstance())
-                                        rt->tableSet(*inst, name, key, out);
-                                }
-                            });
-        } else if (value.kind == ReflectedValueKind::Array ||
-                   value.kind == ReflectedValueKind::Table ||
-                   value.kind == ReflectedValueKind::Instance ||
-                   value.kind == ReflectedValueKind::None ||
-                   value.kind == ReflectedValueKind::Other) {
-            cell = text(key + " = element", elementId);
-        } else {
-            cell = inputText(elementLabel, valueText(value), elementId,
-                             [this, name = member.name, key](
-                                 const std::string& text) {
-                                 ReflectedValue out;
-                                 out.kind = ReflectedValueKind::String;
-                                 out.text = text;
-                                 if (Runtime* rt = runtime()) {
-                                     if (const ssq::Object* inst = currentInstance())
-                                         rt->tableSet(*inst, name, key, out);
-                                 }
-                             });
-        }
-        rows.push_back(row(
-            {std::move(cell),
-             button("x##" + elementId + "_del", elementId + "_del",
-                    [this, name = member.name, key]() {
-                        if (Runtime* rt = runtime()) {
-                            if (const ssq::Object* inst = currentInstance())
-                                rt->tableRemove(*inst, name, key);
-                        }
-                        rebuildHost();
-                    })},
-            elementId + "_row"));
-    }
-    rows.push_back(row(
-        {button("+##" + base + "_add", base + "_add",
-                [this, name = member.name, keys]() {
-                    if (Runtime* rt = runtime()) {
-                        if (const ssq::Object* inst = currentInstance()) {
-                            std::string key = "key" + std::to_string(keys.size());
-                            size_t suffix = 0;
-                            while (std::find(keys.begin(), keys.end(), key) !=
-                                   keys.end())
-                                key = "key" + std::to_string(keys.size() + (++suffix));
-                            ReflectedValue out;
-                            out.kind = ReflectedValueKind::String;
-                            rt->tableSet(*inst, name, key, out);
-                        }
-                    }
-                    rebuildHost();
-                })},
-        base + "_addrow"));
-    return collapsingHeader(member.name + " (table)##" + base, std::move(rows), base,
-                            false);
 }
 
 WidgetDesc Inspector::build() {
@@ -510,12 +357,7 @@ void Inspector::sync() {
     if (!propertyModel_) rebuildPropertyModel();
     if (!propertyModel_) return;
     propertyModel_->refresh();
-    PropertyViewOptions options;
-    options.idPrefix = "prop_";
-    options.showAdvanced = true;
-    options.showEditorOnly = true;
-    options.groupCategories = false;
-    syncPropertyView(host->get(), *propertyModel_, options);
+    syncPropertyView(host->get(), *propertyModel_, propertyViewOptions());
 }
 
 }  // namespace eve::ui

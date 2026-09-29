@@ -35,6 +35,7 @@
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -2529,6 +2530,66 @@ bool UI::inspectAddInstance() {
     return inspector_ && inspector_->addInstance();
 }
 
+namespace {
+
+const char *propertyKindName(property_access::PropertyKind kind) {
+    using property_access::PropertyKind;
+    switch (kind) {
+        case PropertyKind::Auto: return "auto";
+        case PropertyKind::Bool: return "bool";
+        case PropertyKind::Integer: return "integer";
+        case PropertyKind::Number: return "number";
+        case PropertyKind::String: return "string";
+        case PropertyKind::Enum: return "enum";
+        case PropertyKind::Color: return "color";
+        case PropertyKind::Vec2: return "vec2";
+        case PropertyKind::Vec3: return "vec3";
+        case PropertyKind::Vec4: return "vec4";
+        case PropertyKind::AssetRef: return "assetRef";
+        case PropertyKind::ObjectRef: return "objectRef";
+        case PropertyKind::Struct: return "struct";
+        case PropertyKind::Array: return "array";
+        case PropertyKind::Map: return "map";
+        case PropertyKind::Action: return "action";
+        case PropertyKind::ReadOnlyText: return "readOnlyText";
+    }
+    return "auto";
+}
+
+}  // namespace
+
+ssq::Object UI::propertySchema(ssq::Object instance) {
+    Runtime *runtime = ModuleManager::runtime();
+    if (!runtime) return ssq::Object();
+    if (instance.getType() != ssq::Type::INSTANCE) return ssq::Object(runtime->handle());
+    property_access::ReflectedPropertyModel model(*runtime, instance);
+    ssq::VM &vm = runtime->vm();
+    ssq::Table out = vm.newTable();
+    out.set("typeId", model.schema().typeId);
+    out.set("version", static_cast<int>(model.schema().version));
+    ssq::Array properties = vm.newArray();
+    for (const property_access::PropertyDescriptor &property : model.schema().properties) {
+        ssq::Table entry = vm.newTable();
+        entry.set("path", property.path);
+        entry.set("kind", std::string(propertyKindName(property.kind)));
+        entry.set("displayName", property.displayName);
+        entry.set("description", property.description);
+        entry.set("category", property.category);
+        entry.set("readOnly", property_access::hasFlag(property.flags, property_access::PropertyFlag::ReadOnly));
+        entry.set("presenterHint", property.presenterHint);
+        entry.set("units", property.numeric.units);
+        if (property.numeric.minimum) entry.set("min", *property.numeric.minimum);
+        if (property.numeric.maximum) entry.set("max", *property.numeric.maximum);
+        if (property.numeric.step) entry.set("step", *property.numeric.step);
+        ssq::Array choices = vm.newArray();
+        for (const std::string &choice : property.choices) choices.push(choice);
+        entry.set("choices", choices);
+        properties.push(entry);
+    }
+    out.set("properties", properties);
+    return out;
+}
+
 bool UI::dbOpen() {
     if (!databasePanel_) databasePanel_ = std::make_unique<DatabasePanel>();
     databasePanel_->open();
@@ -2885,6 +2946,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("inspectSetPickHandler", &UI::inspectSetPickHandler);
     cls.addFunc("inspectPickScene", &UI::inspectPickScene);
     cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
+    cls.addFunc("propertySchema", &UI::propertySchema);
 
     cls.addFunc("dbOpen", &UI::dbOpen);
     cls.addFunc("dbClose", &UI::dbClose);

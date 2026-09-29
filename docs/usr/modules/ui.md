@@ -317,6 +317,14 @@ anim->advance(step);  // 与游戏时钟同泵
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
 - `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+- `inspect()`、`inspectClose()`、`inspectRefresh()`、`inspectSelectClass()`、`inspectObject()`、`inspectSetPickHandler()`、`inspectPickScene()`、`inspectAddInstance()`、`propertySchema()`
+- `dbOpen()`、`dbClose()`、`dbRefresh()`、`dbSelectClass()`、`dbRegister()`、`dbCreateInstance()`、`dbUnregister()`
+- `editorOpen()`、`editorClose()`、`editorSelectPanel()`、`sceneOpen()`、`sceneClose()`、`sceneSelectNode()`、`sceneSetPickHandler()`
+
+`propertySchema(instance)` 返回脚本实例经反射派生的属性 schema 表（`typeId` /
+`version` / `properties[]`，含 `path`、`kind`、`displayName`、`readOnly`、数值约束与
+`choices`）。`editor="color"|"vec2"|"vec3"|"vec4"|slider|combo` 等 attribute 决定 kind；
+可编辑面板请用 `inspectObject(instance)`，不要把 schema 表当成第二权威状态。
 
 ## 引擎纹理控件
 

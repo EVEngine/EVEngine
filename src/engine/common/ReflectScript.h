@@ -14,7 +14,9 @@ class Runtime;
  * @brief Exposes the Runtime reflection API to scripts as `eve.reflect`.
  *
  * Adds a `reflect` sub-table to the `eve` table with class/instance
- * introspection, typed property read/write and array/table member editing:
+ * introspection, typed property read/write and array/table member editing.
+ * Script-facing schema projection for the shared property UI lives on
+ * `ui.propertySchema(instance)` (built by `ReflectedPropertyModel`).
  *
  * @code
  * local info = eve.reflect.classInfo("Hero")     // class metadata table

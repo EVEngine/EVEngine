@@ -109,9 +109,9 @@ enum class EVENGINE_API_FOUNDATION ReflectedValueKind : uint8_t {
     Integer  = 2, /**< @brief OT_INTEGER. */
     Float    = 3, /**< @brief OT_FLOAT. */
     String   = 4, /**< @brief OT_STRING. */
-    Array    = 5, /**< @brief OT_ARRAY (not yet editable). */
-    Table    = 6, /**< @brief OT_TABLE (not yet editable). */
-    Instance = 7, /**< @brief Nested script instance (not yet editable). */
+    Array    = 5, /**< @brief OT_ARRAY (editable via Runtime array APIs / ReflectedPropertyModel). */
+    Table    = 6, /**< @brief OT_TABLE (editable via Runtime table APIs / ReflectedPropertyModel). */
+    Instance = 7, /**< @brief Nested script instance (navigate; ObjectRef in property schema). */
     Other    = 8, /**< @brief Any other slot kind. */
 };
 

@@ -109,7 +109,10 @@ struct WriteResult {
  *
  * This is the single semantic validation entry point for property-access property
  * adapters. Host-specific adapters may translate its diagnostics, but must not
- * reimplement kind, enum, finite or numeric-range validation.
+ * reimplement kind, enum, finite, arity or numeric-range validation.
+ *
+ * Color requires an Array of 4 numeric components; Vec2/Vec3/Vec4 require 2/3/4.
+ * Rejected composites use `property_access.property.arity` when the length is wrong.
  */
 EVENGINE_API_FOUNDATION WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
 
