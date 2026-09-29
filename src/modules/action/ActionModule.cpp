@@ -14,6 +14,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -120,11 +121,15 @@ public:
                 DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick", {}, "action.squirrel"));
         auto delta = Duration::fromSeconds(seconds);
         if (!delta) return Result<Value>::failure(delta.status());
-        Value::Array advances;
+        Value::Array          advances;
+        std::optional<Status> firstFailure;
         for (const auto& activation : abilities_.activeActivations()) {
             auto advanced = actions_.advance(activation.executionId,
                                              SimulationTick(static_cast<std::uint64_t>(tickValue)), delta.value());
-            if (!advanced) return Result<Value>::failure(advanced.status());
+            if (!advanced) {
+                if (!firstFailure) firstFailure = advanced.status();
+                continue;
+            }
             Value::Object value;
             value["activationId"]   = static_cast<std::int64_t>(activation.id.value());
             value["executionId"]    = static_cast<std::int64_t>(activation.executionId.value());
@@ -134,8 +139,12 @@ public:
         }
         auto cooled = abilities_.advanceCooldowns(delta.value());
         if (!cooled) return Result<Value>::failure(cooled.status());
+        // Always synchronize so terminal (Failed/Cancelled) activations leave the
+        // active list even when one advance returned an error; otherwise the next
+        // call re-hits the same activation and never advances the rest.
         auto synchronized = abilities_.synchronize();
         if (!synchronized) return Result<Value>::failure(synchronized.status());
+        if (firstFailure) return Result<Value>::failure(*firstFailure);
         Value::Object result;
         result["advances"]       = std::move(advances);
         result["completedCount"] = static_cast<std::int64_t>(synchronized.value());

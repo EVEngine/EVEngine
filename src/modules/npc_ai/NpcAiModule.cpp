@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -50,6 +51,15 @@ Result<BlackboardValue> parseBlackboardValue(const Value& value) {
                                                               {}, "npc_ai.squirrel"));
 }
 
+Result<std::uint32_t> parseUInt32Field(std::int64_t value, const std::string& path) {
+    constexpr auto kMax = static_cast<std::int64_t>(std::numeric_limits<std::uint32_t>::max());
+    if (value < 0 || value > kMax)
+        return Result<std::uint32_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "npc_ai unsigned 32-bit field is out of range", path, {},
+            "npc_ai.squirrel"));
+    return Result<std::uint32_t>::success(static_cast<std::uint32_t>(value));
+}
+
 Result<BlackboardPredicate> parsePredicate(const Value& value, const std::string& path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
@@ -89,9 +99,11 @@ Result<BehaviorDefinition> parseBehaviorDefinition(const Value& value) {
             DiagnosticCode::InvalidArgument, "npc_ai behavior id is required", "id", {}, "npc_ai.squirrel"));
     definition.id = *id->second.getIf<std::string>();
     if (const auto version = root->find("schemaVersion"); version != root->end()) {
-        if (const auto* integer = version->second.getIf<std::int64_t>())
-            definition.schemaVersion = static_cast<std::uint32_t>(*integer);
-        else
+        if (const auto* integer = version->second.getIf<std::int64_t>()) {
+            auto parsedVersion = parseUInt32Field(*integer, "schemaVersion");
+            if (!parsedVersion) return Result<BehaviorDefinition>::failure(parsedVersion.status());
+            definition.schemaVersion = parsedVersion.value();
+        } else
             return Result<BehaviorDefinition>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                          "npc_ai schemaVersion must be an integer",
                                                                          "schemaVersion", {}, "npc_ai.squirrel"));
@@ -245,9 +257,11 @@ Result<BehaviorDefinition> parseBehaviorDefinition(const Value& value) {
                             transitionPath + ".signal", {}, "npc_ai.squirrel"));
                 }
                 if (const auto priority = transitionObject->find("priority"); priority != transitionObject->end()) {
-                    if (const auto* integer = priority->second.getIf<std::int64_t>())
-                        transition.priority = static_cast<std::uint32_t>(*integer);
-                    else
+                    if (const auto* integer = priority->second.getIf<std::int64_t>()) {
+                        auto parsedPriority = parseUInt32Field(*integer, transitionPath + ".priority");
+                        if (!parsedPriority) return Result<BehaviorDefinition>::failure(parsedPriority.status());
+                        transition.priority = parsedPriority.value();
+                    } else
                         return Result<BehaviorDefinition>::failure(Diagnostic::error(
                             DiagnosticCode::InvalidArgument, "npc_ai transition priority must be an integer",
                             transitionPath + ".priority", {}, "npc_ai.squirrel"));
@@ -303,7 +317,8 @@ public:
     explicit ScriptNpcAiWorld(std::int64_t traceCapacity, std::int64_t maxMemoriesPerAgent) {
         NpcAiWorldConfig config;
         if (traceCapacity > 0) config.traceCapacity = static_cast<std::size_t>(traceCapacity);
-        if (maxMemoriesPerAgent > 0) config.maxMemoriesPerAgent = static_cast<std::size_t>(maxMemoriesPerAgent);
+        // Zero disables perception memory in the core world; only negative keeps the default.
+        if (maxMemoriesPerAgent >= 0) config.maxMemoriesPerAgent = static_cast<std::size_t>(maxMemoriesPerAgent);
         world_ = std::make_unique<NpcAiWorld>(config);
     }
 
@@ -404,15 +419,19 @@ public:
 
     Result<Value> tick(std::int64_t simulationTick, double deltaSeconds, std::int64_t maxAgents,
                        std::int64_t maxTransitionsPerAgent) {
-        if (simulationTick < 0 || maxAgents < 0 || maxTransitionsPerAgent < 0 || !(deltaSeconds >= 0.0))
+        auto parsedMaxAgents = parseUInt32Field(maxAgents, "maxAgents");
+        if (!parsedMaxAgents) return Result<Value>::failure(parsedMaxAgents.status());
+        auto parsedMaxTransitions = parseUInt32Field(maxTransitionsPerAgent, "maxTransitionsPerAgent");
+        if (!parsedMaxTransitions) return Result<Value>::failure(parsedMaxTransitions.status());
+        if (simulationTick < 0 || !(deltaSeconds >= 0.0))
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "npc_ai tick arguments are invalid", "tick", {},
                                                             "npc_ai.squirrel"));
         TickContext context;
         context.simulationTick         = static_cast<std::uint64_t>(simulationTick);
         context.deltaSeconds           = deltaSeconds;
-        context.maxAgents              = static_cast<std::uint32_t>(maxAgents);
-        context.maxTransitionsPerAgent = static_cast<std::uint32_t>(maxTransitionsPerAgent);
+        context.maxAgents              = parsedMaxAgents.value();
+        context.maxTransitionsPerAgent = parsedMaxTransitions.value();
         auto report                    = world_->tick(context);
         if (!report) return Result<Value>::failure(report.status());
         Value::Object result;

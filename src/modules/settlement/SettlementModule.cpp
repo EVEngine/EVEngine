@@ -16,6 +16,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace eve::settlement {
@@ -35,6 +36,18 @@ struct ResourceState {
     double maximum = 0.0;
 };
 
+bool isCreditKind(std::string_view kind) noexcept { return kind == "heal" || kind == "gain"; }
+
+bool isDebitKind(std::string_view kind) noexcept { return kind == "damage" || kind == "spend"; }
+
+bool isLedgerKind(std::string_view kind) noexcept { return isCreditKind(kind) || isDebitKind(kind); }
+
+Result<void> unsupportedLedgerKind(std::string_view kind) {
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                   "settlement ledger kind must be damage, spend, heal, or gain",
+                                                   std::string(kind), {}, "settlement.squirrel"));
+}
+
 class LedgerPolicy final : public ISettlementPolicy {
 public:
     explicit LedgerPolicy(ResourceState& state) : state_(state) {}
@@ -52,15 +65,20 @@ public:
     Result<void> armorShield(SettlementContext&) override { return Result<void>::success(); }
     Result<void> clamp(SettlementContext& context) override {
         const auto& kind = context.request().kind;
-        if (kind == "heal" || kind == "gain") return context.setClampMax(state_.maximum - state_.current);
-        if (kind == "damage" || kind == "spend") return context.setClampMax(state_.current);
-        return context.setClampMax(context.magnitude());
+        if (isCreditKind(kind)) return context.setClampMax(state_.maximum - state_.current);
+        if (isDebitKind(kind)) return context.setClampMax(state_.current);
+        return unsupportedLedgerKind(kind);
     }
     Result<PreparedApply> prepareApply(const SettlementContext& context) override {
         const double before = state_.current;
         const auto&  kind   = context.request().kind;
-        const double after  = (kind == "heal" || kind == "gain") ? before + context.magnitude()
-                                                                : before - context.magnitude();
+        double       after  = before;
+        if (isCreditKind(kind))
+            after = before + context.magnitude();
+        else if (isDebitKind(kind))
+            after = before - context.magnitude();
+        else
+            return Result<PreparedApply>::failure(unsupportedLedgerKind(kind).status());
         return Result<PreparedApply>::success(PreparedApply(
             [this, after]() {
                 state_.current = after;
@@ -123,9 +141,10 @@ public:
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "settlement resource bounds are invalid", "resource", {},
                                                             "settlement.squirrel"));
-        resources_[{subject, resource}] = ResourceState{current, maximum};
+        const std::string subjectKey = parsed->format();
+        resources_[{subjectKey, resource}] = ResourceState{current, maximum};
         Value::Object result;
-        result["subject"]  = subject;
+        result["subject"]  = subjectKey;
         result["resource"] = resource;
         result["current"]  = current;
         result["maximum"]  = maximum;
@@ -133,13 +152,19 @@ public:
     }
 
     Result<Value> getResource(const std::string& subject, const std::string& resource) const {
-        const auto found = resources_.find({subject, resource});
+        auto parsed = PersistentId::parse(subject);
+        if (!parsed)
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "settlement subject must be a UUID", "subject", {},
+                                                            "settlement.squirrel"));
+        const std::string subjectKey = parsed->format();
+        const auto        found      = resources_.find({subjectKey, resource});
         if (found == resources_.end())
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound,
                                                             "settlement ledger resource was not found", "resource", {},
                                                             "settlement.squirrel"));
         Value::Object result;
-        result["subject"]  = subject;
+        result["subject"]  = subjectKey;
         result["resource"] = resource;
         result["current"]  = found->second.current;
         result["maximum"]  = found->second.maximum;
@@ -147,7 +172,12 @@ public:
     }
 
     Result<Value> removeResource(const std::string& subject, const std::string& resource) {
-        if (resources_.erase({subject, resource}) == 0)
+        auto parsed = PersistentId::parse(subject);
+        if (!parsed)
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "settlement subject must be a UUID", "subject", {},
+                                                            "settlement.squirrel"));
+        if (resources_.erase({parsed->format(), resource}) == 0)
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound,
                                                             "settlement ledger resource was not found", "resource", {},
                                                             "settlement.squirrel"));
@@ -173,7 +203,9 @@ public:
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "settlement request fields are invalid", "request", {},
                                                             "settlement.squirrel"));
-        auto found = resources_.find({targetText, resource});
+        if (!isLedgerKind(kind)) return Result<Value>::failure(unsupportedLedgerKind(kind).status());
+        const std::string targetKey = targetId->format();
+        auto              found     = resources_.find({targetKey, resource});
         if (found == resources_.end())
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound,
                                                             "settlement ledger target resource was not found",

@@ -62,3 +62,31 @@ TEST_CASE("settlementScript.runtimeOwnsRulesAndLedger") {
     CHECK(vm.find("digest").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("ruleCount").toInt(), 1);
 }
+
+TEST_CASE("settlementScript.rejectsUnknownKindAndNormalizesSubjectCase") {
+    ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
+    auto    eve = vm.addTable("eve");
+    eve::script::exposeResultBindings(eve);
+    eve::settlement::Settlement::expose(eve);
+    vm.run(vm.compileSource(R"(
+        settlement <- eve.Settlement();
+        runtime <- settlement.newRuntime().value;
+        source <- "01020304-0506-0708-890a-0b0c0d0e0f10";
+        targetUpper <- "11121314-1516-1718-991A-1B1C1D1E1F20";
+        targetLower <- "11121314-1516-1718-991a-1b1c1d1e1f20";
+        upserted <- runtime.upsertResource(targetUpper, "hp", 50.0, 100.0);
+        settled <- runtime.settle(source, targetLower, "damage", "hp", 10.0, "", "{}", 1);
+        after <- runtime.getResource(targetUpper, "hp");
+        unknown <- runtime.settle(source, targetLower, "burn", "hp", 5.0, "", "{}", 2);
+        afterUnknown <- runtime.getResource(targetLower, "hp");
+        applied <- settled.value.applied;
+        current <- after.value.current;
+        currentAfterUnknown <- afterUnknown.value.current;
+    )"));
+    CHECK(vm.find("upserted").toTable().get<bool>("ok"));
+    CHECK(vm.find("settled").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("applied").toFloat(), 10.0f);
+    CHECK_EQ(vm.find("current").toFloat(), 40.0f);
+    CHECK(!vm.find("unknown").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("currentAfterUnknown").toFloat(), 40.0f);
+}

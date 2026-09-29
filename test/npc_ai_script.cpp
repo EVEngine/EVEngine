@@ -50,3 +50,30 @@ TEST_CASE("npcAiScript.worldOwnsSignalAndBlackboardAgents") {
     CHECK(vm.find("stale").toBool());
     CHECK(!vm.find("afterDestroy").toTable().get<bool>("ok"));
 }
+
+TEST_CASE("npcAiScript.rejectsOutOfRangeFieldsAndHonorsZeroMemory") {
+    ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
+    auto    eve = vm.addTable("eve");
+    eve::script::exposeResultBindings(eve);
+    eve::npc_ai::NpcAi::expose(eve);
+    vm.run(vm.compileSource(R"(
+        npc <- eve.NpcAi();
+        world <- npc.newWorld(64, 0).value;
+        wrapVersion <- "{\"id\":\"guard\",\"schemaVersion\":4294967297,\"initialState\":\"idle\",\"states\":[{\"id\":\"idle\"}]}";
+        negativePriority <- "{\"id\":\"guard\",\"schemaVersion\":1,\"initialState\":\"idle\",\"states\":[{\"id\":\"idle\",\"transitions\":[{\"targetState\":\"idle\",\"priority\":-1}]}]}";
+        validBehavior <- "{\"id\":\"guard\",\"schemaVersion\":1,\"initialState\":\"idle\",\"states\":[{\"id\":\"idle\"}]}";
+        badVersion <- world.validateBehavior(wrapVersion);
+        badPriority <- world.validateBehavior(negativePriority);
+        registered <- world.registerBehavior(validBehavior);
+        agent <- world.createAgent("guard").value;
+        oversizedBudget <- world.tick(1, 0.016, 4294967296, 8);
+        remembered <- world.remember(agent, "player", "sight", 0.5, 1, 10, "{}");
+        okTick <- world.tick(1, 0.016, 8, 8);
+    )"));
+    CHECK(!vm.find("badVersion").toTable().get<bool>("ok"));
+    CHECK(!vm.find("badPriority").toTable().get<bool>("ok"));
+    CHECK(vm.find("registered").toTable().get<bool>("ok"));
+    CHECK(!vm.find("oversizedBudget").toTable().get<bool>("ok"));
+    CHECK(!vm.find("remembered").toTable().get<bool>("ok"));
+    CHECK(vm.find("okTick").toTable().get<bool>("ok"));
+}

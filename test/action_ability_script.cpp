@@ -82,3 +82,36 @@ TEST_CASE("actionScript.runtimeOwnsAbilityLifecycle") {
     CHECK(vm.find("found").toTable().get<bool>("ok"));
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));
 }
+
+TEST_CASE("actionScript.advanceAbilitiesSynchronizesTerminalFailures") {
+    auto encoded = eve::action::encodeAbilityAsset(lightAttack());
+    REQUIRE(encoded.ok());
+    auto abilityJson = encoded.value().toJson();
+    REQUIRE(abilityJson.ok());
+
+    ssq::VM vm(1024, ssq::Libs::STRING | ssq::Libs::MATH);
+    auto    eve = vm.addTable("eve");
+    eve::script::exposeResultBindings(eve);
+    eve::action::Action::expose(eve);
+    const std::string abilityLiteral = abilityJson.value();
+    eve.addFunc("abilityJson", [abilityLiteral]() { return abilityLiteral; });
+    vm.run(vm.compileSource(R"(
+        action <- eve.Action();
+        runtime <- action.newRuntime().value;
+        runtime.registerAbilityJson(eve.abilityJson());
+        grantId <- runtime.grantAbility("fighter:player", "ability:light-attack").value.grantId;
+        activated <- runtime.activateAbility(grantId, 1);
+        executionId <- activated.value.executionId;
+        // Cancel the underlying action without synchronizing the ability activation list.
+        cancelled <- runtime.cancelAction(executionId, 1);
+        failedAdvance <- runtime.advanceAbilities(2, 0.10);
+        // After the failed advance, the terminal activation must have been synchronized away.
+        recovered <- runtime.advanceAbilities(3, 0.10);
+        recoveredActive <- recovered.value.activeCount;
+    )"));
+    CHECK(vm.find("activated").toTable().get<bool>("ok"));
+    CHECK(vm.find("cancelled").toTable().get<bool>("ok"));
+    CHECK(!vm.find("failedAdvance").toTable().get<bool>("ok"));
+    CHECK(vm.find("recovered").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("recoveredActive").toInt(), 0);
+}
