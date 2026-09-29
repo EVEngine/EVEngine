@@ -1,5 +1,3 @@
-#pragma once
-
 // Dedicated floor-texture recipe coverage lives in this TU so the large
 // procgen.cpp suite stays process-isolated and focused.
 
