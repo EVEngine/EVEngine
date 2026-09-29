@@ -69,9 +69,10 @@ public:
             if (out.version != DnutDocument::CurrentVersion) fail("不支持的 dnut version");
             DataValue::Object pools;
             while (cur().kind != Tok::Eof) {
-                if (!isIdent()) fail("期望 pool 或 conversation");
+                if (!isIdent()) fail("期望 pool、conversation 或 story");
                 if (cur().value == "pool") parsePool(pools);
                 else if (cur().value == "conversation") out.conversations.push_back(parseConversation());
+                else if (cur().value == "story") skipForeignTopLevelBlock();
                 else fail("未知顶层字段 '" + cur().value + "'");
             }
             out.poolRoot = DataValue::object({{"pools", DataValue::object(std::move(pools))}});
@@ -247,6 +248,37 @@ private:
                              std::string(1, c) + "'");
         }
         toks_.push_back(Token{Tok::Eof, "", line, static_cast<int>(i - lineStart + 1)});
+    }
+
+    /**
+     * @brief Skip a top-level block owned by another `.dnut` dialect (today: `story`).
+     * @remarks Consumes the keyword, any same-line modifiers/fields, and the braced
+     *          body so one document can hold RPG stories next to conversations.
+     */
+    void skipForeignTopLevelBlock() {
+        adv();  // dialect keyword such as `story`
+        int depth = 0;
+        bool sawBrace = false;
+        while (cur().kind != Tok::Eof) {
+            if (isPunct("{")) {
+                ++depth;
+                sawBrace = true;
+                adv();
+                continue;
+            }
+            if (isPunct("}")) {
+                if (depth > 0) --depth;
+                adv();
+                if (sawBrace && depth == 0) return;
+                continue;
+            }
+            if (sawBrace && depth == 0) return;
+            if (!sawBrace && isIdent() &&
+                (cur().value == "pool" || cur().value == "conversation" || cur().value == "story"))
+                return;
+            adv();
+        }
+        if (sawBrace && depth != 0) fail("未闭合的顶层块");
     }
 
     DataValue parseLiteralValue() {

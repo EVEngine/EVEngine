@@ -625,12 +625,26 @@ public:
         return assets.contains(id);
     }
 
-    /** @brief Record completion once a successful run leaves the runtime inactive. */
-    void publishCompletion() {
-        if (runtime.isActive()) return;
+    /** @brief Publish or clear the GameState-backed cursor after a transition. */
+    void persistProgress() {
         if (!binding || !binding->gameState || storyId.empty()) return;
-        binding->gameState->setSelfVariable(completionScope(storyId), "completed", 1.0);
+        const std::string scope = completionScope(storyId);
+        if (!runtime.isActive()) {
+            binding->gameState->clearSelfString(scope, "cursor");
+            binding->gameState->setSelfVariable(scope, "completed", 1.0);
+            return;
+        }
+        eve::Value captured;
+        if (auto result = runtime.captureState(captured); !result.ok()) return;
+        auto encoded = captured.toJson();
+        if (!encoded.ok()) return;
+        binding->gameState->setSelfString(scope, "cursor", std::move(encoded).takeValue());
+        if (!binding->gameState->hasSelfVariable(scope, "completed"))
+            binding->gameState->setSelfVariable(scope, "completed", 0.0);
     }
+
+    /** @brief Record completion once a successful run leaves the runtime inactive. */
+    void publishCompletion() { persistProgress(); }
 };
 
 RpgStorySession::RpgStorySession() : impl_(std::make_unique<Impl>()) {}
@@ -667,6 +681,26 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
                 return makeStoryFailure(eve::DiagnosticCode::Conflict,
                                     "non-repeatable story '" + storyId + "' is already complete", "storyId");
             binding->gameState->setSelfVariable(scope, "completed", 0.0);
+            binding->gameState->clearSelfString(scope, "cursor");
+        }
+
+        if (binding->gameState->hasSelfString(scope, "cursor")) {
+            const std::string encoded = binding->gameState->getSelfString(scope, "cursor");
+            auto              parsed  = eve::Value::fromJson(encoded);
+            if (!parsed.ok())
+                return makeStoryFailure(eve::DiagnosticCode::ParseError,
+                                        "persisted story cursor is not valid JSON", scope + ".cursor");
+            impl_->storyId = storyId;
+            impl_->configureRuntime();
+            if (auto restored = impl_->runtime.restoreState(parsed.value()); !restored.ok()) {
+                const auto* diagnostic = restored.error();
+                const std::string message =
+                    diagnostic ? diagnostic->message() : "story cursor could not be restored";
+                stop();
+                return makeStoryFailure(eve::DiagnosticCode::Failed, message, scope + ".cursor");
+            }
+            impl_->persistProgress();
+            return eve::Result<void>::success();
         }
     }
 

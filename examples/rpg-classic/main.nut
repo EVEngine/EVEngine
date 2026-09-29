@@ -39,15 +39,16 @@ persist acceptedDialogueContent = null
 persist acceptedShopContent = null
 persist acceptedEncounterContent = null
 persist acceptedBattleTacticsContent = null
-persist acceptedStoryEventContent = null
+persist acceptedStoryContent = null
 persist acceptedLocalizationContent = null
-persist storyEvent = null
+persist storySession = null
 persist text = eve.I18n()
 
 const BASE_HP = 100.0;
 const BASE_MP = 40.0;
-const SAVE_CONTENT_VERSION = "rpg-classic.content.v9";
-const PREVIOUS_SAVE_CONTENT_VERSION = "rpg-classic.content.v8";
+const SAVE_CONTENT_VERSION = "rpg-classic.content.v10";
+const PREVIOUS_SAVE_CONTENT_VERSION = "rpg-classic.content.v9";
+const PRE_DNUT_STORY_SAVE_CONTENT_VERSION = "rpg-classic.content.v8";
 const PRE_LOCALIZATION_SAVE_CONTENT_VERSION = "rpg-classic.content.v7";
 const SINGLE_ACTOR_SAVE_CONTENT_VERSION = "rpg-classic.content.v6";
 const OLDER_SAVE_CONTENT_VERSION = "rpg-classic.content.v5";
@@ -83,7 +84,7 @@ pendingDialogueContent <- null
 pendingShopContent <- null
 pendingEncounterContent <- null
 pendingBattleTacticsContent <- null
-pendingStoryEventContent <- null
+pendingStoryContent <- null
 pendingLocalizationContent <- null
 storyWaitRemaining <- 0.0
 
@@ -206,7 +207,7 @@ function registerContent() {
     pendingShopContent = null;
     pendingEncounterContent = null;
     pendingBattleTacticsContent = null;
-    pendingStoryEventContent = null;
+    pendingStoryContent = null;
     local list = [
         ["effects", "registerEffectsFromJson"],
         ["skills", "registerSkillsFromJson"],
@@ -275,14 +276,14 @@ function registerContent() {
     }
     pendingBattleTacticsContent = tacticsJson;
 
-    local storyEventJson = readTextFile("data/story-events.json");
-    if (storyEventJson == null) return false;
-    local storyEventResult = rpg.replaceStoryEventsFromJson(storyEventJson);
-    if (!storyEventResult.ok) {
-        print("rpg-classic: story events rejected: " + storyEventResult.status.summary + "\n");
+    local storyDnut = readTextFile("data/stories.dnut");
+    if (storyDnut == null) return false;
+    local storyResult = rpg.replaceStoriesFromDnut(storyDnut, "data/stories.dnut");
+    if (!storyResult.ok) {
+        print("rpg-classic: story catalogue rejected: " + storyResult.status.summary + "\n");
         return false;
     }
-    pendingStoryEventContent = storyEventJson;
+    pendingStoryContent = storyDnut;
 
     rpg.registerItemStatsFromJson("iron_sword",
         @"[ {""attribute"":""attack"",""op"":""add"",""value"":8} ]");
@@ -551,7 +552,7 @@ function validateProductLocalization() {
 }
 
 function restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                 previousBattleTactics, previousStoryEvents, previousLocalization) {
+                                 previousBattleTactics, previousStories, previousLocalization) {
     local restored = true;
     if (previousLocalization != null) {
         local previousLanguage = preferredLanguage;
@@ -598,17 +599,17 @@ function restoreNarrativeContent(previousQuest, previousDialogue, previousShop, 
         local tacticsRollback = rpg.replaceBattleTacticsFromJson(previousBattleTactics);
         if (!tacticsRollback.ok) restored = false;
     } else rpg.clearBattleTactics();
-    if (previousStoryEvents != null) {
-        local storyRollback = rpg.replaceStoryEventsFromJson(previousStoryEvents);
+    if (previousStories != null) {
+        local storyRollback = rpg.replaceStoriesFromDnut(previousStories, "data/stories.dnut");
         if (!storyRollback.ok) restored = false;
-    } else rpg.clearStoryEvents();
+    } else rpg.clearStories();
     dialogueReady = restored && previousDialogue != null;
     pendingQuestContent = null;
     pendingDialogueContent = null;
     pendingShopContent = null;
     pendingEncounterContent = null;
     pendingBattleTacticsContent = null;
-    pendingStoryEventContent = null;
+    pendingStoryContent = null;
     pendingLocalizationContent = null;
     return restored;
 }
@@ -619,35 +620,35 @@ function publishNarrativeContentPackage(reload = false) {
     local previousShop = acceptedShopContent;
     local previousEncounter = acceptedEncounterContent;
     local previousBattleTactics = acceptedBattleTacticsContent;
-    local previousStoryEvents = acceptedStoryEventContent;
+    local previousStories = acceptedStoryContent;
     local previousLocalization = acceptedLocalizationContent;
     if (!registerContent()) {
         restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                previousBattleTactics, previousStoryEvents, previousLocalization);
+                                previousBattleTactics, previousStories, previousLocalization);
         print("rpg-classic: content package rejected; accepted content restored\n");
         return false;
     }
     if (!loadLocalizationContent()) {
         restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                previousBattleTactics, previousStoryEvents, previousLocalization);
+                                previousBattleTactics, previousStories, previousLocalization);
         print("rpg-classic: localization package rejected; accepted content restored\n");
         return false;
     }
     if (!loadDialogueContent(reload)) {
         restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                previousBattleTactics, previousStoryEvents, previousLocalization);
+                                previousBattleTactics, previousStories, previousLocalization);
         print("rpg-classic: narrative package rejected; accepted content restored\n");
         return false;
     }
     if (!validateProductLocalization()) {
         restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                previousBattleTactics, previousStoryEvents, previousLocalization);
+                                previousBattleTactics, previousStories, previousLocalization);
         print("rpg-classic: product localization links rejected\n");
         return false;
     }
     if (!validateWorldContentLinks()) {
         restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,
-                                previousBattleTactics, previousStoryEvents, previousLocalization);
+                                previousBattleTactics, previousStories, previousLocalization);
         print("rpg-classic: narrative package links rejected; accepted content restored\n");
         return false;
     }
@@ -656,14 +657,14 @@ function publishNarrativeContentPackage(reload = false) {
     acceptedShopContent = pendingShopContent;
     acceptedEncounterContent = pendingEncounterContent;
     acceptedBattleTacticsContent = pendingBattleTacticsContent;
-    acceptedStoryEventContent = pendingStoryEventContent;
+    acceptedStoryContent = pendingStoryContent;
     acceptedLocalizationContent = pendingLocalizationContent;
     pendingQuestContent = null;
     pendingDialogueContent = null;
     pendingShopContent = null;
     pendingEncounterContent = null;
     pendingBattleTacticsContent = null;
-    pendingStoryEventContent = null;
+    pendingStoryContent = null;
     pendingLocalizationContent = null;
     dialogueReady = true;
     print("rpg-classic: narrative content package committed\n");
@@ -685,14 +686,14 @@ function refreshDialogueUI() {
         activeConversation = "";
         activeDialogueQuest = "";
         activeSpeakerName = "";
-        if (storyEvent != null && storyEvent.isActive() &&
-            storyEvent.getStepKind() == "dialogue") {
-            local advanced = storyEvent.advance(gs);
+        if (storySession != null && storySession.isActive() &&
+            storySession.getStepKind() == "dialogue") {
+            local advanced = storySession.advance();
             if (!advanced.ok) {
                 logMessage("story.advanceFailed", {error = advanced.status.summary});
                 return;
             }
-            presentStoryEventStep();
+            presentStoryStep();
         }
         return;
     }
@@ -713,11 +714,11 @@ function refreshDialogueUI() {
     }
 }
 
-function presentStoryEventStep() {
-    while (storyEvent != null && storyEvent.isActive()) {
-        local kind = storyEvent.getStepKind();
+function presentStoryStep() {
+    while (storySession != null && storySession.isActive()) {
+        local kind = storySession.getStepKind();
         if (kind == "dialogue") {
-            local conversationId = storyEvent.getReference();
+            local conversationId = storySession.getStepString("id");
             local started = dialogueFlow.startChecked(conversationId, {});
             if (!started.ok) {
                 reportDialogueDiagnostics();
@@ -733,26 +734,35 @@ function presentStoryEventStep() {
             return true;
         }
         if (kind == "wait") {
-            storyWaitRemaining = storyEvent.getDuration();
+            storyWaitRemaining = storySession.getStepNumber("duration");
             return true;
         }
         if (kind == "message") {
-            logLine(tr(storyEvent.getReference()));
+            // Authored `text=` is treated as an i18n key when present in the bundle.
+            logLine(tr(storySession.getStepString("text")));
         } else if (kind == "move") {
-            if (storyEvent.getActorId() != "player" ||
-                !worldPath.isWalkable(storyEvent.getX().tointeger(), storyEvent.getY().tointeger())) {
+            local actorId = storySession.getStepString("actor");
+            local destX = storySession.getStepNumber("x").tointeger();
+            local destY = storySession.getStepNumber("y").tointeger();
+            if ((actorId != "player" && actorId != "hero") ||
+                !worldPath.isWalkable(destX, destY)) {
                 logMessage("story.moveRejected");
                 return false;
             }
-            worldX = storyEvent.getX().tointeger();
-            worldY = storyEvent.getY().tointeger();
+            worldX = destX;
+            worldY = destY;
         } else if (kind == "camera") {
-            logMessage("story.camera", {x = storyEvent.getX(), y = storyEvent.getY()});
+            logMessage("story.camera", {
+                x = storySession.getStepNumber("x"),
+                y = storySession.getStepNumber("y")
+            });
+        } else if (kind == "animation" || kind == "select") {
+            // Host-presented presentation steps: acknowledge immediately in this demo.
         } else {
             logMessage("story.unknownStep");
             return false;
         }
-        local advanced = storyEvent.advance(gs);
+        local advanced = storySession.advance();
         if (!advanced.ok) {
             logMessage("story.advanceFailed", {error = advanced.status.summary});
             return false;
@@ -763,18 +773,17 @@ function presentStoryEventStep() {
 }
 
 function startStoryEvent(eventId) {
-    local candidate = rpg.newStoryEventSession();
-    local begun = candidate.begin(eventId, gs);
+    local candidate = rpg.newStorySession();
+    local begun = candidate.begin(eventId, gs, party, bag, equip);
     if (!begun.ok) return false;
-    storyEvent = candidate;
+    storySession = candidate;
     storyWaitRemaining = 0.0;
-    return presentStoryEventStep();
+    return presentStoryStep();
 }
 
 function resumePendingStoryEvent() {
-    local scope = "story.event:forest.arrival";
-    if (gs.hasSelfVariable(scope, "cursor") &&
-        (!gs.hasSelfVariable(scope, "completed") || gs.getSelfVariable(scope, "completed") != 1.0))
+    local scope = "story.forest.arrival";
+    if (gs.hasSelfString(scope, "cursor"))
         return startStoryEvent("forest.arrival");
     return false;
 }
@@ -1584,6 +1593,7 @@ function makeSaveSession() {
     local session = eve.RPGSaveSession();
     if (session.setContentVersion(SAVE_CONTENT_VERSION) == 0 ||
         session.allowCompatibleContentVersion(PREVIOUS_SAVE_CONTENT_VERSION) == 0 ||
+        session.allowCompatibleContentVersion(PRE_DNUT_STORY_SAVE_CONTENT_VERSION) == 0 ||
         session.allowCompatibleContentVersion(PRE_LOCALIZATION_SAVE_CONTENT_VERSION) == 0 ||
         session.allowSingleActorPartyMigration(SINGLE_ACTOR_SAVE_CONTENT_VERSION) == 0 ||
         session.allowSingleActorPartyMigration(OLDER_SAVE_CONTENT_VERSION) == 0 ||
@@ -1730,7 +1740,7 @@ function continueSaveSlot(slot) {
 }
 
 function saveCheckpoint() {
-    local resumableStory = storyEvent != null && storyEvent.isActive();
+    local resumableStory = storySession != null && storySession.isActive();
     if (state == "gameover" ||
         (screen != "explore" && screen != "adjust" && !resumableStory)) {
         logMessage("save.unsafe");
@@ -1848,7 +1858,7 @@ function loadCheckpoint(replaceUnsavedNewRun = false) {
     if (migratedWorldState) logMessage("save.migrated");
     logMessage("save.loaded", {area = worldMapTitle("village")});
     refreshHud();
-    storyEvent = null;
+    storySession = null;
     storyWaitRemaining = 0.0;
     resumePendingStoryEvent();
     return true;
@@ -1864,7 +1874,7 @@ function startNewGame(slot = activeSaveSlot) {
     wave = 1; gold = 0; kills = 0; statPoints = 0;
     activeEncounter = "";
     activeEncounterId = "";
-    storyEvent = null;
+    storySession = null;
     storyWaitRemaining = 0.0;
     log = [];
     hitFlash.player = 0.0; hitFlash.enemy = 0.0;
@@ -1966,12 +1976,12 @@ eve_update = function(dt) {
     }
     if (hitFlash.player > 0.0) hitFlash.player -= dt;
     if (hitFlash.enemy > 0.0) hitFlash.enemy -= dt;
-    if (storyEvent != null && storyEvent.isActive() && storyEvent.getStepKind() == "wait") {
+    if (storySession != null && storySession.isActive() && storySession.getStepKind() == "wait") {
         storyWaitRemaining -= dt;
         if (storyWaitRemaining <= 0.0) {
-            local advancedStory = storyEvent.advance(gs);
+            local advancedStory = storySession.advance();
             if (!advancedStory.ok) logMessage("story.advanceFailed", {error = advancedStory.status.summary});
-            else presentStoryEventStep();
+            else presentStoryStep();
         }
     }
     if (screen == "title") {
@@ -1981,7 +1991,7 @@ eve_update = function(dt) {
         if (key_just_pressed("C")) setScreen(returnScreen);
     } else if (screen == "dialogue") {
         if (key_just_pressed("escape", "Escape")) openPauseMenu();
-        else if (storyEvent != null && storyEvent.isActive() && key_just_pressed("F5"))
+        else if (storySession != null && storySession.isActive() && key_just_pressed("F5"))
             saveCheckpoint();
         else
         if (dialogueFlow.getNodeKind() == "choice") {
@@ -1995,8 +2005,8 @@ eve_update = function(dt) {
     } else if (state == "gameover") {
         if (key_just_pressed("E")) recoverPartyAtVillage();
         else if (key_just_pressed("R")) startNewGame(activeSaveSlot);
-    } else if (storyEvent != null && storyEvent.isActive() &&
-               storyEvent.getStepKind() == "wait") {
+    } else if (storySession != null && storySession.isActive() &&
+               storySession.getStepKind() == "wait") {
         if (key_just_pressed("F5")) saveCheckpoint();
     } else if (screen == "explore") {
         if (key_just_pressed("escape", "Escape")) openPauseMenu();

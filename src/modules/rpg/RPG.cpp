@@ -954,6 +954,10 @@ void RPG::expose(ssq::Table &table) {
     gs.addFunc("setSelfVariable", [](GameState *g, const std::string &s, const std::string &n, float v) { if (g) g->setSelfVariable(s, n, double(v)); });
     gs.addFunc("getSelfVariable", [](GameState *g, const std::string &s, const std::string &n) -> float { return g ? float(g->getSelfVariable(s, n)) : 0.f; });
     gs.addFunc("hasSelfVariable", &GameState::hasSelfVariable);
+    gs.addFunc("setSelfString", &GameState::setSelfString);
+    gs.addFunc("getSelfString", &GameState::getSelfString);
+    gs.addFunc("hasSelfString", &GameState::hasSelfString);
+    gs.addFunc("clearSelfString", &GameState::clearSelfString);
     gs.addFunc("clear", &GameState::clear);
     gs.addFunc("snapshotJson", [](GameState *g) -> std::string {
         if (!g) return {};

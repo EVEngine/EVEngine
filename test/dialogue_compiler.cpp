@@ -12,6 +12,10 @@ version 1
 pool greeting {
   guide: "A // inside string is not a comment" id="greeting.line"
 }
+story forest.arrival {
+  dialogue id=story.forest.arrival
+  wait 0.35
+}
 conversation greeting.scene entry=end {
   parameter count int optional default=2
   node end end

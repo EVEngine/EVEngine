@@ -11,8 +11,8 @@
 #include "map/TileConfig.h"
 #include "rpg/EncounterCatalogue.h"
 #include "rpg/Quest.h"
+#include "rpg/RpgDialect.h"
 #include "rpg/Skill.h"
-#include "rpg/StoryEvent.h"
 #include "rpg/Tracker.h"
 
 #include <filesystem>
@@ -45,7 +45,7 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find("function confirmDeleteSaveSlot()") != std::string::npos);
     CHECK(script.find("function confirmReturnToTitle()") != std::string::npos);
     CHECK(script.find("saveFs.writeTextAtomic(SETTINGS_PATH") != std::string::npos);
-    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v9\"") != std::string::npos);
+    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v10\"") != std::string::npos);
     CHECK(script.find("function loadWorldMap(mapId, x, y, fx, fy)") != std::string::npos);
     CHECK(script.find("function transitionThroughPortal(index)") != std::string::npos);
     CHECK(script.find("function beginQuestNpcDialogue(index)") != std::string::npos);
@@ -65,10 +65,12 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find(
               "function restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,") !=
           std::string::npos);
-    CHECK(script.find("rpg.replaceStoryEventsFromJson(storyEventJson)") != std::string::npos);
+    CHECK(script.find("rpg.replaceStoriesFromDnut(storyDnut, \"data/stories.dnut\")") != std::string::npos);
     CHECK(script.find("text.replaceBundleFromJson(source)") != std::string::npos);
     CHECK(script.find("dialogueFlow.validateLocalization(text, \"zh-CN\")") != std::string::npos);
     CHECK(script.find("function resumePendingStoryEvent()") != std::string::npos);
+    CHECK(script.find("rpg.newStorySession()") != std::string::npos);
+    CHECK(script.find("function presentStoryStep()") != std::string::npos);
     CHECK(script.find("accepted content restored") != std::string::npos);
     CHECK(script.find("publishNarrativeContentPackage(true)") != std::string::npos);
     CHECK(script.find("loadFromFileWithObjectContract(path, worldObjectContract)") != std::string::npos);
@@ -339,8 +341,9 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     REQUIRE(quests.ok());
     auto encounters = eve::rpg::EncounterCatalogue::replaceFromJsonStrict(readFile(root / "encounters.json"));
     REQUIRE(encounters.ok());
-    auto storyEvents = eve::rpg::StoryEventCatalogue::replaceFromJsonStrict(readFile(root / "story-events.json"));
-    REQUIRE(storyEvents.ok());
+    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(readFile(root / "stories.dnut"), "stories.dnut");
+    REQUIRE(stories.ok());
+    CHECK(eve::rpg::RpgStoryCatalogue::contains("forest.arrival"));
 
     std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
     auto compiled = eve::dialogue::compileDnutConversations(
@@ -399,13 +402,10 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
             CHECK(localization->hasInLanguage("en", node.i18nKey));
         }
     }
-    const auto* arrival = eve::rpg::StoryEventCatalogue::find("forest.arrival");
-    REQUIRE(arrival != nullptr);
-    for (const auto& step : arrival->steps) {
-        if (step.kind == eve::rpg::StoryEventStepKind::Dialogue) CHECK(conversationIds.count(step.reference) == 1);
-        if (step.kind == eve::rpg::StoryEventStepKind::Message)
-            CHECK(localization->validateKeyCoverage(step.reference).ok());
-    }
+    CHECK(conversationIds.count("story.forest.arrival") == 1);
+    CHECK(localization->validateKeyCoverage("gameplayLog.story.recorded").ok());
+
+    eve::rpg::RpgStoryCatalogue::clear();
 
     const std::vector<std::string> states{"offer", "active", "turnin", "completed"};
     for (const auto& mapName : {"village.json", "forest.json"}) {
@@ -437,6 +437,5 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     eve::rpg::QuestRegistry::clear();
     eve::rpg::EncounterCatalogue::clear();
     eve::rpg::SkillRegistry::clear();
-    eve::rpg::StoryEventCatalogue::clear();
     localization->clear();
 }
