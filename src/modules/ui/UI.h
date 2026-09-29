@@ -633,6 +633,16 @@ public:
     bool inspectPickScene();
     /** @brief Creates another instance of the selected inspector class. */
     bool inspectAddInstance();
+    /**
+     * @brief Return the reflection-derived `PropertySchema` for a live script instance.
+     *
+     * The schema is built by `ReflectedPropertyModel` (attributes → kinds/flags) and
+     * projected as a Squirrel table `{ typeId, version, properties = [ { path, kind,
+     * displayName, description, category, readOnly, choices, min, max, step, units,
+     * presenterHint }, ... ] }`. Scripts use this to inspect or drive custom UI; the
+     * authoritative editable view remains `ui.inspectObject` / PropertyView.
+     */
+    ssq::Object propertySchema(ssq::Object instance);
 
     // ---- Reflection-driven database panel -------------------------------
     /** @brief Opens the database panel (class menu + editable instance grid). */
