@@ -15,7 +15,8 @@ namespace eve::property_access {
  * Reflection metadata defines the schema while Runtime owns all reads and writes.
  * Scalars, enums, Color/Vec composites (`editor="color"|"vec2"|"vec3"|"vec4"`),
  * arrays and tables are editable through `write()`. Nested instances stay
- * ObjectRef (class-name string) and read-only — hosts navigate them separately.
+ * ObjectRef as a class-name string and remain read-only; hosts navigate them
+ * separately.
  *
  * This adapter is compiled with `property_access` but is not part of the L0
  * contract: `PropertyAccess.h` stays free of the script runtime. Include this
@@ -23,6 +24,17 @@ namespace eve::property_access {
  */
 class EVENGINE_API_FOUNDATION ReflectedPropertyModel final : public IPropertyAccess {
 public:
+    /**
+     * @brief Bind one live script instance to the shared property-access contract.
+     * @param runtime Borrowed Runtime that performs reflection reads and writes.
+     * @param instance Live Squirrel instance retained by this model.
+     * @ownership Does not own `runtime`; retains `instance` for the model lifetime.
+     * @lifetime `runtime` must outlive this model; do not keep the model across
+     *           Runtime stop/unload. `instance` stays rooted until destruction.
+     * @thread Call on the UI/script thread that owns the Runtime.
+     * @reentrancy Construction reads reflection metadata; do not invoke unknown
+     *             callbacks while constructing.
+     */
     ReflectedPropertyModel(Runtime &runtime, ssq::Object instance);
     ~ReflectedPropertyModel() override;
     ReflectedPropertyModel(const ReflectedPropertyModel &) = delete;
