@@ -181,11 +181,11 @@ function buildGallery() {
 }
 
 function applyPreset(index) {
-    if (index < 0 || index >= PRESETS.len()) return
+    if (index < 0 || index >= PRESETS.len()) return statusLabel()
     presetIndex = index
     local pr = PRESETS[index]
     floorLab.mode = pr.mode
-    floorLab.wear = ("wear" in pr) ? pr.wear : floorLab.wear
+    if ("wear" in pr) floorLab.wear = pr.wear
     if (pr.mode == 0) {
         floorLab.layoutIndex = indexOf(WOOD_LAYOUTS, pr.layout)
         floorLab.toneIndex = indexOf(WOOD_TONES, pr.tone)
@@ -206,6 +206,7 @@ function applyPreset(index) {
     }
     if (floorLab.uiReady) syncSliders()
     rebuildTextures()
+    return statusLabel()
 }
 
 function syncSliders() {
