@@ -165,14 +165,20 @@ void Destruction::expose(ssq::Table& table) {
     instance.addFunc("applyAnchorField", applyAnchorFieldScript);
     instance.addFunc("applySleepField", applySleepFieldScript);
     instance.addFunc("step", stepScript);
-    instance.addFunc("boneCount", &GeometryCollectionInstance::boneCount);
-    instance.addFunc("edgeCount", &GeometryCollectionInstance::edgeCount);
+    instance.addFunc("boneCount", [](GeometryCollectionInstance* self) { return self->boneCount(); });
+    instance.addFunc("edgeCount", [](GeometryCollectionInstance* self) { return self->edgeCount(); });
     instance.addFunc("boneState", boneStateScript);
-    instance.addFunc("edgeStrain", &GeometryCollectionInstance::edgeStrain);
-    instance.addFunc("edgeBroken", &GeometryCollectionInstance::edgeBroken);
-    instance.addFunc("detachEventCount", &GeometryCollectionInstance::detachEventCount);
-    instance.addFunc("hasLiveWorld", &GeometryCollectionInstance::hasLiveWorld);
-    instance.addFunc("releaseBodies", &GeometryCollectionInstance::releaseBodies);
+    instance.addFunc("edgeStrain", [](GeometryCollectionInstance* self, int edgeIndex) {
+        return self->edgeStrain(edgeIndex);
+    });
+    instance.addFunc("edgeBroken", [](GeometryCollectionInstance* self, int edgeIndex) {
+        return self->edgeBroken(edgeIndex);
+    });
+    instance.addFunc("detachEventCount", [](GeometryCollectionInstance* self) {
+        return self->detachEventCount();
+    });
+    instance.addFunc("hasLiveWorld", [](GeometryCollectionInstance* self) { return self->hasLiveWorld(); });
+    instance.addFunc("releaseBodies", [](GeometryCollectionInstance* self) { self->releaseBodies(); });
 }
 
 void Destruction::expose(ssq::Class& cls) {

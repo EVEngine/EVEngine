@@ -64,5 +64,5 @@ function eve_update(dt) {
 }
 
 function eve_render() {
-    gfx.clear(0.12, 0.14, 0.18, 1.0);
+    gfx.clear();
 }

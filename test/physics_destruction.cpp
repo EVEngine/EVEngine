@@ -107,9 +107,10 @@ TEST_CASE("physics_destruction.instanceDestroyReleasesBodiesBeforeWorld") {
     std::unique_ptr<World3D> world(mod->newWorld3D(0.f, -9.8f, 0.f, true));
     auto asset = GeometryCollectionAsset::makeWeldedBoxesFixture(1.f);
     REQUIRE(asset.ok());
-    auto instance = GeometryCollectionInstance::create(*world, asset.value(), 0.f, 2.f, 0.f);
-    REQUIRE(instance.ok());
-    auto link = instance.value()->boneLink(0);
+    auto created = GeometryCollectionInstance::create(*world, asset.value(), 0.f, 2.f, 0.f);
+    REQUIRE(created.ok());
+    auto instance = std::move(created.value());
+    auto link = instance->boneLink(0);
     REQUIRE(link.ok());
     instance.reset();
     auto resolved = link.value().resolve(*world);
@@ -122,16 +123,17 @@ TEST_CASE("physics_destruction.worldDestroyFirstLeavesStaleLinks") {
     std::unique_ptr<World3D> world(mod->newWorld3D(0.f, -9.8f, 0.f, true));
     auto asset = GeometryCollectionAsset::makeWeldedBoxesFixture(1.f);
     REQUIRE(asset.ok());
-    auto instance = GeometryCollectionInstance::create(*world, asset.value(), 0.f, 2.f, 0.f);
-    REQUIRE(instance.ok());
-    auto link = instance.value()->boneLink(0);
+    auto created = GeometryCollectionInstance::create(*world, asset.value(), 0.f, 2.f, 0.f);
+    REQUIRE(created.ok());
+    auto instance = std::move(created.value());
+    auto link = instance->boneLink(0);
     REQUIRE(link.ok());
 
     world->destroy();
     world.reset();
 
-    REQUIRE(!instance.value()->hasLiveWorld());
-    auto stepped = instance.value()->step(simStep(1));
+    REQUIRE(!instance->hasLiveWorld());
+    auto stepped = instance->step(simStep(1));
     REQUIRE(!stepped.ok());
     REQUIRE_EQ(stepped.status().code(), eve::StatusCode::Rejected);
 

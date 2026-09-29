@@ -47,6 +47,32 @@
       "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
     },
     {
+      "id": "physics-destruction-bone-link-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/destruction/GeometryCollectionInstance.h",
+      "owner": "physics::GeometryCollectionInstance",
+      "issue": "EVENGINE-DESTRUCTION-P0",
+      "reason": "Geometry-collection bones bind to World3D bodies only through PhysicsLink; either destruction order must stale-resolve without retained Body3D pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/destruction/GeometryCollectionInstance.h",
+        "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
+      ],
+      "tests": [
+        "test/physics_destruction.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "GeometryCollectionInstance",
+        "PhysicsLink"
+      ],
+      "create": "GeometryCollectionInstance::create builds Body3D per bone and stores PhysicsLink::fromBody; rollback destroys partial bodies on failure.",
+      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority.",
+      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField reject without mutating topology.",
+      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity.",
+      "stale": "boneLink/step/applyField resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
+    },
+    {
       "id": "physics-link-contract",
       "rule": "link",
       "scope": "src/modules/physics/PhysicsLink.h",
@@ -97,32 +123,6 @@
       "destroy_order": "Fragment destruction is independent; world destruction makes rasterization impossible without dereferencing retained world pointers.",
       "restore": "Transactional restore and clear increment the world epoch; callers must discard or explicitly recreate stale physics projections.",
       "stale": "Rasterization compares both runtime world identity and epoch and returns StaleHandle before any terrain write."
-    },
-    {
-      "id": "physics-destruction-bone-link-contract",
-      "rule": "link",
-      "scope": "src/modules/physics/destruction/GeometryCollectionInstance.h",
-      "owner": "physics::GeometryCollectionInstance",
-      "issue": "EVENGINE-DESTRUCTION-P0",
-      "reason": "Geometry-collection bones bind to World3D bodies only through PhysicsLink; either destruction order must stale-resolve without retained Body3D pointers.",
-      "expiry": "2027-12-31",
-      "evidence": [
-        "src/modules/physics/destruction/GeometryCollectionInstance.h",
-        "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
-      ],
-      "tests": [
-        "test/physics_destruction.cpp",
-        "scripts/tests/test_architecture_contracts.py"
-      ],
-      "symbols": [
-        "GeometryCollectionInstance",
-        "PhysicsLink"
-      ],
-      "create": "GeometryCollectionInstance::create builds Body3D per bone and stores PhysicsLink::fromBody; rollback destroys partial bodies on failure.",
-      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority.",
-      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField reject without mutating topology.",
-      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity.",
-      "stale": "boneLink/step/applyField resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
     },
     {
       "id": "rts-link-contract",
