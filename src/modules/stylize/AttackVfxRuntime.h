@@ -3,11 +3,11 @@
 
 /**
  * @file AttackVfxRuntime.h
- * @brief Pooled AttackVfx orchestration shell (Phase 1 — no layer executors).
+ * @brief Pooled AttackVfx orchestration with optional layer executors.
  *
  * Owns recipe registration, play/signal/advance/stop, and phase enter/exit
- * events. Layer backends (particles, MeshVFX, decal, camera) are not started
- * yet; later phases attach executors behind the same handle/frame contract.
+ * events. Layer backends register as IAttackVfxLayerExecutor listeners; missing
+ * executors emit LayerSkipped without failing the instance.
  */
 
 #include "common/Identity.h"
@@ -15,10 +15,10 @@
 #include "stylize/AttackVfxRecipe.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::stylize {
@@ -81,14 +81,18 @@ struct AttackVfxFrameEvent {
         PhaseExit,
         InstanceStopped,
         CueConsumed,
-        CueIgnored
+        CueIgnored,
+        LayerStarted,
+        LayerSkipped
     };
 
     Kind               kind  = Kind::CueIgnored;
     AttackVfxHandle    handle{};
     AttackVfxPhaseKind phase = AttackVfxPhaseKind::Release;
+    AttackVfxLayerRole role  = AttackVfxLayerRole::Particles;
     std::string        cue;
     std::size_t        layerCount = 0;
+    std::size_t        layerIndex = 0;
 };
 
 /** @brief Owning result of one atomic orchestration step. */
@@ -101,15 +105,19 @@ struct AttackVfxFrame {
 /**
  * @brief Deterministic pooled runtime for AttackVfxRecipe instances.
  *
- * @ownership Owns live instance slots and registered recipe copies. Does not
- *            own GPU/particle resources in Phase 1.
+ * @ownership Owns live instance slots and registered recipe copies. Layer GPU
+ *            resources are owned by IAttackVfxLayerExecutor implementations.
  * @thread Simulation-thread affine. No internal synchronization.
- * @reentrancy Does not invoke user callbacks.
+ * @reentrancy Does not invoke user callbacks; may call registered executors.
  */
 class EVENGINE_API_WORLD AttackVfxRuntime {
 public:
     /** @brief Construct with a default pool capacity of 32. */
     AttackVfxRuntime();
+    ~AttackVfxRuntime();
+
+    AttackVfxRuntime(const AttackVfxRuntime&) = delete;
+    AttackVfxRuntime& operator=(const AttackVfxRuntime&) = delete;
 
     /**
      * @brief Resize the instance pool. Fails when any slot is occupied.
@@ -158,28 +166,11 @@ public:
     [[nodiscard]] std::size_t activeCount() const noexcept;
 
     /** @brief Configured pool capacity. */
-    [[nodiscard]] std::size_t capacity() const noexcept { return slots_.size(); }
+    [[nodiscard]] std::size_t capacity() const noexcept;
 
 private:
-    struct Slot {
-        std::uint32_t                        generation = 1;
-        std::optional<AttackVfxInstanceState> state;
-    };
-
-    [[nodiscard]] Result<AttackVfxInstanceState*> resolve(AttackVfxHandle handle);
-    [[nodiscard]] const AttackVfxInstanceState* resolve(AttackVfxHandle handle) const;
-    void enterPhase(AttackVfxInstanceState& state, std::size_t phaseIndex, AttackVfxFrame& frame);
-    void exitPhase(AttackVfxInstanceState& state, std::size_t phaseIndex, AttackVfxFrame& frame,
-                   std::string_view cue);
-    void armTimedPhases(AttackVfxInstanceState& state);
-    void applyCue(AttackVfxInstanceState& state, std::string_view cue, AttackVfxFrame& frame);
-    void finishInstance(std::size_t slotIndex, AttackVfxFrame& frame, std::string_view cue);
-    [[nodiscard]] Result<LogicalId> resolveSkinId(const AttackVfxRecipe& recipe,
-                                                  const AttackVfxRequest& request) const;
-
-    std::vector<Slot>                                  slots_;
-    std::unordered_map<std::string, AttackVfxRecipe>   recipes_;
-    std::unordered_map<std::string, AttackVfxSkin>     skins_;
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace eve::stylize
