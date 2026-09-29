@@ -1,5 +1,7 @@
 # Settlement
 
+**脚本入口：** `eve.Settlement()`（槽位 `settlement`）
+
 `settlement` 是 RPG、战棋、RTS、卡牌与其他玩法共享的确定性结算协议。模块只拥有计算顺序、结果解释和原子提交机制；生命、护盾、装甲、棋盘单位、卡牌与效果实例仍由对应玩法模块持有。
 
 ## 统一流程
@@ -80,8 +82,16 @@ EveScript 可把完整规则文档写成一个字符串，交给现有玩法对�
 `settlement.rules` version 1 格式。C++ 侧也可直接调用 `SettlementRuleSet::configureJson`。
 该入口先严格解析整份文档并编译所有 `when`，全部成功后才替换旧配置；未知字段、未知版本或任一条件
 编译失败都会保留上一份规则。Tactics 的 settlement policy 由游戏侧 C++ 持有，因此当前通过同一个
-`configureJson` 解析规则后调用 `TacticsSettlementRuntime::configureSettlementRules`，不暴露无法提供
-权威 policy 的脚本假接口。
+`configureJson` 解析规则后调用 `TacticsSettlementRuntime::configureSettlementRules`。
+
+另外，`eve.Settlement()`（槽位 `settlement`）提供协议级脚本门面（`getName` /
+`newRuntime`）。`newRuntime()` 返回脚本拥有的 `SettlementRuntime`
+（`ownership` 恒为 `"owned"`），可 `configureRulesJson` /
+`validateRulesJson` / `rulesCanonicalJson` / `rulesDigest` / `ruleCount`，并用
+`upsertResource` / `getResource` / `removeResource` / `clearResources` +
+`settle(...)` 在**脚本自有 ledger**上跑 damage/heal/spend/gain。
+该 ledger **不会**写入 RPG/Combat/RTS/Card 的域状态；生产玩法仍应走各自的
+`configureSettlementRulesJson` 与域 policy。
 
 最小文档如下：
 
