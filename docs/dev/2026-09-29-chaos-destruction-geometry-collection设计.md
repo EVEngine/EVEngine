@@ -1,6 +1,6 @@
 # Chaos Destruction 风格几何破碎系统设计
 
-> 状态：设计草案（尚未实施）。日期：2026-09-29  
+> 状态：P0 实施中（领域核心已落地；cook/graphics/editing 未做）。日期：2026-09-29  
 > 目标：参考 Unreal Chaos Destruction，在 EVEngine 上落地一套 **预切几何集合 +
 > 连接图 + 聚类层级 + 运行时场驱动** 的 3D 模型破碎框架，覆盖墙体、道具、掩体等
 > 硬表面破坏，并给脚本/编辑器留稳定 API。  
@@ -11,6 +11,19 @@
 > [`Result检查与不得丢弃返回值规范.md`](./Result检查与不得丢弃返回值规范.md)、
 > [`体素引擎差距分析.md`](./体素引擎差距分析.md)、
 > [`docs/usr/modules/physics.md`](../usr/modules/physics.md)。
+
+## 0. P0 落地备注（2026-09-29）
+
+已合入模块 `physics_destruction`（`src/modules/physics/destruction/`，脚本
+`eve.Destruction()`）：
+
+- `GeometryCollectionAsset` schema `physics:geometry-collection@1`（盒代理骨块 + 连接图）
+- `GeometryCollectionInstance`：`PhysicsLink` 绑 Body3D、Strain/Anchor/Sleep 场、step 断边事件
+- 测试：`test/physics_destruction.cpp`；示例：`examples/destruction-basic`
+- **层纠正**：因绑定 `World3D`/`Body3D`，模块为 **LAYER 5**（`DEPS physics schema`），
+  而非初稿的 L3（L3 仅适用于自带求解器、不依赖 physics facade 的 softbody 形态）
+
+P1+（cook / clustering / graphics / editor）仍按下文阶段表推进。
 
 ## 1. 问题与非目标
 
@@ -81,7 +94,7 @@ DestructionField（应变/锚固/冲量/休眠）
 
 | 模块名 | DIR | LAYER | 职责 |
 |--------|-----|-------|------|
-| `physics_destruction` | `physics/destruction` | 3 | 资产解码、实例、连接图步进、场应用、与 `World3D` 解绑；无 graphics |
+| `physics_destruction` | `physics/destruction` | **5** | 资产解码、实例、连接图步进、场应用、与 `World3D` 解绑；无 graphics。P0 因依赖 Body3D 落在 L5（初稿 L3 已纠正） |
 | `physics_destruction_cook` | `physics/destruction/cook` | 4 | `CanonicalMeshData` → asset；Voronoi/平面/径向 |
 | `physics_destruction_graphics` | `physics/destruction/graphics` | 4 | 骨块 mesh 同步、内材材质、休眠后静态合并（可选） |
 | `physics_destruction_editing` | `physics/destruction/editing` | 5 | FractureRecipe schema、属性面板契约 |
@@ -297,10 +310,10 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 ### P0 — 领域核心可测（无编辑器）
 
-- [ ] `physics_destruction`：Asset v1 编解码、Instance、手工 fixture 连接图（跳过 cook）、断边 → Body、双销毁顺序测试
-- [ ] `DestructionField`：Strain + Anchor + Sleep
-- [ ] Contract：`ARCHITECTURE_BASE=HEAD make check/architecture-contracts`；模块裁剪 present/absent
-- [ ] 示例：`examples/destruction-basic`（预置两块焊接盒子）
+- [x] `physics_destruction`：Asset v1 编解码、Instance、手工 fixture 连接图（跳过 cook）、断边 → Body、双销毁顺序测试
+- [x] `DestructionField`：Strain + Anchor + Sleep
+- [x] Contract：`physics-destruction-bone-link-contract` + `test/physics_destruction.cpp`
+- [x] 示例：`examples/destruction-basic`（预置两块焊接盒子）
 
 ### P1 — Cook
 
