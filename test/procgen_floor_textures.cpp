@@ -163,7 +163,8 @@ TEST_CASE("procgen.floorTextures.pbr.fullMapSet") {
     auto woodResult = generateWoodFloorPbr(wood);
     REQUIRE(woodResult.ok());
     REQUIRE(static_cast<bool>(woodResult.value()));
-    CHECK(woodResult.value()->albedo != nullptr && woodResult.value()->ao != nullptr);
+    CHECK(woodResult.value()->albedo != nullptr);
+    CHECK(woodResult.value()->ao != nullptr);
 
     Params tile;
     tile.setSeed(22);
