@@ -12,18 +12,23 @@
 > [`体素引擎差距分析.md`](./体素引擎差距分析.md)、
 > [`docs/usr/modules/physics.md`](../usr/modules/physics.md)。
 
-## 0. P0 落地备注（2026-09-29）
+## 0. P0/P1 落地备注（2026-09-29）
 
-已合入模块 `physics_destruction`（`src/modules/physics/destruction/`，脚本
-`eve.Destruction()`）：
+已合入模块：
 
-- `GeometryCollectionAsset` schema `physics:geometry-collection@1`（盒代理骨块 + 连接图）
-- `GeometryCollectionInstance`：`PhysicsLink` 绑 Body3D、Strain/Anchor/Sleep 场、step 断边事件
-- 测试：`test/physics_destruction.cpp`；示例：`examples/destruction-basic`
-- **层纠正**：因绑定 `World3D`/`Body3D`，模块为 **LAYER 5**（`DEPS physics schema`），
-  而非初稿的 L3（L3 仅适用于自带求解器、不依赖 physics facade 的 softbody 形态）
+- `physics_destruction`（`eve.Destruction()`）：Asset / Instance / Fields / PhysicsLink
+- `physics_destruction_cook`：`FractureRecipe` + `cookGeometryCollection`（Uniform/Clustered Voronoi、Planar、Radial）
 
-P1+（cook / clustering / graphics / editor）仍按下文阶段表推进。
+测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`；示例：`examples/destruction-basic`。
+
+**层纠正**：因绑定 `World3D`/`Body3D`，宿主为 **LAYER 5**；cook 同层依赖宿主 + `asset`。
+三角网格 CSG 切面盖帽与层级 cluster 骨块（schema 扩展）留待 graphics / schema v2。
+
+P2+（graphics / editing / editor）仍按下文阶段表推进。
+
+---
+
+> 以下为原始设计正文。
 
 ## 1. 问题与非目标
 
@@ -95,7 +100,7 @@ DestructionField（应变/锚固/冲量/休眠）
 | 模块名 | DIR | LAYER | 职责 |
 |--------|-----|-------|------|
 | `physics_destruction` | `physics/destruction` | **5** | 资产解码、实例、连接图步进、场应用、与 `World3D` 解绑；无 graphics。P0 因依赖 Body3D 落在 L5（初稿 L3 已纠正） |
-| `physics_destruction_cook` | `physics/destruction/cook` | 4 | `CanonicalMeshData` → asset；Voronoi/平面/径向 |
+| `physics_destruction_cook` | `physics/destruction/cook` | **5** | `CanonicalMeshData` → asset；Voronoi/平面/径向（盒代理 + 连接图；三角 CSG 盖帽延后） |
 | `physics_destruction_graphics` | `physics/destruction/graphics` | 4 | 骨块 mesh 同步、内材材质、休眠后静态合并（可选） |
 | `physics_destruction_editing` | `physics/destruction/editing` | 5 | FractureRecipe schema、属性面板契约 |
 | `physics_destruction_editor` | `physics/destruction/editor` | 7 | Fracture 编辑器 Mode（后期） |
@@ -317,9 +322,9 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 ### P1 — Cook
 
-- [ ] `physics_destruction_cook`：封闭网格 Uniform Voronoi + 切面盖帽 + 凸包
-- [ ] Planar / Radial；命名 RNG bit-exact fixture
-- [ ] Cluster hierarchy auto-cluster
+- [x] `physics_destruction_cook`：网格 AABB 上 Uniform Voronoi 盒代理 + 邻接连接图（三角 CSG 盖帽延后至 graphics cook）
+- [x] Planar / Radial；命名 RNG（seed + stream）bit-exact fixture
+- [x] ClusteredVoronoi 自动聚类：岛内边更高 `strainThreshold`，岛间更低（层级骨块 schema 延后）
 
 ### P2 — 表现与编辑
 

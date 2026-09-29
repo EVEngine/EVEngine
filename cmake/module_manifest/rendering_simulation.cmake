@@ -94,6 +94,12 @@ eve_declare_module(NAME physics_destruction DIR physics/destruction LIB EVPhysic
                    LAYER 5 SCRIPT Destruction SLOT destruction
                    DEPS physics schema
                    GROUP 3d web)
+# Offline fracture cook for geometry collections. Same layer as the host is
+# allowed; nested DIR physics/destruction/cook is excluded from the host scan.
+eve_declare_module(NAME physics_destruction_cook DIR physics/destruction/cook
+                   LIB EVPhysicsDestruction_cook LAYER 5
+                   DEPS asset physics_destruction
+                   GROUP 3d web)
 # Optional Action adapter for generation-safe 3D body-pair collision windows.
 eve_declare_module(NAME physics_action DIR physics/action LAYER 5
                    DEPS action physics
