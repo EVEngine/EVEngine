@@ -218,6 +218,56 @@ local texture = textureResult.value;
 `prototypeTextureDescriptors()` 枚举，并以 `generatePrototypeTexture()` 生成 owning
 RGBA8 `ImageData`。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。
 
+## 程序化地板纹理（木地板 / 瓷砖）
+
+`tex.floor.wood` 与 `tex.floor.tile` 用参数排列组合生成可平铺地板 albedo，无需外部图片。
+对应的完整 PBR 配方为 `pbr.floor.wood` / `pbr.floor.tile`，一次烘焙产出
+albedo / normal / roughness / metallic / height / AO（位移场与 albedo 像素对齐）。
+示例见 `examples/procedural-textures`（Material 绑定 albedo+normal+height，scalar roughness/metallic）。
+
+木地板 `layout` 支持 `planks` / `staggered` / `herringbone` / `chevron` / `parquet` /
+`basket` / `diagonal` / `ladder` / `finger` / `versailles`；`tone` 支持 `oak` / `walnut` /
+`pine` / `cherry` / `ebony` / `ash` / `maple` / `teak`。
+其余常用旋钮：`rows`、`cols`、`gap`、`grain`、`warp`、`wear`、`stain`、`bevel`。
+PBR 额外旋钮：`roughnessLow`、`roughnessHigh`、`metallic`、`normalStrength`、`aoStrength`、
+`heightStrength`（沟槽偏粗糙，板面偏光滑）。
+
+瓷砖 `pattern` 支持 `square` / `checker` / `diamond` / `hex` / `subway` / `brick` /
+`stack` / `mosaic` / `basket` / `herringbone` / `octagon` / `fishscale` / `scallop` /
+`pinwheel` / `windmill` / `star` / `moroccan` / `cobble` / `arabesque` / `terrazzo`；
+`palette` 支持 `ceramic` / `terracotta` / `slate` / `porcelain` / `marble` / `black` /
+`mosaic` / `subway` / `encaustic` / `jade` / `cobalt`。其余常用旋钮：`tilesX`、
+`tilesY`、`grout`、`bevel`、`glaze`、`wear`、`speckles`、`motif`。釉面越高，板面粗糙度越低。
+
+```squirrel
+local textureParamsResult = gen.newParams();
+if (!textureParamsResult.ok) throw textureParamsResult.status.summary;
+local tp = textureParamsResult.value;
+tp.setSize(256, 256);
+tp.setString("layout", "herringbone");
+tp.setString("tone", "walnut");
+tp.setInt("rows", 8);
+tp.setInt("cols", 8);
+tp.setFloat("gap", 0.035);
+local textureResult = gen.generateTexture("tex.floor.wood", tp, gfx);
+if (!textureResult.ok) throw textureResult.status.summary;
+
+local pbrResult = gen.generatePbrMaterial("pbr.floor.wood", tp);
+if (!pbrResult.ok) throw pbrResult.status.summary;
+local maps = pbrResult.value;
+local albedo = maps.getAlbedo();
+local normal = maps.getNormal();
+local height = maps.getHeight();
+local roughness = maps.getRoughness();
+local metallic = maps.getMetallic();
+local ao = maps.getAo();
+maps.destroy();
+```
+
+C++ 可用 `generateWoodFloorTexture()` / `generateTileFloorTexture()` 获得 albedo，以及
+`generateWoodFloorPbr()` / `generateTileFloorPbr()` 获得完整 `PbrTextureSet`；注册入口为
+`registerFloorTextureRecipes()` 与 `registerFloorPbrRecipes()`。
+
 ### Params 的类型与尺寸语义
 
 `Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、
