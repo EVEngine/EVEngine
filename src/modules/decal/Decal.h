@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 #include "decal/DecalManager.h"
 
@@ -21,7 +22,7 @@ namespace eve::decal {
  * pass (see setEnabled). `decal.update(dt)` must be called each frame to
  * advance fades and evict expired instances.
  */
-class Decal : public Module {
+class EVENGINE_API_WORLD Decal : public Module {
 public:
     Module_REG(Decal);
     Decal();
