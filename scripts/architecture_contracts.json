@@ -49,13 +49,14 @@
     {
       "id": "physics-destruction-bone-link-contract",
       "rule": "link",
-      "scope": "src/modules/physics/destruction/GeometryCollectionInstance.h",
+      "scope": "src/modules/physics/destruction/**",
       "owner": "physics::GeometryCollectionInstance",
       "issue": "EVENGINE-DESTRUCTION-P0",
       "reason": "Geometry-collection bones bind to World3D bodies only through PhysicsLink; either destruction order must stale-resolve without retained Body3D pointers.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/physics/destruction/GeometryCollectionInstance.h",
+        "src/modules/physics/destruction/graphics/GeometryCollectionRenderer.h",
         "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
       ],
       "tests": [

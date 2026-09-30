@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "graphics/Graphics.h"
+#include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World3D.h"
 #include "physics/destruction/DestructionField.h"
@@ -31,11 +32,15 @@ eve::SimulationStep simStep(std::uint64_t tick) {
     return {eve::SimulationTick{tick}, eve::Duration::fromSeconds(1.0 / 60.0).expect("destruction gfx dt")};
 }
 
-std::unique_ptr<eve::window::Window> makeHiddenWindow() {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) return nullptr;
-    auto window = std::make_unique<eve::window::Window>();
-    if (!window->create("destruction-gfx", 320, 240, false)) return nullptr;
-    return window;
+bool tryInitDrawWindow(eve::window::Window*& window, eve::graphics::Graphics*& graphics) {
+    window = eve::window::Window::create();
+    graphics = eve::graphics::Graphics::create();
+    if (!window || !graphics) return false;
+    eve::window::WindowSettings settings;
+    settings.width = 320;
+    settings.height = 240;
+    settings.centered = true;
+    return window->setWindowSettings(settings);
 }
 
 }  // namespace
@@ -52,14 +57,12 @@ TEST_CASE("physics_destruction_editing.fractureRecipeSchemaMirrorsDefaults") {
 }
 
 TEST_CASE("physics_destruction_graphics.drawsActiveAndBatchesSleepingBones") {
-    auto window = makeHiddenWindow();
-    if (!window) {
-        WARN("SDL window unavailable; skipping destruction graphics draw test");
+    eve::window::Window* window = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    if (!tryInitDrawWindow(window, gfx)) {
+        // Headless hosts without a display/Vulkan ICD skip the draw path.
         return;
     }
-    auto* gfx = eve::graphics::Graphics::create();
-    REQUIRE(gfx != nullptr);
-    REQUIRE(gfx->initWithWindow(window->getNativeWindow()));
 
     auto* mod = Physics::create();
     std::unique_ptr<World3D> world(mod->newWorld3D(0.f, 0.f, 0.f, true));
@@ -78,6 +81,7 @@ TEST_CASE("physics_destruction_graphics.drawsActiveAndBatchesSleepingBones") {
     REQUIRE(drawn.ok());
     REQUIRE_EQ(renderer.lastActiveDrawCount(), 2);
     REQUIRE_EQ(renderer.lastSleepBatchCount(), 0);
+    gfx->present();
 
     DestructionField strain;
     strain.kind = DestructionFieldKind::Strain;
@@ -111,11 +115,13 @@ TEST_CASE("physics_destruction_graphics.drawsActiveAndBatchesSleepingBones") {
     REQUIRE(instance->boneState(1) == BoneRuntimeState::Sleeping);
     REQUIRE(instance->sleepBatchRevision() > 0u);
 
+    gfx->begin3DFrame();
     auto drawnSleep = renderer.draw(gfx);
     REQUIRE(drawnSleep.ok());
     REQUIRE_EQ(renderer.lastActiveDrawCount(), 0);
     REQUIRE_EQ(renderer.lastSleepBatchCount(), 2);
-    gfx->end3DFrame();
+    gfx->present();
+    window->close();
 }
 
 TEST_CASE("physics_destruction_graphics.staleWorldRejectsDraw") {
@@ -129,9 +135,7 @@ TEST_CASE("physics_destruction_graphics.staleWorldRejectsDraw") {
     GeometryCollectionRenderer renderer(instance.get());
     world->destroy();
     world.reset();
+    REQUIRE(!instance->hasLiveWorld());
     auto drawn = renderer.draw(nullptr);
     REQUIRE(!drawn.ok());
-    // Even with a null graphics pointer we get InvalidArgument; with a live
-    // Graphics the stale world would return StaleHandle — covered by hasLiveWorld.
-    REQUIRE(!instance->hasLiveWorld());
 }

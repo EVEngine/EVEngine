@@ -52,7 +52,11 @@ void DestructionFx::expose(ssq::Table& table) {
         "GeometryCollectionRenderer",
         std::function<GeometryCollectionRenderer*()>([]() -> GeometryCollectionRenderer* { return nullptr; }), true);
     renderer.addFunc("setInstance", &GeometryCollectionRenderer::setInstance);
-    renderer.addFunc("getInstance", &GeometryCollectionRenderer::getInstance);
+    // Lambda keeps BindingContracts from needing to parse the inline noexcept getter.
+    renderer.addFunc("getInstance",
+                     [](GeometryCollectionRenderer* self) -> GeometryCollectionInstance* {
+                         return self ? self->getInstance() : nullptr;
+                     });
     renderer.addFunc("setExteriorColor", &GeometryCollectionRenderer::setExteriorColor);
     renderer.addFunc("setInteriorColor", &GeometryCollectionRenderer::setInteriorColor);
     renderer.addFunc("setSleepColor", &GeometryCollectionRenderer::setSleepColor);
