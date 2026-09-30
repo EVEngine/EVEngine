@@ -1,0 +1,973 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::VegetationMotion结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html">VegetationMotion</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1VegetationMotion-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::VegetationMotion结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Source-equivalent plant motion parameters with explicit time and texture inputs. All data is owned. No wall clock/RNG/global shader state is read. Noise is linear RGBA with bilinear repeat addressing. The built-in 2x2 pattern is a native default; matching an authored appearance requires the same noise texture as the source. Speed/scale/amplitude controls retain TVE 12.6 plant shader units. Object transforms must be finite, affine and invertible. Output geometry is world space.  
+ <a href="structeve_1_1graphics_1_1VegetationMotion.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a27f91f0902a100fcc7721b19e732d51a" id="r_a27f91f0902a100fcc7721b19e732d51a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a27f91f0902a100fcc7721b19e732d51a">time</a> = 0.</td></tr>
+<tr class="separator:a27f91f0902a100fcc7721b19e732d51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92368a5596194ee5fca570366022bbe6" id="r_a92368a5596194ee5fca570366022bbe6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a92368a5596194ee5fca570366022bbe6">timeScale</a> = 1.</td></tr>
+<tr class="separator:a92368a5596194ee5fca570366022bbe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bbbd842e4b62a64555e4d2fb0bcf1f7" id="r_a7bbbd842e4b62a64555e4d2fb0bcf1f7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a7bbbd842e4b62a64555e4d2fb0bcf1f7">timeOffset</a> = 0.</td></tr>
+<tr class="separator:a7bbbd842e4b62a64555e4d2fb0bcf1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fb68ee7ef9537c6931a1398f2a4038d" id="r_a4fb68ee7ef9537c6931a1398f2a4038d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a4fb68ee7ef9537c6931a1398f2a4038d">timeOverride</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4fb68ee7ef9537c6931a1398f2a4038d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af01b27111702627386791037e54222e7" id="r_af01b27111702627386791037e54222e7"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#af01b27111702627386791037e54222e7">objectToWorld</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:af01b27111702627386791037e54222e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ab4899bad4a5275ec58008343b7fd51" id="r_a3ab4899bad4a5275ec58008343b7fd51"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a3ab4899bad4a5275ec58008343b7fd51">camera</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a3ab4899bad4a5275ec58008343b7fd51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643da5346b2d509ae7733b8e3fd21ec0" id="r_a643da5346b2d509ae7733b8e3fd21ec0"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a643da5346b2d509ae7733b8e3fd21ec0">worldOrigin</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a643da5346b2d509ae7733b8e3fd21ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938b521f9f64ebe545a849829c8dacc6" id="r_a938b521f9f64ebe545a849829c8dacc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a59a9ccde0600fe85cc50dd9fc3df85a4">VegetationBatchMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a938b521f9f64ebe545a849829c8dacc6">batchMode</a> = <a class="el" href="namespaceeve_1_1graphics.html#a59a9ccde0600fe85cc50dd9fc3df85a4a497031794414a552435f90151ac3b54b">VegetationBatchMode::Object</a></td></tr>
+<tr class="separator:a938b521f9f64ebe545a849829c8dacc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c0accdd3bd4bc9a7479dc05b3f6f335" id="r_a5c0accdd3bd4bc9a7479dc05b3f6f335"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a5c0accdd3bd4bc9a7479dc05b3f6f335">usePivots</a> = true</td></tr>
+<tr class="separator:a5c0accdd3bd4bc9a7479dc05b3f6f335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b00447e3a4398d067185527d99d356" id="r_af5b00447e3a4398d067185527d99d356"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#af5b00447e3a4398d067185527d99d356">dynamicMode</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af5b00447e3a4398d067185527d99d356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac012eb28bb9ce16386c7baff0a306277" id="r_ac012eb28bb9ce16386c7baff0a306277"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ac012eb28bb9ce16386c7baff0a306277">rigidity</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac012eb28bb9ce16386c7baff0a306277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a067e0006888a908a6350b14ff40c59ba" id="r_a067e0006888a908a6350b14ff40c59ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a067e0006888a908a6350b14ff40c59ba">facing</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a067e0006888a908a6350b14ff40c59ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5466cabd0e5bda95d744b5de636b6963" id="r_a5466cabd0e5bda95d744b5de636b6963"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a5466cabd0e5bda95d744b5de636b6963">bending</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5466cabd0e5bda95d744b5de636b6963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8383cff42036eb1fe55f5b5747a043" id="r_a6c8383cff42036eb1fe55f5b5747a043"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a6c8383cff42036eb1fe55f5b5747a043">bendingSpeed</a> = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6c8383cff42036eb1fe55f5b5747a043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a101aba32313ace2d89e1c5e1d126d929" id="r_a101aba32313ace2d89e1c5e1d126d929"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a101aba32313ace2d89e1c5e1d126d929">bendingScale</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a101aba32313ace2d89e1c5e1d126d929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9baf6f1c40f3de60cec294ae3ed67c2f" id="r_a9baf6f1c40f3de60cec294ae3ed67c2f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a9baf6f1c40f3de60cec294ae3ed67c2f">bendingVariation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9baf6f1c40f3de60cec294ae3ed67c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1528b5d3b69917400839ee4a0f23ea0" id="r_ae1528b5d3b69917400839ee4a0f23ea0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ae1528b5d3b69917400839ee4a0f23ea0">branch</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae1528b5d3b69917400839ee4a0f23ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13cb01d1b2d052f1f101624ae7dd0e8b" id="r_a13cb01d1b2d052f1f101624ae7dd0e8b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a13cb01d1b2d052f1f101624ae7dd0e8b">rolling</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a13cb01d1b2d052f1f101624ae7dd0e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af53707e7fa2bfa045e0d2e1cd7427a09" id="r_af53707e7fa2bfa045e0d2e1cd7427a09"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#af53707e7fa2bfa045e0d2e1cd7427a09">branchSpeed</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af53707e7fa2bfa045e0d2e1cd7427a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee72a11f306abc2c6015b2e2642469b2" id="r_aee72a11f306abc2c6015b2e2642469b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#aee72a11f306abc2c6015b2e2642469b2">branchScale</a> = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aee72a11f306abc2c6015b2e2642469b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a9fdfcc1f8938b0abd9d900be673204" id="r_a8a9fdfcc1f8938b0abd9d900be673204"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a8a9fdfcc1f8938b0abd9d900be673204">branchVariation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8a9fdfcc1f8938b0abd9d900be673204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac94e717624d435a3f7c4f1e33e3a7363" id="r_ac94e717624d435a3f7c4f1e33e3a7363"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ac94e717624d435a3f7c4f1e33e3a7363">flutter</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac94e717624d435a3f7c4f1e33e3a7363"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addfc468128f0524852ff71390e2e2e65" id="r_addfc468128f0524852ff71390e2e2e65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#addfc468128f0524852ff71390e2e2e65">flutterSpeed</a> = 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:addfc468128f0524852ff71390e2e2e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3fd1cb2e4629795daf90f0787ab7a6d" id="r_aa3fd1cb2e4629795daf90f0787ab7a6d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#aa3fd1cb2e4629795daf90f0787ab7a6d">flutterScale</a> = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa3fd1cb2e4629795daf90f0787ab7a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab108b2dcddfe7e34e44d9e50da4c68d4" id="r_ab108b2dcddfe7e34e44d9e50da4c68d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ab108b2dcddfe7e34e44d9e50da4c68d4">flutterVariation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab108b2dcddfe7e34e44d9e50da4c68d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d206be20bad28bd40b4cc447e25f38" id="r_a02d206be20bad28bd40b4cc447e25f38"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a02d206be20bad28bd40b4cc447e25f38">globalBending</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a02d206be20bad28bd40b4cc447e25f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2a7240db64cbbc8b3dd5253aeadf1f1" id="r_ad2a7240db64cbbc8b3dd5253aeadf1f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ad2a7240db64cbbc8b3dd5253aeadf1f1">globalBranch</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad2a7240db64cbbc8b3dd5253aeadf1f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b5e78cc3dfc7b850c2ebce2615d598" id="r_a69b5e78cc3dfc7b850c2ebce2615d598"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a69b5e78cc3dfc7b850c2ebce2615d598">globalFlutter</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a69b5e78cc3dfc7b850c2ebce2615d598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a159bad5766d4253b3dfb0f913d316077" id="r_a159bad5766d4253b3dfb0f913d316077"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a159bad5766d4253b3dfb0f913d316077">noiseTiling</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a159bad5766d4253b3dfb0f913d316077"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c6e5dde09f560708de73d38d709c341" id="r_a0c6e5dde09f560708de73d38d709c341"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a0c6e5dde09f560708de73d38d709c341">interaction</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0c6e5dde09f560708de73d38d709c341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4846100f09d60b66c63b9ab14d5d52" id="r_a7b4846100f09d60b66c63b9ab14d5d52"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a7b4846100f09d60b66c63b9ab14d5d52">interactionMask</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7b4846100f09d60b66c63b9ab14d5d52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f294a10d6d6420a99dd086c8848e53" id="r_ab5f294a10d6d6420a99dd086c8848e53"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#ab5f294a10d6d6420a99dd086c8848e53">fadeDistance</a> = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab5f294a10d6d6420a99dd086c8848e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bf96ef04eab60db9f6f1ed9af4d8553" id="r_a4bf96ef04eab60db9f6f1ed9af4d8553"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a4bf96ef04eab60db9f6f1ed9af4d8553">globalSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4bf96ef04eab60db9f6f1ed9af4d8553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f613c0ff2c962f5e42b1a7dfa8263ca" id="r_a4f613c0ff2c962f5e42b1a7dfa8263ca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a4f613c0ff2c962f5e42b1a7dfa8263ca">sizeFadeStart</a> = 1000000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4f613c0ff2c962f5e42b1a7dfa8263ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa8f80a79148314b8f78422686eb2f76" id="r_afa8f80a79148314b8f78422686eb2f76"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#afa8f80a79148314b8f78422686eb2f76">sizeFadeEnd</a> = 1000001.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:afa8f80a79148314b8f78422686eb2f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cb58ec7e2a22b8204d1e78b5c83471b" id="r_a0cb58ec7e2a22b8204d1e78b5c83471b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a0cb58ec7e2a22b8204d1e78b5c83471b">distanceFadeBias</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0cb58ec7e2a22b8204d1e78b5c83471b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeaabc068f7d899b160d551dd09e97fb" id="r_aeeaabc068f7d899b160d551dd09e97fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#aeeaabc068f7d899b160d551dd09e97fb">perspectivePush</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aeeaabc068f7d899b160d551dd09e97fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cfda74d959bbafbe4036eb5bff5fc6d" id="r_a3cfda74d959bbafbe4036eb5bff5fc6d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a3cfda74d959bbafbe4036eb5bff5fc6d">perspectiveNoise</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3cfda74d959bbafbe4036eb5bff5fc6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9566f2cbce961fb1fa7fa33f6c6a33d9" id="r_a9566f2cbce961fb1fa7fa33f6c6a33d9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a9566f2cbce961fb1fa7fa33f6c6a33d9">perspectiveAngle</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9566f2cbce961fb1fa7fa33f6c6a33d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2a126ef760945503f8fbef979b44e07" id="r_af2a126ef760945503f8fbef979b44e07"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#af2a126ef760945503f8fbef979b44e07">motionLayer</a> = 0</td></tr>
+<tr class="separator:af2a126ef760945503f8fbef979b44e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83c5ee1c9f448b829939d9063c8ffc0b" id="r_a83c5ee1c9f448b829939d9063c8ffc0b"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a83c5ee1c9f448b829939d9063c8ffc0b">vertexLayer</a> = 0</td></tr>
+<tr class="separator:a83c5ee1c9f448b829939d9063c8ffc0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55218ee80f6558523b218b4d6e09ecdf" id="r_a55218ee80f6558523b218b4d6e09ecdf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationMotion.html#a55218ee80f6558523b218b4d6e09ecdf">noise</a></td></tr>
+<tr class="separator:a55218ee80f6558523b218b4d6e09ecdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Source-equivalent plant motion parameters with explicit time and texture inputs. All data is owned. No wall clock/RNG/global shader state is read. Noise is linear RGBA with bilinear repeat addressing. The built-in 2x2 pattern is a native default; matching an authored appearance requires the same noise texture as the source. Speed/scale/amplitude controls retain TVE 12.6 plant shader units. Object transforms must be finite, affine and invertible. Output geometry is world space. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a938b521f9f64ebe545a849829c8dacc6" name="a938b521f9f64ebe545a849829c8dacc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938b521f9f64ebe545a849829c8dacc6">&#9670;&#160;</a></span>batchMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a59a9ccde0600fe85cc50dd9fc3df85a4">VegetationBatchMode</a> eve::graphics::VegetationMotion::batchMode = <a class="el" href="namespaceeve_1_1graphics.html#a59a9ccde0600fe85cc50dd9fc3df85a4a497031794414a552435f90151ac3b54b">VegetationBatchMode::Object</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a5466cabd0e5bda95d744b5de636b6963" name="a5466cabd0e5bda95d744b5de636b6963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5466cabd0e5bda95d744b5de636b6963">&#9670;&#160;</a></span>bending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::bending = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a101aba32313ace2d89e1c5e1d126d929" name="a101aba32313ace2d89e1c5e1d126d929"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a101aba32313ace2d89e1c5e1d126d929">&#9670;&#160;</a></span>bendingScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::bendingScale = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c8383cff42036eb1fe55f5b5747a043" name="a6c8383cff42036eb1fe55f5b5747a043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c8383cff42036eb1fe55f5b5747a043">&#9670;&#160;</a></span>bendingSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::bendingSpeed = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9baf6f1c40f3de60cec294ae3ed67c2f" name="a9baf6f1c40f3de60cec294ae3ed67c2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9baf6f1c40f3de60cec294ae3ed67c2f">&#9670;&#160;</a></span>bendingVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::bendingVariation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1528b5d3b69917400839ee4a0f23ea0" name="ae1528b5d3b69917400839ee4a0f23ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1528b5d3b69917400839ee4a0f23ea0">&#9670;&#160;</a></span>branch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::branch = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee72a11f306abc2c6015b2e2642469b2" name="aee72a11f306abc2c6015b2e2642469b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee72a11f306abc2c6015b2e2642469b2">&#9670;&#160;</a></span>branchScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::branchScale = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af53707e7fa2bfa045e0d2e1cd7427a09" name="af53707e7fa2bfa045e0d2e1cd7427a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af53707e7fa2bfa045e0d2e1cd7427a09">&#9670;&#160;</a></span>branchSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::branchSpeed = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a9fdfcc1f8938b0abd9d900be673204" name="a8a9fdfcc1f8938b0abd9d900be673204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a9fdfcc1f8938b0abd9d900be673204">&#9670;&#160;</a></span>branchVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::branchVariation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ab4899bad4a5275ec58008343b7fd51" name="a3ab4899bad4a5275ec58008343b7fd51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ab4899bad4a5275ec58008343b7fd51">&#9670;&#160;</a></span>camera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::VegetationMotion::camera {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cb58ec7e2a22b8204d1e78b5c83471b" name="a0cb58ec7e2a22b8204d1e78b5c83471b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cb58ec7e2a22b8204d1e78b5c83471b">&#9670;&#160;</a></span>distanceFadeBias</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::distanceFadeBias = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5b00447e3a4398d067185527d99d356" name="af5b00447e3a4398d067185527d99d356"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5b00447e3a4398d067185527d99d356">&#9670;&#160;</a></span>dynamicMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::dynamicMode = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a067e0006888a908a6350b14ff40c59ba" name="a067e0006888a908a6350b14ff40c59ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a067e0006888a908a6350b14ff40c59ba">&#9670;&#160;</a></span>facing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::facing = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5f294a10d6d6420a99dd086c8848e53" name="ab5f294a10d6d6420a99dd086c8848e53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f294a10d6d6420a99dd086c8848e53">&#9670;&#160;</a></span>fadeDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::fadeDistance = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="ac94e717624d435a3f7c4f1e33e3a7363" name="ac94e717624d435a3f7c4f1e33e3a7363"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac94e717624d435a3f7c4f1e33e3a7363">&#9670;&#160;</a></span>flutter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::flutter = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3fd1cb2e4629795daf90f0787ab7a6d" name="aa3fd1cb2e4629795daf90f0787ab7a6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3fd1cb2e4629795daf90f0787ab7a6d">&#9670;&#160;</a></span>flutterScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::flutterScale = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="addfc468128f0524852ff71390e2e2e65" name="addfc468128f0524852ff71390e2e2e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addfc468128f0524852ff71390e2e2e65">&#9670;&#160;</a></span>flutterSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::flutterSpeed = 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab108b2dcddfe7e34e44d9e50da4c68d4" name="ab108b2dcddfe7e34e44d9e50da4c68d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab108b2dcddfe7e34e44d9e50da4c68d4">&#9670;&#160;</a></span>flutterVariation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::flutterVariation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02d206be20bad28bd40b4cc447e25f38" name="a02d206be20bad28bd40b4cc447e25f38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d206be20bad28bd40b4cc447e25f38">&#9670;&#160;</a></span>globalBending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::globalBending = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="ad2a7240db64cbbc8b3dd5253aeadf1f1" name="ad2a7240db64cbbc8b3dd5253aeadf1f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2a7240db64cbbc8b3dd5253aeadf1f1">&#9670;&#160;</a></span>globalBranch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::globalBranch = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="a69b5e78cc3dfc7b850c2ebce2615d598" name="a69b5e78cc3dfc7b850c2ebce2615d598"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b5e78cc3dfc7b850c2ebce2615d598">&#9670;&#160;</a></span>globalFlutter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::globalFlutter = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="a4bf96ef04eab60db9f6f1ed9af4d8553" name="a4bf96ef04eab60db9f6f1ed9af4d8553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bf96ef04eab60db9f6f1ed9af4d8553">&#9670;&#160;</a></span>globalSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::globalSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c6e5dde09f560708de73d38d709c341" name="a0c6e5dde09f560708de73d38d709c341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c6e5dde09f560708de73d38d709c341">&#9670;&#160;</a></span>interaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::interaction = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b4846100f09d60b66c63b9ab14d5d52" name="a7b4846100f09d60b66c63b9ab14d5d52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4846100f09d60b66c63b9ab14d5d52">&#9670;&#160;</a></span>interactionMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::interactionMask = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2a126ef760945503f8fbef979b44e07" name="af2a126ef760945503f8fbef979b44e07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2a126ef760945503f8fbef979b44e07">&#9670;&#160;</a></span>motionLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::graphics::VegetationMotion::motionLayer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationDetails_8cpp_source.html#l00035">eve::graphics::configureVegetationDetails()</a> , 以及 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a55218ee80f6558523b218b4d6e09ecdf" name="a55218ee80f6558523b218b4d6e09ecdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55218ee80f6558523b218b4d6e09ecdf">&#9670;&#160;</a></span>noise</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a> eve::graphics::VegetationMotion::noise</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">{2,</div>
+<div class="line">                         2,</div>
+<div class="line">                              {glm::vec4(0.2f, 0.7f, 0.85f, 1.f), glm::vec4(0.8f, 0.4f, 0.55f, 1.f),</div>
+<div class="line">                               glm::vec4(0.4f, 0.2f, 0.65f, 1.f), glm::vec4(0.7f, 0.8f, 1.f, 1.f)}}</div>
+</div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a159bad5766d4253b3dfb0f913d316077" name="a159bad5766d4253b3dfb0f913d316077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a159bad5766d4253b3dfb0f913d316077">&#9670;&#160;</a></span>noiseTiling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::noiseTiling = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="af01b27111702627386791037e54222e7" name="af01b27111702627386791037e54222e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af01b27111702627386791037e54222e7">&#9670;&#160;</a></span>objectToWorld</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::VegetationMotion::objectToWorld {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a9566f2cbce961fb1fa7fa33f6c6a33d9" name="a9566f2cbce961fb1fa7fa33f6c6a33d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9566f2cbce961fb1fa7fa33f6c6a33d9">&#9670;&#160;</a></span>perspectiveAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::perspectiveAngle = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3cfda74d959bbafbe4036eb5bff5fc6d" name="a3cfda74d959bbafbe4036eb5bff5fc6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cfda74d959bbafbe4036eb5bff5fc6d">&#9670;&#160;</a></span>perspectiveNoise</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::perspectiveNoise = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeeaabc068f7d899b160d551dd09e97fb" name="aeeaabc068f7d899b160d551dd09e97fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeaabc068f7d899b160d551dd09e97fb">&#9670;&#160;</a></span>perspectivePush</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::perspectivePush = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac012eb28bb9ce16386c7baff0a306277" name="ac012eb28bb9ce16386c7baff0a306277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac012eb28bb9ce16386c7baff0a306277">&#9670;&#160;</a></span>rigidity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::rigidity = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13cb01d1b2d052f1f101624ae7dd0e8b" name="a13cb01d1b2d052f1f101624ae7dd0e8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13cb01d1b2d052f1f101624ae7dd0e8b">&#9670;&#160;</a></span>rolling</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::rolling = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa8f80a79148314b8f78422686eb2f76" name="afa8f80a79148314b8f78422686eb2f76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa8f80a79148314b8f78422686eb2f76">&#9670;&#160;</a></span>sizeFadeEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::sizeFadeEnd = 1000001.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4f613c0ff2c962f5e42b1a7dfa8263ca" name="a4f613c0ff2c962f5e42b1a7dfa8263ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f613c0ff2c962f5e42b1a7dfa8263ca">&#9670;&#160;</a></span>sizeFadeStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::sizeFadeStart = 1000000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27f91f0902a100fcc7721b19e732d51a" name="a27f91f0902a100fcc7721b19e732d51a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27f91f0902a100fcc7721b19e732d51a">&#9670;&#160;</a></span>time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::graphics::VegetationMotion::time = 0.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bbbd842e4b62a64555e4d2fb0bcf1f7" name="a7bbbd842e4b62a64555e4d2fb0bcf1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bbbd842e4b62a64555e4d2fb0bcf1f7">&#9670;&#160;</a></span>timeOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::graphics::VegetationMotion::timeOffset = 0.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fb68ee7ef9537c6931a1398f2a4038d" name="a4fb68ee7ef9537c6931a1398f2a4038d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fb68ee7ef9537c6931a1398f2a4038d">&#9670;&#160;</a></span>timeOverride</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationMotion::timeOverride = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92368a5596194ee5fca570366022bbe6" name="a92368a5596194ee5fca570366022bbe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92368a5596194ee5fca570366022bbe6">&#9670;&#160;</a></span>timeScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::graphics::VegetationMotion::timeScale = 1.</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c0accdd3bd4bc9a7479dc05b3f6f335" name="a5c0accdd3bd4bc9a7479dc05b3f6f335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c0accdd3bd4bc9a7479dc05b3f6f335">&#9670;&#160;</a></span>usePivots</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::VegetationMotion::usePivots = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a83c5ee1c9f448b829939d9063c8ffc0b" name="a83c5ee1c9f448b829939d9063c8ffc0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83c5ee1c9f448b829939d9063c8ffc0b">&#9670;&#160;</a></span>vertexLayer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::graphics::VegetationMotion::vertexLayer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a643da5346b2d509ae7733b8e3fd21ec0" name="a643da5346b2d509ae7733b8e3fd21ec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643da5346b2d509ae7733b8e3fd21ec0">&#9670;&#160;</a></span>worldOrigin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::VegetationMotion::worldOrigin {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a> 第 <a class="el" href="VegetationMotion_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackVegetationScene_8cpp_source.html#l00846">eve::asset_graphics::VegetationSceneGpuRuntime::create()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="VegetationMotion_8h_source.html">VegetationMotion.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

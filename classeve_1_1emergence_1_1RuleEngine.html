@@ -1,0 +1,1133 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::emergence::RuleEngine类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1emergence.html">emergence</a></li><li class="navelem"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1emergence_1_1RuleEngine-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::emergence::RuleEngine类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Indexed, deferred rule evaluator for tens of thousands of conditions.  
+ <a href="classeve_1_1emergence_1_1RuleEngine.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a005bb237b5b0a948b2bed5232358f778" id="r_a005bb237b5b0a948b2bed5232358f778"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a005bb237b5b0a948b2bed5232358f778">RuleEngine</a> ()=default</td></tr>
+<tr class="separator:a005bb237b5b0a948b2bed5232358f778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32049c8f832b7b0688f194668ca01ea8" id="r_a32049c8f832b7b0688f194668ca01ea8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a32049c8f832b7b0688f194668ca01ea8">~RuleEngine</a> ()=default</td></tr>
+<tr class="separator:a32049c8f832b7b0688f194668ca01ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6ee008a2f9e148e7bb6aa611d039f0c" id="r_aa6ee008a2f9e148e7bb6aa611d039f0c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#aa6ee008a2f9e148e7bb6aa611d039f0c">RuleEngine</a> (const <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;)=delete</td></tr>
+<tr class="separator:aa6ee008a2f9e148e7bb6aa611d039f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed813125f7eea7a6b495ee1ecc30a6b" id="r_a5ed813125f7eea7a6b495ee1ecc30a6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a5ed813125f7eea7a6b495ee1ecc30a6b">operator=</a> (const <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;)=delete</td></tr>
+<tr class="separator:a5ed813125f7eea7a6b495ee1ecc30a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefaec0b3af85396c650f82649f67bb05" id="r_aefaec0b3af85396c650f82649f67bb05"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#aefaec0b3af85396c650f82649f67bb05">RuleEngine</a> (<a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:aefaec0b3af85396c650f82649f67bb05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae051aadb1c5c3a04c0bfc83a0760f7d" id="r_aae051aadb1c5c3a04c0bfc83a0760f7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#aae051aadb1c5c3a04c0bfc83a0760f7d">operator=</a> (<a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:aae051aadb1c5c3a04c0bfc83a0760f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ace262b2c31ca85932e730d16b662aa" id="r_a2ace262b2c31ca85932e730d16b662aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a2ace262b2c31ca85932e730d16b662aa">replaceCatalogue</a> (std::vector&lt; <a class="el" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a> &gt; rules)</td></tr>
+<tr class="memdesc:a2ace262b2c31ca85932e730d16b662aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically replace every rule definition.  <br /></td></tr>
+<tr class="separator:a2ace262b2c31ca85932e730d16b662aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2818c09d6e29901056eadf4b1d945e29" id="r_a2818c09d6e29901056eadf4b1d945e29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a2818c09d6e29901056eadf4b1d945e29">replaceCatalogueJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a2818c09d6e29901056eadf4b1d945e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the catalogue from a versioned JSON document.  <br /></td></tr>
+<tr class="separator:a2818c09d6e29901056eadf4b1d945e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16c2e1a36e4aa6f1db567ea13891015a" id="r_a16c2e1a36e4aa6f1db567ea13891015a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a16c2e1a36e4aa6f1db567ea13891015a">clear</a> ()</td></tr>
+<tr class="memdesc:a16c2e1a36e4aa6f1db567ea13891015a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every rule, fact, and queued activation.  <br /></td></tr>
+<tr class="separator:a16c2e1a36e4aa6f1db567ea13891015a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851e924a819125fa7a8d053402f9a949" id="r_a851e924a819125fa7a8d053402f9a949"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a851e924a819125fa7a8d053402f9a949">ruleCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a851e924a819125fa7a8d053402f9a949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed rule count.  <br /></td></tr>
+<tr class="separator:a851e924a819125fa7a8d053402f9a949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71e8e6dc25bb32cc4c7371e9362fb3e4" id="r_a71e8e6dc25bb32cc4c7371e9362fb3e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a71e8e6dc25bb32cc4c7371e9362fb3e4">contains</a> (std::string_view ruleId) const</td></tr>
+<tr class="memdesc:a71e8e6dc25bb32cc4c7371e9362fb3e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a stable rule id exists.  <br /></td></tr>
+<tr class="separator:a71e8e6dc25bb32cc4c7371e9362fb3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5974662ec27e343cfa39b864191e4148" id="r_a5974662ec27e343cfa39b864191e4148"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a5974662ec27e343cfa39b864191e4148">find</a> (std::string_view ruleId) const</td></tr>
+<tr class="memdesc:a5974662ec27e343cfa39b864191e4148"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow one committed definition. @ownership Borrowed from this engine; callers must not delete it. @lifetime Invalidated by <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a16c2e1a36e4aa6f1db567ea13891015a" title="Remove every rule, fact, and queued activation.">clear()</a> or a successful catalogue replacement. @nullable Null when the id is absent. @thread Owning simulation thread only.  <br /></td></tr>
+<tr class="separator:a5974662ec27e343cfa39b864191e4148"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c2d9ab41dd9fb1f726f1f1c0c311de" id="r_a59c2d9ab41dd9fb1f726f1f1c0c311de"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1emergence_1_1FactStore.html">FactStore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a59c2d9ab41dd9fb1f726f1f1c0c311de">facts</a> () const noexcept</td></tr>
+<tr class="memdesc:a59c2d9ab41dd9fb1f726f1f1c0c311de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative fact store for read-only inspection. @ownership Borrowed; this engine remains the owner. @lifetime Valid until the engine is destroyed. @thread Owning simulation thread only.  <br /></td></tr>
+<tr class="separator:a59c2d9ab41dd9fb1f726f1f1c0c311de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41c514be2bd62dfdd1a03a3ca03e4c24" id="r_a41c514be2bd62dfdd1a03a3ca03e4c24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a41c514be2bd62dfdd1a03a3ca03e4c24">setValue</a> (std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">eve::Value</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a41c514be2bd62dfdd1a03a3ca03e4c24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a value fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:a41c514be2bd62dfdd1a03a3ca03e4c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b7562d850c2e11ea8470c5517ee1bef" id="r_a9b7562d850c2e11ea8470c5517ee1bef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a9b7562d850c2e11ea8470c5517ee1bef">setTag</a> (std::string tag, bool present)</td></tr>
+<tr class="memdesc:a9b7562d850c2e11ea8470c5517ee1bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a tag fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:a9b7562d850c2e11ea8470c5517ee1bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5550df34dff7c9e3d7bdffb753d4c22d" id="r_a5550df34dff7c9e3d7bdffb753d4c22d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a5550df34dff7c9e3d7bdffb753d4c22d">setAttribute</a> (std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">eve::Value</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a5550df34dff7c9e3d7bdffb753d4c22d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an attribute fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:a5550df34dff7c9e3d7bdffb753d4c22d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6771a2def780ee482fab7cf0dfc3b38" id="r_ab6771a2def780ee482fab7cf0dfc3b38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#ab6771a2def780ee482fab7cf0dfc3b38">setResource</a> (std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">eve::Value</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ab6771a2def780ee482fab7cf0dfc3b38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a resource fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:ab6771a2def780ee482fab7cf0dfc3b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e775536d85deea080df766fda4c4836" id="r_a8e775536d85deea080df766fda4c4836"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a8e775536d85deea080df766fda4c4836">setState</a> (std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">eve::Value</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a8e775536d85deea080df766fda4c4836"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a state fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:a8e775536d85deea080df766fda4c4836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff9824632bfb93c5ce86b8596b8b2830" id="r_aff9824632bfb93c5ce86b8596b8b2830"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#aff9824632bfb93c5ce86b8596b8b2830">setAuthority</a> (std::string <a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, bool granted)</td></tr>
+<tr class="memdesc:aff9824632bfb93c5ce86b8596b8b2830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an authority fact and wake watchers when it changes.  <br /></td></tr>
+<tr class="separator:aff9824632bfb93c5ce86b8596b8b2830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f3a443a821a092e6f533878d80344dd" id="r_a8f3a443a821a092e6f533878d80344dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a8f3a443a821a092e6f533878d80344dd">setPolicy</a> (std::string <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">decision::ConditionResult</a> result)</td></tr>
+<tr class="memdesc:a8f3a443a821a092e6f533878d80344dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache a policy evaluation result and wake <code>policy:&lt;name&gt;</code> watchers when it changes.  <br /></td></tr>
+<tr class="separator:a8f3a443a821a092e6f533878d80344dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a841eaedee5d7ae3e3f05723ed46794e7" id="r_a841eaedee5d7ae3e3f05723ed46794e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a841eaedee5d7ae3e3f05723ed46794e7">drain</a> (std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a841eaedee5d7ae3e3f05723ed46794e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate dirty rules and resolve activations for one simulation tick.  <br /></td></tr>
+<tr class="separator:a841eaedee5d7ae3e3f05723ed46794e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad70a955a40265e84ce8c2f0620365971" id="r_ad70a955a40265e84ce8c2f0620365971"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#ad70a955a40265e84ce8c2f0620365971">activationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ad70a955a40265e84ce8c2f0620365971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activations retained from the most recent drain batches since clearActivations.  <br /></td></tr>
+<tr class="separator:ad70a955a40265e84ce8c2f0620365971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68fdc3060cb9c1d1d3e6b0f11b9ccb24" id="r_a68fdc3060cb9c1d1d3e6b0f11b9ccb24"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1emergence_1_1Activation.html">Activation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a68fdc3060cb9c1d1d3e6b0f11b9ccb24">activationAt</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a68fdc3060cb9c1d1d3e6b0f11b9ccb24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow one retained activation. @ownership Borrowed from this engine; callers must not delete it. @lifetime Invalidated by clear, clearActivations, or catalogue replacement. @nullable Null when index is out of range. @thread Owning simulation thread only.  <br /></td></tr>
+<tr class="separator:a68fdc3060cb9c1d1d3e6b0f11b9ccb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2643529b342f0f13fbe32c61957ea28" id="r_aa2643529b342f0f13fbe32c61957ea28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#aa2643529b342f0f13fbe32c61957ea28">clearActivations</a> ()</td></tr>
+<tr class="memdesc:aa2643529b342f0f13fbe32c61957ea28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop retained activations without touching facts or rules.  <br /></td></tr>
+<tr class="separator:aa2643529b342f0f13fbe32c61957ea28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9689d90330429b7667a55bcf592b476c" id="r_a9689d90330429b7667a55bcf592b476c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a9689d90330429b7667a55bcf592b476c">resetRule</a> (std::string_view ruleId)</td></tr>
+<tr class="memdesc:a9689d90330429b7667a55bcf592b476c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-enable a once-fired rule and clear its edge latch.  <br /></td></tr>
+<tr class="separator:a9689d90330429b7667a55bcf592b476c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f1e0ef7b0eb59479e0a803f2ec36ece" id="r_a9f1e0ef7b0eb59479e0a803f2ec36ece"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a9f1e0ef7b0eb59479e0a803f2ec36ece">dirtyCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a9f1e0ef7b0eb59479e0a803f2ec36ece"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: rules marked dirty since the last successful drain start.  <br /></td></tr>
+<tr class="separator:a9f1e0ef7b0eb59479e0a803f2ec36ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83c1f6fc3a320e4c43e659eabfb937e0" id="r_a83c1f6fc3a320e4c43e659eabfb937e0"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a83c1f6fc3a320e4c43e659eabfb937e0">lastDrainEvaluations</a> () const noexcept</td></tr>
+<tr class="memdesc:a83c1f6fc3a320e4c43e659eabfb937e0"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: condition evaluations performed during the last drain.  <br /></td></tr>
+<tr class="separator:a83c1f6fc3a320e4c43e659eabfb937e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b8620420096b7ba87cc15bd4415ac2" id="r_a15b8620420096b7ba87cc15bd4415ac2"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a15b8620420096b7ba87cc15bd4415ac2">wakeKeyEvents</a> () const noexcept</td></tr>
+<tr class="memdesc:a15b8620420096b7ba87cc15bd4415ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: distinct keys that woke at least one rule since construction/clear.  <br /></td></tr>
+<tr class="separator:a15b8620420096b7ba87cc15bd4415ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6621b0358c238516432f3a8422a7e34a" id="r_a6621b0358c238516432f3a8422a7e34a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a6621b0358c238516432f3a8422a7e34a">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a6621b0358c238516432f3a8422a7e34a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export runtime state (facts + rule latches) as deterministic JSON.  <br /></td></tr>
+<tr class="separator:a6621b0358c238516432f3a8422a7e34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b747960116a84cdeab1880f24a4d761" id="r_a5b747960116a84cdeab1880f24a4d761"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a5b747960116a84cdeab1880f24a4d761">restoreJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a5b747960116a84cdeab1880f24a4d761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restore runtime state; catalogue must already match rule ids.  <br /></td></tr>
+<tr class="separator:a5b747960116a84cdeab1880f24a4d761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Indexed, deferred rule evaluator for tens of thousands of conditions. </p>
+<p>Fact mutations only wake rules that watch the changed key. Activations are queued and resolved by <code>drain</code>, never inline during mutation. Built-in fact.set plus economy credit/debit actions execute during drain; other kinds go to <code><a class="el" href="classeve_1_1IEmergenceActionHandler.html" title="Capability listener that may consume one emergence action kind.">IEmergenceActionHandler</a></code> listeners and remain visible in the activation log for scripts.</p>
+<p>@ownership Caller-owned when constructed directly; module-owned when created through <code><a class="el" href="classeve_1_1emergence_1_1Emergence.html#a726f037b9e25cd2cfd578d00f8557191" title="Allocate a module-owned rule engine.">Emergence::newEngine()</a></code>. @thread Owning simulation thread only. @reentrancy <code>drain</code> must not be called reentrantly on the same engine. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a005bb237b5b0a948b2bed5232358f778" name="a005bb237b5b0a948b2bed5232358f778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a005bb237b5b0a948b2bed5232358f778">&#9670;&#160;</a></span>RuleEngine() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::emergence::RuleEngine::RuleEngine </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a32049c8f832b7b0688f194668ca01ea8" name="a32049c8f832b7b0688f194668ca01ea8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32049c8f832b7b0688f194668ca01ea8">&#9670;&#160;</a></span>~RuleEngine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::emergence::RuleEngine::~RuleEngine </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa6ee008a2f9e148e7bb6aa611d039f0c" name="aa6ee008a2f9e148e7bb6aa611d039f0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6ee008a2f9e148e7bb6aa611d039f0c">&#9670;&#160;</a></span>RuleEngine() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::emergence::RuleEngine::RuleEngine </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aefaec0b3af85396c650f82649f67bb05" name="aefaec0b3af85396c650f82649f67bb05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefaec0b3af85396c650f82649f67bb05">&#9670;&#160;</a></span>RuleEngine() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::emergence::RuleEngine::RuleEngine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a68fdc3060cb9c1d1d3e6b0f11b9ccb24" name="a68fdc3060cb9c1d1d3e6b0f11b9ccb24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68fdc3060cb9c1d1d3e6b0f11b9ccb24">&#9670;&#160;</a></span>activationAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1emergence_1_1Activation.html">Activation</a> * eve::emergence::RuleEngine::activationAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow one retained activation. @ownership Borrowed from this engine; callers must not delete it. @lifetime Invalidated by clear, clearActivations, or catalogue replacement. @nullable Null when index is out of range. @thread Owning simulation thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="ad70a955a40265e84ce8c2f0620365971" name="ad70a955a40265e84ce8c2f0620365971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad70a955a40265e84ce8c2f0620365971">&#9670;&#160;</a></span>activationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::emergence::RuleEngine::activationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Activations retained from the most recent drain batches since clearActivations. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16c2e1a36e4aa6f1db567ea13891015a" name="a16c2e1a36e4aa6f1db567ea13891015a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16c2e1a36e4aa6f1db567ea13891015a">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::emergence::RuleEngine::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every rule, fact, and queued activation. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa2643529b342f0f13fbe32c61957ea28" name="aa2643529b342f0f13fbe32c61957ea28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2643529b342f0f13fbe32c61957ea28">&#9670;&#160;</a></span>clearActivations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::emergence::RuleEngine::clearActivations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop retained activations without touching facts or rules. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71e8e6dc25bb32cc4c7371e9362fb3e4" name="a71e8e6dc25bb32cc4c7371e9362fb3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71e8e6dc25bb32cc4c7371e9362fb3e4">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::emergence::RuleEngine::contains </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>ruleId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether a stable rule id exists. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f1e0ef7b0eb59479e0a803f2ec36ece" name="a9f1e0ef7b0eb59479e0a803f2ec36ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f1e0ef7b0eb59479e0a803f2ec36ece">&#9670;&#160;</a></span>dirtyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::emergence::RuleEngine::dirtyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: rules marked dirty since the last successful drain start. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a841eaedee5d7ae3e3f05723ed46794e7" name="a841eaedee5d7ae3e3f05723ed46794e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a841eaedee5d7ae3e3f05723ed46794e7">&#9670;&#160;</a></span>drain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::emergence::RuleEngine::drain </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate dirty rules and resolve activations for one simulation tick. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tick</td><td>Injected simulation tick used for cooldown and activation metadata. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of activations produced this call (also retained until clearActivations). </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Nested drain on the same engine returns PreconditionViolation. </dd>
+<dd>
+Within each dirty pass, activations run in <code>(priority DESC, ruleId ASC)</code> order. Cascaded <code>fact.set</code> wakes are evaluated in later passes of the same drain. Rising/once/cooldown latches commit only after that activation's actions succeed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a59c2d9ab41dd9fb1f726f1f1c0c311de" name="a59c2d9ab41dd9fb1f726f1f1c0c311de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59c2d9ab41dd9fb1f726f1f1c0c311de">&#9670;&#160;</a></span>facts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1emergence_1_1FactStore.html">FactStore</a> &amp; eve::emergence::RuleEngine::facts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative fact store for read-only inspection. @ownership Borrowed; this engine remains the owner. @lifetime Valid until the engine is destroyed. @thread Owning simulation thread only. </p>
+<dl class="section remark"><dt>备注</dt><dd>Mutations must go through the mediated <code>set*</code> APIs so watchers wake. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5974662ec27e343cfa39b864191e4148" name="a5974662ec27e343cfa39b864191e4148"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5974662ec27e343cfa39b864191e4148">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a> * eve::emergence::RuleEngine::find </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>ruleId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow one committed definition. @ownership Borrowed from this engine; callers must not delete it. @lifetime Invalidated by <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html#a16c2e1a36e4aa6f1db567ea13891015a" title="Remove every rule, fact, and queued activation.">clear()</a> or a successful catalogue replacement. @nullable Null when the id is absent. @thread Owning simulation thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a83c1f6fc3a320e4c43e659eabfb937e0" name="a83c1f6fc3a320e4c43e659eabfb937e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83c1f6fc3a320e4c43e659eabfb937e0">&#9670;&#160;</a></span>lastDrainEvaluations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::emergence::RuleEngine::lastDrainEvaluations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: condition evaluations performed during the last drain. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ed813125f7eea7a6b495ee1ecc30a6b" name="a5ed813125f7eea7a6b495ee1ecc30a6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ed813125f7eea7a6b495ee1ecc30a6b">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp; eve::emergence::RuleEngine::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae051aadb1c5c3a04c0bfc83a0760f7d" name="aae051aadb1c5c3a04c0bfc83a0760f7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae051aadb1c5c3a04c0bfc83a0760f7d">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp; eve::emergence::RuleEngine::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1emergence_1_1RuleEngine.html">RuleEngine</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ace262b2c31ca85932e730d16b662aa" name="a2ace262b2c31ca85932e730d16b662aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ace262b2c31ca85932e730d16b662aa">&#9670;&#160;</a></span>replaceCatalogue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::emergence::RuleEngine::replaceCatalogue </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1emergence_1_1RuleDefinition.html">RuleDefinition</a> &gt;&#160;</td>
+          <td class="paramname"><em>rules</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically replace every rule definition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rules</td><td>Owning definitions; watch keys are derived when omitted. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Committed rule count, or structured failure preserving the prior catalogue. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a2818c09d6e29901056eadf4b1d945e29" name="a2818c09d6e29901056eadf4b1d945e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2818c09d6e29901056eadf4b1d945e29">&#9670;&#160;</a></span>replaceCatalogueJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::emergence::RuleEngine::replaceCatalogueJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the catalogue from a versioned JSON document. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 <code>eve.emergence.rules</code> version 1 document. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Committed rule count, or structured failure preserving the prior catalogue. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00147">action</a>, <a class="el" href="PlayHost_8cpp_source.html#l00156">actions</a>, <a class="el" href="RuleTypes_8h_source.html#l00046">eve::emergence::RuleDefinition::actions</a>, <a class="el" href="DnutCompiler_8cpp_source.html#l00030">condition</a>, <a class="el" href="RuleTypes_8h_source.html#l00044">eve::emergence::RuleDefinition::condition</a>, <a class="el" href="RuleTypes_8h_source.html#l00043">eve::emergence::RuleDefinition::cooldownTicks</a>, <a class="el" href="ConditionCodec_8cpp_source.html#l00257">eve::emergence::decodeCondition()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RuleTypes_8h_source.html#l00041">eve::emergence::RuleDefinition::fireMode</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="RuleTypes_8h_source.html#l00039">eve::emergence::RuleDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="RuleTypes_8h_source.html#l00042">eve::emergence::RuleDefinition::once</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="RuleTypes_8h_source.html#l00040">eve::emergence::RuleDefinition::priority</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a> , 以及 <a class="el" href="RuleTypes_8h_source.html#l00045">eve::emergence::RuleDefinition::watchKeys</a>.</p>
+
+</div>
+</div>
+<a id="a9689d90330429b7667a55bcf592b476c" name="a9689d90330429b7667a55bcf592b476c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9689d90330429b7667a55bcf592b476c">&#9670;&#160;</a></span>resetRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::emergence::RuleEngine::resetRule </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>ruleId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-enable a once-fired rule and clear its edge latch. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied when the rule exists, NotFound otherwise. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a5b747960116a84cdeab1880f24a4d761" name="a5b747960116a84cdeab1880f24a4d761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b747960116a84cdeab1880f24a4d761">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::emergence::RuleEngine::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restore runtime state; catalogue must already match rule ids. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or structured failure leaving the engine unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00547">547</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00138">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="FactStore_8cpp_source.html#l00282">eve::emergence::FactStore::restoreJson()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="a851e924a819125fa7a8d053402f9a949" name="a851e924a819125fa7a8d053402f9a949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a851e924a819125fa7a8d053402f9a949">&#9670;&#160;</a></span>ruleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::emergence::RuleEngine::ruleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Committed rule count. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5550df34dff7c9e3d7bdffb753d4c22d" name="a5550df34dff7c9e3d7bdffb753d4c22d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5550df34dff7c9e3d7bdffb753d4c22d">&#9670;&#160;</a></span>setAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setAttribute </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set an attribute fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00289">289</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="aff9824632bfb93c5ce86b8596b8b2830" name="aff9824632bfb93c5ce86b8596b8b2830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9824632bfb93c5ce86b8596b8b2830">&#9670;&#160;</a></span>setAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setAuthority </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>granted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set an authority fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8f3a443a821a092e6f533878d80344dd" name="a8f3a443a821a092e6f533878d80344dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f3a443a821a092e6f533878d80344dd">&#9670;&#160;</a></span>setPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setPolicy </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">decision::ConditionResult</a>&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cache a policy evaluation result and wake <code>policy:&lt;name&gt;</code> watchers when it changes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Non-empty policy id matching a <code>policy_call</code> condition key. </td></tr>
+    <tr><td class="paramname">result</td><td>Owning ConditionResult snapshot. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab6771a2def780ee482fab7cf0dfc3b38" name="ab6771a2def780ee482fab7cf0dfc3b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6771a2def780ee482fab7cf0dfc3b38">&#9670;&#160;</a></span>setResource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setResource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a resource fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a8e775536d85deea080df766fda4c4836" name="a8e775536d85deea080df766fda4c4836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e775536d85deea080df766fda4c4836">&#9670;&#160;</a></span>setState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setState </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a state fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a9b7562d850c2e11ea8470c5517ee1bef" name="a9b7562d850c2e11ea8470c5517ee1bef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b7562d850c2e11ea8470c5517ee1bef">&#9670;&#160;</a></span>setTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setTag </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>present</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a tag fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a41c514be2bd62dfdd1a03a3ca03e4c24" name="a41c514be2bd62dfdd1a03a3ca03e4c24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41c514be2bd62dfdd1a03a3ca03e4c24">&#9670;&#160;</a></span>setValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::emergence::RuleEngine::setValue </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a value fact and wake watchers when it changes. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="FactStore_8cpp_source.html#l00106">eve::emergence::makeFactKey()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00160">value</a>.</p>
+
+</div>
+</div>
+<a id="a6621b0358c238516432f3a8422a7e34a" name="a6621b0358c238516432f3a8422a7e34a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6621b0358c238516432f3a8422a7e34a">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::emergence::RuleEngine::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Export runtime state (facts + rule latches) as deterministic JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a> 第 <a class="el" href="RuleEngine_8cpp_source.html#l00526">526</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+</div>
+</div>
+<a id="a15b8620420096b7ba87cc15bd4415ac2" name="a15b8620420096b7ba87cc15bd4415ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15b8620420096b7ba87cc15bd4415ac2">&#9670;&#160;</a></span>wakeKeyEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::emergence::RuleEngine::wakeKeyEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Diagnostic.html" title="A structured explanation of a failed, degraded, or noteworthy result.">Diagnostic</a>: distinct keys that woke at least one rule since construction/clear. </p>
+
+<p class="definition">在文件 <a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a> 第 <a class="el" href="RuleEngine_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/emergence/<a class="el" href="RuleEngine_8h_source.html">RuleEngine.h</a></li>
+<li>src/modules/emergence/<a class="el" href="RuleEngine_8cpp_source.html">RuleEngine.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

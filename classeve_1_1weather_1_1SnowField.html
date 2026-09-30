@@ -1,0 +1,832 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weather::SnowField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weather.html">weather</a></li><li class="navelem"><a class="el" href="classeve_1_1weather_1_1SnowField.html">SnowField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1weather_1_1SnowField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weather::SnowField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Interactive snow depth field: a dense [0,1] float grid.  
+ <a href="classeve_1_1weather_1_1SnowField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SnowField_8h_source.html">SnowField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac08b8c6a60e0b71a0ab844b4bd7d4002" id="r_ac08b8c6a60e0b71a0ab844b4bd7d4002"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#ac08b8c6a60e0b71a0ab844b4bd7d4002">SnowField</a> ()=default</td></tr>
+<tr class="separator:ac08b8c6a60e0b71a0ab844b4bd7d4002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059849811480e098f17a225a67605f10" id="r_a059849811480e098f17a225a67605f10"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a059849811480e098f17a225a67605f10">SnowField</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="classeve_1_1weather_1_1SnowField.html#aa126abdd6637bfde6d9ad74d9bf48a23">height</a>)</td></tr>
+<tr class="separator:a059849811480e098f17a225a67605f10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e746cbe5b74e5762ead99f8227e3755" id="r_a9e746cbe5b74e5762ead99f8227e3755"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a9e746cbe5b74e5762ead99f8227e3755">resize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="classeve_1_1weather_1_1SnowField.html#aa126abdd6637bfde6d9ad74d9bf48a23">height</a>)</td></tr>
+<tr class="separator:a9e746cbe5b74e5762ead99f8227e3755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4770548dcc7bfc6ee4b5b06aabde30eb" id="r_a4770548dcc7bfc6ee4b5b06aabde30eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a4770548dcc7bfc6ee4b5b06aabde30eb">getWidth</a> () const</td></tr>
+<tr class="separator:a4770548dcc7bfc6ee4b5b06aabde30eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68e7c50ba9c2817d1020553851c7aa61" id="r_a68e7c50ba9c2817d1020553851c7aa61"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a68e7c50ba9c2817d1020553851c7aa61">getHeight</a> () const</td></tr>
+<tr class="separator:a68e7c50ba9c2817d1020553851c7aa61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38a46702bde87971247b330601fdae67" id="r_a38a46702bde87971247b330601fdae67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a38a46702bde87971247b330601fdae67">inBounds</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:a38a46702bde87971247b330601fdae67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility predicate returning whether a cell is inside the field.  <br /></td></tr>
+<tr class="separator:a38a46702bde87971247b330601fdae67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeb433f3740d530d910dcd424d5eb574" id="r_afeb433f3740d530d910dcd424d5eb574"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#afeb433f3740d530d910dcd424d5eb574">fill</a> (float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:afeb433f3740d530d910dcd424d5eb574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set every cell to v (clamped to [0,1]).  <br /></td></tr>
+<tr class="separator:afeb433f3740d530d910dcd424d5eb574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5ef0f57dc169400f27effcff37b2a51" id="r_af5ef0f57dc169400f27effcff37b2a51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#af5ef0f57dc169400f27effcff37b2a51">setHeight</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:af5ef0f57dc169400f27effcff37b2a51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one cell (clamped to [0,1]); out-of-bounds is a no-op.  <br /></td></tr>
+<tr class="separator:af5ef0f57dc169400f27effcff37b2a51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa126abdd6637bfde6d9ad74d9bf48a23" id="r_aa126abdd6637bfde6d9ad74d9bf48a23"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#aa126abdd6637bfde6d9ad74d9bf48a23">height</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:aa126abdd6637bfde6d9ad74d9bf48a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell value in [0,1]; out-of-bounds reads 0.  <br /></td></tr>
+<tr class="separator:aa126abdd6637bfde6d9ad74d9bf48a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a361371126fbaa236cd4573da65d0d201" id="r_a361371126fbaa236cd4573da65d0d201"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a361371126fbaa236cd4573da65d0d201">isDirty</a> () const</td></tr>
+<tr class="memdesc:a361371126fbaa236cd4573da65d0d201"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when any cell changed since the last <a class="el" href="classeve_1_1weather_1_1SnowField.html#a3bccec8279f06487d2e25953ce145e8b">clearDirty()</a>.  <br /></td></tr>
+<tr class="separator:a361371126fbaa236cd4573da65d0d201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bccec8279f06487d2e25953ce145e8b" id="r_a3bccec8279f06487d2e25953ce145e8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a3bccec8279f06487d2e25953ce145e8b">clearDirty</a> ()</td></tr>
+<tr class="separator:a3bccec8279f06487d2e25953ce145e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694eadb3d2fc9d516677f197544736b7" id="r_a694eadb3d2fc9d516677f197544736b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a694eadb3d2fc9d516677f197544736b7">stampFootprint</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float cz, float dirX, float dirZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>)</td></tr>
+<tr class="memdesc:a694eadb3d2fc9d516677f197544736b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Press a footprint into the snow: an ellipse along (dirX, dirZ) with a soft bowl depression and a raised rim at the edges.  <br /></td></tr>
+<tr class="separator:a694eadb3d2fc9d516677f197544736b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcce8d9eaa8ff8ca14d6b999d79ab2e8" id="r_adcce8d9eaa8ff8ca14d6b999d79ab2e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#adcce8d9eaa8ff8ca14d6b999d79ab2e8">stampImpact</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float cz, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>)</td></tr>
+<tr class="memdesc:adcce8d9eaa8ff8ca14d6b999d79ab2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carve an impact crater: a parabolic bowl (deep center, shallow edge) plus a raised snow rim just outside the bowl.  <br /></td></tr>
+<tr class="separator:adcce8d9eaa8ff8ca14d6b999d79ab2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad412d1d2ce7a6b60737d342ba8a52656" id="r_ad412d1d2ce7a6b60737d342ba8a52656"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#ad412d1d2ce7a6b60737d342ba8a52656">addSnowfall</a> (float amount)</td></tr>
+<tr class="memdesc:ad412d1d2ce7a6b60737d342ba8a52656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snowfall recovery: raise every cell toward 1 by <code>amount</code>. Call with dt * snowfallRate each frame; clamped per cell.  <br /></td></tr>
+<tr class="separator:ad412d1d2ce7a6b60737d342ba8a52656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83d33dcb2855e401331204a96ca123b5" id="r_a83d33dcb2855e401331204a96ca123b5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a83d33dcb2855e401331204a96ca123b5">toHeightRGBA</a> () const</td></tr>
+<tr class="memdesc:a83d33dcb2855e401331204a96ca123b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">POM height map as RGBA8 (width x height x 4): R = snow depth, G = B = 0, A = 255 (white = raised toward the viewer, matches parallax_map.glsl).  <br /></td></tr>
+<tr class="separator:a83d33dcb2855e401331204a96ca123b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10155f3cb31660c0f034059b33344dc1" id="r_a10155f3cb31660c0f034059b33344dc1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a10155f3cb31660c0f034059b33344dc1">toAlbedoRGBA</a> () const</td></tr>
+<tr class="memdesc:a10155f3cb31660c0f034059b33344dc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Albedo as RGBA8: cool-white snow blended to dark ground by depth, plus a tiny per-cell hash, so bare ground reads dark and deep snow white.  <br /></td></tr>
+<tr class="separator:a10155f3cb31660c0f034059b33344dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad25451a325e225e47eedfcbf247253b" id="r_aad25451a325e225e47eedfcbf247253b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#aad25451a325e225e47eedfcbf247253b">toNormalRGBA</a> () const</td></tr>
+<tr class="memdesc:aad25451a325e225e47eedfcbf247253b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tangent-space normal map as RGBA8 derived from the snow-depth gradient (flat = 128,128,255, OpenGL-style, matches applyNormalMap).  <br /></td></tr>
+<tr class="separator:aad25451a325e225e47eedfcbf247253b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ade73cbc5c5ff6d3c79407c0c0e8f0d" id="r_a2ade73cbc5c5ff6d3c79407c0c0e8f0d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weather_1_1SnowField.html#a2ade73cbc5c5ff6d3c79407c0c0e8f0d">data</a> () const</td></tr>
+<tr class="memdesc:a2ade73cbc5c5ff6d3c79407c0c0e8f0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an immediate read-only view of the dense field storage. @ownership Borrowed from this <a class="el" href="classeve_1_1weather_1_1SnowField.html" title="Interactive snow depth field: a dense [0,1] float grid.">SnowField</a>. @lifetime Invalidated by resize or destruction of this <a class="el" href="classeve_1_1weather_1_1SnowField.html" title="Interactive snow depth field: a dense [0,1] float grid.">SnowField</a>. @thread The caller must externally synchronize mutation.  <br /></td></tr>
+<tr class="separator:a2ade73cbc5c5ff6d3c79407c0c0e8f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Interactive snow depth field: a dense [0,1] float grid. </p>
+<p>1.0 = full snow cover, 0.0 = bare ground. The grid drives both the terrain-surface displacement (snow thickness) and the POM height map (R channel, white = raised), so footprints and impact craters deform the rendered snow surface instead of being a flat decal.</p>
+<p>Pure CPU data (no graphics / procgen includes): render and heightmap bridging live in the weather module (<a class="el" href="Snow_8h.html">Snow.h</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac08b8c6a60e0b71a0ab844b4bd7d4002" name="ac08b8c6a60e0b71a0ab844b4bd7d4002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac08b8c6a60e0b71a0ab844b4bd7d4002">&#9670;&#160;</a></span>SnowField() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weather::SnowField::SnowField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a059849811480e098f17a225a67605f10" name="a059849811480e098f17a225a67605f10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059849811480e098f17a225a67605f10">&#9670;&#160;</a></span>SnowField() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weather::SnowField::SnowField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="SnowField_8cpp_source.html#l00028">resize()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad412d1d2ce7a6b60737d342ba8a52656" name="ad412d1d2ce7a6b60737d342ba8a52656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad412d1d2ce7a6b60737d342ba8a52656">&#9670;&#160;</a></span>addSnowfall()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::addSnowfall </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snowfall recovery: raise every cell toward 1 by <code>amount</code>. Call with dt * snowfallRate each frame; clamped per cell. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a3bccec8279f06487d2e25953ce145e8b" name="a3bccec8279f06487d2e25953ce145e8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bccec8279f06487d2e25953ce145e8b">&#9670;&#160;</a></span>clearDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::clearDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ade73cbc5c5ff6d3c79407c0c0e8f0d" name="a2ade73cbc5c5ff6d3c79407c0c0e8f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ade73cbc5c5ff6d3c79407c0c0e8f0d">&#9670;&#160;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::weather::SnowField::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return an immediate read-only view of the dense field storage. @ownership Borrowed from this <a class="el" href="classeve_1_1weather_1_1SnowField.html" title="Interactive snow depth field: a dense [0,1] float grid.">SnowField</a>. @lifetime Invalidated by resize or destruction of this <a class="el" href="classeve_1_1weather_1_1SnowField.html" title="Interactive snow depth field: a dense [0,1] float grid.">SnowField</a>. @thread The caller must externally synchronize mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afeb433f3740d530d910dcd424d5eb574" name="afeb433f3740d530d910dcd424d5eb574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb433f3740d530d910dcd424d5eb574">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::fill </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set every cell to v (clamped to [0,1]). </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a68e7c50ba9c2817d1020553851c7aa61" name="a68e7c50ba9c2817d1020553851c7aa61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e7c50ba9c2817d1020553851c7aa61">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weather::SnowField::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SnowFieldTarget_8cpp_source.html#l00014">eve::lighting_editing::SnowFieldTarget::height()</a>, <a class="el" href="Snow_8cpp_source.html#l00070">eve::weather::Snow::updateTexture()</a> , 以及 <a class="el" href="Snow_8cpp_source.html#l00062">eve::weather::Snow::uploadTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a4770548dcc7bfc6ee4b5b06aabde30eb" name="a4770548dcc7bfc6ee4b5b06aabde30eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4770548dcc7bfc6ee4b5b06aabde30eb">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weather::SnowField::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snow_8cpp_source.html#l00070">eve::weather::Snow::updateTexture()</a>, <a class="el" href="Snow_8cpp_source.html#l00062">eve::weather::Snow::uploadTexture()</a> , 以及 <a class="el" href="SnowFieldTarget_8cpp_source.html#l00013">eve::lighting_editing::SnowFieldTarget::width()</a>.</p>
+
+</div>
+</div>
+<a id="aa126abdd6637bfde6d9ad74d9bf48a23" name="aa126abdd6637bfde6d9ad74d9bf48a23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa126abdd6637bfde6d9ad74d9bf48a23">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::SnowField::height </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cell value in [0,1]; out-of-bounds reads 0. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SnowField_8cpp_source.html#l00035">inBounds()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snow_8cpp_source.html#l00018">eve::weather::applySnowToHeightmap()</a>, <a class="el" href="SnowFieldTarget_8cpp_source.html#l00016">eve::lighting_editing::SnowFieldTarget::readScalar()</a> , 以及 <a class="el" href="SnowFieldTarget_8cpp_source.html#l00019">eve::lighting_editing::SnowFieldTarget::writeScalar()</a>.</p>
+
+</div>
+</div>
+<a id="a38a46702bde87971247b330601fdae67" name="a38a46702bde87971247b330601fdae67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38a46702bde87971247b330601fdae67">&#9670;&#160;</a></span>inBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::SnowField::inBounds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility predicate returning whether a cell is inside the field. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snow_8cpp_source.html#l00018">eve::weather::applySnowToHeightmap()</a>, <a class="el" href="SnowFieldTarget_8cpp_source.html#l00015">eve::lighting_editing::SnowFieldTarget::containsCell()</a>, <a class="el" href="SnowField_8cpp_source.html#l00051">height()</a>, <a class="el" href="SnowField_8cpp_source.html#l00045">setHeight()</a>, <a class="el" href="SnowField_8cpp_source.html#l00056">stampFootprint()</a> , 以及 <a class="el" href="SnowField_8cpp_source.html#l00107">stampImpact()</a>.</p>
+
+</div>
+</div>
+<a id="a361371126fbaa236cd4573da65d0d201" name="a361371126fbaa236cd4573da65d0d201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a361371126fbaa236cd4573da65d0d201">&#9670;&#160;</a></span>isDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::SnowField::isDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when any cell changed since the last <a class="el" href="classeve_1_1weather_1_1SnowField.html#a3bccec8279f06487d2e25953ce145e8b">clearDirty()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8h_source.html">SnowField.h</a> 第 <a class="el" href="SnowField_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e746cbe5b74e5762ead99f8227e3755" name="a9e746cbe5b74e5762ead99f8227e3755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e746cbe5b74e5762ead99f8227e3755">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SnowField_8cpp_source.html#l00024">SnowField()</a>.</p>
+
+</div>
+</div>
+<a id="af5ef0f57dc169400f27effcff37b2a51" name="af5ef0f57dc169400f27effcff37b2a51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5ef0f57dc169400f27effcff37b2a51">&#9670;&#160;</a></span>setHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::setHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one cell (clamped to [0,1]); out-of-bounds is a no-op. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="SnowField_8cpp_source.html#l00035">inBounds()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SnowFieldTarget_8cpp_source.html#l00019">eve::lighting_editing::SnowFieldTarget::writeScalar()</a>.</p>
+
+</div>
+</div>
+<a id="a694eadb3d2fc9d516677f197544736b7" name="a694eadb3d2fc9d516677f197544736b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a694eadb3d2fc9d516677f197544736b7">&#9670;&#160;</a></span>stampFootprint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::stampFootprint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Press a footprint into the snow: an ellipse along (dirX, dirZ) with a soft bowl depression and a raised rim at the edges. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cx</td><td>/ cz center in grid cell coordinates (may be fractional) </td></tr>
+    <tr><td class="paramname">dirX</td><td>/ dirZ travel direction (need not be normalized) </td></tr>
+    <tr><td class="paramname">radius</td><td>half length along the travel direction, in cells </td></tr>
+    <tr><td class="paramname">depth</td><td>depression strength [0,1] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00075">across</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="SnowField_8cpp_source.html#l00035">inBounds()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00135">margin</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="adcce8d9eaa8ff8ca14d6b999d79ab2e8" name="adcce8d9eaa8ff8ca14d6b999d79ab2e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcce8d9eaa8ff8ca14d6b999d79ab2e8">&#9670;&#160;</a></span>stampImpact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weather::SnowField::stampImpact </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Carve an impact crater: a parabolic bowl (deep center, shallow edge) plus a raised snow rim just outside the bowl. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cx</td><td>/ cz center in grid cell coordinates </td></tr>
+    <tr><td class="paramname">radius</td><td>crater radius in cells </td></tr>
+    <tr><td class="paramname">depth</td><td>crater depth [0,1] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="SnowField_8cpp_source.html#l00035">inBounds()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00135">margin</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a10155f3cb31660c0f034059b33344dc1" name="a10155f3cb31660c0f034059b33344dc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10155f3cb31660c0f034059b33344dc1">&#9670;&#160;</a></span>toAlbedoRGBA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint8_t &gt; eve::weather::SnowField::toAlbedoRGBA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Albedo as RGBA8: cool-white snow blended to dark ground by depth, plus a tiny per-cell hash, so bare ground reads dark and deep snow white. </p>
+<p>@ownership Returned value owns its pixels. @lifetime Independent of this field after return. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a83d33dcb2855e401331204a96ca123b5" name="a83d33dcb2855e401331204a96ca123b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83d33dcb2855e401331204a96ca123b5">&#9670;&#160;</a></span>toHeightRGBA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint8_t &gt; eve::weather::SnowField::toHeightRGBA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>POM height map as RGBA8 (width x height x 4): R = snow depth, G = B = 0, A = 255 (white = raised toward the viewer, matches parallax_map.glsl). </p>
+<p>@ownership Returned value owns its pixels. @lifetime Independent of this field after return. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aad25451a325e225e47eedfcbf247253b" name="aad25451a325e225e47eedfcbf247253b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad25451a325e225e47eedfcbf247253b">&#9670;&#160;</a></span>toNormalRGBA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint8_t &gt; eve::weather::SnowField::toNormalRGBA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tangent-space normal map as RGBA8 derived from the snow-depth gradient (flat = 128,128,255, OpenGL-style, matches applyNormalMap). </p>
+<p>@ownership Returned value owns its pixels. @lifetime Independent of this field after return. </p>
+
+<p class="definition">在文件 <a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a> 第 <a class="el" href="SnowField_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weather/<a class="el" href="SnowField_8h_source.html">SnowField.h</a></li>
+<li>src/modules/weather/<a class="el" href="SnowField_8cpp_source.html">SnowField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

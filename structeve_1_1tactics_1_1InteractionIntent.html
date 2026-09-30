@@ -1,0 +1,314 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tactics::InteractionIntent结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li><li class="navelem"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html">InteractionIntent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1tactics_1_1InteractionIntent-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tactics::InteractionIntent结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One player intention, expressed with stable identities only.  
+ <a href="structeve_1_1tactics_1_1InteractionIntent.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Interaction_8h_source.html">Interaction.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a19d9760a0dca85803a2558ec515b8347" id="r_a19d9760a0dca85803a2558ec515b8347"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#a19d9760a0dca85803a2558ec515b8347">kind</a> = <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">InteractionIntentKind::None</a></td></tr>
+<tr class="separator:a19d9760a0dca85803a2558ec515b8347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a932762bed88061e2f2bf589140ea5407" id="r_a932762bed88061e2f2bf589140ea5407"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#a932762bed88061e2f2bf589140ea5407">actor</a></td></tr>
+<tr class="memdesc:a932762bed88061e2f2bf589140ea5407"><td class="mdescLeft">&#160;</td><td class="mdescRight">The unit the intent is about (the controlled unit when one is known).  <br /></td></tr>
+<tr class="separator:a932762bed88061e2f2bf589140ea5407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4dc8c25bbfa72bda54b0a7e8e1f4d64" id="r_ac4dc8c25bbfa72bda54b0a7e8e1f4d64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">cell</a></td></tr>
+<tr class="separator:ac4dc8c25bbfa72bda54b0a7e8e1f4d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b26a01ea53483d54735612e1b9d9c1b" id="r_a2b26a01ea53483d54735612e1b9d9c1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#a2b26a01ea53483d54735612e1b9d9c1b">action</a></td></tr>
+<tr class="memdesc:a2b26a01ea53483d54735612e1b9d9c1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Armed ability for <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">InteractionIntentKind::UseAbilityOn</a>.  <br /></td></tr>
+<tr class="separator:a2b26a01ea53483d54735612e1b9d9c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa274dccea2839ca452eec927b640a65b" id="r_aa274dccea2839ca452eec927b640a65b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#aa274dccea2839ca452eec927b640a65b">targetUnit</a></td></tr>
+<tr class="memdesc:aa274dccea2839ca452eec927b640a65b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit occupying the target cell, when the intent targets a unit.  <br /></td></tr>
+<tr class="separator:aa274dccea2839ca452eec927b640a65b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a471dfdf48835e69932e2b0604c13ae29" id="r_a471dfdf48835e69932e2b0604c13ae29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1InteractionIntent.html#a471dfdf48835e69932e2b0604c13ae29">expected</a></td></tr>
+<tr class="memdesc:a471dfdf48835e69932e2b0604c13ae29"><td class="mdescLeft">&#160;</td><td class="mdescRight">The revision this intent was decided against.  <br /></td></tr>
+<tr class="separator:a471dfdf48835e69932e2b0604c13ae29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One player intention, expressed with stable identities only. </p>
+<dl class="section remark"><dt>备注</dt><dd>The intent carries the revision it was decided against, exactly like a gameplay command, so a caller can detect that the world moved on between the click and the commit instead of committing against stale observations. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00074">74</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a2b26a01ea53483d54735612e1b9d9c1b" name="a2b26a01ea53483d54735612e1b9d9c1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b26a01ea53483d54735612e1b9d9c1b">&#9670;&#160;</a></span>action</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::tactics::InteractionIntent::action</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Armed ability for <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa03f96f0ee1520acbd04550010bf6e2ee">InteractionIntentKind::UseAbilityOn</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Interaction_8cpp_source.html#l00171">eve::tactics::InteractionSession::onEndTurn()</a>.</p>
+
+</div>
+</div>
+<a id="a932762bed88061e2f2bf589140ea5407" name="a932762bed88061e2f2bf589140ea5407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a932762bed88061e2f2bf589140ea5407">&#9670;&#160;</a></span>actor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::tactics::InteractionIntent::actor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The unit the intent is about (the controlled unit when one is known). </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4dc8c25bbfa72bda54b0a7e8e1f4d64" name="ac4dc8c25bbfa72bda54b0a7e8e1f4d64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4dc8c25bbfa72bda54b0a7e8e1f4d64">&#9670;&#160;</a></span>cell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> eve::tactics::InteractionIntent::cell</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a471dfdf48835e69932e2b0604c13ae29" name="a471dfdf48835e69932e2b0604c13ae29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471dfdf48835e69932e2b0604c13ae29">&#9670;&#160;</a></span>expected</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> eve::tactics::InteractionIntent::expected</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The revision this intent was decided against. </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19d9760a0dca85803a2558ec515b8347" name="a19d9760a0dca85803a2558ec515b8347"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d9760a0dca85803a2558ec515b8347">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564a">InteractionIntentKind</a> eve::tactics::InteractionIntent::kind = <a class="el" href="namespaceeve_1_1tactics.html#a614dac5cdfadcc587d56aa478fb9564aa6adf97f83acf6453d4a6a4b1070f3754">InteractionIntentKind::None</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa274dccea2839ca452eec927b640a65b" name="aa274dccea2839ca452eec927b640a65b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa274dccea2839ca452eec927b640a65b">&#9670;&#160;</a></span>targetUnit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::tactics::InteractionIntent::targetUnit</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unit occupying the target cell, when the intent targets a unit. </p>
+
+<p class="definition">在文件 <a class="el" href="Interaction_8h_source.html">Interaction.h</a> 第 <a class="el" href="Interaction_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/tactics/<a class="el" href="Interaction_8h_source.html">Interaction.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

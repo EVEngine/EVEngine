@@ -1,0 +1,259 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hexmap/HexMapMesh.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9beb90eeb0f208ac74f7b70f24c9d85f.html">hexmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">HexMapMesh.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HexMapMesh_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="HexMap_8h.html">hexmap/HexMap.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="HexMeshData_8h.html">hexmap/HexMeshData.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="HexVisibility_8h.html">hexmap/HexVisibility.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1hexmap.html">eve::hexmap</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html">HexTerrainVertexCode</a> {</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a2e301ccac8921d1fbfd8b0315205db4f">   31</a></span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a2e301ccac8921d1fbfd8b0315205db4f">encodeIndices</a>(std::int32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, std::int32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, std::int32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) + <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) * 8.f + <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) * 64.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a65da6fbeec142b834ff625b7bf2866ae">   35</a></span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a65da6fbeec142b834ff625b7bf2866ae">encodeWeights</a>(<span class="keywordtype">float</span> weightB, <span class="keywordtype">float</span> weightC) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> weightB + weightC * 16.f; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a> = 1.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">b</a> = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a451b1af70a7936e531c8eea5085c37d5">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a451b1af70a7936e531c8eea5085c37d5">c</a> = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#aecf78db42732cc011137bae7641da32f">   45</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#aecf78db42732cc011137bae7641da32f">primary</a>() noexcept { <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>{1.f, 0.f, 0.f}; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a62d983069261663e62bdbcf5e5b2f732">   47</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a62d983069261663e62bdbcf5e5b2f732">blend</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>{1.f - <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, 0.f}; }</div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#ac40e52d3b170cd5cac3a04bad74d9801">   49</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#ac40e52d3b170cd5cac3a04bad74d9801">blend3</a>(<span class="keywordtype">float</span> t2, <span class="keywordtype">float</span> t3) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>{1.f - t2 - t3, t2, t3};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a6a8cc41902a570ea9922b2d26160f426">   53</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a> <a class="code hl_function" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a6a8cc41902a570ea9922b2d26160f426">lerp</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>&amp; <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>&amp; <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">b</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexTerrainWeights.html">HexTerrainWeights</a>{<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a> + (<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">b</a>.a - <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.a) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.b + (<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">b</a>.b - <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.b) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.c + (<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">b</a>.c - <a class="code hl_variable" href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">a</a>.c) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#a69f301dfd9f19e471ad27322528d466e">buildTerrainMesh</a>(<span class="keyword">const</span> HexMap&amp; map, std::int32_t chunkIndex, HexMeshData&amp; out);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#a76772c4e406f09e2efc22726bb050b98">buildWaterMesh</a>(<span class="keyword">const</span> HexMap&amp; map, std::int32_t chunkIndex, HexMeshData&amp; out);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#a6a6c3c97074177f405ecdabf29d65554">buildRiverMesh</a>(<span class="keyword">const</span> HexMap&amp; map, std::int32_t chunkIndex, HexMeshData&amp; out);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#a174032c88f8247861bda51e51d63c3c6">buildRoadMesh</a>(<span class="keyword">const</span> HexMap&amp; map, std::int32_t chunkIndex, HexMeshData&amp; out);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#a3f8c598df512ba1f98e8242d8cc298d4">buildChunkSurfaceMesh</a>(<span class="keyword">const</span> HexMap&amp; map, std::int32_t chunkIndex, <a class="code hl_enumeration" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151ab">HexSurface</a> surface,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                                              HexMeshData&amp; out);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1hexmap.html#ad502d1c10b98dc76541b6662ed646fd7">buildFogMesh</a>(<span class="keyword">const</span> HexMap&amp; map, <span class="keyword">const</span> HexVisibility&amp; visibility, std::int32_t chunkIndex,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                     HexMeshData&amp; out);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}  <span class="comment">// namespace eve::hexmap</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aHexMap_8h_html"><div class="ttname"><a href="HexMap_8h.html">HexMap.h</a></div><div class="ttdoc">Editable hex cell grid: topology, queries, picking and authoring.</div></div>
+<div class="ttc" id="aHexMeshData_8h_html"><div class="ttname"><a href="HexMeshData_8h.html">HexMeshData.h</a></div><div class="ttdoc">CPU vertex/index container shared by the hex surface builders.</div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aHexVisibility_8h_html"><div class="ttname"><a href="HexVisibility_8h.html">HexVisibility.h</a></div><div class="ttdoc">Reference-counted cell visibility and explored state.</div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html"><div class="ttname"><a href="namespaceeve_1_1hexmap.html">eve::hexmap</a></div><div class="ttdef"><b>Definition</b> <a href="HexCell_8h_source.html#l00009">HexCell.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a174032c88f8247861bda51e51d63c3c6"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a174032c88f8247861bda51e51d63c3c6">eve::hexmap::buildRoadMesh</a></div><div class="ttdeci">void buildRoadMesh(const HexMap &amp;map, std::int32_t chunkIndex, HexMeshData &amp;out)</div><div class="ttdoc">Builds the road surface of one chunk.</div><div class="ttdef"><b>Definition</b> <a href="HexRoadMesh_8cpp_source.html#l00102">HexRoadMesh.cpp:102</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a3c1facb3e6721984bbf3b25d2f4151ab"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151ab">eve::hexmap::HexSurface</a></div><div class="ttdeci">HexSurface</div><div class="ttdoc">Surface streams a chunk mesh is generated for.</div><div class="ttdef"><b>Definition</b> <a href="HexMap_8h_source.html#l00019">HexMap.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a3f8c598df512ba1f98e8242d8cc298d4"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a3f8c598df512ba1f98e8242d8cc298d4">eve::hexmap::buildChunkSurfaceMesh</a></div><div class="ttdeci">void buildChunkSurfaceMesh(const HexMap &amp;map, std::int32_t chunkIndex, HexSurface surface, HexMeshData &amp;out)</div><div class="ttdoc">Builds one chunk surface by dispatching on surface.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8cpp_source.html#l00005">HexMapMesh.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a69f301dfd9f19e471ad27322528d466e"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a69f301dfd9f19e471ad27322528d466e">eve::hexmap::buildTerrainMesh</a></div><div class="ttdeci">EVENGINE_API_WORLD void buildTerrainMesh(const HexMap &amp;map, std::int32_t chunkIndex, HexMeshData &amp;out)</div><div class="ttdoc">Builds the ground, terrace and cliff surface of one chunk.</div><div class="ttdef"><b>Definition</b> <a href="HexTerrainMesh_8cpp_source.html#l00729">HexTerrainMesh.cpp:729</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a6a6c3c97074177f405ecdabf29d65554"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a6a6c3c97074177f405ecdabf29d65554">eve::hexmap::buildRiverMesh</a></div><div class="ttdeci">void buildRiverMesh(const HexMap &amp;map, std::int32_t chunkIndex, HexMeshData &amp;out)</div><div class="ttdoc">Builds the river channel surface of one chunk.</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00103">HexRiverMesh.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a76772c4e406f09e2efc22726bb050b98"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a76772c4e406f09e2efc22726bb050b98">eve::hexmap::buildWaterMesh</a></div><div class="ttdeci">EVENGINE_API_WORLD void buildWaterMesh(const HexMap &amp;map, std::int32_t chunkIndex, HexMeshData &amp;out)</div><div class="ttdoc">Builds the water surface and shore band of one chunk.</div><div class="ttdef"><b>Definition</b> <a href="HexWaterMesh_8cpp_source.html#l00191">HexWaterMesh.cpp:191</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_ad502d1c10b98dc76541b6662ed646fd7"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#ad502d1c10b98dc76541b6662ed646fd7">eve::hexmap::buildFogMesh</a></div><div class="ttdeci">void buildFogMesh(const HexMap &amp;map, const HexVisibility &amp;visibility, std::int32_t chunkIndex, HexMeshData &amp;out)</div><div class="ttdoc">Builds the fog-of-war overlay of one chunk.</div><div class="ttdef"><b>Definition</b> <a href="HexFogMesh_8cpp_source.html#l00116">HexFogMesh.cpp:116</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainVertexCode_html"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html">eve::hexmap::HexTerrainVertexCode</a></div><div class="ttdoc">Encodes the three contributing cells of a terrain vertex.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00029">HexMapMesh.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainVertexCode_html_a2e301ccac8921d1fbfd8b0315205db4f"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a2e301ccac8921d1fbfd8b0315205db4f">eve::hexmap::HexTerrainVertexCode::encodeIndices</a></div><div class="ttdeci">static float encodeIndices(std::int32_t a, std::int32_t b, std::int32_t c) noexcept</div><div class="ttdoc">First texture coordinate, carrying the three terrain indices.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00031">HexMapMesh.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainVertexCode_html_a65da6fbeec142b834ff625b7bf2866ae"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainVertexCode.html#a65da6fbeec142b834ff625b7bf2866ae">eve::hexmap::HexTerrainVertexCode::encodeWeights</a></div><div class="ttdeci">static float encodeWeights(float weightB, float weightC) noexcept</div><div class="ttdoc">Second texture coordinate, carrying the secondary/tertiary weights.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00035">HexMapMesh.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html">eve::hexmap::HexTerrainWeights</a></div><div class="ttdoc">Terrain-layer weights of a vertex; the three entries sum to 1.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00039">HexMapMesh.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_a451b1af70a7936e531c8eea5085c37d5"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a451b1af70a7936e531c8eea5085c37d5">eve::hexmap::HexTerrainWeights::c</a></div><div class="ttdeci">float c</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00042">HexMapMesh.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_a5f4c8f3d080b167c02080c4d8125a62f"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a5f4c8f3d080b167c02080c4d8125a62f">eve::hexmap::HexTerrainWeights::a</a></div><div class="ttdeci">float a</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00040">HexMapMesh.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_a62d983069261663e62bdbcf5e5b2f732"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a62d983069261663e62bdbcf5e5b2f732">eve::hexmap::HexTerrainWeights::blend</a></div><div class="ttdeci">static HexTerrainWeights blend(float t) noexcept</div><div class="ttdoc">Weights of two cells, t towards the second.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00047">HexMapMesh.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_a6a8cc41902a570ea9922b2d26160f426"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a6a8cc41902a570ea9922b2d26160f426">eve::hexmap::HexTerrainWeights::lerp</a></div><div class="ttdeci">static HexTerrainWeights lerp(const HexTerrainWeights &amp;a, const HexTerrainWeights &amp;b, float t) noexcept</div><div class="ttdoc">Interpolates two weight sets.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00053">HexMapMesh.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_a7bb68583fb415f840731114dc55c4f9f"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#a7bb68583fb415f840731114dc55c4f9f">eve::hexmap::HexTerrainWeights::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00041">HexMapMesh.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_ac40e52d3b170cd5cac3a04bad74d9801"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#ac40e52d3b170cd5cac3a04bad74d9801">eve::hexmap::HexTerrainWeights::blend3</a></div><div class="ttdeci">static HexTerrainWeights blend3(float t2, float t3) noexcept</div><div class="ttdoc">Weights of three cells, t2/t3 towards the second and third.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00049">HexMapMesh.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexTerrainWeights_html_aecf78db42732cc011137bae7641da32f"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexTerrainWeights.html#aecf78db42732cc011137bae7641da32f">eve::hexmap::HexTerrainWeights::primary</a></div><div class="ttdeci">static HexTerrainWeights primary() noexcept</div><div class="ttdoc">Weights of the first cell alone.</div><div class="ttdef"><b>Definition</b> <a href="HexMapMesh_8h_source.html#l00045">HexMapMesh.h:45</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

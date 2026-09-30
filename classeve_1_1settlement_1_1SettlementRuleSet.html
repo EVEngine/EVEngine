@@ -1,0 +1,473 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::settlement::SettlementRuleSet类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1settlement.html">settlement</a></li><li class="navelem"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html">SettlementRuleSet</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1settlement_1_1SettlementRuleSet-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::settlement::SettlementRuleSet类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Validated immutable-style rule collection installable into pipelines.  
+ <a href="classeve_1_1settlement_1_1SettlementRuleSet.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SettlementRules_8h_source.html">SettlementRules.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a428a5a21c8c9b2884b7fcd4899af10cb" id="r_a428a5a21c8c9b2884b7fcd4899af10cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a428a5a21c8c9b2884b7fcd4899af10cb">configure</a> (std::vector&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementRule.html">SettlementRule</a> &gt; rules)</td></tr>
+<tr class="memdesc:a428a5a21c8c9b2884b7fcd4899af10cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace all rules after validating ids, operands and phases.  <br /></td></tr>
+<tr class="separator:a428a5a21c8c9b2884b7fcd4899af10cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fb090d825756e3ee584dfe1d1a063ac" id="r_a0fb090d825756e3ee584dfe1d1a063ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a0fb090d825756e3ee584dfe1d1a063ac">configureJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a0fb090d825756e3ee584dfe1d1a063ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically decode and replace a strict versioned JSON rule document.  <br /></td></tr>
+<tr class="separator:a0fb090d825756e3ee584dfe1d1a063ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafd35ad2d7e889405d3bda47b73e9b07" id="r_aafd35ad2d7e889405d3bda47b73e9b07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#aafd35ad2d7e889405d3bda47b73e9b07">install</a> (<a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html">SettlementPipeline</a> &amp;pipeline) const</td></tr>
+<tr class="memdesc:aafd35ad2d7e889405d3bda47b73e9b07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install a stable snapshot as custom stages on a pipeline.  <br /></td></tr>
+<tr class="separator:aafd35ad2d7e889405d3bda47b73e9b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd06821b749d28d7ba1822723662860a" id="r_afd06821b749d28d7ba1822723662860a"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#afd06821b749d28d7ba1822723662860a">size</a> () const noexcept</td></tr>
+<tr class="memdesc:afd06821b749d28d7ba1822723662860a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of validated rules in this collection.  <br /></td></tr>
+<tr class="separator:afd06821b749d28d7ba1822723662860a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f040dfa624bae071cde67a32f2992b5" id="r_a4f040dfa624bae071cde67a32f2992b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a4f040dfa624bae071cde67a32f2992b5">canonicalJson</a> () const</td></tr>
+<tr class="memdesc:a4f040dfa624bae071cde67a32f2992b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize validated rules in their semantic execution order.  <br /></td></tr>
+<tr class="separator:a4f040dfa624bae071cde67a32f2992b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03a3ee5134943837eadb8ed3c57fd2f8" id="r_a03a3ee5134943837eadb8ed3c57fd2f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#aaaf0d65059bd675715fff4063c9ca9b2">eve::ContentId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a03a3ee5134943837eadb8ed3c57fd2f8">digest</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a03a3ee5134943837eadb8ed3c57fd2f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash the canonical validated rule-set representation.  <br /></td></tr>
+<tr class="separator:a03a3ee5134943837eadb8ed3c57fd2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2868fe0be2b5941a385b55d44b7bee72" id="r_a2868fe0be2b5941a385b55d44b7bee72"><td class="memItemLeft" align="right" valign="top">static constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a2868fe0be2b5941a385b55d44b7bee72">schemaVersion</a> () noexcept</td></tr>
+<tr class="memdesc:a2868fe0be2b5941a385b55d44b7bee72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable schema version used by canonical rule-set identity.  <br /></td></tr>
+<tr class="separator:a2868fe0be2b5941a385b55d44b7bee72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17d5acaaac0d5155f1768e405cc4328" id="r_ae17d5acaaac0d5155f1768e405cc4328"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html">SettlementRuleSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#ae17d5acaaac0d5155f1768e405cc4328">fromJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:ae17d5acaaac0d5155f1768e405cc4328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and compile a strict versioned JSON rule document without mutating an existing rule set.  <br /></td></tr>
+<tr class="separator:ae17d5acaaac0d5155f1768e405cc4328"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Validated immutable-style rule collection installable into pipelines. </p>
+<p>Configuration is transactional: a failed replacement leaves the previous rules unchanged. Installing copies the current rules into pipeline-owned stage callbacks, so the rule set may be destroyed immediately afterwards. The collection is simulation-thread confined; installed callbacks are synchronous and do not retain request or policy references. </p>
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8h_source.html">SettlementRules.h</a> 第 <a class="el" href="SettlementRules_8h_source.html#l00077">77</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4f040dfa624bae071cde67a32f2992b5" name="a4f040dfa624bae071cde67a32f2992b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f040dfa624bae071cde67a32f2992b5">&#9670;&#160;</a></span>canonicalJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::settlement::SettlementRuleSet::canonicalJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize validated rules in their semantic execution order. </p>
+<dl class="section return"><dt>返回</dt><dd>Versioned canonical JSON, or a structured serialization failure. @cost O(n log n) in rule count due to semantic ordering and filter normalization. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SettlementRuleIdentity_8cpp_source.html">SettlementRuleIdentity.cpp</a> 第 <a class="el" href="SettlementRuleIdentity_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a> , 以及 <a class="el" href="SettlementRules_8h_source.html#l00080">schemaVersion()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SettlementRuleIdentity_8cpp_source.html#l00078">digest()</a>.</p>
+
+</div>
+</div>
+<a id="a428a5a21c8c9b2884b7fcd4899af10cb" name="a428a5a21c8c9b2884b7fcd4899af10cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428a5a21c8c9b2884b7fcd4899af10cb">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementRuleSet::configure </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementRule.html">SettlementRule</a> &gt;&#160;</td>
+          <td class="paramname"><em>rules</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace all rules after validating ids, operands and phases. </p>
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00836">836</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda890572ae74a26a271fecc3ca7e2a41b9">eve::settlement::AbsorbFlat</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a9639e32cab248434a17ab32237cb3b71">eve::settlement::Apply</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda59fd527c4a77a1a8522016dc9dfa9ee8">eve::settlement::ClampMaximum</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a5d30f54fc5f12894fd1afbf4d41c5969">eve::settlement::Decision</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51aa4ecfc70574394990cf17bd83df499f7">eve::settlement::Event</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda9ef69f48f751342bb563666bdbc224fb">eve::settlement::Immune</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda9d82a0f406f346bcb6fcd036e1b98175">eve::settlement::Lifesteal</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fdae257376d913f3b53cbb4a9b19d770648">eve::settlement::Multiply</a>, <a class="el" href="PlayHost_8cpp_source.html#l00140">path</a>, <a class="el" href="SettlementRules_8cpp_source.html#l00724">program</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda74de3e45e4491e956e8dc18d841d9b00">eve::settlement::Reflect</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda9117259cd827403a7fce995c1f6a056c">eve::settlement::ResistFlat</a>, <a class="el" href="namespaceeve_1_1settlement.html#a5717f69291097a734983874c501f14fda5bf5fa9dec739a4d98cbcf19ed9d3780">eve::settlement::ResistPercent</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51af698f67f5666aff10729d8a1cb1c14d2">eve::settlement::Trigger</a> , 以及 <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51aad3d06d03d94223fa652babc913de686">eve::settlement::Validate</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SettlementRuleJson_8cpp_source.html#l00173">configureJson()</a> , 以及 <a class="el" href="SettlementEffectProjection_8cpp_source.html#l00109">eve::settlement::projectEffectRules()</a>.</p>
+
+</div>
+</div>
+<a id="a0fb090d825756e3ee584dfe1d1a063ac" name="a0fb090d825756e3ee584dfe1d1a063ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fb090d825756e3ee584dfe1d1a063ac">&#9670;&#160;</a></span>configureJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementRuleSet::configureJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically decode and replace a strict versioned JSON rule document. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Canonical <code>settlement.rules</code> document; unknown fields and versions are rejected. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a located parse/schema/rule-validation diagnostic while preserving old rules. @cost Linear JSON decode plus condition compilation for every rule. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SettlementRuleJson_8cpp_source.html">SettlementRuleJson.cpp</a> 第 <a class="el" href="SettlementRuleJson_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SettlementRules_8cpp_source.html#l00836">configure()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="SettlementRules_8h_source.html#l00080">schemaVersion()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SettlementRuleJson_8cpp_source.html#l00165">fromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a03a3ee5134943837eadb8ed3c57fd2f8" name="a03a3ee5134943837eadb8ed3c57fd2f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03a3ee5134943837eadb8ed3c57fd2f8">&#9670;&#160;</a></span>digest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#aaaf0d65059bd675715fff4063c9ca9b2">eve::ContentId</a> &gt; eve::settlement::SettlementRuleSet::digest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hash the canonical validated rule-set representation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hashProvider</td><td>Explicit provider shared with snapshot and settlement result hashing. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Stable content identity, or a structured serialization/provider failure. @cost Canonical serialization plus the injected provider's hashing cost. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SettlementRuleIdentity_8cpp_source.html">SettlementRuleIdentity.cpp</a> 第 <a class="el" href="SettlementRuleIdentity_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SettlementRuleIdentity_8cpp_source.html#l00054">canonicalJson()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>.</p>
+
+</div>
+</div>
+<a id="ae17d5acaaac0d5155f1768e405cc4328" name="ae17d5acaaac0d5155f1768e405cc4328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae17d5acaaac0d5155f1768e405cc4328">&#9670;&#160;</a></span>fromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html">SettlementRuleSet</a> &gt; eve::settlement::SettlementRuleSet::fromJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode and compile a strict versioned JSON rule document without mutating an existing rule set. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Canonical <code>settlement.rules</code> document shared by runtime and editor/tool validation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A validated owning rule set, or the same located diagnostic used by <a class="el" href="classeve_1_1settlement_1_1SettlementRuleSet.html#a0fb090d825756e3ee584dfe1d1a063ac" title="Atomically decode and replace a strict versioned JSON rule document.">configureJson()</a>. @cost Linear JSON decode plus condition compilation for every rule. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SettlementRuleJson_8cpp_source.html">SettlementRuleJson.cpp</a> 第 <a class="el" href="SettlementRuleJson_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="SettlementRuleJson_8cpp_source.html#l00173">configureJson()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorDiagnostics_8cpp_source.html#l00007">eve::editor::EditorValidationService::EditorValidationService()</a>.</p>
+
+</div>
+</div>
+<a id="aafd35ad2d7e889405d3bda47b73e9b07" name="aafd35ad2d7e889405d3bda47b73e9b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafd35ad2d7e889405d3bda47b73e9b07">&#9670;&#160;</a></span>install()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementRuleSet::install </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html">SettlementPipeline</a> &amp;&#160;</td>
+          <td class="paramname"><em>pipeline</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install a stable snapshot as custom stages on a pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pipeline</td><td>Pipeline mutated on the caller's simulation thread. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a duplicate-stage/configuration diagnostic. @cost Linear in rule count and copies the validated configuration once. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a> 第 <a class="el" href="SettlementRules_8cpp_source.html#l00894">894</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00649">eve::settlement::SettlementPipeline::addStage()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="DnutCompiler_8cpp_source.html#l00030">condition</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00094">context</a>, <a class="el" href="SettlementRules_8cpp_source.html#l00725">digest</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="McpScriptTools_8cpp_source.html#l00040">name</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardEffects_8cpp_source.html#l00110">eve::card::CardEffectExecutor::configureSettlementRules()</a>, <a class="el" href="Damage_8cpp_source.html#l00269">eve::combat::DamageRuntime::configureSettlementRules()</a>, <a class="el" href="Battle_8cpp_source.html#l00027">eve::rpg::Battle::configureSettlementRules()</a> , 以及 <a class="el" href="TacticsSettlement_8cpp_source.html#l00032">eve::tactics::TacticsSettlementRuntime::configureSettlementRules()</a>.</p>
+
+</div>
+</div>
+<a id="a2868fe0be2b5941a385b55d44b7bee72" name="a2868fe0be2b5941a385b55d44b7bee72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2868fe0be2b5941a385b55d44b7bee72">&#9670;&#160;</a></span>schemaVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr std::uint32_t eve::settlement::SettlementRuleSet::schemaVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable schema version used by canonical rule-set identity. </p>
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8h_source.html">SettlementRules.h</a> 第 <a class="el" href="SettlementRules_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SettlementRuleIdentity_8cpp_source.html#l00054">canonicalJson()</a> , 以及 <a class="el" href="SettlementRuleJson_8cpp_source.html#l00173">configureJson()</a>.</p>
+
+</div>
+</div>
+<a id="afd06821b749d28d7ba1822723662860a" name="afd06821b749d28d7ba1822723662860a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd06821b749d28d7ba1822723662860a">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::settlement::SettlementRuleSet::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of validated rules in this collection. </p>
+
+<p class="definition">在文件 <a class="el" href="SettlementRules_8h_source.html">SettlementRules.h</a> 第 <a class="el" href="SettlementRules_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/settlement/<a class="el" href="SettlementRules_8h_source.html">SettlementRules.h</a></li>
+<li>src/modules/settlement/<a class="el" href="SettlementRuleIdentity_8cpp_source.html">SettlementRuleIdentity.cpp</a></li>
+<li>src/modules/settlement/<a class="el" href="SettlementRuleJson_8cpp_source.html">SettlementRuleJson.cpp</a></li>
+<li>src/modules/settlement/<a class="el" href="SettlementRules_8cpp_source.html">SettlementRules.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

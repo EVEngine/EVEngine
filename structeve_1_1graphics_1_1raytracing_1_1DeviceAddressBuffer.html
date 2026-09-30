@@ -1,0 +1,627 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::raytracing::DeviceAddressBuffer结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1raytracing.html">raytracing</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::raytracing::DeviceAddressBuffer结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Device-local buffer with shader device address (for AS builds / SBT). @ownership Owns the Vulkan buffer and memory; destroyed on <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#afa5437544f93d8a3d1455b0e8e67b71a">release()</a>.  
+ <a href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a06229291dd85604e9d415bca8a7cb600" id="r_a06229291dd85604e9d415bca8a7cb600"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a06229291dd85604e9d415bca8a7cb600">DeviceAddressBuffer</a> ()=default</td></tr>
+<tr class="separator:a06229291dd85604e9d415bca8a7cb600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a342ce97963ea1d65d1948669459bb9ff" id="r_a342ce97963ea1d65d1948669459bb9ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a342ce97963ea1d65d1948669459bb9ff">~DeviceAddressBuffer</a> ()</td></tr>
+<tr class="separator:a342ce97963ea1d65d1948669459bb9ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0119d8fb46cc03feb8905aa4bb5f9ab4" id="r_a0119d8fb46cc03feb8905aa4bb5f9ab4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a0119d8fb46cc03feb8905aa4bb5f9ab4">DeviceAddressBuffer</a> (const <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;)=delete</td></tr>
+<tr class="separator:a0119d8fb46cc03feb8905aa4bb5f9ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2d853a8946b4ab703ab4deb5f30bbd3" id="r_ad2d853a8946b4ab703ab4deb5f30bbd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#ad2d853a8946b4ab703ab4deb5f30bbd3">operator=</a> (const <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;)=delete</td></tr>
+<tr class="separator:ad2d853a8946b4ab703ab4deb5f30bbd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab90ae29b21b2d4fbb3a1d566a950d32b" id="r_ab90ae29b21b2d4fbb3a1d566a950d32b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#ab90ae29b21b2d4fbb3a1d566a950d32b">DeviceAddressBuffer</a> (<a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&amp;o) noexcept</td></tr>
+<tr class="separator:ab90ae29b21b2d4fbb3a1d566a950d32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de6ec25cb9214b38fd1b1b021afba46" id="r_a8de6ec25cb9214b38fd1b1b021afba46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a8de6ec25cb9214b38fd1b1b021afba46">operator=</a> (<a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&amp;o) noexcept</td></tr>
+<tr class="separator:a8de6ec25cb9214b38fd1b1b021afba46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa5437544f93d8a3d1455b0e8e67b71a" id="r_afa5437544f93d8a3d1455b0e8e67b71a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#afa5437544f93d8a3d1455b0e8e67b71a">release</a> ()</td></tr>
+<tr class="separator:afa5437544f93d8a3d1455b0e8e67b71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0d1ea6d388c774c018d25b18c81d759" id="r_ac0d1ea6d388c774c018d25b18c81d759"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#ac0d1ea6d388c774c018d25b18c81d759">steal</a> (<a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;o) noexcept</td></tr>
+<tr class="separator:ac0d1ea6d388c774c018d25b18c81d759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab078c597320feb979fe0d4e5795b32a4" id="r_ab078c597320feb979fe0d4e5795b32a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#ab078c597320feb979fe0d4e5795b32a4">allocate</a> (vkb::Device &amp;dev, vk::DeviceSize <a class="el" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>, vk::BufferUsageFlags <a class="el" href="AssetCommand_8cpp.html#a17b8eeb1abf8e09ef061a057d69577bf">usage</a>)</td></tr>
+<tr class="memdesc:ab078c597320feb979fe0d4e5795b32a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a buffer usage that includes SHADER_DEVICE_ADDRESS.  <br /></td></tr>
+<tr class="separator:ab078c597320feb979fe0d4e5795b32a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac03912830b7aa6e37d4464444711e1b4" id="r_ac03912830b7aa6e37d4464444711e1b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#ac03912830b7aa6e37d4464444711e1b4">upload</a> (vk::CommandPool pool, vk::Queue queue, const void *data, vk::DeviceSize <a class="el" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)</td></tr>
+<tr class="memdesc:ac03912830b7aa6e37d4464444711e1b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload host bytes via a staging buffer (stalls the queue).  <br /></td></tr>
+<tr class="separator:ac03912830b7aa6e37d4464444711e1b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6be452f1c48ee5800ad2e065f272b340" id="r_a6be452f1c48ee5800ad2e065f272b340"><td class="memItemLeft" align="right" valign="top">vk::Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a6be452f1c48ee5800ad2e065f272b340">buffer</a> {}</td></tr>
+<tr class="separator:a6be452f1c48ee5800ad2e065f272b340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d228248f3377b13673edc0c7e99500" id="r_af4d228248f3377b13673edc0c7e99500"><td class="memItemLeft" align="right" valign="top">vk::DeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#af4d228248f3377b13673edc0c7e99500">memory</a> {}</td></tr>
+<tr class="separator:af4d228248f3377b13673edc0c7e99500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a777b76b2350b22a4e85a40eea3093398" id="r_a777b76b2350b22a4e85a40eea3093398"><td class="memItemLeft" align="right" valign="top">vk::DeviceSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a777b76b2350b22a4e85a40eea3093398">size</a> = 0</td></tr>
+<tr class="separator:a777b76b2350b22a4e85a40eea3093398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a9c83b2c35b62bd25e91aed9198e351" id="r_a9a9c83b2c35b62bd25e91aed9198e351"><td class="memItemLeft" align="right" valign="top">vk::DeviceAddress&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a9a9c83b2c35b62bd25e91aed9198e351">address</a> = 0</td></tr>
+<tr class="separator:a9a9c83b2c35b62bd25e91aed9198e351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ec1059eea323a84657f4e124eae14b5" id="r_a1ec1059eea323a84657f4e124eae14b5"><td class="memItemLeft" align="right" valign="top">vkb::Device *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#a1ec1059eea323a84657f4e124eae14b5">device</a> = nullptr</td></tr>
+<tr class="separator:a1ec1059eea323a84657f4e124eae14b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Device-local buffer with shader device address (for AS builds / SBT). @ownership Owns the Vulkan buffer and memory; destroyed on <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html#afa5437544f93d8a3d1455b0e8e67b71a">release()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a06229291dd85604e9d415bca8a7cb600" name="a06229291dd85604e9d415bca8a7cb600"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06229291dd85604e9d415bca8a7cb600">&#9670;&#160;</a></span>DeviceAddressBuffer() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::raytracing::DeviceAddressBuffer::DeviceAddressBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a342ce97963ea1d65d1948669459bb9ff" name="a342ce97963ea1d65d1948669459bb9ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a342ce97963ea1d65d1948669459bb9ff">&#9670;&#160;</a></span>~DeviceAddressBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::raytracing::DeviceAddressBuffer::~DeviceAddressBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a>.</p>
+
+</div>
+</div>
+<a id="a0119d8fb46cc03feb8905aa4bb5f9ab4" name="a0119d8fb46cc03feb8905aa4bb5f9ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0119d8fb46cc03feb8905aa4bb5f9ab4">&#9670;&#160;</a></span>DeviceAddressBuffer() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::raytracing::DeviceAddressBuffer::DeviceAddressBuffer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab90ae29b21b2d4fbb3a1d566a950d32b" name="ab90ae29b21b2d4fbb3a1d566a950d32b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab90ae29b21b2d4fbb3a1d566a950d32b">&#9670;&#160;</a></span>DeviceAddressBuffer() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::raytracing::DeviceAddressBuffer::DeviceAddressBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00079">steal()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab078c597320feb979fe0d4e5795b32a4" name="ab078c597320feb979fe0d4e5795b32a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab078c597320feb979fe0d4e5795b32a4">&#9670;&#160;</a></span>allocate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::raytracing::DeviceAddressBuffer::allocate </td>
+          <td>(</td>
+          <td class="paramtype">vkb::Device &amp;&#160;</td>
+          <td class="paramname"><em>dev</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vk::DeviceSize&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vk::BufferUsageFlags&#160;</td>
+          <td class="paramname"><em>usage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate a buffer usage that includes SHADER_DEVICE_ADDRESS. </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8cpp_source.html">VulkanRayTracing.cpp</a> 第 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8h_source.html#l00032">address</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00029">buffer</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00152">bytes</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00033">device</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00030">memory</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00031">size</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00163">usage</a>.</p>
+
+</div>
+</div>
+<a id="ad2d853a8946b4ab703ab4deb5f30bbd3" name="ad2d853a8946b4ab703ab4deb5f30bbd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2d853a8946b4ab703ab4deb5f30bbd3">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp; eve::graphics::raytracing::DeviceAddressBuffer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8de6ec25cb9214b38fd1b1b021afba46" name="a8de6ec25cb9214b38fd1b1b021afba46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8de6ec25cb9214b38fd1b1b021afba46">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp; eve::graphics::raytracing::DeviceAddressBuffer::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00079">steal()</a>.</p>
+
+</div>
+</div>
+<a id="afa5437544f93d8a3d1455b0e8e67b71a" name="afa5437544f93d8a3d1455b0e8e67b71a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa5437544f93d8a3d1455b0e8e67b71a">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::raytracing::DeviceAddressBuffer::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8cpp_source.html">VulkanRayTracing.cpp</a> 第 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8h_source.html#l00032">address</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00029">buffer</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00033">device</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00030">memory</a> , 以及 <a class="el" href="VulkanRayTracing_8h_source.html#l00031">size</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00220">eve::graphics::raytracing::VulkanRayTracing::detachDevice()</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00040">operator=()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00152">eve::graphics::raytracing::AccelerationStructure::release()</a> , 以及 <a class="el" href="VulkanRayTracing_8h_source.html#l00036">~DeviceAddressBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="ac0d1ea6d388c774c018d25b18c81d759" name="ac0d1ea6d388c774c018d25b18c81d759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0d1ea6d388c774c018d25b18c81d759">&#9670;&#160;</a></span>steal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::raytracing::DeviceAddressBuffer::steal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1raytracing_1_1DeviceAddressBuffer.html">DeviceAddressBuffer</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8cpp_source.html">VulkanRayTracing.cpp</a> 第 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00026">buffer</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00013">memory</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8h_source.html#l00039">DeviceAddressBuffer()</a> , 以及 <a class="el" href="VulkanRayTracing_8h_source.html#l00040">operator=()</a>.</p>
+
+</div>
+</div>
+<a id="ac03912830b7aa6e37d4464444711e1b4" name="ac03912830b7aa6e37d4464444711e1b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac03912830b7aa6e37d4464444711e1b4">&#9670;&#160;</a></span>upload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::raytracing::DeviceAddressBuffer::upload </td>
+          <td>(</td>
+          <td class="paramtype">vk::CommandPool&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vk::Queue&#160;</td>
+          <td class="paramname"><em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vk::DeviceSize&#160;</td>
+          <td class="paramname"><em>bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload host bytes via a staging buffer (stalls the queue). </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8cpp_source.html">VulkanRayTracing.cpp</a> 第 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanRayTracing_8h_source.html#l00029">buffer</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00152">bytes</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00033">device</a>, <a class="el" href="VulkanRayTracing_8h_source.html#l00031">size</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a9a9c83b2c35b62bd25e91aed9198e351" name="a9a9c83b2c35b62bd25e91aed9198e351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a9c83b2c35b62bd25e91aed9198e351">&#9670;&#160;</a></span>address</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DeviceAddress eve::graphics::raytracing::DeviceAddressBuffer::address = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a>.</p>
+
+</div>
+</div>
+<a id="a6be452f1c48ee5800ad2e065f272b340" name="a6be452f1c48ee5800ad2e065f272b340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be452f1c48ee5800ad2e065f272b340">&#9670;&#160;</a></span>buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Buffer eve::graphics::raytracing::DeviceAddressBuffer::buffer {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00127">upload()</a>.</p>
+
+</div>
+</div>
+<a id="a1ec1059eea323a84657f4e124eae14b5" name="a1ec1059eea323a84657f4e124eae14b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ec1059eea323a84657f4e124eae14b5">&#9670;&#160;</a></span>device</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::Device* eve::graphics::raytracing::DeviceAddressBuffer::device = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00127">upload()</a>.</p>
+
+</div>
+</div>
+<a id="af4d228248f3377b13673edc0c7e99500" name="af4d228248f3377b13673edc0c7e99500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d228248f3377b13673edc0c7e99500">&#9670;&#160;</a></span>memory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DeviceMemory eve::graphics::raytracing::DeviceAddressBuffer::memory {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a>.</p>
+
+</div>
+</div>
+<a id="a777b76b2350b22a4e85a40eea3093398" name="a777b76b2350b22a4e85a40eea3093398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a777b76b2350b22a4e85a40eea3093398">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::DeviceSize eve::graphics::raytracing::DeviceAddressBuffer::size = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a> 第 <a class="el" href="VulkanRayTracing_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00092">allocate()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00068">release()</a> , 以及 <a class="el" href="VulkanRayTracing_8cpp_source.html#l00127">upload()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/raytracing/vulkan/<a class="el" href="VulkanRayTracing_8h_source.html">VulkanRayTracing.h</a></li>
+<li>src/modules/graphics/raytracing/vulkan/<a class="el" href="VulkanRayTracing_8cpp_source.html">VulkanRayTracing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

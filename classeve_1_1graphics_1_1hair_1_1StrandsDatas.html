@@ -1,0 +1,541 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::hair::StrandsDatas类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html">hair</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::hair::StrandsDatas类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU-authoritative strand buffer (UE <code>FHairStrandsDatas</code> analogue).  
+ <a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3ab81716a70d087db44b0cdf90d157b5" id="r_a3ab81716a70d087db44b0cdf90d157b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a3ab81716a70d087db44b0cdf90d157b5">setPoints</a> (std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8b5c0399dbcfcf0ca1e89b7d81399794">points</a>)</td></tr>
+<tr class="separator:a3ab81716a70d087db44b0cdf90d157b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2422507db7fa6991ae1f71ea301ffbd4" id="r_a2422507db7fa6991ae1f71ea301ffbd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a2422507db7fa6991ae1f71ea301ffbd4">setCurves</a> (std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &gt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a08e1fd7676e2b515a330a7febf58b113">curves</a>)</td></tr>
+<tr class="separator:a2422507db7fa6991ae1f71ea301ffbd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a063cdfc60e72444802d800dda45cb4bd" id="r_a063cdfc60e72444802d800dda45cb4bd"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a063cdfc60e72444802d800dda45cb4bd">addPoint</a> (const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &amp;<a class="el" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>)</td></tr>
+<tr class="separator:a063cdfc60e72444802d800dda45cb4bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f61f578287fdcebe326299500ae5ae4" id="r_a8f61f578287fdcebe326299500ae5ae4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8f61f578287fdcebe326299500ae5ae4">addCurve</a> (const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>)</td></tr>
+<tr class="separator:a8f61f578287fdcebe326299500ae5ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b4a8c8b5993de0883bd6e0a1ad4ff0" id="r_a57b4a8c8b5993de0883bd6e0a1ad4ff0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a57b4a8c8b5993de0883bd6e0a1ad4ff0">clear</a> ()</td></tr>
+<tr class="separator:a57b4a8c8b5993de0883bd6e0a1ad4ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ef024fd8192ec1ed112e3ebab68186" id="r_a23ef024fd8192ec1ed112e3ebab68186"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a> () const</td></tr>
+<tr class="memdesc:a23ef024fd8192ec1ed112e3ebab68186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify offsets, counts, and finite values.  <br /></td></tr>
+<tr class="separator:a23ef024fd8192ec1ed112e3ebab68186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3e880804e81d0ecd4dba57b3db2b4f4" id="r_ac3e880804e81d0ecd4dba57b3db2b4f4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#ac3e880804e81d0ecd4dba57b3db2b4f4">pointCount</a> () const</td></tr>
+<tr class="separator:ac3e880804e81d0ecd4dba57b3db2b4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75b18fbb7e189882a6d8c04fadbd02d1" id="r_a75b18fbb7e189882a6d8c04fadbd02d1"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a> () const</td></tr>
+<tr class="separator:a75b18fbb7e189882a6d8c04fadbd02d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5c0399dbcfcf0ca1e89b7d81399794" id="r_a8b5c0399dbcfcf0ca1e89b7d81399794"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8b5c0399dbcfcf0ca1e89b7d81399794">points</a> () const</td></tr>
+<tr class="memdesc:a8b5c0399dbcfcf0ca1e89b7d81399794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed points; invalidated by mutation.  <br /></td></tr>
+<tr class="separator:a8b5c0399dbcfcf0ca1e89b7d81399794"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08e1fd7676e2b515a330a7febf58b113" id="r_a08e1fd7676e2b515a330a7febf58b113"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a08e1fd7676e2b515a330a7febf58b113">curves</a> () const</td></tr>
+<tr class="memdesc:a08e1fd7676e2b515a330a7febf58b113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed curves; invalidated by mutation.  <br /></td></tr>
+<tr class="separator:a08e1fd7676e2b515a330a7febf58b113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a993f22a9e18f67c5283c9691f6406561" id="r_a993f22a9e18f67c5283c9691f6406561"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a993f22a9e18f67c5283c9691f6406561">curvePoints</a> (size_t curveIndex) const</td></tr>
+<tr class="memdesc:a993f22a9e18f67c5283c9691f6406561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed points of one curve.  <br /></td></tr>
+<tr class="separator:a993f22a9e18f67c5283c9691f6406561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8acbab5829a4e9e330366be2cc5c57bc" id="r_a8acbab5829a4e9e330366be2cc5c57bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8acbab5829a4e9e330366be2cc5c57bc">computeBounds</a> (glm::vec3 &amp;outMin, glm::vec3 &amp;outMax) const</td></tr>
+<tr class="memdesc:a8acbab5829a4e9e330366be2cc5c57bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned bounds of all points; empty → zero box at origin.  <br /></td></tr>
+<tr class="separator:a8acbab5829a4e9e330366be2cc5c57bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU-authoritative strand buffer (UE <code>FHairStrandsDatas</code> analogue). </p>
+<p>Points are dense; each curve references a contiguous subrange. Optional per-point attributes can be added later without changing curve indices.</p>
+<p>@thread Affine to the owning asset/instance; no internal synchronization. @reentrancy Does not invoke callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a> 第 <a class="el" href="StrandsDatas_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8f61f578287fdcebe326299500ae5ae4" name="a8f61f578287fdcebe326299500ae5ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f61f578287fdcebe326299500ae5ae4">&#9670;&#160;</a></span>addCurve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::hair::StrandsDatas::addCurve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &amp;&#160;</td>
+          <td class="paramname"><em>curve</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a063cdfc60e72444802d800dda45cb4bd" name="a063cdfc60e72444802d800dda45cb4bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a063cdfc60e72444802d800dda45cb4bd">&#9670;&#160;</a></span>addPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::hair::StrandsDatas::addPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a> , 以及 <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>.</p>
+
+</div>
+</div>
+<a id="a57b4a8c8b5993de0883bd6e0a1ad4ff0" name="a57b4a8c8b5993de0883bd6e0a1ad4ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b4a8c8b5993de0883bd6e0a1ad4ff0">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::StrandsDatas::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8acbab5829a4e9e330366be2cc5c57bc" name="a8acbab5829a4e9e330366be2cc5c57bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8acbab5829a4e9e330366be2cc5c57bc">&#9670;&#160;</a></span>computeBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::StrandsDatas::computeBounds </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>outMin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>outMax</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Axis-aligned bounds of all points; empty → zero box at origin. </p>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a75b18fbb7e189882a6d8c04fadbd02d1" name="a75b18fbb7e189882a6d8c04fadbd02d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75b18fbb7e189882a6d8c04fadbd02d1">&#9670;&#160;</a></span>curveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::hair::StrandsDatas::curveCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a> 第 <a class="el" href="StrandsDatas_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00164">eve::graphics::hair::GroomBinding::build()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00074">eve::graphics::hair::ClusterGrid::build()</a>, <a class="el" href="Guides_8cpp_source.html#l00103">eve::graphics::hair::buildGuideWeights()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">eve::graphics::hair::buildRibbons()</a>, <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00018">eve::graphics::hair::GuideSimulator::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a993f22a9e18f67c5283c9691f6406561" name="a993f22a9e18f67c5283c9691f6406561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a993f22a9e18f67c5283c9691f6406561">&#9670;&#160;</a></span>curvePoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt; eve::graphics::hair::StrandsDatas::curvePoints </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>curveIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrowed points of one curve. </p>
+<dl class="section return"><dt>返回</dt><dd>Empty span when <code>curveIndex</code> is out of range or the range is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00164">eve::graphics::hair::GroomBinding::build()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00074">eve::graphics::hair::ClusterGrid::build()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">eve::graphics::hair::buildRibbons()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00018">eve::graphics::hair::GuideSimulator::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a08e1fd7676e2b515a330a7febf58b113" name="a08e1fd7676e2b515a330a7febf58b113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08e1fd7676e2b515a330a7febf58b113">&#9670;&#160;</a></span>curves()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &gt; eve::graphics::hair::StrandsDatas::curves </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed curves; invalidated by mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a> 第 <a class="el" href="StrandsDatas_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a> , 以及 <a class="el" href="StrandsDatas_8cpp_source.html#l00022">setCurves()</a>.</p>
+
+</div>
+</div>
+<a id="ac3e880804e81d0ecd4dba57b3db2b4f4" name="ac3e880804e81d0ecd4dba57b3db2b4f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3e880804e81d0ecd4dba57b3db2b4f4">&#9670;&#160;</a></span>pointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::hair::StrandsDatas::pointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a> 第 <a class="el" href="StrandsDatas_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00018">eve::graphics::hair::GuideSimulator::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a8b5c0399dbcfcf0ca1e89b7d81399794" name="a8b5c0399dbcfcf0ca1e89b7d81399794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b5c0399dbcfcf0ca1e89b7d81399794">&#9670;&#160;</a></span>points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt; eve::graphics::hair::StrandsDatas::points </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed points; invalidated by mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a> 第 <a class="el" href="StrandsDatas_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a>, <a class="el" href="Simulation_8cpp_source.html#l00018">eve::graphics::hair::GuideSimulator::reset()</a> , 以及 <a class="el" href="StrandsDatas_8cpp_source.html#l00020">setPoints()</a>.</p>
+
+</div>
+</div>
+<a id="a2422507db7fa6991ae1f71ea301ffbd4" name="a2422507db7fa6991ae1f71ea301ffbd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2422507db7fa6991ae1f71ea301ffbd4">&#9670;&#160;</a></span>setCurves()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::StrandsDatas::setCurves </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &gt;&#160;</td>
+          <td class="paramname"><em>curves</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrandsDatas_8h_source.html#l00066">curves()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a>, <a class="el" href="Procedural_8cpp_source.html#l00104">eve::graphics::hair::generateOnMesh()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00201">eve::graphics::hair::GuideSimulator::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a3ab81716a70d087db44b0cdf90d157b5" name="a3ab81716a70d087db44b0cdf90d157b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ab81716a70d087db44b0cdf90d157b5">&#9670;&#160;</a></span>setPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::StrandsDatas::setPoints </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &gt;&#160;</td>
+          <td class="paramname"><em>points</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrandsDatas_8h_source.html#l00064">points()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a>, <a class="el" href="Procedural_8cpp_source.html#l00104">eve::graphics::hair::generateOnMesh()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00201">eve::graphics::hair::GuideSimulator::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a23ef024fd8192ec1ed112e3ebab68186" name="a23ef024fd8192ec1ed112e3ebab68186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ef024fd8192ec1ed112e3ebab68186">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::StrandsDatas::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify offsets, counts, and finite values. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument / InvariantViolation with path. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a> 第 <a class="el" href="StrandsDatas_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">end</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Binding_8cpp_source.html#l00164">eve::graphics::hair::GroomBinding::build()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00074">eve::graphics::hair::ClusterGrid::build()</a>, <a class="el" href="Guides_8cpp_source.html#l00103">eve::graphics::hair::buildGuideWeights()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">eve::graphics::hair::buildRibbons()</a>, <a class="el" href="Binding_8cpp_source.html#l00224">eve::graphics::hair::GroomBinding::deform()</a>, <a class="el" href="Guides_8cpp_source.html#l00056">eve::graphics::hair::extractGuides()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a>, <a class="el" href="Procedural_8cpp_source.html#l00104">eve::graphics::hair::generateOnMesh()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>, <a class="el" href="Simulation_8cpp_source.html#l00018">eve::graphics::hair::GuideSimulator::reset()</a> , 以及 <a class="el" href="Simulation_8cpp_source.html#l00201">eve::graphics::hair::GuideSimulator::snapshot()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/hair/<a class="el" href="StrandsDatas_8h_source.html">StrandsDatas.h</a></li>
+<li>src/modules/graphics/hair/<a class="el" href="StrandsDatas_8cpp_source.html">StrandsDatas.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

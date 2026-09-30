@@ -1,0 +1,1937 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexMetrics类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">HexMetrics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexMetrics-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexMetrics类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Hexagon metrics shared by the map model and every mesh builder.  
+ <a href="classeve_1_1hexmap_1_1HexMetrics.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a13159879f6087226639253ca0d012b04" id="r_a13159879f6087226639253ca0d012b04"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a13159879f6087226639253ca0d012b04">outerRadius</a> () noexcept</td></tr>
+<tr class="memdesc:a13159879f6087226639253ca0d012b04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Radius of a hex cell in world units.  <br /></td></tr>
+<tr class="separator:a13159879f6087226639253ca0d012b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea1006d8501e5d3a26551fc02be0df9" id="r_adea1006d8501e5d3a26551fc02be0df9"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#adea1006d8501e5d3a26551fc02be0df9">innerRadius</a> () noexcept</td></tr>
+<tr class="memdesc:adea1006d8501e5d3a26551fc02be0df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inner radius of a hex cell.  <br /></td></tr>
+<tr class="separator:adea1006d8501e5d3a26551fc02be0df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f4fcacedacbb23a38884251bfb107e2" id="r_a2f4fcacedacbb23a38884251bfb107e2"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a2f4fcacedacbb23a38884251bfb107e2">innerDiameter</a> () noexcept</td></tr>
+<tr class="memdesc:a2f4fcacedacbb23a38884251bfb107e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of one hex column.  <br /></td></tr>
+<tr class="separator:a2f4fcacedacbb23a38884251bfb107e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5b9850ee5acf8fe118c81d6e316d92" id="r_aca5b9850ee5acf8fe118c81d6e316d92"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aca5b9850ee5acf8fe118c81d6e316d92">rowSpacing</a> () noexcept</td></tr>
+<tr class="memdesc:aca5b9850ee5acf8fe118c81d6e316d92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row spacing between hex rows.  <br /></td></tr>
+<tr class="separator:aca5b9850ee5acf8fe118c81d6e316d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7f826d2f9a4f5e638562e2e7e80f5d9" id="r_ac7f826d2f9a4f5e638562e2e7e80f5d9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac7f826d2f9a4f5e638562e2e7e80f5d9">corner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> direction, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) noexcept</td></tr>
+<tr class="memdesc:ac7f826d2f9a4f5e638562e2e7e80f5d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outer corner <code>direction</code> of a unit hex, scaled by <code>scale</code>.  <br /></td></tr>
+<tr class="separator:ac7f826d2f9a4f5e638562e2e7e80f5d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3aa99742310600f3a451f3830a37f9b" id="r_ae3aa99742310600f3a451f3830a37f9b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae3aa99742310600f3a451f3830a37f9b">firstCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:ae3aa99742310600f3a451f3830a37f9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">First (counter-clockwise) outer corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:ae3aa99742310600f3a451f3830a37f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bdbfa11c7aba72cfd3a093efab1e25c" id="r_a4bdbfa11c7aba72cfd3a093efab1e25c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a4bdbfa11c7aba72cfd3a093efab1e25c">secondCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a4bdbfa11c7aba72cfd3a093efab1e25c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second (clockwise) outer corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a4bdbfa11c7aba72cfd3a093efab1e25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14b23a602a3497b0a2805783878ffd65" id="r_a14b23a602a3497b0a2805783878ffd65"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a14b23a602a3497b0a2805783878ffd65">firstSolidCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a14b23a602a3497b0a2805783878ffd65"><td class="mdescLeft">&#160;</td><td class="mdescRight">First solid corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a14b23a602a3497b0a2805783878ffd65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1edc7b0781a66586f3623164c170d9e1" id="r_a1edc7b0781a66586f3623164c170d9e1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1edc7b0781a66586f3623164c170d9e1">secondSolidCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a1edc7b0781a66586f3623164c170d9e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second solid corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a1edc7b0781a66586f3623164c170d9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a771b589a429a8ddf6843987da557b18e" id="r_a771b589a429a8ddf6843987da557b18e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a771b589a429a8ddf6843987da557b18e">solidEdgeMiddle</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a771b589a429a8ddf6843987da557b18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Midpoint of the solid edge of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a771b589a429a8ddf6843987da557b18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d4304498cf469f195ad8ee7fd14db38" id="r_a6d4304498cf469f195ad8ee7fd14db38"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6d4304498cf469f195ad8ee7fd14db38">firstWaterCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a6d4304498cf469f195ad8ee7fd14db38"><td class="mdescLeft">&#160;</td><td class="mdescRight">First water corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a6d4304498cf469f195ad8ee7fd14db38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a259daa62ddb195103cbc8b4605c38333" id="r_a259daa62ddb195103cbc8b4605c38333"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a259daa62ddb195103cbc8b4605c38333">secondWaterCorner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a259daa62ddb195103cbc8b4605c38333"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second water corner of <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a259daa62ddb195103cbc8b4605c38333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6880dc730b0b942b5b757d9c88e08ded" id="r_a6880dc730b0b942b5b757d9c88e08ded"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6880dc730b0b942b5b757d9c88e08ded">bridge</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a6880dc730b0b942b5b757d9c88e08ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bridge vector from the solid edge of <code>direction</code> to the neighbour.  <br /></td></tr>
+<tr class="separator:a6880dc730b0b942b5b757d9c88e08ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a895ee8af6e79203ead781b31fc440190" id="r_a895ee8af6e79203ead781b31fc440190"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a895ee8af6e79203ead781b31fc440190">waterBridge</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a895ee8af6e79203ead781b31fc440190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bridge vector from the water edge of <code>direction</code> to the neighbour.  <br /></td></tr>
+<tr class="separator:a895ee8af6e79203ead781b31fc440190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9d5c9e060e4f2e37a7c76b0afe7c54d" id="r_ad9d5c9e060e4f2e37a7c76b0afe7c54d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ad9d5c9e060e4f2e37a7c76b0afe7c54d">terraceLerp</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, int <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) noexcept</td></tr>
+<tr class="memdesc:ad9d5c9e060e4f2e37a7c76b0afe7c54d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates a position along a terraced slope.  <br /></td></tr>
+<tr class="separator:ad9d5c9e060e4f2e37a7c76b0afe7c54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3717102f4f706c2874ff3ce3200c0c38" id="r_a3717102f4f706c2874ff3ce3200c0c38"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a3717102f4f706c2874ff3ce3200c0c38">terraceLerpWeights</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, int <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) noexcept</td></tr>
+<tr class="memdesc:a3717102f4f706c2874ff3ce3200c0c38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates terrain weights along a terraced slope.  <br /></td></tr>
+<tr class="separator:a3717102f4f706c2874ff3ce3200c0c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6684d714f17f4e54860c9d53e1d79d38" id="r_a6684d714f17f4e54860c9d53e1d79d38"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6684d714f17f4e54860c9d53e1d79d38">wallLerp</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> near, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> far) noexcept</td></tr>
+<tr class="memdesc:a6684d714f17f4e54860c9d53e1d79d38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of the midpoint of a wall between two elevations.  <br /></td></tr>
+<tr class="separator:a6684d714f17f4e54860c9d53e1d79d38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c093ea9669edf65a89411eeaf74a90e" id="r_a1c093ea9669edf65a89411eeaf74a90e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1c093ea9669edf65a89411eeaf74a90e">wallThicknessOffset</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> near, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> far) noexcept</td></tr>
+<tr class="memdesc:a1c093ea9669edf65a89411eeaf74a90e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Half-thickness offset applied to a wall segment.  <br /></td></tr>
+<tr class="separator:a1c093ea9669edf65a89411eeaf74a90e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac011220afbfc31c0e174e6e6762a5189" id="r_ac011220afbfc31c0e174e6e6762a5189"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac011220afbfc31c0e174e6e6762a5189">elevationY</a> (int <a class="el" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>) noexcept</td></tr>
+<tr class="memdesc:ac011220afbfc31c0e174e6e6762a5189"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of a cell's elevation surface.  <br /></td></tr>
+<tr class="separator:ac011220afbfc31c0e174e6e6762a5189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6b7e0119a2315c5c9f5bcd9d06c8db2" id="r_ac6b7e0119a2315c5c9f5bcd9d06c8db2"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac6b7e0119a2315c5c9f5bcd9d06c8db2">streamBedY</a> (int <a class="el" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>) noexcept</td></tr>
+<tr class="memdesc:ac6b7e0119a2315c5c9f5bcd9d06c8db2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of a river bed inside a cell.  <br /></td></tr>
+<tr class="separator:ac6b7e0119a2315c5c9f5bcd9d06c8db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e55e437c96cb36eaeb7a23c986f7479" id="r_a5e55e437c96cb36eaeb7a23c986f7479"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a5e55e437c96cb36eaeb7a23c986f7479">waterSurfaceY</a> (int <a class="el" href="HexMapGenerator_8cpp.html#af4a3f05e9a960f255dadcd9433456edd">waterLevel</a>) noexcept</td></tr>
+<tr class="memdesc:a5e55e437c96cb36eaeb7a23c986f7479"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of a water surface at <code>waterLevel</code>.  <br /></td></tr>
+<tr class="separator:a5e55e437c96cb36eaeb7a23c986f7479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d769c7a53aa4ef7b1aaa2ba0e39f3d7" id="r_a1d769c7a53aa4ef7b1aaa2ba0e39f3d7"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1d769c7a53aa4ef7b1aaa2ba0e39f3d7">solidRadius</a> () noexcept</td></tr>
+<tr class="memdesc:a1d769c7a53aa4ef7b1aaa2ba0e39f3d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance from a cell centre to its nearest edge midpoint.  <br /></td></tr>
+<tr class="separator:a1d769c7a53aa4ef7b1aaa2ba0e39f3d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a91386948ac7851923a5532ac49e5b48f" id="r_a91386948ac7851923a5532ac49e5b48f"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a> = 0.866025404<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a91386948ac7851923a5532ac49e5b48f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ratio of the outer radius to the inner radius.  <br /></td></tr>
+<tr class="separator:a91386948ac7851923a5532ac49e5b48f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fba269940e61ba5f2e64ff3c6a1830" id="r_a78fba269940e61ba5f2e64ff3c6a1830"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a78fba269940e61ba5f2e64ff3c6a1830">kInnerToOuter</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a></td></tr>
+<tr class="memdesc:a78fba269940e61ba5f2e64ff3c6a1830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ratio of the inner radius to the outer radius.  <br /></td></tr>
+<tr class="separator:a78fba269940e61ba5f2e64ff3c6a1830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a503624902b9e5f0c914321deb88c8" id="r_a49a503624902b9e5f0c914321deb88c8"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a> = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a49a503624902b9e5f0c914321deb88c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default outer (corner) radius of one hex cell.  <br /></td></tr>
+<tr class="separator:a49a503624902b9e5f0c914321deb88c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ca4848ef3140c85a7bbc4d1b7c68bb4" id="r_a7ca4848ef3140c85a7bbc4d1b7c68bb4"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7ca4848ef3140c85a7bbc4d1b7c68bb4">kElevationStep</a> = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a7ca4848ef3140c85a7bbc4d1b7c68bb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical distance between two elevation levels.  <br /></td></tr>
+<tr class="separator:a7ca4848ef3140c85a7bbc4d1b7c68bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33372de33b3069ebfa4f0160b470e22a" id="r_a33372de33b3069ebfa4f0160b470e22a"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a> = 2</td></tr>
+<tr class="memdesc:a33372de33b3069ebfa4f0160b470e22a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terraces generated per slope.  <br /></td></tr>
+<tr class="separator:a33372de33b3069ebfa4f0160b470e22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373089a24cfe5fe1c4b51d1bb683dd58" id="r_a373089a24cfe5fe1c4b51d1bb683dd58"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a373089a24cfe5fe1c4b51d1bb683dd58">kTerraceSteps</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a> * 2 + 1</td></tr>
+<tr class="memdesc:a373089a24cfe5fe1c4b51d1bb683dd58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terrace interpolation steps per slope (<code>terracesPerSlope * 2 + 1</code>).  <br /></td></tr>
+<tr class="separator:a373089a24cfe5fe1c4b51d1bb683dd58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82b8342cf24cfa70a278d4229a638efc" id="r_a82b8342cf24cfa70a278d4229a638efc"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a82b8342cf24cfa70a278d4229a638efc">kHorizontalTerraceStepSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / static_cast&lt;float&gt;(<a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a373089a24cfe5fe1c4b51d1bb683dd58">kTerraceSteps</a>)</td></tr>
+<tr class="memdesc:a82b8342cf24cfa70a278d4229a638efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal fraction of one terrace interpolation step.  <br /></td></tr>
+<tr class="separator:a82b8342cf24cfa70a278d4229a638efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b42086ad8afe2e6de7c69f352224685" id="r_a7b42086ad8afe2e6de7c69f352224685"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7b42086ad8afe2e6de7c69f352224685">kVerticalTerraceStepSize</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / static_cast&lt;float&gt;(<a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a> + 1)</td></tr>
+<tr class="memdesc:a7b42086ad8afe2e6de7c69f352224685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical fraction of one terrace interpolation step.  <br /></td></tr>
+<tr class="separator:a7b42086ad8afe2e6de7c69f352224685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae27f3c377e82454ccdb75c31925fa48e" id="r_ae27f3c377e82454ccdb75c31925fa48e"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae27f3c377e82454ccdb75c31925fa48e">kSolidFactor</a> = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae27f3c377e82454ccdb75c31925fa48e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factor of the solid, uniform-colour hex inscribed in a cell.  <br /></td></tr>
+<tr class="separator:ae27f3c377e82454ccdb75c31925fa48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5804eb1f0ac13ab69c741b8d7c9c70" id="r_aca5804eb1f0ac13ab69c741b8d7c9c70"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aca5804eb1f0ac13ab69c741b8d7c9c70">kBlendFactor</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> - <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae27f3c377e82454ccdb75c31925fa48e">kSolidFactor</a></td></tr>
+<tr class="memdesc:aca5804eb1f0ac13ab69c741b8d7c9c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factor of the blend region between two neighbouring cells.  <br /></td></tr>
+<tr class="separator:aca5804eb1f0ac13ab69c741b8d7c9c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9580a7583a2b47d92e4bd0fbcbe6c846" id="r_a9580a7583a2b47d92e4bd0fbcbe6c846"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9580a7583a2b47d92e4bd0fbcbe6c846">kWaterFactor</a> = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a9580a7583a2b47d92e4bd0fbcbe6c846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factor of the solid water surface inscribed in a cell.  <br /></td></tr>
+<tr class="separator:a9580a7583a2b47d92e4bd0fbcbe6c846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90c9d7719dbafe70ffbad363a26a546c" id="r_a90c9d7719dbafe70ffbad363a26a546c"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a90c9d7719dbafe70ffbad363a26a546c">kWaterBlendFactor</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> - <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9580a7583a2b47d92e4bd0fbcbe6c846">kWaterFactor</a></td></tr>
+<tr class="memdesc:a90c9d7719dbafe70ffbad363a26a546c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factor of the water blend region between two cells.  <br /></td></tr>
+<tr class="separator:a90c9d7719dbafe70ffbad363a26a546c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3319c9d323d7fbf08ec7bc2d1a94cbb" id="r_ab3319c9d323d7fbf08ec7bc2d1a94cbb"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ab3319c9d323d7fbf08ec7bc2d1a94cbb">kCellPerturbStrength</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab3319c9d323d7fbf08ec7bc2d1a94cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strength of the XZ position perturbation.  <br /></td></tr>
+<tr class="separator:ab3319c9d323d7fbf08ec7bc2d1a94cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a206d3d1bf1c62516af20251291fb22a7" id="r_a206d3d1bf1c62516af20251291fb22a7"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a206d3d1bf1c62516af20251291fb22a7">kElevationPerturbStrength</a> = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a206d3d1bf1c62516af20251291fb22a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strength of the vertical elevation perturbation.  <br /></td></tr>
+<tr class="separator:a206d3d1bf1c62516af20251291fb22a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd05536f02ae89a9f1903031dce55e60" id="r_abd05536f02ae89a9f1903031dce55e60"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#abd05536f02ae89a9f1903031dce55e60">kStreamBedElevationOffset</a> = -1.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:abd05536f02ae89a9f1903031dce55e60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elevation offset of a carved river bed relative to the cell.  <br /></td></tr>
+<tr class="separator:abd05536f02ae89a9f1903031dce55e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafbad58087fc6327e8791f06f4932b98" id="r_aafbad58087fc6327e8791f06f4932b98"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aafbad58087fc6327e8791f06f4932b98">kWaterElevationOffset</a> = -0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aafbad58087fc6327e8791f06f4932b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elevation offset of a water surface relative to the water level.  <br /></td></tr>
+<tr class="separator:aafbad58087fc6327e8791f06f4932b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ba4b27ee3a9f54f0f474597781a31e7" id="r_a6ba4b27ee3a9f54f0f474597781a31e7"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6ba4b27ee3a9f54f0f474597781a31e7">kRiverSurfaceScale</a> = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a6ba4b27ee3a9f54f0f474597781a31e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of the river channel.  <br /></td></tr>
+<tr class="separator:a6ba4b27ee3a9f54f0f474597781a31e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f249ebc611044f8170b00c79bd5461b" id="r_a9f249ebc611044f8170b00c79bd5461b"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9f249ebc611044f8170b00c79bd5461b">kWallHeight</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a9f249ebc611044f8170b00c79bd5461b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height of a city/farm wall.  <br /></td></tr>
+<tr class="separator:a9f249ebc611044f8170b00c79bd5461b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbc1b93574785b75764ea30943348c8c" id="r_abbc1b93574785b75764ea30943348c8c"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#abbc1b93574785b75764ea30943348c8c">kWallYOffset</a> = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:abbc1b93574785b75764ea30943348c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical wall offset; negative so walls do not float above the surface.  <br /></td></tr>
+<tr class="separator:abbc1b93574785b75764ea30943348c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19e176e7a9306e27db6f9c0cd0650468" id="r_a19e176e7a9306e27db6f9c0cd0650468"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a19e176e7a9306e27db6f9c0cd0650468">kWallThickness</a> = 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a19e176e7a9306e27db6f9c0cd0650468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wall thickness.  <br /></td></tr>
+<tr class="separator:a19e176e7a9306e27db6f9c0cd0650468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a628861b4b3f9fad44dcbe9eb20921eec" id="r_a628861b4b3f9fad44dcbe9eb20921eec"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a628861b4b3f9fad44dcbe9eb20921eec">kWallElevationOffset</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7b42086ad8afe2e6de7c69f352224685">kVerticalTerraceStepSize</a></td></tr>
+<tr class="memdesc:a628861b4b3f9fad44dcbe9eb20921eec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wall elevation offset, matching the vertical terrace step size.  <br /></td></tr>
+<tr class="separator:a628861b4b3f9fad44dcbe9eb20921eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a2ae5c9bfba566626bf845ff8c3b6a" id="r_ae9a2ae5c9bfba566626bf845ff8c3b6a"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae9a2ae5c9bfba566626bf845ff8c3b6a">kChunkSizeX</a> = 5</td></tr>
+<tr class="memdesc:ae9a2ae5c9bfba566626bf845ff8c3b6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk size in the X dimension.  <br /></td></tr>
+<tr class="separator:ae9a2ae5c9bfba566626bf845ff8c3b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5b0275cdf0ca1909f3b27c15ff20e90" id="r_ad5b0275cdf0ca1909f3b27c15ff20e90"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ad5b0275cdf0ca1909f3b27c15ff20e90">kChunkSizeZ</a> = 5</td></tr>
+<tr class="memdesc:ad5b0275cdf0ca1909f3b27c15ff20e90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunk size in the Z dimension.  <br /></td></tr>
+<tr class="separator:ad5b0275cdf0ca1909f3b27c15ff20e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add259d9011c88fadee75b8b5c67e36a4" id="r_add259d9011c88fadee75b8b5c67e36a4"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#add259d9011c88fadee75b8b5c67e36a4">kMinElevation</a> = -4</td></tr>
+<tr class="memdesc:add259d9011c88fadee75b8b5c67e36a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum editable elevation.  <br /></td></tr>
+<tr class="separator:add259d9011c88fadee75b8b5c67e36a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af07e8c771b400253a02aa604064ed7e6" id="r_af07e8c771b400253a02aa604064ed7e6"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#af07e8c771b400253a02aa604064ed7e6">kMaxElevation</a> = 8</td></tr>
+<tr class="memdesc:af07e8c771b400253a02aa604064ed7e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum editable elevation.  <br /></td></tr>
+<tr class="separator:af07e8c771b400253a02aa604064ed7e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ec46c9205eeb14d7a7cc7c733f5768" id="r_ab5ec46c9205eeb14d7a7cc7c733f5768"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ab5ec46c9205eeb14d7a7cc7c733f5768">kOuterRadius</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a></td></tr>
+<tr class="memdesc:ab5ec46c9205eeb14d7a7cc7c733f5768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outer (corner) radius of one hex cell in world units.  <br /></td></tr>
+<tr class="separator:ab5ec46c9205eeb14d7a7cc7c733f5768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f628015ed2cb950052f0188197f2de6" id="r_a8f628015ed2cb950052f0188197f2de6"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a8f628015ed2cb950052f0188197f2de6">kInnerRadius</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a> * <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a></td></tr>
+<tr class="memdesc:a8f628015ed2cb950052f0188197f2de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inner (edge) radius of one hex cell in world units.  <br /></td></tr>
+<tr class="separator:a8f628015ed2cb950052f0188197f2de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0df8743637cff756ae715b85cc279fdc" id="r_a0df8743637cff756ae715b85cc279fdc"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a0df8743637cff756ae715b85cc279fdc">kInnerDiameter</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a8f628015ed2cb950052f0188197f2de6">kInnerRadius</a> * 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a0df8743637cff756ae715b85cc279fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of one hex column.  <br /></td></tr>
+<tr class="separator:a0df8743637cff756ae715b85cc279fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ac7460b55008abfe9f69bb04b915b0" id="r_aa5ac7460b55008abfe9f69bb04b915b0"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aa5ac7460b55008abfe9f69bb04b915b0">kRowSpacing</a> = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a> * 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aa5ac7460b55008abfe9f69bb04b915b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row spacing between hex rows.  <br /></td></tr>
+<tr class="separator:aa5ac7460b55008abfe9f69bb04b915b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Hexagon metrics shared by the map model and every mesh builder. </p>
+<p>The layout matches the Catlike Coding "Hex Map" reference project: pointy-top hexes on the XZ plane, +X east, +Z north, odd rows shifted half a cell to the right, Y up. All radii are expressed in world units and are compile-time constants, so a different scale needs a different build rather than a setter. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00106">106</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6880dc730b0b942b5b757d9c88e08ded" name="a6880dc730b0b942b5b757d9c88e08ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6880dc730b0b942b5b757d9c88e08ded">&#9670;&#160;</a></span>bridge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::bridge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bridge vector from the solid edge of <code>direction</code> to the neighbour. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="HexMetrics_8h_source.html#l00127">kBlendFactor</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+</div>
+</div>
+<a id="ac7f826d2f9a4f5e638562e2e7e80f5d9" name="ac7f826d2f9a4f5e638562e2e7e80f5d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7f826d2f9a4f5e638562e2e7e80f5d9">&#9670;&#160;</a></span>corner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::corner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>direction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outer corner <code>direction</code> of a unit hex, scaled by <code>scale</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a3a3ea00cfc35332cedf6e5e9a32e94da">eve::hexmap::E</a>, <a class="el" href="HexMetrics_8h_source.html#l00162">kInnerRadius</a>, <a class="el" href="HexMetrics_8h_source.html#l00160">kOuterRadius</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50adc33066c3993e0d50896e533fd692ce0">eve::hexmap::NE</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a7f39ac71e81132daad44925b3bdfde5a">eve::hexmap::NW</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50af003c44deab679aa2edfaff864c77402">eve::hexmap::SE</a>, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a6f56aa4e2561eb66f17f6d8de8070a77">eve::hexmap::SW</a> , 以及 <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a61e9c06ea9a85a5088a499df6458d276">eve::hexmap::W</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00209">bridge()</a>, <a class="el" href="HexMetrics_8h_source.html#l00193">firstCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00197">firstSolidCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00205">firstWaterCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00195">secondCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00199">secondSolidCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00207">secondWaterCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00201">solidEdgeMiddle()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00213">waterBridge()</a>.</p>
+
+</div>
+</div>
+<a id="ac011220afbfc31c0e174e6e6762a5189" name="ac011220afbfc31c0e174e6e6762a5189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac011220afbfc31c0e174e6e6762a5189">&#9670;&#160;</a></span>elevationY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float eve::hexmap::HexMetrics::elevationY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elevation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate of a cell's elevation surface. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00115">kElevationStep</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00173">eve::hexmap::HexMap::cellPosition()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>.</p>
+
+</div>
+</div>
+<a id="ae3aa99742310600f3a451f3830a37f9b" name="ae3aa99742310600f3a451f3830a37f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3aa99742310600f3a451f3830a37f9b">&#9670;&#160;</a></span>firstCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::firstCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>First (counter-clockwise) outer corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>.</p>
+
+</div>
+</div>
+<a id="a14b23a602a3497b0a2805783878ffd65" name="a14b23a602a3497b0a2805783878ffd65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b23a602a3497b0a2805783878ffd65">&#9670;&#160;</a></span>firstSolidCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::firstSolidCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>First solid corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00125">kSolidFactor</a>.</p>
+
+</div>
+</div>
+<a id="a6d4304498cf469f195ad8ee7fd14db38" name="a6d4304498cf469f195ad8ee7fd14db38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d4304498cf469f195ad8ee7fd14db38">&#9670;&#160;</a></span>firstWaterCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::firstWaterCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>First water corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00129">kWaterFactor</a>.</p>
+
+</div>
+</div>
+<a id="a2f4fcacedacbb23a38884251bfb107e2" name="a2f4fcacedacbb23a38884251bfb107e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f4fcacedacbb23a38884251bfb107e2">&#9670;&#160;</a></span>innerDiameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr float eve::hexmap::HexMetrics::innerDiameter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Width of one hex column. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00164">kInnerDiameter</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexCoordinates_8cpp_source.html#l00005">eve::hexmap::HexCoordinates::fromWorldPosition()</a>.</p>
+
+</div>
+</div>
+<a id="adea1006d8501e5d3a26551fc02be0df9" name="adea1006d8501e5d3a26551fc02be0df9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adea1006d8501e5d3a26551fc02be0df9">&#9670;&#160;</a></span>innerRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr float eve::hexmap::HexMetrics::innerRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inner radius of a hex cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00162">kInnerRadius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00272">solidRadius()</a>.</p>
+
+</div>
+</div>
+<a id="a13159879f6087226639253ca0d012b04" name="a13159879f6087226639253ca0d012b04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13159879f6087226639253ca0d012b04">&#9670;&#160;</a></span>outerRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr float eve::hexmap::HexMetrics::outerRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Radius of a hex cell in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00160">kOuterRadius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexCoordinates_8cpp_source.html#l00005">eve::hexmap::HexCoordinates::fromWorldPosition()</a>.</p>
+
+</div>
+</div>
+<a id="aca5b9850ee5acf8fe118c81d6e316d92" name="aca5b9850ee5acf8fe118c81d6e316d92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca5b9850ee5acf8fe118c81d6e316d92">&#9670;&#160;</a></span>rowSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr float eve::hexmap::HexMetrics::rowSpacing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Row spacing between hex rows. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00166">kRowSpacing</a>.</p>
+
+</div>
+</div>
+<a id="a4bdbfa11c7aba72cfd3a093efab1e25c" name="a4bdbfa11c7aba72cfd3a093efab1e25c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bdbfa11c7aba72cfd3a093efab1e25c">&#9670;&#160;</a></span>secondCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::secondCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Second (clockwise) outer corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+</div>
+</div>
+<a id="a1edc7b0781a66586f3623164c170d9e1" name="a1edc7b0781a66586f3623164c170d9e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1edc7b0781a66586f3623164c170d9e1">&#9670;&#160;</a></span>secondSolidCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::secondSolidCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Second solid corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="HexMetrics_8h_source.html#l00125">kSolidFactor</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+</div>
+</div>
+<a id="a259daa62ddb195103cbc8b4605c38333" name="a259daa62ddb195103cbc8b4605c38333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a259daa62ddb195103cbc8b4605c38333">&#9670;&#160;</a></span>secondWaterCorner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::secondWaterCorner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Second water corner of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="HexMetrics_8h_source.html#l00129">kWaterFactor</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+</div>
+</div>
+<a id="a771b589a429a8ddf6843987da557b18e" name="a771b589a429a8ddf6843987da557b18e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a771b589a429a8ddf6843987da557b18e">&#9670;&#160;</a></span>solidEdgeMiddle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::solidEdgeMiddle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Midpoint of the solid edge of <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="HexMetrics_8h_source.html#l00125">kSolidFactor</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a> , 以及 <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a1d769c7a53aa4ef7b1aaa2ba0e39f3d7" name="a1d769c7a53aa4ef7b1aaa2ba0e39f3d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d769c7a53aa4ef7b1aaa2ba0e39f3d7">&#9670;&#160;</a></span>solidRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float eve::hexmap::HexMetrics::solidRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Distance from a cell centre to its nearest edge midpoint. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00171">innerRadius()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00125">kSolidFactor</a>.</p>
+
+</div>
+</div>
+<a id="ac6b7e0119a2315c5c9f5bcd9d06c8db2" name="ac6b7e0119a2315c5c9f5bcd9d06c8db2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6b7e0119a2315c5c9f5bcd9d06c8db2">&#9670;&#160;</a></span>streamBedY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float eve::hexmap::HexMetrics::streamBedY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>elevation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate of a river bed inside a cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="HexMetrics_8h_source.html#l00115">kElevationStep</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00137">kStreamBedElevationOffset</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ad9d5c9e060e4f2e37a7c76b0afe7c54d" name="ad9d5c9e060e4f2e37a7c76b0afe7c54d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9d5c9e060e4f2e37a7c76b0afe7c54d">&#9670;&#160;</a></span>terraceLerp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::terraceLerp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates a position along a terraced slope. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>Start position (low side). </td></tr>
+    <tr><td class="paramname">b</td><td>End position (high side). </td></tr>
+    <tr><td class="paramname">step</td><td>Terrace step in <code>[0, kTerraceSteps]</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="HexMetrics_8h_source.html#l00121">kHorizontalTerraceStepSize</a>, <a class="el" href="HexMetrics_8h_source.html#l00123">kVerticalTerraceStepSize</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00019">eve::hexmap::HexVec3::x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00304">eve::hexmap::EdgeVertices::terraceLerp()</a>.</p>
+
+</div>
+</div>
+<a id="a3717102f4f706c2874ff3ce3200c0c38" name="a3717102f4f706c2874ff3ce3200c0c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3717102f4f706c2874ff3ce3200c0c38">&#9670;&#160;</a></span>terraceLerpWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::terraceLerpWeights </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolates terrain weights along a terraced slope. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="HexMetrics_8h_source.html#l00121">kHorizontalTerraceStepSize</a>, <a class="el" href="HexMetrics_8h_source.html#l00046">eve::hexmap::lerp()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+</div>
+</div>
+<a id="a6684d714f17f4e54860c9d53e1d79d38" name="a6684d714f17f4e54860c9d53e1d79d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6684d714f17f4e54860c9d53e1d79d38">&#9670;&#160;</a></span>wallLerp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::wallLerp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>near</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>far</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Position of the midpoint of a wall between two elevations. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00149">kWallElevationOffset</a>, <a class="el" href="HexMetrics_8h_source.html#l00145">kWallYOffset</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00019">eve::hexmap::HexVec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a1c093ea9669edf65a89411eeaf74a90e" name="a1c093ea9669edf65a89411eeaf74a90e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c093ea9669edf65a89411eeaf74a90e">&#9670;&#160;</a></span>wallThicknessOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::wallThicknessOffset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>near</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>far</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Half-thickness offset applied to a wall segment. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00147">kWallThickness</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00019">eve::hexmap::HexVec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a895ee8af6e79203ead781b31fc440190" name="a895ee8af6e79203ead781b31fc440190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a895ee8af6e79203ead781b31fc440190">&#9670;&#160;</a></span>waterBridge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexMetrics::waterBridge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bridge vector from the water edge of <code>direction</code> to the neighbour. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="HexMetrics_8h_source.html#l00131">kWaterBlendFactor</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00071">eve::hexmap::next()</a>.</p>
+
+</div>
+</div>
+<a id="a5e55e437c96cb36eaeb7a23c986f7479" name="a5e55e437c96cb36eaeb7a23c986f7479"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e55e437c96cb36eaeb7a23c986f7479">&#9670;&#160;</a></span>waterSurfaceY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float eve::hexmap::HexMetrics::waterSurfaceY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>waterLevel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate of a water surface at <code>waterLevel</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00115">kElevationStep</a>, <a class="el" href="HexMetrics_8h_source.html#l00139">kWaterElevationOffset</a> , 以及 <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">waterLevel</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aca5804eb1f0ac13ab69c741b8d7c9c70" name="aca5804eb1f0ac13ab69c741b8d7c9c70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca5804eb1f0ac13ab69c741b8d7c9c70">&#9670;&#160;</a></span>kBlendFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kBlendFactor = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> - <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae27f3c377e82454ccdb75c31925fa48e">kSolidFactor</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Factor of the blend region between two neighbouring cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00209">bridge()</a>.</p>
+
+</div>
+</div>
+<a id="ab3319c9d323d7fbf08ec7bc2d1a94cbb" name="ab3319c9d323d7fbf08ec7bc2d1a94cbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3319c9d323d7fbf08ec7bc2d1a94cbb">&#9670;&#160;</a></span>kCellPerturbStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kCellPerturbStrength = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Strength of the XZ position perturbation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexNoise_8cpp_source.html#l00056">eve::hexmap::HexNoise::perturb()</a>.</p>
+
+</div>
+</div>
+<a id="ae9a2ae5c9bfba566626bf845ff8c3b6a" name="ae9a2ae5c9bfba566626bf845ff8c3b6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a2ae5c9bfba566626bf845ff8c3b6a">&#9670;&#160;</a></span>kChunkSizeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kChunkSizeX = 5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk size in the X dimension. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>, <a class="el" href="HexMap_8cpp_source.html#l00118">eve::hexmap::HexMap::chunkCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00124">eve::hexmap::HexMap::chunkCenter()</a>, <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00040">eve::hexmap::HexMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="ad5b0275cdf0ca1909f3b27c15ff20e90" name="ad5b0275cdf0ca1909f3b27c15ff20e90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5b0275cdf0ca1909f3b27c15ff20e90">&#9670;&#160;</a></span>kChunkSizeZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kChunkSizeZ = 5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Chunk size in the Z dimension. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>, <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexWaterMesh_8cpp_source.html#l00191">eve::hexmap::buildWaterMesh()</a>, <a class="el" href="HexMap_8cpp_source.html#l00118">eve::hexmap::HexMap::chunkCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00124">eve::hexmap::HexMap::chunkCenter()</a>, <a class="el" href="HexSerializer_8cpp_source.html#l00197">eve::hexmap::loadHexMap()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00040">eve::hexmap::HexMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a49a503624902b9e5f0c914321deb88c8" name="a49a503624902b9e5f0c914321deb88c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a503624902b9e5f0c914321deb88c8">&#9670;&#160;</a></span>kDefaultOuterRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kDefaultOuterRadius = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default outer (corner) radius of one hex cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a206d3d1bf1c62516af20251291fb22a7" name="a206d3d1bf1c62516af20251291fb22a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a206d3d1bf1c62516af20251291fb22a7">&#9670;&#160;</a></span>kElevationPerturbStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kElevationPerturbStrength = 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Strength of the vertical elevation perturbation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexNoise_8cpp_source.html#l00063">eve::hexmap::HexNoise::elevationPerturb()</a>.</p>
+
+</div>
+</div>
+<a id="a7ca4848ef3140c85a7bbc4d1b7c68bb4" name="a7ca4848ef3140c85a7bbc4d1b7c68bb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ca4848ef3140c85a7bbc4d1b7c68bb4">&#9670;&#160;</a></span>kElevationStep</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kElevationStep = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vertical distance between two elevation levels. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00259">elevationY()</a>, <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>, <a class="el" href="HexMetrics_8h_source.html#l00263">streamBedY()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00267">waterSurfaceY()</a>.</p>
+
+</div>
+</div>
+<a id="a82b8342cf24cfa70a278d4229a638efc" name="a82b8342cf24cfa70a278d4229a638efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b8342cf24cfa70a278d4229a638efc">&#9670;&#160;</a></span>kHorizontalTerraceStepSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kHorizontalTerraceStepSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / static_cast&lt;float&gt;(<a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a373089a24cfe5fe1c4b51d1bb683dd58">kTerraceSteps</a>)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Horizontal fraction of one terrace interpolation step. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00224">terraceLerp()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00234">terraceLerpWeights()</a>.</p>
+
+</div>
+</div>
+<a id="a0df8743637cff756ae715b85cc279fdc" name="a0df8743637cff756ae715b85cc279fdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0df8743637cff756ae715b85cc279fdc">&#9670;&#160;</a></span>kInnerDiameter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kInnerDiameter = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a8f628015ed2cb950052f0188197f2de6">kInnerRadius</a> * 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Width of one hex column. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00173">innerDiameter()</a>.</p>
+
+</div>
+</div>
+<a id="a8f628015ed2cb950052f0188197f2de6" name="a8f628015ed2cb950052f0188197f2de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f628015ed2cb950052f0188197f2de6">&#9670;&#160;</a></span>kInnerRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kInnerRadius = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a> * <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inner (edge) radius of one hex cell in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00171">innerRadius()</a>.</p>
+
+</div>
+</div>
+<a id="a78fba269940e61ba5f2e64ff3c6a1830" name="a78fba269940e61ba5f2e64ff3c6a1830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fba269940e61ba5f2e64ff3c6a1830">&#9670;&#160;</a></span>kInnerToOuter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kInnerToOuter = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ratio of the inner radius to the outer radius. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af07e8c771b400253a02aa604064ed7e6" name="af07e8c771b400253a02aa604064ed7e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af07e8c771b400253a02aa604064ed7e6">&#9670;&#160;</a></span>kMaxElevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kMaxElevation = 8</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum editable elevation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereGenerator_8cpp_source.html#l00124">eve::hexmap::generateSphereMap()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00191">eve::hexmap::HexSphereMap::pickCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00395">eve::hexmap::HexMap::setElevation()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00384">eve::hexmap::HexSphereMap::setElevation()</a>, <a class="el" href="HexMap_8cpp_source.html#l00422">eve::hexmap::HexMap::setWaterLevel()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00411">eve::hexmap::HexSphereMap::setWaterLevel()</a>.</p>
+
+</div>
+</div>
+<a id="add259d9011c88fadee75b8b5c67e36a4" name="add259d9011c88fadee75b8b5c67e36a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add259d9011c88fadee75b8b5c67e36a4">&#9670;&#160;</a></span>kMinElevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kMinElevation = -4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimum editable elevation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereGenerator_8cpp_source.html#l00124">eve::hexmap::generateSphereMap()</a>, <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>, <a class="el" href="HexMap_8cpp_source.html#l00395">eve::hexmap::HexMap::setElevation()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00384">eve::hexmap::HexSphereMap::setElevation()</a>.</p>
+
+</div>
+</div>
+<a id="ab5ec46c9205eeb14d7a7cc7c733f5768" name="ab5ec46c9205eeb14d7a7cc7c733f5768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ec46c9205eeb14d7a7cc7c733f5768">&#9670;&#160;</a></span>kOuterRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kOuterRadius = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outer (corner) radius of one hex cell in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00178">corner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00169">outerRadius()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00180">eve::hexmap::HexMap::pickCell()</a>.</p>
+
+</div>
+</div>
+<a id="a91386948ac7851923a5532ac49e5b48f" name="a91386948ac7851923a5532ac49e5b48f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91386948ac7851923a5532ac49e5b48f">&#9670;&#160;</a></span>kOuterToInner</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kOuterToInner = 0.866025404<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ratio of the outer radius to the inner radius. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ba4b27ee3a9f54f0f474597781a31e7" name="a6ba4b27ee3a9f54f0f474597781a31e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ba4b27ee3a9f54f0f474597781a31e7">&#9670;&#160;</a></span>kRiverSurfaceScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kRiverSurfaceScale = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Width of the river channel. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRiverMesh_8cpp_source.html#l00103">eve::hexmap::buildRiverMesh()</a>.</p>
+
+</div>
+</div>
+<a id="aa5ac7460b55008abfe9f69bb04b915b0" name="aa5ac7460b55008abfe9f69bb04b915b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5ac7460b55008abfe9f69bb04b915b0">&#9670;&#160;</a></span>kRowSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kRowSpacing = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a> * 1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Row spacing between hex rows. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00175">rowSpacing()</a>.</p>
+
+</div>
+</div>
+<a id="ae27f3c377e82454ccdb75c31925fa48e" name="ae27f3c377e82454ccdb75c31925fa48e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae27f3c377e82454ccdb75c31925fa48e">&#9670;&#160;</a></span>kSolidFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kSolidFactor = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Factor of the solid, uniform-colour hex inscribed in a cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexRoadMesh_8cpp_source.html#l00102">eve::hexmap::buildRoadMesh()</a>, <a class="el" href="HexMetrics_8h_source.html#l00197">firstSolidCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00199">secondSolidCorner()</a>, <a class="el" href="HexMetrics_8h_source.html#l00201">solidEdgeMiddle()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00272">solidRadius()</a>.</p>
+
+</div>
+</div>
+<a id="abd05536f02ae89a9f1903031dce55e60" name="abd05536f02ae89a9f1903031dce55e60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd05536f02ae89a9f1903031dce55e60">&#9670;&#160;</a></span>kStreamBedElevationOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kStreamBedElevationOffset = -1.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Elevation offset of a carved river bed relative to the cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00263">streamBedY()</a>.</p>
+
+</div>
+</div>
+<a id="a33372de33b3069ebfa4f0160b470e22a" name="a33372de33b3069ebfa4f0160b470e22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33372de33b3069ebfa4f0160b470e22a">&#9670;&#160;</a></span>kTerracesPerSlope</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kTerracesPerSlope = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Terraces generated per slope. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a373089a24cfe5fe1c4b51d1bb683dd58" name="a373089a24cfe5fe1c4b51d1bb683dd58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373089a24cfe5fe1c4b51d1bb683dd58">&#9670;&#160;</a></span>kTerraceSteps</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::hexmap::HexMetrics::kTerraceSteps = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a> * 2 + 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Terrace interpolation steps per slope (<code>terracesPerSlope * 2 + 1</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b42086ad8afe2e6de7c69f352224685" name="a7b42086ad8afe2e6de7c69f352224685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b42086ad8afe2e6de7c69f352224685">&#9670;&#160;</a></span>kVerticalTerraceStepSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kVerticalTerraceStepSize = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> / static_cast&lt;float&gt;(<a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a> + 1)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vertical fraction of one terrace interpolation step. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00224">terraceLerp()</a>.</p>
+
+</div>
+</div>
+<a id="a628861b4b3f9fad44dcbe9eb20921eec" name="a628861b4b3f9fad44dcbe9eb20921eec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a628861b4b3f9fad44dcbe9eb20921eec">&#9670;&#160;</a></span>kWallElevationOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWallElevationOffset = <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7b42086ad8afe2e6de7c69f352224685">kVerticalTerraceStepSize</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wall elevation offset, matching the vertical terrace step size. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00240">wallLerp()</a>.</p>
+
+</div>
+</div>
+<a id="a9f249ebc611044f8170b00c79bd5461b" name="a9f249ebc611044f8170b00c79bd5461b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f249ebc611044f8170b00c79bd5461b">&#9670;&#160;</a></span>kWallHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWallHeight = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Height of a city/farm wall. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19e176e7a9306e27db6f9c0cd0650468" name="a19e176e7a9306e27db6f9c0cd0650468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19e176e7a9306e27db6f9c0cd0650468">&#9670;&#160;</a></span>kWallThickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWallThickness = 0.75<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wall thickness. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00249">wallThicknessOffset()</a>.</p>
+
+</div>
+</div>
+<a id="abbc1b93574785b75764ea30943348c8c" name="abbc1b93574785b75764ea30943348c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbc1b93574785b75764ea30943348c8c">&#9670;&#160;</a></span>kWallYOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWallYOffset = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vertical wall offset; negative so walls do not float above the surface. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00240">wallLerp()</a>.</p>
+
+</div>
+</div>
+<a id="a90c9d7719dbafe70ffbad363a26a546c" name="a90c9d7719dbafe70ffbad363a26a546c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90c9d7719dbafe70ffbad363a26a546c">&#9670;&#160;</a></span>kWaterBlendFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWaterBlendFactor = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> - <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9580a7583a2b47d92e4bd0fbcbe6c846">kWaterFactor</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Factor of the water blend region between two cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00213">waterBridge()</a>.</p>
+
+</div>
+</div>
+<a id="aafbad58087fc6327e8791f06f4932b98" name="aafbad58087fc6327e8791f06f4932b98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafbad58087fc6327e8791f06f4932b98">&#9670;&#160;</a></span>kWaterElevationOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWaterElevationOffset = -0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Elevation offset of a water surface relative to the water level. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00267">waterSurfaceY()</a>.</p>
+
+</div>
+</div>
+<a id="a9580a7583a2b47d92e4bd0fbcbe6c846" name="a9580a7583a2b47d92e4bd0fbcbe6c846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9580a7583a2b47d92e4bd0fbcbe6c846">&#9670;&#160;</a></span>kWaterFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexMetrics::kWaterFactor = 0.6<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Factor of the solid water surface inscribed in a cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 第 <a class="el" href="HexMetrics_8h_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMetrics_8h_source.html#l00205">firstWaterCorner()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00207">secondWaterCorner()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

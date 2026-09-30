@@ -1,0 +1,191 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1raytracing.html">raytracing</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">VulkanRayTracing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::raytracing::VulkanRayTracing 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a11dc5d89403efedb8255e4fcd1e79257">addMesh</a>(Mesh *mesh, const glm::mat4 &amp;transform) override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#acd6c32ad1aa843d3ed9606105c30be25">addTriangleMesh</a>(const float *positionsXYZ, int vertexCount, const uint32_t *indices, int indexCount, const glm::mat4 &amp;transform) override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#adbebea2cb99b6a459bab4656892cc2e7">applyReflections</a>(Graphics *gfx, Texture *sceneColor, Texture *hwDepth, Texture *worldNormal, Canvas *dest, const glm::mat4 &amp;invViewProj, const glm::mat4 &amp;viewProj, const glm::vec3 &amp;eyeWorld) override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a5b87a9a62922d635d5d9121ffa33bd34">attachDevice</a>(vkb::Device *device, const RayTracingCaps &amp;caps, vk::CommandPool uploadPool, vk::Queue graphicsQueue)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IRayTracing.html#a080648d2380c951be15ed1f74034f208">capabilityName</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IRayTracing.html">eve::graphics::IRayTracing</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a2833b37211ce918c72dc552dc53a2c8d">caps</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a08643d4325b88099c2cb75ab474b7386">clearScene</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a837f0e4b723feec896bf1b4e8f3497fb">detachDevice</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a3776b1f906f37d3f4d46014e48960fc6">detachFromGraphics</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a7a77e301207bfe702c8bf34de89ddb3b">ensureAttached</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a7e9819b7fe55812c40532910353adbcc">isAvailable</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#aefd232da2b90dce16fb5d59d972cbdee">operator=</a>(const VulkanRayTracing &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a027a51b1ca4e43bcbe26bdcaa552e8a5">rebuildScene</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#ab14a2574ac28a17b327254d923ddd47e">VulkanRayTracing</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#aa8bfe39a5f4c0f56ce9ca3d8a24018ef">VulkanRayTracing</a>(const VulkanRayTracing &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IRayTracing.html#a1ab49786216203c1bbaaf34eb9040fe7">~IRayTracing</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IRayTracing.html">eve::graphics::IRayTracing</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html#a1175b8bbdc39f9a11bcb18aef27caa60">~VulkanRayTracing</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1raytracing_1_1VulkanRayTracing.html">eve::graphics::raytracing::VulkanRayTracing</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

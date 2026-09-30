@@ -1,0 +1,304 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/import/UnitySourceInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_5a462b2626f54b4e1f382bc8b7e5a769.html">import</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UnitySourceInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UnitySourceInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="UnitySource_8h.html">asset/import/UnitySource.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Utf8Validation_8h.html">common/Utf8Validation.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__import.html">eve::asset_import</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">struct </span>UnityProjectImportRequest;</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html">UnityExpandedPrefab</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a11169dd8c40b0e72ceff90595882b7e9">   14</a></span>    std::vector&lt;std::uint8_t&gt;  <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a11169dd8c40b0e72ceff90595882b7e9">bytes</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a40fe810c5b4e19e9429941ce7680286d">   15</a></span>    std::vector&lt;ImportFinding&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a40fe810c5b4e19e9429941ce7680286d">findings</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;UnityExpandedPrefab&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#ad659c17efad6f35eefa23da38b1aaa03">expandUnityPrefab</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp;,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceIndex.html">UnitySourceIndex</a>&amp;,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#abe589a2b04b5134a02cee8ca1f665647">prepareUnitySpriteAnimation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;          <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a3ea7d82853e26908e952538857d0c5e3">prepareUnityCollection</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                                                                 <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceIndex.html">UnitySourceIndex</a>&amp;          <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a3a906b503ebb526cdc16e79041d22bd8">prepareUnityPrefab</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                                             <span class="keyword">const</span> std::string&amp;               <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#ac3f5c56ea67970e7b44449094e041e04">prepareUnityFbx</a>(</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#adea4896421a2f30ab23ce3448a57c351">prepareUnityNativeMesh</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp;,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                                                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a9f946f61eea28f59163958b07acfb9b3">prepareUnityNativeTexture</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp;,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a6b918e52edb90035e63c9348b2d1a297">prepareUnityNativeVolumeTexture</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp;,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                                                          <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a81df5ee8aaf006c2f939ad10d13730d0">prepareUnityVegetationMaterial</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                                         <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;          <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a7c5abb0b03747110415cbce823b67ad9">prepareUnityVegetationPreset</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a692fb5ef1d52852d6320ec0244976a6c">prepareUnityVegetationScene</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;          <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a3b19d02738de3e6f8fcf3225e941c0b7">prepareUnityMaterial</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                               <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceAsset.html">UnitySourceAsset</a>&amp;          <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#adc1b3252f5953bcc52cd63ffb6483592">bindUnityRenderers</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">UnityProjectImportRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1UnitySourceIndex.html">UnitySourceIndex</a>&amp; <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                              <a class="code hl_struct" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}  <span class="comment">// namespace eve::asset_import</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__import_1_1unity__detail.html">eve::asset_import::unity_detail</a> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__import_1_1unity__detail.html#a1e37da583b1992ecb58978c7f4e99f65">   70</a></span><span class="keyword">inline</span> std::string <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1unity__detail.html#a1e37da583b1992ecb58978c7f4e99f65">foldAscii</a>(std::string <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">for</span> (<span class="keywordtype">char</span>&amp; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> : <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> &gt;= <span class="charliteral">&#39;A&#39;</span> &amp;&amp; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> &lt;= <span class="charliteral">&#39;Z&#39;</span>) <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> += <span class="charliteral">&#39;a&#39;</span> - <span class="charliteral">&#39;A&#39;</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__import_1_1unity__detail.html#ad527e6dd8abd5c2f5f618ec8a17477ba">   76</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1unity__detail.html#ad527e6dd8abd5c2f5f618ec8a17477ba">validGuid</a>(std::string_view <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.size() == 32 &amp;&amp; std::all_of(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.begin(), <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.end(), [](<span class="keywordtype">char</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>               return (c &gt;= <span class="stringliteral">&#39;0&#39;</span> &amp;&amp; c &lt;= <span class="stringliteral">&#39;9&#39;</span>) || (c &gt;= <span class="stringliteral">&#39;a&#39;</span> &amp;&amp; c &lt;= <span class="stringliteral">&#39;f&#39;</span>) || (c &gt;= <span class="stringliteral">&#39;A&#39;</span> &amp;&amp; c &lt;= <span class="stringliteral">&#39;F&#39;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>           });</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__import_1_1unity__detail.html#a31c60a134920e2fb0f2e45c370da62e1">   82</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1unity__detail.html#a31c60a134920e2fb0f2e45c370da62e1">validPath</a>(std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.empty() || <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size() &gt; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumStringBytes || <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.front() == <span class="charliteral">&#39;/&#39;</span> ||</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.find_first_of(<span class="stringliteral">&quot;\\:&lt;&gt;\&quot;|?*&quot;</span>) != std::string_view::npos || !<a class="code hl_function" href="namespaceeve.html#aaebff6fc96f58ff55b1f164817d9777d">isValidUtf8</a>(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ad76ac1e90bd315b0fb378dc00de33489ad98ac12774fca5c3cbaffe276840c55f">Utf8NullPolicy::Reject</a>))</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> : <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> &lt; 32 || <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> == 127) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::size_t <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">while</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> &lt; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size()) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> = <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.find(<span class="charliteral">&#39;/&#39;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> == std::string_view::npos) <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> = <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">const</span> <span class="keyword">auto</span> part = <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.substr(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (part.empty() || part == <span class="stringliteral">&quot;.&quot;</span> || part == <span class="stringliteral">&quot;..&quot;</span> || part.back() == <span class="charliteral">&#39;.&#39;</span> || part.back() == <span class="charliteral">&#39; &#39;</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> = <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> + 1;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.back() != <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1unity__detail.html#a9cb4efa8b387c292a54686a7f22e4b34">metaScalar</a>(std::span&lt;const std::uint8_t&gt; <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>, std::string_view <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                                             std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}  <span class="comment">// namespace eve::asset_import::unity_detail</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">ActionTimelinePayloadEditor.cpp:23</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00161">AssetCommand.cpp:161</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ae0f3ddf34dc12c944c03445c0bc3fee6"><div class="ttname"><a href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a></div><div class="ttdeci">#define EVENGINE_API_PLATFORM</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00107">Export.h:107</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00152">McpRuntimeTools.cpp:152</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00140">PlayHost.cpp:140</a></div></div>
+<div class="ttc" id="aUnitySource_8h_html"><div class="ttname"><a href="UnitySource_8h.html">UnitySource.h</a></div><div class="ttdoc">Bounded Unity package ingestion and project identity index.</div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_ac305f1e828b2cf82b0d6fed8194ce85c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a></div><div class="ttdeci">const AssetImportLimits &amp; limits</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00030">UnityVegetationPreset.cpp:30</a></div></div>
+<div class="ttc" id="aUtf8Validation_8h_html"><div class="ttname"><a href="Utf8Validation_8h.html">Utf8Validation.h</a></div><div class="ttdoc">Strict allocation-free UTF-8 validation.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">MeshModifierGraph.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1unity__detail_html"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1unity__detail.html">eve::asset_import::unity_detail</a></div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8cpp_source.html#l00008">UnitySource.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1unity__detail_html_a1e37da583b1992ecb58978c7f4e99f65"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1unity__detail.html#a1e37da583b1992ecb58978c7f4e99f65">eve::asset_import::unity_detail::foldAscii</a></div><div class="ttdeci">std::string foldAscii(std::string value)</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00070">UnitySourceInternal.h:70</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1unity__detail_html_a31c60a134920e2fb0f2e45c370da62e1"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1unity__detail.html#a31c60a134920e2fb0f2e45c370da62e1">eve::asset_import::unity_detail::validPath</a></div><div class="ttdeci">bool validPath(std::string_view path, const AssetImportLimits &amp;limits)</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00082">UnitySourceInternal.h:82</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1unity__detail_html_a9cb4efa8b387c292a54686a7f22e4b34"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1unity__detail.html#a9cb4efa8b387c292a54686a7f22e4b34">eve::asset_import::unity_detail::metaScalar</a></div><div class="ttdeci">Result&lt; std::string &gt; metaScalar(std::span&lt; const std::uint8_t &gt; bytes, std::string_view key, std::string_view path)</div><div class="ttdoc">Read an unindented scalar from .meta; rejects duplicate keys and binary metadata.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8cpp_source.html#l00010">UnitySource.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1unity__detail_html_ad527e6dd8abd5c2f5f618ec8a17477ba"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1unity__detail.html#ad527e6dd8abd5c2f5f618ec8a17477ba">eve::asset_import::unity_detail::validGuid</a></div><div class="ttdeci">bool validGuid(std::string_view value)</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00076">UnitySourceInternal.h:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html"><div class="ttname"><a href="namespaceeve_1_1asset__import.html">eve::asset_import</a></div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00014">AssetImporter.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a3a906b503ebb526cdc16e79041d22bd8"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a3a906b503ebb526cdc16e79041d22bd8">eve::asset_import::prepareUnityPrefab</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityPrefab(const UnityProjectImportRequest &amp;request, const std::string &amp;path)</div><div class="ttdoc">Prepare one prefab without copying or re-indexing the source collection.</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8cpp_source.html#l00758">UnityImporter.cpp:758</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a3b19d02738de3e6f8fcf3225e941c0b7"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a3b19d02738de3e6f8fcf3225e941c0b7">eve::asset_import::prepareUnityMaterial</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityMaterial(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Dispatch built-in Standard and admitted vegetation materials to canonical PBR data.</div><div class="ttdef"><b>Definition</b> <a href="UnityRenderBindings_8cpp_source.html#l00049">UnityRenderBindings.cpp:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a3ea7d82853e26908e952538857d0c5e3"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a3ea7d82853e26908e952538857d0c5e3">eve::asset_import::prepareUnityCollection</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityCollection(const UnityProjectImportRequest &amp;request, const UnitySourceIndex &amp;index)</div><div class="ttdoc">Prepare an owning collection candidate using a validated source index.</div><div class="ttdef"><b>Definition</b> <a href="UnityCollection_8cpp_source.html#l00101">UnityCollection.cpp:101</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a692fb5ef1d52852d6320ec0244976a6c"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a692fb5ef1d52852d6320ec0244976a6c">eve::asset_import::prepareUnityVegetationScene</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityVegetationScene(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert a complete TVE manager component set from one Unity scene.</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00677">UnityVegetationScene.cpp:677</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a6b918e52edb90035e63c9348b2d1a297"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a6b918e52edb90035e63c9348b2d1a297">eve::asset_import::prepareUnityNativeVolumeTexture</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityNativeVolumeTexture(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert embedded linear R8 Unity Texture3D to an owning canonical volume candidate.</div><div class="ttdef"><b>Definition</b> <a href="UnityNativeVolumeTexture_8cpp_source.html#l00046">UnityNativeVolumeTexture.cpp:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a7c5abb0b03747110415cbce823b67ad9"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a7c5abb0b03747110415cbce823b67ad9">eve::asset_import::prepareUnityVegetationPreset</a></div><div class="ttdeci">EVENGINE_API_PLATFORM Result&lt; PreparedAssetImport &gt; prepareUnityVegetationPreset(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Parse one TVE conversion preset into a bounded versioned command tree.</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00106">UnityVegetationPreset.cpp:106</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a81df5ee8aaf006c2f939ad10d13730d0"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a81df5ee8aaf006c2f939ad10d13730d0">eve::asset_import::prepareUnityVegetationMaterial</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityVegetationMaterial(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert admitted TVE primary material data; remaining source features are reported explicitly.</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00423">UnityVegetationMaterial.cpp:423</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a9f946f61eea28f59163958b07acfb9b3"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a9f946f61eea28f59163958b07acfb9b3">eve::asset_import::prepareUnityNativeTexture</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityNativeTexture(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert embedded BC3 text Texture2D to an owning image candidate.</div><div class="ttdef"><b>Definition</b> <a href="UnityNativeTexture_8cpp_source.html#l00045">UnityNativeTexture.cpp:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_abe589a2b04b5134a02cee8ca1f665647"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#abe589a2b04b5134a02cee8ca1f665647">eve::asset_import::prepareUnitySpriteAnimation</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnitySpriteAnimation(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert an explicit SpriteRenderer timeline and referenced metadata into an owning canonical candidat...</div><div class="ttdef"><b>Definition</b> <a href="UnitySpriteAnimation_8cpp_source.html#l00079">UnitySpriteAnimation.cpp:79</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_ac3f5c56ea67970e7b44449094e041e04"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#ac3f5c56ea67970e7b44449094e041e04">eve::asset_import::prepareUnityFbx</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityFbx(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Convert a static FBX with explicit Unity importer settings and hashed subasset identities.</div><div class="ttdef"><b>Definition</b> <a href="UnityFbx_8cpp_source.html#l00210">UnityFbx.cpp:210</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_ad659c17efad6f35eefa23da38b1aaa03"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#ad659c17efad6f35eefa23da38b1aaa03">eve::asset_import::expandUnityPrefab</a></div><div class="ttdeci">Result&lt; UnityExpandedPrefab &gt; expandUnityPrefab(const UnityProjectImportRequest &amp;request, const UnitySourceIndex &amp;index, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Resolve bounded nested prefab references into an unpublished owning text candidate.</div><div class="ttdef"><b>Definition</b> <a href="UnityPrefabExpansion_8cpp_source.html#l00163">UnityPrefabExpansion.cpp:163</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_adc1b3252f5953bcc52cd63ffb6483592"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#adc1b3252f5953bcc52cd63ffb6483592">eve::asset_import::bindUnityRenderers</a></div><div class="ttdeci">Result&lt; void &gt; bindUnityRenderers(const UnityProjectImportRequest &amp;request, const UnitySourceIndex &amp;index, PreparedAssetImport &amp;out)</div><div class="ttdoc">Resolve renderer references after all collection assets are prepared; unpublished candidate only.</div><div class="ttdef"><b>Definition</b> <a href="UnityRenderBindings_8cpp_source.html#l00138">UnityRenderBindings.cpp:138</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_adea4896421a2f30ab23ce3448a57c351"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#adea4896421a2f30ab23ce3448a57c351">eve::asset_import::prepareUnityNativeMesh</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareUnityNativeMesh(const UnityProjectImportRequest &amp;request, const UnitySourceAsset &amp;source)</div><div class="ttdoc">Decode a bounded static Unity text Mesh into owning canonical submesh candidates.</div><div class="ttdef"><b>Definition</b> <a href="UnityNativeMesh_8cpp_source.html#l00046">UnityNativeMesh.cpp:46</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aaebff6fc96f58ff55b1f164817d9777d"><div class="ttname"><a href="namespaceeve.html#aaebff6fc96f58ff55b1f164817d9777d">eve::isValidUtf8</a></div><div class="ttdeci">bool isValidUtf8(std::string_view text, Utf8NullPolicy nullPolicy) noexcept</div><div class="ttdoc">Validate shortest-form UTF-8, Unicode scalar range and optional NUL exclusion.</div><div class="ttdef"><b>Definition</b> <a href="Utf8Validation_8cpp_source.html#l00005">Utf8Validation.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ad76ac1e90bd315b0fb378dc00de33489ad98ac12774fca5c3cbaffe276840c55f"><div class="ttname"><a href="namespaceeve.html#ad76ac1e90bd315b0fb378dc00de33489ad98ac12774fca5c3cbaffe276840c55f">eve::Utf8NullPolicy::Reject</a></div><div class="ttdeci">@ Reject</div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1AssetImportLimits_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1AssetImportLimits.html">eve::asset_import::AssetImportLimits</a></div><div class="ttdoc">Parser and allocation budgets applied to untrusted importer inputs.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00017">AssetImporter.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1PreparedAssetImport_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1PreparedAssetImport.html">eve::asset_import::PreparedAssetImport</a></div><div class="ttdoc">Owning, validated source archive candidate not yet published to disk/database.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00090">AssetImporter.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnityExpandedPrefab_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html">eve::asset_import::UnityExpandedPrefab</a></div><div class="ttdoc">Owning import-only expansion; original source bytes remain authoritative for archival.</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00013">UnitySourceInternal.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnityExpandedPrefab_html_a11169dd8c40b0e72ceff90595882b7e9"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a11169dd8c40b0e72ceff90595882b7e9">eve::asset_import::UnityExpandedPrefab::bytes</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; bytes</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00014">UnitySourceInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnityExpandedPrefab_html_a40fe810c5b4e19e9429941ce7680286d"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnityExpandedPrefab.html#a40fe810c5b4e19e9429941ce7680286d">eve::asset_import::UnityExpandedPrefab::findings</a></div><div class="ttdeci">std::vector&lt; ImportFinding &gt; findings</div><div class="ttdef"><b>Definition</b> <a href="UnitySourceInternal_8h_source.html#l00015">UnitySourceInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnityProjectImportRequest_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnityProjectImportRequest.html">eve::asset_import::UnityProjectImportRequest</a></div><div class="ttdoc">In-memory Unity project slice; keys are normalized project-relative paths.</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8h_source.html#l00015">UnityImporter.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceAsset_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceAsset.html">eve::asset_import::UnitySourceAsset</a></div><div class="ttdoc">Immutable-by-convention owning source index entry; no borrowed source addresses.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00038">UnitySource.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1UnitySourceIndex_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1UnitySourceIndex.html">eve::asset_import::UnitySourceIndex</a></div><div class="ttdoc">Owning deterministic index sorted by path, plus missing-reference diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="UnitySource_8h_source.html#l00047">UnitySource.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

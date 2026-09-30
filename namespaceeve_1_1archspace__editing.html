@@ -1,0 +1,744 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace__editing.html">archspace_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html">ArchSpaceDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revisioned ArchSpace document target for Inspector, tools and automation.  <a href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a25f3e6ed17d773090cc7fbd266d608bb" id="r_a25f3e6ed17d773090cc7fbd266d608bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td></tr>
+<tr class="separator:a25f3e6ed17d773090cc7fbd266d608bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0a06efb49381a44a0ecf4f1ff2fd28" id="r_aac0a06efb49381a44a0ecf4f1ff2fd28"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#aac0a06efb49381a44a0ecf4f1ff2fd28">DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:aac0a06efb49381a44a0ecf4f1ff2fd28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41181adfeb548452eecd667d09d01a29" id="r_a41181adfeb548452eecd667d09d01a29"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> = <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td></tr>
+<tr class="separator:a41181adfeb548452eecd667d09d01a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae249db1beb6b3a5f5a3b4be046cf7472" id="r_ae249db1beb6b3a5f5a3b4be046cf7472"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ae249db1beb6b3a5f5a3b4be046cf7472">EditRegion</a> = <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td></tr>
+<tr class="separator:ae249db1beb6b3a5f5a3b4be046cf7472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ab30edbd20bdf08a62dc4c4fbade8d" id="r_ab5ab30edbd20bdf08a62dc4c4fbade8d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ab5ab30edbd20bdf08a62dc4c4fbade8d">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:ab5ab30edbd20bdf08a62dc4c4fbade8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1cce494c22c0270cc296686315e749" id="r_a2b1cce494c22c0270cc296686315e749"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a2b1cce494c22c0270cc296686315e749"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:a2b1cce494c22c0270cc296686315e749"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c79ff5dfb1535524cc5e12740c3a74" id="r_af3c79ff5dfb1535524cc5e12740c3a74"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#af3c79ff5dfb1535524cc5e12740c3a74">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:af3c79ff5dfb1535524cc5e12740c3a74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e707af4b7ea9fe7a7421eb64411cc08" id="r_a8e707af4b7ea9fe7a7421eb64411cc08"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:a8e707af4b7ea9fe7a7421eb64411cc08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab78cce497f0971f20477bfc666d3c89a" id="r_ab78cce497f0971f20477bfc666d3c89a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">IDomainOperationTarget</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td></tr>
+<tr class="separator:ab78cce497f0971f20477bfc666d3c89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1aef8c29d08d6ca1850a2fde4f98f3e7" id="r_a1aef8c29d08d6ca1850a2fde4f98f3e7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a1aef8c29d08d6ca1850a2fde4f98f3e7">IDomainOperationTargetStaging</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="separator:a1aef8c29d08d6ca1850a2fde4f98f3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2292a98d1d4ca2563703179709a35ee7" id="r_a2292a98d1d4ca2563703179709a35ee7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2292a98d1d4ca2563703179709a35ee7">IEditableTarget</a> = <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td></tr>
+<tr class="separator:a2292a98d1d4ca2563703179709a35ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ea37211b8b75d092f32586f630b60f" id="r_a59ea37211b8b75d092f32586f630b60f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a59ea37211b8b75d092f32586f630b60f">IEditingSnapshotProvider</a> = <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="separator:a59ea37211b8b75d092f32586f630b60f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58c8ed3704b5091d74bdc8748fd9bf39" id="r_a58c8ed3704b5091d74bdc8748fd9bf39"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a58c8ed3704b5091d74bdc8748fd9bf39">IPropertyProvider</a> = <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td></tr>
+<tr class="separator:a58c8ed3704b5091d74bdc8748fd9bf39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a77848eebe130c8685ed5b5f8967da" id="r_ab9a77848eebe130c8685ed5b5f8967da"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ab9a77848eebe130c8685ed5b5f8967da">ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td></tr>
+<tr class="separator:ab9a77848eebe130c8685ed5b5f8967da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b0e804aba8ee5b8704a7c1e0aa91b2" id="r_a31b0e804aba8ee5b8704a7c1e0aa91b2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a31b0e804aba8ee5b8704a7c1e0aa91b2">PropertyDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td></tr>
+<tr class="separator:a31b0e804aba8ee5b8704a7c1e0aa91b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a001f3f81204ef94eb5da27af7bdef29f" id="r_a001f3f81204ef94eb5da27af7bdef29f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a001f3f81204ef94eb5da27af7bdef29f">PropertyFlag</a> = <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td></tr>
+<tr class="separator:a001f3f81204ef94eb5da27af7bdef29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9dd038b057d1c45b1364e5ae816ceea" id="r_aa9dd038b057d1c45b1364e5ae816ceea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> = <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td></tr>
+<tr class="separator:aa9dd038b057d1c45b1364e5ae816ceea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af07b1498249d6909691e551651387298" id="r_af07b1498249d6909691e551651387298"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#af07b1498249d6909691e551651387298">PropertyReadResult</a> = <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td></tr>
+<tr class="separator:af07b1498249d6909691e551651387298"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63e06a435fe3d5f0b251d8d78fd30b1" id="r_aa63e06a435fe3d5f0b251d8d78fd30b1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#aa63e06a435fe3d5f0b251d8d78fd30b1">PropertyReadState</a> = <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td></tr>
+<tr class="separator:aa63e06a435fe3d5f0b251d8d78fd30b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a141c43b7565aae9fca24f8463640ce8c" id="r_a141c43b7565aae9fca24f8463640ce8c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a141c43b7565aae9fca24f8463640ce8c">PropertySchema</a> = <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td></tr>
+<tr class="separator:a141c43b7565aae9fca24f8463640ce8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad91284a2624052fef230d5a3667dc1f8" id="r_ad91284a2624052fef230d5a3667dc1f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ad91284a2624052fef230d5a3667dc1f8">PropertySetMode</a> = <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td></tr>
+<tr class="separator:ad91284a2624052fef230d5a3667dc1f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad731715f61039c9b509bd32ef1ea8a76" id="r_ad731715f61039c9b509bd32ef1ea8a76"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ad731715f61039c9b509bd32ef1ea8a76">PropertyType</a> = <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td></tr>
+<tr class="separator:ad731715f61039c9b509bd32ef1ea8a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3cae625b0221821a737f5e2be677b11" id="r_aa3cae625b0221821a737f5e2be677b11"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#aa3cae625b0221821a737f5e2be677b11">Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:aa3cae625b0221821a737f5e2be677b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa5c08a1f9aac89de94cae40666669e1" id="r_afa5c08a1f9aac89de94cae40666669e1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#afa5c08a1f9aac89de94cae40666669e1">RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:afa5c08a1f9aac89de94cae40666669e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add24e047b0366c1032b72d6ec2d52091" id="r_add24e047b0366c1032b72d6ec2d52091"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td></tr>
+<tr class="separator:add24e047b0366c1032b72d6ec2d52091"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6b03fb0de984cdaa049a1f63eec64ab" id="r_ad6b03fb0de984cdaa049a1f63eec64ab"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ad6b03fb0de984cdaa049a1f63eec64ab">TargetDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td></tr>
+<tr class="separator:ad6b03fb0de984cdaa049a1f63eec64ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb5db21bff75b27a9d56c2466afd4efb" id="r_acb5db21bff75b27a9d56c2466afd4efb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#acb5db21bff75b27a9d56c2466afd4efb">TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td></tr>
+<tr class="separator:acb5db21bff75b27a9d56c2466afd4efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ba12ae040a41496eadb2cd65a094e2" id="r_ae6ba12ae040a41496eadb2cd65a094e2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ae6ba12ae040a41496eadb2cd65a094e2">EditorGizmoSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1GizmoSnapshot.html">editing::GizmoSnapshot</a></td></tr>
+<tr class="separator:ae6ba12ae040a41496eadb2cd65a094e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9972dcd24f09c91d1e092187293101a" id="r_ac9972dcd24f09c91d1e092187293101a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#ac9972dcd24f09c91d1e092187293101a">EditorGizmoPrimitive</a> = <a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html">editing::GizmoPrimitive</a></td></tr>
+<tr class="separator:ac9972dcd24f09c91d1e092187293101a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4016a7b07eab9268c27860f69dc660d0" id="r_a4016a7b07eab9268c27860f69dc660d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace__editing.html#a4016a7b07eab9268c27860f69dc660d0">registerEditingCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a4016a7b07eab9268c27860f69dc660d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register ArchSpace-owned planned commands with a generic editing host.  <br /></td></tr>
+<tr class="separator:a4016a7b07eab9268c27860f69dc660d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a25f3e6ed17d773090cc7fbd266d608bb" name="a25f3e6ed17d773090cc7fbd266d608bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25f3e6ed17d773090cc7fbd266d608bb">&#9670;&#160;</a></span>CapabilityId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">eve::archspace_editing::CapabilityId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac0a06efb49381a44a0ecf4f1ff2fd28" name="aac0a06efb49381a44a0ecf4f1ff2fd28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0a06efb49381a44a0ecf4f1ff2fd28">&#9670;&#160;</a></span>DiagnosticSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::archspace_editing::DiagnosticSeverity</a> = typedef <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41181adfeb548452eecd667d09d01a29" name="a41181adfeb548452eecd667d09d01a29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41181adfeb548452eecd667d09d01a29">&#9670;&#160;</a></span>DomainOperation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">eve::archspace_editing::DomainOperation</a> = typedef <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5ab30edbd20bdf08a62dc4c4fbade8d" name="ab5ab30edbd20bdf08a62dc4c4fbade8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ab30edbd20bdf08a62dc4c4fbade8d">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ab5ab30edbd20bdf08a62dc4c4fbade8d">eve::archspace_editing::EditorDiagnostic</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac9972dcd24f09c91d1e092187293101a" name="ac9972dcd24f09c91d1e092187293101a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9972dcd24f09c91d1e092187293101a">&#9670;&#160;</a></span>EditorGizmoPrimitive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ac9972dcd24f09c91d1e092187293101a">eve::archspace_editing::EditorGizmoPrimitive</a> = typedef <a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html">editing::GizmoPrimitive</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6ba12ae040a41496eadb2cd65a094e2" name="ae6ba12ae040a41496eadb2cd65a094e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ba12ae040a41496eadb2cd65a094e2">&#9670;&#160;</a></span>EditorGizmoSnapshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ae6ba12ae040a41496eadb2cd65a094e2">eve::archspace_editing::EditorGizmoSnapshot</a> = typedef <a class="el" href="structeve_1_1editing_1_1GizmoSnapshot.html">editing::GizmoSnapshot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b1cce494c22c0270cc296686315e749" name="a2b1cce494c22c0270cc296686315e749"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1cce494c22c0270cc296686315e749">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">eve::archspace_editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3c79ff5dfb1535524cc5e12740c3a74" name="af3c79ff5dfb1535524cc5e12740c3a74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3c79ff5dfb1535524cc5e12740c3a74">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::archspace_editing::EditorStatus</a> = typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e707af4b7ea9fe7a7421eb64411cc08" name="a8e707af4b7ea9fe7a7421eb64411cc08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e707af4b7ea9fe7a7421eb64411cc08">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">eve::archspace_editing::EditorValue</a> = typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae249db1beb6b3a5f5a3b4be046cf7472" name="ae249db1beb6b3a5f5a3b4be046cf7472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae249db1beb6b3a5f5a3b4be046cf7472">&#9670;&#160;</a></span>EditRegion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ae249db1beb6b3a5f5a3b4be046cf7472">eve::archspace_editing::EditRegion</a> = typedef <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab78cce497f0971f20477bfc666d3c89a" name="ab78cce497f0971f20477bfc666d3c89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab78cce497f0971f20477bfc666d3c89a">&#9670;&#160;</a></span>IDomainOperationTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">eve::archspace_editing::IDomainOperationTarget</a> = typedef <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1aef8c29d08d6ca1850a2fde4f98f3e7" name="a1aef8c29d08d6ca1850a2fde4f98f3e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1aef8c29d08d6ca1850a2fde4f98f3e7">&#9670;&#160;</a></span>IDomainOperationTargetStaging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a1aef8c29d08d6ca1850a2fde4f98f3e7">eve::archspace_editing::IDomainOperationTargetStaging</a> = typedef <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2292a98d1d4ca2563703179709a35ee7" name="a2292a98d1d4ca2563703179709a35ee7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2292a98d1d4ca2563703179709a35ee7">&#9670;&#160;</a></span>IEditableTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a2292a98d1d4ca2563703179709a35ee7">eve::archspace_editing::IEditableTarget</a> = typedef <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a59ea37211b8b75d092f32586f630b60f" name="a59ea37211b8b75d092f32586f630b60f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59ea37211b8b75d092f32586f630b60f">&#9670;&#160;</a></span>IEditingSnapshotProvider</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a59ea37211b8b75d092f32586f630b60f">eve::archspace_editing::IEditingSnapshotProvider</a> = typedef <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">editing::IEditingSnapshotProvider</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58c8ed3704b5091d74bdc8748fd9bf39" name="a58c8ed3704b5091d74bdc8748fd9bf39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58c8ed3704b5091d74bdc8748fd9bf39">&#9670;&#160;</a></span>IPropertyProvider</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a58c8ed3704b5091d74bdc8748fd9bf39">eve::archspace_editing::IPropertyProvider</a> = typedef <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9a77848eebe130c8685ed5b5f8967da" name="ab9a77848eebe130c8685ed5b5f8967da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a77848eebe130c8685ed5b5f8967da">&#9670;&#160;</a></span>ObjectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ab9a77848eebe130c8685ed5b5f8967da">eve::archspace_editing::ObjectId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31b0e804aba8ee5b8704a7c1e0aa91b2" name="a31b0e804aba8ee5b8704a7c1e0aa91b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b0e804aba8ee5b8704a7c1e0aa91b2">&#9670;&#160;</a></span>PropertyDescriptor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a31b0e804aba8ee5b8704a7c1e0aa91b2">eve::archspace_editing::PropertyDescriptor</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a001f3f81204ef94eb5da27af7bdef29f" name="a001f3f81204ef94eb5da27af7bdef29f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a001f3f81204ef94eb5da27af7bdef29f">&#9670;&#160;</a></span>PropertyFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">eve::archspace_editing::PropertyFlag</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9dd038b057d1c45b1364e5ae816ceea" name="aa9dd038b057d1c45b1364e5ae816ceea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9dd038b057d1c45b1364e5ae816ceea">&#9670;&#160;</a></span>PropertyPath</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">eve::archspace_editing::PropertyPath</a> = typedef <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af07b1498249d6909691e551651387298" name="af07b1498249d6909691e551651387298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af07b1498249d6909691e551651387298">&#9670;&#160;</a></span>PropertyReadResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#af07b1498249d6909691e551651387298">eve::archspace_editing::PropertyReadResult</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa63e06a435fe3d5f0b251d8d78fd30b1" name="aa63e06a435fe3d5f0b251d8d78fd30b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa63e06a435fe3d5f0b251d8d78fd30b1">&#9670;&#160;</a></span>PropertyReadState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">eve::archspace_editing::PropertyReadState</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a141c43b7565aae9fca24f8463640ce8c" name="a141c43b7565aae9fca24f8463640ce8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a141c43b7565aae9fca24f8463640ce8c">&#9670;&#160;</a></span>PropertySchema</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#a141c43b7565aae9fca24f8463640ce8c">eve::archspace_editing::PropertySchema</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad91284a2624052fef230d5a3667dc1f8" name="ad91284a2624052fef230d5a3667dc1f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad91284a2624052fef230d5a3667dc1f8">&#9670;&#160;</a></span>PropertySetMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::archspace_editing::PropertySetMode</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad731715f61039c9b509bd32ef1ea8a76" name="ad731715f61039c9b509bd32ef1ea8a76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad731715f61039c9b509bd32ef1ea8a76">&#9670;&#160;</a></span>PropertyType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::archspace_editing::PropertyType</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3cae625b0221821a737f5e2be677b11" name="aa3cae625b0221821a737f5e2be677b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3cae625b0221821a737f5e2be677b11">&#9670;&#160;</a></span>Revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#aa3cae625b0221821a737f5e2be677b11">eve::archspace_editing::Revision</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa5c08a1f9aac89de94cae40666669e1" name="afa5c08a1f9aac89de94cae40666669e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa5c08a1f9aac89de94cae40666669e1">&#9670;&#160;</a></span>RuleId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#afa5c08a1f9aac89de94cae40666669e1">eve::archspace_editing::RuleId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add24e047b0366c1032b72d6ec2d52091" name="add24e047b0366c1032b72d6ec2d52091"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add24e047b0366c1032b72d6ec2d52091">&#9670;&#160;</a></span>SelectionSnapshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">eve::archspace_editing::SelectionSnapshot</a> = typedef <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6b03fb0de984cdaa049a1f63eec64ab" name="ad6b03fb0de984cdaa049a1f63eec64ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6b03fb0de984cdaa049a1f63eec64ab">&#9670;&#160;</a></span>TargetDescriptor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#ad6b03fb0de984cdaa049a1f63eec64ab">eve::archspace_editing::TargetDescriptor</a> = typedef <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb5db21bff75b27a9d56c2466afd4efb" name="acb5db21bff75b27a9d56c2466afd4efb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb5db21bff75b27a9d56c2466afd4efb">&#9670;&#160;</a></span>TargetId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1archspace__editing.html#acb5db21bff75b27a9d56c2466afd4efb">eve::archspace_editing::TargetId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a4016a7b07eab9268c27860f69dc660d0" name="a4016a7b07eab9268c27860f69dc660d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4016a7b07eab9268c27860f69dc660d0">&#9670;&#160;</a></span>registerEditingCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::archspace_editing::registerEditingCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register ArchSpace-owned planned commands with a generic editing host. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceEditingCommands_8cpp_source.html">ArchSpaceEditingCommands.cpp</a> 第 <a class="el" href="ArchSpaceEditingCommands_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00158">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="archspace__editor_8cpp_source.html#l00055">eve::archspace_editor::ArchSpaceEditorModule::ArchSpaceEditorModule()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

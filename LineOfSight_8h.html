@@ -1,0 +1,251 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/LineOfSight.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">LineOfSight.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Injectable line-of-sight and cover policies over the tactical board.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TacticsPath_8h_source.html">tactics/TacticsPath.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TacticsTypes_8h_source.html">tactics/TacticsTypes.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+</div>
+<p><a href="LineOfSight_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">eve::tactics::ILineOfSightPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answers "can @p from see @p to" for one board.  <a href="classeve_1_1tactics_1_1ILineOfSightPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1ICoverPolicy.html">eve::tactics::ICoverPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answers "how much cover does @p target have against @p attacker".  <a href="classeve_1_1tactics_1_1ICoverPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html">eve::tactics::GridLineOfSightPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The built-in grid policy: a straight-line trace over the board's own topology.  <a href="classeve_1_1tactics_1_1GridLineOfSightPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tactics_1_1GridCoverPolicy.html">eve::tactics::GridCoverPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The built-in cover policy: blockers adjacent to the target, prioritising the line.  <a href="classeve_1_1tactics_1_1GridCoverPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1tactics" id="r_namespaceeve_1_1tactics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html">eve::tactics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:af1918f1a4d961c1bbec50e48449554d8" id="r_af1918f1a4d961c1bbec50e48449554d8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">eve::tactics::CoverLevel</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8a6adf97f83acf6453d4a6a4b1070f3754">eve::tactics::None</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8ac48615a1bc4197056d522af276aa5a85">eve::tactics::Half</a>
+, <a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8abbd47109890259c0127154db1af26c75">eve::tactics::Full</a>
+ }</td></tr>
+<tr class="memdesc:af1918f1a4d961c1bbec50e48449554d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">How much protection a cell gives against an attacker.  <a href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">更多...</a><br /></td></tr>
+<tr class="separator:af1918f1a4d961c1bbec50e48449554d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a14c323ea9cdac9a673ff1474e86d0fd7" id="r_a14c323ea9cdac9a673ff1474e86d0fd7"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a14c323ea9cdac9a673ff1474e86d0fd7">eve::tactics::coverLevelName</a> (<a class="el" href="namespaceeve_1_1tactics.html#af1918f1a4d961c1bbec50e48449554d8">CoverLevel</a> level) noexcept</td></tr>
+<tr class="memdesc:a14c323ea9cdac9a673ff1474e86d0fd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable protocol spelling of a cover level.  <br /></td></tr>
+<tr class="separator:a14c323ea9cdac9a673ff1474e86d0fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b390cc88bf047721fcf5d16492b3222" id="r_a9b390cc88bf047721fcf5d16492b3222"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a9b390cc88bf047721fcf5d16492b3222">eve::tactics::gridLineOfSightPolicy</a> ()</td></tr>
+<tr class="memdesc:a9b390cc88bf047721fcf5d16492b3222"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide built-in line-of-sight policy.  <br /></td></tr>
+<tr class="separator:a9b390cc88bf047721fcf5d16492b3222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde99d4ffa1be62ce6d904f614d06520" id="r_afde99d4ffa1be62ce6d904f614d06520"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classeve_1_1tactics_1_1ICoverPolicy.html">ICoverPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#afde99d4ffa1be62ce6d904f614d06520">eve::tactics::gridCoverPolicy</a> ()</td></tr>
+<tr class="memdesc:afde99d4ffa1be62ce6d904f614d06520"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide built-in cover policy (same ownership remarks as above).  <br /></td></tr>
+<tr class="separator:afde99d4ffa1be62ce6d904f614d06520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa05447001ddc8124fc62cb398659a9" id="r_a1fa05447001ddc8124fc62cb398659a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#a1fa05447001ddc8124fc62cb398659a9">eve::tactics::visibleCellsInRange</a> (const <a class="el" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, const <a class="el" href="classeve_1_1tactics_1_1ILineOfSightPolicy.html">ILineOfSightPolicy</a> &amp;policy, <a class="el" href="structeve_1_1tactics_1_1Cell.html">Cell</a> origin, int <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, int <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, <a class="el" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> metric)</td></tr>
+<tr class="memdesc:a1fa05447001ddc8124fc62cb398659a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cells within a metric range of <code>origin</code> that <code>policy</code> can actually see.  <br /></td></tr>
+<tr class="separator:a1fa05447001ddc8124fc62cb398659a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:adc314cc3edba9374fdcea00968b5a696" id="r_adc314cc3edba9374fdcea00968b5a696"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tactics.html#adc314cc3edba9374fdcea00968b5a696">eve::tactics::kSightBlockerTag</a> = &quot;sight_blocker&quot;</td></tr>
+<tr class="memdesc:adc314cc3edba9374fdcea00968b5a696"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1tactics_1_1Cell.html" title="Logical board coordinate independent of rendering projection.">Cell</a> tag that makes a cell block line of sight.  <br /></td></tr>
+<tr class="separator:adc314cc3edba9374fdcea00968b5a696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Injectable line-of-sight and cover policies over the tactical board. </p>
+<p>The gap this closes: a turn-based tactics game needs "can this unit see that cell" and "how much cover does that cell give", and the reference framework answers both inside its per-ability targeting code. That makes the answer untestable, unreusable and impossible to replace with a different board shape.</p>
+<p>Here both questions are interfaces with <b>named capabilities</b>, plus one built-in grid implementation that understands the three board topologies tactics already supports. The interfaces are the seam a different board (a hex map with its own projection, a project's own occlusion rules) plugs into: it registers its own provider instead of the tactics core growing a second geometry.</p>
+<p>Blocking is read from the persisted cell <b>tags</b> rather than from a new field: <code>passable</code> already means "may be entered", and a low wall or a smoke cloud blocks sight without blocking movement. Reading a tag keeps sight a separate fact that costs no schema version, and the tag name is a named constant so it is not a magic string.</p>
+<p>This header has no rendering or ECS dependency: policies read <code>BoardState</code> values only. </p>
+
+<p class="definition">在文件 <a class="el" href="LineOfSight_8h_source.html">LineOfSight.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

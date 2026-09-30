@@ -1,0 +1,572 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainBakedMaskCache类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainBakedMaskCache-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainBakedMaskCache类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Own Pcg-style per-terrain baked scalar masks keyed by stable terrain and mask identities. Entries contain copied CPU rasters. Scene objects, providers, GPU resources, callbacks, clocks and RNG are not retained.  
+ <a href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainBakedMaskCache_8h_source.html">TerrainBakedMaskCache.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainBakedMaskCache_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a98514442d3037f87522bd89ef2dbb4d1" id="r_a98514442d3037f87522bd89ef2dbb4d1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a98514442d3037f87522bd89ef2dbb4d1">TerrainBakedMaskCache</a> ()</td></tr>
+<tr class="separator:a98514442d3037f87522bd89ef2dbb4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06e6625e32a49d9ef297c283ac6cb195" id="r_a06e6625e32a49d9ef297c283ac6cb195"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a06e6625e32a49d9ef297c283ac6cb195">~TerrainBakedMaskCache</a> ()</td></tr>
+<tr class="separator:a06e6625e32a49d9ef297c283ac6cb195"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af338bed5d020de3ec0f54642e2e940f6" id="r_af338bed5d020de3ec0f54642e2e940f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#af338bed5d020de3ec0f54642e2e940f6">TerrainBakedMaskCache</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:af338bed5d020de3ec0f54642e2e940f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898c8bb1cefe4975dc7846c138c92884" id="r_a898c8bb1cefe4975dc7846c138c92884"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a898c8bb1cefe4975dc7846c138c92884">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a898c8bb1cefe4975dc7846c138c92884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89844b09c4434a15c632c8993af7658f" id="r_a89844b09c4434a15c632c8993af7658f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a89844b09c4434a15c632c8993af7658f">TerrainBakedMaskCache</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;)=delete</td></tr>
+<tr class="separator:a89844b09c4434a15c632c8993af7658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f7891ddb6d326765a6737c09578c7d7" id="r_a5f7891ddb6d326765a6737c09578c7d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a5f7891ddb6d326765a6737c09578c7d7">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;)=delete</td></tr>
+<tr class="separator:a5f7891ddb6d326765a6737c09578c7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a959b51f6b4bf2e1f08f8deacc03f1f4b" id="r_a959b51f6b4bf2e1f08f8deacc03f1f4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a959b51f6b4bf2e1f08f8deacc03f1f4b">store</a> (const std::string &amp;terrainId, const std::string &amp;maskGuid, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;raster)</td></tr>
+<tr class="memdesc:a959b51f6b4bf2e1f08f8deacc03f1f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy or atomically replace one finite baked raster and mark it fresh.  <br /></td></tr>
+<tr class="separator:a959b51f6b4bf2e1f08f8deacc03f1f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0a5067ee4c08500a380e870bc1535b5" id="r_aa0a5067ee4c08500a380e870bc1535b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#aa0a5067ee4c08500a380e870bc1535b5">markDirty</a> (const std::string &amp;maskGuid)</td></tr>
+<tr class="memdesc:aa0a5067ee4c08500a380e870bc1535b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark every matching GUID entry stale; stale reads fail until a provider stores a replacement.  <br /></td></tr>
+<tr class="separator:aa0a5067ee4c08500a380e870bc1535b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abadfe8399bb3ae96d9d88da3ad15e72a" id="r_abadfe8399bb3ae96d9d88da3ad15e72a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#abadfe8399bb3ae96d9d88da3ad15e72a">erase</a> (const std::string &amp;terrainId, const std::string &amp;maskGuid)</td></tr>
+<tr class="memdesc:abadfe8399bb3ae96d9d88da3ad15e72a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one exact entry.  <br /></td></tr>
+<tr class="separator:abadfe8399bb3ae96d9d88da3ad15e72a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d07b6eb87c82bb28134fb57e9b19823" id="r_a8d07b6eb87c82bb28134fb57e9b19823"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a8d07b6eb87c82bb28134fb57e9b19823">clear</a> ()</td></tr>
+<tr class="memdesc:a8d07b6eb87c82bb28134fb57e9b19823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all entries.  <br /></td></tr>
+<tr class="separator:a8d07b6eb87c82bb28134fb57e9b19823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06f088771d8a88afb5f4d3cbc396386e" id="r_a06f088771d8a88afb5f4d3cbc396386e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#a06f088771d8a88afb5f4d3cbc396386e">getEntryCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a06f088771d8a88afb5f4d3cbc396386e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of retained entries, including dirty entries.  <br /></td></tr>
+<tr class="separator:a06f088771d8a88afb5f4d3cbc396386e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6caeb9dfb963c3c00ca89482b125798" id="r_ae6caeb9dfb963c3c00ca89482b125798"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html#ae6caeb9dfb963c3c00ca89482b125798">copyMask</a> (const std::string &amp;terrainId, const std::string &amp;maskGuid, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:ae6caeb9dfb963c3c00ca89482b125798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one fresh entry into any positive output resolution using Clamp/Bilinear sampling.  <br /></td></tr>
+<tr class="separator:ae6caeb9dfb963c3c00ca89482b125798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Own Pcg-style per-terrain baked scalar masks keyed by stable terrain and mask identities. Entries contain copied CPU rasters. Scene objects, providers, GPU resources, callbacks, clocks and RNG are not retained. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8h_source.html">TerrainBakedMaskCache.h</a> 第 <a class="el" href="TerrainBakedMaskCache_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a98514442d3037f87522bd89ef2dbb4d1" name="a98514442d3037f87522bd89ef2dbb4d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98514442d3037f87522bd89ef2dbb4d1">&#9670;&#160;</a></span>TerrainBakedMaskCache() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainBakedMaskCache::TerrainBakedMaskCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06e6625e32a49d9ef297c283ac6cb195" name="a06e6625e32a49d9ef297c283ac6cb195"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06e6625e32a49d9ef297c283ac6cb195">&#9670;&#160;</a></span>~TerrainBakedMaskCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainBakedMaskCache::~TerrainBakedMaskCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af338bed5d020de3ec0f54642e2e940f6" name="af338bed5d020de3ec0f54642e2e940f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af338bed5d020de3ec0f54642e2e940f6">&#9670;&#160;</a></span>TerrainBakedMaskCache() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainBakedMaskCache::TerrainBakedMaskCache </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89844b09c4434a15c632c8993af7658f" name="a89844b09c4434a15c632c8993af7658f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89844b09c4434a15c632c8993af7658f">&#9670;&#160;</a></span>TerrainBakedMaskCache() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainBakedMaskCache::TerrainBakedMaskCache </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8d07b6eb87c82bb28134fb57e9b19823" name="a8d07b6eb87c82bb28134fb57e9b19823"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d07b6eb87c82bb28134fb57e9b19823">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainBakedMaskCache::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all entries. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6caeb9dfb963c3c00ca89482b125798" name="ae6caeb9dfb963c3c00ca89482b125798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6caeb9dfb963c3c00ca89482b125798">&#9670;&#160;</a></span>copyMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainBakedMaskCache::copyMask </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>terrainId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>maskGuid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one fresh entry into any positive output resolution using Clamp/Bilinear sampling. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed output samples, or NotFound for missing/dirty data; failure never modifies output. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>Output remains unchanged. @thread Synchronous owner-thread mutation; output is exclusively borrowed and no references escape. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00031">eve::procgen::raster_detail::textureSample()</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="abadfe8399bb3ae96d9d88da3ad15e72a" name="abadfe8399bb3ae96d9d88da3ad15e72a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abadfe8399bb3ae96d9d88da3ad15e72a">&#9670;&#160;</a></span>erase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainBakedMaskCache::erase </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>terrainId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>maskGuid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one exact entry. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a06f088771d8a88afb5f4d3cbc396386e" name="a06f088771d8a88afb5f4d3cbc396386e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06f088771d8a88afb5f4d3cbc396386e">&#9670;&#160;</a></span>getEntryCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainBakedMaskCache::getEntryCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of retained entries, including dirty entries. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0a5067ee4c08500a380e870bc1535b5" name="aa0a5067ee4c08500a380e870bc1535b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0a5067ee4c08500a380e870bc1535b5">&#9670;&#160;</a></span>markDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainBakedMaskCache::markDirty </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>maskGuid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark every matching GUID entry stale; stale reads fail until a provider stores a replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a5f7891ddb6d326765a6737c09578c7d7" name="a5f7891ddb6d326765a6737c09578c7d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f7891ddb6d326765a6737c09578c7d7">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp; eve::procgen::TerrainBakedMaskCache::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a898c8bb1cefe4975dc7846c138c92884" name="a898c8bb1cefe4975dc7846c138c92884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898c8bb1cefe4975dc7846c138c92884">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp; eve::procgen::TerrainBakedMaskCache::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainBakedMaskCache.html">TerrainBakedMaskCache</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a959b51f6b4bf2e1f08f8deacc03f1f4b" name="a959b51f6b4bf2e1f08f8deacc03f1f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a959b51f6b4bf2e1f08f8deacc03f1f4b">&#9670;&#160;</a></span>store()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainBakedMaskCache::store </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>terrainId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>maskGuid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>raster</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy or atomically replace one finite baked raster and mark it fresh. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a> 第 <a class="el" href="TerrainBakedMaskCache_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainBakedMaskCache_8h_source.html">TerrainBakedMaskCache.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainBakedMaskCache_8cpp_source.html">TerrainBakedMaskCache.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

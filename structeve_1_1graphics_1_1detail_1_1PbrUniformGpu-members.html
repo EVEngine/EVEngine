@@ -1,0 +1,252 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html">detail</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::detail::PbrUniformGpu 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5b8666ee39c4d5b6ff29e0452becb259">ambient</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a991f2f8e793c0fe7e10e3649c463297f">camera</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa3421d28dd579342a8af84b06d36f81d">coat</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac426008346329eac8cdd624f7351eef8">colorMaskParams</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a7a97e2e2fe112a0fe74774db957f3b82">colorMaskSecondary</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3e1f7191eca3cdb32e670f3693e53e6a">colorsCoords</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a71ef8baa687dc2fb9e2ee99aaaaf3673">colorsFallback</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aff4f27735ab27686e60bb9b52540b4b2">colorsInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5d520a71d5d5d7bbbe7f56d74cab3488">colorsUsage0</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a2626714db3b7e13160b1ef148b3acf01">colorsUsage1</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4d4e69c7537579036d4b03ed20baa6ee">colorsUsage2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5f16249607cd069007fc7ffdee92c2db">detailColor</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a96a6487a8f6ba716190e9af79a8a05df">detailColorTwo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a98477c8145cab5f8e0be935b36fef92f">detailInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9c205d3646f111ca93831e15e2d696a5">detailInfo2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a796e379aa2ccad8a57aa0c7c51a8e7e3">detailMasks</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9fd4663fac868e90c3f5fb00d5e1f63e">detailMaterial</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aaa2ad4618c6a655a763fc2218f046da1">detailUv</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#af38f6cd631932007d28ad00345c7e311">detailValues</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a32abdf899485eadd11500752a295554d">emissive</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a92eb8dbb61a21f14441dea4c89ccf339">extrasCoords</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9d2ebd01ae95b918250893cac8567921">extrasFallback</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a6062d37af8e0bfcd7c38bf6105d15ae9">extrasInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac75a61c926bc675205995d41db29ff27">extrasUsage0</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3425480a553dea24091b822c51710949">extrasUsage1</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4997d5357d1796b2595acd5a53608e16">extrasUsage2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0ef526de6ff8360252ae85f8c2df239f">lights</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0406ca530b0be6445b876fed34dd0046">material</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aaa94a6d4269234277e045d775183dc05">misc</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a8c66b30bd9ca5d067f32ebb9d00e00ee">model</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a6e2705f3794d7055ab7a2bbb98b53cab">motionBending</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aefeabed111bb59f62e5d3c28f076d806">motionBranch</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#abc9747f1980719afaf99736204b85ec6">motionBranch2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae08f170324a1924d39f45cf3616064f3">motionControl</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ad4bc20e21e2163bef57a0a92a3db298c">motionCoords</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a72f26a74c3774397754339eaeecef10e">motionFallback</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a548d92f717338fe3dde49ae083bf20c3">motionFlutter</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3bd88bee20292f3ff21dbdd8620a35a0">motionGlobal0</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac5669651661859e1b2e6a31217f8265d">motionGlobal1</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3fcefa44bb26e0e4ded6b1ac8ad143ca">motionHighlightColor</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ab8e2798af9008603dfc6073a56ca92d7">motionInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a787e76aa60cb9d354675003d94fd927c">motionPerspective</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa85fd5bbaf73feec2b565a83c8f515db">motionTime</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#afb1b6d9845119bdb4d3d562ddf455569">motionUsage0</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae181db4310088a92b42dd2ddbb8ac054">motionUsage1</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5c94f336079bf3a416e546ad0d048eb3">motionUsage2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a1542c650195894a5358891af5ff11179">mvp</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1">specular</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0b2c99ef12fdbe7106b00efa16afa7df">tangentInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3bc87cc7d44f09381d106aa5ec4a3f73">tint</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0b93c6f0bab35b0b93d8cf1aad77cff9">translucencyColor</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5c9f5d5644dc672af78742a4ff73a1de">translucencyLighting</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a43901807542bc502a70cdd1e77184ce8">translucencyMask</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae69a3ae1a4bab16855422f7b83af705e">translucencyParams</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ad3155dc2819959be847c002397c2245f">uvInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae6be12202ee9a3973f7b2bc31ac9268b">uvTransform</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a78c23d74ee16c18331e643f1486b096e">vegetationAlphaCamera</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0cb3d0fe9209e137aad4dec87940d7ab">vegetationAlphaFade</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac2c334ca3b76bbf65511c156e4d4d66c">vegetationColorParams</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#acfa686e80f7e08ffbf329bf4eb12ea9d">vegetationEmission</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a16a11eba8a4bed3682351a7adb7eacb2">vegetationFieldColor</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a71be69c283d37ae2d5d55209125864f2">vegetationGlobalMasks</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aef8f4af90623b4953743c4cfd3798c0e">vegetationGradientOne</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#afb5a371b98130881b20c1fbc68673048">vegetationGradientTwo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a687cf01c6b313d96b83987178d51b03e">vegetationInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#adca521bc679296e7e1697c9e0112c98a">vegetationOcclusionColor</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a28d85eaa15e77b332a2d9e0c0a95e918">vegetationOcclusionParams</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa7a72660414be22e978d6cd513267020">vegetationOverlay</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#abbb835e9cc5698d36e4f4d2410975555">vegetationStageParams</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9ca2ffa268ceda2b9221ab7c03238a72">vegetationWetness</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aadeffadbe34a0f263123d9712c346f24">vertexCoords</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac4d64bf4d81e05112df8bba8fb45caf7">vertexFallback</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4f7d6b2f61a8a6886b86d450e2106736">vertexInfo</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a366f00c6d418a8d38c88c753064e4f63">vertexSize</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a03c99add169766dacbaaebad2963b4e1">vertexUsage0</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae1bd274cca2a0c9dcdd73a170333bd0b">vertexUsage1</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a45f538877d02d8441354241de394fd9a">vertexUsage2</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#af078a07d3749e2b9a71dd386cb1ba346">view</a></td><td class="entry"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

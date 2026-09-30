@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/PointSetAttributeOps.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">PointSetAttributeOps.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="PointSet_8h_source.html">procgen/PointSet.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+</div>
+<p><a href="PointSetAttributeOps_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af7c32799d726cc63e6624c977877759b" id="r_af7c32799d726cc63e6624c977877759b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#af7c32799d726cc63e6624c977877759b">eve::procgen::isPointFloatSelector</a> (std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) noexcept</td></tr>
+<tr class="separator:af7c32799d726cc63e6624c977877759b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b7011f349b978cb4383bd0835867d85" id="r_a2b7011f349b978cb4383bd0835867d85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a2b7011f349b978cb4383bd0835867d85">eve::procgen::isPointFloatChannel</a> (std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) noexcept</td></tr>
+<tr class="memdesc:a2b7011f349b978cb4383bd0835867d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether <code>name</code> is a valid float channel (builtin selector or metadata name).  <br /></td></tr>
+<tr class="separator:a2b7011f349b978cb4383bd0835867d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30ac711ed452eae4489699cffea3c0f4" id="r_a30ac711ed452eae4489699cffea3c0f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a30ac711ed452eae4489699cffea3c0f4">eve::procgen::readPointFloatChannel</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>)</td></tr>
+<tr class="memdesc:a30ac711ed452eae4489699cffea3c0f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a float metadata column or closed <code>$</code> point-field selector.  <br /></td></tr>
+<tr class="separator:a30ac711ed452eae4489699cffea3c0f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6aa299538f3799fac17944cf968b78c" id="r_ab6aa299538f3799fac17944cf968b78c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab6aa299538f3799fac17944cf968b78c">eve::procgen::writePointFloatChannel</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::string_view <a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ab6aa299538f3799fac17944cf968b78c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a float metadata column or closed <code>$</code> point-field selector.  <br /></td></tr>
+<tr class="separator:ab6aa299538f3799fac17944cf968b78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9e05e62e6ef2afa88769c420268f2e" id="r_a6d9e05e62e6ef2afa88769c420268f2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6d9e05e62e6ef2afa88769c420268f2e">eve::procgen::mathPointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, float operand, float <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>)</td></tr>
+<tr class="memdesc:a6d9e05e62e6ef2afa88769c420268f2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one scalar operation to a float metadata attribute or <code>$</code> selector.  <br /></td></tr>
+<tr class="separator:a6d9e05e62e6ef2afa88769c420268f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77928b9a61bfe9d4ccce4c98c3e743c8" id="r_a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a77928b9a61bfe9d4ccce4c98c3e743c8">eve::procgen::filterPointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float minValue, float maxValue, bool invert)</td></tr>
+<tr class="memdesc:a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select points whose named float attribute or <code>$</code> selector lies in an inclusive range.  <br /></td></tr>
+<tr class="separator:a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f168b136fc51915806729462d050f95" id="r_a3f168b136fc51915806729462d050f95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3f168b136fc51915806729462d050f95">eve::procgen::filterPointIntAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::int64_t minValue, std::int64_t maxValue, bool invert)</td></tr>
+<tr class="memdesc:a3f168b136fc51915806729462d050f95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select points whose named int attribute lies in an inclusive range.  <br /></td></tr>
+<tr class="separator:a3f168b136fc51915806729462d050f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12441ddef57d75e7cbc61f71ce79f7a" id="r_af12441ddef57d75e7cbc61f71ce79f7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#af12441ddef57d75e7cbc61f71ce79f7a">eve::procgen::filterPointBoolAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, bool invert)</td></tr>
+<tr class="memdesc:af12441ddef57d75e7cbc61f71ce79f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select points whose named bool attribute equals a value.  <br /></td></tr>
+<tr class="separator:af12441ddef57d75e7cbc61f71ce79f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415ca001e9c2083358553b441392c92d" id="r_a415ca001e9c2083358553b441392c92d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a415ca001e9c2083358553b441392c92d">eve::procgen::copyPointAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>)</td></tr>
+<tr class="memdesc:a415ca001e9c2083358553b441392c92d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one float channel or typed metadata column onto another name.  <br /></td></tr>
+<tr class="separator:a415ca001e9c2083358553b441392c92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6010a6e7dd36a6682debbd157274e5b" id="r_ae6010a6e7dd36a6682debbd157274e5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ae6010a6e7dd36a6682debbd157274e5b">eve::procgen::renamePointAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, const std::string &amp;<a class="el" href="HexUnits_8cpp.html#a1cda486e5488f8ab9196eb812fc14402">to</a>)</td></tr>
+<tr class="memdesc:ae6010a6e7dd36a6682debbd157274e5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rename one metadata column.  <br /></td></tr>
+<tr class="separator:ae6010a6e7dd36a6682debbd157274e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24c3a31c6046098e84d871f1cee0572f" id="r_a24c3a31c6046098e84d871f1cee0572f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a24c3a31c6046098e84d871f1cee0572f">eve::procgen::deletePointAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a24c3a31c6046098e84d871f1cee0572f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete one metadata column.  <br /></td></tr>
+<tr class="separator:a24c3a31c6046098e84d871f1cee0572f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad199bc509446cc09e155c7b1cd39c871" id="r_ad199bc509446cc09e155c7b1cd39c871"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad199bc509446cc09e155c7b1cd39c871">eve::procgen::transferPointAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:ad199bc509446cc09e155c7b1cd39c871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer one attribute from <code>source</code> onto <code>target</code> points.  <br /></td></tr>
+<tr class="separator:ad199bc509446cc09e155c7b1cd39c871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8217b05cf8dd0e5d192d27a4d896f58e" id="r_a8217b05cf8dd0e5d192d27a4d896f58e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8217b05cf8dd0e5d192d27a4d896f58e">eve::procgen::setPointIntAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, std::int64_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a8217b05cf8dd0e5d192d27a4d896f58e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a constant int metadata column on every point.  <br /></td></tr>
+<tr class="separator:a8217b05cf8dd0e5d192d27a4d896f58e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f80663fb0125a8fd9ff89b041bffe7" id="r_ad6f80663fb0125a8fd9ff89b041bffe7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad6f80663fb0125a8fd9ff89b041bffe7">eve::procgen::setPointBoolAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, bool <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:ad6f80663fb0125a8fd9ff89b041bffe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a constant bool metadata column on every point.  <br /></td></tr>
+<tr class="separator:ad6f80663fb0125a8fd9ff89b041bffe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5280fdc2955c2f756d141ce76d9db37" id="r_ad5280fdc2955c2f756d141ce76d9db37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad5280fdc2955c2f756d141ce76d9db37">eve::procgen::setPointVectorAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ad5280fdc2955c2f756d141ce76d9db37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a constant vector metadata column on every point.  <br /></td></tr>
+<tr class="separator:ad5280fdc2955c2f756d141ce76d9db37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae90fd8253a775e0e1e78bee405cd8754" id="r_ae90fd8253a775e0e1e78bee405cd8754"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ae90fd8253a775e0e1e78bee405cd8754">eve::procgen::comparePointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;comparison, float operand, const std::string &amp;outputAttribute, float <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>)</td></tr>
+<tr class="memdesc:ae90fd8253a775e0e1e78bee405cd8754"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare a float channel against an operand and write a bool metadata column.  <br /></td></tr>
+<tr class="separator:ae90fd8253a775e0e1e78bee405cd8754"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5158d522e4bb0ce4808fe69c71fe6e88" id="r_a5158d522e4bb0ce4808fe69c71fe6e88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a5158d522e4bb0ce4808fe69c71fe6e88">eve::procgen::selectPointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;conditionAttribute, const std::string &amp;trueAttribute, const std::string &amp;falseAttribute, const std::string &amp;outputAttribute, float trueDefault, float falseDefault)</td></tr>
+<tr class="memdesc:a5158d522e4bb0ce4808fe69c71fe6e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select between two float channels using a bool metadata condition.  <br /></td></tr>
+<tr class="separator:a5158d522e4bb0ce4808fe69c71fe6e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86b922116b29d7daf812bde8bc042117" id="r_a86b922116b29d7daf812bde8bc042117"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a86b922116b29d7daf812bde8bc042117">eve::procgen::ensurePointSetDataRow</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)</td></tr>
+<tr class="memdesc:a86b922116b29d7daf812bde8bc042117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether <code>name</code> is a known <code>$</code>-prefixed float point-field selector.  <br /></td></tr>
+<tr class="separator:a86b922116b29d7daf812bde8bc042117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c244465ad982365463b8dc9558353c" id="r_a47c244465ad982365463b8dc9558353c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a47c244465ad982365463b8dc9558353c">eve::procgen::setPointDataFloatAttribute</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, const std::string &amp;attribute, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a47c244465ad982365463b8dc9558353c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a float into the <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> @Data domain.  <br /></td></tr>
+<tr class="separator:a47c244465ad982365463b8dc9558353c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d42a8de47215345404df195dfbfeb9" id="r_a90d42a8de47215345404df195dfbfeb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a90d42a8de47215345404df195dfbfeb9">eve::procgen::setPointDataIntAttribute</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, const std::string &amp;attribute, std::int64_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a90d42a8de47215345404df195dfbfeb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write an int into the <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> @Data domain.  <br /></td></tr>
+<tr class="separator:a90d42a8de47215345404df195dfbfeb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907b2a99469ed44768c65c456dad00b7" id="r_a907b2a99469ed44768c65c456dad00b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a907b2a99469ed44768c65c456dad00b7">eve::procgen::setPointDataStringAttribute</a> (<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>, const std::string &amp;attribute, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a907b2a99469ed44768c65c456dad00b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a string into the <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> @Data domain.  <br /></td></tr>
+<tr class="separator:a907b2a99469ed44768c65c456dad00b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a850813ad255b15a6b36652808cb98dfe" id="r_a850813ad255b15a6b36652808cb98dfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a850813ad255b15a6b36652808cb98dfe">eve::procgen::partitionPointAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a850813ad255b15a6b36652808cb98dfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign partition indices from a string/int attribute (mode: value|hash).  <br /></td></tr>
+<tr class="separator:a850813ad255b15a6b36652808cb98dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a680d059794a24fb1bca0f3b882c4edaf" id="r_a680d059794a24fb1bca0f3b882c4edaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a680d059794a24fb1bca0f3b882c4edaf">eve::procgen::noisePointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float frequency, float amplitude, float <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>)</td></tr>
+<tr class="memdesc:a680d059794a24fb1bca0f3b882c4edaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write deterministic float noise into a metadata attribute.  <br /></td></tr>
+<tr class="separator:a680d059794a24fb1bca0f3b882c4edaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a982a7da965d8c5e243b5a01efb74bc" id="r_a2a982a7da965d8c5e243b5a01efb74bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a2a982a7da965d8c5e243b5a01efb74bc">eve::procgen::mathPointIntAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, std::int64_t operand, std::int64_t <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>)</td></tr>
+<tr class="memdesc:a2a982a7da965d8c5e243b5a01efb74bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply integer math to an int metadata column.  <br /></td></tr>
+<tr class="separator:a2a982a7da965d8c5e243b5a01efb74bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a90cf9c78dbb88a396bd58265726ca3" id="r_a7a90cf9c78dbb88a396bd58265726ca3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a7a90cf9c78dbb88a396bd58265726ca3">eve::procgen::mathPointVectorAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, float operandX, float operandY, float operandZ, float defaultX, float defaultY, float defaultZ)</td></tr>
+<tr class="memdesc:a7a90cf9c78dbb88a396bd58265726ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply vector math to a vector metadata column.  <br /></td></tr>
+<tr class="separator:a7a90cf9c78dbb88a396bd58265726ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

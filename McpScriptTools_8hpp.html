@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/McpScriptTools.hpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">McpScriptTools.hpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Project-script → MCP export registry.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &lt;Poco/JSON/Object.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &lt;squirrel.h&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="McpScriptTools_8hpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespacessq" id="r_namespacessq"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacessq.html">ssq</a></td></tr>
+<tr class="memdesc:namespacessq"><td class="mdescLeft">&#160;</td><td class="mdescRight">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp <a href="https://github.com/sunxfancy/ECS.hpp">https://github.com/sunxfancy/ECS.hpp</a> <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dev" id="r_namespaceeve_1_1dev"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html">eve::dev</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ad94312a28f8455d82229120df749d6dc" id="r_ad94312a28f8455d82229120df749d6dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#ad94312a28f8455d82229120df749d6dc">eve::dev::isScriptTool</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ad94312a28f8455d82229120df749d6dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>name</code> is exported by the project script registry.  <br /></td></tr>
+<tr class="separator:ad94312a28f8455d82229120df749d6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a472c894b6e8c0984a984a06d457e788d" id="r_a472c894b6e8c0984a984a06d457e788d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a472c894b6e8c0984a984a06d457e788d">eve::dev::scriptToolNames</a> ()</td></tr>
+<tr class="memdesc:a472c894b6e8c0984a984a06d457e788d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exported tool names in registration order.  <br /></td></tr>
+<tr class="separator:a472c894b6e8c0984a984a06d457e788d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14afd88b48049a55ecb27507bd0cf681" id="r_a14afd88b48049a55ecb27507bd0cf681"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a14afd88b48049a55ecb27507bd0cf681">eve::dev::scriptToolCount</a> ()</td></tr>
+<tr class="memdesc:a14afd88b48049a55ecb27507bd0cf681"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of exported tools (for <code>eve_status</code>).  <br /></td></tr>
+<tr class="separator:a14afd88b48049a55ecb27507bd0cf681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa195ec7dc81cbe3d1ddcd73d00e600fc" id="r_aa195ec7dc81cbe3d1ddcd73d00e600fc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#aa195ec7dc81cbe3d1ddcd73d00e600fc">eve::dev::scriptToolSchemas</a> ()</td></tr>
+<tr class="memdesc:aa195ec7dc81cbe3d1ddcd73d00e600fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comma-free MCP tool schema fragments for every exported tool.  <br /></td></tr>
+<tr class="separator:aa195ec7dc81cbe3d1ddcd73d00e600fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a56ebcbfe5bb98310797c1b91ef5fff" id="r_a3a56ebcbfe5bb98310797c1b91ef5fff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a3a56ebcbfe5bb98310797c1b91ef5fff">eve::dev::callScriptTool</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, Poco::JSON::Object::Ptr args)</td></tr>
+<tr class="memdesc:a3a56ebcbfe5bb98310797c1b91ef5fff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke one exported tool.  <br /></td></tr>
+<tr class="separator:a3a56ebcbfe5bb98310797c1b91ef5fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45801290c1b542ef6304f01aba412f74" id="r_a45801290c1b542ef6304f01aba412f74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a45801290c1b542ef6304f01aba412f74">eve::dev::clearScriptTools</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> owner)</td></tr>
+<tr class="memdesc:a45801290c1b542ef6304f01aba412f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop registry entries owned by <code>owner</code>.  <br /></td></tr>
+<tr class="separator:a45801290c1b542ef6304f01aba412f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb9489bead91f8b8f087ff7541a78a30" id="r_abb9489bead91f8b8f087ff7541a78a30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#abb9489bead91f8b8f087ff7541a78a30">eve::dev::exposeMcpScriptApi</a> (ssq::VM &amp;<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:abb9489bead91f8b8f087ff7541a78a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose <code>eve.mcp.tool/remove/tools/clear</code> on a VM.  <br /></td></tr>
+<tr class="separator:abb9489bead91f8b8f087ff7541a78a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a075e25c4b7ad6a5ff67780478aeb4c36" id="r_a075e25c4b7ad6a5ff67780478aeb4c36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html#a075e25c4b7ad6a5ff67780478aeb4c36">eve::dev::isValidScriptToolName</a> (const std::string &amp;<a class="el" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a075e25c4b7ad6a5ff67780478aeb4c36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate an exported tool name.  <br /></td></tr>
+<tr class="separator:a075e25c4b7ad6a5ff67780478aeb4c36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Project-script → MCP export registry. </p>
+<p>Game developers describe their own domain models in Squirrel. Without an export path those models are only reachable through generic escape hatches (<code>eve_run_script</code>, <code>eve_host_script</code>), which an agent cannot discover from <code>tools/list</code> and cannot call by name. This registry lets a project publish a named, described, schema-carrying endpoint that the embedded server advertises exactly like a built-in tool.</p>
+<p>@ownership Registered handlers and schemas are borrowed Squirrel objects owned by the host VM; the registry owns no closure and never frees one. @lifetime A registration stays valid until it is removed, replaced, shadowed by a built-in name, or the owning VM detaches. @thread Game-loop thread only, like the MCP server poll that dispatches them. Registration and dispatch are mutex-guarded so a handler may re-enter the registry (for example to register another tool) without deadlocking.</p>
+<div class="fragment"><div class="line"><a class="code hl_namespace" href="namespaceeve.html">eve</a>.mcp.tool(<span class="stringliteral">&quot;game_npcs&quot;</span>, {</div>
+<div class="line">    <a class="code hl_variable" href="McpScriptTools_8cpp.html#a2e1454f6988673f814408646edaeb320">description</a> = <span class="stringliteral">&quot;List live NPCs&quot;</span>,</div>
+<div class="line">    inputSchema = { <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> = <span class="stringliteral">&quot;object&quot;</span>, <a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a> = { lane = { <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> = <span class="stringliteral">&quot;string&quot;</span> } } },</div>
+<div class="line">    <a class="code hl_variable" href="McpScriptTools_8cpp.html#a7a3867dc9cbde6b5fbe3e46574df9627">handler</a> = <a class="code hl_variable" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>(args) { <span class="keywordflow">return</span> { <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> = 3 }; }</div>
+<div class="line">});</div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aMapObjectContract_8cpp_html_a40e5a3359abf90a92f01ea7be31f0178"><div class="ttname"><a href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a></div><div class="ttdeci">std::map&lt; std::string, PropertyRule &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="MapObjectContract_8cpp_source.html#l00077">MapObjectContract.cpp:77</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a2e1454f6988673f814408646edaeb320"><div class="ttname"><a href="McpScriptTools_8cpp.html#a2e1454f6988673f814408646edaeb320">description</a></div><div class="ttdeci">std::string description</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00041">McpScriptTools.cpp:41</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a7a3867dc9cbde6b5fbe3e46574df9627"><div class="ttname"><a href="McpScriptTools_8cpp.html#a7a3867dc9cbde6b5fbe3e46574df9627">handler</a></div><div class="ttdeci">HSQOBJECT handler</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00044">McpScriptTools.cpp:44</a></div></div>
+<div class="ttc" id="aSchemaRegistry_8cpp_html_a2048e73eae4842e77700dd84f3aef92c"><div class="ttname"><a href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a></div><div class="ttdeci">MigrationFunction function</div><div class="ttdef"><b>Definition</b> <a href="SchemaRegistry_8cpp_source.html#l00034">SchemaRegistry.cpp:34</a></div></div>
+<div class="ttc" id="aSourceTiff_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="SourceTiff_8cpp_source.html#l00024">SourceTiff.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --><p>Boundary: this is for observing and actuating <b>game-domain state</b>. Mutating an editable document still belongs to the editor command protocol (<code>editor.registerScriptCommand</code> + <code>eve_editor_execute</code>), which owns transactions, validation and undo. Publishing a second write path for the same document would break that authority. </p>
+
+<p class="definition">在文件 <a class="el" href="McpScriptTools_8hpp_source.html">McpScriptTools.hpp</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

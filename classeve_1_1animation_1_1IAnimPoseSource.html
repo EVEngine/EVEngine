@@ -1,0 +1,497 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::IAnimPoseSource类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1IAnimPoseSource-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::IAnimPoseSource类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Borrowed pose provider consumed by <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html" title="Combines a borrowed base pose source with ordered override/additive layers.">AnimLayerMixer</a>.  
+ <a href="classeve_1_1animation_1_1IAnimPoseSource.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation::IAnimPoseSource 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation_1_1IAnimPoseSource.png" usemap="#eve::animation::IAnimPoseSource_map" alt=""/>
+  <map id="eve::animation::IAnimPoseSource_map" name="eve::animation::IAnimPoseSource_map">
+<area href="classeve_1_1animation_1_1AnimGraph.html" title="Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks,..." alt="eve::animation::AnimGraph" shape="rect" coords="0,56,203,80"/>
+<area href="classeve_1_1animation_1_1AnimLayerMixer.html" title="Combines a borrowed base pose source with ordered override/additive layers." alt="eve::animation::AnimLayerMixer" shape="rect" coords="213,56,416,80"/>
+<area href="classeve_1_1animation_1_1AnimPlayer.html" title="Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer." alt="eve::animation::AnimPlayer" shape="rect" coords="426,56,629,80"/>
+<area href="classeve_1_1animation_1_1AnimStateMachine.html" title="Clip-driven animation state machine with float/bool/trigger parameters and cross-fade transitions...." alt="eve::animation::AnimStateMachine" shape="rect" coords="639,56,842,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abf789926b2868eb20cf7b1c9e8c4803e" id="r_abf789926b2868eb20cf7b1c9e8c4803e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#abf789926b2868eb20cf7b1c9e8c4803e">~IAnimPoseSource</a> ()=default</td></tr>
+<tr class="separator:abf789926b2868eb20cf7b1c9e8c4803e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68476b9d30fe6315a553006a77a200db" id="r_a68476b9d30fe6315a553006a77a200db"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a68476b9d30fe6315a553006a77a200db">getSkeleton</a> () const =0</td></tr>
+<tr class="memdesc:a68476b9d30fe6315a553006a77a200db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skeleton this source evaluates against; never null while attached. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:a68476b9d30fe6315a553006a77a200db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eca902e1aeed26b81cc1ddc2735e553" id="r_a9eca902e1aeed26b81cc1ddc2735e553"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9eca902e1aeed26b81cc1ddc2735e553">getPose</a> ()=0</td></tr>
+<tr class="memdesc:a9eca902e1aeed26b81cc1ddc2735e553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most recent local pose; valid after a successful advance. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:a9eca902e1aeed26b81cc1ddc2735e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa456dcb98d87af7a0c1aa772762e7abc" id="r_aa456dcb98d87af7a0c1aa772762e7abc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#aa456dcb98d87af7a0c1aa772762e7abc">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)=0</td></tr>
+<tr class="memdesc:aa456dcb98d87af7a0c1aa772762e7abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consume one scheduler step and refresh <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9eca902e1aeed26b81cc1ddc2735e553" title="Most recent local pose; valid after a successful advance. @ownership Borrowed @lifetime Valid while t...">getPose()</a>.  <br /></td></tr>
+<tr class="separator:aa456dcb98d87af7a0c1aa772762e7abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26a1ec791c54f67bb257e22f0d7f8d0b" id="r_a26a1ec791c54f67bb257e22f0d7f8d0b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a26a1ec791c54f67bb257e22f0d7f8d0b">hasCurrentTick</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a26a1ec791c54f67bb257e22f0d7f8d0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether advance has consumed at least one checked step.  <br /></td></tr>
+<tr class="separator:a26a1ec791c54f67bb257e22f0d7f8d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4cf1e5cba507ef8062e0dc972bdf59" id="r_a1d4cf1e5cba507ef8062e0dc972bdf59"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a1d4cf1e5cba507ef8062e0dc972bdf59">currentTick</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a1d4cf1e5cba507ef8062e0dc972bdf59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last scheduler tick consumed by advance.  <br /></td></tr>
+<tr class="separator:a1d4cf1e5cba507ef8062e0dc972bdf59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46d78d0802008d2993ced61ea1384623" id="r_a46d78d0802008d2993ced61ea1384623"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a46d78d0802008d2993ced61ea1384623">getEventCount</a> () const</td></tr>
+<tr class="memdesc:a46d78d0802008d2993ced61ea1384623"><td class="mdescLeft">&#160;</td><td class="mdescRight">Events emitted by the most recent advance; default is none.  <br /></td></tr>
+<tr class="separator:a46d78d0802008d2993ced61ea1384623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f49b3f382b0b0e162319fb7d6ed937a" id="r_a3f49b3f382b0b0e162319fb7d6ed937a"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a3f49b3f382b0b0e162319fb7d6ed937a">getEventName</a> (int) const</td></tr>
+<tr class="separator:a3f49b3f382b0b0e162319fb7d6ed937a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a969acd6092a07ac3271849fdcc40c6" id="r_a9a969acd6092a07ac3271849fdcc40c6"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9a969acd6092a07ac3271849fdcc40c6">getEventPayload</a> (int) const</td></tr>
+<tr class="separator:a9a969acd6092a07ac3271849fdcc40c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Borrowed pose provider consumed by <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html" title="Combines a borrowed base pose source with ordered override/additive layers.">AnimLayerMixer</a>. </p>
+<p>Implementations are not owned by the mixer. Callers must keep the source alive for as long as it remains attached as a base or layer. <code>advance</code> must be invoked by the mixer (or an equivalent evaluation owner); do not also advance the same source with the same tick elsewhere. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a> 第 <a class="el" href="AnimPoseSource_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abf789926b2868eb20cf7b1c9e8c4803e" name="abf789926b2868eb20cf7b1c9e8c4803e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf789926b2868eb20cf7b1c9e8c4803e">&#9670;&#160;</a></span>~IAnimPoseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::animation::IAnimPoseSource::~IAnimPoseSource </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa456dcb98d87af7a0c1aa772762e7abc" name="aa456dcb98d87af7a0c1aa772762e7abc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa456dcb98d87af7a0c1aa772762e7abc">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::IAnimPoseSource::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Consume one scheduler step and refresh <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9eca902e1aeed26b81cc1ddc2735e553" title="Most recent local pose; valid after a successful advance. @ownership Borrowed @lifetime Valid while t...">getPose()</a>. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#aea4a52f3985bafabf136d899a56a6f15">eve::animation::AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6a316bf88f71db1c23e9295970b0fd26">eve::animation::AnimLayerMixer</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a2177ae437ab193a9f78e34bddec34bef">eve::animation::AnimPlayer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#ab81190569751b1cc5dde2a61e553f36d">eve::animation::AnimStateMachine</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">eve::animation::AnimLayerMixer::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a1d4cf1e5cba507ef8062e0dc972bdf59" name="a1d4cf1e5cba507ef8062e0dc972bdf59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4cf1e5cba507ef8062e0dc972bdf59">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::animation::IAnimPoseSource::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last scheduler tick consumed by advance. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a0596cba05656a0d201531031eec22c6b">eve::animation::AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6493d0ce9bec7402bae42a24f087e671">eve::animation::AnimLayerMixer</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a31ee289dc917da74a12d53bf5d13eb58">eve::animation::AnimPlayer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#a29ecef3761c6e797c2597e4c008828cb">eve::animation::AnimStateMachine</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">eve::animation::AnimLayerMixer::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a46d78d0802008d2993ced61ea1384623" name="a46d78d0802008d2993ced61ea1384623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46d78d0802008d2993ced61ea1384623">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::animation::IAnimPoseSource::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Events emitted by the most recent advance; default is none. </p>
+
+<p>被 <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ab529d3a82cde569261438c047d5a4d1a">eve::animation::AnimLayerMixer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a9a173ccffd1a0ef8fd21c9049a4a4588">eve::animation::AnimPlayer</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a> 第 <a class="el" href="AnimPoseSource_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f49b3f382b0b0e162319fb7d6ed937a" name="a3f49b3f382b0b0e162319fb7d6ed937a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f49b3f382b0b0e162319fb7d6ed937a">&#9670;&#160;</a></span>getEventName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::animation::IAnimPoseSource::getEventName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>被 <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a42c3579cfbb077f2f248c292235d718a">eve::animation::AnimLayerMixer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a1a5ac2db9f1a8afa0f6beade842ec769">eve::animation::AnimPlayer</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a> 第 <a class="el" href="AnimPoseSource_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a969acd6092a07ac3271849fdcc40c6" name="a9a969acd6092a07ac3271849fdcc40c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a969acd6092a07ac3271849fdcc40c6">&#9670;&#160;</a></span>getEventPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::animation::IAnimPoseSource::getEventPayload </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>被 <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ad7b60c603b3d2a3613d85a09cde21867">eve::animation::AnimLayerMixer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a96c2348f7393e40f21a9b729c4e11fc6">eve::animation::AnimPlayer</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a> 第 <a class="el" href="AnimPoseSource_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9eca902e1aeed26b81cc1ddc2735e553" name="a9eca902e1aeed26b81cc1ddc2735e553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eca902e1aeed26b81cc1ddc2735e553">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::IAnimPoseSource::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Most recent local pose; valid after a successful advance. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a683fa777dc14fd42a7d1dfe876c7c49f">eve::animation::AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a5cabeede0612fbf5719779ea7866aae7">eve::animation::AnimLayerMixer</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#ac9967c8442fdcdc4a49c3b6146bec966">eve::animation::AnimPlayer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#ab7d3166f4e4e1a09966abe856985dbbb">eve::animation::AnimStateMachine</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a68476b9d30fe6315a553006a77a200db" name="a68476b9d30fe6315a553006a77a200db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68476b9d30fe6315a553006a77a200db">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::IAnimPoseSource::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Skeleton this source evaluates against; never null while attached. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#accf65d06763d6193ac2802f88d111fe3">eve::animation::AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a3a75f9d20ce0905c527a11812aea29dc">eve::animation::AnimLayerMixer</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a00617e38dc74dd39b1ebc7423c6a397b">eve::animation::AnimPlayer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#ab957c993ebdcd9962b804c6cd08a1299">eve::animation::AnimStateMachine</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a26a1ec791c54f67bb257e22f0d7f8d0b" name="a26a1ec791c54f67bb257e22f0d7f8d0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26a1ec791c54f67bb257e22f0d7f8d0b">&#9670;&#160;</a></span>hasCurrentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::animation::IAnimPoseSource::hasCurrentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether advance has consumed at least one checked step. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation_1_1AnimGraph.html#a3f0b0591415839f1fc1624ffd655d1f1">eve::animation::AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a46206930f5bb3e45915f8475d8cfd966">eve::animation::AnimLayerMixer</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html#a51e2a720be1e57346687510214323dd2">eve::animation::AnimPlayer</a> , 以及 <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html#a16419a8c740eb01e75090601873f425f">eve::animation::AnimStateMachine</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">eve::animation::AnimLayerMixer::advance()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimPoseSource_8h_source.html">AnimPoseSource.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

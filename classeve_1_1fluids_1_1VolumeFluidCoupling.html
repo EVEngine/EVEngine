@@ -1,0 +1,496 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::VolumeFluidCoupling类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1VolumeFluidCoupling-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluidCoupling类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Process-local generation-checked bridge between fluid samples and rigid bodies. @ownership Owns local collider descriptions and typed physics links, never world/body/solver pointers. @thread Simulation-thread affine; no callbacks, concurrent mutation or reentrancy.  
+ <a href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VolumeFluidCoupling_8h_source.html">VolumeFluidCoupling.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCoupling_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aacd72e952bb6753d9cf8b258de45a334" id="r_aacd72e952bb6753d9cf8b258de45a334"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#aacd72e952bb6753d9cf8b258de45a334">VolumeFluidCoupling</a> ()</td></tr>
+<tr class="separator:aacd72e952bb6753d9cf8b258de45a334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2f5c3e811c04f70e8070d95f54e5706" id="r_af2f5c3e811c04f70e8070d95f54e5706"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#af2f5c3e811c04f70e8070d95f54e5706">~VolumeFluidCoupling</a> ()</td></tr>
+<tr class="separator:af2f5c3e811c04f70e8070d95f54e5706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad592f9c2883ac6972834ea08da4439cc" id="r_ad592f9c2883ac6972834ea08da4439cc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#ad592f9c2883ac6972834ea08da4439cc">VolumeFluidCoupling</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp;)=delete</td></tr>
+<tr class="separator:ad592f9c2883ac6972834ea08da4439cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7cccaccf574f12a883a90793f11de44" id="r_ad7cccaccf574f12a883a90793f11de44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#ad7cccaccf574f12a883a90793f11de44">operator=</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp;)=delete</td></tr>
+<tr class="separator:ad7cccaccf574f12a883a90793f11de44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab76065200fdac6ca81f2b9eb12c61a29" id="r_ab76065200fdac6ca81f2b9eb12c61a29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#ab76065200fdac6ca81f2b9eb12c61a29">attach</a> (<a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;<a class="el" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a> &amp;localShape)</td></tr>
+<tr class="memdesc:ab76065200fdac6ca81f2b9eb12c61a29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a live body and local-space shape; labels must be unique, maximum 1024.  <br /></td></tr>
+<tr class="separator:ab76065200fdac6ca81f2b9eb12c61a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36af806f225c9a0ddda13d7773506c2d" id="r_a36af806f225c9a0ddda13d7773506c2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#a36af806f225c9a0ddda13d7773506c2d">detach</a> (unsigned <a class="el" href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a>)</td></tr>
+<tr class="memdesc:a36af806f225c9a0ddda13d7773506c2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a label; absent labels are a successful no-op.  <br /></td></tr>
+<tr class="separator:a36af806f225c9a0ddda13d7773506c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aa3e6e46dfc5245c64e9fe54c81d42f" id="r_a9aa3e6e46dfc5245c64e9fe54c81d42f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#a9aa3e6e46dfc5245c64e9fe54c81d42f">setImpulseLimits</a> (float maximumLinearDelta, float maximumAngularDelta)</td></tr>
+<tr class="memdesc:a9aa3e6e46dfc5245c64e9fe54c81d42f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets per-step rigid velocity-change limits used after impulse aggregation.  <br /></td></tr>
+<tr class="separator:a9aa3e6e46dfc5245c64e9fe54c81d42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a13d828919e1b8bee0f828c1e1c6465" id="r_a8a13d828919e1b8bee0f828c1e1c6465"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#a8a13d828919e1b8bee0f828c1e1c6465">lastClampedBodyCount</a> () const</td></tr>
+<tr class="memdesc:a8a13d828919e1b8bee0f828c1e1c6465"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns how many linked bodies had a linear or angular impulse scaled in the last successful step.  <br /></td></tr>
+<tr class="separator:a8a13d828919e1b8bee0f828c1e1c6465"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b3803e34d5d2db54b0d35b5068a0036" id="r_a6b3803e34d5d2db54b0d35b5068a0036"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html#a6b3803e34d5d2db54b0d35b5068a0036">step</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;fluid, float dt, unsigned substeps=4, std::span&lt; const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html">VolumeFluidThermalRule</a> &gt; rules={})</td></tr>
+<tr class="memdesc:a6b3803e34d5d2db54b0d35b5068a0036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves all links, samples poses, advances fluid and applies opposite impulses once.  <br /></td></tr>
+<tr class="separator:a6b3803e34d5d2db54b0d35b5068a0036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Process-local generation-checked bridge between fluid samples and rigid bodies. @ownership Owns local collider descriptions and typed physics links, never world/body/solver pointers. @thread Simulation-thread affine; no callbacks, concurrent mutation or reentrancy. </p>
+<p>Step exclusively supplies the solver's collider set. Destroying this bridge leaves both worlds alive; destroying a body/world makes the stored link stale. After restore/hot reload, reconstruct links from application persistent identity. This bridge has no serialized runtime handles and invokes no world.step callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8h_source.html">VolumeFluidCoupling.h</a> 第 <a class="el" href="VolumeFluidCoupling_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aacd72e952bb6753d9cf8b258de45a334" name="aacd72e952bb6753d9cf8b258de45a334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacd72e952bb6753d9cf8b258de45a334">&#9670;&#160;</a></span>VolumeFluidCoupling() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidCoupling::VolumeFluidCoupling </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2f5c3e811c04f70e8070d95f54e5706" name="af2f5c3e811c04f70e8070d95f54e5706"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2f5c3e811c04f70e8070d95f54e5706">&#9670;&#160;</a></span>~VolumeFluidCoupling()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidCoupling::~VolumeFluidCoupling </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad592f9c2883ac6972834ea08da4439cc" name="ad592f9c2883ac6972834ea08da4439cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad592f9c2883ac6972834ea08da4439cc">&#9670;&#160;</a></span>VolumeFluidCoupling() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::VolumeFluidCoupling::VolumeFluidCoupling </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab76065200fdac6ca81f2b9eb12c61a29" name="ab76065200fdac6ca81f2b9eb12c61a29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab76065200fdac6ca81f2b9eb12c61a29">&#9670;&#160;</a></span>attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::VolumeFluidCoupling::attach </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">VolumeFluidCollider</a> &amp;&#160;</td>
+          <td class="paramname"><em>localShape</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a live body and local-space shape; labels must be unique, maximum 1024. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="VolumeFluid_8h_source.html#l00084">eve::fluids::VolumeFluidSettings::capacity</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00007">eve::fluids::VolumeFluid::create()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00039">eve::physics::PhysicsLink::fromBody()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a>.</p>
+
+</div>
+</div>
+<a id="a36af806f225c9a0ddda13d7773506c2d" name="a36af806f225c9a0ddda13d7773506c2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36af806f225c9a0ddda13d7773506c2d">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::fluids::VolumeFluidCoupling::detach </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>label</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a label; absent labels are a successful no-op. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="DnutCompiler_8cpp_source.html#l00038">label</a>.</p>
+
+</div>
+</div>
+<a id="a8a13d828919e1b8bee0f828c1e1c6465" name="a8a13d828919e1b8bee0f828c1e1c6465"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a13d828919e1b8bee0f828c1e1c6465">&#9670;&#160;</a></span>lastClampedBodyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned eve::fluids::VolumeFluidCoupling::lastClampedBodyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns how many linked bodies had a linear or angular impulse scaled in the last successful step. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidBindings_8cpp_source.html#l00004">eve::fluids::exposeVolumeFluidType()</a>.</p>
+
+</div>
+</div>
+<a id="ad7cccaccf574f12a883a90793f11de44" name="ad7cccaccf574f12a883a90793f11de44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7cccaccf574f12a883a90793f11de44">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp; eve::fluids::VolumeFluidCoupling::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluidCoupling.html">VolumeFluidCoupling</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9aa3e6e46dfc5245c64e9fe54c81d42f" name="a9aa3e6e46dfc5245c64e9fe54c81d42f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aa3e6e46dfc5245c64e9fe54c81d42f">&#9670;&#160;</a></span>setImpulseLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::fluids::VolumeFluidCoupling::setImpulseLimits </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maximumLinearDelta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maximumAngularDelta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets per-step rigid velocity-change limits used after impulse aggregation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maximumLinearDelta</td><td>Maximum center-of-mass speed change in [0.01,1000] m/s. </td></tr>
+    <tr><td class="paramname">maximumAngularDelta</td><td>Maximum angular-speed change in [0.01,10000] rad/s.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Simulation-thread only. Defaults are 20 m/s and 100 rad/s. The complete fluid step remains authoritative; only the outgoing partitioned rigid impulse is scaled. No callback or external object is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a6b3803e34d5d2db54b0d35b5068a0036" name="a6b3803e34d5d2db54b0d35b5068a0036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b3803e34d5d2db54b0d35b5068a0036">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; unsigned &gt; eve::fluids::VolumeFluidCoupling::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>fluid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>substeps</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html">VolumeFluidThermalRule</a> &gt;&#160;</td>
+          <td class="paramname"><em>rules</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves all links, samples poses, advances fluid and applies opposite impulses once. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of contact and attachment-reaction contributions applied. Stale links fail before either domain mutates.</dd></dl>
+<p>All linked bodies must belong to the supplied world. Forces are aggregated about each body's center of mass, preserving the contact torque. Prescribed attached solids return their linear inertia and gravity load; this includes ellipsoid angular inertia and is separate from collider-contact impulses; each contribution is applied once. Rigid integration is caller-owned: call world.step after this operation. This is partitioned coupling, not a shared iterative rigid/fluid solve. Optional thermal rules use sampled collider labels in the same fluid step. Rules are borrowed only for this call; invalid rules leave both domains unchanged. Aggregated impulses are bounded by setImpulseLimits to prevent a light rigid body from destabilizing the next partitioned fluid sample. </p>
+
+<p class="definition">在文件 <a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a> 第 <a class="el" href="VolumeFluidCoupling_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00293">eve::fluids::VolumeFluid::attachmentReactions()</a>, <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00170">binding</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00595">body</a>, <a class="el" href="BushMesh_8cpp_source.html#l00033">center</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00291">eve::fluids::VolumeFluid::contacts()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00173">reactions</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00624">eve::fluids::VolumeFluid::stepWithColliders()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidCoupling_8h_source.html">VolumeFluidCoupling.h</a></li>
+<li>src/modules/fluids/<a class="el" href="VolumeFluidCoupling_8cpp_source.html">VolumeFluidCoupling.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

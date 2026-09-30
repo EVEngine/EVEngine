@@ -1,0 +1,218 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html">hair</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::hair::GroomInstance 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a205e34c90cab6cc7dc3f74a67dd08934">bakeProceduralMesh</a>(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices, int indexCount, const ProceduralParams &amp;params={})</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1cf173eb1cb6d6ea630806285d66e589">bakeProceduralPlane</a>(float sizeX, float sizeZ, const ProceduralParams &amp;params={})</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a48574cfee2cfd312f694986ca65c6a1c">disableGuideSimulation</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a49905d6fe35bd9aa07e417149951f676">draw</a>(const glm::mat4 &amp;model)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ada84a1bdfcc6bf0c578e7578d6e9e271">draw</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#aefa372cdfb1fa2be1ec8fcd4411c1809">enableGuideSimulation</a>(const GuideSimParams &amp;params={}, float guideFraction=0.15f, InterpolationMode mode=InterpolationMode::Offset)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ad3b52bd6ef155b930e372c31de16c076">getActiveLodIndex</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acc88b9da800c8c88d4176fbfa5c7e3c4">getActiveRepresentation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7a55999850a619cf8d8d466e3baff422">getClusterCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a496c5eeb9a31d8ebaac83fa2cdffa890">getCurveCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7821ea9a02204d405cf0065371cad89f">getForcedLod</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab602e347687b16b327b76caf7fd16533">getGroupCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9a0e745e96a3dfc32e70b9d7f1ea5ea2">getGuideSimParams</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a2ce0546b5447eb8f34463e3995d15c8a">getMarschnerR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6f23d8c12dc7334d959e0cf7dcd1f9de">getMarschnerTRT</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a921ce24dab8e2f2bd90968a7608bc10f">getMarschnerTT</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab9156ba558396c82f51011ec8b731095">getMesh</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1523d7827e50ba528ece18f9ef265ab9">getPointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acc8fc868dc08f63483f417b72b51d9c0">getRootAoStrength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab126a7c25818f48dd46491b8b2e8fe8c">getScreenSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1425abbbcb96bf8de25df41ffd074115">getSelfShadowBias</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acd5e1ddf55ea795eaec0001c7a4d6b4c">getSelfShadowStrength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a04b74e26ece7b3c3d7677de9919d85f7">getShader</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#afeacd5d5ba3577286458d03c15902aae">getTexture</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9c2293fb2dc3f550445c04baffc2096e">getVisibleCurveCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6269c9c30482d3a34e892a18b3e0c572">getWidthScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1025b9080d7769b9836fec21cf2edb14">GroomInstance</a>(Graphics *gfx)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab275b5e0120bbce28416ff2a626a3c58">GroomInstance</a>(const GroomInstance &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7498ac594a78e530298990b750a566df">isClusterCullingEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6a3938eb19b632550130fab6fd0bddb0">isGuideSimulationEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a97683a15f855ec2f90d809a8a38ba823">operator=</a>(const GroomInstance &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a82f085a259164de71a7cc74b99b50367">rebuild</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6c1d68e7a146fe7f2e2dae27d45c090d">setAsset</a>(const GroomAsset &amp;asset)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a0c1e0bdb87a8117e078be8192128e410">setClusterCullingEnabled</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ae8a8b5e03c64f65a64edb62d51bd13e0">setForcedLod</a>(int lod)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ac38a423170c303acd9f5e5e5feed7bdc">setGuideSimParams</a>(const GuideSimParams &amp;params)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ac438bb6bc9df1d942b061b09047201ba">setMarschnerLobes</a>(float r, float tt, float trt)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ad8c40473edf9d2d3430308c8cae418ef">setScreenSize</a>(float screenSize)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a316d751b32f88e27d2d5acde6c294400">setSelfShadow</a>(float strength, float bias, float rootAo)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1e49ac7dd8b421f1b516f4967987d2d1">setSideHint</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a39dbb800e07e819df1ed9147abf1c2e5">setWidthScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a19ba232fd6bc3cb4af9602b801e00dfe">update</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a412d6f151f9bff2cfefc303624b19acf">updateVisibility</a>(const float *viewProj16)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9e4781e8353d50ac4bc6ac34de228ac7">~GroomInstance</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">eve::graphics::hair::GroomInstance</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

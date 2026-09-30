@@ -1,0 +1,635 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::GtsTerrainExportLodSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html">GtsTerrainExportLodSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::GtsTerrainExportLodSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete native counterpart of one <code>GTSExportTerrainLODSettings</code> record.  
+ <a href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a939ad2c805df51ecf0fafb23bda7cf33" id="r_a939ad2c805df51ecf0fafb23bda7cf33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a939ad2c805df51ecf0fafb23bda7cf33">validate</a> () const</td></tr>
+<tr class="memdesc:a939ad2c805df51ecf0fafb23bda7cf33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate all persisted and executable values in this record.  <br /></td></tr>
+<tr class="separator:a939ad2c805df51ecf0fafb23bda7cf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf78dc644e2608499c59cd10a49783b2" id="r_aaf78dc644e2608499c59cd10a49783b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">GtsTerrainLodLevelSettings</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#aaf78dc644e2608499c59cd10a49783b2">compileLevel</a> () const</td></tr>
+<tr class="memdesc:aaf78dc644e2608499c59cd10a49783b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this export record to the sequential mesh-LOD contract.  <br /></td></tr>
+<tr class="separator:aaf78dc644e2608499c59cd10a49783b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a00da9b23150995628d22b91bafd03c10" id="r_a00da9b23150995628d22b91bafd03c10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a00da9b23150995628d22b91bafd03c10">saveResolution</a> = <a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ac48615a1bc4197056d522af276aa5a85">GtsTerrainSaveResolution::Half</a></td></tr>
+<tr class="separator:a00da9b23150995628d22b91bafd03c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0034a4b6c3ce32eacb593bf05b84a95b" id="r_a0034a4b6c3ce32eacb593bf05b84a95b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a0034a4b6c3ce32eacb593bf05b84a95b">simplifyQuality</a> = 1.0f</td></tr>
+<tr class="separator:a0034a4b6c3ce32eacb593bf05b84a95b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b463d39a14bfc57e276791d7cf4626e" id="r_a2b463d39a14bfc57e276791d7cf4626e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1GtsMeshSimplificationOptions.html">GtsMeshSimplificationOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a2b463d39a14bfc57e276791d7cf4626e">simplification</a> {}</td></tr>
+<tr class="separator:a2b463d39a14bfc57e276791d7cf4626e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae437db80ba1c613da8bc5c6b82db45c" id="r_aae437db80ba1c613da8bc5c6b82db45c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70a">GtsTerrainNormalEdgeMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#aae437db80ba1c613da8bc5c6b82db45c">normalEdgeMode</a> = <a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70aae510cdf33cd497134b47b9316314d4b4">GtsTerrainNormalEdgeMode::Smooth</a></td></tr>
+<tr class="separator:aae437db80ba1c613da8bc5c6b82db45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0e1eca54174d574933715908b969d15" id="r_ae0e1eca54174d574933715908b969d15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458">GtsTerrainLodMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#ae0e1eca54174d574933715908b969d15">mode</a> = <a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458aed0b2800891993e5157930d89d6c4dd8">GtsTerrainLodMode::Impostor</a></td></tr>
+<tr class="separator:ae0e1eca54174d574933715908b969d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07d86d856b949cdfa33c5f4a5b4c3bb5" id="r_a07d86d856b949cdfa33c5f4a5b4c3bb5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a07d86d856b949cdfa33c5f4a5b4c3bb5">exportTextures</a> = true</td></tr>
+<tr class="separator:a07d86d856b949cdfa33c5f4a5b4c3bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac330ea9944ad0a877b1dc4cdd6c6fe7d" id="r_ac330ea9944ad0a877b1dc4cdd6c6fe7d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#ac330ea9944ad0a877b1dc4cdd6c6fe7d">exportNormalMaps</a> = true</td></tr>
+<tr class="separator:ac330ea9944ad0a877b1dc4cdd6c6fe7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed7f5e89aa413a14c42f5843cc85bb4" id="r_aeed7f5e89aa413a14c42f5843cc85bb4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#aeed7f5e89aa413a14c42f5843cc85bb4">exportSplatmaps</a> = true</td></tr>
+<tr class="separator:aeed7f5e89aa413a14c42f5843cc85bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a160320a6cbd7b5dc01fb4900402b1151" id="r_a160320a6cbd7b5dc01fb4900402b1151"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a160320a6cbd7b5dc01fb4900402b1151">createMaterials</a> = true</td></tr>
+<tr class="separator:a160320a6cbd7b5dc01fb4900402b1151"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8c5177498e7023a2f5d496943aa9b9f" id="r_ae8c5177498e7023a2f5d496943aa9b9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308">GtsTerrainExportShader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#ae8c5177498e7023a2f5d496943aa9b9f">materialShader</a> = <a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308aeb6d8ae6f20283755b339c0dc273988b">GtsTerrainExportShader::Standard</a></td></tr>
+<tr class="separator:ae8c5177498e7023a2f5d496943aa9b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9070a649a718ae30868d6cf6742f65b6" id="r_a9070a649a718ae30868d6cf6742f65b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a9070a649a718ae30868d6cf6742f65b6">bakeVertexColors</a> = true</td></tr>
+<tr class="separator:a9070a649a718ae30868d6cf6742f65b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70a476e9a61876422dd4aaa2eb4fb2cb" id="r_a70a476e9a61876422dd4aaa2eb4fb2cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a70a476e9a61876422dd4aaa2eb4fb2cb">vertexColorSmoothing</a> = 3</td></tr>
+<tr class="separator:a70a476e9a61876422dd4aaa2eb4fb2cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598984406b6bea0e636023bc49597335" id="r_a598984406b6bea0e636023bc49597335"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a598984406b6bea0e636023bc49597335">bakeLayerMask</a> = 0xffffffffU</td></tr>
+<tr class="separator:a598984406b6bea0e636023bc49597335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287d57dd6d1040f6c78114d859dedf9b" id="r_a287d57dd6d1040f6c78114d859dedf9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456">GtsTerrainTextureExportMethod</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a287d57dd6d1040f6c78114d859dedf9b">textureExportMethod</a> = <a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456a152ed4e930cbc30964e7fc00c9c50f2b">GtsTerrainTextureExportMethod::OrthographicBake</a></td></tr>
+<tr class="separator:a287d57dd6d1040f6c78114d859dedf9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5393addd4297808af1673e56ffd8a19" id="r_aa5393addd4297808af1673e56ffd8a19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9">GtsTerrainAlphaChannel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#aa5393addd4297808af1673e56ffd8a19">alphaChannel</a> = <a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9a6836366b1ef05ae4b5032f5bd2c6bf67">GtsTerrainAlphaChannel::Heightmap</a></td></tr>
+<tr class="separator:aa5393addd4297808af1673e56ffd8a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64e65d91386455c7e36ec5bfa1b233c7" id="r_a64e65d91386455c7e36ec5bfa1b233c7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a64e65d91386455c7e36ec5bfa1b233c7">textureExportResolution</a> = 2048</td></tr>
+<tr class="separator:a64e65d91386455c7e36ec5bfa1b233c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae207f31ec8891344196c70c953464432" id="r_ae207f31ec8891344196c70c953464432"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0d">GtsTerrainBakeLighting</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#ae207f31ec8891344196c70c953464432">bakeLighting</a> = <a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0da778c095cefbe096da0bb005e8023be9d">GtsTerrainBakeLighting::NeutralLighting</a></td></tr>
+<tr class="separator:ae207f31ec8891344196c70c953464432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec2f304f7d3ed8c1dad4abeedd74c28" id="r_aeec2f304f7d3ed8c1dad4abeedd74c28"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#aeec2f304f7d3ed8c1dad4abeedd74c28">namePrefix</a></td></tr>
+<tr class="separator:aeec2f304f7d3ed8c1dad4abeedd74c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a70a9f8732fbdad460a411f1a882731" id="r_a1a70a9f8732fbdad460a411f1a882731"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#a1a70a9f8732fbdad460a411f1a882731">captureBaseMapTextures</a> = false</td></tr>
+<tr class="separator:a1a70a9f8732fbdad460a411f1a882731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace651b4da9121a598690083bc4e06053" id="r_ace651b4da9121a598690083bc4e06053"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GtsTerrainExportLodSettings.html#ace651b4da9121a598690083bc4e06053">screenRelativeTransitionHeight</a> = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ace651b4da9121a598690083bc4e06053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete native counterpart of one <code>GTSExportTerrainLODSettings</code> record. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00063">63</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aaf78dc644e2608499c59cd10a49783b2" name="aaf78dc644e2608499c59cd10a49783b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf78dc644e2608499c59cd10a49783b2">&#9670;&#160;</a></span>compileLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GtsTerrainLodLevelSettings.html">GtsTerrainLodLevelSettings</a> &gt; eve::procgen::GtsTerrainExportLodSettings::compileLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert this export record to the sequential mesh-LOD contract. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html">GtsTerrainExportSettings.cpp</a> 第 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00083">screenRelativeTransitionHeight</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00066">simplification</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00065">simplifyQuality</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00430">valid</a> , 以及 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a939ad2c805df51ecf0fafb23bda7cf33" name="a939ad2c805df51ecf0fafb23bda7cf33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a939ad2c805df51ecf0fafb23bda7cf33">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GtsTerrainExportLodSettings::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate all persisted and executable values in this record. </p>
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html">GtsTerrainExportSettings.cpp</a> 第 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8h_source.html#l00009">eve::procgen::GtsMeshSimplificationOptions::aggressiveness</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00078">alphaChannel</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00080">bakeLighting</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00073">materialShader</a>, <a class="el" href="GtsMeshSimplifier_8h_source.html#l00010">eve::procgen::GtsMeshSimplificationOptions::maxIterationCount</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00068">mode</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00081">namePrefix</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00067">normalEdgeMode</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00064">saveResolution</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00083">screenRelativeTransitionHeight</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00066">simplification</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00065">simplifyQuality</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00077">textureExportMethod</a>, <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00079">textureExportResolution</a> , 以及 <a class="el" href="GtsMeshSimplifier_8h_source.html#l00009">eve::procgen::GtsMeshSimplificationOptions::vertexLinkDistance</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00294">compileLevel()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aa5393addd4297808af1673e56ffd8a19" name="aa5393addd4297808af1673e56ffd8a19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5393addd4297808af1673e56ffd8a19">&#9670;&#160;</a></span>alphaChannel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9">GtsTerrainAlphaChannel</a> eve::procgen::GtsTerrainExportLodSettings::alphaChannel = <a class="el" href="namespaceeve_1_1procgen.html#a27a47fb130d8e2706d6aa6d6fa1003c9a6836366b1ef05ae4b5032f5bd2c6bf67">GtsTerrainAlphaChannel::Heightmap</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a598984406b6bea0e636023bc49597335" name="a598984406b6bea0e636023bc49597335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598984406b6bea0e636023bc49597335">&#9670;&#160;</a></span>bakeLayerMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::procgen::GtsTerrainExportLodSettings::bakeLayerMask = 0xffffffffU</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae207f31ec8891344196c70c953464432" name="ae207f31ec8891344196c70c953464432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae207f31ec8891344196c70c953464432">&#9670;&#160;</a></span>bakeLighting</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0d">GtsTerrainBakeLighting</a> eve::procgen::GtsTerrainExportLodSettings::bakeLighting = <a class="el" href="namespaceeve_1_1procgen.html#a669e19faf7c7d2f3265248daa85b1b0da778c095cefbe096da0bb005e8023be9d">GtsTerrainBakeLighting::NeutralLighting</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a9070a649a718ae30868d6cf6742f65b6" name="a9070a649a718ae30868d6cf6742f65b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9070a649a718ae30868d6cf6742f65b6">&#9670;&#160;</a></span>bakeVertexColors</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::bakeVertexColors = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a70a9f8732fbdad460a411f1a882731" name="a1a70a9f8732fbdad460a411f1a882731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a70a9f8732fbdad460a411f1a882731">&#9670;&#160;</a></span>captureBaseMapTextures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::captureBaseMapTextures = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a160320a6cbd7b5dc01fb4900402b1151" name="a160320a6cbd7b5dc01fb4900402b1151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a160320a6cbd7b5dc01fb4900402b1151">&#9670;&#160;</a></span>createMaterials</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::createMaterials = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac330ea9944ad0a877b1dc4cdd6c6fe7d" name="ac330ea9944ad0a877b1dc4cdd6c6fe7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac330ea9944ad0a877b1dc4cdd6c6fe7d">&#9670;&#160;</a></span>exportNormalMaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::exportNormalMaps = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeed7f5e89aa413a14c42f5843cc85bb4" name="aeed7f5e89aa413a14c42f5843cc85bb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeed7f5e89aa413a14c42f5843cc85bb4">&#9670;&#160;</a></span>exportSplatmaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::exportSplatmaps = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07d86d856b949cdfa33c5f4a5b4c3bb5" name="a07d86d856b949cdfa33c5f4a5b4c3bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07d86d856b949cdfa33c5f4a5b4c3bb5">&#9670;&#160;</a></span>exportTextures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::GtsTerrainExportLodSettings::exportTextures = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8c5177498e7023a2f5d496943aa9b9f" name="ae8c5177498e7023a2f5d496943aa9b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c5177498e7023a2f5d496943aa9b9f">&#9670;&#160;</a></span>materialShader</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308">GtsTerrainExportShader</a> eve::procgen::GtsTerrainExportLodSettings::materialShader = <a class="el" href="namespaceeve_1_1procgen.html#a39b45e060ed9897853779eddfebbc308aeb6d8ae6f20283755b339c0dc273988b">GtsTerrainExportShader::Standard</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae0e1eca54174d574933715908b969d15" name="ae0e1eca54174d574933715908b969d15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0e1eca54174d574933715908b969d15">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458">GtsTerrainLodMode</a> eve::procgen::GtsTerrainExportLodSettings::mode = <a class="el" href="namespaceeve_1_1procgen.html#aa29fc9dd6525351ed603accc9fb8c458aed0b2800891993e5157930d89d6c4dd8">GtsTerrainLodMode::Impostor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aeec2f304f7d3ed8c1dad4abeedd74c28" name="aeec2f304f7d3ed8c1dad4abeedd74c28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeec2f304f7d3ed8c1dad4abeedd74c28">&#9670;&#160;</a></span>namePrefix</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::GtsTerrainExportLodSettings::namePrefix</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00300">eve::procgen::makeGtsTerrainImpostorLod()</a>, <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00329">eve::procgen::makeGtsTerrainLowPolyLod()</a> , 以及 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aae437db80ba1c613da8bc5c6b82db45c" name="aae437db80ba1c613da8bc5c6b82db45c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae437db80ba1c613da8bc5c6b82db45c">&#9670;&#160;</a></span>normalEdgeMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70a">GtsTerrainNormalEdgeMode</a> eve::procgen::GtsTerrainExportLodSettings::normalEdgeMode = <a class="el" href="namespaceeve_1_1procgen.html#af22033a0a968e6fd190841d67bc9e70aae510cdf33cd497134b47b9316314d4b4">GtsTerrainNormalEdgeMode::Smooth</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a00da9b23150995628d22b91bafd03c10" name="a00da9b23150995628d22b91bafd03c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00da9b23150995628d22b91bafd03c10">&#9670;&#160;</a></span>saveResolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587">GtsTerrainSaveResolution</a> eve::procgen::GtsTerrainExportLodSettings::saveResolution = <a class="el" href="namespaceeve_1_1procgen.html#a275fc5463d5fe3a0992fae3e8447c587ac48615a1bc4197056d522af276aa5a85">GtsTerrainSaveResolution::Half</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ace651b4da9121a598690083bc4e06053" name="ace651b4da9121a598690083bc4e06053"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace651b4da9121a598690083bc4e06053">&#9670;&#160;</a></span>screenRelativeTransitionHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::GtsTerrainExportLodSettings::screenRelativeTransitionHeight = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00294">compileLevel()</a> , 以及 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a2b463d39a14bfc57e276791d7cf4626e" name="a2b463d39a14bfc57e276791d7cf4626e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b463d39a14bfc57e276791d7cf4626e">&#9670;&#160;</a></span>simplification</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1GtsMeshSimplificationOptions.html">GtsMeshSimplificationOptions</a> eve::procgen::GtsTerrainExportLodSettings::simplification {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00294">compileLevel()</a> , 以及 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0034a4b6c3ce32eacb593bf05b84a95b" name="a0034a4b6c3ce32eacb593bf05b84a95b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0034a4b6c3ce32eacb593bf05b84a95b">&#9670;&#160;</a></span>simplifyQuality</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::GtsTerrainExportLodSettings::simplifyQuality = 1.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00294">compileLevel()</a> , 以及 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a287d57dd6d1040f6c78114d859dedf9b" name="a287d57dd6d1040f6c78114d859dedf9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a287d57dd6d1040f6c78114d859dedf9b">&#9670;&#160;</a></span>textureExportMethod</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456">GtsTerrainTextureExportMethod</a> eve::procgen::GtsTerrainExportLodSettings::textureExportMethod = <a class="el" href="namespaceeve_1_1procgen.html#a9de1188ee5b694896bd3f83a0c5e9456a152ed4e930cbc30964e7fc00c9c50f2b">GtsTerrainTextureExportMethod::OrthographicBake</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a64e65d91386455c7e36ec5bfa1b233c7" name="a64e65d91386455c7e36ec5bfa1b233c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64e65d91386455c7e36ec5bfa1b233c7">&#9670;&#160;</a></span>textureExportResolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GtsTerrainExportLodSettings::textureExportResolution = 2048</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GtsTerrainExportSettings_8cpp_source.html#l00275">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a70a476e9a61876422dd4aaa2eb4fb2cb" name="a70a476e9a61876422dd4aaa2eb4fb2cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70a476e9a61876422dd4aaa2eb4fb2cb">&#9670;&#160;</a></span>vertexColorSmoothing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GtsTerrainExportLodSettings::vertexColorSmoothing = 3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a> 第 <a class="el" href="GtsTerrainExportSettings_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="GtsTerrainExportSettings_8h_source.html">GtsTerrainExportSettings.h</a></li>
+<li>src/modules/procgen/<a class="el" href="GtsTerrainExportSettings_8cpp_source.html">GtsTerrainExportSettings.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

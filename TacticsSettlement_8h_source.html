@@ -1,0 +1,244 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsSettlement.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TacticsSettlement.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TacticsSettlement_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="settlement_2Settlement_8h.html">settlement/Settlement.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SettlementRules_8h.html">settlement/SettlementRules.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsBattle_8h.html">tactics/TacticsBattle.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a3715c131b222147b5a60858acc42194b">   17</a></span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1AbilityReceipt.html">AbilityReceipt</a>            <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a3715c131b222147b5a60858acc42194b">ability</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7dcb6b36b687b74b4a121356a82a29f1">   19</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>                <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7dcb6b36b687b74b4a121356a82a29f1">target</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a15ebe011fafe2040bce8847295a6a884">   20</a></span>    std::string               <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a15ebe011fafe2040bce8847295a6a884">kind</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62a4d4b28f5d1b0b5f8d37c590e13274">   21</a></span>    <span class="keywordtype">double</span>                    <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62a4d4b28f5d1b0b5f8d37c590e13274">magnitude</a> = 0.0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#ad88337e9fd33bb0e7b21f890f7e32ec3">   22</a></span>    std::vector&lt;std::string&gt;  <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#ad88337e9fd33bb0e7b21f890f7e32ec3">tags</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7c8a0befec0d246802b5d89d752fb092">   23</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a>            <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7c8a0befec0d246802b5d89d752fb092">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62931108c9f78b1c9df187b5b53fec3f">   24</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>                     <a class="code hl_variable" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62931108c9f78b1c9df187b5b53fec3f">context</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;settlement::SettlementRequest&gt;</a> <a class="code hl_function" href="namespaceeve_1_1tactics.html#a5b5dace6f142ffa77937ada0dfd707e2">makeSettlementRequest</a>(</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html">   45</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html">TacticsSettlementRuntime</a> final {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> configureSettlementRules(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1settlement_1_1SettlementRuleSet.html">settlement::SettlementRuleSet</a>&amp; rules);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;settlement::SettlementResult&gt;</a> settle(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">AbilitySettlementRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>, <a class="code hl_class" href="classeve_1_1settlement_1_1ISettlementPolicy.html">settlement::ISettlementPolicy</a>&amp; policy,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <a class="code hl_class" href="classeve_1_1game__event_1_1GameEventLog.html">game_event::GameEventLog</a>* eventLog = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;settlement::SettlementResult&gt;</a>&gt; settleAtomic(</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        std::span&lt;const AbilitySettlementRequest&gt; requests, std::span&lt;settlement::ISettlementPolicy*&gt; policies,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_class" href="classeve_1_1game__event_1_1GameEventLog.html">game_event::GameEventLog</a>* eventLog = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1settlement_1_1SettlementPipeline.html">settlement::SettlementPipeline</a> settlement_;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>};</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aSettlementRules_8h_html"><div class="ttname"><a href="SettlementRules_8h.html">SettlementRules.h</a></div><div class="ttdoc">Declarative, domain-neutral rules for buffs and gameplay effects.</div></div>
+<div class="ttc" id="aTacticsBattle_8h_html"><div class="ttname"><a href="TacticsBattle_8h.html">TacticsBattle.h</a></div><div class="ttdoc">Checked battle setup and deterministic phase systems.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1game__event_1_1GameEventLog_html"><div class="ttname"><a href="classeve_1_1game__event_1_1GameEventLog.html">eve::game_event::GameEventLog</a></div><div class="ttdoc">Deterministic in-memory stream of topic-neutral event envelopes.</div><div class="ttdef"><b>Definition</b> <a href="GameEvent_8h_source.html#l00258">GameEvent.h:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1settlement_1_1ISettlementPolicy_html"><div class="ttname"><a href="classeve_1_1settlement_1_1ISettlementPolicy.html">eve::settlement::ISettlementPolicy</a></div><div class="ttdoc">Domain-owned policy hooks used by the common settlement pipeline.</div><div class="ttdef"><b>Definition</b> <a href="settlement_2Settlement_8h_source.html#l00493">Settlement.h:493</a></div></div>
+<div class="ttc" id="aclasseve_1_1settlement_1_1SettlementPipeline_html"><div class="ttname"><a href="classeve_1_1settlement_1_1SettlementPipeline.html">eve::settlement::SettlementPipeline</a></div><div class="ttdoc">Deterministically ordered, composable settlement pipeline.</div><div class="ttdef"><b>Definition</b> <a href="settlement_2Settlement_8h_source.html#l00537">Settlement.h:537</a></div></div>
+<div class="ttc" id="aclasseve_1_1settlement_1_1SettlementRuleSet_html"><div class="ttname"><a href="classeve_1_1settlement_1_1SettlementRuleSet.html">eve::settlement::SettlementRuleSet</a></div><div class="ttdoc">Validated immutable-style rule collection installable into pipelines.</div><div class="ttdef"><b>Definition</b> <a href="SettlementRules_8h_source.html#l00077">SettlementRules.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1TacticsSettlementRuntime_html"><div class="ttname"><a href="classeve_1_1tactics_1_1TacticsSettlementRuntime.html">eve::tactics::TacticsSettlementRuntime</a></div><div class="ttdoc">Owner-thread settlement bridge between tactics declarations and game-owned combat state.</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00045">TacticsSettlement.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Interaction_8cpp_source.html#l00013">Interaction.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_a5b5dace6f142ffa77937ada0dfd707e2"><div class="ttname"><a href="namespaceeve_1_1tactics.html#a5b5dace6f142ffa77937ada0dfd707e2">eve::tactics::makeSettlementRequest</a></div><div class="ttdeci">Result&lt; settlement::SettlementRequest &gt; makeSettlementRequest(const AbilitySettlementRequest &amp;request)</div><div class="ttdoc">Validate and project a committed tactical ability into the canonical settlement request.</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8cpp_source.html#l00008">TacticsSettlement.cpp:8</a></div></div>
+<div class="ttc" id="asettlement_2Settlement_8h_html"><div class="ttname"><a href="settlement_2Settlement_8h.html">Settlement.h</a></div><div class="ttdoc">Domain-neutral, deterministic settlement pipeline.</div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilityReceipt_html"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilityReceipt.html">eve::tactics::AbilityReceipt</a></div><div class="ttdoc">One declared ability activation and the resource state it left behind.</div><div class="ttdef"><b>Definition</b> <a href="TacticsBattle_8h_source.html#l00029">TacticsBattle.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html">eve::tactics::AbilitySettlementRequest</a></div><div class="ttdoc">Owning values required to settle one previously declared tactical ability.</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00016">TacticsSettlement.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a15ebe011fafe2040bce8847295a6a884"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a15ebe011fafe2040bce8847295a6a884">eve::tactics::AbilitySettlementRequest::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00020">TacticsSettlement.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a3715c131b222147b5a60858acc42194b"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a3715c131b222147b5a60858acc42194b">eve::tactics::AbilitySettlementRequest::ability</a></div><div class="ttdeci">AbilityReceipt ability</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00017">TacticsSettlement.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a62931108c9f78b1c9df187b5b53fec3f"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62931108c9f78b1c9df187b5b53fec3f">eve::tactics::AbilitySettlementRequest::context</a></div><div class="ttdeci">Value context</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00024">TacticsSettlement.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a62a4d4b28f5d1b0b5f8d37c590e13274"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a62a4d4b28f5d1b0b5f8d37c590e13274">eve::tactics::AbilitySettlementRequest::magnitude</a></div><div class="ttdeci">double magnitude</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00021">TacticsSettlement.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a7c8a0befec0d246802b5d89d752fb092"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7c8a0befec0d246802b5d89d752fb092">eve::tactics::AbilitySettlementRequest::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00023">TacticsSettlement.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_a7dcb6b36b687b74b4a121356a82a29f1"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#a7dcb6b36b687b74b4a121356a82a29f1">eve::tactics::AbilitySettlementRequest::target</a></div><div class="ttdeci">SubjectRef target</div><div class="ttdoc">Optional stable board/cell subject; targetUnit remains the default when valid.</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00019">TacticsSettlement.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1AbilitySettlementRequest_html_ad88337e9fd33bb0e7b21f890f7e32ec3"><div class="ttname"><a href="structeve_1_1tactics_1_1AbilitySettlementRequest.html#ad88337e9fd33bb0e7b21f890f7e32ec3">eve::tactics::AbilitySettlementRequest::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="TacticsSettlement_8h_source.html#l00022">TacticsSettlement.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

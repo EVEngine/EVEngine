@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimSmr.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimSmr.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimSmr_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="AnimMath_8h.html">animation/AnimMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>AnimPose;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>AnimRetargetProfile;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9">AnimSmrBodyPart</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a94b1fe49b616aa3862defa8922c7493d">Torso</a> = 0,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a551c5c03a1a91f2cf90e0d9a9b6dd378">Arm</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9acacda5f1cfd4d67ed61e3befe20a63d7">Leg</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a98921133d10fbdb0fb6dbb7b2648befe">Head</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a6311ae17c1ee52b36e68aaf4ad066387">Other</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1AnimSmrSensor.html">AnimSmrSensor</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#ac75fb3d623c9e9cbb5f86c8f3dd47ef5">   34</a></span>    <span class="keywordtype">int</span>             <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#ac75fb3d623c9e9cbb5f86c8f3dd47ef5">boneIndex</a> = -1;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#ace252126150de0346e4811d06b0f7328">   35</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9">AnimSmrBodyPart</a> <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#ace252126150de0346e4811d06b0f7328">part</a>      = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a6311ae17c1ee52b36e68aaf4ad066387">AnimSmrBodyPart::Other</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#af4b753daf591a7cd60941e4977259455">   36</a></span>    <span class="keywordtype">float</span>           <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#af4b753daf591a7cd60941e4977259455">localX</a>    = 0.f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#a7b0d5b4413c6a135c9a476a20e409a22">   37</a></span>    <span class="keywordtype">float</span>           <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#a7b0d5b4413c6a135c9a476a20e409a22">localY</a>    = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#ae9fcd073cf567a1810fd2949a98a8ef0">   38</a></span>    <span class="keywordtype">float</span>           <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#ae9fcd073cf567a1810fd2949a98a8ef0">localZ</a>    = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrSensor.html#a685c011f1efaf9d79bfaf5c23cbbab2f">   39</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrSensor.html#a685c011f1efaf9d79bfaf5c23cbbab2f">semanticKey</a>;  </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrIkChain.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1AnimSmrIkChain.html">AnimSmrIkChain</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrIkChain.html#a1b099b2b269c3ef2b7f5d5d02f88cf92">   44</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrIkChain.html#a1b099b2b269c3ef2b7f5d5d02f88cf92">rootBone</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrIkChain.html#a8784161eae8b1dd720be4daeda37b6ea">   45</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrIkChain.html#a8784161eae8b1dd720be4daeda37b6ea">midBone</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1AnimSmrIkChain.html#ae1b2de1927df7d1883532f055abfd1a5">   46</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1AnimSmrIkChain.html#ae1b2de1927df7d1883532f055abfd1a5">tipBone</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html">   53</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html">AnimSmrSensorCloud</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html">AnimSmrSensorCloud</a> fromSkeleton(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>* skeleton);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html">AnimSmrSensorCloud</a> fromSkeletonDense(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>* skeleton, <span class="keywordtype">int</span> ringsPerBone, <span class="keywordtype">int</span> pointsPerRing);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html#a8f346094b576f25ae1047d26c4a26e80">   71</a></span>    <span class="keywordtype">int</span>                  <a class="code hl_function" href="classeve_1_1animation_1_1AnimSmrSensorCloud.html#a8f346094b576f25ae1047d26c4a26e80">getSensorCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(sensors_.size()); }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1AnimSmrSensor.html">AnimSmrSensor</a>&amp; getSensor(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9">AnimSmrBodyPart</a>      getSensorPart(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> evaluateWorldPositions(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>* <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>, std::vector&lt;float&gt;&amp; outXYZ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::vector&lt;AnimSmrSensor&gt; sensors_;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>};</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1animation.html#af8e124018d94259008c5afbd0fdfb202">smrRefineRetargetedClip</a>(<span class="keyword">const</span> AnimClip&amp; sourceClip, AnimClip&amp; targetClip, <span class="keyword">const</span> AnimSkeleton* sourceSkeleton,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                            <span class="keyword">const</span> AnimSkeleton* targetSkeleton, AnimRetargetProfile&amp; profile);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimMath_8h_html"><div class="ttname"><a href="AnimMath_8h.html">AnimMath.h</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_ac8f9d11b63bfd0cfb294366658eb7e91"><div class="ttname"><a href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a></div><div class="ttdeci">eve::EntitySpatialPose pose</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00386">AudioCapabilities.cpp:386</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00017">AnimPose.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00016">AnimSkeleton.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSmrSensorCloud_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSmrSensorCloud.html">eve::animation::AnimSmrSensorCloud</a></div><div class="ttdoc">Bone-attached sensor cloud for skinned-motion-retarget interaction queries. Script type: AnimSmrSenso...</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00053">AnimSmr.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSmrSensorCloud_html_a8f346094b576f25ae1047d26c4a26e80"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSmrSensorCloud.html#a8f346094b576f25ae1047d26c4a26e80">eve::animation::AnimSmrSensorCloud::getSensorCount</a></div><div class="ttdeci">int getSensorCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00071">AnimSmr.h:71</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00057">Animation.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9">eve::animation::AnimSmrBodyPart</a></div><div class="ttdeci">AnimSmrBodyPart</div><div class="ttdoc">Coarse body-part tag used to select MeshRet-style interaction pairs.</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00018">AnimSmr.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9a551c5c03a1a91f2cf90e0d9a9b6dd378"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a551c5c03a1a91f2cf90e0d9a9b6dd378">eve::animation::AnimSmrBodyPart::Arm</a></div><div class="ttdeci">@ Arm</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9a6311ae17c1ee52b36e68aaf4ad066387"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a6311ae17c1ee52b36e68aaf4ad066387">eve::animation::AnimSmrBodyPart::Other</a></div><div class="ttdeci">@ Other</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9a94b1fe49b616aa3862defa8922c7493d"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a94b1fe49b616aa3862defa8922c7493d">eve::animation::AnimSmrBodyPart::Torso</a></div><div class="ttdeci">@ Torso</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9a98921133d10fbdb0fb6dbb7b2648befe"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9a98921133d10fbdb0fb6dbb7b2648befe">eve::animation::AnimSmrBodyPart::Head</a></div><div class="ttdeci">@ Head</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a11d22d07aeb526b0f2b7ff896ed167a9acacda5f1cfd4d67ed61e3befe20a63d7"><div class="ttname"><a href="namespaceeve_1_1animation.html#a11d22d07aeb526b0f2b7ff896ed167a9acacda5f1cfd4d67ed61e3befe20a63d7">eve::animation::AnimSmrBodyPart::Leg</a></div><div class="ttdeci">@ Leg</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_af8e124018d94259008c5afbd0fdfb202"><div class="ttname"><a href="namespaceeve_1_1animation.html#af8e124018d94259008c5afbd0fdfb202">eve::animation::smrRefineRetargetedClip</a></div><div class="ttdeci">int smrRefineRetargetedClip(const AnimClip &amp;sourceClip, AnimClip &amp;targetClip, const AnimSkeleton *sourceSkeleton, const AnimSkeleton *targetSkeleton, AnimRetargetProfile &amp;profile)</div><div class="ttdoc">Refine an FK-retargeted clip so source body-part proximity/contact is preserved on the target.</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00344">AnimSmr.cpp:344</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrIkChain_html"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrIkChain.html">eve::animation::AnimSmrIkChain</a></div><div class="ttdoc">Two-bone IK chain used to realize an interaction correction.</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00043">AnimSmr.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrIkChain_html_a1b099b2b269c3ef2b7f5d5d02f88cf92"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrIkChain.html#a1b099b2b269c3ef2b7f5d5d02f88cf92">eve::animation::AnimSmrIkChain::rootBone</a></div><div class="ttdeci">std::string rootBone</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00044">AnimSmr.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrIkChain_html_a8784161eae8b1dd720be4daeda37b6ea"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrIkChain.html#a8784161eae8b1dd720be4daeda37b6ea">eve::animation::AnimSmrIkChain::midBone</a></div><div class="ttdeci">std::string midBone</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00045">AnimSmr.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrIkChain_html_ae1b2de1927df7d1883532f055abfd1a5"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrIkChain.html#ae1b2de1927df7d1883532f055abfd1a5">eve::animation::AnimSmrIkChain::tipBone</a></div><div class="ttdeci">std::string tipBone</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00046">AnimSmr.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html">eve::animation::AnimSmrSensor</a></div><div class="ttdoc">One semantically consistent sensor attached to a bone (classical SCS stand-in).</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00033">AnimSmr.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_a685c011f1efaf9d79bfaf5c23cbbab2f"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#a685c011f1efaf9d79bfaf5c23cbbab2f">eve::animation::AnimSmrSensor::semanticKey</a></div><div class="ttdeci">std::string semanticKey</div><div class="ttdoc">Normalized bone name + sample id for cross-skeleton match.</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00039">AnimSmr.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_a7b0d5b4413c6a135c9a476a20e409a22"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#a7b0d5b4413c6a135c9a476a20e409a22">eve::animation::AnimSmrSensor::localY</a></div><div class="ttdeci">float localY</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00037">AnimSmr.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_ac75fb3d623c9e9cbb5f86c8f3dd47ef5"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#ac75fb3d623c9e9cbb5f86c8f3dd47ef5">eve::animation::AnimSmrSensor::boneIndex</a></div><div class="ttdeci">int boneIndex</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00034">AnimSmr.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_ace252126150de0346e4811d06b0f7328"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#ace252126150de0346e4811d06b0f7328">eve::animation::AnimSmrSensor::part</a></div><div class="ttdeci">AnimSmrBodyPart part</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00035">AnimSmr.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_ae9fcd073cf567a1810fd2949a98a8ef0"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#ae9fcd073cf567a1810fd2949a98a8ef0">eve::animation::AnimSmrSensor::localZ</a></div><div class="ttdeci">float localZ</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00038">AnimSmr.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1AnimSmrSensor_html_af4b753daf591a7cd60941e4977259455"><div class="ttname"><a href="structeve_1_1animation_1_1AnimSmrSensor.html#af4b753daf591a7cd60941e4977259455">eve::animation::AnimSmrSensor::localX</a></div><div class="ttdeci">float localX</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8h_source.html#l00036">AnimSmr.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

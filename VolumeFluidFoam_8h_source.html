@@ -1,0 +1,250 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/VolumeFluidFoam.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VolumeFluidFoam.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VolumeFluidFoam_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="VolumeFluid_8h.html">fluids/VolumeFluid.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="VolumeFluidDiffuse_8h.html">fluids/VolumeFluidDiffuse.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html">VolumeFluidFoamSettings</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a130c61083f7be9de051a09f82550f1d5">   14</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a130c61083f7be9de051a09f82550f1d5">rate</a>               = 500.f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#adda0cda33096c5ac359262fa34be3598">   15</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#adda0cda33096c5ac359262fa34be3598">randomness</a>         = .01f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a99b637fc3f4cbe8931ca78b19876559b">   16</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a99b637fc3f4cbe8931ca78b19876559b">vorticityThreshold</a> = 10.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a25edd8bedc2cbbc47d2bcab1c83b5e5f">   17</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a25edd8bedc2cbbc47d2bcab1c83b5e5f">densityThreshold</a>   = 2000.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a3708ade01d4c80eb7ed6b2a6e2f13799">   18</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a3708ade01d4c80eb7ed6b2a6e2f13799">lifetime</a>           = 2.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#abece4ae4b1ca89520f9cc99bec7ff31a">   19</a></span>    <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#abece4ae4b1ca89520f9cc99bec7ff31a">maxPerStep</a>         = 256;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">VolumeFluidFoamSnapshot</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#af9db19b2e3fa24ad0eb3bb2aab31a1d2">   23</a></span>    std::string             <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#af9db19b2e3fa24ad0eb3bb2aab31a1d2">schema</a>  = <span class="stringliteral">&quot;eve.volume-fluid-foam&quot;</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a2395d37db3ce86ea8a3e4bace3bc95da">   24</a></span>    <span class="keywordtype">unsigned</span>                <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a2395d37db3ce86ea8a3e4bace3bc95da">version</a> = 1;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a0c20a221feb1fc744f8f26d6e14c1e71">   25</a></span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html">VolumeFluidFoamSettings</a> <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a0c20a221feb1fc744f8f26d6e14c1e71">settings</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#afba782e98496cbf3ee3161411f4dfc90">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#afba782e98496cbf3ee3161411f4dfc90">credit</a> = <span class="stringliteral">&quot;0&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a83ab612601bea0a134581288b355bf11">   29</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a83ab612601bea0a134581288b355bf11">randomState</a> = 1;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1VolumeFluidFoam.html">   39</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidFoam.html">VolumeFluidFoam</a> final {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;unsigned&gt;</a> advance(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a>&amp; pool, <span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;unsigned&gt;</a> advanceFromActor(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a>&amp; pool, <span class="keywordtype">float</span> seconds,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                    <span class="keywordtype">unsigned</span> actorGroup);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;unsigned&gt;</a> advanceFromActorInterpolated(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a>&amp; pool,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                                                <span class="keywordtype">float</span> seconds, <span class="keywordtype">unsigned</span> actorGroup, <span class="keywordtype">float</span> alpha);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">VolumeFluidFoamSnapshot</a> snapshot() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> restore(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">VolumeFluidFoamSnapshot</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html">VolumeFluidFoamSettings</a>                 settings_;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">double</span>                                  credit_      = 0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    uint32_t                                randomState_ = 1;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::vector&lt;glm::vec3&gt;                  positionScratch_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;VolumeFluidFieldSample&gt;     sampleScratch_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::vector&lt;VolumeFluidDiffuseParticle&gt; batchScratch_;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;unsigned&gt;</a> advanceFiltered(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">VolumeFluidDiffuse</a>&amp; pool, <span class="keywordtype">float</span> seconds,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                                   <span class="keywordtype">bool</span> filterActor, <span class="keywordtype">unsigned</span> actorGroup, <span class="keywordtype">float</span> alpha);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>};</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aVolumeFluidDiffuse_8h_html"><div class="ttname"><a href="VolumeFluidDiffuse_8h.html">VolumeFluidDiffuse.h</a></div></div>
+<div class="ttc" id="aVolumeFluid_8h_html"><div class="ttname"><a href="VolumeFluid_8h.html">VolumeFluid.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluidDiffuse_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluidDiffuse.html">eve::fluids::VolumeFluidDiffuse</a></div><div class="ttdoc">Bounded, one-way fluid-advected secondary particle pool. @ownership Owns particles and capacity; no f...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidDiffuse_8h_source.html#l00038">VolumeFluidDiffuse.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluidFoam_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluidFoam.html">eve::fluids::VolumeFluidFoam</a></div><div class="ttdoc">Generates secondary particles at high-curl, low-density fluid source positions. @ownership Owns setti...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00039">VolumeFluidFoam.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluid_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></div><div class="ttdoc">CPU position-based free-volume fluid with a bounded spatial grid. @ownership Owns all particle state;...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluid_8h_source.html#l00517">VolumeFluid.h:517</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html">eve::fluids::VolumeFluidFoamSettings</a></div><div class="ttdoc">Foam source thresholds in the native sampled field, plus bounded emission settings.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00013">VolumeFluidFoam.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_a130c61083f7be9de051a09f82550f1d5"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a130c61083f7be9de051a09f82550f1d5">eve::fluids::VolumeFluidFoamSettings::rate</a></div><div class="ttdeci">float rate</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00014">VolumeFluidFoam.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_a25edd8bedc2cbbc47d2bcab1c83b5e5f"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a25edd8bedc2cbbc47d2bcab1c83b5e5f">eve::fluids::VolumeFluidFoamSettings::densityThreshold</a></div><div class="ttdeci">float densityThreshold</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00017">VolumeFluidFoam.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_a3708ade01d4c80eb7ed6b2a6e2f13799"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a3708ade01d4c80eb7ed6b2a6e2f13799">eve::fluids::VolumeFluidFoamSettings::lifetime</a></div><div class="ttdeci">float lifetime</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00018">VolumeFluidFoam.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_a99b637fc3f4cbe8931ca78b19876559b"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#a99b637fc3f4cbe8931ca78b19876559b">eve::fluids::VolumeFluidFoamSettings::vorticityThreshold</a></div><div class="ttdeci">float vorticityThreshold</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00016">VolumeFluidFoam.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_abece4ae4b1ca89520f9cc99bec7ff31a"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#abece4ae4b1ca89520f9cc99bec7ff31a">eve::fluids::VolumeFluidFoamSettings::maxPerStep</a></div><div class="ttdeci">unsigned maxPerStep</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00019">VolumeFluidFoam.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSettings_html_adda0cda33096c5ac359262fa34be3598"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSettings.html#adda0cda33096c5ac359262fa34be3598">eve::fluids::VolumeFluidFoamSettings::randomness</a></div><div class="ttdeci">float randomness</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00015">VolumeFluidFoam.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html">eve::fluids::VolumeFluidFoamSnapshot</a></div><div class="ttdoc">Owning strict version-1 foam controller state; checkpoint the diffuse pool separately.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00022">VolumeFluidFoam.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html_a0c20a221feb1fc744f8f26d6e14c1e71"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a0c20a221feb1fc744f8f26d6e14c1e71">eve::fluids::VolumeFluidFoamSnapshot::settings</a></div><div class="ttdeci">VolumeFluidFoamSettings settings</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00025">VolumeFluidFoam.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html_a2395d37db3ce86ea8a3e4bace3bc95da"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a2395d37db3ce86ea8a3e4bace3bc95da">eve::fluids::VolumeFluidFoamSnapshot::version</a></div><div class="ttdeci">unsigned version</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00024">VolumeFluidFoam.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html_a83ab612601bea0a134581288b355bf11"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#a83ab612601bea0a134581288b355bf11">eve::fluids::VolumeFluidFoamSnapshot::randomState</a></div><div class="ttdeci">uint32_t randomState</div><div class="ttdoc">Nonzero state of the isolated foam RNG stream; restore to inject a seed.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00029">VolumeFluidFoam.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html_af9db19b2e3fa24ad0eb3bb2aab31a1d2"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#af9db19b2e3fa24ad0eb3bb2aab31a1d2">eve::fluids::VolumeFluidFoamSnapshot::schema</a></div><div class="ttdeci">std::string schema</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00023">VolumeFluidFoam.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1VolumeFluidFoamSnapshot_html_afba782e98496cbf3ee3161411f4dfc90"><div class="ttname"><a href="structeve_1_1fluids_1_1VolumeFluidFoamSnapshot.html#afba782e98496cbf3ee3161411f4dfc90">eve::fluids::VolumeFluidFoamSnapshot::credit</a></div><div class="ttdeci">std::string credit</div><div class="ttdoc">Decimal double text preserves fractional emission credit in float32 VMs.</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoam_8h_source.html#l00027">VolumeFluidFoam.h:27</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,920 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hexmap/HexMapGenerator.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9beb90eeb0f208ac74f7b70f24c9d85f.html">hexmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">HexMapGenerator.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic port of the reference hex-map project's procedural generator.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="HexMapGenerator_8h_source.html">hexmap/HexMapGenerator.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Diagnostic_8h_source.html">common/Diagnostic.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="HexSearch_8h_source.html">hexmap/HexSearch.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="HexMapGenerator_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1hexmap" id="r_namespaceeve_1_1hexmap"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html">eve::hexmap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aecb61b39103539f6bd80a3b54ed91956" id="r_aecb61b39103539f6bd80a3b54ed91956"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#aecb61b39103539f6bd80a3b54ed91956">eve::hexmap::generateHexMap</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, const <a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html">HexMapGeneratorSettings</a> &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>)</td></tr>
+<tr class="memdesc:aecb61b39103539f6bd80a3b54ed91956"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the grid's contents with a procedurally generated map.  <br /></td></tr>
+<tr class="separator:aecb61b39103539f6bd80a3b54ed91956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic port of the reference hex-map project's procedural generator. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 中定义.</p>
+</div><h2 class="groupheader">变量说明</h2>
+<a id="aac5b430b2c31de5a6d07007998a54de5" name="aac5b430b2c31de5a6d07007998a54de5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac5b430b2c31de5a6d07007998a54de5">&#9670;&#160;</a></span>chunkSizeMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t chunkSizeMax = 100</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad969ca924b13aad8545c54015db5c03e" name="ad969ca924b13aad8545c54015db5c03e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad969ca924b13aad8545c54015db5c03e">&#9670;&#160;</a></span>chunkSizeMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t chunkSizeMin = 30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfca4fad3c5c4083b226efa83c00d693" name="acfca4fad3c5c4083b226efa83c00d693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfca4fad3c5c4083b226efa83c00d693">&#9670;&#160;</a></span>climate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ClimateData&gt; climate</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current moisture and cloud state per cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02616">eve::procgen::Procgen::analyzeTerrainScaled()</a> , 以及 <a class="el" href="TerrainAsset_8cpp_source.html#l00096">eve::procgen::TerrainAsset::bake()</a>.</p>
+
+</div>
+</div>
+<a id="a8f1e048bddf83ef44268f988aefd70ae" name="a8f1e048bddf83ef44268f988aefd70ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f1e048bddf83ef44268f988aefd70ae">&#9670;&#160;</a></span>clouds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float clouds = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Demo_8cpp_source.html#l00169">eve::demo::Demo::newPlanetTexture()</a>.</p>
+
+</div>
+</div>
+<a id="acf5dbbc2b47a488b09c8aa84604c73e3" name="acf5dbbc2b47a488b09c8aa84604c73e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf5dbbc2b47a488b09c8aa84604c73e3">&#9670;&#160;</a></span>elevationMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t elevationMaximum = 8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a437acc949893b75f876f2f359604d937" name="a437acc949893b75f876f2f359604d937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a437acc949893b75f876f2f359604d937">&#9670;&#160;</a></span>elevationMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t elevationMinimum = -2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9d506c213af4c4558c43a535f6b71f3" name="aa9d506c213af4c4558c43a535f6b71f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d506c213af4c4558c43a535f6b71f3">&#9670;&#160;</a></span>erodible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::int32_t&gt; erodible</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cells still eligible for erosion. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7be3f0c8d418e3131ddcdddd84e16e1" name="ae7be3f0c8d418e3131ddcdddd84e16e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7be3f0c8d418e3131ddcdddd84e16e1">&#9670;&#160;</a></span>erodibleFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::uint8_t&gt; erodibleFlag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Membership flags parallel to the erodible list. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b46eebb7876c9588b087efde3aefcd3" name="a7b46eebb7876c9588b087efde3aefcd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b46eebb7876c9588b087efde3aefcd3">&#9670;&#160;</a></span>erosionPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t erosionPercentage = 50</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c657ccb45bfafd3e374055485460826" name="a7c657ccb45bfafd3e374055485460826"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c657ccb45bfafd3e374055485460826">&#9670;&#160;</a></span>evaporationFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float evaporationFactor = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3152e36f7ebbe80e3ab2c18afa1b3bf" name="ae3152e36f7ebbe80e3ab2c18afa1b3bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3152e36f7ebbe80e3ab2c18afa1b3bf">&#9670;&#160;</a></span>extraLakeProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float extraLakeProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a256f7328e3a77b4a10cfdd0e000a1b95" name="a256f7328e3a77b4a10cfdd0e000a1b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256f7328e3a77b4a10cfdd0e000a1b95">&#9670;&#160;</a></span>flowDirections</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;HexDirection&gt; flowDirections</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Candidate directions considered by one river step. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab10d8710944d46f6e88c178986633910" name="ab10d8710944d46f6e88c178986633910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab10d8710944d46f6e88c178986633910">&#9670;&#160;</a></span>highRiseProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float highRiseProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab0ddd2bf977cf701b76f69e171c58045" name="ab0ddd2bf977cf701b76f69e171c58045"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0ddd2bf977cf701b76f69e171c58045">&#9670;&#160;</a></span>highTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float highTemperature = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af4e80719be159ecc6e63a5cf17c2c68e" name="af4e80719be159ecc6e63a5cf17c2c68e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4e80719be159ecc6e63a5cf17c2c68e">&#9670;&#160;</a></span>jitterProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float jitterProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24a70f958bd2980173770d5115386e85" name="a24a70f958bd2980173770d5115386e85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a70f958bd2980173770d5115386e85">&#9670;&#160;</a></span>landCells</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t landCells = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of cells that count as land, driving the river budget. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9368240e9e2fe681a1e47e80f6d6efb" name="ab9368240e9e2fe681a1e47e80f6d6efb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9368240e9e2fe681a1e47e80f6d6efb">&#9670;&#160;</a></span>landPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t landPercentage = 50</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00224">eve::hexmap::HexMapModule::generateSphere()</a>.</p>
+
+</div>
+</div>
+<a id="a8c2203a4013c96e3504e85da491026cc" name="a8c2203a4013c96e3504e85da491026cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c2203a4013c96e3504e85da491026cc">&#9670;&#160;</a></span>lowTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lowTemperature = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14c53ce59e47ea6465566f13edb52b70" name="a14c53ce59e47ea6465566f13edb52b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c53ce59e47ea6465566f13edb52b70">&#9670;&#160;</a></span>mapBorderX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t mapBorderX = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a683c631e514887e917714b7acc497b5b" name="a683c631e514887e917714b7acc497b5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a683c631e514887e917714b7acc497b5b">&#9670;&#160;</a></span>mapBorderZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t mapBorderZ = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a910fab66e07cdf0c63d6e58b11738a17" name="a910fab66e07cdf0c63d6e58b11738a17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a910fab66e07cdf0c63d6e58b11738a17">&#9670;&#160;</a></span>moisture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float moisture = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereGenerator_8cpp_source.html#l00124">eve::hexmap::generateSphereMap()</a>.</p>
+
+</div>
+</div>
+<a id="afcb632ff911192109eef42d3f8eb03cf" name="afcb632ff911192109eef42d3f8eb03cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcb632ff911192109eef42d3f8eb03cf">&#9670;&#160;</a></span>nextClimate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ClimateData&gt; nextClimate</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-cell accumulation target of the next climate cycle. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00402">402</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a747d3d50d70f251262f6bebb2b2b7c2a" name="a747d3d50d70f251262f6bebb2b2b7c2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a747d3d50d70f251262f6bebb2b2b7c2a">&#9670;&#160;</a></span>plant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t plant = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ce70b8d2e3726a11262ed388f0af580" name="a0ce70b8d2e3726a11262ed388f0af580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce70b8d2e3726a11262ed388f0af580">&#9670;&#160;</a></span>precipitationFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float precipitationFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1716caad7589da0b213e2232bf6bb016" name="a1716caad7589da0b213e2232bf6bb016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1716caad7589da0b213e2232bf6bb016">&#9670;&#160;</a></span>regionBorder</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t regionBorder = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0570cf9b2bfc879179eacb8c249722f9" name="a0570cf9b2bfc879179eacb8c249722f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0570cf9b2bfc879179eacb8c249722f9">&#9670;&#160;</a></span>regionCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t regionCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6c3f09cfb97dd317ff54ca664203810" name="aa6c3f09cfb97dd317ff54ca664203810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c3f09cfb97dd317ff54ca664203810">&#9670;&#160;</a></span>riverOrigins</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::int32_t&gt; riverOrigins</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Weighted river-origin candidates. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03b9b3824a899b0c66b129f41e02ab4a" name="a03b9b3824a899b0c66b129f41e02ab4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03b9b3824a899b0c66b129f41e02ab4a">&#9670;&#160;</a></span>riverPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t riverPercentage = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>.</p>
+
+</div>
+</div>
+<a id="a89a0282142b5849834fb88271dc04eb7" name="a89a0282142b5849834fb88271dc04eb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89a0282142b5849834fb88271dc04eb7">&#9670;&#160;</a></span>runoffFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float runoffFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c414707515b6b5b2d231b13032786cb" name="a6c414707515b6b5b2d231b13032786cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c414707515b6b5b2d231b13032786cb">&#9670;&#160;</a></span>search</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">HexSearchContext search</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frontier reused by the land-growth and erosion searches. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b311029258f0b3c276b7216dd7ac13f" name="a4b311029258f0b3c276b7216dd7ac13f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b311029258f0b3c276b7216dd7ac13f">&#9670;&#160;</a></span>seepageFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float seepageFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a77a02d726c0239cbc92b07ab6d0119eb" name="a77a02d726c0239cbc92b07ab6d0119eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77a02d726c0239cbc92b07ab6d0119eb">&#9670;&#160;</a></span>sinkProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float sinkProbability = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64610a7f5e2afa6e3a8a56ec0121ccef" name="a64610a7f5e2afa6e3a8a56ec0121ccef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64610a7f5e2afa6e3a8a56ec0121ccef">&#9670;&#160;</a></span>startingMoisture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float startingMoisture = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab2f567fb1addd5a606c1bd10ca24b069" name="ab2f567fb1addd5a606c1bd10ca24b069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f567fb1addd5a606c1bd10ca24b069">&#9670;&#160;</a></span>temperatureJitter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float temperatureJitter = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06e07bd3001c730539b09ce555bbf41b" name="a06e07bd3001c730539b09ce555bbf41b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06e07bd3001c730539b09ce555bbf41b">&#9670;&#160;</a></span>terrain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t terrain = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af4a3f05e9a960f255dadcd9433456edd" name="af4a3f05e9a960f255dadcd9433456edd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4a3f05e9a960f255dadcd9433456edd">&#9670;&#160;</a></span>waterLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t waterLevel = 3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00664">eve::hexmap::HexMap::editWaterLevel()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00638">eve::hexmap::HexSphereMap::editWaterLevel()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00224">eve::hexmap::HexMapModule::generateSphere()</a>, <a class="el" href="HexSphereGenerator_8cpp_source.html#l00124">eve::hexmap::generateSphereMap()</a>, <a class="el" href="HexMap_8cpp_source.html#l00517">eve::hexmap::HexMap::setOutgoingRiver()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00499">eve::hexmap::HexSphereMap::setOutgoingRiver()</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00267">eve::hexmap::HexMetrics::waterSurfaceY()</a>.</p>
+
+</div>
+</div>
+<a id="ad560ee00a45ebc8c637415d302b2f74c" name="ad560ee00a45ebc8c637415d302b2f74c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad560ee00a45ebc8c637415d302b2f74c">&#9670;&#160;</a></span>windDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">HexDirection windDirection = HexDirection::NW</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b02ff5c0c4250e2b934d8998eb02e22" name="a1b02ff5c0c4250e2b934d8998eb02e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b02ff5c0c4250e2b934d8998eb02e22">&#9670;&#160;</a></span>windStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float windStrength = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationWind_8cpp_source.html#l00068">eve::graphics::advanceVegetationWindAudio()</a>.</p>
+
+</div>
+</div>
+<a id="ac01e19c73f75e415d450df1f0d529894" name="ac01e19c73f75e415d450df1f0d529894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac01e19c73f75e415d450df1f0d529894">&#9670;&#160;</a></span>xMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t xMax = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">eve::map::Fov::Impl::buildOpaqueRects()</a>.</p>
+
+</div>
+</div>
+<a id="a8134a3fd540e87f87c59c5871e303694" name="a8134a3fd540e87f87c59c5871e303694"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8134a3fd540e87f87c59c5871e303694">&#9670;&#160;</a></span>xMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t xMin = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00728">eve::map::Fov::Impl::buildOpaqueRects()</a>.</p>
+
+</div>
+</div>
+<a id="a7a64e1585439bffb5e4365fe05866237" name="a7a64e1585439bffb5e4365fe05866237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a64e1585439bffb5e4365fe05866237">&#9670;&#160;</a></span>zMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t zMax = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClusteredLight_8cpp_source.html#l00009">eve::graphics::buildClusteredLighting()</a>.</p>
+
+</div>
+</div>
+<a id="ab4bbfebf7dca35e31cfb763d4613e8f1" name="ab4bbfebf7dca35e31cfb763d4613e8f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4bbfebf7dca35e31cfb763d4613e8f1">&#9670;&#160;</a></span>zMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t zMin = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8cpp_source.html">HexMapGenerator.cpp</a> 第 <a class="el" href="HexMapGenerator_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClusteredLight_8cpp_source.html#l00009">eve::graphics::buildClusteredLighting()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/spline/SplinePath.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_7d876b8dc44e6cf8fdefa3918fb5f7cd.html">spline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SplinePath.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SplinePath_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1SplinePoint.html">SplinePoint</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#a3ba729252bee1a39e3f3d31505b7767b">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a3ba729252bee1a39e3f3d31505b7767b">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#ae157bb85941823b0b17e8c4b7c26cf1e">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a9444d949cadb12b3dee9296bd9823326">z</a> = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#a852d09b150fb662ff376556fba68f10d">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a852d09b150fb662ff376556fba68f10d">inX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a764fd24da76318d752e4b458b2f5d5d5">inY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#aab22d9cab7c6060243a461bc2ce56dc7">inZ</a> = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#a43addc8b1235bac1ba7a8cdef72eb9f2">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a43addc8b1235bac1ba7a8cdef72eb9f2">outX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a3bbc435f77772ceb6f9409aa85f53808">outY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#ac587e729dfbca3d583c91ba19fa9447d">outZ</a> = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#a8b7e9e9163318158d7b764246fcf59ca">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a8b7e9e9163318158d7b764246fcf59ca">rollDegrees</a> = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#ab8b94663cd36c8f9073fee37835e2572">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#ab8b94663cd36c8f9073fee37835e2572">scaleX</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a34778a8674982a8f86391479a06eaefd">scaleY</a> = 1.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#a849a3af450efb510ef30c9b3063c411b">   21</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a849a3af450efb510ef30c9b3063c411b">breakBefore</a>  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplinePoint.html#abc8cc8edfbb23a7e9324aed7312b6c7d">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#abc8cc8edfbb23a7e9324aed7312b6c7d">pitchDegrees</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplinePoint.html#a41a5fb3d05095b7470125092da8a9a3c">yawDegrees</a> = 0.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1SplineSample.html">SplineSample</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#abe86a9a6166cd89c3a718c48f5b49c63">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#abe86a9a6166cd89c3a718c48f5b49c63">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#aca5be1742b8f85a6cf66d73e2b15f28b">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a10e557fe3e11cc142898f7210a10ad9d">z</a> = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#ac35db10251cc91a3cbe2b8873f7d5a2d">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#ac35db10251cc91a3cbe2b8873f7d5a2d">tangentX</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a9e24df57d589b5d6aad01bd718c4380c">tangentY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a33defcf0acbdf4092efb7a3a0ed6308a">tangentZ</a> = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#a2cf5757315dd629ead637e7eb5845e5a">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a2cf5757315dd629ead637e7eb5845e5a">normalizedDistance</a> = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#a4d345a87b1ebadea26154fa982672d74">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a4d345a87b1ebadea26154fa982672d74">rollDegrees</a>        = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#af2f6e9fad6c82ab5a722a34767a63ab1">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#af2f6e9fad6c82ab5a722a34767a63ab1">scaleX</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#ac6002b8eee2f3a972a1b817aa22f14a7">scaleY</a> = 1.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#a2e6e3a06a1e592e7b2e4f8c5132a08b1">   32</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a2e6e3a06a1e592e7b2e4f8c5132a08b1">chunkIndex</a>   = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineSample.html#a6a7e2ce10d009a40a76eb8aea46c5685">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a6a7e2ce10d009a40a76eb8aea46c5685">pitchDegrees</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineSample.html#a618d685a3216b3353c61becb8540109a">yawDegrees</a> = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineFrameSample.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1SplineFrameSample.html">SplineFrameSample</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineFrameSample.html#acb30277d70b9604f64b21d32d6cb5bbe">   38</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1SplineSample.html">SplineSample</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#acb30277d70b9604f64b21d32d6cb5bbe">sample</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineFrameSample.html#a7ecf6d19620c0c5439d72ce550671fa3">   39</a></span>    <span class="keywordtype">float</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a7ecf6d19620c0c5439d72ce550671fa3">sideX</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#ac616ad35f3d6bb3087de067ddd29ad84">sideY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a70cc47ffc11d854bc80df906f0e85acc">sideZ</a> = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineFrameSample.html#a7f1557967fa14e160609039ece9f729e">   40</a></span>    <span class="keywordtype">float</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a7f1557967fa14e160609039ece9f729e">upX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#ab9340edee5b18198adfbebe239afeb13">upY</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a0daf6e9d66430f77e4f47d75df5b70e5">upZ</a> = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1SplineFrameSample.html#a830fa5d4d272423800ea8e4e41919d2e">   41</a></span>    <span class="keywordtype">float</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a830fa5d4d272423800ea8e4e41919d2e">forwardX</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#a06f30edcda3b8e0d4d800ae024151797">forwardY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1SplineFrameSample.html#aa867a35cfedac3045c5e6b1533701ea9">forwardZ</a> = 1.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplineDistribution.html">   45</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1SplineDistribution.html">SplineDistribution</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplineDistribution.html#addc24ad73dacbe556da514bf08494782">   48</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplineDistribution.html#addc24ad73dacbe556da514bf08494782">SplineDistribution</a>(std::vector&lt;SplineFrameSample&gt; frames = {}) : frames_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(frames)) {}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplineDistribution.html#ad94f449ae8255dbf421b1e464aaeaa5f">   50</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplineDistribution.html#ad94f449ae8255dbf421b1e464aaeaa5f">count</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(frames_.size()); }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> sampleResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineFrameSample&gt;</a> frameResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::vector&lt;SplineFrameSample&gt; frames_;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePolyline.html">   61</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1SplinePolyline.html">SplinePolyline</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePolyline.html#afaf0b8fa5752f34b6cba80def5c89db9">   64</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplinePolyline.html#afaf0b8fa5752f34b6cba80def5c89db9">SplinePolyline</a>(std::vector&lt;std::vector&lt;SplineSample&gt;&gt; chunks = {}, <span class="keywordtype">bool</span> closed = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        : chunks_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(chunks)), closed_(closed) {}</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>() const noexcept;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;SplineSample&gt; pointResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePolyline.html#a19944cdee6b2a6e7ff295ebd971aac47">   71</a></span>    [[nodiscard]] <span class="keywordtype">int</span> chunkCount() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(chunks_.size()); }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] <span class="keywordtype">int</span> chunkPointCount(<span class="keywordtype">int</span> chunk) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> chunkPointResult(<span class="keywordtype">int</span> chunk, <span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePolyline.html#a93ada4f7c84061541a935c23d298d38c">   77</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplinePolyline.html#a93ada4f7c84061541a935c23d298d38c">isClosed</a>() const noexcept { <span class="keywordflow">return</span> closed_; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::vector&lt;std::vector&lt;SplineSample&gt;&gt; chunks_;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">bool</span>                                   closed_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePath.html">   90</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a> {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setKindResult(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> setClosed(<span class="keywordtype">bool</span> closed);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> addPointResult(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1SplinePoint.html">SplinePoint</a>&amp; <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setPointResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1SplinePoint.html">SplinePoint</a>&amp; <a class="code hl_variable" href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setPointProfileResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keywordtype">float</span> rollDegrees, <span class="keywordtype">float</span> scaleX, <span class="keywordtype">float</span> scaleY);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setPointRotationResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keywordtype">float</span> pitchDegrees, <span class="keywordtype">float</span> yawDegrees,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                                                      <span class="keywordtype">float</span> rollDegrees);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setPointChunkBreakResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keywordtype">bool</span> disconnected);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> removePointResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> evaluateResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> evaluateDistanceResult(<span class="keywordtype">float</span> distance, <span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;float&gt;</a> lengthResult(<span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> closestPointResult(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">int</span> samplesPerSegment = 32) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;SplineFrameSample&gt;</a>&gt; sampleFramesResult(<span class="keywordtype">int</span> sampleCount, <span class="keywordtype">bool</span> uniformByDistance,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                                                            <span class="keywordtype">float</span> rollDegrees       = 0.f,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                                                                            <span class="keywordtype">int</span>   samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineSample&gt;</a> travelResult(<span class="keywordtype">float</span> distance, std::string_view wrapMode = <span class="stringliteral">&quot;clamp&quot;</span>,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                                                    <span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineFrameSample&gt;</a> travelFrameResult(<span class="keywordtype">float</span> distance, std::string_view wrapMode = <span class="stringliteral">&quot;clamp&quot;</span>,</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                                                              <span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplineDistribution&gt;</a> distributeResult(<span class="keywordtype">int</span> <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a96888c566c534d7f33a97e50697df5dc">instanceCount</a>, <span class="keywordtype">bool</span> includeEnd = <span class="keyword">true</span>,</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                                              <span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;SplinePolyline&gt;</a> polylineResult(<span class="keywordtype">int</span> sampleCount = 64, <span class="keywordtype">bool</span> uniformByDistance = <span class="keyword">true</span>,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                                                        <span class="keywordtype">int</span> samplesPerSegment = 24) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> applyShapePresetResult(std::string_view preset, <span class="keywordtype">int</span> pointCount, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                                                      <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanGenerator_8cpp.html#ae272ffe1bc44f13b1f944fa558ff4c98">turns</a> = 1.f);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePath.html#a96ec5fb8c6ef5289e383d177da150a25">  156</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplinePath.html#a96ec5fb8c6ef5289e383d177da150a25">pointCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(points_.size()); }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    [[nodiscard]] <span class="keywordtype">int</span> segmentCount() const noexcept;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    [[nodiscard]] <span class="keywordtype">int</span> chunkCount() const noexcept;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_class" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a>&gt; chunkPathResult(<span class="keywordtype">int</span> chunk) const;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePath.html#a8d21f9db249a8bb75553c064a55cfa27">  164</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>() const noexcept { <span class="keywordflow">return</span> kind_; }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePath.html#a4796296e6829277ac1b22e419adad6f9">  166</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1SplinePath.html#a4796296e6829277ac1b22e419adad6f9">isClosed</a>() const noexcept { <span class="keywordflow">return</span> closed_; }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1SplinePath.html#a0f1a1a011bd74d1116ccb089f55097fe">  168</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1SplinePath.html#a0f1a1a011bd74d1116ccb089f55097fe">revision</a>() const noexcept { <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">struct </span>ArcEntry {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordtype">int</span>   segment  = 0;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>        = 0.f;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordtype">float</span> distance = 0.f;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    };</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> validateReady() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    [[nodiscard]] SplineSample evaluateUnchecked(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    [[nodiscard]] SplineSample evaluateSegmentUnchecked(<span class="keywordtype">int</span> segment, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> normalized) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    [[nodiscard]] std::vector&lt;std::pair&lt;int, int&gt;&gt; segmentEndpoints() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>                     ensureArcTable(<span class="keywordtype">int</span> samplesPerSegment) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">void</span>                                           invalidate();</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::vector&lt;SplinePoint&gt;      points_;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::string                   kind_     = <span class="stringliteral">&quot;catmullRom&quot;</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">bool</span>                          closed_   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    std::uint64_t                 revision_ = 0;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">mutable</span> std::vector&lt;ArcEntry&gt; arcTable_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">mutable</span> <span class="keywordtype">int</span>                   arcSamplesPerSegment_ = 0;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>};</div>
+</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_a96888c566c534d7f33a97e50697df5dc"><div class="ttname"><a href="GraphicsParticles_8cpp.html#a96888c566c534d7f33a97e50697df5dc">instanceCount</a></div><div class="ttdeci">std::uint32_t instanceCount</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00020">GraphicsParticles.cpp:20</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSourceTiff_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="SourceTiff_8cpp_source.html#l00024">SourceTiff.cpp:24</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aUrbanGenerator_8cpp_html_ae272ffe1bc44f13b1f944fa558ff4c98"><div class="ttname"><a href="UrbanGenerator_8cpp.html#ae272ffe1bc44f13b1f944fa558ff4c98">turns</a></div><div class="ttdeci">int turns</div><div class="ttdef"><b>Definition</b> <a href="UrbanGenerator_8cpp_source.html#l00212">UrbanGenerator.cpp:212</a></div></div>
+<div class="ttc" id="aVolumeFluidSimplexQuery_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidSimplexQuery_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">VolumeFluidSimplexQuery.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplineDistribution_html"><div class="ttname"><a href="classeve_1_1procgen_1_1SplineDistribution.html">eve::procgen::SplineDistribution</a></div><div class="ttdoc">Owning uniformly distributed spline samples for instancing.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00045">SplinePath.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplineDistribution_html_ad94f449ae8255dbf421b1e464aaeaa5f"><div class="ttname"><a href="classeve_1_1procgen_1_1SplineDistribution.html#ad94f449ae8255dbf421b1e464aaeaa5f">eve::procgen::SplineDistribution::count</a></div><div class="ttdeci">int count() const noexcept</div><div class="ttdoc">Return the number of independent sample values.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00050">SplinePath.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplineDistribution_html_addc24ad73dacbe556da514bf08494782"><div class="ttname"><a href="classeve_1_1procgen_1_1SplineDistribution.html#addc24ad73dacbe556da514bf08494782">eve::procgen::SplineDistribution::SplineDistribution</a></div><div class="ttdeci">SplineDistribution(std::vector&lt; SplineFrameSample &gt; frames={})</div><div class="ttdoc">Construct an owning distribution from validated samples.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00048">SplinePath.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePath_html"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePath.html">eve::procgen::SplinePath</a></div><div class="ttdoc">Owning multi-segment 3D spline with deterministic bounded sampling.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00090">SplinePath.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePath_html_a0f1a1a011bd74d1116ccb089f55097fe"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePath.html#a0f1a1a011bd74d1116ccb089f55097fe">eve::procgen::SplinePath::revision</a></div><div class="ttdeci">std::uint64_t revision() const noexcept</div><div class="ttdoc">Return monotonic mutation revision.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00168">SplinePath.h:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePath_html_a4796296e6829277ac1b22e419adad6f9"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePath.html#a4796296e6829277ac1b22e419adad6f9">eve::procgen::SplinePath::isClosed</a></div><div class="ttdeci">bool isClosed() const noexcept</div><div class="ttdoc">Report whether the path is closed.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00166">SplinePath.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePath_html_a96ec5fb8c6ef5289e383d177da150a25"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePath.html#a96ec5fb8c6ef5289e383d177da150a25">eve::procgen::SplinePath::pointCount</a></div><div class="ttdeci">int pointCount() const noexcept</div><div class="ttdoc">Return point count.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00156">SplinePath.h:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePolyline_html"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePolyline.html">eve::procgen::SplinePolyline</a></div><div class="ttdoc">Owning sampled polyline for renderer-neutral runtime visualization adapters.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00061">SplinePath.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePolyline_html_a93ada4f7c84061541a935c23d298d38c"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePolyline.html#a93ada4f7c84061541a935c23d298d38c">eve::procgen::SplinePolyline::isClosed</a></div><div class="ttdeci">bool isClosed() const noexcept</div><div class="ttdoc">Report whether presentation adapters should close the last-to-first edge.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00077">SplinePath.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1SplinePolyline_html_afaf0b8fa5752f34b6cba80def5c89db9"><div class="ttname"><a href="classeve_1_1procgen_1_1SplinePolyline.html#afaf0b8fa5752f34b6cba80def5c89db9">eve::procgen::SplinePolyline::SplinePolyline</a></div><div class="ttdeci">SplinePolyline(std::vector&lt; std::vector&lt; SplineSample &gt; &gt; chunks={}, bool closed=false)</div><div class="ttdoc">Construct from an owning sequence of sampled points.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00064">SplinePath.h:64</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html">eve::procgen::SplineFrameSample</a></div><div class="ttdoc">Evaluated spline sample with an orthonormal transported cross-section frame.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00037">SplinePath.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a06f30edcda3b8e0d4d800ae024151797"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a06f30edcda3b8e0d4d800ae024151797">eve::procgen::SplineFrameSample::forwardY</a></div><div class="ttdeci">float forwardY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00041">SplinePath.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a0daf6e9d66430f77e4f47d75df5b70e5"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a0daf6e9d66430f77e4f47d75df5b70e5">eve::procgen::SplineFrameSample::upZ</a></div><div class="ttdeci">float upZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00040">SplinePath.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a70cc47ffc11d854bc80df906f0e85acc"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a70cc47ffc11d854bc80df906f0e85acc">eve::procgen::SplineFrameSample::sideZ</a></div><div class="ttdeci">float sideZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00039">SplinePath.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a7ecf6d19620c0c5439d72ce550671fa3"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a7ecf6d19620c0c5439d72ce550671fa3">eve::procgen::SplineFrameSample::sideX</a></div><div class="ttdeci">float sideX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00039">SplinePath.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a7f1557967fa14e160609039ece9f729e"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a7f1557967fa14e160609039ece9f729e">eve::procgen::SplineFrameSample::upX</a></div><div class="ttdeci">float upX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00040">SplinePath.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_a830fa5d4d272423800ea8e4e41919d2e"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#a830fa5d4d272423800ea8e4e41919d2e">eve::procgen::SplineFrameSample::forwardX</a></div><div class="ttdeci">float forwardX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00041">SplinePath.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_aa867a35cfedac3045c5e6b1533701ea9"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#aa867a35cfedac3045c5e6b1533701ea9">eve::procgen::SplineFrameSample::forwardZ</a></div><div class="ttdeci">float forwardZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00041">SplinePath.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_ab9340edee5b18198adfbebe239afeb13"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#ab9340edee5b18198adfbebe239afeb13">eve::procgen::SplineFrameSample::upY</a></div><div class="ttdeci">float upY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00040">SplinePath.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_ac616ad35f3d6bb3087de067ddd29ad84"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#ac616ad35f3d6bb3087de067ddd29ad84">eve::procgen::SplineFrameSample::sideY</a></div><div class="ttdeci">float sideY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00039">SplinePath.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineFrameSample_html_acb30277d70b9604f64b21d32d6cb5bbe"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineFrameSample.html#acb30277d70b9604f64b21d32d6cb5bbe">eve::procgen::SplineFrameSample::sample</a></div><div class="ttdeci">SplineSample sample</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00038">SplinePath.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html">eve::procgen::SplinePoint</a></div><div class="ttdoc">One spline anchor with incoming and outgoing handle offsets.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00015">SplinePath.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a34778a8674982a8f86391479a06eaefd"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a34778a8674982a8f86391479a06eaefd">eve::procgen::SplinePoint::scaleY</a></div><div class="ttdeci">float scaleY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00020">SplinePath.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a3ba729252bee1a39e3f3d31505b7767b"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a3ba729252bee1a39e3f3d31505b7767b">eve::procgen::SplinePoint::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00016">SplinePath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a3bbc435f77772ceb6f9409aa85f53808"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a3bbc435f77772ceb6f9409aa85f53808">eve::procgen::SplinePoint::outY</a></div><div class="ttdeci">float outY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00018">SplinePath.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a41a5fb3d05095b7470125092da8a9a3c"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a41a5fb3d05095b7470125092da8a9a3c">eve::procgen::SplinePoint::yawDegrees</a></div><div class="ttdeci">float yawDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00022">SplinePath.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a43addc8b1235bac1ba7a8cdef72eb9f2"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a43addc8b1235bac1ba7a8cdef72eb9f2">eve::procgen::SplinePoint::outX</a></div><div class="ttdeci">float outX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00018">SplinePath.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a764fd24da76318d752e4b458b2f5d5d5"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a764fd24da76318d752e4b458b2f5d5d5">eve::procgen::SplinePoint::inY</a></div><div class="ttdeci">float inY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00017">SplinePath.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a849a3af450efb510ef30c9b3063c411b"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a849a3af450efb510ef30c9b3063c411b">eve::procgen::SplinePoint::breakBefore</a></div><div class="ttdeci">bool breakBefore</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00021">SplinePath.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a852d09b150fb662ff376556fba68f10d"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a852d09b150fb662ff376556fba68f10d">eve::procgen::SplinePoint::inX</a></div><div class="ttdeci">float inX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00017">SplinePath.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a8b7e9e9163318158d7b764246fcf59ca"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a8b7e9e9163318158d7b764246fcf59ca">eve::procgen::SplinePoint::rollDegrees</a></div><div class="ttdeci">float rollDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00019">SplinePath.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_a9444d949cadb12b3dee9296bd9823326"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#a9444d949cadb12b3dee9296bd9823326">eve::procgen::SplinePoint::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00016">SplinePath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_aab22d9cab7c6060243a461bc2ce56dc7"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#aab22d9cab7c6060243a461bc2ce56dc7">eve::procgen::SplinePoint::inZ</a></div><div class="ttdeci">float inZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00017">SplinePath.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_ab8b94663cd36c8f9073fee37835e2572"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#ab8b94663cd36c8f9073fee37835e2572">eve::procgen::SplinePoint::scaleX</a></div><div class="ttdeci">float scaleX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00020">SplinePath.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_abc8cc8edfbb23a7e9324aed7312b6c7d"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#abc8cc8edfbb23a7e9324aed7312b6c7d">eve::procgen::SplinePoint::pitchDegrees</a></div><div class="ttdeci">float pitchDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00022">SplinePath.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_ac587e729dfbca3d583c91ba19fa9447d"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#ac587e729dfbca3d583c91ba19fa9447d">eve::procgen::SplinePoint::outZ</a></div><div class="ttdeci">float outZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00018">SplinePath.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplinePoint_html_ae157bb85941823b0b17e8c4b7c26cf1e"><div class="ttname"><a href="structeve_1_1procgen_1_1SplinePoint.html#ae157bb85941823b0b17e8c4b7c26cf1e">eve::procgen::SplinePoint::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00016">SplinePath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html">eve::procgen::SplineSample</a></div><div class="ttdoc">Evaluated spline position and normalized tangent.</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00026">SplinePath.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a10e557fe3e11cc142898f7210a10ad9d"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a10e557fe3e11cc142898f7210a10ad9d">eve::procgen::SplineSample::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00027">SplinePath.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a2cf5757315dd629ead637e7eb5845e5a"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a2cf5757315dd629ead637e7eb5845e5a">eve::procgen::SplineSample::normalizedDistance</a></div><div class="ttdeci">float normalizedDistance</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00029">SplinePath.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a2e6e3a06a1e592e7b2e4f8c5132a08b1"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a2e6e3a06a1e592e7b2e4f8c5132a08b1">eve::procgen::SplineSample::chunkIndex</a></div><div class="ttdeci">int chunkIndex</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00032">SplinePath.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a33defcf0acbdf4092efb7a3a0ed6308a"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a33defcf0acbdf4092efb7a3a0ed6308a">eve::procgen::SplineSample::tangentZ</a></div><div class="ttdeci">float tangentZ</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00028">SplinePath.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a4d345a87b1ebadea26154fa982672d74"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a4d345a87b1ebadea26154fa982672d74">eve::procgen::SplineSample::rollDegrees</a></div><div class="ttdeci">float rollDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00030">SplinePath.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a618d685a3216b3353c61becb8540109a"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a618d685a3216b3353c61becb8540109a">eve::procgen::SplineSample::yawDegrees</a></div><div class="ttdeci">float yawDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00033">SplinePath.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a6a7e2ce10d009a40a76eb8aea46c5685"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a6a7e2ce10d009a40a76eb8aea46c5685">eve::procgen::SplineSample::pitchDegrees</a></div><div class="ttdeci">float pitchDegrees</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00033">SplinePath.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_a9e24df57d589b5d6aad01bd718c4380c"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#a9e24df57d589b5d6aad01bd718c4380c">eve::procgen::SplineSample::tangentY</a></div><div class="ttdeci">float tangentY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00028">SplinePath.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_abe86a9a6166cd89c3a718c48f5b49c63"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#abe86a9a6166cd89c3a718c48f5b49c63">eve::procgen::SplineSample::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00027">SplinePath.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_ac35db10251cc91a3cbe2b8873f7d5a2d"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#ac35db10251cc91a3cbe2b8873f7d5a2d">eve::procgen::SplineSample::tangentX</a></div><div class="ttdeci">float tangentX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00028">SplinePath.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_ac6002b8eee2f3a972a1b817aa22f14a7"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#ac6002b8eee2f3a972a1b817aa22f14a7">eve::procgen::SplineSample::scaleY</a></div><div class="ttdeci">float scaleY</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00031">SplinePath.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_aca5be1742b8f85a6cf66d73e2b15f28b"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#aca5be1742b8f85a6cf66d73e2b15f28b">eve::procgen::SplineSample::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00027">SplinePath.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1SplineSample_html_af2f6e9fad6c82ab5a722a34767a63ab1"><div class="ttname"><a href="structeve_1_1procgen_1_1SplineSample.html#af2f6e9fad6c82ab5a722a34767a63ab1">eve::procgen::SplineSample::scaleX</a></div><div class="ttdeci">float scaleX</div><div class="ttdef"><b>Definition</b> <a href="SplinePath_8h_source.html#l00031">SplinePath.h:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

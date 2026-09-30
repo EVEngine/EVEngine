@@ -1,0 +1,789 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::script::detail::RuntimeSlotStore类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script.html">script</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script_1_1detail.html">detail</a></li><li class="navelem"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::script::detail::RuntimeSlotStore类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Tag-free slot store behind every RuntimeObjectRegistry&lt;T, Tag&gt;.  
+ <a href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af36547772d9bb923786a0f4d23288c89" id="r_af36547772d9bb923786a0f4d23288c89"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#af36547772d9bb923786a0f4d23288c89">RuntimeSlotStore</a> (<a class="el" href="namespaceeve_1_1script_1_1detail.html#aa819b43b4d9db774574388e09c0142ce">OwnedInstanceDestroy</a> <a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a>) noexcept</td></tr>
+<tr class="memdesc:af36547772d9bb923786a0f4d23288c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty store that owns no slot.  <br /></td></tr>
+<tr class="separator:af36547772d9bb923786a0f4d23288c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af71c2e3f72f7d0a68a9a8ebf4db8447d" id="r_af71c2e3f72f7d0a68a9a8ebf4db8447d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#af71c2e3f72f7d0a68a9a8ebf4db8447d">RuntimeSlotStore</a> (const <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;)=delete</td></tr>
+<tr class="separator:af71c2e3f72f7d0a68a9a8ebf4db8447d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c07ef5f5504d3828f3f4ab7a1d96921" id="r_a8c07ef5f5504d3828f3f4ab7a1d96921"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a8c07ef5f5504d3828f3f4ab7a1d96921">operator=</a> (const <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;)=delete</td></tr>
+<tr class="separator:a8c07ef5f5504d3828f3f4ab7a1d96921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a645034b13a15b23fd16cac6df314ee46" id="r_a645034b13a15b23fd16cac6df314ee46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a645034b13a15b23fd16cac6df314ee46">RuntimeSlotStore</a> (<a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a645034b13a15b23fd16cac6df314ee46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b49449fb20251825210c88569c77a56" id="r_a0b49449fb20251825210c88569c77a56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a0b49449fb20251825210c88569c77a56">operator=</a> (<a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a0b49449fb20251825210c88569c77a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac35764308d7a0fb30501ce106aac227c" id="r_ac35764308d7a0fb30501ce106aac227c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ac35764308d7a0fb30501ce106aac227c">~RuntimeSlotStore</a> ()</td></tr>
+<tr class="separator:ac35764308d7a0fb30501ce106aac227c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b01708ad7a7d3d386b46d75f3352b2" id="r_ab7b01708ad7a7d3d386b46d75f3352b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1script_1_1detail_1_1RuntimeSlotCoordinates.html">RuntimeSlotCoordinates</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ab7b01708ad7a7d3d386b46d75f3352b2">emplace</a> (void *<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>)</td></tr>
+<tr class="memdesc:ab7b01708ad7a7d3d386b46d75f3352b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores one object in a fresh or recycled slot.  <br /></td></tr>
+<tr class="separator:ab7b01708ad7a7d3d386b46d75f3352b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cb1e3e9b9135e3cbb9d8bd5f1277dd2" id="r_a5cb1e3e9b9135e3cbb9d8bd5f1277dd2"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a5cb1e3e9b9135e3cbb9d8bd5f1277dd2">resolve</a> (std::uint32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::uint32_t <a class="el" href="PrefabActionCapabilities_8cpp.html#ab8272ed7acd527a30a66e18ea76ce85b">generation</a>, std::uint64_t <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a>) const noexcept</td></tr>
+<tr class="memdesc:a5cb1e3e9b9135e3cbb9d8bd5f1277dd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrows the live object for these coordinates, or null when stale.  <br /></td></tr>
+<tr class="separator:a5cb1e3e9b9135e3cbb9d8bd5f1277dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c2beed0373ee62b75eaea84be04e26" id="r_a25c2beed0373ee62b75eaea84be04e26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a25c2beed0373ee62b75eaea84be04e26">erase</a> (std::uint32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::uint32_t <a class="el" href="PrefabActionCapabilities_8cpp.html#ab8272ed7acd527a30a66e18ea76ce85b">generation</a>, std::uint64_t <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a>)</td></tr>
+<tr class="memdesc:a25c2beed0373ee62b75eaea84be04e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the object in a live slot, then advances or retires it.  <br /></td></tr>
+<tr class="separator:a25c2beed0373ee62b75eaea84be04e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7889ef064850e16220b84f324ee179e8" id="r_a7889ef064850e16220b84f324ee179e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a7889ef064850e16220b84f324ee179e8">isStale</a> (std::uint32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::uint32_t <a class="el" href="PrefabActionCapabilities_8cpp.html#ab8272ed7acd527a30a66e18ea76ce85b">generation</a>, std::uint64_t <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a>) const noexcept</td></tr>
+<tr class="memdesc:a7889ef064850e16220b84f324ee179e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a non-invalid handle can no longer resolve.  <br /></td></tr>
+<tr class="separator:a7889ef064850e16220b84f324ee179e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aca4a4eb0c90d8cf2af1f9568f90acf" id="r_a9aca4a4eb0c90d8cf2af1f9568f90acf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a9aca4a4eb0c90d8cf2af1f9568f90acf">pin</a> (std::uint32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::uint32_t <a class="el" href="PrefabActionCapabilities_8cpp.html#ab8272ed7acd527a30a66e18ea76ce85b">generation</a>, std::uint64_t <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a>)</td></tr>
+<tr class="memdesc:a9aca4a4eb0c90d8cf2af1f9568f90acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keeps one live slot's object alive across <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a25c2beed0373ee62b75eaea84be04e26" title="Destroys the object in a live slot, then advances or retires it.">erase()</a> and <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#af09de46fac2109e95ba4a2a7eabe1535" title="Destroys every live object and invalidates every prior handle.">clear()</a>.  <br /></td></tr>
+<tr class="separator:a9aca4a4eb0c90d8cf2af1f9568f90acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae952335e68f5acfbbb13610b29aacb44" id="r_ae952335e68f5acfbbb13610b29aacb44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ae952335e68f5acfbbb13610b29aacb44">unpin</a> (std::uint32_t <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, std::uint64_t <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a>) noexcept</td></tr>
+<tr class="memdesc:ae952335e68f5acfbbb13610b29aacb44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases one pin, destroying the object when it was the last one on an erased slot.  <br /></td></tr>
+<tr class="separator:ae952335e68f5acfbbb13610b29aacb44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af09de46fac2109e95ba4a2a7eabe1535" id="r_af09de46fac2109e95ba4a2a7eabe1535"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#af09de46fac2109e95ba4a2a7eabe1535">clear</a> ()</td></tr>
+<tr class="memdesc:af09de46fac2109e95ba4a2a7eabe1535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys every live object and invalidates every prior handle.  <br /></td></tr>
+<tr class="separator:af09de46fac2109e95ba4a2a7eabe1535"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2833ef348c3263e15960b578499eab5f" id="r_a2833ef348c3263e15960b578499eab5f"><td class="memTemplParams" colspan="2">template&lt;class F &gt; </td></tr>
+<tr class="memitem:a2833ef348c3263e15960b578499eab5f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a2833ef348c3263e15960b578499eab5f">forEachLive</a> (F &amp;&amp;visit)</td></tr>
+<tr class="memdesc:a2833ef348c3263e15960b578499eab5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visits every live slot with its index, in slot order.  <br /></td></tr>
+<tr class="separator:a2833ef348c3263e15960b578499eab5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad608f77d575da52479d514487b227a8f" id="r_ad608f77d575da52479d514487b227a8f"><td class="memTemplParams" colspan="2">template&lt;class F &gt; </td></tr>
+<tr class="memitem:ad608f77d575da52479d514487b227a8f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad608f77d575da52479d514487b227a8f">forEachLive</a> (F &amp;&amp;visit) const</td></tr>
+<tr class="memdesc:ad608f77d575da52479d514487b227a8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only overload: the callback receives <code>const void*</code>.  <br /></td></tr>
+<tr class="separator:ad608f77d575da52479d514487b227a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad755b51be11adbd542c31654d3202588" id="r_ad755b51be11adbd542c31654d3202588"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ad755b51be11adbd542c31654d3202588">ownerEpoch</a> () const noexcept</td></tr>
+<tr class="memdesc:ad755b51be11adbd542c31654d3202588"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the non-reusable lifetime epoch of this store.  <br /></td></tr>
+<tr class="separator:ad755b51be11adbd542c31654d3202588"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Tag-free slot store behind every RuntimeObjectRegistry&lt;T, Tag&gt;. </p>
+<p>Holds raw pointers and one destroy hook, so it never sees T or Tag. The bookkeeping it performs &ndash; free-list reuse, generation bumping, slot retirement at generation exhaustion, owner-epoch staleness and the release rollback &ndash; is identical for every registry and is emitted once here instead of once per (T, Tag) pair.</p>
+<dl class="section remark"><dt>备注</dt><dd>Ownership rule for <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ab7b01708ad7a7d3d386b46d75f3352b2" title="Stores one object in a fresh or recycled slot.">emplace()</a>: the store takes the object only on success. A failed emplace leaves the object with the caller, which still owns it. @thread Owner-thread-affine; no synchronization is provided. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a> 第 <a class="el" href="RuntimeRegistry_8h_source.html#l00126">126</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af36547772d9bb923786a0f4d23288c89" name="af36547772d9bb923786a0f4d23288c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af36547772d9bb923786a0f4d23288c89">&#9670;&#160;</a></span>RuntimeSlotStore() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::detail::RuntimeSlotStore::RuntimeSlotStore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1script_1_1detail.html#aa819b43b4d9db774574388e09c0142ce">OwnedInstanceDestroy</a>&#160;</td>
+          <td class="paramname"><em>destroy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty store that owns no slot. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a> 第 <a class="el" href="RuntimeRegistry_8h_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af71c2e3f72f7d0a68a9a8ebf4db8447d" name="af71c2e3f72f7d0a68a9a8ebf4db8447d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af71c2e3f72f7d0a68a9a8ebf4db8447d">&#9670;&#160;</a></span>RuntimeSlotStore() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::detail::RuntimeSlotStore::RuntimeSlotStore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a645034b13a15b23fd16cac6df314ee46" name="a645034b13a15b23fd16cac6df314ee46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a645034b13a15b23fd16cac6df314ee46">&#9670;&#160;</a></span>RuntimeSlotStore() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::detail::RuntimeSlotStore::RuntimeSlotStore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac35764308d7a0fb30501ce106aac227c" name="ac35764308d7a0fb30501ce106aac227c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac35764308d7a0fb30501ce106aac227c">&#9670;&#160;</a></span>~RuntimeSlotStore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::detail::RuntimeSlotStore::~RuntimeSlotStore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af09de46fac2109e95ba4a2a7eabe1535" name="af09de46fac2109e95ba4a2a7eabe1535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af09de46fac2109e95ba4a2a7eabe1535">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::detail::RuntimeSlotStore::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys every live object and invalidates every prior handle. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="ab7b01708ad7a7d3d386b46d75f3352b2" name="ab7b01708ad7a7d3d386b46d75f3352b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7b01708ad7a7d3d386b46d75f3352b2">&#9670;&#160;</a></span>emplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1script_1_1detail_1_1RuntimeSlotCoordinates.html">RuntimeSlotCoordinates</a> &gt; eve::script::detail::RuntimeSlotStore::emplace </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stores one object in a fresh or recycled slot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>Non-null object whose destruction becomes store-owned. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The slot coordinates, or a structured failure. @ownership On success the store owns <code>object</code> and destroys it through its destroy hook; on failure the caller keeps ownership. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="RuntimeRegistry_8h_source.html#l00109">eve::script::detail::RuntimeSlotCoordinates::generation</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a25c2beed0373ee62b75eaea84be04e26" name="a25c2beed0373ee62b75eaea84be04e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25c2beed0373ee62b75eaea84be04e26">&#9670;&#160;</a></span>erase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::script::detail::RuntimeSlotStore::erase </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ownerEpoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the object in a live slot, then advances or retires it. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00149">generation</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeRegistry_8h_source.html#l00216">ownerEpoch()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2833ef348c3263e15960b578499eab5f" name="a2833ef348c3263e15960b578499eab5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2833ef348c3263e15960b578499eab5f">&#9670;&#160;</a></span>forEachLive() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::detail::RuntimeSlotStore::forEachLive </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>visit</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Visits every live slot with its index, in slot order. </p>
+<p>The store holds untyped pointers, so it reports the index and the raw object; the typed registry narrows that pair into <code>(index, T&amp;)</code>. Retired and free slots are skipped, so the callback only ever sees live objects. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">visit</td><td>Callable taking <code>(std::uint32_t index, void* object)</code>. @thread Owner thread only; the callback runs under no lock and must not re-enter the store. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a> 第 <a class="el" href="RuntimeRegistry_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="ad608f77d575da52479d514487b227a8f" name="ad608f77d575da52479d514487b227a8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad608f77d575da52479d514487b227a8f">&#9670;&#160;</a></span>forEachLive() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class F &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::detail::RuntimeSlotStore::forEachLive </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>visit</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read-only overload: the callback receives <code>const void*</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a> 第 <a class="el" href="RuntimeRegistry_8h_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a7889ef064850e16220b84f324ee179e8" name="a7889ef064850e16220b84f324ee179e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7889ef064850e16220b84f324ee179e8">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::detail::RuntimeSlotStore::isStale </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ownerEpoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a non-invalid handle can no longer resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00149">generation</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="a8c07ef5f5504d3828f3f4ab7a1d96921" name="a8c07ef5f5504d3828f3f4ab7a1d96921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c07ef5f5504d3828f3f4ab7a1d96921">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp; eve::script::detail::RuntimeSlotStore::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b49449fb20251825210c88569c77a56" name="a0b49449fb20251825210c88569c77a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b49449fb20251825210c88569c77a56">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp; eve::script::detail::RuntimeSlotStore::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html">RuntimeSlotStore</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad755b51be11adbd542c31654d3202588" name="ad755b51be11adbd542c31654d3202588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad755b51be11adbd542c31654d3202588">&#9670;&#160;</a></span>ownerEpoch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::script::detail::RuntimeSlotStore::ownerEpoch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the non-reusable lifetime epoch of this store. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a> 第 <a class="el" href="RuntimeRegistry_8h_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00150">erase()</a> , 以及 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00116">pin()</a>.</p>
+
+</div>
+</div>
+<a id="a9aca4a4eb0c90d8cf2af1f9568f90acf" name="a9aca4a4eb0c90d8cf2af1f9568f90acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aca4a4eb0c90d8cf2af1f9568f90acf">&#9670;&#160;</a></span>pin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void * &gt; eve::script::detail::RuntimeSlotStore::pin </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ownerEpoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Keeps one live slot's object alive across <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#a25c2beed0373ee62b75eaea84be04e26" title="Destroys the object in a live slot, then advances or retires it.">erase()</a> and <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#af09de46fac2109e95ba4a2a7eabe1535" title="Destroys every live object and invalidates every prior handle.">clear()</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Slot index taken from the reference. </td></tr>
+    <tr><td class="paramname">generation</td><td>Slot generation taken from the reference. </td></tr>
+    <tr><td class="paramname">ownerEpoch</td><td>Owner epoch taken from the reference. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The live object, or a stale-handle failure. @ownership The object stays store-owned; the pin only postpones destruction. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Every successful pin must be matched by exactly one <a class="el" href="classeve_1_1script_1_1detail_1_1RuntimeSlotStore.html#ae952335e68f5acfbbb13610b29aacb44" title="Releases one pin, destroying the object when it was the last one on an erased slot.">unpin()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00149">generation</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="RuntimeRegistry_8h_source.html#l00216">ownerEpoch()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a5cb1e3e9b9135e3cbb9d8bd5f1277dd2" name="a5cb1e3e9b9135e3cbb9d8bd5f1277dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cb1e3e9b9135e3cbb9d8bd5f1277dd2">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::script::detail::RuntimeSlotStore::resolve </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ownerEpoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrows the live object for these coordinates, or null when stale. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00149">generation</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<a id="ae952335e68f5acfbbb13610b29aacb44" name="ae952335e68f5acfbbb13610b29aacb44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae952335e68f5acfbbb13610b29aacb44">&#9670;&#160;</a></span>unpin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::detail::RuntimeSlotStore::unpin </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>ownerEpoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases one pin, destroying the object when it was the last one on an erased slot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Slot index taken from the reference. </td></tr>
+    <tr><td class="paramname">ownerEpoch</td><td>Owner epoch taken from the reference. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Safe to call on a stale slot or an already released pin: unpinning more often than pinning is a no-op, never a destruction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a> 第 <a class="el" href="RuntimeRegistry_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00163">index</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="RuntimeRegistry_8h_source.html">RuntimeRegistry.h</a></li>
+<li>src/engine/common/<a class="el" href="RuntimeRegistry_8cpp_source.html">RuntimeRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

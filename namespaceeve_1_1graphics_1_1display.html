@@ -1,0 +1,1111 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::display 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1display.html">display</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::display 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1display_1_1Support.html">Support</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ad6283529a0124a950c27c768f3d97d0b" id="r_ad6283529a0124a950c27c768f3d97d0b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162">Sdr</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0badd4c2a8418ab27d7ef3100411899b790">ScRgb</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0baddf9c15aeea6aa8388890e87b892cf17">Hdr10</a> = 2
+ }</td></tr>
+<tr class="memdesc:ad6283529a0124a950c27c768f3d97d0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active present color encoding after swapchain selection.  <a href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">更多...</a><br /></td></tr>
+<tr class="separator:ad6283529a0124a950c27c768f3d97d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf37df8b462ac46f70346adbfd83a2aa" id="r_acf37df8b462ac46f70346adbfd83a2aa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aa">OutputMode</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aaa5e8b4e08625f665f0ef915c49bb45162">Sdr</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aaa06b9281e396db002010bde1de57262eb">Auto</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aaaddf9c15aeea6aa8388890e87b892cf17">Hdr10</a> = 2
+, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aaadd4c2a8418ab27d7ef3100411899b790">ScRgb</a> = 3
+ }</td></tr>
+<tr class="memdesc:acf37df8b462ac46f70346adbfd83a2aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requested present preference; Auto picks Hdr10 then ScRgb then Sdr.  <a href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aa">更多...</a><br /></td></tr>
+<tr class="separator:acf37df8b462ac46f70346adbfd83a2aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a8a85fecc0316784b9ff84e35f17f88d6" id="r_a8a85fecc0316784b9ff84e35f17f88d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a8a85fecc0316784b9ff84e35f17f88d6">clampCalibration</a> (float &amp;paperWhiteNits, float &amp;peakNits) noexcept</td></tr>
+<tr class="memdesc:a8a85fecc0316784b9ff84e35f17f88d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clamp paper-white / peak luminance into the engine-supported range.  <br /></td></tr>
+<tr class="separator:a8a85fecc0316784b9ff84e35f17f88d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84f1d4a021ac6abb1eda5fe9680201dc" id="r_a84f1d4a021ac6abb1eda5fe9680201dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a84f1d4a021ac6abb1eda5fe9680201dc">packNits</a> (float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:a84f1d4a021ac6abb1eda5fe9680201dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack paper-white and peak nits into one float for the present resolve tint.  <br /></td></tr>
+<tr class="separator:a84f1d4a021ac6abb1eda5fe9680201dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcbb72fd81c556a0c42c52b92d06202f" id="r_adcbb72fd81c556a0c42c52b92d06202f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#adcbb72fd81c556a0c42c52b92d06202f">unpackNits</a> (float packed, float &amp;paperWhiteNits, float &amp;peakNits) noexcept</td></tr>
+<tr class="memdesc:adcbb72fd81c556a0c42c52b92d06202f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpack paper-white and peak nits from the present resolve tint channel.  <br /></td></tr>
+<tr class="separator:adcbb72fd81c556a0c42c52b92d06202f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2164bb809fec41864290f2ffb776a7b" id="r_ae2164bb809fec41864290f2ffb776a7b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ae2164bb809fec41864290f2ffb776a7b">packActiveMode</a> (<a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a> space) noexcept</td></tr>
+<tr class="memdesc:ae2164bb809fec41864290f2ffb776a7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the active present mode into the resolve tint G channel.  <br /></td></tr>
+<tr class="separator:ae2164bb809fec41864290f2ffb776a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a651c963f607d2bdfa920832914aae176" id="r_a651c963f607d2bdfa920832914aae176"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a651c963f607d2bdfa920832914aae176">packComposeLinearMode</a> () noexcept</td></tr>
+<tr class="memdesc:a651c963f607d2bdfa920832914aae176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tint G value for compose-linear output (paper-white-relative, no OETF).  <br /></td></tr>
+<tr class="separator:a651c963f607d2bdfa920832914aae176"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a195cc800627de003e806d4f0822f9190" id="r_a195cc800627de003e806d4f0822f9190"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a195cc800627de003e806d4f0822f9190">unpackActiveMode</a> (float packed) noexcept</td></tr>
+<tr class="memdesc:a195cc800627de003e806d4f0822f9190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode the present mode from the resolve tint G channel.  <br /></td></tr>
+<tr class="separator:a195cc800627de003e806d4f0822f9190"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a169ff4e169f019e7899c7f2075943b86" id="r_a169ff4e169f019e7899c7f2075943b86"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a169ff4e169f019e7899c7f2075943b86">isComposeLinearMode</a> (float packed) noexcept</td></tr>
+<tr class="memdesc:a169ff4e169f019e7899c7f2075943b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the tint G channel requests compose-linear (mode 3).  <br /></td></tr>
+<tr class="separator:a169ff4e169f019e7899c7f2075943b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f78fc87bb010f1111d14383e4abb2aa" id="r_a7f78fc87bb010f1111d14383e4abb2aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a7f78fc87bb010f1111d14383e4abb2aa">sceneResolveTint</a> (bool aces, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a> space, bool attachmentEncodesSrgb, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:a7f78fc87bb010f1111d14383e4abb2aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the Color tint used by the final scene present resolve.  <br /></td></tr>
+<tr class="separator:a7f78fc87bb010f1111d14383e4abb2aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfd0e45869589ed4e0c9da152fb7b0a3" id="r_adfd0e45869589ed4e0c9da152fb7b0a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#adfd0e45869589ed4e0c9da152fb7b0a3">sceneComposeTint</a> (bool aces, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:adfd0e45869589ed4e0c9da152fb7b0a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the Color tint for tonemapping into a linear HDR compose target.  <br /></td></tr>
+<tr class="separator:adfd0e45869589ed4e0c9da152fb7b0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fec07b9d2b4a8508a57fb5defe84325" id="r_a5fec07b9d2b4a8508a57fb5defe84325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a5fec07b9d2b4a8508a57fb5defe84325">uiResolveTint</a> (<a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a> space, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:a5fec07b9d2b4a8508a57fb5defe84325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the Color tint used when compositing SDR UI onto an HDR swapchain.  <br /></td></tr>
+<tr class="separator:a5fec07b9d2b4a8508a57fb5defe84325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06273b932f662b22eb02b3b77be61a36" id="r_a06273b932f662b22eb02b3b77be61a36"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a06273b932f662b22eb02b3b77be61a36">luminanceRec709</a> (float <a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float <a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="separator:a06273b932f662b22eb02b3b77be61a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa547540f632bf9e4d073c3060dc76553" id="r_aa547540f632bf9e4d073c3060dc76553"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#aa547540f632bf9e4d073c3060dc76553">rec709ToRec2020</a> (float &amp;<a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="memdesc:aa547540f632bf9e4d073c3060dc76553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert display-linear Rec.709 RGB into Rec.2020.  <br /></td></tr>
+<tr class="separator:aa547540f632bf9e4d073c3060dc76553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39701f3db77201b8f2894dcb9f65bdf4" id="r_a39701f3db77201b8f2894dcb9f65bdf4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a39701f3db77201b8f2894dcb9f65bdf4">linearToPq</a> (float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) noexcept</td></tr>
+<tr class="memdesc:a39701f3db77201b8f2894dcb9f65bdf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the ST.2084 PQ OETF to a [0,1] normalized luminance sample.  <br /></td></tr>
+<tr class="separator:a39701f3db77201b8f2894dcb9f65bdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a447d194ebd11b77bc9bbb7cd23108c50" id="r_a447d194ebd11b77bc9bbb7cd23108c50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a447d194ebd11b77bc9bbb7cd23108c50">encodeHdr10</a> (float &amp;<a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:a447d194ebd11b77bc9bbb7cd23108c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map filmic display-linear RGB (1 = paper white) into HDR10 PQ codes.  <br /></td></tr>
+<tr class="separator:a447d194ebd11b77bc9bbb7cd23108c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecc422dff59b803a53fc9fa6ee345194" id="r_aecc422dff59b803a53fc9fa6ee345194"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#aecc422dff59b803a53fc9fa6ee345194">acesToDisplayLinear</a> (float &amp;<a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:aecc422dff59b803a53fc9fa6ee345194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand ACES [0,1] output into display-linear relative to paper white.  <br /></td></tr>
+<tr class="separator:aecc422dff59b803a53fc9fa6ee345194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb20ac7cc98aed45b52d97d4336e8cb9" id="r_afb20ac7cc98aed45b52d97d4336e8cb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#afb20ac7cc98aed45b52d97d4336e8cb9">encodeScRgb</a> (float &amp;<a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float &amp;<a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float paperWhiteNits, float peakNits) noexcept</td></tr>
+<tr class="memdesc:afb20ac7cc98aed45b52d97d4336e8cb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map paper-white-relative display-linear RGB into scRGB (1.0 = 80 nits).  <br /></td></tr>
+<tr class="separator:afb20ac7cc98aed45b52d97d4336e8cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:aab1a18476df9dc7c649e8785a7500f91" id="r_aab1a18476df9dc7c649e8785a7500f91"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#aab1a18476df9dc7c649e8785a7500f91">kDefaultPaperWhiteNits</a> = 200.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aab1a18476df9dc7c649e8785a7500f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fca81c6808820dbdea3b4e5139e3c3b" id="r_a8fca81c6808820dbdea3b4e5139e3c3b"><td class="memItemLeft" align="right" valign="top">constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#a8fca81c6808820dbdea3b4e5139e3c3b">kDefaultPeakNits</a> = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8fca81c6808820dbdea3b4e5139e3c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ad6283529a0124a950c27c768f3d97d0b" name="ad6283529a0124a950c27c768f3d97d0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6283529a0124a950c27c768f3d97d0b">&#9670;&#160;</a></span>ActiveColorSpace</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">eve::graphics::display::ActiveColorSpace</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active present color encoding after swapchain selection. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162" name="ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162"></a>Sdr&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad6283529a0124a950c27c768f3d97d0badd4c2a8418ab27d7ef3100411899b790" name="ad6283529a0124a950c27c768f3d97d0badd4c2a8418ab27d7ef3100411899b790"></a>ScRgb&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad6283529a0124a950c27c768f3d97d0baddf9c15aeea6aa8388890e87b892cf17" name="ad6283529a0124a950c27c768f3d97d0baddf9c15aeea6aa8388890e87b892cf17"></a>Hdr10&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf37df8b462ac46f70346adbfd83a2aa" name="acf37df8b462ac46f70346adbfd83a2aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf37df8b462ac46f70346adbfd83a2aa">&#9670;&#160;</a></span>OutputMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1display.html#acf37df8b462ac46f70346adbfd83a2aa">eve::graphics::display::OutputMode</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Requested present preference; Auto picks Hdr10 then ScRgb then Sdr. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acf37df8b462ac46f70346adbfd83a2aaa5e8b4e08625f665f0ef915c49bb45162" name="acf37df8b462ac46f70346adbfd83a2aaa5e8b4e08625f665f0ef915c49bb45162"></a>Sdr&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acf37df8b462ac46f70346adbfd83a2aaa06b9281e396db002010bde1de57262eb" name="acf37df8b462ac46f70346adbfd83a2aaa06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acf37df8b462ac46f70346adbfd83a2aaaddf9c15aeea6aa8388890e87b892cf17" name="acf37df8b462ac46f70346adbfd83a2aaaddf9c15aeea6aa8388890e87b892cf17"></a>Hdr10&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acf37df8b462ac46f70346adbfd83a2aaadd4c2a8418ab27d7ef3100411899b790" name="acf37df8b462ac46f70346adbfd83a2aaadd4c2a8418ab27d7ef3100411899b790"></a>ScRgb&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aecc422dff59b803a53fc9fa6ee345194" name="aecc422dff59b803a53fc9fa6ee345194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecc422dff59b803a53fc9fa6ee345194">&#9670;&#160;</a></span>acesToDisplayLinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::acesToDisplayLinear </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Expand ACES [0,1] output into display-linear relative to paper white. </p>
+<p>Tonemap in a scaled domain so the shoulder lands near peak/paperWhite. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">clampCalibration()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a> , 以及 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>.</p>
+
+</div>
+</div>
+<a id="a8a85fecc0316784b9ff84e35f17f88d6" name="a8a85fecc0316784b9ff84e35f17f88d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a85fecc0316784b9ff84e35f17f88d6">&#9670;&#160;</a></span>clampCalibration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::clampCalibration </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clamp paper-white / peak luminance into the engine-supported range. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00146">acesToDisplayLinear()</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00129">encodeHdr10()</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00165">encodeScRgb()</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00033">packNits()</a>, <a class="el" href="DisplayOutput_8cpp_source.html#l00023">eve::graphics::Graphics::setDisplayHdrCalibration()</a>, <a class="el" href="GraphicsDisplayOutput_8cpp_source.html#l00107">eve::graphics::vulkan::Graphics::setDisplayHdrCalibration()</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00041">unpackNits()</a>.</p>
+
+</div>
+</div>
+<a id="a447d194ebd11b77bc9bbb7cd23108c50" name="a447d194ebd11b77bc9bbb7cd23108c50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a447d194ebd11b77bc9bbb7cd23108c50">&#9670;&#160;</a></span>encodeHdr10()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::encodeHdr10 </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map filmic display-linear RGB (1 = paper white) into HDR10 PQ codes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r,g,b</td><td>Display-linear Rec.709 channels relative to paper white. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">clampCalibration()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00114">linearToPq()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00104">rec709ToRec2020()</a>.</p>
+
+</div>
+</div>
+<a id="afb20ac7cc98aed45b52d97d4336e8cb9" name="afb20ac7cc98aed45b52d97d4336e8cb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb20ac7cc98aed45b52d97d4336e8cb9">&#9670;&#160;</a></span>encodeScRgb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::encodeScRgb </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map paper-white-relative display-linear RGB into scRGB (1.0 = 80 nits). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r,g,b</td><td>Display-linear Rec.709 channels relative to paper white. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">clampCalibration()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a169ff4e169f019e7899c7f2075943b86" name="a169ff4e169f019e7899c7f2075943b86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a169ff4e169f019e7899c7f2075943b86">&#9670;&#160;</a></span>isComposeLinearMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::display::isComposeLinearMode </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>packed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the tint G channel requests compose-linear (mode 3). </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39701f3db77201b8f2894dcb9f65bdf4" name="a39701f3db77201b8f2894dcb9f65bdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39701f3db77201b8f2894dcb9f65bdf4">&#9670;&#160;</a></span>linearToPq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::display::linearToPq </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the ST.2084 PQ OETF to a [0,1] normalized luminance sample. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00129">encodeHdr10()</a>.</p>
+
+</div>
+</div>
+<a id="a06273b932f662b22eb02b3b77be61a36" name="a06273b932f662b22eb02b3b77be61a36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06273b932f662b22eb02b3b77be61a36">&#9670;&#160;</a></span>luminanceRec709()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::display::luminanceRec709 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a> , 以及 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>.</p>
+
+</div>
+</div>
+<a id="ae2164bb809fec41864290f2ffb776a7b" name="ae2164bb809fec41864290f2ffb776a7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2164bb809fec41864290f2ffb776a7b">&#9670;&#160;</a></span>packActiveMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::display::packActiveMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Encode the active present mode into the resolve tint G channel. </p>
+<p><a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> modes: 0=SDR, 1=scRGB, 2=HDR10, 3=compose-linear (no encode). </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0baddf9c15aeea6aa8388890e87b892cf17">Hdr10</a>, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0badd4c2a8418ab27d7ef3100411899b790">ScRgb</a> , 以及 <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162">Sdr</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00079">sceneResolveTint()</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00094">uiResolveTint()</a>.</p>
+
+</div>
+</div>
+<a id="a651c963f607d2bdfa920832914aae176" name="a651c963f607d2bdfa920832914aae176"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a651c963f607d2bdfa920832914aae176">&#9670;&#160;</a></span>packComposeLinearMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::display::packComposeLinearMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tint G value for compose-linear output (paper-white-relative, no OETF). </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00089">sceneComposeTint()</a>.</p>
+
+</div>
+</div>
+<a id="a84f1d4a021ac6abb1eda5fe9680201dc" name="a84f1d4a021ac6abb1eda5fe9680201dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84f1d4a021ac6abb1eda5fe9680201dc">&#9670;&#160;</a></span>packNits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::display::packNits </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack paper-white and peak nits into one float for the present resolve tint. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">clampCalibration()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00089">sceneComposeTint()</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00079">sceneResolveTint()</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00094">uiResolveTint()</a>.</p>
+
+</div>
+</div>
+<a id="aa547540f632bf9e4d073c3060dc76553" name="aa547540f632bf9e4d073c3060dc76553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa547540f632bf9e4d073c3060dc76553">&#9670;&#160;</a></span>rec709ToRec2020()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::rec709ToRec2020 </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert display-linear Rec.709 RGB into Rec.2020. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a> , 以及 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00129">encodeHdr10()</a>.</p>
+
+</div>
+</div>
+<a id="adfd0e45869589ed4e0c9da152fb7b0a3" name="adfd0e45869589ed4e0c9da152fb7b0a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfd0e45869589ed4e0c9da152fb7b0a3">&#9670;&#160;</a></span>sceneComposeTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a> eve::graphics::display::sceneComposeTint </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>aces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the Color tint for tonemapping into a linear HDR compose target. </p>
+<p>Mode 3 skips PQ/scRGB encode so overlays can blend in display-linear space. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00063">packComposeLinearMode()</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00033">packNits()</a>.</p>
+
+</div>
+</div>
+<a id="a7f78fc87bb010f1111d14383e4abb2aa" name="a7f78fc87bb010f1111d14383e4abb2aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f78fc87bb010f1111d14383e4abb2aa">&#9670;&#160;</a></span>sceneResolveTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a> eve::graphics::display::sceneResolveTint </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>aces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>attachmentEncodesSrgb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the Color tint used by the final scene present resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00050">packActiveMode()</a>, <a class="el" href="DisplayOutputEncoding_8h_source.html#l00033">packNits()</a> , 以及 <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162">Sdr</a>.</p>
+
+</div>
+</div>
+<a id="a5fec07b9d2b4a8508a57fb5defe84325" name="a5fec07b9d2b4a8508a57fb5defe84325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fec07b9d2b4a8508a57fb5defe84325">&#9670;&#160;</a></span>uiResolveTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a> eve::graphics::display::uiResolveTint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the Color tint used when compositing SDR UI onto an HDR swapchain. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00050">packActiveMode()</a> , 以及 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00033">packNits()</a>.</p>
+
+</div>
+</div>
+<a id="a195cc800627de003e806d4f0822f9190" name="a195cc800627de003e806d4f0822f9190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a195cc800627de003e806d4f0822f9190">&#9670;&#160;</a></span>unpackActiveMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0b">ActiveColorSpace</a> eve::graphics::display::unpackActiveMode </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>packed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode the present mode from the resolve tint G channel. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0baddf9c15aeea6aa8388890e87b892cf17">Hdr10</a>, <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0badd4c2a8418ab27d7ef3100411899b790">ScRgb</a> , 以及 <a class="el" href="namespaceeve_1_1graphics_1_1display.html#ad6283529a0124a950c27c768f3d97d0ba5e8b4e08625f665f0ef915c49bb45162">Sdr</a>.</p>
+
+</div>
+</div>
+<a id="adcbb72fd81c556a0c42c52b92d06202f" name="adcbb72fd81c556a0c42c52b92d06202f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcbb72fd81c556a0c42c52b92d06202f">&#9670;&#160;</a></span>unpackNits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::display::unpackNits </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>packed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>paperWhiteNits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>peakNits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unpack paper-white and peak nits from the present resolve tint channel. </p>
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00027">clampCalibration()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="aab1a18476df9dc7c649e8785a7500f91" name="aab1a18476df9dc7c649e8785a7500f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab1a18476df9dc7c649e8785a7500f91">&#9670;&#160;</a></span>kDefaultPaperWhiteNits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::graphics::display::kDefaultPaperWhiteNits = 200.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8fca81c6808820dbdea3b4e5139e3c3b" name="a8fca81c6808820dbdea3b4e5139e3c3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fca81c6808820dbdea3b4e5139e3c3b">&#9670;&#160;</a></span>kDefaultPeakNits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::graphics::display::kDefaultPeakNits = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DisplayOutputEncoding_8h_source.html">DisplayOutputEncoding.h</a> 第 <a class="el" href="DisplayOutputEncoding_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

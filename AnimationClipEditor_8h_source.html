@@ -1,0 +1,387 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/editor/AnimationClipEditor.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li><li class="navelem"><a class="el" href="dir_18c874d68fc3d101200ef7faa747758a.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimationClipEditor.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimationClipEditor_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="AnimationClip_8h.html">animation/editing/AnimationClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="SkeletonOverlay_8h.html">animation/editing/SkeletonOverlay.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="EditingGizmo_8h.html">editing/EditingGizmo.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAuthority_8h.html">editor/EditorAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="EditorTransactionService_8h.html">editor/EditorTransactionService.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="EditorWorkspace_8h.html">editor/EditorWorkspace.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation__editor.html">eve::animation_editor</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">   37</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a817e176557c9bf2fd750d6c9fabd7d18">EVENGINE_API_EDITORS</a> <a class="code hl_class" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a>(std::string targetId);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a587713171297dab70fccd1d06d13ea79">   49</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a587713171297dab70fccd1d06d13ea79">loadRuntimeClip</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>&amp; skeleton,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af7b606f962fd7f33a27a4731202872bc">   58</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af7b606f962fd7f33a27a4731202872bc">writeRuntimeClip</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                                         <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>&amp; skeleton) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d51984657c33e8ec54aaf803e3dadf4">   61</a></span>    <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d51984657c33e8ec54aaf803e3dadf4">AnimationClipEditor</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa66a311842537c1117015272baba0f85">   62</a></span>    <a class="code hl_class" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a>&amp; <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa66a311842537c1117015272baba0f85">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af84fbeb3c02eca9e4b30b26e0aa8ccce">   65</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">animation_editing::AnimationClipDocumentTarget</a>&amp; <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af84fbeb3c02eca9e4b30b26e0aa8ccce">target</a>() const noexcept { <span class="keywordflow">return</span> target_; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> configureWorkspace(<a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a>&amp; workspace) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setViewport(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> rowHeight, <span class="keywordtype">float</span> labelWidth);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> seekSeconds(<span class="keywordtype">double</span> seconds);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> seekX(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> pointerDown(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> selectBone(std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setMaskWeight(<span class="keywordtype">double</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setDuration(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setSampleRate(<span class="keywordtype">double</span> sampleRate);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setLoop(<span class="keywordtype">bool</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> keySelectedBone();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> deleteSelectedKey();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setSelectedPosition(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setSelectedRotation(<span class="keywordtype">double</span> xDegrees, <span class="keywordtype">double</span> yDegrees,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                                                            <span class="keywordtype">double</span> zDegrees);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> setSelectedScale(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;void&gt;</a> moveSelectedKey(<span class="keywordtype">double</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;editor::TransactionReceipt&gt;</a> undo();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">animation_editing::EditorResult&lt;editor::TransactionReceipt&gt;</a> redo();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> play() noexcept;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> pause() noexcept;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">void</span> stop() noexcept;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] animation_editing::EditorResult&lt;<span class="keywordtype">void</span>&gt; update(<span class="keywordtype">double</span> deltaSeconds);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac2229ce0e2b9c07b3734fd28bd72da5b">  120</a></span>    <span class="keywordtype">bool</span>          canUndo() const noexcept { <span class="keywordflow">return</span> transactions_.canUndo(); }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad8d84f290ed907e50efd3594fadb8c95">  121</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad8d84f290ed907e50efd3594fadb8c95">canRedo</a>() const noexcept { <span class="keywordflow">return</span> transactions_.canRedo(); }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#afb8b05dbf4ae7a8d302933e4a2db1089">  122</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#afb8b05dbf4ae7a8d302933e4a2db1089">isPlaying</a>() const noexcept { <span class="keywordflow">return</span> playing_; }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7771f16625519fb9d803c6df25cd061a">  123</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7771f16625519fb9d803c6df25cd061a">revision</a>() const noexcept { <span class="keywordflow">return</span> target_.revision(); }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">  124</a></span>    <span class="keywordtype">double</span>        <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">duration</a>() const noexcept { <span class="keywordflow">return</span> target_.duration(); }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">  125</a></span>    <span class="keywordtype">double</span>        <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">sampleRate</a>() const noexcept { <span class="keywordflow">return</span> target_.sampleRate(); }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a64f1ff92991892c2c4cda8bf6883fb16">  126</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a64f1ff92991892c2c4cda8bf6883fb16">isLooping</a>() const noexcept { <span class="keywordflow">return</span> target_.isLooping(); }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ceed144a1923acdd0160c9dfa10bd1d">  127</a></span>    <span class="keywordtype">double</span>        <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ceed144a1923acdd0160c9dfa10bd1d">playhead</a>() const noexcept { <span class="keywordflow">return</span> playhead_; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9eab9c9ab371c0c57028c57008d1458">  128</a></span>    <span class="keywordtype">float</span>         <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9eab9c9ab371c0c57028c57008d1458">layoutWidth</a>() const noexcept { <span class="keywordflow">return</span> viewportWidth_; }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">float</span>         layoutHeight() const noexcept;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">float</span>         playheadX() const noexcept;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ba13387bab1d5de60546d13f7b9321d">  131</a></span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>   selectedBone()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> selectedBone_; }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">double</span>        selectedMaskWeight() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abe661bbfb1119f3c33e2dc1e9e5006dc">  133</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_function" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abe661bbfb1119f3c33e2dc1e9e5006dc">hasSelectedKey</a>() const noexcept { <span class="keywordflow">return</span> !selectedKeyId_.empty(); }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">double</span>        selectedKeyTime() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">double</span>        selectedPositionX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">double</span>        selectedPositionY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">double</span>        selectedPositionZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">double</span>        selectedRotationX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">double</span>        selectedRotationY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">double</span>        selectedRotationZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">double</span>        selectedScaleX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">double</span>        selectedScaleY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">double</span>        selectedScaleZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">int</span>           boneCount() const noexcept;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>   boneName(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>   boneParent(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">int</span>         trackCount() const;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> trackBone(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">bool</span>        isTrackSelected(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">int</span>         keyCount() const;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">float</span>       keyX(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">float</span>       keyY(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">bool</span>        isKeySelected(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">int</span>         eventCount() const;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">float</span>       eventX(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> eventName(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordtype">int</span>         primitiveCount() const;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> primitiveKind(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">float</span>       primitiveX(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">float</span>       primitiveY(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">float</span>       primitiveDirX(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">float</span>       primitiveDirY(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">float</span>       primitiveLength(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">float</span>       primitiveRadius(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">float</span>       primitiveR(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">float</span>       primitiveG(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">float</span>       primitiveB(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a37284ccf7721374af9d2b98188de62d3">  172</a></span>    const animation_editing::AnimationClipPreview&amp; preview() const noexcept { <span class="keywordflow">return</span> preview_; }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">struct </span>SkeletonBone {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        std::string <a class="code hl_variable" href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    };</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">struct </span>TimelineKey {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">animation_editing::StableId</a> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        std::string                 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordtype">int</span>                         keyIndex = 0;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordtype">double</span>                      <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a>     = 0.0;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordtype">int</span>                         row      = 0;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    };</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    [[nodiscard]] animation_editing::EditorResult&lt;void&gt; commit(</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        animation_editing::EditorResult&lt;animation_editing::DomainOperation&gt; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, std::string <a class="code hl_variable" href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    [[nodiscard]] animation_editing::EditorResult&lt;void&gt; refreshPreview();</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    [[nodiscard]] animation_editing::EditorResult&lt;void&gt; updateSelectedTransform(</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">const</span> animation_editing::AnimationTransformKey&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, std::string <a class="code hl_variable" href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a>);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    [[nodiscard]] animation_editing::AnimationTransformKey sampledSelectedTransform() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">void</span>                                                seedPreviewClip();</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    std::vector&lt;std::string&gt;                            skeletonBones() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    std::string                                         skeletonParent(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">float</span>                                               timeToX(<span class="keywordtype">double</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">double</span>                                              xToTime(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoPrimitive.html">eve::editing::GizmoPrimitive</a>*                 primitiveAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    std::vector&lt;TimelineKey&gt;                            flattenKeys() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    animation_editing::AnimationClipDocumentTarget target_;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    editor::LocalWorldAuthority                    authority_;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    editor::LocalTransactionBackend                transactions_;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    animation_editing::SkeletonOverlayBuilder      overlayBuilder_;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    animation_editing::AnimationClipPreview        preview_;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoSnapshot.html">eve::editing::GizmoSnapshot</a>                    overlay_;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    std::string                                    selectedBone_ = <span class="stringliteral">&quot;Hips&quot;</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    animation_editing::StableId                    selectedKeyTrack_;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    animation_editing::StableId                    selectedKeyId_;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    std::uint64_t                                  txSequence_       = 0;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordtype">double</span>                                         playhead_         = 0.0;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">bool</span>                                           playing_          = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordtype">float</span>                                          viewportWidth_    = 800.0f;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">float</span>                                          rowHeight_        = 36.0f;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">float</span>                                          labelWidth_       = 120.0f;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    std::vector&lt;SkeletonBone&gt;                      skeleton_;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>};</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}  <span class="comment">// namespace eve::animation_editor</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00159">ActionNotifyRegistry.cpp:159</a></div></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a3d46ec202b30bb5881fea13fd722e5eb"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a></div><div class="ttdeci">Duration time</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">ActionTimelinePayloadEditor.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a796271009cb4b679640c5ea4ecf8f6c8"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a></div><div class="ttdeci">LogicalId trackId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00019">ActionTimelinePayloadEditor.cpp:19</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a66625d8d6c0894b4828b43f826a09b8f"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00018">AnimCurveLibrary.cpp:18</a></div></div>
+<div class="ttc" id="aAnimationClip_8h_html"><div class="ttname"><a href="AnimationClip_8h.html">AnimationClip.h</a></div></div>
+<div class="ttc" id="aDnutCompiler_8cpp_html_a1dd28f5ea7b5b0780013e960944ddaa0"><div class="ttname"><a href="DnutCompiler_8cpp.html#a1dd28f5ea7b5b0780013e960944ddaa0">label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00038">DnutCompiler.cpp:38</a></div></div>
+<div class="ttc" id="aEditingGizmo_8h_html"><div class="ttname"><a href="EditingGizmo_8h.html">EditingGizmo.h</a></div></div>
+<div class="ttc" id="aEditorAuthority_8h_html"><div class="ttname"><a href="EditorAuthority_8h.html">EditorAuthority.h</a></div></div>
+<div class="ttc" id="aEditorTransactionService_8h_html"><div class="ttname"><a href="EditorTransactionService_8h.html">EditorTransactionService.h</a></div></div>
+<div class="ttc" id="aEditorWorkspace_8h_html"><div class="ttname"><a href="EditorWorkspace_8h.html">EditorWorkspace.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a817e176557c9bf2fd750d6c9fabd7d18"><div class="ttname"><a href="Export_8h.html#a817e176557c9bf2fd750d6c9fabd7d18">EVENGINE_API_EDITORS</a></div><div class="ttdeci">#define EVENGINE_API_EDITORS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00112">Export.h:112</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a5ed2b25d9f2f070cb0ee764aa0985308"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a></div><div class="ttdeci">bool loop</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00034">LegacyAnimationImporter.cpp:34</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_aa998c8d51ac188304eb2c6ae8549c6d2"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a></div><div class="ttdeci">std::uint32_t bone</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00024">LegacyAnimationImporter.cpp:24</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_ae5a367e308f2a54eea84358fbc9bee47"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a></div><div class="ttdeci">std::int32_t parent</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00014">LegacyAnimationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aMcpScriptTools_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="McpScriptTools_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="McpScriptTools_8cpp_source.html#l00040">McpScriptTools.cpp:40</a></div></div>
+<div class="ttc" id="aSkeletonOverlay_8h_html"><div class="ttname"><a href="SkeletonOverlay_8h.html">SkeletonOverlay.h</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_a99108733d00274978a4979dc072bd513"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a></div><div class="ttdeci">double weight</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00164">UnityVegetationMaterial.cpp:164</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00163">UnityVegetationMaterial.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00296">Identity.h:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00145">AnimClip.h:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00016">AnimSkeleton.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationClipDocumentTarget_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">eve::animation_editing::AnimationClipDocumentTarget</a></div><div class="ttdoc">UI-neutral animation clip document with reversible stable-id timeline edits.</div><div class="ttdef"><b>Definition</b> <a href="AnimationClip_8h_source.html#l00100">AnimationClip.h:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></div><div class="ttdoc">Timeline-style controller for one authored animation clip.</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00037">AnimationClipEditor.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a2cd5231629ed88b3b9283c2815be58c2"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">eve::animation_editor::AnimationClipEditor::duration</a></div><div class="ttdeci">double duration() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00124">AnimationClipEditor.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a587713171297dab70fccd1d06d13ea79"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a587713171297dab70fccd1d06d13ea79">eve::animation_editor::AnimationClipEditor::loadRuntimeClip</a></div><div class="ttdeci">animation_editing::EditorResult&lt; void &gt; loadRuntimeClip(const animation::AnimSkeleton &amp;skeleton, const animation::AnimClip &amp;clip)</div><div class="ttdoc">Atomically replace the editor document from a real runtime skeleton and clip.</div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a64f1ff92991892c2c4cda8bf6883fb16"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a64f1ff92991892c2c4cda8bf6883fb16">eve::animation_editor::AnimationClipEditor::isLooping</a></div><div class="ttdeci">bool isLooping() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00126">AnimationClipEditor.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a6ceed144a1923acdd0160c9dfa10bd1d"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ceed144a1923acdd0160c9dfa10bd1d">eve::animation_editor::AnimationClipEditor::playhead</a></div><div class="ttdeci">double playhead() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00127">AnimationClipEditor.h:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a7771f16625519fb9d803c6df25cd061a"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7771f16625519fb9d803c6df25cd061a">eve::animation_editor::AnimationClipEditor::revision</a></div><div class="ttdeci">std::uint64_t revision() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00123">AnimationClipEditor.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a7ea284e53797d3d86cf9d25fcc853803"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">eve::animation_editor::AnimationClipEditor::sampleRate</a></div><div class="ttdeci">double sampleRate() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00125">AnimationClipEditor.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_a9d51984657c33e8ec54aaf803e3dadf4"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d51984657c33e8ec54aaf803e3dadf4">eve::animation_editor::AnimationClipEditor::AnimationClipEditor</a></div><div class="ttdeci">AnimationClipEditor(const AnimationClipEditor &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_aa66a311842537c1117015272baba0f85"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa66a311842537c1117015272baba0f85">eve::animation_editor::AnimationClipEditor::operator=</a></div><div class="ttdeci">AnimationClipEditor &amp; operator=(const AnimationClipEditor &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_aa9eab9c9ab371c0c57028c57008d1458"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9eab9c9ab371c0c57028c57008d1458">eve::animation_editor::AnimationClipEditor::layoutWidth</a></div><div class="ttdeci">float layoutWidth() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00128">AnimationClipEditor.h:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_abe661bbfb1119f3c33e2dc1e9e5006dc"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#abe661bbfb1119f3c33e2dc1e9e5006dc">eve::animation_editor::AnimationClipEditor::hasSelectedKey</a></div><div class="ttdeci">bool hasSelectedKey() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00133">AnimationClipEditor.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_ad8d84f290ed907e50efd3594fadb8c95"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad8d84f290ed907e50efd3594fadb8c95">eve::animation_editor::AnimationClipEditor::canRedo</a></div><div class="ttdeci">bool canRedo() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00121">AnimationClipEditor.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_af7b606f962fd7f33a27a4731202872bc"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af7b606f962fd7f33a27a4731202872bc">eve::animation_editor::AnimationClipEditor::writeRuntimeClip</a></div><div class="ttdeci">animation_editing::EditorResult&lt; void &gt; writeRuntimeClip(animation::AnimClip &amp;clip, const animation::AnimSkeleton &amp;skeleton) const</div><div class="ttdoc">Replace a runtime clip with the current authoritative editor document.</div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_af84fbeb3c02eca9e4b30b26e0aa8ccce"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af84fbeb3c02eca9e4b30b26e0aa8ccce">eve::animation_editor::AnimationClipEditor::target</a></div><div class="ttdeci">const animation_editing::AnimationClipDocumentTarget &amp; target() const noexcept</div><div class="ttdoc">Borrow the authoritative clip document.</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00065">AnimationClipEditor.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editor_1_1AnimationClipEditor_html_afb8b05dbf4ae7a8d302933e4a2db1089"><div class="ttname"><a href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#afb8b05dbf4ae7a8d302933e4a2db1089">eve::animation_editor::AnimationClipEditor::isPlaying</a></div><div class="ttdeci">bool isPlaying() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8h_source.html#l00122">AnimationClipEditor.h:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html">eve::editor::EditorWorkspace</a></div><div class="ttdoc">Composition model shared by project-specific developer and runtime editors.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00043">EditorWorkspace.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editor_html"><div class="ttname"><a href="namespaceeve_1_1animation__editor.html">eve::animation_editor</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationClipEditor_8cpp_source.html#l00017">AnimationClipEditor.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00057">Animation.cpp:57</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00564">Container.h:564</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoPrimitive_html"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoPrimitive.html">eve::editing::GizmoPrimitive</a></div><div class="ttdoc">Renderer-neutral wire primitive for authoring viewport overlays.</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00012">EditingGizmo.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html">eve::editing::GizmoSnapshot</a></div><div class="ttdoc">Immutable revision-tagged overlay snapshot consumed by any viewport renderer.</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00027">EditingGizmo.h:27</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

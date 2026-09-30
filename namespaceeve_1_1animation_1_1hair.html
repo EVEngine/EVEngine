@@ -1,0 +1,344 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::hair 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation_1_1hair.html">hair</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::hair 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Convenience helpers for hair/tail/accessory spring chains on <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html" title="World-space spring-chain solver that writes results as local bone rotations.">DynamicBoneSolver</a>.  
+<a href="namespaceeve_1_1animation_1_1hair.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1hair_1_1ChainDesc.html">ChainDesc</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One named spring chain with game-friendly hair defaults.  <a href="structeve_1_1animation_1_1hair_1_1ChainDesc.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ac73fe7c70d68bf6e0a4503b0edf6dbf6" id="r_ac73fe7c70d68bf6e0a4503b0edf6dbf6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1hair.html#ac73fe7c70d68bf6e0a4503b0edf6dbf6">addChain</a> (<a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;solver, const <a class="el" href="structeve_1_1animation_1_1hair_1_1ChainDesc.html">ChainDesc</a> &amp;<a class="el" href="EvpackSceneTemplateLoader_8cpp.html#a756a08fb035410e457b83b4e5c1ce433">desc</a>)</td></tr>
+<tr class="memdesc:ac73fe7c70d68bf6e0a4503b0edf6dbf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add one hair/tail chain by bone name.  <br /></td></tr>
+<tr class="separator:ac73fe7c70d68bf6e0a4503b0edf6dbf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abac3b6bb9a1c54e65a4bd8e7dd2a561c" id="r_abac3b6bb9a1c54e65a4bd8e7dd2a561c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1hair.html#abac3b6bb9a1c54e65a4bd8e7dd2a561c">setupChains</a> (<a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;solver, const std::vector&lt; <a class="el" href="structeve_1_1animation_1_1hair_1_1ChainDesc.html">ChainDesc</a> &gt; &amp;chains, bool clearFirst=true)</td></tr>
+<tr class="memdesc:abac3b6bb9a1c54e65a4bd8e7dd2a561c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace or append hair chains.  <br /></td></tr>
+<tr class="separator:abac3b6bb9a1c54e65a4bd8e7dd2a561c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3551ff338a3e07a0265e52b10b957c6c" id="r_a3551ff338a3e07a0265e52b10b957c6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1hair.html#a3551ff338a3e07a0265e52b10b957c6c">addHeadCollider</a> (<a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;solver, const std::string &amp;boneName, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>=0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float offsetZ=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a3551ff338a3e07a0265e52b10b957c6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a bone-following sphere collider (typically the head) for hair chains.  <br /></td></tr>
+<tr class="separator:a3551ff338a3e07a0265e52b10b957c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Convenience helpers for hair/tail/accessory spring chains on <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html" title="World-space spring-chain solver that writes results as local bone rotations.">DynamicBoneSolver</a>. </p>
+<p>This is the recommended path for card-based hair motion (guide bones), not strand simulation. Graphics never includes this header — sample bone positions in avatar/ script code and feed card meshes separately. </p>
+</div><h2 class="groupheader">函数说明</h2>
+<a id="ac73fe7c70d68bf6e0a4503b0edf6dbf6" name="ac73fe7c70d68bf6e0a4503b0edf6dbf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac73fe7c70d68bf6e0a4503b0edf6dbf6">&#9670;&#160;</a></span>addChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::animation::hair::addChain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1hair_1_1ChainDesc.html">ChainDesc</a> &amp;&#160;</td>
+          <td class="paramname"><em>desc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add one hair/tail chain by bone name. </p>
+<dl class="section return"><dt>返回</dt><dd>Chain index on success. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HairDynamicBones_8cpp_source.html">HairDynamicBones.cpp</a> 第 <a class="el" href="HairDynamicBones_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00079">eve::animation::DynamicBoneSolver::addChainByName()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00051">desc</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00097">eve::animation::DynamicBoneSolver::setChainEndLength()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00088">eve::animation::DynamicBoneSolver::setChainSelfCollision()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairDynamicBones_8cpp_source.html#l00041">setupChains()</a> , 以及 <a class="el" href="Animation_8cpp_source.html#l00339">eve::animation::Animation::setupHairChain()</a>.</p>
+
+</div>
+</div>
+<a id="a3551ff338a3e07a0265e52b10b957c6c" name="a3551ff338a3e07a0265e52b10b957c6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3551ff338a3e07a0265e52b10b957c6c">&#9670;&#160;</a></span>addHeadCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::animation::hair::addHeadCollider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>boneName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em> = <code>0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetY</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetZ</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a bone-following sphere collider (typically the head) for hair chains. </p>
+<dl class="section return"><dt>返回</dt><dd>Collider count after add, or failure when the bone cannot be resolved. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HairDynamicBones_8cpp_source.html">HairDynamicBones.cpp</a> 第 <a class="el" href="HairDynamicBones_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00110">eve::animation::DynamicBoneSolver::addBoneColliderSphere()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00114">eve::animation::DynamicBoneSolver::getColliderCount()</a>, <a class="el" href="DynamicBoneSolver_8h_source.html#l00051">eve::animation::DynamicBoneSolver::getSkeleton()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>, <a class="el" href="TileConfig_8cpp_source.html#l00918">offsetY</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00355">eve::animation::Animation::setupHairHeadCollider()</a>.</p>
+
+</div>
+</div>
+<a id="abac3b6bb9a1c54e65a4bd8e7dd2a561c" name="abac3b6bb9a1c54e65a4bd8e7dd2a561c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abac3b6bb9a1c54e65a4bd8e7dd2a561c">&#9670;&#160;</a></span>setupChains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::hair::setupChains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td>
+          <td class="paramname"><em>solver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1animation_1_1hair_1_1ChainDesc.html">ChainDesc</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>chains</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clearFirst</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace or append hair chains. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clearFirst</td><td>When true, clears existing chains before adding. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairDynamicBones_8cpp_source.html">HairDynamicBones.cpp</a> 第 <a class="el" href="HairDynamicBones_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HairDynamicBones_8cpp_source.html#l00022">addChain()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00084">eve::animation::DynamicBoneSolver::clearChains()</a>, <a class="el" href="Diagnostic_8h_source.html#l00137">eve::Diagnostic::message()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

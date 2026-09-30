@@ -1,0 +1,316 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/PcgTerrainStreaming.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgTerrainStreaming.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgTerrainStreaming_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PcgTerrainStreaming_8h.html">procgen/heightmap/PcgTerrainStreaming.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a883d352b7f94caa453990414c5981e96">    9</a></span><a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a883d352b7f94caa453990414c5981e96">PcgTerrainStreamingAuthority::~PcgTerrainStreamingAuthority</a>() {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">if</span> (authority_) cap::removeListener&lt;IPhotoModeFieldSink&gt;(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a74470df2ec0e6bff9ac3c44829129c01">   13</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a74470df2ec0e6bff9ac3c44829129c01">PcgTerrainStreamingAuthority::setTarget</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1TerrainStreamingCache.html">TerrainStreamingCache</a>* cache, <span class="keywordtype">float</span> worldUnitsPerSample) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!std::isfinite(worldUnitsPerSample) || worldUnitsPerSample &lt;= 0.f) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            <span class="stringliteral">&quot;world units per sample must be positive and finite&quot;</span>, {}, {}, <span class="stringliteral">&quot;procgen.pcgTerrainStreaming&quot;</span>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    cache_ = cache;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    state_.<a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#af422b5f1c82b403bfdd0e6d329c7ea22">worldUnitsPerSample</a> = worldUnitsPerSample;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a32239d14d3c4c609aa836e5c6c528f11">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a32239d14d3c4c609aa836e5c6c528f11">PcgTerrainStreamingAuthority::setAuthority</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a> == authority_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) cap::addListener&lt;IPhotoModeFieldSink&gt;(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">else</span> cap::removeListener&lt;IPhotoModeFieldSink&gt;(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    authority_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ac8710e9f3d695ca8296d8931d7e88868">   30</a></span><a class="code hl_enumeration" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ac8710e9f3d695ca8296d8931d7e88868">PcgTerrainStreamingAuthority::acceptsPhotoModeField</a>(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> assignment.domain == <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d">PhotoModeDomain::Streaming</a> ? <a class="code hl_enumvalue" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678">PhotoModeFieldAcceptance::Accepted</a></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                                            : <a class="code hl_enumvalue" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699">PhotoModeFieldAcceptance::Rejected</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#abcaa6299ceaa00fdaa51695abc60ba93">   36</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#abcaa6299ceaa00fdaa51695abc60ba93">PcgTerrainStreamingAuthority::applyPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a> = std::get_if&lt;float&gt;(&amp;assignment.<a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#a441bcca343de9970d1398cabc169909d">value</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a> || !std::isfinite(*<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) || *value &lt; 0.f || *value &gt; 5000.f) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="stringliteral">&quot;streaming range must be finite in [0,5000]&quot;</span>, assignment.<a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">field</a>, {},</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="stringliteral">&quot;procgen.pcgTerrainStreaming&quot;</span>));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> next = state_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (assignment.<a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">field</a> == <span class="stringliteral">&quot;m_pcgLoadRange&quot;</span>) next.regularRange = *<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (assignment.<a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">field</a> == <span class="stringliteral">&quot;m_pcgImpostorRange&quot;</span>) next.impostorRange = *<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="stringliteral">&quot;unsupported streaming photo-mode field&quot;</span>, assignment.<a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">field</a>, {}, <span class="stringliteral">&quot;procgen.pcgTerrainStreaming&quot;</span>));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    state_ = next;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keywordtype">int</span> PcgTerrainStreamingAuthority::rangeToChunks(<span class="keywordtype">float</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!cache_) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> chunkSize = cache_-&gt;asset().getChunkSize();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (chunkSize &lt;= 0) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> / (state_.worldUnitsPerSample * <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(chunkSize))));</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a3ed7ab323879520633969a8f63f9a81d">   61</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a3ed7ab323879520633969a8f63f9a81d">PcgTerrainStreamingAuthority::regularRadiusChunks</a>() const noexcept {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> rangeToChunks(state_.<a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#a5f8afb340b3690ec5103881d70e9b89e">regularRange</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a6b51a26feda35b6a2a80000b70382250">   65</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a6b51a26feda35b6a2a80000b70382250">PcgTerrainStreamingAuthority::impostorRadiusChunks</a>() const noexcept {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> rangeToChunks(state_.<a class="code hl_variable" href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#a1d051a355e7474010ff98c3b1febf8f5">impostorRange</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ad4a73421ab6589752154fdf7645427eb">   69</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TerrainStreamStats&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ad4a73421ab6589752154fdf7645427eb">PcgTerrainStreamingAuthority::streamAround</a>(</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">int</span> worldSampleX, <span class="keywordtype">int</span> worldSampleY, <span class="keywordtype">int</span> maxLoads) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!cache_) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;TerrainStreamStats&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="stringliteral">&quot;terrain streaming cache is unavailable&quot;</span>, {}, {}, <span class="stringliteral">&quot;procgen.pcgTerrainStreaming&quot;</span>));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (maxLoads &lt; 0) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;TerrainStreamStats&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="stringliteral">&quot;maximum loads must be non-negative&quot;</span>, {}, {}, <span class="stringliteral">&quot;procgen.pcgTerrainStreaming&quot;</span>));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;TerrainStreamStats&gt;::success</a>(</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        cache_-&gt;<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainStreamingCache.html#adcdf5196ba31172f56c634c04edc1c23">streamAround</a>(worldSampleX, worldSampleY, <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a3ed7ab323879520633969a8f63f9a81d">regularRadiusChunks</a>(), maxLoads));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a0c4355432cf5a7c24dfe80d8a1dd3896">   83</a></span><a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694">PcgTerrainStreamingTier</a> <a class="code hl_function" href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a0c4355432cf5a7c24dfe80d8a1dd3896">PcgTerrainStreamingAuthority::tierForDistance</a>(<span class="keywordtype">float</span> worldDistance) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!std::isfinite(worldDistance) || worldDistance &lt; 0.f) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aa5ae20aa7fda5bd38bf0dce98e65bd2d">PcgTerrainStreamingTier::Unloaded</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (worldDistance &lt;= state_.regularRange) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694ad2203cb1237cb6460cbad94564e39345">PcgTerrainStreamingTier::Regular</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (worldDistance &lt;= state_.impostorRange) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aed0b2800891993e5157930d89d6c4dd8">PcgTerrainStreamingTier::Impostor</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aa5ae20aa7fda5bd38bf0dce98e65bd2d">PcgTerrainStreamingTier::Unloaded</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00160">ActionNotifyRegistry.cpp:160</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad73a08b362d03aef0cbf46e78c9c0631"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00020">LanguageIndex.cpp:20</a></div></div>
+<div class="ttc" id="aPcgTerrainStreaming_8h_html"><div class="ttname"><a href="PcgTerrainStreaming_8h.html">PcgTerrainStreaming.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a0c4355432cf5a7c24dfe80d8a1dd3896"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a0c4355432cf5a7c24dfe80d8a1dd3896">eve::procgen::PcgTerrainStreamingAuthority::tierForDistance</a></div><div class="ttdeci">PcgTerrainStreamingTier tierForDistance(float worldDistance) const noexcept</div><div class="ttdoc">Select the runtime representation for a world-space distance.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00083">PcgTerrainStreaming.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a32239d14d3c4c609aa836e5c6c528f11"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a32239d14d3c4c609aa836e5c6c528f11">eve::procgen::PcgTerrainStreamingAuthority::setAuthority</a></div><div class="ttdeci">void setAuthority(bool enabled)</div><div class="ttdoc">Register or revoke the unique Streaming-domain PhotoMode authority.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00023">PcgTerrainStreaming.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a3ed7ab323879520633969a8f63f9a81d"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a3ed7ab323879520633969a8f63f9a81d">eve::procgen::PcgTerrainStreamingAuthority::regularRadiusChunks</a></div><div class="ttdeci">int regularRadiusChunks() const noexcept</div><div class="ttdoc">Return the regular residency radius after conversion to chunks.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00061">PcgTerrainStreaming.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a6b51a26feda35b6a2a80000b70382250"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a6b51a26feda35b6a2a80000b70382250">eve::procgen::PcgTerrainStreamingAuthority::impostorRadiusChunks</a></div><div class="ttdeci">int impostorRadiusChunks() const noexcept</div><div class="ttdoc">Return the impostor visibility radius after conversion to chunks.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00065">PcgTerrainStreaming.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a74470df2ec0e6bff9ac3c44829129c01"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a74470df2ec0e6bff9ac3c44829129c01">eve::procgen::PcgTerrainStreamingAuthority::setTarget</a></div><div class="ttdeci">Result&lt; void &gt; setTarget(TerrainStreamingCache *cache, float worldUnitsPerSample)</div><div class="ttdoc">Attach a borrowed cache and define the world size of one terrain sample.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00013">PcgTerrainStreaming.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_a883d352b7f94caa453990414c5981e96"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#a883d352b7f94caa453990414c5981e96">eve::procgen::PcgTerrainStreamingAuthority::~PcgTerrainStreamingAuthority</a></div><div class="ttdeci">~PcgTerrainStreamingAuthority() override</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00009">PcgTerrainStreaming.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_abcaa6299ceaa00fdaa51695abc60ba93"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#abcaa6299ceaa00fdaa51695abc60ba93">eve::procgen::PcgTerrainStreamingAuthority::applyPhotoModeField</a></div><div class="ttdeci">Result&lt; void &gt; applyPhotoModeField(const PhotoModeAssignment &amp;assignment) override</div><div class="ttdoc">Apply one accepted assignment atomically on the game thread.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00036">PcgTerrainStreaming.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_ac8710e9f3d695ca8296d8931d7e88868"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ac8710e9f3d695ca8296d8931d7e88868">eve::procgen::PcgTerrainStreamingAuthority::acceptsPhotoModeField</a></div><div class="ttdeci">PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment &amp;assignment) const noexcept override</div><div class="ttdoc">Return true only for fields owned by this provider.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00030">PcgTerrainStreaming.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PcgTerrainStreamingAuthority_html_ad4a73421ab6589752154fdf7645427eb"><div class="ttname"><a href="classeve_1_1procgen_1_1PcgTerrainStreamingAuthority.html#ad4a73421ab6589752154fdf7645427eb">eve::procgen::PcgTerrainStreamingAuthority::streamAround</a></div><div class="ttdeci">Result&lt; TerrainStreamStats &gt; streamAround(int worldSampleX, int worldSampleY, int maxLoads=0)</div><div class="ttdoc">Stream full terrain chunks around a world-space sample coordinate.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8cpp_source.html#l00069">PcgTerrainStreaming.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainStreamingCache_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainStreamingCache.html">eve::procgen::TerrainStreamingCache</a></div><div class="ttdoc">Runtime decoded-chunk cache for an EVTR terrain asset.</div><div class="ttdef"><b>Definition</b> <a href="TerrainStreaming_8h_source.html#l00049">TerrainStreaming.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainStreamingCache_html_adcdf5196ba31172f56c634c04edc1c23"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainStreamingCache.html#adcdf5196ba31172f56c634c04edc1c23">eve::procgen::TerrainStreamingCache::streamAround</a></div><div class="ttdeci">TerrainStreamStats streamAround(int worldX, int worldY, int radiusChunks, int maxLoads=0, std::string *error=nullptr)</div><div class="ttdoc">Stream chunks around a world-space sample coordinate.</div><div class="ttdef"><b>Definition</b> <a href="TerrainStreaming_8cpp_source.html#l00034">TerrainStreaming.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a1e3964a6fd328b07fdda713f96fd5694"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694">eve::procgen::PcgTerrainStreamingTier</a></div><div class="ttdeci">PcgTerrainStreamingTier</div><div class="ttdoc">Runtime representation selected by Pcg's regular and impostor ranges.</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8h_source.html#l00011">PcgTerrainStreaming.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a1e3964a6fd328b07fdda713f96fd5694aa5ae20aa7fda5bd38bf0dce98e65bd2d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aa5ae20aa7fda5bd38bf0dce98e65bd2d">eve::procgen::PcgTerrainStreamingTier::Unloaded</a></div><div class="ttdeci">@ Unloaded</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a1e3964a6fd328b07fdda713f96fd5694ad2203cb1237cb6460cbad94564e39345"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694ad2203cb1237cb6460cbad94564e39345">eve::procgen::PcgTerrainStreamingTier::Regular</a></div><div class="ttdeci">@ Regular</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a1e3964a6fd328b07fdda713f96fd5694aed0b2800891993e5157930d89d6c4dd8"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a1e3964a6fd328b07fdda713f96fd5694aed0b2800891993e5157930d89d6c4dd8">eve::procgen::PcgTerrainStreamingTier::Impostor</a></div><div class="ttdeci">@ Impostor</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">eve::PhotoModeFieldAcceptance</a></div><div class="ttdeci">PhotoModeFieldAcceptance</div><div class="ttdoc">Capability implemented by the composition root that routes assignments to domain owners.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00032">PcgPhotoModeApply.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678">eve::PhotoModeFieldAcceptance::Accepted</a></div><div class="ttdeci">@ Accepted</div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699">eve::PhotoModeFieldAcceptance::Rejected</a></div><div class="ttdeci">@ Rejected</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d">eve::PhotoModeDomain::Streaming</a></div><div class="ttdeci">@ Streaming</div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html">eve::PhotoModeAssignment</a></div><div class="ttdoc">One reversible field assignment in a photo-mode transaction.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html_a441bcca343de9970d1398cabc169909d"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html#a441bcca343de9970d1398cabc169909d">eve::PhotoModeAssignment::value</a></div><div class="ttdeci">PhotoModeValue value</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html_aaf79f32fc2b6d69648ce9e6c90edfd11"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">eve::PhotoModeAssignment::field</a></div><div class="ttdeci">std::string field</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainStreamingState_html_a1d051a355e7474010ff98c3b1febf8f5"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#a1d051a355e7474010ff98c3b1febf8f5">eve::procgen::PcgTerrainStreamingState::impostorRange</a></div><div class="ttdeci">float impostorRange</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8h_source.html#l00016">PcgTerrainStreaming.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainStreamingState_html_a5f8afb340b3690ec5103881d70e9b89e"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#a5f8afb340b3690ec5103881d70e9b89e">eve::procgen::PcgTerrainStreamingState::regularRange</a></div><div class="ttdeci">float regularRange</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8h_source.html#l00015">PcgTerrainStreaming.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PcgTerrainStreamingState_html_af422b5f1c82b403bfdd0e6d329c7ea22"><div class="ttname"><a href="structeve_1_1procgen_1_1PcgTerrainStreamingState.html#af422b5f1c82b403bfdd0e6d329c7ea22">eve::procgen::PcgTerrainStreamingState::worldUnitsPerSample</a></div><div class="ttdeci">float worldUnitsPerSample</div><div class="ttdef"><b>Definition</b> <a href="PcgTerrainStreaming_8h_source.html#l00017">PcgTerrainStreaming.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

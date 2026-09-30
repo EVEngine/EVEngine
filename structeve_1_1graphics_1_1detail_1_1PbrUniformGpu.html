@@ -1,0 +1,1597 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::detail::PbrUniformGpu结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1detail.html">detail</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::detail::PbrUniformGpu结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Canonical std140 payload consumed by both generated PBR shader stages.  
+ <a href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a1542c650195894a5358891af5ff11179" id="r_a1542c650195894a5358891af5ff11179"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a1542c650195894a5358891af5ff11179">mvp</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a1542c650195894a5358891af5ff11179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c66b30bd9ca5d067f32ebb9d00e00ee" id="r_a8c66b30bd9ca5d067f32ebb9d00e00ee"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a8c66b30bd9ca5d067f32ebb9d00e00ee">model</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a8c66b30bd9ca5d067f32ebb9d00e00ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af078a07d3749e2b9a71dd386cb1ba346" id="r_af078a07d3749e2b9a71dd386cb1ba346"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#af078a07d3749e2b9a71dd386cb1ba346">view</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:af078a07d3749e2b9a71dd386cb1ba346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a991f2f8e793c0fe7e10e3649c463297f" id="r_a991f2f8e793c0fe7e10e3649c463297f"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a991f2f8e793c0fe7e10e3649c463297f">camera</a> {}</td></tr>
+<tr class="separator:a991f2f8e793c0fe7e10e3649c463297f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc87cc7d44f09381d106aa5ec4a3f73" id="r_a3bc87cc7d44f09381d106aa5ec4a3f73"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3bc87cc7d44f09381d106aa5ec4a3f73">tint</a> {}</td></tr>
+<tr class="separator:a3bc87cc7d44f09381d106aa5ec4a3f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b8666ee39c4d5b6ff29e0452becb259" id="r_a5b8666ee39c4d5b6ff29e0452becb259"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5b8666ee39c4d5b6ff29e0452becb259">ambient</a> {}</td></tr>
+<tr class="separator:a5b8666ee39c4d5b6ff29e0452becb259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0406ca530b0be6445b876fed34dd0046" id="r_a0406ca530b0be6445b876fed34dd0046"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0406ca530b0be6445b876fed34dd0046">material</a> {}</td></tr>
+<tr class="separator:a0406ca530b0be6445b876fed34dd0046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32abdf899485eadd11500752a295554d" id="r_a32abdf899485eadd11500752a295554d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a32abdf899485eadd11500752a295554d">emissive</a> {}</td></tr>
+<tr class="separator:a32abdf899485eadd11500752a295554d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1" id="r_ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1">specular</a> {}</td></tr>
+<tr class="separator:ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3421d28dd579342a8af84b06d36f81d" id="r_aa3421d28dd579342a8af84b06d36f81d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa3421d28dd579342a8af84b06d36f81d">coat</a> {}</td></tr>
+<tr class="separator:aa3421d28dd579342a8af84b06d36f81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa94a6d4269234277e045d775183dc05" id="r_aaa94a6d4269234277e045d775183dc05"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aaa94a6d4269234277e045d775183dc05">misc</a> {}</td></tr>
+<tr class="separator:aaa94a6d4269234277e045d775183dc05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef526de6ff8360252ae85f8c2df239f" id="r_a0ef526de6ff8360252ae85f8c2df239f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0ef526de6ff8360252ae85f8c2df239f">lights</a> [8] {}</td></tr>
+<tr class="separator:a0ef526de6ff8360252ae85f8c2df239f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6be12202ee9a3973f7b2bc31ac9268b" id="r_ae6be12202ee9a3973f7b2bc31ac9268b"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae6be12202ee9a3973f7b2bc31ac9268b">uvTransform</a> [11] {}</td></tr>
+<tr class="separator:ae6be12202ee9a3973f7b2bc31ac9268b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3155dc2819959be847c002397c2245f" id="r_ad3155dc2819959be847c002397c2245f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUvInfoGpu.html">PbrUvInfoGpu</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ad3155dc2819959be847c002397c2245f">uvInfo</a> [11] {}</td></tr>
+<tr class="separator:ad3155dc2819959be847c002397c2245f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a97e2e2fe112a0fe74774db957f3b82" id="r_a7a97e2e2fe112a0fe74774db957f3b82"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a7a97e2e2fe112a0fe74774db957f3b82">colorMaskSecondary</a> {}</td></tr>
+<tr class="separator:a7a97e2e2fe112a0fe74774db957f3b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac426008346329eac8cdd624f7351eef8" id="r_ac426008346329eac8cdd624f7351eef8"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac426008346329eac8cdd624f7351eef8">colorMaskParams</a> {}</td></tr>
+<tr class="separator:ac426008346329eac8cdd624f7351eef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b2c99ef12fdbe7106b00efa16afa7df" id="r_a0b2c99ef12fdbe7106b00efa16afa7df"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0b2c99ef12fdbe7106b00efa16afa7df">tangentInfo</a> {}</td></tr>
+<tr class="separator:a0b2c99ef12fdbe7106b00efa16afa7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b93c6f0bab35b0b93d8cf1aad77cff9" id="r_a0b93c6f0bab35b0b93d8cf1aad77cff9"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0b93c6f0bab35b0b93d8cf1aad77cff9">translucencyColor</a> {}</td></tr>
+<tr class="separator:a0b93c6f0bab35b0b93d8cf1aad77cff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae69a3ae1a4bab16855422f7b83af705e" id="r_ae69a3ae1a4bab16855422f7b83af705e"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae69a3ae1a4bab16855422f7b83af705e">translucencyParams</a> {}</td></tr>
+<tr class="separator:ae69a3ae1a4bab16855422f7b83af705e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c9f5d5644dc672af78742a4ff73a1de" id="r_a5c9f5d5644dc672af78742a4ff73a1de"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5c9f5d5644dc672af78742a4ff73a1de">translucencyLighting</a> {}</td></tr>
+<tr class="separator:a5c9f5d5644dc672af78742a4ff73a1de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43901807542bc502a70cdd1e77184ce8" id="r_a43901807542bc502a70cdd1e77184ce8"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a43901807542bc502a70cdd1e77184ce8">translucencyMask</a> {}</td></tr>
+<tr class="separator:a43901807542bc502a70cdd1e77184ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fcefa44bb26e0e4ded6b1ac8ad143ca" id="r_a3fcefa44bb26e0e4ded6b1ac8ad143ca"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3fcefa44bb26e0e4ded6b1ac8ad143ca">motionHighlightColor</a> {}</td></tr>
+<tr class="separator:a3fcefa44bb26e0e4ded6b1ac8ad143ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a72660414be22e978d6cd513267020" id="r_aa7a72660414be22e978d6cd513267020"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa7a72660414be22e978d6cd513267020">vegetationOverlay</a> {}</td></tr>
+<tr class="separator:aa7a72660414be22e978d6cd513267020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ca2ffa268ceda2b9221ab7c03238a72" id="r_a9ca2ffa268ceda2b9221ab7c03238a72"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9ca2ffa268ceda2b9221ab7c03238a72">vegetationWetness</a> {}</td></tr>
+<tr class="separator:a9ca2ffa268ceda2b9221ab7c03238a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbb835e9cc5698d36e4f4d2410975555" id="r_abbb835e9cc5698d36e4f4d2410975555"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#abbb835e9cc5698d36e4f4d2410975555">vegetationStageParams</a> {}</td></tr>
+<tr class="separator:abbb835e9cc5698d36e4f4d2410975555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16a11eba8a4bed3682351a7adb7eacb2" id="r_a16a11eba8a4bed3682351a7adb7eacb2"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a16a11eba8a4bed3682351a7adb7eacb2">vegetationFieldColor</a> {}</td></tr>
+<tr class="separator:a16a11eba8a4bed3682351a7adb7eacb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c334ca3b76bbf65511c156e4d4d66c" id="r_ac2c334ca3b76bbf65511c156e4d4d66c"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac2c334ca3b76bbf65511c156e4d4d66c">vegetationColorParams</a> {}</td></tr>
+<tr class="separator:ac2c334ca3b76bbf65511c156e4d4d66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d85eaa15e77b332a2d9e0c0a95e918" id="r_a28d85eaa15e77b332a2d9e0c0a95e918"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a28d85eaa15e77b332a2d9e0c0a95e918">vegetationOcclusionParams</a> {}</td></tr>
+<tr class="separator:a28d85eaa15e77b332a2d9e0c0a95e918"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca521bc679296e7e1697c9e0112c98a" id="r_adca521bc679296e7e1697c9e0112c98a"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#adca521bc679296e7e1697c9e0112c98a">vegetationOcclusionColor</a> {}</td></tr>
+<tr class="separator:adca521bc679296e7e1697c9e0112c98a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71be69c283d37ae2d5d55209125864f2" id="r_a71be69c283d37ae2d5d55209125864f2"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a71be69c283d37ae2d5d55209125864f2">vegetationGlobalMasks</a> {}</td></tr>
+<tr class="separator:a71be69c283d37ae2d5d55209125864f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a687cf01c6b313d96b83987178d51b03e" id="r_a687cf01c6b313d96b83987178d51b03e"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a687cf01c6b313d96b83987178d51b03e">vegetationInfo</a> {}</td></tr>
+<tr class="separator:a687cf01c6b313d96b83987178d51b03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa2ad4618c6a655a763fc2218f046da1" id="r_aaa2ad4618c6a655a763fc2218f046da1"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aaa2ad4618c6a655a763fc2218f046da1">detailUv</a> {}</td></tr>
+<tr class="separator:aaa2ad4618c6a655a763fc2218f046da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f16249607cd069007fc7ffdee92c2db" id="r_a5f16249607cd069007fc7ffdee92c2db"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5f16249607cd069007fc7ffdee92c2db">detailColor</a> {}</td></tr>
+<tr class="separator:a5f16249607cd069007fc7ffdee92c2db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a6487a8f6ba716190e9af79a8a05df" id="r_a96a6487a8f6ba716190e9af79a8a05df"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a96a6487a8f6ba716190e9af79a8a05df">detailColorTwo</a> {}</td></tr>
+<tr class="separator:a96a6487a8f6ba716190e9af79a8a05df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af38f6cd631932007d28ad00345c7e311" id="r_af38f6cd631932007d28ad00345c7e311"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#af38f6cd631932007d28ad00345c7e311">detailValues</a> {}</td></tr>
+<tr class="separator:af38f6cd631932007d28ad00345c7e311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fd4663fac868e90c3f5fb00d5e1f63e" id="r_a9fd4663fac868e90c3f5fb00d5e1f63e"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9fd4663fac868e90c3f5fb00d5e1f63e">detailMaterial</a> {}</td></tr>
+<tr class="separator:a9fd4663fac868e90c3f5fb00d5e1f63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a796e379aa2ccad8a57aa0c7c51a8e7e3" id="r_a796e379aa2ccad8a57aa0c7c51a8e7e3"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a796e379aa2ccad8a57aa0c7c51a8e7e3">detailMasks</a> {}</td></tr>
+<tr class="separator:a796e379aa2ccad8a57aa0c7c51a8e7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98477c8145cab5f8e0be935b36fef92f" id="r_a98477c8145cab5f8e0be935b36fef92f"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a98477c8145cab5f8e0be935b36fef92f">detailInfo</a> {}</td></tr>
+<tr class="separator:a98477c8145cab5f8e0be935b36fef92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c205d3646f111ca93831e15e2d696a5" id="r_a9c205d3646f111ca93831e15e2d696a5"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9c205d3646f111ca93831e15e2d696a5">detailInfo2</a> {}</td></tr>
+<tr class="separator:a9c205d3646f111ca93831e15e2d696a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92eb8dbb61a21f14441dea4c89ccf339" id="r_a92eb8dbb61a21f14441dea4c89ccf339"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a92eb8dbb61a21f14441dea4c89ccf339">extrasCoords</a> {}</td></tr>
+<tr class="separator:a92eb8dbb61a21f14441dea4c89ccf339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2ebd01ae95b918250893cac8567921" id="r_a9d2ebd01ae95b918250893cac8567921"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a9d2ebd01ae95b918250893cac8567921">extrasFallback</a> {}</td></tr>
+<tr class="separator:a9d2ebd01ae95b918250893cac8567921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac75a61c926bc675205995d41db29ff27" id="r_ac75a61c926bc675205995d41db29ff27"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac75a61c926bc675205995d41db29ff27">extrasUsage0</a> {}</td></tr>
+<tr class="separator:ac75a61c926bc675205995d41db29ff27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3425480a553dea24091b822c51710949" id="r_a3425480a553dea24091b822c51710949"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3425480a553dea24091b822c51710949">extrasUsage1</a> {}</td></tr>
+<tr class="separator:a3425480a553dea24091b822c51710949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4997d5357d1796b2595acd5a53608e16" id="r_a4997d5357d1796b2595acd5a53608e16"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4997d5357d1796b2595acd5a53608e16">extrasUsage2</a> {}</td></tr>
+<tr class="separator:a4997d5357d1796b2595acd5a53608e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6062d37af8e0bfcd7c38bf6105d15ae9" id="r_a6062d37af8e0bfcd7c38bf6105d15ae9"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a6062d37af8e0bfcd7c38bf6105d15ae9">extrasInfo</a> {}</td></tr>
+<tr class="separator:a6062d37af8e0bfcd7c38bf6105d15ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cb3d0fe9209e137aad4dec87940d7ab" id="r_a0cb3d0fe9209e137aad4dec87940d7ab"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a0cb3d0fe9209e137aad4dec87940d7ab">vegetationAlphaFade</a> {}</td></tr>
+<tr class="separator:a0cb3d0fe9209e137aad4dec87940d7ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78c23d74ee16c18331e643f1486b096e" id="r_a78c23d74ee16c18331e643f1486b096e"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a78c23d74ee16c18331e643f1486b096e">vegetationAlphaCamera</a> {}</td></tr>
+<tr class="separator:a78c23d74ee16c18331e643f1486b096e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfa686e80f7e08ffbf329bf4eb12ea9d" id="r_acfa686e80f7e08ffbf329bf4eb12ea9d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#acfa686e80f7e08ffbf329bf4eb12ea9d">vegetationEmission</a> {}</td></tr>
+<tr class="separator:acfa686e80f7e08ffbf329bf4eb12ea9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef8f4af90623b4953743c4cfd3798c0e" id="r_aef8f4af90623b4953743c4cfd3798c0e"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aef8f4af90623b4953743c4cfd3798c0e">vegetationGradientOne</a> {}</td></tr>
+<tr class="separator:aef8f4af90623b4953743c4cfd3798c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb5a371b98130881b20c1fbc68673048" id="r_afb5a371b98130881b20c1fbc68673048"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#afb5a371b98130881b20c1fbc68673048">vegetationGradientTwo</a> {}</td></tr>
+<tr class="separator:afb5a371b98130881b20c1fbc68673048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e1f7191eca3cdb32e670f3693e53e6a" id="r_a3e1f7191eca3cdb32e670f3693e53e6a"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3e1f7191eca3cdb32e670f3693e53e6a">colorsCoords</a> {}</td></tr>
+<tr class="separator:a3e1f7191eca3cdb32e670f3693e53e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71ef8baa687dc2fb9e2ee99aaaaf3673" id="r_a71ef8baa687dc2fb9e2ee99aaaaf3673"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a71ef8baa687dc2fb9e2ee99aaaaf3673">colorsFallback</a> {}</td></tr>
+<tr class="separator:a71ef8baa687dc2fb9e2ee99aaaaf3673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d520a71d5d5d7bbbe7f56d74cab3488" id="r_a5d520a71d5d5d7bbbe7f56d74cab3488"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5d520a71d5d5d7bbbe7f56d74cab3488">colorsUsage0</a> {}</td></tr>
+<tr class="separator:a5d520a71d5d5d7bbbe7f56d74cab3488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2626714db3b7e13160b1ef148b3acf01" id="r_a2626714db3b7e13160b1ef148b3acf01"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a2626714db3b7e13160b1ef148b3acf01">colorsUsage1</a> {}</td></tr>
+<tr class="separator:a2626714db3b7e13160b1ef148b3acf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4e69c7537579036d4b03ed20baa6ee" id="r_a4d4e69c7537579036d4b03ed20baa6ee"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4d4e69c7537579036d4b03ed20baa6ee">colorsUsage2</a> {}</td></tr>
+<tr class="separator:a4d4e69c7537579036d4b03ed20baa6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4f27735ab27686e60bb9b52540b4b2" id="r_aff4f27735ab27686e60bb9b52540b4b2"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aff4f27735ab27686e60bb9b52540b4b2">colorsInfo</a> {}</td></tr>
+<tr class="separator:aff4f27735ab27686e60bb9b52540b4b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadeffadbe34a0f263123d9712c346f24" id="r_aadeffadbe34a0f263123d9712c346f24"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aadeffadbe34a0f263123d9712c346f24">vertexCoords</a> {}</td></tr>
+<tr class="separator:aadeffadbe34a0f263123d9712c346f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4d64bf4d81e05112df8bba8fb45caf7" id="r_ac4d64bf4d81e05112df8bba8fb45caf7"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac4d64bf4d81e05112df8bba8fb45caf7">vertexFallback</a> {}</td></tr>
+<tr class="separator:ac4d64bf4d81e05112df8bba8fb45caf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03c99add169766dacbaaebad2963b4e1" id="r_a03c99add169766dacbaaebad2963b4e1"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a03c99add169766dacbaaebad2963b4e1">vertexUsage0</a> {}</td></tr>
+<tr class="separator:a03c99add169766dacbaaebad2963b4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1bd274cca2a0c9dcdd73a170333bd0b" id="r_ae1bd274cca2a0c9dcdd73a170333bd0b"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae1bd274cca2a0c9dcdd73a170333bd0b">vertexUsage1</a> {}</td></tr>
+<tr class="separator:ae1bd274cca2a0c9dcdd73a170333bd0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f538877d02d8441354241de394fd9a" id="r_a45f538877d02d8441354241de394fd9a"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a45f538877d02d8441354241de394fd9a">vertexUsage2</a> {}</td></tr>
+<tr class="separator:a45f538877d02d8441354241de394fd9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a366f00c6d418a8d38c88c753064e4f63" id="r_a366f00c6d418a8d38c88c753064e4f63"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a366f00c6d418a8d38c88c753064e4f63">vertexSize</a> {}</td></tr>
+<tr class="separator:a366f00c6d418a8d38c88c753064e4f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f7d6b2f61a8a6886b86d450e2106736" id="r_a4f7d6b2f61a8a6886b86d450e2106736"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a4f7d6b2f61a8a6886b86d450e2106736">vertexInfo</a> {}</td></tr>
+<tr class="separator:a4f7d6b2f61a8a6886b86d450e2106736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4bc20e21e2163bef57a0a92a3db298c" id="r_ad4bc20e21e2163bef57a0a92a3db298c"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ad4bc20e21e2163bef57a0a92a3db298c">motionCoords</a> {}</td></tr>
+<tr class="separator:ad4bc20e21e2163bef57a0a92a3db298c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72f26a74c3774397754339eaeecef10e" id="r_a72f26a74c3774397754339eaeecef10e"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a72f26a74c3774397754339eaeecef10e">motionFallback</a> {}</td></tr>
+<tr class="separator:a72f26a74c3774397754339eaeecef10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb1b6d9845119bdb4d3d562ddf455569" id="r_afb1b6d9845119bdb4d3d562ddf455569"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#afb1b6d9845119bdb4d3d562ddf455569">motionUsage0</a> {}</td></tr>
+<tr class="separator:afb1b6d9845119bdb4d3d562ddf455569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae181db4310088a92b42dd2ddbb8ac054" id="r_ae181db4310088a92b42dd2ddbb8ac054"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae181db4310088a92b42dd2ddbb8ac054">motionUsage1</a> {}</td></tr>
+<tr class="separator:ae181db4310088a92b42dd2ddbb8ac054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c94f336079bf3a416e546ad0d048eb3" id="r_a5c94f336079bf3a416e546ad0d048eb3"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a5c94f336079bf3a416e546ad0d048eb3">motionUsage2</a> {}</td></tr>
+<tr class="separator:a5c94f336079bf3a416e546ad0d048eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bd88bee20292f3ff21dbdd8620a35a0" id="r_a3bd88bee20292f3ff21dbdd8620a35a0"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a3bd88bee20292f3ff21dbdd8620a35a0">motionGlobal0</a> {}</td></tr>
+<tr class="separator:a3bd88bee20292f3ff21dbdd8620a35a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5669651661859e1b2e6a31217f8265d" id="r_ac5669651661859e1b2e6a31217f8265d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ac5669651661859e1b2e6a31217f8265d">motionGlobal1</a> {}</td></tr>
+<tr class="separator:ac5669651661859e1b2e6a31217f8265d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa85fd5bbaf73feec2b565a83c8f515db" id="r_aa85fd5bbaf73feec2b565a83c8f515db"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aa85fd5bbaf73feec2b565a83c8f515db">motionTime</a> {}</td></tr>
+<tr class="separator:aa85fd5bbaf73feec2b565a83c8f515db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2705f3794d7055ab7a2bbb98b53cab" id="r_a6e2705f3794d7055ab7a2bbb98b53cab"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a6e2705f3794d7055ab7a2bbb98b53cab">motionBending</a> {}</td></tr>
+<tr class="separator:a6e2705f3794d7055ab7a2bbb98b53cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefeabed111bb59f62e5d3c28f076d806" id="r_aefeabed111bb59f62e5d3c28f076d806"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#aefeabed111bb59f62e5d3c28f076d806">motionBranch</a> {}</td></tr>
+<tr class="separator:aefeabed111bb59f62e5d3c28f076d806"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc9747f1980719afaf99736204b85ec6" id="r_abc9747f1980719afaf99736204b85ec6"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#abc9747f1980719afaf99736204b85ec6">motionBranch2</a> {}</td></tr>
+<tr class="separator:abc9747f1980719afaf99736204b85ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a548d92f717338fe3dde49ae083bf20c3" id="r_a548d92f717338fe3dde49ae083bf20c3"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a548d92f717338fe3dde49ae083bf20c3">motionFlutter</a> {}</td></tr>
+<tr class="separator:a548d92f717338fe3dde49ae083bf20c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08f170324a1924d39f45cf3616064f3" id="r_ae08f170324a1924d39f45cf3616064f3"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ae08f170324a1924d39f45cf3616064f3">motionControl</a> {}</td></tr>
+<tr class="separator:ae08f170324a1924d39f45cf3616064f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a787e76aa60cb9d354675003d94fd927c" id="r_a787e76aa60cb9d354675003d94fd927c"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a787e76aa60cb9d354675003d94fd927c">motionPerspective</a> {}</td></tr>
+<tr class="separator:a787e76aa60cb9d354675003d94fd927c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8e2798af9008603dfc6073a56ca92d7" id="r_ab8e2798af9008603dfc6073a56ca92d7"><td class="memItemLeft" align="right" valign="top">glm::uvec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#ab8e2798af9008603dfc6073a56ca92d7">motionInfo</a> {}</td></tr>
+<tr class="separator:ab8e2798af9008603dfc6073a56ca92d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Canonical std140 payload consumed by both generated PBR shader stages. </p>
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a5b8666ee39c4d5b6ff29e0452becb259" name="a5b8666ee39c4d5b6ff29e0452becb259"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b8666ee39c4d5b6ff29e0452becb259">&#9670;&#160;</a></span>ambient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::ambient {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a991f2f8e793c0fe7e10e3649c463297f" name="a991f2f8e793c0fe7e10e3649c463297f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a991f2f8e793c0fe7e10e3649c463297f">&#9670;&#160;</a></span>camera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::camera {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3421d28dd579342a8af84b06d36f81d" name="aa3421d28dd579342a8af84b06d36f81d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3421d28dd579342a8af84b06d36f81d">&#9670;&#160;</a></span>coat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::coat {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac426008346329eac8cdd624f7351eef8" name="ac426008346329eac8cdd624f7351eef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac426008346329eac8cdd624f7351eef8">&#9670;&#160;</a></span>colorMaskParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorMaskParams {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a97e2e2fe112a0fe74774db957f3b82" name="a7a97e2e2fe112a0fe74774db957f3b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a97e2e2fe112a0fe74774db957f3b82">&#9670;&#160;</a></span>colorMaskSecondary</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorMaskSecondary {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e1f7191eca3cdb32e670f3693e53e6a" name="a3e1f7191eca3cdb32e670f3693e53e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e1f7191eca3cdb32e670f3693e53e6a">&#9670;&#160;</a></span>colorsCoords</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorsCoords {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71ef8baa687dc2fb9e2ee99aaaaf3673" name="a71ef8baa687dc2fb9e2ee99aaaaf3673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71ef8baa687dc2fb9e2ee99aaaaf3673">&#9670;&#160;</a></span>colorsFallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorsFallback {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff4f27735ab27686e60bb9b52540b4b2" name="aff4f27735ab27686e60bb9b52540b4b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff4f27735ab27686e60bb9b52540b4b2">&#9670;&#160;</a></span>colorsInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::colorsInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d520a71d5d5d7bbbe7f56d74cab3488" name="a5d520a71d5d5d7bbbe7f56d74cab3488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d520a71d5d5d7bbbe7f56d74cab3488">&#9670;&#160;</a></span>colorsUsage0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorsUsage0 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2626714db3b7e13160b1ef148b3acf01" name="a2626714db3b7e13160b1ef148b3acf01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2626714db3b7e13160b1ef148b3acf01">&#9670;&#160;</a></span>colorsUsage1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorsUsage1 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d4e69c7537579036d4b03ed20baa6ee" name="a4d4e69c7537579036d4b03ed20baa6ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d4e69c7537579036d4b03ed20baa6ee">&#9670;&#160;</a></span>colorsUsage2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::colorsUsage2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f16249607cd069007fc7ffdee92c2db" name="a5f16249607cd069007fc7ffdee92c2db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f16249607cd069007fc7ffdee92c2db">&#9670;&#160;</a></span>detailColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailColor {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96a6487a8f6ba716190e9af79a8a05df" name="a96a6487a8f6ba716190e9af79a8a05df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a6487a8f6ba716190e9af79a8a05df">&#9670;&#160;</a></span>detailColorTwo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailColorTwo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98477c8145cab5f8e0be935b36fef92f" name="a98477c8145cab5f8e0be935b36fef92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98477c8145cab5f8e0be935b36fef92f">&#9670;&#160;</a></span>detailInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::detailInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c205d3646f111ca93831e15e2d696a5" name="a9c205d3646f111ca93831e15e2d696a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c205d3646f111ca93831e15e2d696a5">&#9670;&#160;</a></span>detailInfo2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::detailInfo2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a796e379aa2ccad8a57aa0c7c51a8e7e3" name="a796e379aa2ccad8a57aa0c7c51a8e7e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a796e379aa2ccad8a57aa0c7c51a8e7e3">&#9670;&#160;</a></span>detailMasks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailMasks {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9fd4663fac868e90c3f5fb00d5e1f63e" name="a9fd4663fac868e90c3f5fb00d5e1f63e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fd4663fac868e90c3f5fb00d5e1f63e">&#9670;&#160;</a></span>detailMaterial</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailMaterial {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa2ad4618c6a655a763fc2218f046da1" name="aaa2ad4618c6a655a763fc2218f046da1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa2ad4618c6a655a763fc2218f046da1">&#9670;&#160;</a></span>detailUv</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailUv {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af38f6cd631932007d28ad00345c7e311" name="af38f6cd631932007d28ad00345c7e311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af38f6cd631932007d28ad00345c7e311">&#9670;&#160;</a></span>detailValues</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::detailValues {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32abdf899485eadd11500752a295554d" name="a32abdf899485eadd11500752a295554d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32abdf899485eadd11500752a295554d">&#9670;&#160;</a></span>emissive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::emissive {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92eb8dbb61a21f14441dea4c89ccf339" name="a92eb8dbb61a21f14441dea4c89ccf339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92eb8dbb61a21f14441dea4c89ccf339">&#9670;&#160;</a></span>extrasCoords</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::extrasCoords {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d2ebd01ae95b918250893cac8567921" name="a9d2ebd01ae95b918250893cac8567921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d2ebd01ae95b918250893cac8567921">&#9670;&#160;</a></span>extrasFallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::extrasFallback {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6062d37af8e0bfcd7c38bf6105d15ae9" name="a6062d37af8e0bfcd7c38bf6105d15ae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6062d37af8e0bfcd7c38bf6105d15ae9">&#9670;&#160;</a></span>extrasInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::extrasInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac75a61c926bc675205995d41db29ff27" name="ac75a61c926bc675205995d41db29ff27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac75a61c926bc675205995d41db29ff27">&#9670;&#160;</a></span>extrasUsage0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::extrasUsage0 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3425480a553dea24091b822c51710949" name="a3425480a553dea24091b822c51710949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3425480a553dea24091b822c51710949">&#9670;&#160;</a></span>extrasUsage1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::extrasUsage1 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4997d5357d1796b2595acd5a53608e16" name="a4997d5357d1796b2595acd5a53608e16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4997d5357d1796b2595acd5a53608e16">&#9670;&#160;</a></span>extrasUsage2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::extrasUsage2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ef526de6ff8360252ae85f8c2df239f" name="a0ef526de6ff8360252ae85f8c2df239f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef526de6ff8360252ae85f8c2df239f">&#9670;&#160;</a></span>lights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1Light3DGpu.html">Light3DGpu</a> eve::graphics::detail::PbrUniformGpu::lights[8] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0406ca530b0be6445b876fed34dd0046" name="a0406ca530b0be6445b876fed34dd0046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0406ca530b0be6445b876fed34dd0046">&#9670;&#160;</a></span>material</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::material {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa94a6d4269234277e045d775183dc05" name="aaa94a6d4269234277e045d775183dc05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa94a6d4269234277e045d775183dc05">&#9670;&#160;</a></span>misc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::misc {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c66b30bd9ca5d067f32ebb9d00e00ee" name="a8c66b30bd9ca5d067f32ebb9d00e00ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c66b30bd9ca5d067f32ebb9d00e00ee">&#9670;&#160;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::detail::PbrUniformGpu::model {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e2705f3794d7055ab7a2bbb98b53cab" name="a6e2705f3794d7055ab7a2bbb98b53cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2705f3794d7055ab7a2bbb98b53cab">&#9670;&#160;</a></span>motionBending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionBending {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefeabed111bb59f62e5d3c28f076d806" name="aefeabed111bb59f62e5d3c28f076d806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefeabed111bb59f62e5d3c28f076d806">&#9670;&#160;</a></span>motionBranch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionBranch {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc9747f1980719afaf99736204b85ec6" name="abc9747f1980719afaf99736204b85ec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc9747f1980719afaf99736204b85ec6">&#9670;&#160;</a></span>motionBranch2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionBranch2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae08f170324a1924d39f45cf3616064f3" name="ae08f170324a1924d39f45cf3616064f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08f170324a1924d39f45cf3616064f3">&#9670;&#160;</a></span>motionControl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionControl {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4bc20e21e2163bef57a0a92a3db298c" name="ad4bc20e21e2163bef57a0a92a3db298c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4bc20e21e2163bef57a0a92a3db298c">&#9670;&#160;</a></span>motionCoords</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionCoords {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72f26a74c3774397754339eaeecef10e" name="a72f26a74c3774397754339eaeecef10e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f26a74c3774397754339eaeecef10e">&#9670;&#160;</a></span>motionFallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionFallback {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a548d92f717338fe3dde49ae083bf20c3" name="a548d92f717338fe3dde49ae083bf20c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a548d92f717338fe3dde49ae083bf20c3">&#9670;&#160;</a></span>motionFlutter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionFlutter {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bd88bee20292f3ff21dbdd8620a35a0" name="a3bd88bee20292f3ff21dbdd8620a35a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bd88bee20292f3ff21dbdd8620a35a0">&#9670;&#160;</a></span>motionGlobal0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionGlobal0 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5669651661859e1b2e6a31217f8265d" name="ac5669651661859e1b2e6a31217f8265d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5669651661859e1b2e6a31217f8265d">&#9670;&#160;</a></span>motionGlobal1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionGlobal1 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3fcefa44bb26e0e4ded6b1ac8ad143ca" name="a3fcefa44bb26e0e4ded6b1ac8ad143ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fcefa44bb26e0e4ded6b1ac8ad143ca">&#9670;&#160;</a></span>motionHighlightColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionHighlightColor {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8e2798af9008603dfc6073a56ca92d7" name="ab8e2798af9008603dfc6073a56ca92d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8e2798af9008603dfc6073a56ca92d7">&#9670;&#160;</a></span>motionInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::motionInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a787e76aa60cb9d354675003d94fd927c" name="a787e76aa60cb9d354675003d94fd927c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a787e76aa60cb9d354675003d94fd927c">&#9670;&#160;</a></span>motionPerspective</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionPerspective {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa85fd5bbaf73feec2b565a83c8f515db" name="aa85fd5bbaf73feec2b565a83c8f515db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa85fd5bbaf73feec2b565a83c8f515db">&#9670;&#160;</a></span>motionTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionTime {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb1b6d9845119bdb4d3d562ddf455569" name="afb1b6d9845119bdb4d3d562ddf455569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb1b6d9845119bdb4d3d562ddf455569">&#9670;&#160;</a></span>motionUsage0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionUsage0 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae181db4310088a92b42dd2ddbb8ac054" name="ae181db4310088a92b42dd2ddbb8ac054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae181db4310088a92b42dd2ddbb8ac054">&#9670;&#160;</a></span>motionUsage1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionUsage1 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c94f336079bf3a416e546ad0d048eb3" name="a5c94f336079bf3a416e546ad0d048eb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c94f336079bf3a416e546ad0d048eb3">&#9670;&#160;</a></span>motionUsage2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::motionUsage2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1542c650195894a5358891af5ff11179" name="a1542c650195894a5358891af5ff11179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1542c650195894a5358891af5ff11179">&#9670;&#160;</a></span>mvp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::detail::PbrUniformGpu::mvp {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PbrGpuUniform_8cpp_source.html#l00007">eve::graphics::detail::buildPbrUniformGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1" name="ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac01efa4dd19c8c6bbdfbb8e8c0e0f4d1">&#9670;&#160;</a></span>specular</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::specular {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b2c99ef12fdbe7106b00efa16afa7df" name="a0b2c99ef12fdbe7106b00efa16afa7df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b2c99ef12fdbe7106b00efa16afa7df">&#9670;&#160;</a></span>tangentInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::tangentInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bc87cc7d44f09381d106aa5ec4a3f73" name="a3bc87cc7d44f09381d106aa5ec4a3f73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bc87cc7d44f09381d106aa5ec4a3f73">&#9670;&#160;</a></span>tint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::tint {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b93c6f0bab35b0b93d8cf1aad77cff9" name="a0b93c6f0bab35b0b93d8cf1aad77cff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b93c6f0bab35b0b93d8cf1aad77cff9">&#9670;&#160;</a></span>translucencyColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::translucencyColor {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c9f5d5644dc672af78742a4ff73a1de" name="a5c9f5d5644dc672af78742a4ff73a1de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c9f5d5644dc672af78742a4ff73a1de">&#9670;&#160;</a></span>translucencyLighting</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::translucencyLighting {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43901807542bc502a70cdd1e77184ce8" name="a43901807542bc502a70cdd1e77184ce8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43901807542bc502a70cdd1e77184ce8">&#9670;&#160;</a></span>translucencyMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::translucencyMask {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae69a3ae1a4bab16855422f7b83af705e" name="ae69a3ae1a4bab16855422f7b83af705e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae69a3ae1a4bab16855422f7b83af705e">&#9670;&#160;</a></span>translucencyParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::translucencyParams {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3155dc2819959be847c002397c2245f" name="ad3155dc2819959be847c002397c2245f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3155dc2819959be847c002397c2245f">&#9670;&#160;</a></span>uvInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1detail_1_1PbrUvInfoGpu.html">PbrUvInfoGpu</a> eve::graphics::detail::PbrUniformGpu::uvInfo[11] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6be12202ee9a3973f7b2bc31ac9268b" name="ae6be12202ee9a3973f7b2bc31ac9268b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6be12202ee9a3973f7b2bc31ac9268b">&#9670;&#160;</a></span>uvTransform</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::uvTransform[11] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78c23d74ee16c18331e643f1486b096e" name="a78c23d74ee16c18331e643f1486b096e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78c23d74ee16c18331e643f1486b096e">&#9670;&#160;</a></span>vegetationAlphaCamera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationAlphaCamera {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cb3d0fe9209e137aad4dec87940d7ab" name="a0cb3d0fe9209e137aad4dec87940d7ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cb3d0fe9209e137aad4dec87940d7ab">&#9670;&#160;</a></span>vegetationAlphaFade</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationAlphaFade {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2c334ca3b76bbf65511c156e4d4d66c" name="ac2c334ca3b76bbf65511c156e4d4d66c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2c334ca3b76bbf65511c156e4d4d66c">&#9670;&#160;</a></span>vegetationColorParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationColorParams {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfa686e80f7e08ffbf329bf4eb12ea9d" name="acfa686e80f7e08ffbf329bf4eb12ea9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfa686e80f7e08ffbf329bf4eb12ea9d">&#9670;&#160;</a></span>vegetationEmission</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationEmission {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16a11eba8a4bed3682351a7adb7eacb2" name="a16a11eba8a4bed3682351a7adb7eacb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16a11eba8a4bed3682351a7adb7eacb2">&#9670;&#160;</a></span>vegetationFieldColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationFieldColor {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71be69c283d37ae2d5d55209125864f2" name="a71be69c283d37ae2d5d55209125864f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71be69c283d37ae2d5d55209125864f2">&#9670;&#160;</a></span>vegetationGlobalMasks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationGlobalMasks {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef8f4af90623b4953743c4cfd3798c0e" name="aef8f4af90623b4953743c4cfd3798c0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef8f4af90623b4953743c4cfd3798c0e">&#9670;&#160;</a></span>vegetationGradientOne</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationGradientOne {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb5a371b98130881b20c1fbc68673048" name="afb5a371b98130881b20c1fbc68673048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb5a371b98130881b20c1fbc68673048">&#9670;&#160;</a></span>vegetationGradientTwo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationGradientTwo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a687cf01c6b313d96b83987178d51b03e" name="a687cf01c6b313d96b83987178d51b03e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a687cf01c6b313d96b83987178d51b03e">&#9670;&#160;</a></span>vegetationInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::vegetationInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adca521bc679296e7e1697c9e0112c98a" name="adca521bc679296e7e1697c9e0112c98a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca521bc679296e7e1697c9e0112c98a">&#9670;&#160;</a></span>vegetationOcclusionColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationOcclusionColor {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28d85eaa15e77b332a2d9e0c0a95e918" name="a28d85eaa15e77b332a2d9e0c0a95e918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d85eaa15e77b332a2d9e0c0a95e918">&#9670;&#160;</a></span>vegetationOcclusionParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationOcclusionParams {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7a72660414be22e978d6cd513267020" name="aa7a72660414be22e978d6cd513267020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a72660414be22e978d6cd513267020">&#9670;&#160;</a></span>vegetationOverlay</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationOverlay {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbb835e9cc5698d36e4f4d2410975555" name="abbb835e9cc5698d36e4f4d2410975555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbb835e9cc5698d36e4f4d2410975555">&#9670;&#160;</a></span>vegetationStageParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationStageParams {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ca2ffa268ceda2b9221ab7c03238a72" name="a9ca2ffa268ceda2b9221ab7c03238a72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ca2ffa268ceda2b9221ab7c03238a72">&#9670;&#160;</a></span>vegetationWetness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vegetationWetness {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aadeffadbe34a0f263123d9712c346f24" name="aadeffadbe34a0f263123d9712c346f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadeffadbe34a0f263123d9712c346f24">&#9670;&#160;</a></span>vertexCoords</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexCoords {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4d64bf4d81e05112df8bba8fb45caf7" name="ac4d64bf4d81e05112df8bba8fb45caf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4d64bf4d81e05112df8bba8fb45caf7">&#9670;&#160;</a></span>vertexFallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexFallback {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4f7d6b2f61a8a6886b86d450e2106736" name="a4f7d6b2f61a8a6886b86d450e2106736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f7d6b2f61a8a6886b86d450e2106736">&#9670;&#160;</a></span>vertexInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::uvec4 eve::graphics::detail::PbrUniformGpu::vertexInfo {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a366f00c6d418a8d38c88c753064e4f63" name="a366f00c6d418a8d38c88c753064e4f63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a366f00c6d418a8d38c88c753064e4f63">&#9670;&#160;</a></span>vertexSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexSize {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03c99add169766dacbaaebad2963b4e1" name="a03c99add169766dacbaaebad2963b4e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c99add169766dacbaaebad2963b4e1">&#9670;&#160;</a></span>vertexUsage0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexUsage0 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1bd274cca2a0c9dcdd73a170333bd0b" name="ae1bd274cca2a0c9dcdd73a170333bd0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1bd274cca2a0c9dcdd73a170333bd0b">&#9670;&#160;</a></span>vertexUsage1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexUsage1 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45f538877d02d8441354241de394fd9a" name="a45f538877d02d8441354241de394fd9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f538877d02d8441354241de394fd9a">&#9670;&#160;</a></span>vertexUsage2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::detail::PbrUniformGpu::vertexUsage2 {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af078a07d3749e2b9a71dd386cb1ba346" name="af078a07d3749e2b9a71dd386cb1ba346"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af078a07d3749e2b9a71dd386cb1ba346">&#9670;&#160;</a></span>view</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::detail::PbrUniformGpu::view {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a> 第 <a class="el" href="PbrGpuUniform_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="PbrGpuUniform_8h_source.html">PbrGpuUniform.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

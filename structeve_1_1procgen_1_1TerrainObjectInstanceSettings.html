@@ -1,0 +1,821 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainObjectInstanceSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html">TerrainObjectInstanceSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainObjectInstanceSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One resource entry emitted around each accepted Pcg game-object prototype location.  
+ <a href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aa0673b1ac3703f53e9ef49222210c33a" id="r_aa0673b1ac3703f53e9ef49222210c33a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aa0673b1ac3703f53e9ef49222210c33a">asset</a></td></tr>
+<tr class="separator:aa0673b1ac3703f53e9ef49222210c33a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae987abd1bfe921fc8f4b17848283b953" id="r_ae987abd1bfe921fc8f4b17848283b953"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ae987abd1bfe921fc8f4b17848283b953">minimumInstances</a> = 1</td></tr>
+<tr class="separator:ae987abd1bfe921fc8f4b17848283b953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd719d77872b73f8459695c76b1dfc9c" id="r_abd719d77872b73f8459695c76b1dfc9c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#abd719d77872b73f8459695c76b1dfc9c">maximumInstances</a> = 1</td></tr>
+<tr class="separator:abd719d77872b73f8459695c76b1dfc9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03debc69fb1187a9c300a6b7ac0b403b" id="r_a03debc69fb1187a9c300a6b7ac0b403b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a03debc69fb1187a9c300a6b7ac0b403b">failureRate</a> = 0</td></tr>
+<tr class="separator:a03debc69fb1187a9c300a6b7ac0b403b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5aa1d0e33df38af393697df9bb004c" id="r_aca5aa1d0e33df38af393697df9bb004c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aca5aa1d0e33df38af393697df9bb004c">minimumOffsetX</a> = 0</td></tr>
+<tr class="separator:aca5aa1d0e33df38af393697df9bb004c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40178b10c307f6577f954485be87bc69" id="r_a40178b10c307f6577f954485be87bc69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a40178b10c307f6577f954485be87bc69">maximumOffsetX</a> = 0</td></tr>
+<tr class="separator:a40178b10c307f6577f954485be87bc69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9253b98e22f286aeca8ab7bb37eb859a" id="r_a9253b98e22f286aeca8ab7bb37eb859a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a9253b98e22f286aeca8ab7bb37eb859a">minimumOffsetY</a> = 0</td></tr>
+<tr class="separator:a9253b98e22f286aeca8ab7bb37eb859a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad974ab3c62524f0d662a29f97eb123fb" id="r_ad974ab3c62524f0d662a29f97eb123fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ad974ab3c62524f0d662a29f97eb123fb">maximumOffsetY</a> = 0</td></tr>
+<tr class="separator:ad974ab3c62524f0d662a29f97eb123fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab21b9804bacb15d66989b9de1ee8823e" id="r_ab21b9804bacb15d66989b9de1ee8823e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ab21b9804bacb15d66989b9de1ee8823e">minimumOffsetZ</a> = 0</td></tr>
+<tr class="separator:ab21b9804bacb15d66989b9de1ee8823e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af88f5e0883a9242a8cbaa110689e23e7" id="r_af88f5e0883a9242a8cbaa110689e23e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#af88f5e0883a9242a8cbaa110689e23e7">maximumOffsetZ</a> = 0</td></tr>
+<tr class="separator:af88f5e0883a9242a8cbaa110689e23e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2319fe4146cea400c63d77f019802b4" id="r_af2319fe4146cea400c63d77f019802b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6f">TerrainObjectYOffsetMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#af2319fe4146cea400c63d77f019802b4">yOffsetMode</a> = <a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6fa0092da6c4a0692edae76d475ffb497a8">TerrainObjectYOffsetMode::TerrainHeight</a></td></tr>
+<tr class="separator:af2319fe4146cea400c63d77f019802b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba77e32ae7a2635a34f15e866aaba4b" id="r_abba77e32ae7a2635a34f15e866aaba4b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#abba77e32ae7a2635a34f15e866aaba4b">customOffset</a> = 0</td></tr>
+<tr class="separator:abba77e32ae7a2635a34f15e866aaba4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a277f86c58c829dfe26554da534537c0d" id="r_a277f86c58c829dfe26554da534537c0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16fa">TerrainObjectScaleMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a277f86c58c829dfe26554da534537c0d">scaleMode</a> = <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa4457d440870ad6d42bab9082d9bf9b61">TerrainObjectScaleMode::Fixed</a></td></tr>
+<tr class="separator:a277f86c58c829dfe26554da534537c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabbbf46f09ed4178df223a688225e14f" id="r_aabbbf46f09ed4178df223a688225e14f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aabbbf46f09ed4178df223a688225e14f">commonScale</a> = true</td></tr>
+<tr class="separator:aabbbf46f09ed4178df223a688225e14f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fa2ff9aba8c4739c6324e884bbba9f4" id="r_a4fa2ff9aba8c4739c6324e884bbba9f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a4fa2ff9aba8c4739c6324e884bbba9f4">minimumScale</a> = 1</td></tr>
+<tr class="separator:a4fa2ff9aba8c4739c6324e884bbba9f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae09f720e9856b26a5dd8fb18287294dd" id="r_ae09f720e9856b26a5dd8fb18287294dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ae09f720e9856b26a5dd8fb18287294dd">maximumScale</a> = 1</td></tr>
+<tr class="separator:ae09f720e9856b26a5dd8fb18287294dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0785790653bc219ad264787c218e908d" id="r_a0785790653bc219ad264787c218e908d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a0785790653bc219ad264787c218e908d">minimumScaleX</a> = 1</td></tr>
+<tr class="separator:a0785790653bc219ad264787c218e908d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab597e06d5bdbfc8a02906f4bea03da70" id="r_ab597e06d5bdbfc8a02906f4bea03da70"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ab597e06d5bdbfc8a02906f4bea03da70">maximumScaleX</a> = 1</td></tr>
+<tr class="separator:ab597e06d5bdbfc8a02906f4bea03da70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e266079c558761627aaa90577c9edf1" id="r_a2e266079c558761627aaa90577c9edf1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a2e266079c558761627aaa90577c9edf1">minimumScaleY</a> = 1</td></tr>
+<tr class="separator:a2e266079c558761627aaa90577c9edf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47700b40553805eecaa9e82562b71781" id="r_a47700b40553805eecaa9e82562b71781"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a47700b40553805eecaa9e82562b71781">maximumScaleY</a> = 1</td></tr>
+<tr class="separator:a47700b40553805eecaa9e82562b71781"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b21e2fa0739896d532c03aecf72132d" id="r_a6b21e2fa0739896d532c03aecf72132d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a6b21e2fa0739896d532c03aecf72132d">minimumScaleZ</a> = 1</td></tr>
+<tr class="separator:a6b21e2fa0739896d532c03aecf72132d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff9f86583e26c1096a557af7904f6a89" id="r_aff9f86583e26c1096a557af7904f6a89"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aff9f86583e26c1096a557af7904f6a89">maximumScaleZ</a> = 1</td></tr>
+<tr class="separator:aff9f86583e26c1096a557af7904f6a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92111431f5c6cbde32babad552967d83" id="r_a92111431f5c6cbde32babad552967d83"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a92111431f5c6cbde32babad552967d83">scaleRandomPercentage</a> = 0</td></tr>
+<tr class="separator:a92111431f5c6cbde32babad552967d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e9f11a0ad4ab1bae5a20a51b7b17fd0" id="r_a3e9f11a0ad4ab1bae5a20a51b7b17fd0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a3e9f11a0ad4ab1bae5a20a51b7b17fd0">scaleRandomPercentageX</a> = 0</td></tr>
+<tr class="separator:a3e9f11a0ad4ab1bae5a20a51b7b17fd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab820a5806032391745c6b3139db2894a" id="r_ab820a5806032391745c6b3139db2894a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ab820a5806032391745c6b3139db2894a">scaleRandomPercentageY</a> = 0</td></tr>
+<tr class="separator:ab820a5806032391745c6b3139db2894a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acac038ec802711355998d69e02e9e2ad" id="r_acac038ec802711355998d69e02e9e2ad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#acac038ec802711355998d69e02e9e2ad">scaleRandomPercentageZ</a> = 0</td></tr>
+<tr class="separator:acac038ec802711355998d69e02e9e2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff41e7d96a05aad1e19087e6fd18160a" id="r_aff41e7d96a05aad1e19087e6fd18160a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aff41e7d96a05aad1e19087e6fd18160a">minimumRotationX</a> = 0</td></tr>
+<tr class="separator:aff41e7d96a05aad1e19087e6fd18160a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9df73805f60261fd445be1e201cd7d5" id="r_ab9df73805f60261fd445be1e201cd7d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ab9df73805f60261fd445be1e201cd7d5">maximumRotationX</a> = 0</td></tr>
+<tr class="separator:ab9df73805f60261fd445be1e201cd7d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b9e8b0c916c4a7e3889b49464c36a69" id="r_a1b9e8b0c916c4a7e3889b49464c36a69"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a1b9e8b0c916c4a7e3889b49464c36a69">minimumRotationY</a> = 0</td></tr>
+<tr class="separator:a1b9e8b0c916c4a7e3889b49464c36a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a625d16ffe9e44f5c5b547550cffc31bf" id="r_a625d16ffe9e44f5c5b547550cffc31bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a625d16ffe9e44f5c5b547550cffc31bf">maximumRotationY</a> = 0</td></tr>
+<tr class="separator:a625d16ffe9e44f5c5b547550cffc31bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf0a79000f242d6bd0352342c9846e0" id="r_aaaf0a79000f242d6bd0352342c9846e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#aaaf0a79000f242d6bd0352342c9846e0">minimumRotationZ</a> = 0</td></tr>
+<tr class="separator:aaaf0a79000f242d6bd0352342c9846e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5db8d37bd36232439abba7f011930c5" id="r_ad5db8d37bd36232439abba7f011930c5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#ad5db8d37bd36232439abba7f011930c5">maximumRotationZ</a> = 0</td></tr>
+<tr class="separator:ad5db8d37bd36232439abba7f011930c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a702058d753338fa73ee6eaae5f13422d" id="r_a702058d753338fa73ee6eaae5f13422d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a702058d753338fa73ee6eaae5f13422d">yOffsetAlongSlope</a> = false</td></tr>
+<tr class="separator:a702058d753338fa73ee6eaae5f13422d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d7ee80c6d91bd837fc612523088a1b" id="r_af4d7ee80c6d91bd837fc612523088a1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#af4d7ee80c6d91bd837fc612523088a1b">alignForwardToSlope</a> = false</td></tr>
+<tr class="separator:af4d7ee80c6d91bd837fc612523088a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a186078a57a4f5d1f1cc76e890662a349" id="r_a186078a57a4f5d1f1cc76e890662a349"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainObjectInstanceSettings.html#a186078a57a4f5d1f1cc76e890662a349">rotateToSlope</a> = false</td></tr>
+<tr class="separator:a186078a57a4f5d1f1cc76e890662a349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One resource entry emitted around each accepted Pcg game-object prototype location. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af4d7ee80c6d91bd837fc612523088a1b" name="af4d7ee80c6d91bd837fc612523088a1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d7ee80c6d91bd837fc612523088a1b">&#9670;&#160;</a></span>alignForwardToSlope</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainObjectInstanceSettings::alignForwardToSlope = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0673b1ac3703f53e9ef49222210c33a" name="aa0673b1ac3703f53e9ef49222210c33a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0673b1ac3703f53e9ef49222210c33a">&#9670;&#160;</a></span>asset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::TerrainObjectInstanceSettings::asset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabbbf46f09ed4178df223a688225e14f" name="aabbbf46f09ed4178df223a688225e14f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabbbf46f09ed4178df223a688225e14f">&#9670;&#160;</a></span>commonScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainObjectInstanceSettings::commonScale = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abba77e32ae7a2635a34f15e866aaba4b" name="abba77e32ae7a2635a34f15e866aaba4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba77e32ae7a2635a34f15e866aaba4b">&#9670;&#160;</a></span>customOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::customOffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03debc69fb1187a9c300a6b7ac0b403b" name="a03debc69fb1187a9c300a6b7ac0b403b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03debc69fb1187a9c300a6b7ac0b403b">&#9670;&#160;</a></span>failureRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::failureRate = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd719d77872b73f8459695c76b1dfc9c" name="abd719d77872b73f8459695c76b1dfc9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd719d77872b73f8459695c76b1dfc9c">&#9670;&#160;</a></span>maximumInstances</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainObjectInstanceSettings::maximumInstances = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40178b10c307f6577f954485be87bc69" name="a40178b10c307f6577f954485be87bc69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40178b10c307f6577f954485be87bc69">&#9670;&#160;</a></span>maximumOffsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumOffsetX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad974ab3c62524f0d662a29f97eb123fb" name="ad974ab3c62524f0d662a29f97eb123fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad974ab3c62524f0d662a29f97eb123fb">&#9670;&#160;</a></span>maximumOffsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumOffsetY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af88f5e0883a9242a8cbaa110689e23e7" name="af88f5e0883a9242a8cbaa110689e23e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af88f5e0883a9242a8cbaa110689e23e7">&#9670;&#160;</a></span>maximumOffsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumOffsetZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9df73805f60261fd445be1e201cd7d5" name="ab9df73805f60261fd445be1e201cd7d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9df73805f60261fd445be1e201cd7d5">&#9670;&#160;</a></span>maximumRotationX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumRotationX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a625d16ffe9e44f5c5b547550cffc31bf" name="a625d16ffe9e44f5c5b547550cffc31bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a625d16ffe9e44f5c5b547550cffc31bf">&#9670;&#160;</a></span>maximumRotationY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumRotationY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5db8d37bd36232439abba7f011930c5" name="ad5db8d37bd36232439abba7f011930c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5db8d37bd36232439abba7f011930c5">&#9670;&#160;</a></span>maximumRotationZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumRotationZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae09f720e9856b26a5dd8fb18287294dd" name="ae09f720e9856b26a5dd8fb18287294dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09f720e9856b26a5dd8fb18287294dd">&#9670;&#160;</a></span>maximumScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab597e06d5bdbfc8a02906f4bea03da70" name="ab597e06d5bdbfc8a02906f4bea03da70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab597e06d5bdbfc8a02906f4bea03da70">&#9670;&#160;</a></span>maximumScaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumScaleX = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47700b40553805eecaa9e82562b71781" name="a47700b40553805eecaa9e82562b71781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47700b40553805eecaa9e82562b71781">&#9670;&#160;</a></span>maximumScaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumScaleY = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff9f86583e26c1096a557af7904f6a89" name="aff9f86583e26c1096a557af7904f6a89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9f86583e26c1096a557af7904f6a89">&#9670;&#160;</a></span>maximumScaleZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::maximumScaleZ = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae987abd1bfe921fc8f4b17848283b953" name="ae987abd1bfe921fc8f4b17848283b953"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae987abd1bfe921fc8f4b17848283b953">&#9670;&#160;</a></span>minimumInstances</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainObjectInstanceSettings::minimumInstances = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca5aa1d0e33df38af393697df9bb004c" name="aca5aa1d0e33df38af393697df9bb004c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca5aa1d0e33df38af393697df9bb004c">&#9670;&#160;</a></span>minimumOffsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumOffsetX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9253b98e22f286aeca8ab7bb37eb859a" name="a9253b98e22f286aeca8ab7bb37eb859a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9253b98e22f286aeca8ab7bb37eb859a">&#9670;&#160;</a></span>minimumOffsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumOffsetY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab21b9804bacb15d66989b9de1ee8823e" name="ab21b9804bacb15d66989b9de1ee8823e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab21b9804bacb15d66989b9de1ee8823e">&#9670;&#160;</a></span>minimumOffsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumOffsetZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff41e7d96a05aad1e19087e6fd18160a" name="aff41e7d96a05aad1e19087e6fd18160a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff41e7d96a05aad1e19087e6fd18160a">&#9670;&#160;</a></span>minimumRotationX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumRotationX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b9e8b0c916c4a7e3889b49464c36a69" name="a1b9e8b0c916c4a7e3889b49464c36a69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b9e8b0c916c4a7e3889b49464c36a69">&#9670;&#160;</a></span>minimumRotationY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumRotationY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaaf0a79000f242d6bd0352342c9846e0" name="aaaf0a79000f242d6bd0352342c9846e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaf0a79000f242d6bd0352342c9846e0">&#9670;&#160;</a></span>minimumRotationZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumRotationZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fa2ff9aba8c4739c6324e884bbba9f4" name="a4fa2ff9aba8c4739c6324e884bbba9f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fa2ff9aba8c4739c6324e884bbba9f4">&#9670;&#160;</a></span>minimumScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0785790653bc219ad264787c218e908d" name="a0785790653bc219ad264787c218e908d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0785790653bc219ad264787c218e908d">&#9670;&#160;</a></span>minimumScaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumScaleX = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e266079c558761627aaa90577c9edf1" name="a2e266079c558761627aaa90577c9edf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e266079c558761627aaa90577c9edf1">&#9670;&#160;</a></span>minimumScaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumScaleY = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b21e2fa0739896d532c03aecf72132d" name="a6b21e2fa0739896d532c03aecf72132d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b21e2fa0739896d532c03aecf72132d">&#9670;&#160;</a></span>minimumScaleZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::minimumScaleZ = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a186078a57a4f5d1f1cc76e890662a349" name="a186078a57a4f5d1f1cc76e890662a349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a186078a57a4f5d1f1cc76e890662a349">&#9670;&#160;</a></span>rotateToSlope</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainObjectInstanceSettings::rotateToSlope = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a277f86c58c829dfe26554da534537c0d" name="a277f86c58c829dfe26554da534537c0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a277f86c58c829dfe26554da534537c0d">&#9670;&#160;</a></span>scaleMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16fa">TerrainObjectScaleMode</a> eve::procgen::TerrainObjectInstanceSettings::scaleMode = <a class="el" href="namespaceeve_1_1procgen.html#a9eb4fb941322e7f1ac5943dd89fa16faa4457d440870ad6d42bab9082d9bf9b61">TerrainObjectScaleMode::Fixed</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92111431f5c6cbde32babad552967d83" name="a92111431f5c6cbde32babad552967d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92111431f5c6cbde32babad552967d83">&#9670;&#160;</a></span>scaleRandomPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::scaleRandomPercentage = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e9f11a0ad4ab1bae5a20a51b7b17fd0" name="a3e9f11a0ad4ab1bae5a20a51b7b17fd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e9f11a0ad4ab1bae5a20a51b7b17fd0">&#9670;&#160;</a></span>scaleRandomPercentageX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::scaleRandomPercentageX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab820a5806032391745c6b3139db2894a" name="ab820a5806032391745c6b3139db2894a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab820a5806032391745c6b3139db2894a">&#9670;&#160;</a></span>scaleRandomPercentageY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::scaleRandomPercentageY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acac038ec802711355998d69e02e9e2ad" name="acac038ec802711355998d69e02e9e2ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acac038ec802711355998d69e02e9e2ad">&#9670;&#160;</a></span>scaleRandomPercentageZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainObjectInstanceSettings::scaleRandomPercentageZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a702058d753338fa73ee6eaae5f13422d" name="a702058d753338fa73ee6eaae5f13422d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a702058d753338fa73ee6eaae5f13422d">&#9670;&#160;</a></span>yOffsetAlongSlope</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainObjectInstanceSettings::yOffsetAlongSlope = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2319fe4146cea400c63d77f019802b4" name="af2319fe4146cea400c63d77f019802b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2319fe4146cea400c63d77f019802b4">&#9670;&#160;</a></span>yOffsetMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6f">TerrainObjectYOffsetMode</a> eve::procgen::TerrainObjectInstanceSettings::yOffsetMode = <a class="el" href="namespaceeve_1_1procgen.html#adf115f4b4d2b0c444ad08da8b4da0d6fa0092da6c4a0692edae76d475ffb497a8">TerrainObjectYOffsetMode::TerrainHeight</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a> 第 <a class="el" href="TerrainObjectPlacement_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainObjectPlacement_8h_source.html">TerrainObjectPlacement.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

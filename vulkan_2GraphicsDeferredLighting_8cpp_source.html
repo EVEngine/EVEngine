@@ -1,0 +1,429 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsDeferredLighting.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GraphicsDeferredLighting.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="vulkan_2GraphicsDeferredLighting_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Hybrid clustered deferred lighting (Phase C): fullscreen pass that samples</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// the Phase B GBuffer and evaluates core PBR with ClusteredLight + CSM.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ClusteredLight_8h.html">graphics/ClusteredLight.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Shadow_8h.html">graphics/Shadow.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;graphics/shaders/deferred_lighting_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;graphics/shaders/deferred_lighting_vert_spv.inc&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="vulkan_2Graphics_8h.html">graphics/vulkan/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="GraphicsInternal_8h.html">graphics/vulkan/GraphicsInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>std::vector&lt;uint32_t&gt; embeddedSpirv(<span class="keyword">const</span> uint32_t* words, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">return</span> std::vector&lt;uint32_t&gt;(words, words + <a class="code hl_variable" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">void</span> Graphics::destroyDeferredLightingResources() {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    destroyPipeline(device, deferredLightingPipeline);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    destroyPipelineLayout(device, deferredLightingPipelineLayout);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    deferredLightingSetLayout = vk::DescriptorSetLayout{};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    deferredLightingSetLayoutUnique.reset();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    deferredLightingSet = vk::DescriptorSet{};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    deferredLightingUbo.release();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (deferredLightingSampler) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        device-&gt;destroySampler(deferredLightingSampler);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        deferredLightingSampler = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keywordtype">void</span> Graphics::createDeferredLightingPipeline() {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (deferredLightingPipeline || !sceneColorRenderPass) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    vkb::DescriptorSetLayoutBuilder layoutBuilder;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    deferredLightingSetLayoutUnique =</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        layoutBuilder.buffer(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            .image(2, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            .image(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            .image(4, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            .buffer(7, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            .buffer(8, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            .buffer(9, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            .buffer(10, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            .image(11, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            .createUnique(device.instance);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    deferredLightingSetLayout      = *deferredLightingSetLayoutUnique;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    deferredLightingPipelineLayout = createPipelineLayout(device, deferredLightingSetLayout);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">auto</span>             <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>       = embeddedSpirv(deferred_lighting_vert_spv, deferred_lighting_vert_spv_count);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">auto</span>             <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>       = embeddedSpirv(deferred_lighting_frag_spv, deferred_lighting_frag_spv_count);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    deferredLightingPipeline    = device.createPipeline()</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                      .useClassicPipeline(vertModule, fragModule)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                      .setPipelineLayout(deferredLightingPipelineLayout)</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                      .setDynamicStatesViewportScissor()</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                      .setRasterizer(vk::PolygonMode::eFill, <span class="keyword">false</span>, <span class="keyword">false</span>, 1.0f,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                                     vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                      .setMultisampler(<span class="keyword">false</span>, sceneColorSamples)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                      <span class="comment">// Always pass; fragment writes gl_FragDepth from GBuffer hwDepth so</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                      <span class="comment">// transparent Forward+ can depth-test against deferred opaques.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                      .setDepthStencil(<span class="keyword">true</span>, <span class="keyword">true</span>, vk::CompareOp::eAlways)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                      .setColorAttachmentCount(1)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                                      .build(sceneColorRenderPass);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    device-&gt;destroyShaderModule(vertModule);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    device-&gt;destroyShaderModule(fragModule);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!deferredLightingUbo.buffer) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        deferredLightingUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                     <span class="keyword">sizeof</span>(DeferredLightingUBO), kHostVisibleCoherent);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!deferredLightingSampler) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        vkb::SamplerBuilder sb;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        deferredLightingSampler = sb.nearestClamp().build(device);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> (!deferredLightingSet &amp;&amp; descriptorPool) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        vk::DescriptorSetAllocateInfo alloc{};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        alloc.descriptorPool     = descriptorPool;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        alloc.descriptorSetCount = 1;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        alloc.pSetLayouts        = &amp;deferredLightingSetLayout;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        deferredLightingSet      = device-&gt;allocateDescriptorSets(alloc).front();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0116801a4a35cd685f8c22075ca61a26">   92</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0116801a4a35cd685f8c22075ca61a26">Graphics::drawDeferredLighting</a>() {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (!sceneColorPassOpen || !sceneColorRenderPass) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">auto</span>* gslot = currentGBufferSlot();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">if</span> (!gslot || !gslot-&gt;normalGpu.sampler) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    createDeferredLightingPipeline();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (!deferredLightingPipeline || !deferredLightingSet) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">if</span> (!shadowPipeline) createShadowResources();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    vk::ImageView shadowView = currentShadowArrayView();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (!shadowView || !shadowSampler) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">// Ensure clustered storage exists even with an empty/inactive upload so</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// the SSBO bindings stay valid. Hybrid always samples the cluster tables.</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">active</a>) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        std::vector&lt;ClusteredLightGpu&gt; dirs;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">if</span> (glm::length(glm::vec3(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aaf55d6d96f2103c362deb4d36908fe49">lightDir</a>)) &gt; 1e-4f) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <a class="code hl_struct" href="structeve_1_1graphics_1_1Light3DGpu.html">ClusteredLightGpu</a> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>{};</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1Light3DGpu.html#af421eeb3d7849919dc20652266e549e3">posRadius</a> = glm::vec4(glm::normalize(glm::vec3(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aaf55d6d96f2103c362deb4d36908fe49">lightDir</a>)), 0.f);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.color     = glm::vec4(glm::vec3(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a18f19b63f29cca4dbb806f683910afdc">lightColor</a>), 1.f);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            dirs.push_back(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">ClusteredLightingUpload</a> empty = <a class="code hl_function" href="namespaceeve_1_1graphics.html#a1501acfda8fdee527cf702d842ff310d">buildClusteredLighting</a>(</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            {}, dirs, mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">view</a>, mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#ae07a404ad3df19933851bea6d13c297b">clipInfo</a>.x, mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#ae07a404ad3df19933851bea6d13c297b">clipInfo</a>.y,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            std::max(1, sceneColorWidth), std::max(1, sceneColorHeight), <span class="comment">/*fovYRad*/</span> 1.f, mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a378a83ae760b3a0898c7be877b7bf59b">ambient</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        empty.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">active</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af6c62ec3dcbd422205e84aef896428bf">setMesh3DClusteredLighting</a>(empty);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        uploadClusteredLighting(mesh3dClustered);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">auto</span>&amp; storage = currentClusteredStorage();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (!storage.lightsBuf.buffer || !storage.tableBuf.buffer || !storage.indicesBuf.buffer) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO.html">DeferredLightingUBO</a> ubo{};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    ubo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO.html#ad5196f84b1eb206c05d72f86bd6ed8bd">invViewProj</a> = glm::inverse(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a2e44a128ecdcae370a8e85af390c476e">mvp</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    ubo.view        = mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">view</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    ubo.lightDir    = mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aaf55d6d96f2103c362deb4d36908fe49">lightDir</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="comment">// Mesh3DUBO packs lightCount in lightDir.w; deferred_lighting.frag uses w as</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="comment">// the primary-enable flag. Re-encode enable from the direction vector.</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    ubo.lightDir.w = glm::length(glm::vec3(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aaf55d6d96f2103c362deb4d36908fe49">lightDir</a>)) &gt; 1e-4f ? 1.f : 0.f;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    ubo.lightColor = mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a18f19b63f29cca4dbb806f683910afdc">lightColor</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    ubo.cameraPos  = glm::vec4(glm::vec3(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a0de7910eae1d7fba737c40d30962e580">cameraPos</a>), 0.f);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    ubo.ambient    = mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a378a83ae760b3a0898c7be877b7bf59b">ambient</a>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">active</a>) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        ubo.gridInfo   = mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">gridInfo</a>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        ubo.clipInfo   = mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">clipInfo</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        ubo.ambient    = mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">ambient</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        ubo.lightDir   = mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">primaryDir</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        ubo.lightColor = glm::vec4(glm::vec3(mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">primaryColor</a>), 0.f);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        ubo.view       = mesh3dClustered.<a class="code hl_variable" href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">view</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    ubo.clipInfo.z = float(std::max(1, sceneColorWidth));</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    ubo.clipInfo.w = float(std::max(1, sceneColorHeight));</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    deferredLightingUbo.updateLocal(frameToken(), &amp;ubo, <span class="keyword">sizeof</span>(ubo));</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="comment">// Shadow UBO: stage the latest CSM upload into the clustered shadow ring.</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    ensureMesh3dStrides();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keyword">auto</span>&amp; cfslots = currentMesh3dClusteredFrameSlots();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    ensureMesh3dClusteredRing(cfslots);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keyword">const</span> uint32_t shadowOffset = 0;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::memcpy(<span class="keyword">static_cast&lt;</span>uint8_t*<span class="keyword">&gt;</span>(cfslots.shadowRing.map()) + shadowOffset, &amp;mesh3dShadows.<a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">ubo</a>, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUBO.html">ShadowUBO</a>));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">auto</span> writeImage = [&amp;](uint32_t <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, vk::ImageView <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>, vk::Sampler <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#a6d2a70348e067446fa14e0ac9c8010dd">sampler</a>,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                          vk::ImageLayout <a class="code hl_variable" href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a> = vk::ImageLayout::eShaderReadOnlyOptimal) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        vk::DescriptorImageInfo img{};</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        img.sampler     = <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#a6d2a70348e067446fa14e0ac9c8010dd">sampler</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        img.imageView   = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        img.imageLayout = <a class="code hl_variable" href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        vk::WriteDescriptorSet <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>{};</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstSet          = deferredLightingSet;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstBinding      = <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorCount = 1;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorType  = vk::DescriptorType::eCombinedImageSampler;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.pImageInfo      = &amp;img;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        device-&gt;updateDescriptorSets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, {});</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    };</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">auto</span> writeBuffer = [&amp;](uint32_t <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, vk::Buffer <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>, vk::DeviceSize <a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>, vk::DescriptorType <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        vk::DescriptorBufferInfo buf{};</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        buf.buffer = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        buf.offset = 0;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        buf.range  = <a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        vk::WriteDescriptorSet <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>{};</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstSet          = deferredLightingSet;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstBinding      = <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorCount = 1;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorType  = <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.pBufferInfo     = &amp;buf;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        device-&gt;updateDescriptorSets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, {});</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    };</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    writeBuffer(0, deferredLightingUbo.buffer, <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO.html">DeferredLightingUBO</a>), vk::DescriptorType::eUniformBuffer);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    writeImage(1, gslot-&gt;normal.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    writeImage(2, gslot-&gt;depthColor.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    writeImage(3, gslot-&gt;albedo.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    writeImage(4, gslot-&gt;pbrParams.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    writeImage(5, gslot-&gt;emissive.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    writeImage(6, gslot-&gt;depth.imageView(), deferredLightingSampler);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    writeBuffer(7, storage.lightsBuf.buffer, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    writeBuffer(8, storage.tableBuf.buffer, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    writeBuffer(9, storage.indicesBuf.buffer, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        vk::DescriptorBufferInfo buf{};</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        buf.buffer = cfslots.shadowRing.buffer;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        buf.offset = shadowOffset;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        buf.range  = <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUBO.html">ShadowUBO</a>);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        vk::WriteDescriptorSet <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>{};</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstSet          = deferredLightingSet;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.dstBinding      = 10;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorCount = 1;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.descriptorType  = vk::DescriptorType::eUniformBuffer;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>.pBufferInfo     = &amp;buf;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        device-&gt;updateDescriptorSets(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, {});</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    writeImage(11, shadowView, vk::Sampler(shadowSampler), currentShadowMap().<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>.currentLayout());</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keyword">auto</span>&amp; cb = currentPresentCb();</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, deferredLightingPipeline);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, deferredLightingPipelineLayout, 0, 1, &amp;deferredLightingSet,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                          0, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    setViewportAndScissor(cb, uint32_t(sceneColorWidth), uint32_t(sceneColorHeight));</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    cb.draw(3, 1, 0, 0);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>}</div>
+</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>}  <span class="comment">// namespace eve::graphics::vulkan</span></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aClusteredLight_8h_html"><div class="ttname"><a href="ClusteredLight_8h.html">ClusteredLight.h</a></div></div>
+<div class="ttc" id="aFloorTextures_8cpp_html_accc3e5dba688a899c37c57e53edddb7f"><div class="ttname"><a href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a></div><div class="ttdeci">std::string layout</div><div class="ttdef"><b>Definition</b> <a href="FloorTextures_8cpp_source.html#l00206">FloorTextures.cpp:206</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html"><div class="ttname"><a href="GraphicsInternal_8h.html">GraphicsInternal.h</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a99414c99dbdc7df738b99938089a3298"><div class="ttname"><a href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a></div><div class="ttdeci">vk::ShaderModule vert</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00289">GraphicsInternal.h:289</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_ae743cf0e5d1516ca41060ab8de001134"><div class="ttname"><a href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a></div><div class="ttdeci">vk::ShaderModule frag</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00290">GraphicsInternal.h:290</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_a6d2a70348e067446fa14e0ac9c8010dd"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#a6d2a70348e067446fa14e0ac9c8010dd">sampler</a></div><div class="ttdeci">vk::UniqueSampler sampler</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00016">GraphicsShaderResources.cpp:16</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac97fcc7b295c4be16e43a17090bc02db"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div><div class="ttdeci">vk::UniqueImage image</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00014">GraphicsShaderResources.cpp:14</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a90fb29238b3761db70cfbff3bc865e75"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a90fb29238b3761db70cfbff3bc865e75">buffer</a></div><div class="ttdeci">std::unique_ptr&lt; gpgpu::GpuBuffer &gt; buffer</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00026">OnnxGpgpu.cpp:26</a></div></div>
+<div class="ttc" id="aParticlesCapabilities_8cpp_html_a29e48cdcd5413e721ea32eaef3927e79"><div class="ttname"><a href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a></div><div class="ttdeci">eve::action::ActionVfxBinding binding</div><div class="ttdef"><b>Definition</b> <a href="ParticlesCapabilities_8cpp_source.html#l00170">ParticlesCapabilities.cpp:170</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ada05f6cebac471a16afe32603db72cd2"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ada05f6cebac471a16afe32603db72cd2">view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00598">RenderSystem3D.cpp:598</a></div></div>
+<div class="ttc" id="aShadow_8h_html"><div class="ttname"><a href="Shadow_8h.html">Shadow.h</a></div></div>
+<div class="ttc" id="aSourceTiff_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="SourceTiff_8cpp_source.html#l00024">SourceTiff.cpp:24</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_aa6ea9b07932df851a61fa72bd01761fe"><div class="ttname"><a href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a></div><div class="ttdeci">float size</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00156">TreeMesh.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a0116801a4a35cd685f8c22075ca61a26"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0116801a4a35cd685f8c22075ca61a26">eve::graphics::vulkan::Graphics::drawDeferredLighting</a></div><div class="ttdeci">void drawDeferredLighting() override</div><div class="ttdoc">Fullscreen deferred lighting into the open scene-color pass. Samples GBuffer + clustered lights + CSM...</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2GraphicsDeferredLighting_8cpp_source.html#l00092">GraphicsDeferredLighting.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_af6c62ec3dcbd422205e84aef896428bf"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af6c62ec3dcbd422205e84aef896428bf">eve::graphics::vulkan::Graphics::setMesh3DClusteredLighting</a></div><div class="ttdeci">void setMesh3DClusteredLighting(const ClusteredLightingUpload &amp;upload) override</div><div class="ttdoc">Enable clustered forward path for subsequent default mesh draws (SSBO light lists)....</div><div class="ttdef"><b>Definition</b> <a href="GraphicsPipeline_8cpp_source.html#l01983">GraphicsPipeline.cpp:1983</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></div><div class="ttdef"><b>Definition</b> <a href="VulkanSequence_8h_source.html#l00009">VulkanSequence.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a1501acfda8fdee527cf702d842ff310d"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a1501acfda8fdee527cf702d842ff310d">eve::graphics::buildClusteredLighting</a></div><div class="ttdeci">ClusteredLightingUpload buildClusteredLighting(const std::vector&lt; ClusteredLightGpu &gt; &amp;points, const std::vector&lt; ClusteredLightGpu &gt; &amp;dirs, const glm::mat4 &amp;view, float nearZ, float farZ, int screenW, int screenH, float fovYRad, const glm::vec4 &amp;ambient)</div><div class="ttdoc">Build clustered tables for point lights in view space.</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8cpp_source.html#l00009">ClusteredLight.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html">eve::graphics::ClusteredLightingUpload</a></div><div class="ttdoc">CPU-built clustered lighting upload for one frame/camera. Point lights are clustered; directional lig...</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00032">ClusteredLight.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_a5c8c192b45cfe980d8dda91ef616f365"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a5c8c192b45cfe980d8dda91ef616f365">eve::graphics::ClusteredLightingUpload::clipInfo</a></div><div class="ttdeci">glm::vec4 clipInfo</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00036">ClusteredLight.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_a7bb51aa582d15889e44e2d9c0ef04dd1"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#a7bb51aa582d15889e44e2d9c0ef04dd1">eve::graphics::ClusteredLightingUpload::active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00049">ClusteredLight.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_aa7bc4b2eca6d29bf939fe93c8160c2d3"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa7bc4b2eca6d29bf939fe93c8160c2d3">eve::graphics::ClusteredLightingUpload::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00037">ClusteredLight.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_aa8fea97ab207e511833eca89749e8975"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#aa8fea97ab207e511833eca89749e8975">eve::graphics::ClusteredLightingUpload::primaryColor</a></div><div class="ttdeci">glm::vec4 primaryColor</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00039">ClusteredLight.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_ac6a7937c579d97c9928e89ca26bbc7e9"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#ac6a7937c579d97c9928e89ca26bbc7e9">eve::graphics::ClusteredLightingUpload::primaryDir</a></div><div class="ttdeci">glm::vec4 primaryDir</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00038">ClusteredLight.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_af295223d47aaf08318a8b0210c4fe4c6"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af295223d47aaf08318a8b0210c4fe4c6">eve::graphics::ClusteredLightingUpload::ambient</a></div><div class="ttdeci">glm::vec4 ambient</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00033">ClusteredLight.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ClusteredLightingUpload_html_af8bbc8079a17d853ac35de2f7383a528"><div class="ttname"><a href="structeve_1_1graphics_1_1ClusteredLightingUpload.html#af8bbc8079a17d853ac35de2f7383a528">eve::graphics::ClusteredLightingUpload::gridInfo</a></div><div class="ttdeci">glm::vec4 gridInfo</div><div class="ttdef"><b>Definition</b> <a href="ClusteredLight_8h_source.html#l00034">ClusteredLight.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Light3DGpu_html"><div class="ttname"><a href="structeve_1_1graphics_1_1Light3DGpu.html">eve::graphics::Light3DGpu</a></div><div class="ttdoc">GPU light packing for mesh3d / PBR (std140-friendly).</div><div class="ttdef"><b>Definition</b> <a href="Light_8h_source.html#l00150">Light.h:150</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Light3DGpu_html_af421eeb3d7849919dc20652266e549e3"><div class="ttname"><a href="structeve_1_1graphics_1_1Light3DGpu.html#af421eeb3d7849919dc20652266e549e3">eve::graphics::Light3DGpu::posRadius</a></div><div class="ttdeci">glm::vec4 posRadius</div><div class="ttdef"><b>Definition</b> <a href="Light_8h_source.html#l00151">Light.h:151</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html">eve::graphics::ShadowUBO</a></div><div class="ttdoc">Per-frame / per-draw CSM constants (std140). Binding separate from Mesh3D Frame UBO.</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00019">Shadow.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUpload_html_acd0cce027f3888cb8fa575288e8f03d0"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">eve::graphics::ShadowUpload::ubo</a></div><div class="ttdeci">ShadowUBO ubo</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00028">Shadow.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO_html"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO.html">eve::graphics::vulkan::DeferredLightingUBO</a></div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00206">Graphics.h:206</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO_html_ad5196f84b1eb206c05d72f86bd6ed8bd"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1DeferredLightingUBO.html#ad5196f84b1eb206c05d72f86bd6ed8bd">eve::graphics::vulkan::DeferredLightingUBO::invViewProj</a></div><div class="ttdeci">glm::mat4 invViewProj</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00207">Graphics.h:207</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_a0de7910eae1d7fba737c40d30962e580"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a0de7910eae1d7fba737c40d30962e580">eve::graphics::vulkan::Mesh3DUBO::cameraPos</a></div><div class="ttdeci">glm::vec4 cameraPos</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00167">Graphics.h:167</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_a18f19b63f29cca4dbb806f683910afdc"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a18f19b63f29cca4dbb806f683910afdc">eve::graphics::vulkan::Mesh3DUBO::lightColor</a></div><div class="ttdeci">glm::vec4 lightColor</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00165">Graphics.h:165</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_a2e44a128ecdcae370a8e85af390c476e"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a2e44a128ecdcae370a8e85af390c476e">eve::graphics::vulkan::Mesh3DUBO::mvp</a></div><div class="ttdeci">glm::mat4 mvp</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00162">Graphics.h:162</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_a378a83ae760b3a0898c7be877b7bf59b"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a378a83ae760b3a0898c7be877b7bf59b">eve::graphics::vulkan::Mesh3DUBO::ambient</a></div><div class="ttdeci">glm::vec4 ambient</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00168">Graphics.h:168</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_aade9477ff253b2a7b1b6a9825db72b39"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">eve::graphics::vulkan::Mesh3DUBO::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00173">Graphics.h:173</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_aaf55d6d96f2103c362deb4d36908fe49"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aaf55d6d96f2103c362deb4d36908fe49">eve::graphics::vulkan::Mesh3DUBO::lightDir</a></div><div class="ttdeci">glm::vec4 lightDir</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00164">Graphics.h:164</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_ae07a404ad3df19933851bea6d13c297b"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#ae07a404ad3df19933851bea6d13c297b">eve::graphics::vulkan::Mesh3DUBO::clipInfo</a></div><div class="ttdeci">glm::vec4 clipInfo</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00174">Graphics.h:174</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8h_html"><div class="ttname"><a href="vulkan_2Graphics_8h.html">Graphics.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
