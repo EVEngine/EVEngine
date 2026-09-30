@@ -9,7 +9,7 @@ persist avDecal = null
 persist avAction = null
 persist avHandle = null
 persist avSkinIndex = 0
-persist avPhase = "idle"   // idle | windup | release
+persist avPhase = "idle"   // idle | anticipate | release
 persist avTimer = 0.0
 persist avCycle = 0
 persist avLastEvents = ""
@@ -19,9 +19,9 @@ persist avPassPrinted = false
 persist avTime = 0.0
 
 skins <- [
-    { id = "skin:fire", label = "FIRE", tint = [0.95, 0.35, 0.12], mesh = "slash" },
-    { id = "skin:water", label = "WATER", tint = [0.25, 0.65, 0.95], mesh = "slash" },
-    { id = "skin:lightning", label = "LIGHTNING", tint = [0.85, 0.9, 1.0], mesh = "impactFlash" }
+    { id = "skin:fire", label = "FIRE", tint = [0.95, 0.35, 0.12], meshUri = "skill:weaponSlash" },
+    { id = "skin:water", label = "WATER", tint = [0.25, 0.65, 0.95], meshUri = "skill:weaponSlash" },
+    { id = "skin:lightning", label = "LIGHTNING", tint = [0.85, 0.9, 1.0], meshUri = "skill:impactFlash" }
 ];
 
 function avRequire(result, context) {
@@ -29,19 +29,19 @@ function avRequire(result, context) {
     return result;
 }
 
-function recipeJson(skinId, meshStyle, audioUri) {
+function recipeJson(skinId, meshUri, audioUri) {
     return "{" +
         "\"schema\":\"eve.stylize.attack-vfx\",\"schemaVersion\":1," +
         "\"id\":\"attackvfx:showcase\"," +
         "\"skin\":{" +
             "\"id\":\"" + skinId + "\"," +
-            "\"styleHints\":{\"meshStyle\":\"" + meshStyle + "\"}," +
+            "\"styleHints\":{\"meshStyle\":\"slash\"}," +
             "\"shakeProfile\":{\"posAmp\":0.08,\"rotAmp\":0.4,\"duration\":0.12}," +
             "\"distortionProfile\":{\"strength\":0.35}" +
         "}," +
         "\"phases\":[" +
             "{" +
-                "\"kind\":\"windup\",\"durationSeconds\":0.35," +
+                "\"kind\":\"anticipate\",\"durationSeconds\":0.35," +
                 "\"layers\":[" +
                     "{\"role\":\"meshVfx\",\"uri\":\"skill:chargeAura\"}," +
                     "{\"role\":\"prefab\",\"uri\":\"prefab://charge-ring\"}," +
@@ -51,7 +51,7 @@ function recipeJson(skinId, meshStyle, audioUri) {
             "{" +
                 "\"kind\":\"release\",\"startCue\":\"impact\",\"durationSeconds\":0.55," +
                 "\"layers\":[" +
-                    "{\"role\":\"meshVfx\",\"uri\":\"meshvfx://showcase/slash\"}," +
+                    "{\"role\":\"meshVfx\",\"uri\":\"" + meshUri + "\"}," +
                     "{\"role\":\"trail\",\"uri\":\"trail://blade\",\"floatParams\":{\"lifetime\":0.25}}," +
                     "{\"role\":\"camera\",\"floatParams\":{\"posAmp\":0.12,\"duration\":0.1}}," +
                     "{\"role\":\"distortion\",\"floatParams\":{\"strength\":0.4}}," +
@@ -96,11 +96,11 @@ function applySkinTint() {
 
 function playCycle() {
     local skin = skins[avSkinIndex];
-    avRequire(avAction.registerRecipeJson(recipeJson(skin.id, skin.mesh, "hit.wav")),
+    avRequire(avAction.registerRecipeJson(recipeJson(skin.id, skin.meshUri, "hit.wav")),
               "register recipe");
     local played = avRequire(avAction.play("attackvfx:showcase", 0, 2), "play");
     avHandle = played.value;
-    avPhase = "windup";
+    avPhase = "anticipate";
     avTimer = 0.0;
     avStarted += 1;
     avLastEvents = "play " + skin.label + " slot=" + avHandle.slot;
@@ -163,7 +163,7 @@ eve_update <- function(dt) {
         local summary = summarizeEvents(frame);
         if (summary != "") avLastEvents = summary;
 
-        if (avPhase == "windup" && avTimer >= 0.32) {
+        if (avPhase == "anticipate" && avTimer >= 0.32) {
             local signaled = avRequire(
                 avAction.signal(avHandle.slot, avHandle.generation, "impact"), "signal");
             avPhase = "release";
@@ -213,7 +213,7 @@ eve_render <- function() {
     // Color chips for the active elemental skin / phase.
     gfx.drawSolidRect(18.0, 14.0, 22.0, 22.0, skin.tint[0], skin.tint[1], skin.tint[2], 1.0);
     local phaseColor = avPhase == "release" ? [1.0, 0.75, 0.25] :
-                       avPhase == "windup" ? [0.45, 0.85, 1.0] : [0.35, 0.4, 0.48];
+                       avPhase == "anticipate" ? [0.45, 0.85, 1.0] : [0.35, 0.4, 0.48];
     gfx.drawSolidRect(48.0, 14.0, 14.0, 22.0, phaseColor[0], phaseColor[1], phaseColor[2], 1.0);
 
     // Source→target intent bar under the chips.

@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+
 using namespace eve::stylize;
 using namespace eve::stylize_action;
 
@@ -106,7 +107,7 @@ TEST_CASE("stylize.attack_vfx.layers stylizeAction play advance api") {
     const char* recipeJson = R"({
       "schema":"eve.stylize.attack-vfx","schemaVersion":1,"id":"attackvfx:combo",
       "phases":[
-        {"kind":"windup","durationSeconds":0.1,"layers":[
+        {"kind":"anticipate","durationSeconds":0.1,"layers":[
           {"role":"prefab","uri":"prefab://charge"}
         ]},
         {"kind":"release","startCue":"impact","durationSeconds":0.25,"layers":[

@@ -20,8 +20,8 @@ make run/<platform>-debug GAME=examples/attack-vfx
 
 ## 演示内容
 
-1. `eve.StylizeAction()` 注册带 windup→release（`startCue=impact`）两段相位的配方。
-2. windup：充能 mesh（`skill:chargeAura`）+ prefab 占位 + 粒子 burst。
+1. `eve.StylizeAction()` 注册带 anticipate→release（`startCue=impact`）两段相位的配方。
+2. anticipate：充能 mesh（`skill:chargeAura`）+ prefab 占位 + 粒子 burst。
 3. `signal("impact")` 切入 release：刀光 mesh、trail、camera shake、distortion
    profile、地面 scorch decal、`hit.wav` 一发音频、impact prefab、粒子。
 4. 每轮结束后切换 skin（`skin:fire` / `skin:water` / `skin:lightning`）并重注册配方；
@@ -41,7 +41,7 @@ make run/<platform>-debug GAME=examples/attack-vfx
 | `main.nut` | 配方拼装、轮播、Result 检查、简易 HUD |
 | `config.nut` | 1100×700；裁剪到 stylize / stylizeAction / particles / audio / decal |
 | `hit.wav` | release 相位 one-shot 音频 |
-| `burst.particle.json` | windup / release 共用的粒子 burst 资产 |
+| `burst.particle.json` | anticipate / release 共用的粒子 burst 资产 |
 | `README.md` | 本说明 |
 
 ## 契约
