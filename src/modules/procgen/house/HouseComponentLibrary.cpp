@@ -1,4 +1,4 @@
-#include "housegen/HouseComponentLibrary.h"
+#include "procgen/house/HouseComponentLibrary.h"
 
 #include "common/Json.h"
 
@@ -214,6 +214,34 @@ std::vector<std::reference_wrapper<const HouseComponent>> HouseComponentLibrary:
     if (result.empty() && !style.empty()) return byCategory(category, {});
     std::sort(result.begin(), result.end(),
               [](const auto &left, const auto &right) { return left.get().id < right.get().id; });
+    return result;
+}
+
+bool HouseComponentLibrary::hasCompletePack(std::string_view style) const {
+    if (style.empty()) return false;
+    static constexpr const char *core[] = {"foundation", "floor", "wall", "door", "roof"};
+    for (const char *category : core) {
+        bool present = false;
+        for (const auto &[_, component] : components_)
+            if (component.category == category &&
+                std::find(component.tags.begin(), component.tags.end(), style) != component.tags.end()) {
+                present = true;
+                break;
+            }
+        if (!present) return false;
+    }
+    return true;
+}
+
+std::vector<std::string> HouseComponentLibrary::completePacks() const {
+    std::vector<std::string> styles;
+    for (const auto &[_, component] : components_)
+        for (const std::string &tag : component.tags)
+            if (std::find(styles.begin(), styles.end(), tag) == styles.end()) styles.push_back(tag);
+    std::vector<std::string> result;
+    for (const std::string &style : styles)
+        if (hasCompletePack(style)) result.push_back(style);
+    std::sort(result.begin(), result.end());
     return result;
 }
 

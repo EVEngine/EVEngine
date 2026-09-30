@@ -34,10 +34,6 @@ eve_declare_module(NAME spritestack_editing LAYER 5
 eve_declare_module(NAME stylize_editing LAYER 5
                    DEPS editing stylize
                    GROUP 3d web)
-eve_declare_module(NAME housegen_editing LAYER 5
-                   DEPS editing
-                   OPTIONAL_DEPS housegen
-                   GROUP 3d)
 eve_declare_module(NAME archspace_editing LAYER 5
                    DEPS archspace editing
                    GROUP 3d)
@@ -63,7 +59,7 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    OPTIONAL_DEPS model3d
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
-                   DEPS gpgpu graphics image map transaction
+                   DEPS data gpgpu graphics image map model3d transaction
                    GROUP 3d)
 # L5 -- RTS domain composition profile. Provider modules remain behind typed
 # links; these are the direct implementation dependencies of the profile.
@@ -152,7 +148,6 @@ eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT
 eve_declare_module(NAME fluids_editor LAYER 7 SCRIPT FluidsEditorModule SLOT fluidsEditor
                    DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
 eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
-eve_declare_module(NAME housegen_editor LAYER 7 DEPS domain_gizmo_editor editor housegen_editing GROUP 3d)
 eve_declare_module(NAME archspace_editor LAYER 7
                    DEPS archspace_editing editor
                    SCRIPT ArchSpaceEditorModule SLOT archspaceEditor
@@ -170,7 +165,7 @@ eve_declare_module(NAME npc_ai_editor LAYER 7 DEPS editor npc_ai_editing GROUP 2
 eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
 eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing
                    SCRIPT PhysicsEditorModule SLOT physicsEditor GROUP 3d web)
-eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen procgen_editing
+eve_declare_module(NAME procgen_editor LAYER 7 DEPS domain_gizmo_editor editor procgen procgen_editing
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)
 eve_declare_module(NAME queue_editor LAYER 7 DEPS editor queue_editing GROUP 2d 3d web)
