@@ -1,7 +1,7 @@
 # Destruction Basic — welded boxes + strain field
 
 最小 Chaos 风格破碎烟雾：两块盒子经连接图焊接，应变场超过阈值后断边并
-变成独立动态刚体。
+变成独立动态刚体；可选 `DestructionFx` 绘制盒代理骨块，休眠后合批。
 
 ## 运行
 
@@ -21,10 +21,11 @@ cd examples/destruction-basic && \
 
 ## 操作
 
-- 自动：启动后对焊接中点施加 Strain 场，下一仿真步断边。
+- 自动：启动后对焊接中点施加 Strain 场，下一仿真步断边；稍后施加 Sleep 场合批。
 - `R`：重置场景。
 
 ## 相关
 
 - 设计：`docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md`
-- 模块：`eve.Destruction()`（`physics_destruction`）
+- 用户文档：`docs/usr/modules/destruction.md`
+- 模块：`eve.Destruction()`（`physics_destruction`）、`eve.DestructionFx()`（`physics_destruction_graphics`）

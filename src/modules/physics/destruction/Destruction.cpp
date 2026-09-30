@@ -178,6 +178,9 @@ void Destruction::expose(ssq::Table& table) {
         return self->detachEventCount();
     });
     instance.addFunc("hasLiveWorld", [](GeometryCollectionInstance* self) { return self->hasLiveWorld(); });
+    instance.addFunc("sleepBatchRevision", [](GeometryCollectionInstance* self) {
+        return static_cast<int>(self->sleepBatchRevision());
+    });
     instance.addFunc("releaseBodies", [](GeometryCollectionInstance* self) { self->releaseBodies(); });
 }
 

@@ -1,6 +1,6 @@
 # Chaos Destruction 风格几何破碎系统设计
 
-> 状态：P0 实施中（领域核心已落地；cook/graphics/editing 未做）。日期：2026-09-29  
+> 状态：P2 已落地（核心 + cook + graphics/editing schema）。日期：2026-09-30  
 > 目标：参考 Unreal Chaos Destruction，在 EVEngine 上落地一套 **预切几何集合 +
 > 连接图 + 聚类层级 + 运行时场驱动** 的 3D 模型破碎框架，覆盖墙体、道具、掩体等
 > 硬表面破坏，并给脚本/编辑器留稳定 API。  
@@ -12,19 +12,22 @@
 > [`体素引擎差距分析.md`](./体素引擎差距分析.md)、
 > [`docs/usr/modules/physics.md`](../usr/modules/physics.md)。
 
-## 0. P0/P1 落地备注（2026-09-29）
+## 0. P0–P2 落地备注（2026-09-30）
 
 已合入模块：
 
-- `physics_destruction`（`eve.Destruction()`）：Asset / Instance / Fields / PhysicsLink
+- `physics_destruction`（`eve.Destruction()`）：Asset / Instance / Fields / PhysicsLink / `BonePresentation`
 - `physics_destruction_cook`：`FractureRecipe` + `cookGeometryCollection`（Uniform/Clustered Voronoi、Planar、Radial）
+- `physics_destruction_graphics`（`eve.DestructionFx()`）：盒代理骨块 draw、内材色、Sleep 合批
+- `physics_destruction_editing`：`fractureRecipeSchema()`（UI 无关 PropertySchema）
 
-测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`；示例：`examples/destruction-basic`。
+测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
+`test/physics_destruction_graphics.cpp`；示例：`examples/destruction-basic`；
+用户文档：`docs/usr/modules/destruction.md`。
 
-**层纠正**：因绑定 `World3D`/`Body3D`，宿主为 **LAYER 5**；cook 同层依赖宿主 + `asset`。
-三角网格 CSG 切面盖帽与层级 cluster 骨块（schema 扩展）留待 graphics / schema v2。
-
-P2+（graphics / editing / editor）仍按下文阶段表推进。
+**层纠正**：因绑定 `World3D`/`Body3D`，宿主为 **LAYER 5**；cook / graphics / editing
+同层依赖宿主（graphics 额外依赖 `graphics`，editing 额外依赖 `editing`）。
+三角网格 CSG 切面盖帽与层级 cluster 骨块（schema 扩展）留待 schema v2 / P3。
 
 ---
 
@@ -101,7 +104,7 @@ DestructionField（应变/锚固/冲量/休眠）
 |--------|-----|-------|------|
 | `physics_destruction` | `physics/destruction` | **5** | 资产解码、实例、连接图步进、场应用、与 `World3D` 解绑；无 graphics。P0 因依赖 Body3D 落在 L5（初稿 L3 已纠正） |
 | `physics_destruction_cook` | `physics/destruction/cook` | **5** | `CanonicalMeshData` → asset；Voronoi/平面/径向（盒代理 + 连接图；三角 CSG 盖帽延后） |
-| `physics_destruction_graphics` | `physics/destruction/graphics` | 4 | 骨块 mesh 同步、内材材质、休眠后静态合并（可选） |
+| `physics_destruction_graphics` | `physics/destruction/graphics` | 5 | 骨块 mesh 同步、内材材质、休眠后静态合并（可选；随宿主 L5） |
 | `physics_destruction_editing` | `physics/destruction/editing` | 5 | FractureRecipe schema、属性面板契约 |
 | `physics_destruction_editor` | `physics/destruction/editor` | 7 | Fracture 编辑器 Mode（后期） |
 
@@ -328,9 +331,9 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 ### P2 — 表现与编辑
 
-- [ ] `physics_destruction_graphics`：骨块 draw、内材、Sleep 后合批
-- [ ] `physics_destruction_editing` schema；最小 Fracture 面板
-- [ ] 用户文档 `docs/usr/modules/destruction.md` + MODULES 索引
+- [x] `physics_destruction_graphics`：骨块 draw、内材、Sleep 后合批
+- [x] `physics_destruction_editing` schema（Fracture 面板 UI 壳留给 editor 阶段）
+- [x] 用户文档 `docs/usr/modules/destruction.md` + MODULES 索引
 
 ### P3 — 生产强化
 

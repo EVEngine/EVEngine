@@ -60,17 +60,20 @@
       ],
       "tests": [
         "test/physics_destruction.cpp",
+        "test/physics_destruction_graphics.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
         "GeometryCollectionInstance",
-        "PhysicsLink"
+        "PhysicsLink",
+        "BonePresentation",
+        "GeometryCollectionRenderer"
       ],
       "create": "GeometryCollectionInstance::create builds Body3D per bone and stores PhysicsLink::fromBody; rollback destroys partial bodies on failure.",
-      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority.",
-      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField reject without mutating topology.",
-      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity.",
-      "stale": "boneLink/step/applyField resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
+      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority; GeometryCollectionRenderer borrows Instance/Graphics only for the call.",
+      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField/draw reject without mutating topology.",
+      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity; presentation rebuilds from bonePresentation + sleepBatchRevision.",
+      "stale": "boneLink/step/applyField/bonePresentation/draw resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
     },
     {
       "id": "physics-link-contract",

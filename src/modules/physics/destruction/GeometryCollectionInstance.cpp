@@ -167,6 +167,7 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
                 const float speed = std::sqrt(vx * vx + vy * vy + vz * vz);
                 if (speed > kSleepSpeed) break;
                 body->setType("static");
+                if (bones_[i].state != BoneRuntimeState::Sleeping) ++sleepBatchRevision_;
                 bones_[i].state = BoneRuntimeState::Sleeping;
                 ++receipt.bonesAffected;
                 break;
@@ -280,6 +281,32 @@ eve::Result<PhysicsLink> GeometryCollectionInstance::boneLink(int boneIndex) con
     auto body = bones_[static_cast<std::size_t>(boneIndex)].link.resolve(*world);
     if (!body) return eve::Result<PhysicsLink>::failure(body.status());
     return eve::Result<PhysicsLink>::success(bones_[static_cast<std::size_t>(boneIndex)].link);
+}
+
+eve::Result<BonePresentation> GeometryCollectionInstance::bonePresentation(int boneIndex) const {
+    if (boneIndex < 0 || boneIndex >= static_cast<int>(bones_.size()))
+        return eve::Result<BonePresentation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "geometry-collection bone index is out of range", "bone"));
+    World3D* world = resolveWorld();
+    if (!world)
+        return eve::Result<BonePresentation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "geometry-collection world is gone", "world"));
+    const auto& bone = bones_[static_cast<std::size_t>(boneIndex)];
+    auto body = bone.link.resolve(*world);
+    if (!body) return eve::Result<BonePresentation>::failure(body.status());
+    BonePresentation presentation;
+    presentation.state = bone.state;
+    presentation.halfExtentX = bone.halfExtentX;
+    presentation.halfExtentY = bone.halfExtentY;
+    presentation.halfExtentZ = bone.halfExtentZ;
+    presentation.worldX = body.value()->getX();
+    presentation.worldY = body.value()->getY();
+    presentation.worldZ = body.value()->getZ();
+    presentation.rotX = body.value()->getRotX();
+    presentation.rotY = body.value()->getRotY();
+    presentation.rotZ = body.value()->getRotZ();
+    presentation.rotW = body.value()->getRotW();
+    return eve::Result<BonePresentation>::success(presentation);
 }
 
 void GeometryCollectionInstance::destroyOwnedBodies(World3D& world) {

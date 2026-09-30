@@ -39,6 +39,7 @@
 
 - [脚本 ECS](modules/entity.md)：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。
 - [物理（Box2D / Box3D）](modules/physics.md)：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
+- [几何破碎 Destruction](modules/destruction.md)：预切几何集合、连接图与场驱动断边；可选 DestructionFx 骨块绘制与 Sleep 合批。
 - [Tilemap](modules/map.md)：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
 - [像素物质世界](modules/pixelworld.md)：64×64 分块的确定性沙、水、火焰与可破坏二维材料仿真。

@@ -30,6 +30,26 @@ struct EVENGINE_API_DOMAINS BoneDetachEvent {
 };
 
 /**
+ * @brief Presentation snapshot for one bone (world pose + proxy extents).
+ *
+ * Owning value for the current synchronous call. Pose comes from the live
+ * Body3D; extents come from the instance-owned proxy definition.
+ */
+struct EVENGINE_API_DOMAINS BonePresentation {
+    BoneRuntimeState state = BoneRuntimeState::Attached;
+    float halfExtentX = 0.5f;
+    float halfExtentY = 0.5f;
+    float halfExtentZ = 0.5f;
+    float worldX = 0.f;
+    float worldY = 0.f;
+    float worldZ = 0.f;
+    float rotX = 0.f;
+    float rotY = 0.f;
+    float rotZ = 0.f;
+    float rotW = 1.f;
+};
+
+/**
  * @brief Runtime owner of bone state, connection strain, and PhysicsLink bindings.
  *
  * Borrows a World3D through a process-local world handle. Instance owns the
@@ -81,6 +101,16 @@ public:
     /** @brief Resolve the PhysicsLink for one bone against the live world. */
     [[nodiscard("check bone physics-link resolution")]] eve::Result<PhysicsLink> boneLink(int boneIndex) const;
 
+    /**
+     * @brief Sample one bone's world pose and proxy extents for presentation.
+     * @return Owning snapshot, or StaleHandle/InvalidArgument without mutating state.
+     */
+    [[nodiscard("check bone presentation sampling")]]
+    eve::Result<BonePresentation> bonePresentation(int boneIndex) const;
+
+    /** @brief Monotonic revision bumped when any bone enters Sleeping (for batch rebuild). */
+    [[nodiscard]] std::uint64_t sleepBatchRevision() const noexcept { return sleepBatchRevision_; }
+
     /** @brief Destroy owned bodies if the world is still live; always clears links. */
     void releaseBodies();
 
@@ -114,6 +144,7 @@ private:
     float originY_ = 0.f;
     float originZ_ = 0.f;
     std::uint64_t lastTick_ = 0;
+    std::uint64_t sleepBatchRevision_ = 0;
     bool orphanedPhysics_ = false;
     std::vector<BoneRuntime> bones_;
     std::vector<EdgeRuntime> edges_;
