@@ -58,7 +58,7 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
 # Optional Action adapter for layered AttackVfx recipes (presentation:attack-vfx*).
 eve_declare_module(NAME stylize_action DIR stylize/action LAYER 5
                    SCRIPT StylizeAction SLOT stylizeAction
-                   DEPS action filesystem stylize
+                   DEPS action audio filesystem sound stylize
                    GROUP 3d web)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
 # surfaces, droplet coalescence) with screen-space surface reconstruction. Its

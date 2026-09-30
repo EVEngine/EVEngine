@@ -25,7 +25,7 @@ class Decal : public Module {
 public:
     Module_REG(Decal);
     Decal();
-    ~Decal() override = default;
+    ~Decal() override;
 
     /** @brief Spawn a decal at (x,y,z) facing along (nx,ny,nz); returns id. */
     int project(float x, float y, float z, float nx, float ny, float nz,
@@ -60,5 +60,10 @@ public:
 
 /** @brief Register the IDecalQuery capability (implemented in DecalCapabilities.cpp). */
 void registerDecalCapabilities();
+
+/** @brief Register the AttackVfx Decal layer executor (soft-skips when Graphics is absent). */
+void registerDecalAttackVfxExecutor();
+/** @brief Unregister the AttackVfx Decal layer executor. */
+void unregisterDecalAttackVfxExecutor();
 
 }  // namespace eve::decal

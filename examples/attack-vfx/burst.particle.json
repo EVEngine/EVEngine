@@ -1,0 +1,17 @@
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 2.0 },
+  "emitters": [
+    {
+      "name": "burst",
+      "offset": [0.0, 0.0],
+      "emitter": {
+        "buffer": 48,
+        "direction": 1.2,
+        "emissionRate": 40.0,
+        "layer": 2
+      }
+    }
+  ]
+}
