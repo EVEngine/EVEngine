@@ -68,9 +68,14 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
     candidate.metalStrength = static_cast<float>(number(document, "channel.metal"));
     candidate.emissiveStrength = static_cast<float>(number(document, "channel.emissive"));
     candidate.blendMode = *document.value("blend.mode")->getIf<std::string>() == "add" ? 1 : 0;
-    candidate.projectionMode =
-        *document.value("projection.mode")->getIf<std::string>() == "triplanar" ? 1 : 0;
+    const auto& projectionMode = *document.value("projection.mode")->getIf<std::string>();
+    candidate.projectionMode = projectionMode == "triplanar" ? 1 : projectionMode == "spherical" ? 2 :
+                               projectionMode == "world" ? 3 : 0;
     candidate.blendSharpness = static_cast<float>(number(document, "projection.blendSharpness"));
+    candidate.parallaxScale = static_cast<float>(number(document, "projection.parallaxScale"));
+    candidate.parallaxMinLayers = static_cast<float>(number(document, "projection.parallaxMinLayers"));
+    candidate.parallaxMaxLayers = static_cast<float>(number(document, "projection.parallaxMaxLayers"));
+    candidate.edgeFadeWidth = static_cast<float>(number(document, "projection.edgeFadeWidth"));
     candidate.lifetime = static_cast<float>(number(document, "lifetime.seconds"));
     candidate.fadeIn = static_cast<float>(number(document, "lifetime.fadeIn"));
     candidate.fadeOut = static_cast<float>(number(document, "lifetime.fadeOut"));

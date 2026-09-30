@@ -36,8 +36,12 @@ struct DecalInstance {
     float metalStrength = 0.f;
     float emissiveStrength = 0.f;
     int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
-    int projectionMode = 0;  // 0 = planar (local.xy), 1 = triplanar
+    int projectionMode = 0;  // 0 = planar, 1 = triplanar, 2 = spherical, 3 = world-aligned
     float blendSharpness = 4.f;
+    float parallaxScale = 0.f;
+    float parallaxMinLayers = 8.f;
+    float parallaxMaxLayers = 24.f;
+    float edgeFadeWidth = 0.06f;
     std::string kind;  // quota group ("blood", "dirt", ...)
 };
 
@@ -52,6 +56,21 @@ enum class DecalProjectionStatus : std::uint8_t {
     UnknownId = 1,
     InvalidMode = 2,
     InvalidSharpness = 3,
+};
+
+/** @brief Outcome of applying height-driven parallax settings to a live decal. */
+enum class DecalParallaxStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidScale = 2,
+    InvalidLayers = 3,
+};
+
+/** @brief Outcome of changing the projection-volume edge mask width. */
+enum class DecalEdgeFadeStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidWidth = 2,
 };
 
 /**
@@ -89,6 +108,11 @@ public:
      */
     [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
                                                       float blendSharpness = 4.f);
+    /** @brief Configure POM; scale zero disables it and layers satisfy 1 <= min <= max <= 64. */
+    [[nodiscard]] DecalParallaxStatus setParallax(int id, float scale, float minLayers = 8.f,
+                                                 float maxLayers = 24.f);
+    /** @brief Configure normalized edge feather width in [0, 0.49]. */
+    [[nodiscard]] DecalEdgeFadeStatus setEdgeFade(int id, float width);
 
     /**
      * @brief Atomically install a fully configured instance and remove a previous generation.

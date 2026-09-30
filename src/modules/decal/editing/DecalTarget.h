@@ -51,9 +51,9 @@ public:
     const EditorValue* value(const std::string& path) const;
     /** @brief Validate projection geometry, fades, UVs and texture-channel rules. */
     std::vector<EditorDiagnostic> validate() const;
-    /** @brief Capture schema-version-one decal content. */
+    /** @brief Capture schema-version-two decal content. */
     EditorValue snapshotValue() const;
-    /** @brief Atomically load and validate persisted decal content. */
+    /** @brief Atomically load v4 content or migrate v1-v3 content with compatible projection defaults. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 private:
     bool matches(const SelectionSnapshot& selection) const;
