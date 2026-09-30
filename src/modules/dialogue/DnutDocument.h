@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dialogue/Conversation.h"
 #include "dialogue/Dialogue.h"
+#include "dnut_interpreter/SequenceAsset.h"
 
 #include <string>
 #include <vector>
@@ -33,7 +33,7 @@ struct DnutDocument {
     std::string schema;
     int version = 0;
     DataValue poolRoot = DataValue::object({});
-    std::vector<ConversationAsset> conversations;
+    std::vector<eve::dnut::SequenceAsset> conversations;
 };
 
 }  // namespace eve::dialogue

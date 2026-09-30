@@ -15,10 +15,10 @@ public:
     /** @brief Create an empty document with one end node. */
     explicit ConversationDocument(std::string id = {});
     /** @brief Create an editable copy of a runtime asset. */
-    explicit ConversationDocument(ConversationAsset asset);
+    explicit ConversationDocument(eve::dnut::SequenceAsset asset);
 
     /** @brief Return the editable runtime asset. */
-    const ConversationAsset& asset() const { return asset_; }
+    const eve::dnut::SequenceAsset& asset() const { return asset_; }
     /** @brief Return the stable conversation identifier. */
     const std::string& getId() const { return asset_.id; }
     /** @brief Rename the document identifier. */
@@ -96,11 +96,25 @@ public:
     std::string getDiagnosticMessage(int index) const;
 
 private:
-    ConversationAsset::Node*       findNode(const std::string& nodeId);
-    const ConversationAsset::Node* findNode(const std::string& nodeId) const;
+    /**
+     * @brief Locate a mutable node by id inside `asset_`.
+     * @return Borrowed pointer into `asset_.nodes`, or nullptr when absent.
+     * @ownership Borrowed; this document owns the node storage.
+     * @lifetime Valid until this document is destroyed or `asset_.nodes` is
+     *           structurally mutated.
+     */
+    eve::dnut::SequenceNode* findNode(const std::string& nodeId);
+    /**
+     * @brief Locate a read-only node by id inside `asset_`.
+     * @return Borrowed pointer into `asset_.nodes`, or nullptr when absent.
+     * @ownership Borrowed; this document owns the node storage.
+     * @lifetime Valid until this document is destroyed or `asset_.nodes` is
+     *           structurally mutated.
+     */
+    const eve::dnut::SequenceNode* findNode(const std::string& nodeId) const;
     bool                           fail(const std::string& message);
 
-    ConversationAsset                   asset_;
+    eve::dnut::SequenceAsset            asset_;
     std::vector<ConversationDiagnostic> diagnostics_;
     std::string                         failureMessage_;
 };

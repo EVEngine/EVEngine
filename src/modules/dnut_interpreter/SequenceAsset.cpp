@@ -16,7 +16,19 @@ eve::Result<void> assetFailure(eve::DiagnosticCode code, std::string message, st
 }  // namespace
 
 bool isCoreSequenceNodeType(const std::string& type) noexcept {
-    return type == "branch" || type == "choice" || type == "call" || type == "wait" || type == "end";
+    return type == "branch" || type == "choice" || type == "call" || type == "command" || type == "wait" ||
+           type == "end";
+}
+
+const char* sequenceParameterTypeName(SequenceParameterType type) noexcept {
+    switch (type) {
+        case SequenceParameterType::Any: return "any";
+        case SequenceParameterType::String: return "string";
+        case SequenceParameterType::Integer: return "integer";
+        case SequenceParameterType::Number: return "number";
+        case SequenceParameterType::Boolean: return "boolean";
+    }
+    return "unknown";
 }
 
 const SequenceNode* SequenceAsset::findNode(const std::string& nodeId) const noexcept {
@@ -35,6 +47,21 @@ eve::Result<void> SequenceAsset::validate() const {
         return assetFailure(eve::DiagnosticCode::InvariantViolation, "sequence asset version must be positive",
                             "version");
 
+    std::unordered_set<std::string> parameterNames;
+    for (const auto& parameter : parameters) {
+        if (parameter.name.empty())
+            return assetFailure(eve::DiagnosticCode::InvariantViolation, "sequence parameter has an empty name",
+                                "parameters");
+        if (!parameterNames.insert(parameter.name).second)
+            return assetFailure(eve::DiagnosticCode::AlreadyExists,
+                                "duplicate sequence parameter '" + parameter.name + "'",
+                                "parameters." + parameter.name);
+        if (parameter.required && !parameter.defaultValue.isNull())
+            return assetFailure(eve::DiagnosticCode::InvariantViolation,
+                                "required sequence parameter '" + parameter.name + "' cannot have a default",
+                                "parameters." + parameter.name);
+    }
+
     std::unordered_set<std::string> ids;
     for (const auto& node : nodes) {
         if (node.id.empty())
@@ -49,6 +76,11 @@ eve::Result<void> SequenceAsset::validate() const {
             return assetFailure(eve::DiagnosticCode::InvariantViolation,
                                 "sequence node '" + node.id + "' payload must be an object",
                                 "nodes." + node.id + ".payload");
+        for (const auto& route : node.routes) {
+            if (!route.payload.isObject())
+                return assetFailure(eve::DiagnosticCode::InvariantViolation, "sequence route payload must be an object",
+                                    "nodes." + node.id + ".routes");
+        }
     }
 
     if (!findNode(entry))
@@ -72,6 +104,15 @@ eve::Result<void> SequenceAsset::validate() const {
                 return assetFailure(eve::DiagnosticCode::InvariantViolation,
                                     "call node '" + node.id + "' requires a target asset id",
                                     "nodes." + node.id + ".payload.target");
+            const eve::Value* returnNode = node.payload.find("return");
+            if (returnNode) {
+                if (!returnNode->isString())
+                    return assetFailure(eve::DiagnosticCode::InvariantViolation,
+                                        "call node '" + node.id + "' return must be a node id",
+                                        "nodes." + node.id + ".payload.return");
+                auto returnResult = checkReference(node.id, "payload.return", returnNode->asString());
+                if (!returnResult.ok()) return returnResult;
+            }
         }
         if (node.type == "choice") {
             if (node.routes.empty())
@@ -95,12 +136,6 @@ eve::Result<void> SequenceAsset::validate() const {
                 return assetFailure(eve::DiagnosticCode::InvariantViolation,
                                     "branch node '" + node.id + "' requires at least one route",
                                     "nodes." + node.id + ".routes");
-            for (const auto& route : node.routes) {
-                if (route.condition.isNull())
-                    return assetFailure(eve::DiagnosticCode::InvariantViolation,
-                                        "branch node '" + node.id + "' has a route without a condition",
-                                        "nodes." + node.id + ".routes");
-            }
         }
         for (const auto& route : node.routes) {
             auto routeResult = checkReference(node.id, "routes", route.target);

@@ -688,14 +688,13 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
             const std::string encoded = binding->gameState->getSelfString(scope, "cursor");
             auto              parsed  = eve::Value::fromJson(encoded);
             if (!parsed.ok())
-                return makeStoryFailure(eve::DiagnosticCode::ParseError,
-                                        "persisted story cursor is not valid JSON", scope + ".cursor");
+                return makeStoryFailure(eve::DiagnosticCode::ParseError, "persisted story cursor is not valid JSON",
+                                        scope + ".cursor");
             impl_->storyId = storyId;
             impl_->configureRuntime();
             if (auto restored = impl_->runtime.restoreState(parsed.value()); !restored.ok()) {
-                const auto* diagnostic = restored.error();
-                const std::string message =
-                    diagnostic ? diagnostic->message() : "story cursor could not be restored";
+                const auto*       diagnostic = restored.error();
+                const std::string message = diagnostic ? diagnostic->message() : "story cursor could not be restored";
                 stop();
                 return makeStoryFailure(eve::DiagnosticCode::Failed, message, scope + ".cursor");
             }

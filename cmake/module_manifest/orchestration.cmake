@@ -266,4 +266,4 @@ eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
 eve_declare_module(NAME dialogue LAYER 6
                    SCRIPT Dialogue DialogueUX DialogueVoice DialogueFlow
                    SLOT dialogue dialogueUX dialogueVoice dialogueFlow
-                   DEPS avatar audio decision filesystem transaction)
+                   DEPS avatar audio decision dnut_interpreter filesystem transaction)
