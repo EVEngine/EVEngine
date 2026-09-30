@@ -56,9 +56,12 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Optional Action adapter for layered AttackVfx recipes (presentation:attack-vfx*).
+# audio/sound are optional: WASM/web profiles do not ship Wuff/OpenAL; the Audio
+# AttackVfx executor compiles only when both runtime modules are present.
 eve_declare_module(NAME stylize_action DIR stylize/action LAYER 5
                    SCRIPT StylizeAction SLOT stylizeAction
-                   DEPS action audio filesystem sound stylize
+                   DEPS action filesystem stylize
+                   OPTIONAL_DEPS audio sound
                    GROUP 3d web)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
 # surfaces, droplet coalescence) with screen-space surface reconstruction. Its

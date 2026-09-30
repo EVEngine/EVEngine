@@ -1,11 +1,13 @@
+#include "common/Capability.h"
+#include "stylize/AttackVfxLayerExecutor.h"
+
+#if defined(EVE_STYLIZE_ACTION_AUDIO)
 #include "audio/Audio.h"
 #include "audio/Source.h"
-#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/Resource.h"
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
-#include "stylize/AttackVfxLayerExecutor.h"
 
 #include <cstdint>
 #include <exception>
@@ -13,8 +15,11 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#endif
 
 namespace eve::stylize_action {
+
+#if defined(EVE_STYLIZE_ACTION_AUDIO)
 namespace {
 
 float layerParam(const eve::stylize::AttackVfxLayerStartRequest& request, const char* key,
@@ -110,8 +115,8 @@ public:
 
 private:
     struct Live {
-        eve::ResourcePin                         pin;
-        std::unique_ptr<eve::audio::Source>      source;
+        eve::ResourcePin                    pin;
+        std::unique_ptr<eve::audio::Source> source;
     };
 
     std::uint64_t nextId_ = 1;
@@ -138,5 +143,12 @@ void unregisterAudioAttackVfxExecutor() {
     eve::cap::removeListener<eve::stylize::IAttackVfxLayerExecutor>(&audioExecutor());
     gAudioRegistered = false;
 }
+
+#else
+
+void registerAudioAttackVfxExecutor() {}
+void unregisterAudioAttackVfxExecutor() {}
+
+#endif
 
 }  // namespace eve::stylize_action

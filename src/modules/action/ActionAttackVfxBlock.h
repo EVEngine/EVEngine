@@ -22,6 +22,8 @@ enum class ActionAttackVfxShape : std::uint8_t { Instant, State };
 struct ActionAttackVfxCue {
     double      offsetSeconds = 0.0;
     std::string cue;
+
+    auto operator<=>(const ActionAttackVfxCue&) const = default;
 };
 
 /**
