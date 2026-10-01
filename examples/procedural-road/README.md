@@ -22,7 +22,9 @@ VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
   xvfb-run -a scripts/smoke_examples.sh procedural-road
 ```
 
-配方参数：`scene=straight|curve|bridge|cross|tee|y|fork|skew|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
+配方参数：`scene=straight|curve|bridge|cross|tee|y|fork|skew|interchange`，装饰开关
+`decorTrees|decorMedian|decorGreenbelt|decorLights|decorPoles`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
+自定义道具在 C++ 侧通过 `addCustomRoadDecor(options.decor, spec)` 注册（`RoadDecorSpec` + 局部 Box/Cylinder/Cone）。
 设计说明见 `docs/dev/程序化道路系统设计.md`。
 
 > Cloud / Lavapipe 注意：本机无 GPU，Vulkan ICD 是 Mesa Lavapipe（“显存”走主机 RAM）。

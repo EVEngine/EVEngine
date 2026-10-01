@@ -1,6 +1,7 @@
 #include "procgen/road/RoadBake.h"
 
 #include "common/Diagnostic.h"
+#include "procgen/road/RoadDecor.h"
 #include "procgen/spline/SplinePath.h"
 
 #include <algorithm>
@@ -1248,6 +1249,14 @@ MaterialColor colorForGroup(const std::string& name) {
     if (name == "marking") return {0.96f, 0.96f, 0.94f, 1.f};
     if (name == "markingYellow") return {0.96f, 0.80f, 0.10f, 1.f};
     if (name == "nav") return {0.10f, 0.95f, 1.f, 1.f};
+    if (name == "decorTrunk") return {0.42f, 0.28f, 0.16f, 1.f};
+    if (name == "decorFoliage") return {0.22f, 0.55f, 0.24f, 1.f};
+    if (name == "decorGrass") return {0.28f, 0.58f, 0.26f, 1.f};
+    if (name == "decorMedian") return {0.72f, 0.72f, 0.70f, 1.f};
+    if (name == "decorMetal") return {0.55f, 0.58f, 0.62f, 1.f};
+    if (name == "decorLamp") return {0.95f, 0.90f, 0.55f, 1.f};
+    if (name == "decorPole") return {0.48f, 0.42f, 0.34f, 1.f};
+    if (name == "decorCustom") return {0.70f, 0.55f, 0.40f, 1.f};
     return {0.55f, 0.55f, 0.55f, 1.f};
 }
 
@@ -1297,6 +1306,10 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
     if (options.includeNavigation) {
         auto turns = bakeTurnOverlays(result.mesh, result.overlay, network, options);
         if (!turns.ok()) return Result<RoadBakeResult>::failure(turns.status());
+    }
+    {
+        auto decor = bakeRoadDecorations(result.mesh, network, options.decor);
+        if (!decor.ok()) return Result<RoadBakeResult>::failure(decor.status());
     }
 
     auto painted = paintGroupVertexColors(result.mesh);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "procgen/MeshBuild.h"
+#include "procgen/road/RoadDecor.h"
 #include "procgen/road/RoadNetwork.h"
 #include "procgen/road/RoadTypes.h"
 
@@ -16,6 +17,8 @@ struct RoadBakeOptions {
     bool  includeJunctions    = true;
     float navRibbonHalfWidth  = 0.22f;
     float arrowSpacing        = 5.f;
+    /** @brief Optional trees / median / greenbelt / lights / poles / custom props. */
+    RoadDecorOptions decor;
 };
 
 /** @brief Owning bake result: triangle mesh groups plus overlay polylines. */
