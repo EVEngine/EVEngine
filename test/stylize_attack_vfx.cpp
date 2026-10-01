@@ -237,3 +237,70 @@ TEST_CASE("stylize.attack_vfx runtime rejects stale handles and missing recipes"
     auto stale = runtime.signal(handle, "impact");
     REQUIRE(!stale.ok());
 }
+
+TEST_CASE("stylize.attack_vfx pool resize bumps generation") {
+    AttackVfxRuntime runtime;
+    REQUIRE(runtime.configurePool(2).ok());
+    auto recipe = AttackVfxRecipe::fromJson(R"({
+      "schema":"eve.stylize.attack-vfx","schemaVersion":1,"id":"attackvfx:gen",
+      "phases":[{"kind":"release","durationSeconds":0.05,"layers":[{"role":"trail","uri":"trail://x"}]}]
+    })");
+    REQUIRE(recipe.ok());
+    REQUIRE(runtime.registerRecipe(recipe.value()).ok());
+    auto played = runtime.play(id("attackvfx:gen"), {});
+    REQUIRE(played.ok());
+    auto handle = std::move(played).takeValue();
+    REQUIRE(runtime.stop(handle, AttackVfxStopMode::ClearImmediately).ok());
+    REQUIRE(runtime.configurePool(4).ok());
+    auto again = runtime.play(id("attackvfx:gen"), {});
+    REQUIRE(again.ok());
+    CHECK(again.value().generation != handle.generation);
+    CHECK(!runtime.inspect(handle).has_value());
+    REQUIRE(runtime.stop(again.value(), AttackVfxStopMode::ClearImmediately).ok());
+}
+
+TEST_CASE("stylize.attack_vfx rejects recipe replace while live") {
+    AttackVfxRuntime runtime;
+    auto recipe = AttackVfxRecipe::fromJson(R"({
+      "schema":"eve.stylize.attack-vfx","schemaVersion":1,"id":"attackvfx:live",
+      "phases":[{"kind":"release","durationSeconds":2.0,"layers":[{"role":"trail","uri":"trail://x"}]}]
+    })");
+    REQUIRE(recipe.ok());
+    REQUIRE(runtime.registerRecipe(recipe.value()).ok());
+    auto played = runtime.play(id("attackvfx:live"), {});
+    REQUIRE(played.ok());
+    auto replaced = runtime.registerRecipe(recipe.value());
+    REQUIRE(!replaced.ok());
+    REQUIRE(runtime.stop(played.value(), AttackVfxStopMode::ClearImmediately).ok());
+}
+
+TEST_CASE("stylize.attack_vfx delayed phase uses partial dt") {
+    AttackVfxRuntime runtime;
+    auto recipe = AttackVfxRecipe::fromJson(R"({
+      "schema":"eve.stylize.attack-vfx","schemaVersion":1,"id":"attackvfx:delay",
+      "phases":[{"kind":"release","startOffsetSeconds":0.08,"durationSeconds":0.1,
+                 "layers":[{"role":"trail","uri":"trail://x"}]}]
+    })");
+    REQUIRE(recipe.ok());
+    REQUIRE(runtime.registerRecipe(recipe.value()).ok());
+    auto played = runtime.play(id("attackvfx:delay"), {});
+    REQUIRE(played.ok());
+    auto handle = std::move(played).takeValue();
+    REQUIRE(runtime.advance(0.1).ok());
+    auto snap = runtime.inspect(handle);
+    REQUIRE(snap.has_value());
+    REQUIRE(snap->phases[0].active);
+    // Entered 0.02s into the phase; a full 0.1s credit would have already completed it.
+    CHECK(snap->phases[0].localTime + 1e-9 < 0.1);
+    CHECK(snap->phases[0].localTime + 1e-9 >= 0.02);
+    REQUIRE(runtime.stop(handle, AttackVfxStopMode::ClearImmediately).ok());
+}
+
+TEST_CASE("stylize.attack_vfx budget rejects oversized maxParticles") {
+    auto parsed = AttackVfxRecipe::fromJson(R"({
+      "schema":"eve.stylize.attack-vfx","schemaVersion":1,"id":"attackvfx:budget",
+      "budget":{"maxParticles":5000000000},
+      "phases":[{"kind":"release","layers":[{"role":"particles","uri":"p://a"}]}]
+    })");
+    REQUIRE(!parsed.ok());
+}

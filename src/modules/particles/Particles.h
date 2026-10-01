@@ -29,7 +29,7 @@ class EVENGINE_API_DOMAINS Particles : public Module {
 public:
     Module_REG(Particles);
     Particles();
-    ~Particles() override = default;
+    ~Particles() override;
 
     ParticleEmitter *newEmitter(int bufferSize = 1000);
     /** @brief Create emitter from JSON config file (reads optional "buffer"). */

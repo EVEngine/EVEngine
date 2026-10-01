@@ -112,8 +112,10 @@ public:
             (*skill)->play();
         }
 
+        Live live;
+        live.owned = std::move(owned);
         const auto id = ++nextId_;
-        live_.emplace(id, std::move(owned));
+        live_.emplace(id, std::move(live));
         return Result<AttackVfxLayerHandle>::success(AttackVfxLayerHandle{id});
     }
 
@@ -124,10 +126,14 @@ public:
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::StaleHandle, "meshVfx AttackVfx layer handle is stale", "handle"));
         const float dt = static_cast<float>(dtSeconds);
-        if (auto* asset = std::get_if<std::unique_ptr<MeshVfxAssetInstance>>(&found->second))
+        if (auto* asset = std::get_if<std::unique_ptr<MeshVfxAssetInstance>>(&found->second.owned))
             (*asset)->update(dt);
-        else if (auto* skill = std::get_if<std::unique_ptr<SkillMeshEffect>>(&found->second))
+        else if (auto* skill = std::get_if<std::unique_ptr<SkillMeshEffect>>(&found->second.owned))
             (*skill)->update(dt);
+        if (found->second.draining && isFinished(found->second.owned)) {
+            live_.erase(found);
+            return Result<void>::success(Status::success(StatusCode::NoOp));
+        }
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -136,19 +142,37 @@ public:
         if (found == live_.end())
             return Result<void>::failure(Diagnostic::error(
                 DiagnosticCode::StaleHandle, "meshVfx AttackVfx layer handle is stale", "handle"));
-        if (auto* asset = std::get_if<std::unique_ptr<MeshVfxAssetInstance>>(&found->second))
+        if (auto* asset = std::get_if<std::unique_ptr<MeshVfxAssetInstance>>(&found->second.owned))
             (*asset)->stop(behavior == AttackVfxStopBehavior::ClearImmediately ? 0.f : -1.f);
-        else if (auto* skill = std::get_if<std::unique_ptr<SkillMeshEffect>>(&found->second))
+        else if (auto* skill = std::get_if<std::unique_ptr<SkillMeshEffect>>(&found->second.owned))
             (*skill)->stop(behavior == AttackVfxStopBehavior::ClearImmediately ? 0.f : 0.1f);
-        live_.erase(found);
+        if (behavior == AttackVfxStopBehavior::ClearImmediately) {
+            live_.erase(found);
+            return Result<void>::success(Status::success(StatusCode::Applied));
+        }
+        // StopEmitting keeps the instance so fade-out can complete through update().
+        found->second.draining = true;
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
 private:
     using Owned =
         std::variant<std::unique_ptr<MeshVfxAssetInstance>, std::unique_ptr<SkillMeshEffect>>;
+    struct Live {
+        Owned owned;
+        bool  draining = false;
+    };
+
+    static bool isFinished(const Owned& owned) {
+        if (const auto* asset = std::get_if<std::unique_ptr<MeshVfxAssetInstance>>(&owned))
+            return !*asset || (*asset)->isFinished();
+        if (const auto* skill = std::get_if<std::unique_ptr<SkillMeshEffect>>(&owned))
+            return !*skill || (*skill)->isFinished();
+        return true;
+    }
+
     std::uint64_t nextId_ = 1;
-    std::unordered_map<std::uint64_t, Owned> live_;
+    std::unordered_map<std::uint64_t, Live> live_;
 };
 
 class TrailAttackVfxExecutor final : public IAttackVfxLayerExecutor {

@@ -91,7 +91,13 @@ public:
                 return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
             auto stopped = runtime->stop(found->second.handle, eve::stylize::AttackVfxStopMode::StopEmitting);
             active_.erase(found);
-            if (!stopped) return eve::Result<void>::failure(stopped.status());
+            if (!stopped) {
+                // Recipe may already have completed and invalidated the handle.
+                if (stopped.code() == eve::StatusCode::Rejected ||
+                    stopped.code() == eve::StatusCode::NotFound)
+                    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+                return eve::Result<void>::failure(stopped.status());
+            }
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
 
@@ -121,8 +127,9 @@ public:
         owned.binding      = std::move(binding).takeValue();
         owned.startTime    = context.time;
         owned.executionId  = context.executionId;
-        owned.nextCue      = 0;
-        owned.lastAge      = 0.0;
+        owned.nextCue = 0;
+        owned.lastAge = 0.0;
+        executionClocks_[context.executionId] = context.time.seconds();
 
         if (instant) {
             auto duration = eve::Duration::fromSeconds(owned.binding.lifetimeSeconds);
@@ -157,9 +164,15 @@ public:
 
         bool changed = false;
         const double now = context.time.seconds();
-        double dt = now - lastAdvanceSeconds_;
+
+        // Per-execution clocks: concurrent actions must not share one lastAdvance.
+        auto clockIt = executionClocks_.find(context.executionId);
+        if (clockIt == executionClocks_.end()) {
+            clockIt = executionClocks_.emplace(context.executionId, now).first;
+        }
+        double dt = now - clockIt->second;
         if (context.scrubbing || dt < 0.0) dt = 0.0;
-        lastAdvanceSeconds_ = now;
+        clockIt->second = now;
         if (dt > 0.0) {
             auto frame = runtime->advance(dt);
             if (!frame) return eve::Result<void>::failure(frame.status());
@@ -168,6 +181,7 @@ public:
         }
 
         for (auto& active : active_) {
+            if (active.second.executionId != context.executionId) continue;
             auto cues = deliverCues(*runtime, active.second, context.time);
             if (!cues) return cues;
             changed = changed || cues.code() == eve::StatusCode::Applied;
@@ -185,7 +199,12 @@ public:
                 continue;
             }
             auto stopped = runtime->stop(it->handle, eve::stylize::AttackVfxStopMode::ClearImmediately);
-            if (!stopped) return eve::Result<void>::failure(stopped.status());
+            if (!stopped) {
+                // Instant recipes often complete before lifetime ends; ignore stale stops.
+                if (stopped.code() != eve::StatusCode::Rejected &&
+                    stopped.code() != eve::StatusCode::NotFound)
+                    return eve::Result<void>::failure(stopped.status());
+            }
             it = transients_.erase(it);
             changed = true;
         }
@@ -198,13 +217,13 @@ private:
     using ActiveKey = std::pair<eve::action::ActionExecutionId, std::string>;
 
     struct ActiveInstance {
-        eve::stylize::AttackVfxHandle      handle{};
+        eve::stylize::AttackVfxHandle       handle{};
         eve::action::ActionAttackVfxBinding binding;
-        eve::Duration                      startTime = eve::Duration::zero();
-        eve::Duration                      endTime   = eve::Duration::zero();
-        eve::action::ActionExecutionId     executionId{};
-        std::size_t                        nextCue = 0;
-        double                             lastAge = 0.0;
+        eve::Duration                       startTime = eve::Duration::zero();
+        eve::Duration                       endTime   = eve::Duration::zero();
+        eve::action::ActionExecutionId      executionId{};
+        std::size_t                         nextCue = 0;
+        double                              lastAge = 0.0;
     };
 
     static eve::Result<void> deliverCues(eve::stylize::AttackVfxRuntime& runtime, ActiveInstance& active,
@@ -217,7 +236,14 @@ private:
             if (cue.offsetSeconds > age) break;
             if (cue.offsetSeconds + 1e-9 >= active.lastAge) {
                 auto signaled = runtime.signal(active.handle, cue.cue);
-                if (!signaled) return eve::Result<void>::failure(signaled.status());
+                if (!signaled) {
+                    if (signaled.code() == eve::StatusCode::Rejected ||
+                        signaled.code() == eve::StatusCode::NotFound) {
+                        ++active.nextCue;
+                        continue;
+                    }
+                    return eve::Result<void>::failure(signaled.status());
+                }
                 changed = true;
             }
             ++active.nextCue;
@@ -227,9 +253,9 @@ private:
             eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
     }
 
-    std::map<ActiveKey, ActiveInstance> active_;
-    std::vector<ActiveInstance>         transients_;
-    double                              lastAdvanceSeconds_ = 0.0;
+    std::map<ActiveKey, ActiveInstance>                          active_;
+    std::vector<ActiveInstance>                                  transients_;
+    std::map<eve::action::ActionExecutionId, double>             executionClocks_;
 };
 
 class ActionAttackVfxProvider final : public eve::action::IActionNotifyProvider {

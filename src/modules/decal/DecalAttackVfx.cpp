@@ -2,13 +2,13 @@
 #include "common/Module.h"
 #include "decal/DecalManager.h"
 #include "graphics/Graphics.h"
+#include "graphics/Texture.h"
 #include "stylize/AttackVfxLayerExecutor.h"
 
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 namespace eve::decal {
 namespace {
@@ -67,13 +67,11 @@ public:
             return eve::Result<eve::stylize::AttackVfxLayerHandle>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::NotFound, "decal albedo texture could not be resolved", "uri"));
 
-        const float x = layerParam(request, "x",
-                                   request.playRequest ? static_cast<float>(request.playRequest->sourceId)
-                                                       : 0.f);
-        const float y = layerParam(request, "y", 0.05f);
-        const float z = layerParam(request, "z",
-                                   request.playRequest ? static_cast<float>(request.playRequest->targetId)
-                                                       : 0.f);
+        // World placement comes from authored floatParams (or spatial adapters later).
+        // Entity ids must never be treated as coordinates.
+        const float x        = layerParam(request, "x", 0.f);
+        const float y        = layerParam(request, "y", 0.05f);
+        const float z        = layerParam(request, "z", 0.f);
         const float size     = layerParam(request, "size", 1.2f);
         const float depth    = layerParam(request, "depth", 0.35f);
         const float lifetime = layerParam(request, "lifetime", 1.5f);
@@ -87,22 +85,39 @@ public:
         const int decalId = DecalManager::inst().project(
             x, y, z, 0.f, 1.f, 0.f, albedo, "attackvfx", size, depth, true, seed, fadeIn, lifetime,
             fadeOut, 0.f, 0.f, 0.f, 0.f);
-        if (decalId <= 0)
+        if (decalId <= 0) {
+            releaseTexture(albedo);
             return eve::Result<eve::stylize::AttackVfxLayerHandle>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Failed, "DecalManager.project returned an invalid id", "uri"));
+        }
 
+        Live owned;
+        owned.decalId = decalId;
+        owned.albedo  = albedo;
         const auto id = ++nextId_;
-        live_.emplace(id, decalId);
+        live_.emplace(id, std::move(owned));
         return eve::Result<eve::stylize::AttackVfxLayerHandle>::success(
             eve::stylize::AttackVfxLayerHandle{id});
     }
 
     eve::Result<void> update(eve::stylize::AttackVfxLayerHandle handle, double dtSeconds,
-                             const eve::stylize::AttackVfxLayerStartRequest&) override {
-        if (!live_.contains(handle.id))
+                             const eve::stylize::AttackVfxLayerStartRequest& request) override {
+        const auto found = live_.find(handle.id);
+        if (found == live_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "decal AttackVfx layer handle is stale", "handle"));
-        DecalManager::inst().update(static_cast<float>(dtSeconds));
+
+        // Coalesce DecalManager::update to once per runtime tickSerial.
+        if (request.tickSerial != lastTickSerial_) {
+            DecalManager::inst().update(static_cast<float>(dtSeconds));
+            lastTickSerial_ = request.tickSerial;
+        }
+
+        if (found->second.draining && !DecalManager::inst().contains(found->second.decalId)) {
+            releaseTexture(found->second.albedo);
+            live_.erase(found);
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+        }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -112,15 +127,33 @@ public:
         if (found == live_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "decal AttackVfx layer handle is stale", "handle"));
-        if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately)
-            (void)DecalManager::inst().remove(found->second);
-        live_.erase(found);
+        if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately) {
+            (void)DecalManager::inst().remove(found->second.decalId);
+            releaseTexture(found->second.albedo);
+            live_.erase(found);
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        }
+        // StopEmitting: leave the projected decal to age out via update()/DecalManager.
+        found->second.draining = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
 private:
+    struct Live {
+        int                decalId  = 0;
+        graphics::Texture* albedo   = nullptr;
+        bool               draining = false;
+    };
+
+    static void releaseTexture(graphics::Texture* texture) {
+        if (!texture) return;
+        auto* graphics = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+        if (graphics && graphics->releaseTexture(texture)) delete texture;
+    }
+
     std::uint64_t nextId_ = 1;
-    std::unordered_map<std::uint64_t, int> live_;
+    std::uint64_t lastTickSerial_ = 0;
+    std::unordered_map<std::uint64_t, Live> live_;
 };
 
 DecalAttackVfxExecutor& executor() {

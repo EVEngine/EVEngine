@@ -106,6 +106,8 @@ public:
         if (found == live_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "camera AttackVfx layer handle is stale", "handle"));
+        // IActionCameraCueSink has no cancel API yet; impulses run for their authored duration.
+        // Clearing the local handle still makes the AttackVfx layer identity stale immediately.
         live_.erase(found);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }

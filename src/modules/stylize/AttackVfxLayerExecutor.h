@@ -40,6 +40,8 @@ struct AttackVfxLayerStartRequest {
     const AttackVfxLayer*    layer      = nullptr;
     const AttackVfxSkin*     skin       = nullptr;
     const AttackVfxRequest*  playRequest = nullptr;
+    /** @brief Monotonic serial from AttackVfxRuntime::advance; executors coalesce once-per-tick work. */
+    std::uint64_t            tickSerial = 0;
 };
 
 /**

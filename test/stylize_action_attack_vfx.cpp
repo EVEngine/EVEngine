@@ -161,5 +161,60 @@ TEST_CASE("stylize.action.attack_vfx action notify plays registered recipe") {
     REQUIRE(advanced.ok());
     REQUIRE_EQ(module->runtime().activeCount(), 0u);
 
+    // Second advance after the instant recipe already completed must not fail on stale stop.
+    context.time = eve::Duration::fromSeconds(0.6).value();
+    advanced = registry.value().advanceHandlers(context);
+    REQUIRE(advanced.ok());
+
+    eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
+}
+
+TEST_CASE("stylize.action.attack_vfx cues are sorted by offset") {
+    auto binding = eve::action::ActionAttackVfxBinding::fromPayload(
+        {{"uri", std::string("json:") + kMinimalRecipe},
+         {"lifetimeSeconds", 1.0},
+         {"cues", eve::Value::Array{
+                      eve::Value::Object{{"offsetSeconds", 0.5}, {"cue", "late"}},
+                      eve::Value::Object{{"offsetSeconds", 0.1}, {"cue", "early"}},
+                  }}},
+        eve::action::ActionAttackVfxShape::Instant);
+    REQUIRE(binding.ok());
+    REQUIRE_EQ(binding.value().cues.size(), 2u);
+    CHECK_EQ(binding.value().cues[0].cue, "early");
+    CHECK_EQ(binding.value().cues[1].cue, "late");
+}
+
+TEST_CASE("stylize.action.attack_vfx concurrent executions use isolated clocks") {
+    FakeCameraSink sink;
+    eve::cap::addListener<eve::action::IActionCameraCueSink>(&sink);
+    auto* module = StylizeAction::create();
+    REQUIRE(module != nullptr);
+    REQUIRE(module->registerRecipeJson(kMinimalRecipe).ok());
+
+    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(registry.ok());
+
+    eve::action::ActionTimelineEvent event;
+    event.kind    = eve::action::ActionTimelineEventKind::Notify;
+    event.type    = id("presentation:attack-vfx");
+    event.itemId  = id("item:pulse");
+    event.payload = {{"recipeId", "attackvfx:pulse"}, {"lifetimeSeconds", 0.5}};
+
+    eve::action::ActionNotifyContext a;
+    a.executionId = eve::action::ActionExecutionId{10};
+    a.time        = eve::Duration::fromSeconds(1.0).value();
+    REQUIRE(registry.value().dispatch(event, a).ok());
+
+    eve::action::ActionNotifyContext b;
+    b.executionId = eve::action::ActionExecutionId{11};
+    b.time        = eve::Duration::fromSeconds(0.0).value();
+    REQUIRE(registry.value().dispatch(event, b).ok());
+    REQUIRE_EQ(module->runtime().activeCount(), 2u);
+
+    // Advancing B at t=0 must not apply A's large clock jump as dt.
+    b.time = eve::Duration::fromSeconds(0.05).value();
+    REQUIRE(registry.value().advanceHandlers(b).ok());
+    REQUIRE_EQ(module->runtime().activeCount(), 2u);
+
     eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
 }

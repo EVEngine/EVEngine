@@ -4,6 +4,7 @@
 #include "stylize/AttackVfxLayerExecutor.h"
 
 #include <cmath>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
@@ -33,9 +34,12 @@ IAttackVfxLayerExecutor* findExecutor(AttackVfxLayerRole role) {
 
 struct AttackVfxRuntime::Impl {
     struct LiveLayer {
-        AttackVfxLayerRole   role = AttackVfxLayerRole::Particles;
-        AttackVfxLayerHandle handle{};
+        AttackVfxLayerRole    role = AttackVfxLayerRole::Particles;
+        AttackVfxLayerHandle  handle{};
         AttackVfxStopBehavior stopBehavior = AttackVfxStopBehavior::StopEmitting;
+        std::size_t           layerIndex   = 0;
+        AttackVfxPhaseKind    phase        = AttackVfxPhaseKind::Release;
+        std::size_t           phaseIndex   = 0;
     };
 
     struct LivePhase {
@@ -46,11 +50,13 @@ struct AttackVfxRuntime::Impl {
         std::uint32_t                         generation = 1;
         std::optional<AttackVfxInstanceState> state;
         std::vector<LivePhase>                phaseLayers;
+        std::vector<LiveLayer>                draining;
     };
 
     std::vector<Slot>                                slots{kDefaultCapacity};
     std::unordered_map<std::string, AttackVfxRecipe> recipes;
     std::unordered_map<std::string, AttackVfxSkin>   skins;
+    std::uint64_t                                    tickSerial = 0;
 
     Result<AttackVfxInstanceState*> resolve(AttackVfxHandle handle) {
         if (handle.slot >= slots.size())
@@ -89,6 +95,62 @@ struct AttackVfxRuntime::Impl {
         return it == skins.end() ? nullptr : &it->second;
     }
 
+    AttackVfxLayerStartRequest makeLayerRequest(const AttackVfxInstanceState& state, AttackVfxPhaseKind phase,
+                                                std::size_t phaseIndex, std::size_t layerIndex,
+                                                const AttackVfxLayer* layer, const AttackVfxSkin* skin) const {
+        AttackVfxLayerStartRequest request;
+        request.instance     = state.handle;
+        request.phase        = phase;
+        request.phaseIndex   = phaseIndex;
+        request.layerIndex   = layerIndex;
+        request.layer        = layer;
+        request.skin         = skin;
+        request.playRequest  = &state.request;
+        request.tickSerial   = tickSerial;
+        return request;
+    }
+
+    Result<void> startOneLayer(Slot& slot, std::size_t phaseIndex, const AttackVfxPhase& authored,
+                               const AttackVfxLayer& layer, std::size_t layerIndex, const AttackVfxSkin* skin,
+                               AttackVfxFrame& frame) {
+        auto& state = *slot.state;
+        AttackVfxFrameEvent event;
+        event.handle     = state.handle;
+        event.phase      = authored.kind;
+        event.role       = layer.role;
+        event.layerIndex = layerIndex;
+        event.layerCount = authored.layers.size();
+
+        auto* executor = findExecutor(layer.role);
+        if (!executor) {
+            event.kind = AttackVfxFrameEvent::Kind::LayerSkipped;
+            frame.events.push_back(std::move(event));
+            return Result<void>::success();
+        }
+        auto request = makeLayerRequest(state, authored.kind, phaseIndex, layerIndex, &layer, skin);
+        auto started = executor->start(request);
+        if (!started) {
+            const auto code = started.code();
+            if (code == StatusCode::NotFound || code == StatusCode::Unsupported) {
+                event.kind = AttackVfxFrameEvent::Kind::LayerSkipped;
+                frame.events.push_back(std::move(event));
+                return Result<void>::success();
+            }
+            return Result<void>::failure(started.status());
+        }
+        LiveLayer live;
+        live.role         = layer.role;
+        live.handle       = std::move(started).takeValue();
+        live.stopBehavior = layer.stopBehavior;
+        live.layerIndex   = layerIndex;
+        live.phase        = authored.kind;
+        live.phaseIndex   = phaseIndex;
+        slot.phaseLayers.at(phaseIndex).layers.push_back(std::move(live));
+        event.kind = AttackVfxFrameEvent::Kind::LayerStarted;
+        frame.events.push_back(std::move(event));
+        return Result<void>::success();
+    }
+
     Result<void> startPhaseLayers(Slot& slot, std::size_t phaseIndex, AttackVfxFrame& frame) {
         auto& state = *slot.state;
         const auto recipeIt = recipes.find(state.recipeId.format());
@@ -101,96 +163,145 @@ struct AttackVfxRuntime::Impl {
         const AttackVfxSkin* skin = skinFor(state);
 
         for (std::size_t layerIndex = 0; layerIndex < authored.layers.size(); ++layerIndex) {
-            const auto& layer = authored.layers[layerIndex];
-            AttackVfxFrameEvent event;
-            event.handle     = state.handle;
-            event.phase      = authored.kind;
-            event.role       = layer.role;
-            event.layerIndex = layerIndex;
-            event.layerCount = authored.layers.size();
+            auto started = startOneLayer(slot, phaseIndex, authored, authored.layers[layerIndex], layerIndex, skin,
+                                         frame);
+            if (!started) return started;
+        }
 
-            auto* executor = findExecutor(layer.role);
-            if (!executor) {
-                event.kind = AttackVfxFrameEvent::Kind::LayerSkipped;
-                frame.events.push_back(std::move(event));
-                continue;
-            }
-            AttackVfxLayerStartRequest request;
-            request.instance    = state.handle;
-            request.phase       = authored.kind;
-            request.phaseIndex  = phaseIndex;
-            request.layerIndex  = layerIndex;
-            request.layer       = &layer;
-            request.skin        = skin;
-            request.playRequest = &state.request;
-            auto started = executor->start(request);
-            if (!started) {
-                // Optional backends (missing Particles/camera sink, unsupported role
-                // wiring) soft-skip so authored multi-layer recipes still play.
-                const auto code = started.code();
-                if (code == StatusCode::NotFound || code == StatusCode::Unsupported) {
-                    event.kind = AttackVfxFrameEvent::Kind::LayerSkipped;
-                    frame.events.push_back(std::move(event));
-                    continue;
+        // Skin statusOverlayUri synthesizes a MeshVfx layer when Status phases omit it.
+        if (authored.kind == AttackVfxPhaseKind::Status && skin && !skin->statusOverlayUri.empty()) {
+            bool hasOverlay = false;
+            for (const auto& layer : authored.layers) {
+                if (layer.uri == skin->statusOverlayUri) {
+                    hasOverlay = true;
+                    break;
                 }
-                return Result<void>::failure(started.status());
             }
-            livePhase.layers.push_back(
-                LiveLayer{layer.role, std::move(started).takeValue(), layer.stopBehavior});
-            event.kind = AttackVfxFrameEvent::Kind::LayerStarted;
-            frame.events.push_back(std::move(event));
+            if (!hasOverlay) {
+                AttackVfxLayer overlay;
+                overlay.role = AttackVfxLayerRole::MeshVfx;
+                overlay.uri  = skin->statusOverlayUri;
+                auto started =
+                    startOneLayer(slot, phaseIndex, authored, overlay, authored.layers.size(), skin, frame);
+                if (!started) return started;
+            }
         }
         return Result<void>::success();
     }
 
-    Result<void> stopPhaseLayers(Slot& slot, std::size_t phaseIndex) {
+    Result<void> stopLiveLayer(LiveLayer& live, AttackVfxStopBehavior behavior) {
+        if (!live.handle.valid()) return Result<void>::success();
+        auto* executor = findExecutor(live.role);
+        if (!executor) {
+            live.handle = {};
+            return Result<void>::success();
+        }
+        auto stopped = executor->stop(live.handle, behavior);
+        if (behavior == AttackVfxStopBehavior::ClearImmediately) live.handle = {};
+        return stopped;
+    }
+
+    Result<void> stopPhaseLayers(Slot& slot, std::size_t phaseIndex,
+                                 std::optional<AttackVfxStopBehavior> behaviorOverride = std::nullopt) {
         auto& livePhase = slot.phaseLayers.at(phaseIndex);
         Result<void> status = Result<void>::success();
         for (auto& live : livePhase.layers) {
             if (!live.handle.valid()) continue;
-            auto* executor = findExecutor(live.role);
-            if (!executor) continue;
-            auto stopped = executor->stop(live.handle, live.stopBehavior);
+            const auto behavior = behaviorOverride.value_or(live.stopBehavior);
+            auto stopped = stopLiveLayer(live, behavior);
             if (!stopped && status) status = Result<void>::failure(stopped.status());
+            if (behavior == AttackVfxStopBehavior::StopEmitting && live.handle.valid()) {
+                slot.draining.push_back(live);
+            }
             live.handle = {};
         }
         livePhase.layers.clear();
         return status;
     }
 
+    Result<void> clearDraining(Slot& slot, AttackVfxStopBehavior behavior) {
+        Result<void> status = Result<void>::success();
+        for (auto& live : slot.draining) {
+            if (!live.handle.valid()) continue;
+            auto stopped = stopLiveLayer(live, behavior);
+            if (!stopped && status) status = Result<void>::failure(stopped.status());
+            live.handle = {};
+        }
+        if (behavior == AttackVfxStopBehavior::ClearImmediately) slot.draining.clear();
+        return status;
+    }
+
+    Result<void> updateLiveLayer(Slot& slot, LiveLayer& live, double dtSeconds) {
+        if (!live.handle.valid() || !slot.state) return Result<void>::success();
+        auto* executor = findExecutor(live.role);
+        if (!executor) return Result<void>::success();
+
+        const auto recipeIt = recipes.find(slot.state->recipeId.format());
+        const AttackVfxLayer* layer = nullptr;
+        if (recipeIt != recipes.end() && live.phaseIndex < recipeIt->second.phases.size()) {
+            const auto& authored = recipeIt->second.phases[live.phaseIndex];
+            if (live.layerIndex < authored.layers.size() &&
+                authored.layers[live.layerIndex].role == live.role) {
+                layer = &authored.layers[live.layerIndex];
+            }
+        }
+        const AttackVfxSkin* skin = skinFor(*slot.state);
+        auto request =
+            makeLayerRequest(*slot.state, live.phase, live.phaseIndex, live.layerIndex, layer, skin);
+        return executor->update(live.handle, dtSeconds, request);
+    }
+
     Result<void> updatePhaseLayers(Slot& slot, std::size_t phaseIndex, double dtSeconds) {
-        auto& state = *slot.state;
-        const auto recipeIt = recipes.find(state.recipeId.format());
-        if (recipeIt == recipes.end()) return Result<void>::success();
-        const auto& recipe   = recipeIt->second;
-        const auto& authored = recipe.phases.at(phaseIndex);
-        auto&       livePhase = slot.phaseLayers.at(phaseIndex);
-        const AttackVfxSkin* skin = skinFor(state);
+        auto& livePhase = slot.phaseLayers.at(phaseIndex);
         for (auto& live : livePhase.layers) {
             if (!live.handle.valid()) continue;
-            auto* executor = findExecutor(live.role);
-            if (!executor) continue;
-            AttackVfxLayerStartRequest request;
-            request.instance    = state.handle;
-            request.phase       = authored.kind;
-            request.phaseIndex  = phaseIndex;
-            request.layerIndex  = 0;
-            request.layer       = nullptr;
-            request.skin        = skin;
-            request.playRequest = &state.request;
-            // Recover layer pointer by matching role + handle order.
-            for (std::size_t i = 0; i < authored.layers.size(); ++i) {
-                if (authored.layers[i].role == live.role) {
-                    request.layerIndex = i;
-                    request.layer      = &authored.layers[i];
-                    break;
-                }
-            }
-            if (!request.layer) continue;
-            auto updated = executor->update(live.handle, dtSeconds, request);
+            auto updated = updateLiveLayer(slot, live, dtSeconds);
             if (!updated) return updated;
         }
         return Result<void>::success();
+    }
+
+    Result<void> updateDraining(Slot& slot, double dtSeconds) {
+        Result<void> status = Result<void>::success();
+        for (auto it = slot.draining.begin(); it != slot.draining.end();) {
+            if (!it->handle.valid()) {
+                it = slot.draining.erase(it);
+                continue;
+            }
+            auto* executor = findExecutor(it->role);
+            if (!executor) {
+                it = slot.draining.erase(it);
+                continue;
+            }
+            AttackVfxLayerStartRequest request;
+            request.instance   = slot.state ? slot.state->handle : AttackVfxHandle{};
+            request.phase      = it->phase;
+            request.phaseIndex = it->phaseIndex;
+            request.layerIndex = it->layerIndex;
+            request.tickSerial = tickSerial;
+            if (slot.state) {
+                request.skin        = skinFor(*slot.state);
+                request.playRequest = &slot.state->request;
+            }
+            auto updated = executor->update(it->handle, dtSeconds, request);
+            if (!updated) {
+                // Rejected/NotFound means the executor finished residual lifetime.
+                if (updated.code() == StatusCode::Rejected || updated.code() == StatusCode::NotFound ||
+                    updated.code() == StatusCode::NoOp) {
+                    it = slot.draining.erase(it);
+                    continue;
+                }
+                if (status) status = Result<void>::failure(updated.status());
+                ++it;
+                continue;
+            }
+            if (updated.code() == StatusCode::NoOp) {
+                it = slot.draining.erase(it);
+                continue;
+            }
+            ++it;
+        }
+        return status;
     }
 
     Result<void> enterPhase(Slot& slot, std::size_t phaseIndex, AttackVfxFrame& frame) {
@@ -208,10 +319,11 @@ struct AttackVfxRuntime::Impl {
         return startPhaseLayers(slot, phaseIndex, frame);
     }
 
-    Result<void> exitPhase(Slot& slot, std::size_t phaseIndex, AttackVfxFrame& frame, std::string_view cue) {
+    Result<void> exitPhase(Slot& slot, std::size_t phaseIndex, AttackVfxFrame& frame, std::string_view cue,
+                           std::optional<AttackVfxStopBehavior> behaviorOverride = std::nullopt) {
         auto& phase = slot.state->phases.at(phaseIndex);
         if (!phase.active) return Result<void>::success();
-        auto stopped = stopPhaseLayers(slot, phaseIndex);
+        auto stopped = stopPhaseLayers(slot, phaseIndex, behaviorOverride);
         phase.active    = false;
         phase.completed = true;
         AttackVfxFrameEvent event;
@@ -267,32 +379,61 @@ struct AttackVfxRuntime::Impl {
         return Result<void>::success();
     }
 
-    Result<void> finishInstance(std::size_t slotIndex, AttackVfxFrame& frame, std::string_view cue) {
+    Result<void> finishInstance(std::size_t slotIndex, AttackVfxFrame& frame, std::string_view cue,
+                                bool clearImmediately) {
         auto& slot = slots.at(slotIndex);
-        if (!slot.state) return Result<void>::success();
+        if (!slot.state && slot.draining.empty()) return Result<void>::success();
         Result<void> status = Result<void>::success();
-        for (std::size_t i = 0; i < slot.state->phases.size(); ++i) {
-            if (slot.state->phases[i].active) {
-                auto exited = exitPhase(slot, i, frame, cue);
-                if (!exited && status) status = Result<void>::failure(exited.status());
+        const auto overrideBehavior =
+            clearImmediately ? std::optional<AttackVfxStopBehavior>(AttackVfxStopBehavior::ClearImmediately)
+                             : std::nullopt;
+        if (slot.state) {
+            for (std::size_t i = 0; i < slot.state->phases.size(); ++i) {
+                if (slot.state->phases[i].active) {
+                    auto exited = exitPhase(slot, i, frame, cue, overrideBehavior);
+                    if (!exited && status) status = Result<void>::failure(exited.status());
+                }
             }
         }
-        AttackVfxFrameEvent event;
-        event.kind   = AttackVfxFrameEvent::Kind::InstanceStopped;
-        event.handle = slot.state->handle;
-        event.cue    = std::string(cue);
-        frame.events.push_back(std::move(event));
-        frame.stopped.push_back(slot.state->handle);
-        slot.state.reset();
-        slot.phaseLayers.clear();
-        ++slot.generation;
-        if (slot.generation == 0) slot.generation = 1;
+        if (clearImmediately) {
+            auto cleared = clearDraining(slot, AttackVfxStopBehavior::ClearImmediately);
+            if (!cleared && status) status = Result<void>::failure(cleared.status());
+            slot.draining.clear();
+        }
+        // Free the playable identity immediately. StopEmitting residuals remain in
+        // slot.draining and continue to receive updateDraining ticks without a live state.
+        if (slot.state) {
+            AttackVfxFrameEvent event;
+            event.kind   = AttackVfxFrameEvent::Kind::InstanceStopped;
+            event.handle = slot.state->handle;
+            event.cue    = std::string(cue);
+            frame.events.push_back(std::move(event));
+            frame.stopped.push_back(slot.state->handle);
+            slot.state.reset();
+            slot.phaseLayers.clear();
+            ++slot.generation;
+            if (slot.generation == 0) slot.generation = 1;
+        }
         return status;
+    }
+
+    void stopAllOccupied() {
+        AttackVfxFrame frame;
+        for (std::size_t i = 0; i < slots.size(); ++i) {
+            if (slots[i].state || !slots[i].draining.empty())
+                (void)finishInstance(i, frame, "shutdown", true);
+        }
     }
 };
 
 AttackVfxRuntime::AttackVfxRuntime() : impl_(std::make_unique<Impl>()) {}
-AttackVfxRuntime::~AttackVfxRuntime() = default;
+AttackVfxRuntime::~AttackVfxRuntime() {
+    // Best-effort teardown: never throw from a destructor.
+    try {
+        impl_->stopAllOccupied();
+    } catch (...) {
+    }
+}
 
 std::size_t AttackVfxRuntime::capacity() const noexcept { return impl_->slots.size(); }
 
@@ -303,14 +444,34 @@ Result<void> AttackVfxRuntime::configurePool(std::uint32_t capacity) {
             return fail(DiagnosticCode::InvariantViolation, "cannot resize pool while instances are live",
                         "capacity");
     }
-    impl_->slots.assign(capacity, Impl::Slot{});
+    AttackVfxFrame discard;
+    for (std::size_t i = 0; i < impl_->slots.size(); ++i) {
+        if (!impl_->slots[i].draining.empty())
+            (void)impl_->finishInstance(i, discard, "resize", true);
+    }
+    // Bump generations so stale handles cannot revive after resize into a default slot.
+    std::vector<Impl::Slot> next(capacity);
+    for (std::size_t i = 0; i < capacity; ++i) {
+        if (i < impl_->slots.size()) {
+            next[i].generation = impl_->slots[i].generation + 1;
+            if (next[i].generation == 0) next[i].generation = 1;
+        } else {
+            next[i].generation = 1;
+        }
+    }
+    impl_->slots = std::move(next);
     return Result<void>::success();
 }
 
 Result<void> AttackVfxRuntime::registerRecipe(const AttackVfxRecipe& recipe) {
     auto valid = recipe.validate();
     if (!valid) return valid;
-    impl_->recipes[recipe.id.format()] = recipe;
+    const std::string key = recipe.id.format();
+    for (const auto& slot : impl_->slots) {
+        if (slot.state && slot.state->recipeId.format() == key)
+            return fail(DiagnosticCode::Conflict, "cannot replace recipe while instances are live", "recipeId");
+    }
+    impl_->recipes[key] = recipe;
     if (recipe.skin) {
         auto skinStatus = registerSkin(*recipe.skin);
         if (!skinStatus) return skinStatus;
@@ -381,7 +542,7 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
             auto entered = impl_->enterPhase(slot, i, bootstrap);
             if (!entered) {
                 AttackVfxFrame cleanup;
-                (void)impl_->finishInstance(freeSlot, cleanup, "play-failed");
+                (void)impl_->finishInstance(freeSlot, cleanup, "play-failed", true);
                 return Result<AttackVfxHandle>::failure(entered.status());
             }
         }
@@ -399,7 +560,7 @@ Result<AttackVfxFrame> AttackVfxRuntime::signal(AttackVfxHandle handle, std::str
 
     AttackVfxFrame frame;
     if (cue == "cancel") {
-        auto finished = impl_->finishInstance(handle.slot, frame, cue);
+        auto finished = impl_->finishInstance(handle.slot, frame, cue, true);
         if (!finished) return Result<AttackVfxFrame>::failure(finished.status());
         return Result<AttackVfxFrame>::success(std::move(frame));
     }
@@ -412,12 +573,20 @@ Result<AttackVfxFrame> AttackVfxRuntime::advance(double dtSeconds) {
     if (!std::isfinite(dtSeconds) || dtSeconds < 0.0)
         return failT<AttackVfxFrame>(DiagnosticCode::InvalidArgument, "dtSeconds must be finite and >= 0", "dt");
 
+    ++impl_->tickSerial;
     AttackVfxFrame frame;
     std::vector<std::size_t> toFinish;
+    Result<void> firstError = Result<void>::success();
 
     for (std::size_t slotIndex = 0; slotIndex < impl_->slots.size(); ++slotIndex) {
         auto& slot = impl_->slots[slotIndex];
-        if (!slot.state) continue;
+        if (!slot.state) {
+            if (!slot.draining.empty()) {
+                auto drained = impl_->updateDraining(slot, dtSeconds);
+                if (!drained && firstError) firstError = Result<void>::failure(drained.status());
+            }
+            continue;
+        }
         auto& state = *slot.state;
         state.age += dtSeconds;
         frame.advanced.push_back(state.handle);
@@ -433,29 +602,53 @@ Result<AttackVfxFrame> AttackVfxRuntime::advance(double dtSeconds) {
             const auto& authored = recipe.phases[i];
             auto&       live     = state.phases[i];
             if (live.armed && !live.active && !live.completed) {
+                bool shouldEnter = false;
+                double phaseDt   = dtSeconds;
                 if (authored.startCue.empty()) {
                     if (state.age + 1e-12 >= authored.startOffsetSeconds) {
-                        auto entered = impl_->enterPhase(slot, i, frame);
-                        if (!entered) return Result<AttackVfxFrame>::failure(entered.status());
+                        shouldEnter = true;
+                        phaseDt     = std::max(0.0, state.age - authored.startOffsetSeconds);
+                        if (phaseDt > dtSeconds) phaseDt = dtSeconds;
                     }
                 } else {
                     live.localTime += dtSeconds;
                     if (live.localTime + 1e-12 >= authored.startOffsetSeconds) {
-                        auto entered = impl_->enterPhase(slot, i, frame);
-                        if (!entered) return Result<AttackVfxFrame>::failure(entered.status());
+                        shouldEnter = true;
+                        phaseDt     = std::max(0.0, live.localTime - authored.startOffsetSeconds);
+                        if (phaseDt > dtSeconds) phaseDt = dtSeconds;
                     }
+                }
+                if (shouldEnter) {
+                    auto entered = impl_->enterPhase(slot, i, frame);
+                    if (!entered) {
+                        if (firstError) firstError = Result<void>::failure(entered.status());
+                        continue;
+                    }
+                    // Apply only the post-start remainder so delayed phases do not expire early.
+                    live.localTime = phaseDt;
+                    auto updated = impl_->updatePhaseLayers(slot, i, phaseDt);
+                    if (!updated && firstError) firstError = Result<void>::failure(updated.status());
+                    if (authored.durationSeconds > 0.0 && live.localTime + 1e-12 >= authored.durationSeconds) {
+                        auto exited = impl_->exitPhase(slot, i, frame, "duration");
+                        if (!exited && firstError) firstError = Result<void>::failure(exited.status());
+                    }
+                    continue;
                 }
             }
             if (live.active) {
                 live.localTime += dtSeconds;
                 auto updated = impl_->updatePhaseLayers(slot, i, dtSeconds);
-                if (!updated) return Result<AttackVfxFrame>::failure(updated.status());
+                if (!updated && firstError) firstError = Result<void>::failure(updated.status());
                 if (authored.durationSeconds > 0.0 && live.localTime + 1e-12 >= authored.durationSeconds) {
                     auto exited = impl_->exitPhase(slot, i, frame, "duration");
-                    if (!exited) return Result<AttackVfxFrame>::failure(exited.status());
+                    if (!exited && firstError) firstError = Result<void>::failure(exited.status());
                 }
             }
         }
+
+        // Pump StopEmitting residuals (including layers that exited this tick) once.
+        auto drained = impl_->updateDraining(slot, dtSeconds);
+        if (!drained && firstError) firstError = Result<void>::failure(drained.status());
 
         bool anyPending = false;
         for (const auto& live : state.phases) {
@@ -469,10 +662,15 @@ Result<AttackVfxFrame> AttackVfxRuntime::advance(double dtSeconds) {
 
     for (std::size_t slotIndex : toFinish) {
         if (impl_->slots[slotIndex].state) {
-            auto finished = impl_->finishInstance(slotIndex, frame, "complete");
-            if (!finished) return Result<AttackVfxFrame>::failure(finished.status());
+            const bool stopped = impl_->slots[slotIndex].state->stopping;
+            // Natural completion and StopEmitting honor authored layer stopBehavior (may drain).
+            auto finished =
+                impl_->finishInstance(slotIndex, frame, stopped ? "stop" : "complete", false);
+            if (!finished && firstError) firstError = Result<void>::failure(finished.status());
         }
     }
+
+    if (!firstError) return Result<AttackVfxFrame>::failure(firstError.status());
     return Result<AttackVfxFrame>::success(std::move(frame));
 }
 
@@ -485,8 +683,8 @@ Result<AttackVfxFrame> AttackVfxRuntime::stop(AttackVfxHandle handle, AttackVfxS
         state->stopping = true;
         return Result<AttackVfxFrame>::success(std::move(frame));
     }
-    auto finished =
-        impl_->finishInstance(handle.slot, frame, mode == AttackVfxStopMode::Cancel ? "cancel" : "clear");
+    auto finished = impl_->finishInstance(handle.slot, frame, mode == AttackVfxStopMode::Cancel ? "cancel" : "clear",
+                                          true);
     if (!finished) return Result<AttackVfxFrame>::failure(finished.status());
     return Result<AttackVfxFrame>::success(std::move(frame));
 }

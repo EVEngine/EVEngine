@@ -1,6 +1,7 @@
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "particles/ParticleEffect.h"
+#include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "particles/ParticlesCapabilities.h"
 #include "stylize/AttackVfxLayerExecutor.h"
@@ -13,6 +14,26 @@
 
 namespace eve::particles {
 namespace {
+
+float layerParam(const eve::stylize::AttackVfxLayerStartRequest& request, const char* key,
+                 float fallback) {
+    if (request.layer) {
+        const auto found = request.layer->floatParams.find(key);
+        if (found != request.layer->floatParams.end()) return found->second;
+    }
+    return fallback;
+}
+
+bool effectHasLiveParticles(const ParticleEffect& effect) {
+    const int count = effect.getEmitterCount();
+    for (int i = 0; i < count; ++i) {
+        auto* emitter = effect.getEmitter(i);
+        if (!emitter) continue;
+        if (emitter->getCount() > 0) return true;
+        if (!emitter->isStopped()) return true;
+    }
+    return false;
+}
 
 class ParticlesAttackVfxExecutor final : public eve::stylize::IAttackVfxLayerExecutor {
 public:
@@ -43,29 +64,35 @@ public:
                 eve::DiagnosticCode::Failed, error.empty() ? "particle effect could not be loaded" : error, "uri"));
         }
 
-        if (request.playRequest) {
-            // Phase 2: 2D particle transform uses source id as a stable x offset marker when present.
-            effect->setPosition(static_cast<float>(request.playRequest->sourceId),
-                                static_cast<float>(request.playRequest->targetId));
-        }
+        // Placement uses authored floatParams; entity ids are not world coordinates.
+        effect->setPosition(layerParam(request, "x", 0.f), layerParam(request, "y", 0.f));
         if (const auto intensity = request.layer->floatParams.find("intensity");
             intensity != request.layer->floatParams.end()) {
             effect->setFloatParameter("intensity", intensity->second);
         }
         effect->start();
 
+        Live owned;
+        owned.effect = std::move(effect);
         const auto id = ++nextId_;
-        effects_.emplace(id, std::move(effect));
+        effects_.emplace(id, std::move(owned));
         return eve::Result<eve::stylize::AttackVfxLayerHandle>::success(
             eve::stylize::AttackVfxLayerHandle{id});
     }
 
     eve::Result<void> update(eve::stylize::AttackVfxLayerHandle handle, double,
                              const eve::stylize::AttackVfxLayerStartRequest&) override {
-        if (!effects_.contains(handle.id))
+        const auto found = effects_.find(handle.id);
+        if (found == effects_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "particle AttackVfx layer handle is stale", "handle"));
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+        if (found->second.draining) {
+            if (!found->second.effect || !effectHasLiveParticles(*found->second.effect)) {
+                effects_.erase(found);
+                return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+            }
+        }
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
     eve::Result<void> stop(eve::stylize::AttackVfxLayerHandle handle,
@@ -74,15 +101,25 @@ public:
         if (found == effects_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "particle AttackVfx layer handle is stale", "handle"));
-        found->second->stop();
-        if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately) found->second->reset();
-        effects_.erase(found);
+        if (found->second.effect) found->second.effect->stop();
+        if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately) {
+            if (found->second.effect) found->second.effect->reset();
+            effects_.erase(found);
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        }
+        // StopEmitting keeps the effect so residual particles can age out.
+        found->second.draining = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
 private:
+    struct Live {
+        std::unique_ptr<ParticleEffect> effect;
+        bool                            draining = false;
+    };
+
     std::uint64_t nextId_ = 1;
-    std::unordered_map<std::uint64_t, std::unique_ptr<ParticleEffect>> effects_;
+    std::unordered_map<std::uint64_t, Live> effects_;
 };
 
 ParticlesAttackVfxExecutor& executor() {

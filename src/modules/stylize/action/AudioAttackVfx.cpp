@@ -71,10 +71,11 @@ public:
             source->setPitch(pitch);
             source->setLooping(layerParam(request, "looping", 0.f) > 0.5f);
             source->setRelative(true);
-            if (request.playRequest) {
-                source->setPosition(static_cast<float>(request.playRequest->sourceId), 0.f,
-                                    static_cast<float>(request.playRequest->targetId));
-            }
+            // Placement uses authored floatParams; entity ids are not world coordinates.
+            const float x = layerParam(request, "x", 0.f);
+            const float y = layerParam(request, "y", 0.f);
+            const float z = layerParam(request, "z", 0.f);
+            source->setPosition(x, y, z);
             source->play();
 
             Live owned;
@@ -92,10 +93,18 @@ public:
 
     eve::Result<void> update(eve::stylize::AttackVfxLayerHandle handle, double,
                              const eve::stylize::AttackVfxLayerStartRequest&) override {
-        if (!live_.contains(handle.id))
+        const auto found = live_.find(handle.id);
+        if (found == live_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "audio AttackVfx layer handle is stale", "handle"));
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+        if (found->second.draining) {
+            const bool playing = found->second.source && found->second.source->isPlaying();
+            if (!playing) {
+                live_.erase(found);
+                return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+            }
+        }
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
     eve::Result<void> stop(eve::stylize::AttackVfxLayerHandle handle,
@@ -104,12 +113,18 @@ public:
         if (found == live_.end())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::StaleHandle, "audio AttackVfx layer handle is stale", "handle"));
-        if (found->second.source) {
-            found->second.source->stop();
-            if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately)
+        if (behavior == eve::stylize::AttackVfxStopBehavior::ClearImmediately) {
+            if (found->second.source) {
+                found->second.source->stop();
                 found->second.source->seek(0.0);
+            }
+            live_.erase(found);
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
         }
-        live_.erase(found);
+        // StopEmitting: do not cut the oneshot; let playback finish via update().
+        found->second.draining = true;
+        if (found->second.source && found->second.source->isLooping())
+            found->second.source->setLooping(false);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
 
@@ -117,6 +132,7 @@ private:
     struct Live {
         eve::ResourcePin                    pin;
         std::unique_ptr<eve::audio::Source> source;
+        bool                                draining = false;
     };
 
     std::uint64_t nextId_ = 1;

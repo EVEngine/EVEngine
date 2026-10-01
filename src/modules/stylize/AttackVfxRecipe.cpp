@@ -3,6 +3,7 @@
 #include "common/Value.h"
 
 #include <cmath>
+#include <limits>
 #include <set>
 #include <utility>
 
@@ -417,6 +418,9 @@ Result<AttackVfxBudget> parseBudget(const Value* value, const std::string& path)
         const auto* lod = it->second.getIf<std::int64_t>();
         if (!lod || *lod < 0)
             return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "lod must be >= 0", path + ".lod");
+        if (*lod > static_cast<std::int64_t>(std::numeric_limits<int>::max()))
+            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "lod exceeds int range",
+                                          path + ".lod");
         budget.lod = static_cast<int>(*lod);
     }
     if (const auto it = object->find("maxParticles"); it != object->end()) {
@@ -424,6 +428,9 @@ Result<AttackVfxBudget> parseBudget(const Value* value, const std::string& path)
         if (!count || *count < 0)
             return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "maxParticles must be >= 0",
                                           path + ".maxParticles");
+        if (*count > static_cast<std::int64_t>(std::numeric_limits<int>::max()))
+            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument,
+                                          "maxParticles exceeds int range", path + ".maxParticles");
         budget.maxParticles = static_cast<int>(*count);
     }
     if (const auto it = object->find("allowDistortion"); it != object->end()) {

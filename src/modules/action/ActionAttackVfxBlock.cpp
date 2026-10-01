@@ -1,5 +1,6 @@
 #include "action/ActionAttackVfxBlock.h"
 
+#include <algorithm>
 #include <cmath>
 #include <string_view>
 #include <utility>
@@ -110,6 +111,10 @@ Result<ActionAttackVfxBinding> ActionAttackVfxBinding::fromPayload(const Value::
             cue.cue = *name->second.getIf<std::string>();
             candidate.cues.push_back(std::move(cue));
         }
+        std::stable_sort(candidate.cues.begin(), candidate.cues.end(),
+                         [](const ActionAttackVfxCue& a, const ActionAttackVfxCue& b) {
+                             return a.offsetSeconds < b.offsetSeconds;
+                         });
     }
 
     return Result<ActionAttackVfxBinding>::success(std::move(candidate));
