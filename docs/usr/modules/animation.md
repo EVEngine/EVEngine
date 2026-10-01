@@ -477,6 +477,18 @@ C++ 入口：`setRootMotionPolicy(RootMotionPolicy)` / `applyRootMotionPolicy` /
 `bakeRootMotionIntoPose`（见 `animation/RootMotionPolicy.h`）。失败返回
 `Result`，不得丢弃。
 
+### Montage 与 RootMotionPolicy
+
+`MontagePlayer` 拥有同一套 `RootMotionPolicy`，并推入内部 `AnimPlayer`：
+
+- `setRootMotionPolicy` / `getRootMotionPolicy` / `setRootMotionCharacterYaw` 为规范入口。
+- `setRootMotionMask` / `getRootMotionMask` 仅为兼容：只映射平移/旋转开关到
+  `lockAxes` / `lockRotation`，不表达 bake 或 apply-space。
+- `prepare` / `setSettings` 会用时间轴上的 `rootMotionHorizontal/Vertical/Rotation`
+  覆盖锁轴，但保留已配置的 bake / apply-space / yaw。
+- `MontageCoordinator.setLayerRootMotionPolicy` 在 `play()` 的 `prepare` 之前写入
+  层策略，因而 bake/朝向可跨 prepare 存活；活着的 slot 会立刻收到完整 policy。
+
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
 
 `model3d.createRenderable(gfx, model, meshIndex)` 建的网格可用
