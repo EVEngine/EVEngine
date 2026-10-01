@@ -568,15 +568,15 @@ void ParticleEffect::adoptParsed(ParticleEffect&& other, bool preserveWorldState
 Result<void> ParticleEffect::advanceTimeline(const SimulationStep& step) {
     if (!timelinePlaying_ || timelinePaused_)
         return Result<void>::success(Status::success(StatusCode::NoOp));
-    if (!step.dt || !std::isfinite(step.dt.seconds()) || step.dt.seconds() < 0.0)
+    if (step.delta.nanoseconds() < 0 || !std::isfinite(step.delta.seconds()))
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "timeline step duration must be finite and non-negative",
-            "step.dt"));
+            "step.delta"));
     if (runtimeCues_.empty() && timeline_.duration <= 0.f)
         return Result<void>::success(Status::success(StatusCode::NoOp));
 
     const double previous = timelineSeconds_;
-    double       next     = previous + step.dt.seconds();
+    double       next     = previous + step.delta.seconds();
     auto         fired    = fireDueCues(previous, next);
     if (!fired) return fired;
 
@@ -610,7 +610,7 @@ void ParticleEffect::updateTimeline(float dt) {
         return;
     }
     SimulationStep step;
-    step.dt = duration.value();
+    step.delta = duration.value();
     advanceTimeline(step).ignore();
 }
 
