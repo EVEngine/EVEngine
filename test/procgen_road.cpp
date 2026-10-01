@@ -540,6 +540,87 @@ TEST_CASE("procgen.road.scenes.teeAndYHaveFilletedJunctions") {
     CHECK(RoadNetwork::makeScene("y", 24.f, 4.f, 2, 1).ok());
 }
 
+TEST_CASE("procgen.road.scenes.yJunctionArmFilletDocks") {
+    // Y corners are 120°: curb-return tangency is closer to the hub than
+    // junctionRadius. Arms must trim to that tangency so curb tips meet the
+    // fillet without salmon gaps.
+    auto yj = RoadNetwork::makeY(28.f, 2);
+    REQUIRE(yj.ok());
+    float hubJr = 0.f;
+    for (const auto& n : yj.value().nodes()) {
+        if (std::fabs(n.x) < 1e-3f && std::fabs(n.z) < 1e-3f) hubJr = n.junctionRadius;
+    }
+    REQUIRE(hubJr > 5.f);
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 28;
+    options.includeJunctions    = true;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    auto baked                  = bakeRoadNetwork(yj.value(), options);
+    REQUIRE(baked.ok());
+
+    int curbGroup = -1, asphaltGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        const auto name = baked.value().mesh.getGroupName(g);
+        if (name == "curb") curbGroup = g;
+        if (name == "asphalt") asphaltGroup = g;
+    }
+    REQUIRE(curbGroup >= 0);
+    REQUIRE(asphaltGroup >= 0);
+    auto curb    = baked.value().mesh.copyGroup(curbGroup);
+    auto asphalt = baked.value().mesh.copyGroup(asphaltGroup);
+    REQUIRE(curb);
+    REQUIRE(asphalt);
+
+    // Expected dock ring: for 120° Y with jr=ah+2.8, tangency sits near ~0.58*jr.
+    const float dockR = hubJr * 0.55f;
+    const float band0 = dockR - 0.45f;
+    const float band1 = dockR + 0.45f;
+    int         curbDockHits = 0;
+    for (int i = 0; i < curb->getVertexCount(); ++i) {
+        if (std::fabs(curb->getPositionY(i)) > 1.0f) continue;
+        const float x = curb->getPositionX(i);
+        const float z = curb->getPositionZ(i);
+        const float r = std::sqrt(x * x + z * z);
+        if (r > band0 && r < band1) ++curbDockHits;
+    }
+    CHECK_GT(curbDockHits, 24);
+
+    // No large empty annulus between arm tips and fillet: sample mid-angle rays
+    // and require asphalt coverage near the dock radius (where the tip meets the arc).
+    auto covers = [&](float x, float z) {
+        for (int t = 0; t < asphalt->getIndexCount() / 3; ++t) {
+            const int i0 = asphalt->getIndex(t * 3 + 0);
+            const int i1 = asphalt->getIndex(t * 3 + 1);
+            const int i2 = asphalt->getIndex(t * 3 + 2);
+            const float x0 = asphalt->getPositionX(i0), z0 = asphalt->getPositionZ(i0);
+            const float x1 = asphalt->getPositionX(i1), z1 = asphalt->getPositionZ(i1);
+            const float x2 = asphalt->getPositionX(i2), z2 = asphalt->getPositionZ(i2);
+            const float den = (z1 - z2) * (x0 - x2) + (x2 - x1) * (z0 - z2);
+            if (std::fabs(den) < 1e-8f) continue;
+            const float a = ((z1 - z2) * (x - x2) + (x2 - x1) * (z - z2)) / den;
+            const float b = ((z2 - z0) * (x - x2) + (x0 - x2) * (z - z2)) / den;
+            const float c = 1.f - a - b;
+            if (a >= -1e-3f && b >= -1e-3f && c >= -1e-3f) return true;
+        }
+        return false;
+    };
+    // Probe along the three arm centerlines at the dock radius and slightly inside.
+    const float dirs[3][2] = {{0.f, -1.f}, {0.8660254f, 0.5f}, {-0.8660254f, 0.5f}};
+    for (const auto& d : dirs) {
+        CHECK(covers(d[0] * dockR, d[1] * dockR));
+        CHECK(covers(d[0] * (dockR - 0.35f), d[1] * (dockR - 0.35f)));
+    }
+    // Probe corner mid-angles (between arms) on the fillet asphalt ring.
+    const float midAngles[3] = {-0.5235988f, 1.5707963f, 3.6651914f};  // approx mid of 120° gaps
+    for (float ang : midAngles) {
+        const float x = std::cos(ang) * dockR;
+        const float z = std::sin(ang) * dockR;
+        CHECK(covers(x, z));
+    }
+}
+
 TEST_CASE("procgen.road.bidirectional.markingsAndNav") {
     RoadNetwork network;
     auto        a = network.addNode(-18.f, 0.f, 0.f, 2.f);

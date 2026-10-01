@@ -293,9 +293,12 @@ Result<RoadNetwork> RoadNetwork::makeTee(float span, int lanes) {
     for (auto* r : {&nC, &nS, &nW, &nE}) {
         if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
     }
-    auto e1 = network.addEdge(nW.value(), nC.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
-    auto e2 = network.addEdge(nC.value(), nE.value(), {P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0, style);
-    auto e3 = network.addEdge(nC.value(), nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, lanes, 0, style);
+    auto e1 = network.addEdge(nW.value(), nC.value(),
+                              {P(-half, 0.f, 0.f), P(-half * 0.5f, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e2 = network.addEdge(nC.value(), nE.value(),
+                              {P(0.f, 0.f, 0.f), P(half * 0.5f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0, style);
+    auto e3 = network.addEdge(nC.value(), nS.value(),
+                              {P(0.f, 0.f, 0.f), P(0.f, 0.f, half * 0.5f), P(0.f, 0.f, half)}, lanes, 0, style);
     for (auto* e : {&e1, &e2, &e3}) {
         if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
     }
@@ -329,9 +332,12 @@ Result<RoadNetwork> RoadNetwork::makeY(float span, int lanes) {
     for (auto* r : {&nC, &n1, &n2, &n3}) {
         if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
     }
-    auto e1 = network.addEdge(n1.value(), nC.value(), {P(x1, 0.f, z1), P(0.f, 0.f, 0.f)}, lanes, 0, style);
-    auto e2 = network.addEdge(nC.value(), n2.value(), {P(0.f, 0.f, 0.f), P(x2, 0.f, z2)}, lanes, 0, style);
-    auto e3 = network.addEdge(nC.value(), n3.value(), {P(0.f, 0.f, 0.f), P(x3, 0.f, z3)}, lanes, 0, style);
+    auto e1 = network.addEdge(n1.value(), nC.value(),
+                              {P(x1, 0.f, z1), P(x1 * 0.5f, 0.f, z1 * 0.5f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e2 = network.addEdge(nC.value(), n2.value(),
+                              {P(0.f, 0.f, 0.f), P(x2 * 0.5f, 0.f, z2 * 0.5f), P(x2, 0.f, z2)}, lanes, 0, style);
+    auto e3 = network.addEdge(nC.value(), n3.value(),
+                              {P(0.f, 0.f, 0.f), P(x3 * 0.5f, 0.f, z3 * 0.5f), P(x3, 0.f, z3)}, lanes, 0, style);
     for (auto* e : {&e1, &e2, &e3}) {
         if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
     }
