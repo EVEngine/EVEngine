@@ -2,7 +2,7 @@
 #include "common/Export.h"
 
 #include "common/StateValue.h"
-#include "dialogue/Conversation.h"
+#include "dnut_interpreter/SequenceAsset.h"
 
 #include <functional>
 #include <string>
@@ -20,7 +20,7 @@ namespace eve::dialogue {
 /** @brief Explicit save migrations from an old asset version to its current version. */
 class EVENGINE_API_ORCHESTRATION ConversationSaveMigrations {
 public:
-    using Resolver = std::function<const ConversationAsset*(const std::string&)>;
+    using Resolver = std::function<const eve::dnut::SequenceAsset*(const std::string&)>;
 
     /**
      * @brief Register a direct migration from one saved asset version to the currently loaded asset.

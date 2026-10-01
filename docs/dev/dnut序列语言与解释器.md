@@ -15,7 +15,7 @@
 | 编译产物模型 | `SequenceAsset` / `SequenceNode` / `SequenceRoute` | 通用图模型，节点类型是**字符串**而非闭集枚举 |
 | 步骤词表与字段表 | `StepKindRegistry` | descriptor 是字段的唯一真相源；编译器与作者 UI 都从它派生 |
 | 跨帧执行游标 | `SequenceRuntime` | 调用栈、挂起/恢复、状态捕获、执行预算护栏 |
-| `.dnut` → 资产的编译 | `DnutCompiler` | 只懂控制流关键字；步骤合法性交给注册表 |
+| `.dnut` → 资产的编译 | `DnutCompiler` | `story` 与兼容 `conversation` 方言均产出同一 `SequenceAsset`；步骤合法性交给注册表 |
 | 条件求值的**契约** | `SequenceConditionOutcome` | 只定义「通过/不通过 + 稳定原因」；条件系统由消费者适配 |
 
 **不拥有**（明确不在本模块）：任何领域语义。`line`/`pool`/`story:move`/`skill` 都是
@@ -120,9 +120,7 @@ StepKindDescriptor {
 
 | 债务 | owner | 原因 | 移除条件 |
 | --- | --- | --- | --- |
-| `dialogue` 的 `pool` / `conversation` 两套前端尚未迁到本模块（对话解析器已能跳过 `story` 块，可与 RPG 方言同文件共存） | dialogue | 迁移触及 15 个文件 + 8 个测试文件，与「新增 RPG 方言能力」混在一次交付里失败模式不可分离 | 设计文档 `docs/dev/superpowers/specs/2026-09-15-dnut-interpreter-l1-design.md` §8 阶段 1 的剩余部分完成 |
-| 顶层块切分（`DnutBlockScanner`）尚未抽成显式类型，目前是编译器内的跳过逻辑 | dnut_interpreter | 只有 `story` 一种块需要真正解析，抽象尚无第二个消费者 | dialogue 迁移开始时随迁移落地 |
-| `SequenceDocument`（作者字段反射）尚未落地 | dnut_interpreter | 当前无作者 UI 消费者；字段表已由 `payloadSchema` 唯一拥有，反射可按需派生 | 编辑器接入 `.dnut` 作者视图时 |
+| `SequenceDocument`（作者字段反射）尚未落地；dialogue 的兼容 `ConversationDocument` 仍有手写字段投影 | dnut_interpreter | 本轮优先完成编译器、运行时与 `DialogueFlow` 的唯一控制流 owner 切换；兼容作者 API 暂时直接编辑 `SequenceAsset`，不拥有执行语义 | 作者 UI 改为从 `StepKindRegistry::payloadSchema` 派生字段后删除兼容投影 |
 | `Loop` / `Label`+`Jump` / `Parallel` / `CallCommonEvent` | dnut_interpreter | 阶段 4 控制流扩展；现有 `if`/`choice`/`call`/`wait`/`end` 已覆盖 RPG 示例 | 设计文档 §8 阶段 4 |
 | `rpg::StoryEvent`（JSON 闭集）与 `.dnut` 故事并存 | rpg | 既有 JSON 路径有测试与线格式兼容要求；`rpg-classic` 已切到 `.dnut`，JSON 降为兼容门面 | 设计文档 §8 阶段 2 完成且无外部消费者依赖 JSON 时删除 |
 

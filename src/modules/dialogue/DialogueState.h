@@ -124,7 +124,7 @@ private:
  *
  * Dialogue owns only this borrowed boundary and never mirrors world flags,
  * attributes, reputation, or persistent values. Local conversation variables
- * remain in `ConversationRunner` frames. Mutation providers must implement the
+ * remain in `dnut::SequenceRuntime` frames. Mutation providers must implement the
  * all-or-nothing contract; persistent providers are expected to use
  * StatePatch's transaction participant internally.
  */
