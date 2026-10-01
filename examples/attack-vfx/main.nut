@@ -394,30 +394,30 @@ function updateEarthCones(skin, t) {
         if (appear <= 0.02) continue;
         local x = lerp(SRC_X + 0.55, TGT_X + 0.35, u);
         local z = lerp(SRC_Z, TGT_Z, u) + ((i % 2 == 0) ? -0.28 : 0.28) * (0.5 + u);
-        local h = (0.35 + u * 1.05) * appear;
-        local w = (0.16 + u * 0.28) * (1.1 - 0.2 * appear);
-        local shade = 0.95 - u * 0.2;
-        setRock(idx, x, h * 0.45, z, w, h, w * 0.75,
-                i * 0.4, 0.35 + i * 0.11, i * 0.25,
+        local h = (0.55 + u * 1.25) * appear;
+        local w = (0.22 + u * 0.34) * (1.1 - 0.15 * appear);
+        local shade = 1.0 - u * 0.15;
+        setRock(idx, x, h * 0.5, z, w, h, w * 0.7,
+                i * 0.55, 0.55 + i * 0.15, i * 0.35,
                 skin.tint[0] * shade, skin.tint[1] * shade, skin.tint[2] * shade, true);
         idx += 1;
-        setRock(idx, x + 0.18, h * 0.28, z - 0.12, w * 0.55, h * 0.65, w * 0.5,
-                -i * 0.3, 0.6, i * 0.5,
-                skin.tint[0] * 0.8, skin.tint[1] * 0.75, skin.tint[2] * 0.7, appear > 0.25);
+        setRock(idx, x + 0.22, h * 0.35, z - 0.16, w * 0.65, h * 0.75, w * 0.55,
+                -i * 0.4, 0.8, i * 0.6,
+                skin.tint[0] * 0.85, skin.tint[1] * 0.78, skin.tint[2] * 0.72, appear > 0.2);
         idx += 1;
     }
     // Impact cluster starts earlier so mid-release screenshots show rocks.
-    if (t > 0.28) {
-        local blast = smooth(clamp01((t - 0.28) / 0.35));
-        for (local k = 0; k < 12 && idx < avFxCones.len(); ++k) {
-            local a = k * 0.52 + 0.15;
-            local rad = 0.4 + (k % 4) * 0.16;
-            local h = (0.45 + (k % 3) * 0.35) * blast;
-            local w = 0.18 + (k % 3) * 0.08;
+    if (t > 0.22) {
+        local blast = smooth(clamp01((t - 0.22) / 0.32));
+        for (local k = 0; k < 14 && idx < avFxCones.len(); ++k) {
+            local a = k * 0.45 + 0.12;
+            local rad = 0.45 + (k % 4) * 0.2;
+            local h = (0.55 + (k % 3) * 0.45) * blast;
+            local w = 0.22 + (k % 3) * 0.1;
             setRock(idx, TGT_X + cos(a) * rad * blast, h * 0.5,
-                    TGT_Z + sin(a) * rad * blast, w, h, w * 0.8,
-                    k * 0.7, 0.45 + k * 0.1, k * 0.35,
-                    0.7, 0.4, 0.2, true);
+                    TGT_Z + sin(a) * rad * blast, w, h, w * 0.75,
+                    k * 0.85, 0.55 + k * 0.12, k * 0.4,
+                    0.78, 0.42, 0.18, true);
             idx += 1;
         }
         for (local i = 0; i < 8; ++i) {
@@ -448,31 +448,32 @@ function updateFireBurst(skin, t) {
     }
     if (t > 0.28) {
         local blast = smooth(clamp01((t - 0.28) / 0.38));
-        setOrb(0, TGT_X, 1.25, TGT_Z, 0.55 + 0.95 * blast, 1.0, 0.45, 0.05);
-        setOrb(1, TGT_X, 1.35, TGT_Z, 0.32 + 0.45 * blast, 1.0, 0.85, 0.35);
-        setOrb(2, TGT_X, 1.45, TGT_Z, 0.18 + 0.2 * blast, 1.0, 0.98, 0.75);
-        avChargeRing.setPosition(TGT_X, 1.3, TGT_Z);
-        avChargeRing.setScale(0.7 + 0.55 * blast, 0.06, 0.7 + 0.55 * blast);
+        // Keep burst smaller than the dummy so the target stays readable.
+        setOrb(0, TGT_X, 1.15, TGT_Z, 0.28 + 0.32 * blast, 1.0, 0.4, 0.05);
+        setOrb(1, TGT_X, 1.25, TGT_Z, 0.16 + 0.18 * blast, 1.0, 0.8, 0.3);
+        setOrb(2, TGT_X, 1.35, TGT_Z, 0.1 + 0.1 * blast, 1.0, 0.98, 0.7);
+        avChargeRing.setPosition(TGT_X, 1.2, TGT_Z);
+        avChargeRing.setScale(0.55 + 0.35 * blast, 0.05, 0.55 + 0.35 * blast);
         avChargeRing.setTint(1.0, 0.95, 0.7, 1.0);
         for (local i = 0; i < 14; ++i) {
             local a = i * 0.45 + avTime * 2.5;
-            local rad = 0.45 + 0.7 * blast;
-            setRock(i, TGT_X + cos(a) * rad, 0.35 + (i % 3) * 0.2 * blast,
+            local rad = 0.55 + 0.55 * blast;
+            setRock(i, TGT_X + cos(a) * rad, 0.2 + (i % 3) * 0.18 * blast,
                     TGT_Z + sin(a) * rad * 0.75,
-                    0.1 + 0.08 * (i % 3), 0.35 + 0.45 * blast * (1.0 - (i % 4) * 0.08),
-                    0.1 + 0.06 * (i % 2),
+                    0.12 + 0.1 * (i % 3), 0.28 + 0.4 * blast * (1.0 - (i % 4) * 0.08),
+                    0.12 + 0.08 * (i % 2),
                     a, 0.5, i * 0.3,
                     1.0, 0.35 + (i % 3) * 0.12, 0.04, blast > 0.08);
         }
         for (local i = 3; i < 12; ++i) {
             local a = i * 0.7;
-            setOrb(i, TGT_X + cos(a) * 1.05 * blast, 0.9 + sin(a + avTime * 3.0) * 0.35,
-                   TGT_Z + sin(a) * 0.85 * blast, 0.1 + 0.06 * (1.0 - blast),
+            setOrb(i, TGT_X + cos(a) * 0.95 * blast, 0.75 + sin(a + avTime * 3.0) * 0.3,
+                   TGT_Z + sin(a) * 0.75 * blast, 0.08 + 0.05 * (1.0 - blast),
                    1.0, 0.4, 0.05);
         }
     } else {
-        setOrb(0, px, py, pz, 0.18 + 0.12 * travel, 1.0, 0.6, 0.12);
-        setOrb(1, px - 0.12, py + 0.05, pz, 0.1, 1.0, 0.85, 0.35);
+        setOrb(0, px, py, pz, 0.14 + 0.1 * travel, 1.0, 0.6, 0.12);
+        setOrb(1, px - 0.12, py + 0.05, pz, 0.08, 1.0, 0.85, 0.35);
     }
 }
 
