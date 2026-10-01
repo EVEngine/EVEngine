@@ -67,27 +67,38 @@ and a six-emitter/150-frame rendered stress capture.
   implemented with explicit runtime availability. Lit/unlit particle materials
   and tangent-space normal maps now reuse the 2D lighting pipeline, with an
   explicit CPU-simulation fallback while GPU-resident lighting data remains
-  pending. Distortion and motion-vector policy remain.
+  pending. Distortion is implemented on CPU; motion-vector policy is authored
+  (`none` / `velocity` / `spawn_delta`) with `isMotionVectorActive()` reporting
+  false until a graphics velocity-buffer path lands.
 - Mesh/skeleton, scene depth, and collision interfaces now have explicit
   CPU/GPU availability. Named gameplay float parameters can drive emission,
   speed, size, and playback on both simulation paths without rebuilding an
-  emitter. Signed-distance-field interfaces remain.
+  emitter. A borrowed `IParticleSdfField` interface samples 2D signed distance
+  for CPU collision (`setSdfField`); GPU resident sim reports `sdf` fallback.
+- Reference effect pack under `examples/particle-effects/` (fire, smoke, impact,
+  trail, weather) plus screenshot coverage in `test/particles_p2_p3.cpp`.
 
-Exit criteria: composited reference effects (fire, smoke, impact, projectile
-trail, weather volume) at multiple camera angles with automated screenshots.
+Remaining P2 work: GPU sorting/ribbon/lit data, mesh particle renderer inside
+the particles module, and active motion-vector buffer writes.
 
 ### P3 — composable effect assets and tooling
 
-- A versioned effect asset containing multiple reusable emitters, exposed user
-  parameters, event routes, and timeline controls.
-- Code-first/scriptable modules for spawn/update/render stages, with a compact
-  inspector and curve/gradient/flipbook preview rather than a mandatory graph.
-- Transactional hot reload, migration tests, dependency tracking, pooling, and
-  runtime/editor command parity.
+- Versioned effect assets support schema v1 and v2. v2 adds authored
+  `eventRoutes` (compiled to sub-emitters) and `timeline` cues/duration/looping.
+  Unknown fields on a supported version are ignored; unsupported versions fail
+  closed. `tryFromText` / `tryFromFile` return structured `Result`.
+- Effect-local timeline clocks auto-advance from `Particles::update` /
+  `advance` when playing. Transactional `reloadFromText` / `reloadFromFile`
+  swap layers only after a successful parse and preserve world transform.
+- `ParticleEmitterPool` provides acquire/recycle for short-lived gameplay VFX.
+- ParticleGraph remains a fixed emission→motion→collision→renderer→output chain
+  that compiles to emitter config (not an open spawn/update/render plugin graph).
+  Compact inspector / curve preview UI and dependency-graph tracking remain.
 
-Exit criteria: artists can assemble and tune a multi-emitter effect without a
-native code change, while shipped games can expose the same parameters through
-Squirrel.
+Exit criteria (partial): artists can assemble multi-emitter effects with
+parameters, routes, and timeline cues without a native code change; Squirrel
+exposes the same effect/pool APIs. Remaining: inspector preview widgets,
+dependency tracking, and broader runtime/editor command parity tests.
 
 ## Architectural constraints
 

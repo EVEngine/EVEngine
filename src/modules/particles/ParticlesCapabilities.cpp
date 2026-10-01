@@ -373,6 +373,7 @@ private:
         constexpr float fixedStep = 1.0f / 60.0f;
         while (remaining > kTimeEpsilon) {
             const float step = static_cast<float>(std::min<double>(remaining, fixedStep));
+            effect.updateTimeline(step);
             for (int i = 0; i < effect.getEmitterCount(); ++i) {
                 auto* emitter = effect.getEmitter(i);
                 if (!emitter) continue;

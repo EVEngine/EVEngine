@@ -27,13 +27,29 @@ particles.render(gfx);
 
 ## 版本化多发射器特效资产
 
-复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。版本 1 支持命名层、嵌入式发射器配置或外部 `config` 引用、局部偏移/旋转、禁用层、资产参数默认值和逐层参数覆盖。
+复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。当前接受 schema **v1** 与 **v2**（更高版本失败关闭）。支持版本上的未知字段会被忽略；重名层、无效配置或坏路由/时间线引用会拒绝实例化。
+
+- **v1**：命名层、嵌入式 `emitter` 或外部 `config`、局部偏移/旋转、禁用层、参数默认值与逐层覆盖。
+- **v2**：在 v1 之上增加 `eventRoutes`（编译为子发射器）与 `timeline`（`duration` / `looping` / `cues`）。v1 资产也可选携带这两块字段。
+
+参考特效包见 `examples/particle-effects/`（`fire` / `smoke` / `impact` / `trail` / `weather`）。
 
 ```json
 {
   "type": "eve.particle-effect",
-  "version": 1,
+  "version": 2,
   "parameters": { "intensity": 1.0 },
+  "eventRoutes": [
+    { "from": "core", "on": "death", "to": "smoke", "inheritVelocity": 0.2 }
+  ],
+  "timeline": {
+    "duration": 1.2,
+    "looping": false,
+    "cues": [
+      { "time": 0.0, "action": "emit", "emitter": "core", "count": 24 },
+      { "time": 0.2, "action": "setParameter", "parameter": "intensity", "value": 1.5 }
+    ]
+  },
   "emitters": [
     {
       "name": "core",
@@ -51,6 +67,8 @@ particles.render(gfx);
 }
 ```
 
+时间线 `action`：`start` / `stop` / `pause` / `reset` / `emit` / `setParameter`。`Particles.update` / `advance` 会推进已 `start` 且带时间线的特效时钟。
+
 ```squirrel
 local impact = particles.newEffectFromFile("effects/impact.effect.json");
 if (impact == null) {
@@ -64,7 +82,13 @@ if (impact == null) {
 }
 ```
 
-`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset` 和命名层 `emit`；组销毁时会一起回收所拥有的发射器。未知版本、重名层和无效配置会拒绝实例化，并通过 `getLastEffectError()` 返回可展示的诊断。
+`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset`、命名层 `emit`、`updateTimeline` / `getTimelineSeconds` / `isTimelinePlaying`，以及事务式 `reloadFromFile`（解析失败时保留旧实例与世界变换）。组销毁时会一起回收所拥有的发射器。短命玩法特效可用 `ParticleEmitterPool.acquire/recycle`。
+
+### SDF 碰撞与运动向量策略
+
+`IParticleSdfField`（`common/ParticleSdf.h`）是借用的 2D 有符号距离接口；`setSdfField` + `setCollision("bounce"|"kill"|"stop", …)` 在 CPU 路径采样。GPU 常驻回退原因为 `sdf`。
+
+`setMotionVectorPolicy("none"|"velocity"|"spawn_delta")` 记录资产策略；在图形后端真正写入速度缓冲前，`isMotionVectorActive()` 恒为 false。
 
 ## 绑定到动态骨骼
 
@@ -344,7 +368,7 @@ Lit/法线贴图目前明确使用 CPU 粒子模拟加 GPU 2D lit 绘制；即�
 
 `setMaterialMode("distortion")` 把粒子纹理解释为屏幕空间位移场：R/G 的 0.5 表示零偏移，0/1 表示负/正方向，A 控制羽化覆盖；`setDistortionStrength(pixels)`（`getDistortionStrength()` 可读回）设置最大折射像素数。它采样同一帧已解析的 3D 场景颜色，因此纯 2D 帧或离屏 Canvas 不会伪造背景。JSON 示例：`material: {mode: "distortion", distortionStrength: 12}`。Distortion 当前使用 CPU 粒子模拟和专用 GPU 合成管线。
 
-运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`sorting`、`ribbon`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
+运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`sdf`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`sorting`、`ribbon`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
 
 玩法和效果资产可通过命名浮点参数实时驱动 emitter，无需重建或覆盖基础配置：
 
@@ -448,7 +472,7 @@ Emitter。ambience 在水下可见并运行、离水停止并隐藏；启用过�
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
-**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
+**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_p2_p3.cpp`](../../../test/particles_p2_p3.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
 
 `applyUnderwaterSurfaceVfx(surfaceVfx,active)` 对应 Pcg `SetHDRPVisualEffectsState` 的反向水下开关：水面时
 显示并启动调用者拥有的天气/VFX emitter，潜水时停止并隐藏。调用可对一组 surface emitter 逐个执行；函数

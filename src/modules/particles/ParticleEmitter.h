@@ -14,6 +14,10 @@
 #include <unordered_map>
 #include <vector>
 
+namespace eve {
+class IParticleSdfField;
+}
+
 namespace eve::graphics {
 class Graphics;
 class Camera2D;
@@ -157,6 +161,17 @@ public:
         float boundsMaxY = 0.f;
         /** @brief Query the engine-level world collision resolver each step. */
         bool worldCollision = false;
+        /**
+         * @brief Borrowed 2D SDF used as an additional collision solid.
+         * @ownership Borrowed. Cleared by the caller before the field is destroyed.
+         */
+        eve::IParticleSdfField* sdfField = nullptr;
+        /**
+         * @brief Motion-vector policy for future velocity-buffer writes.
+         * Values: "none" | "velocity" | "spawn_delta". Recorded now; rendering
+         * activation is reported separately by isMotionVectorActive().
+         */
+        std::string motionVectorPolicy = "none";
         /** @brief "billboard" | "axis" | "stretched" | "ribbon". */
         std::string renderMode = "billboard";
         float stretchFactor = 1.f;
@@ -514,6 +529,23 @@ public:
                       float lifetimeLoss = 0.f);
     void setCollisionBounds(bool enabled, float minX, float minY, float maxX, float maxY);
     void setWorldCollision(bool enabled);
+    /**
+     * @brief Bind a borrowed SDF field for particle collision sampling.
+     * @param field Borrowed field, or null to clear. Does not take ownership.
+     */
+    void setSdfField(eve::IParticleSdfField* field);
+    /** @brief Return the borrowed SDF field, or null. */
+    eve::IParticleSdfField* getSdfField();
+    /**
+     * @brief Set motion-vector policy: none, velocity, or spawn_delta.
+     * @remarks Policy is stored for assets/tools; GPU velocity-buffer emission
+     *          is not active until isMotionVectorActive() reports true.
+     */
+    void setMotionVectorPolicy(const std::string& policy);
+    /** @brief Return the normalized motion-vector policy. */
+    std::string getMotionVectorPolicy();
+    /** @brief True when a graphics path is actually writing motion vectors. */
+    bool isMotionVectorActive();
 
     void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
     /** @brief Configure connected ribbon rendering and switch to ribbon mode. */
