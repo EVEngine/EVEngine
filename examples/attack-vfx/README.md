@@ -1,9 +1,12 @@
 # Attack VFX Showcase（综合攻击特效）
 
-用一份 `AttackVfxRecipe` 串联全部 layer role：`meshVfx` / `trail` / `particles` /
-`camera` / `distortion` / `decal` / `audio` / `prefab`，再通过三套 elemental skin
-（FIRE / WATER / LIGHTNING）自动轮播。脚本只依赖 `eve.StylizeAction()` 的
-`registerRecipeJson` / `play` / `signal` / `advance` Result API，不写元素分叉代码。
+贴近参考视频的 arena + 元素攻击演示：棋盘格地面、白色假人、紫色木桩，
+按 WATER whip → EARTH cones → FIRE burst → AIR slash 自动轮播。
+
+`eve.StylizeAction()` 用一份 `AttackVfxRecipe` 编排全部 layer role
+（meshVfx / trail / particles / camera / distortion / decal / audio / prefab）。
+当前 meshVfx / trail / distortion / prefab 多为 CPU 编排占位；**可见冲击**由脚本侧
+`Renderable3D` 演出道具 + 粒子（`particles.update` / `render`）+ decal + audio 承担。
 
 ## 运行
 
@@ -20,12 +23,11 @@ make run/<platform>-debug GAME=examples/attack-vfx
 
 ## 演示内容
 
-1. `eve.StylizeAction()` 注册带 anticipate→release（`startCue=impact`）两段相位的配方。
-2. anticipate：充能 mesh（`skill:chargeAura`）+ prefab 占位 + 粒子 burst。
-3. `signal("impact")` 切入 release：刀光 mesh、trail、camera shake、distortion
-   profile、地面 scorch decal、`hit.wav` 一发音频、impact prefab、粒子。
-4. 每轮结束后切换 skin（`skin:fire` / `skin:water` / `skin:lightning`）并重注册配方；
-   角色方块 tint 跟随 skin。
+1. 棋盘格地板 + 白假人（持杖）+ 紫色圆柱木桩（白顶 / 眼睛）。
+2. 注册 anticipate→release（`startCue=impact`）配方；anticipate 充能环 + 粒子预热。
+3. `signal("impact")` 切入 release：元素演出（鞭 / 锥 / 爆 / 斩）+ 粒子 burst +
+   地面 scorch decal + `hit.wav`；配方层事件仍经 `advance` 汇总。
+4. 四套 skin：`skin:water` / `skin:earth` / `skin:fire` / `skin:air`，每轮重注册。
 5. 可选后端缺失时 runtime soft-skip（`LayerSkipped`），配方仍完整播完。
 
 成功标记：
@@ -38,10 +40,11 @@ make run/<platform>-debug GAME=examples/attack-vfx
 
 | 路径 | 说明 |
 |---|---|
-| `main.nut` | 配方拼装、轮播、Result 检查、简易 HUD |
-| `config.nut` | 1100×700；裁剪到 stylize / stylizeAction / particles / audio / decal |
+| `main.nut` | arena、配方、元素演出、Result 检查、HUD |
+| `config.nut` | 1100×700；stylize / stylizeAction / particles / audio / decal / model3d |
 | `hit.wav` | release 相位 one-shot 音频 |
-| `burst.particle.json` | anticipate / release 共用的粒子 burst 资产 |
+| `*_burst.particle.json` | 四元素 + 通用粒子资产 |
+| `assets/fonts/DejaVuSans-Bold.ttf` | HUD 标题字体 |
 | `README.md` | 本说明 |
 
 ## 契约
