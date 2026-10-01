@@ -331,8 +331,14 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
     REQUIRE_GT(stats.instances, std::uint32_t(4));
     REQUIRE_GT(stats.submittedFrames, std::uint64_t(40));
 
-    const auto mid = gfx->getPixel(320, 180);
-    REQUIRE_GT(mid.r + mid.g + mid.b, 0.12f);
+    float brightest = 0.f;
+    for (int y = 140; y <= 220; y += 10) {
+        for (int x = 120; x <= 520; x += 20) {
+            const auto pixel = gfx->getPixel(x, y);
+            brightest        = std::max(brightest, pixel.r + pixel.g + pixel.b);
+        }
+    }
+    REQUIRE_GT(brightest, 0.2f);
 
     const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_gpu_ribbon.png";
     CHECK(gfx->saveFramePng(output));
