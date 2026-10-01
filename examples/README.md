@@ -103,6 +103,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
+| [destruction-basic](destruction-basic/README.md) | Chaos 风格破碎 P0：两块焊接盒子 + Strain 场断边 |
+| [destruction-clusters](destruction-clusters/README.md) | Chaos 破碎 P3：双岛锚定柱、步进预算、cluster 断边与快照 |
 | [lattice-deform](lattice-deform/README.md) | 3D 晶格缩放变形：squash & stretch、局部鼓起、波浪 |
 | [sprite-stack](sprite-stack/README.md) | 伪 3D：把 3D 模型切成多层 RGBA 叠片渲染 |
 | [armored-command-3d](armored-command-3d/README.md) | 3D RTS 展示：骨骼坦克、编队命令、齐射与指挥所坍塌；Tank/Shell ECS |
