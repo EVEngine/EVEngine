@@ -152,6 +152,7 @@ struct Graphics::GpuParticleResource {
         GpuTexture*        drawTexture = nullptr;
         GpuTexture*        drawDepthTexture = nullptr;
         vk::Buffer         drawSortedIndices = nullptr;
+        vk::Buffer         drawMeta          = nullptr;
         std::uint64_t      serial      = 0;
         bool               initialized = false;
         bool               hasSortedIndices = false;
@@ -257,6 +258,7 @@ void Graphics::createGpuParticlePipelines() {
         vk::DescriptorSetLayoutBinding(2, vk::DescriptorType::eCombinedImageSampler, 1,
                                        vk::ShaderStageFlagBits::eFragment),
         vk::DescriptorSetLayoutBinding(3, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
+        vk::DescriptorSetLayoutBinding(4, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex),
     };
     gpuParticleDrawSetLayout_ = device->createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, drawBindings));
 
@@ -430,6 +432,8 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         auto& resource = *owned;
         const GpuParticleDraw* drawRequest = latestDraw(handle);
         GpuParticleSortMode sortMode = drawRequest ? drawRequest->sortMode : GpuParticleSortMode::None;
+        if (drawRequest && drawRequest->facing == GpuParticleFacingMode::Ribbon)
+            sortMode = GpuParticleSortMode::Birth;
         if (sortMode == GpuParticleSortMode::Distance &&
             !(drawRequest && drawRequest->cameraEnabled))
             sortMode = GpuParticleSortMode::None;
@@ -664,14 +668,18 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
             dispatchSort(2u);
             slot.hasSortedIndices = true;
 
-            // Particle state was read by the sort passes; make it visible to the vertex stage.
-            vk::BufferMemoryBarrier stateReady{};
-            stateReady.buffer        = slot.state.buffer;
-            stateReady.size          = VK_WHOLE_SIZE;
-            stateReady.srcAccessMask = vk::AccessFlagBits::eShaderRead;
-            stateReady.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            // Particle state/meta were read by the sort passes; make them visible to the vertex stage.
+            std::array<vk::BufferMemoryBarrier, 2> toVertex{};
+            toVertex[0].buffer        = slot.state.buffer;
+            toVertex[0].size          = VK_WHOLE_SIZE;
+            toVertex[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[1].buffer        = slot.meta.buffer;
+            toVertex[1].size          = VK_WHOLE_SIZE;
+            toVertex[1].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+            toVertex[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
             cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader, vk::PipelineStageFlagBits::eVertexShader, {},
-                               nullptr, stateReady, nullptr);
+                               nullptr, toVertex, nullptr);
         }
 
         if (runUpdate) {
@@ -726,7 +734,8 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         slot.sortedIndices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer, indexBytes);
     }
     const bool drawDescriptorsDirty = slot.drawTexture != gpuTexture || slot.drawDepthTexture != gpuDepthTexture ||
-                                      slot.drawSortedIndices != slot.sortedIndices.buffer;
+                                      slot.drawSortedIndices != slot.sortedIndices.buffer ||
+                                      slot.drawMeta != slot.meta.buffer;
     if (drawDescriptorsDirty) {
         vk::DescriptorImageInfo image{};
         image.sampler     = gpuTexture->sampler;
@@ -742,7 +751,10 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         vk::DescriptorBufferInfo indices{};
         indices.buffer = slot.sortedIndices.buffer;
         indices.range  = VK_WHOLE_SIZE;
-        std::array<vk::WriteDescriptorSet, 4> writes{};
+        vk::DescriptorBufferInfo metaInfo{};
+        metaInfo.buffer = slot.meta.buffer;
+        metaInfo.range  = VK_WHOLE_SIZE;
+        std::array<vk::WriteDescriptorSet, 5> writes{};
         writes[0].dstSet          = slot.drawSet;
         writes[0].dstBinding      = 0;
         writes[0].descriptorCount = 1;
@@ -763,10 +775,16 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
         writes[3].descriptorCount = 1;
         writes[3].descriptorType  = vk::DescriptorType::eStorageBuffer;
         writes[3].pBufferInfo     = &indices;
+        writes[4].dstSet          = slot.drawSet;
+        writes[4].dstBinding      = 4;
+        writes[4].descriptorCount = 1;
+        writes[4].descriptorType  = vk::DescriptorType::eStorageBuffer;
+        writes[4].pBufferInfo     = &metaInfo;
         device->updateDescriptorSets(writes, nullptr);
         slot.drawTexture         = gpuTexture;
         slot.drawDepthTexture    = gpuDepthTexture;
         slot.drawSortedIndices   = slot.sortedIndices.buffer;
+        slot.drawMeta            = slot.meta.buffer;
     }
 
     vk::Pipeline pipeline = presentComposeActive_ && hdrGpuParticleAlphaPipeline_
@@ -806,10 +824,11 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
     push.cameraParticle[1] = request.draw.cameraEnabled ? 1.f : 0.f;
     push.cameraParticle[2] = request.draw.particleWidth;
     push.cameraParticle[3] = request.draw.particleHeight;
-    push.sizeMode[0]       = request.draw.sizeStart;
-    push.sizeMode[1]       = request.draw.sizeEnd;
-    push.sizeMode[2]       = request.draw.stretchFactor;
-    push.sizeMode[3]       = float(request.draw.facing);
+    const bool ribbon = request.draw.facing == GpuParticleFacingMode::Ribbon;
+    push.sizeMode[0]  = request.draw.sizeStart;
+    push.sizeMode[1]  = request.draw.sizeEnd;
+    push.sizeMode[2]  = ribbon ? request.draw.ribbonWidth : request.draw.stretchFactor;
+    push.sizeMode[3]  = float(request.draw.facing);
     std::copy_n(request.draw.colorStart, 4, push.colorStart);
     std::copy_n(request.draw.colorEnd, 4, push.colorEnd);
     push.flipbook[0] = std::uint32_t(std::max(request.draw.hframes, 1));
@@ -819,6 +838,7 @@ void Graphics::drawGpuParticleRequest(vk::CommandBuffer cb, const GpuParticleDra
     push.soft[0]     = request.draw.softParticles && request.draw.sceneDepth ? 1.f : 0.f;
     push.soft[1]     = request.draw.particleDepth;
     push.soft[2]     = std::max(request.draw.softFadeDistance, 1e-5f);
+    push.soft[3]     = ribbon ? request.draw.ribbonMinSegmentLength : 0.f;
 
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gpuParticleDrawLayout_, 0, slot.drawSet, nullptr);

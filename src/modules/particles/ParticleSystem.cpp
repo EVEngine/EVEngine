@@ -531,9 +531,12 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
         gpuDraw.sizeStart = cfg->sizeStart; gpuDraw.sizeEnd = cfg->sizeEnd;
         gpuDraw.stretchFactor = cfg->stretchFactor;
         gpuDraw.facing = cfg->renderMode == "stretched" ? graphics::GpuParticleFacingMode::Velocity
-                       : cfg->renderMode == "axis" ? graphics::GpuParticleFacingMode::Axis
-                                                    : graphics::GpuParticleFacingMode::ParticleRotation;
+                       : cfg->renderMode == "axis"     ? graphics::GpuParticleFacingMode::Axis
+                       : cfg->renderMode == "ribbon"   ? graphics::GpuParticleFacingMode::Ribbon
+                                                       : graphics::GpuParticleFacingMode::ParticleRotation;
         gpuDraw.axisRotationRadians = cfg->renderAxisDegrees / kRad2Deg;
+        gpuDraw.ribbonWidth = cfg->ribbonWidth;
+        gpuDraw.ribbonMinSegmentLength = cfg->ribbonMinSegmentLength;
         gpuDraw.softParticles = cfg->softParticles; gpuDraw.particleDepth = cfg->softParticleDepth;
         gpuDraw.softFadeDistance = cfg->softFadeDistance;
         gpuDraw.colorStart[0]=cfg->colorStart.r; gpuDraw.colorStart[1]=cfg->colorStart.g;
@@ -541,7 +544,8 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
         gpuDraw.colorEnd[0]=cfg->colorEnd.r; gpuDraw.colorEnd[1]=cfg->colorEnd.g;
         gpuDraw.colorEnd[2]=cfg->colorEnd.b; gpuDraw.colorEnd[3]=cfg->colorEnd.a;
         gpuDraw.hframes=cfg->hframes; gpuDraw.vframes=cfg->vframes;
-        gpuDraw.sortMode = cfg->sortMode == "oldest"   ? graphics::GpuParticleSortMode::Oldest
+        gpuDraw.sortMode = cfg->renderMode == "ribbon" ? graphics::GpuParticleSortMode::Birth
+                           : cfg->sortMode == "oldest"   ? graphics::GpuParticleSortMode::Oldest
                            : cfg->sortMode == "youngest" ? graphics::GpuParticleSortMode::Youngest
                            : cfg->sortMode == "distance" ? graphics::GpuParticleSortMode::Distance
                                                          : graphics::GpuParticleSortMode::None;

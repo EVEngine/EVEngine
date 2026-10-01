@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
@@ -273,6 +274,72 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         emitter->setGpuSimulation(false);
         emitter->release();
     }
+    window->close();
+}
+
+TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 640;
+    settings.height   = 360;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->supportsGpuParticles());
+    gfx->setScreenReadbackEnabled(true);
+
+    const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
+    auto*              texture       = gfx->newTexture(1, 1, whitePixel);
+    REQUIRE(texture != nullptr);
+
+    auto* emitter = Particles::create()->newEmitter(128);
+    emitter->setTexture(texture);
+    emitter->setRandomSeed(4400);
+    emitter->setGpuSimulation(true);
+    emitter->setRibbon(0.8f, 2.f);
+    emitter->setPosition(80.f, 180.f);
+    emitter->setEmissionRate(0.f);
+    emitter->setEmissionRateOverDistance(0.35f);
+    emitter->setParticleLifetime(2.5f, 2.5f);
+    emitter->setParticleSize(10.f, 10.f);
+    emitter->setSizes(1.f, 1.f);
+    emitter->setSpeed(0.f, 0.f);
+    emitter->setSpread(0.f);
+    emitter->setBlendMode("alpha");
+    emitter->setColorStart(1.f, 0.35f, 0.1f, 0.95f);
+    emitter->setColorEnd(1.f, 0.1f, 0.05f, 0.2f);
+    REQUIRE(emitter->isGpuFeatureSetSupported());
+    emitter->start();
+    emitter->emit(1);
+
+    gfx->setBackgroundColorRGBA(0.02f, 0.02f, 0.05f, 1.f);
+    constexpr float dt = 1.f / 60.f;
+    for (int frame = 0; frame < 90; ++frame) {
+        emitter->setPosition(80.f + float(frame) * 5.f, 180.f + std::sin(float(frame) * 0.12f) * 40.f);
+        ParticleSimSystem::update(dt);
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+    }
+
+    REQUIRE(emitter->isGpuSimulationActive());
+    REQUIRE_EQ(emitter->getSimulationBackend(), std::string("gpu"));
+    REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string());
+    const auto stats = gfx->getGpuParticleStats(emitter->gpuSim()->residentHandle);
+    REQUIRE_GT(stats.instances, std::uint32_t(4));
+    REQUIRE_GT(stats.submittedFrames, std::uint64_t(40));
+
+    const auto mid = gfx->getPixel(320, 180);
+    REQUIRE_GT(mid.r + mid.g + mid.b, 0.12f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_gpu_ribbon.png";
+    CHECK(gfx->saveFramePng(output));
+    CHECK(std::filesystem::exists(output));
+
+    emitter->setGpuSimulation(false);
+    emitter->release();
     window->close();
 }
 

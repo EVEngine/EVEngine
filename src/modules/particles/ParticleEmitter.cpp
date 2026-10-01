@@ -78,7 +78,6 @@ const char* gpuFeatureFallbackReason(const ParticleEmitter::Config& cfg, const P
     if (!cfg.velocityCurve.empty() || !cfg.sizeCurve.empty() || !cfg.rotationCurve.empty() ||
         !cfg.colorGradient.empty())
         return "curves";
-    if (cfg.renderMode == "ribbon") return "ribbon";
     if (cfg.materialMode == "distortion") return "distortion_material";
     if (cfg.materialMode != "unlit") return "lit_material";
     return "";

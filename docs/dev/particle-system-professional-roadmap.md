@@ -61,9 +61,10 @@ and a six-emitter/150-frame rendered stress capture.
   renderer contract. Stable oldest/youngest/distance transparency policies run
   on CPU (index reorder) and on the GPU resident path (bitonic index sort +
   vertex indirection); distance without a camera stays unordered.
-- A CPU ribbon renderer connects stable birth-order control points, rejects
-  undersized segments, and shares sprite material/color/size handling. GPU
-  ribbon scan/index generation remains pending. Mesh and light renderers remain.
+- Ribbon renderers connect birth-order control points, reject undersized
+  segments, and share sprite material/color/size handling. The GPU resident path
+  sorts by spawn `birthSerial` then emits oriented segment quads; mesh and light
+  particle renderers remain.
 - Depth sorting policies and a real G-buffer linear-depth soft-particle path are
   implemented with explicit runtime availability. Lit/unlit particle materials
   and tangent-space normal maps now reuse the 2D lighting pipeline, with an
@@ -79,7 +80,7 @@ and a six-emitter/150-frame rendered stress capture.
 - Reference effect pack under `examples/particle-effects/` (fire, smoke, impact,
   trail, weather) plus screenshot coverage in `test/particles_p2_p3.cpp`.
 
-Remaining P2 work: GPU ribbon/lit data, mesh particle renderer inside the
+Remaining P2 work: GPU lit-resident data, mesh particle renderer inside the
 particles module, and active motion-vector buffer writes.
 
 ### P3 — composable effect assets and tooling

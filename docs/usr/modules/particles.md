@@ -349,7 +349,7 @@ JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds
 
 透明粒子可用 `setSortMode("none" | "oldest" | "youngest" | "distance")` 选择稳定的逐发射器提交顺序，`getSortMode()` 返回规范化后的策略。`distance` 在有相机时按远到近排列。CPU 路径按索引重排后提交；GPU 常驻路径在压缩后的 SSBO 上做索引 bitonic 排序，绘制时通过 sorted-index 间接访问，不移动粒子缓冲本身。`distance` 在无相机时退化为无序绘制。
 
-连续拖尾使用 `setRibbon(width, minSegmentLength)`，它按稳定的粒子出生顺序连接相邻控制点，跳过过短段，并沿段方向生成带宽度的纹理四边形；JSON 为 `ribbon: {width, minSegmentLength}`。Ribbon 当前明确使用 CPU 渲染后端，适合配合 `setEmissionRateOverDistance` 制作弹道、刀光和移动轨迹。
+连续拖尾使用 `setRibbon(width, minSegmentLength)`，它按稳定的粒子出生顺序连接相邻控制点，跳过过短段，并沿段方向生成带宽度的纹理四边形；JSON 为 `ribbon: {width, minSegmentLength}`。CPU 路径按存活数组邻接连接；GPU 常驻路径用 spawn `birthSerial` 做索引排序后再生成段，适合配合 `setEmissionRateOverDistance` 制作弹道、刀光和移动轨迹。
 
 `setSoftParticles(true, depth, fadeDistance)` 让常驻粒子采样当前 G-buffer 的线性场景深度，在与几何相交或被遮挡时平滑衰减 alpha；JSON 为 `softParticles: {enabled, depth, fadeDistance}`，深度值均为 `[0,1]` 线性深度。`isSoftParticlesActive()` 只有在 GPU 常驻渲染器已激活且当前帧确实产生场景深度时才返回 true；纯 2D 帧不会伪造深度，而是保持普通粒子外观。
 
@@ -368,7 +368,7 @@ Lit/法线贴图目前明确使用 CPU 粒子模拟加 GPU 2D lit 绘制；即�
 
 `setMaterialMode("distortion")` 把粒子纹理解释为屏幕空间位移场：R/G 的 0.5 表示零偏移，0/1 表示负/正方向，A 控制羽化覆盖；`setDistortionStrength(pixels)`（`getDistortionStrength()` 可读回）设置最大折射像素数。它采样同一帧已解析的 3D 场景颜色，因此纯 2D 帧或离屏 Canvas 不会伪造背景。JSON 示例：`material: {mode: "distortion", distortionStrength: 12}`。Distortion 当前使用 CPU 粒子模拟和专用 GPU 合成管线。
 
-运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`sdf`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`ribbon`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
+运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`sdf`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
 
 玩法和效果资产可通过命名浮点参数实时驱动 emitter，无需重建或覆盖基础配置：
 
@@ -414,7 +414,7 @@ embers.start();
 
 调用 `isGpuSimulationActive()` 可区分“资产请求 GPU”与“本帧已经迁移到 GPU”。`particles.getLastGpuResidentEmitters()` 和 `particles.getLastGpuResidentParticles()` 可用于性能 HUD 和自动质量伸缩。后者是 CPU 侧精确寿命估计；后端的存活、生成、死亡、丢弃和间接实例计数采用帧槽延迟读数，不会阻塞当前帧。
 
-当前常驻 GPU 后端覆盖基础点/线/矩形/椭圆发射、重力、线性/径向/切向加速度、阻尼、限速、噪声、本地/世界空间、旋转、尺寸和起止颜色、flipbook、拉伸、oldest/youngest/distance 透明排序与常用混合模式。需要玩法回调或逐粒子 CPU 状态的功能会自动保留在确定性 CPU 后端，包括碰撞、力场、子发射器、粒子灯光、自定义 shader/canvas、ribbon，以及自定义速度/尺寸/旋转曲线和多段颜色渐变。没有可用图形后端时也安全回退 CPU。
+当前常驻 GPU 后端覆盖基础点/线/矩形/椭圆发射、重力、线性/径向/切向加速度、阻尼、限速、噪声、本地/世界空间、旋转、尺寸和起止颜色、flipbook、拉伸、ribbon（birthSerial 排序段）、oldest/youngest/distance 透明排序与常用混合模式。需要玩法回调或逐粒子 CPU 状态的功能会自动保留在确定性 CPU 后端，包括碰撞、力场、子发射器、粒子灯光、自定义 shader/canvas，以及自定义速度/尺寸/旋转曲线和多段颜色渐变。没有可用图形后端时也安全回退 CPU。
 
 着色器源位于 `graphics/shaders/particle_resident.*`（含 `particle_resident_sort.comp`）；修改后运行 `python scripts/compile_particle_gpu_shaders.py` 更新随引擎编译的 SPIR-V 与 include 文件。
 

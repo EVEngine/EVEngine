@@ -65,6 +65,10 @@ uint makeKey(Particle particle) {
     if (pc.sortMode == 2u) {
         return encodeAscendingFloat(age);
     }
+    if (pc.sortMode == 4u) {
+        // birthSerial is stored as uintBitsToFloat in accelerationNoise.w
+        return floatBitsToUint(particle.accelerationNoise.w);
+    }
     // distance: far to near
     vec2 delta = particle.positionVelocity.xy - pc.camera;
     return encodeDescendingFloat(dot(delta, delta));

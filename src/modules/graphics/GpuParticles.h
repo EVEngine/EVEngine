@@ -13,6 +13,8 @@ enum class GpuParticleFacingMode : std::uint32_t {
     ParticleRotation = 0,
     Velocity         = 1,
     Axis             = 2,
+    /** @brief Connect birth-ordered neighbors into ribbon segments. */
+    Ribbon           = 3,
 };
 
 /**
@@ -20,13 +22,14 @@ enum class GpuParticleFacingMode : std::uint32_t {
  *
  * Index permutation only: particle buffers stay compacted in nondeterministic
  * atomic order. Oldest/youngest use normalized age; distance sorts far-to-near
- * using the draw camera when enabled.
+ * using the draw camera when enabled. Birth orders by spawn serial for ribbons.
  */
 enum class GpuParticleSortMode : std::uint32_t {
     None     = 0,
     Oldest   = 1,
     Youngest = 2,
     Distance = 3,
+    Birth    = 4,
 };
 
 /** @brief Opaque backend-owned GPU particle emitter handle. */
@@ -95,6 +98,8 @@ struct GpuParticleDraw {
     GpuParticleFacingMode facing              = GpuParticleFacingMode::ParticleRotation;
     float                 axisRotationRadians = 0.f;
     GpuParticleSortMode   sortMode            = GpuParticleSortMode::None;
+    float                 ribbonWidth         = 1.f;
+    float                 ribbonMinSegmentLength = 1.f;
     bool                  softParticles       = false;
     float                 particleDepth       = 0.5f;
     float                 softFadeDistance    = 0.05f;
