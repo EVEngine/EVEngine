@@ -6,12 +6,26 @@
 
 #include <algorithm>
 #include <cmath>
+#include <queue>
 #include <utility>
 
 namespace eve::physics {
 namespace {
 
 constexpr float kSleepSpeed = 0.05f;
+
+void setBoneBodyType(Body3D& body, BoneRuntimeState state) {
+    switch (state) {
+        case BoneRuntimeState::Attached:
+        case BoneRuntimeState::Sleeping:
+            body.setType("static");
+            break;
+        case BoneRuntimeState::Detached:
+            body.setType("dynamic");
+            body.setAwake(true);
+            break;
+    }
+}
 
 }  // namespace
 
@@ -48,8 +62,10 @@ eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInsta
         const float x = originX + boneDef.localX;
         const float y = originY + boneDef.localY;
         const float z = originZ + boneDef.localZ;
-        const char* type = boneDef.anchoredDefault ? "static" : "dynamic";
-        Body3D* body = world.newBody(type, x, y, z);
+        // Intact Attached bones stay static so connection-graph topology (not
+        // independent dynamic bodies) keeps the collection from falling apart
+        // before any edge breaks. Detach sync promotes free islands to dynamic.
+        Body3D* body = world.newBody("static", x, y, z);
         if (!body || !body->isValid()) {
             rollback();
             return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
@@ -122,6 +138,10 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
         !std::isfinite(field.radius) || field.radius < 0.f || !std::isfinite(field.magnitude))
         return eve::Result<FieldApplicationReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "destruction field parameters must be finite", "field"));
+    if (field.kind == DestructionFieldKind::Impulse &&
+        (!std::isfinite(field.dirX) || !std::isfinite(field.dirY) || !std::isfinite(field.dirZ)))
+        return eve::Result<FieldApplicationReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "impulse field direction must be finite", "field"));
     World3D* world = resolveWorld();
     if (!world) {
         orphanedPhysics_ = true;
@@ -131,6 +151,7 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
 
     FieldApplicationReceipt receipt;
     int sleepsThisCall = 0;
+    bool needGraphSync = false;
     for (std::size_t i = 0; i < bones_.size(); ++i) {
         auto bodyResult = bones_[i].link.resolve(*world);
         if (!bodyResult) continue;
@@ -138,14 +159,19 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
         const float weight = falloffAt(field, body->getX(), body->getY(), body->getZ());
         if (weight <= 0.f) continue;
         switch (field.kind) {
-            case DestructionFieldKind::Anchor:
+            case DestructionFieldKind::Anchor: {
+                const bool wasSleeping = bones_[i].state == BoneRuntimeState::Sleeping;
                 bones_[i].anchored = true;
                 bones_[i].state    = BoneRuntimeState::Attached;
                 body->setType("static");
+                if (wasSleeping) ++sleepBatchRevision_;
                 ++receipt.bonesAffected;
+                needGraphSync = true;
                 break;
+            }
             case DestructionFieldKind::Impulse: {
-                if (bones_[i].state == BoneRuntimeState::Attached && !bones_[i].anchored) break;
+                // Anchored foundations and still-Attached graph members stay put.
+                if (bones_[i].anchored || bones_[i].state == BoneRuntimeState::Attached) break;
                 float dx = field.dirX, dy = field.dirY, dz = field.dirZ;
                 const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
                 if (len <= 1e-6f) {
@@ -158,9 +184,11 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
                     dz /= len;
                 }
                 const float impulse = field.magnitude * weight;
+                const bool wasSleeping = bones_[i].state == BoneRuntimeState::Sleeping;
                 body->setType("dynamic");
                 body->applyLinearImpulse(dx * impulse, dy * impulse, dz * impulse);
                 bones_[i].state = BoneRuntimeState::Detached;
+                if (wasSleeping) ++sleepBatchRevision_;
                 ++receipt.bonesAffected;
                 break;
             }
@@ -186,6 +214,7 @@ eve::Result<FieldApplicationReceipt> GeometryCollectionInstance::applyField(cons
                 break;
         }
     }
+    if (needGraphSync) syncBoneActivationFromGraph();
 
     if (field.kind == DestructionFieldKind::Strain) {
         for (auto& edge : edges_) {
@@ -213,19 +242,7 @@ void GeometryCollectionInstance::breakEdge(int edgeIndex, std::uint64_t tick, De
     if (edge.broken) return;
     edge.broken = true;
     ++receipt.edgesBroken;
-    World3D* world = resolveWorld();
-    for (int boneIndex : {edge.boneA, edge.boneB}) {
-        if (boneIndex < 0 || boneIndex >= static_cast<int>(bones_.size())) continue;
-        auto& bone = bones_[static_cast<std::size_t>(boneIndex)];
-        if (bone.anchored) continue;
-        bone.state = BoneRuntimeState::Detached;
-        if (!world) continue;
-        auto body = bone.link.resolve(*world);
-        if (body) {
-            body.value()->setType("dynamic");
-            body.value()->setAwake(true);
-        }
-    }
+
     BoneDetachEvent event;
     event.boneA = edge.boneA;
     event.boneB = edge.boneB;
@@ -246,6 +263,70 @@ void GeometryCollectionInstance::breakEdge(int edgeIndex, std::uint64_t tick, De
             clusterBreakEvents_.push_back(clusterEvent);
             ++receipt.clusterBreaks;
         }
+    }
+}
+
+void GeometryCollectionInstance::syncBoneActivationFromGraph() {
+    const int boneCount = static_cast<int>(bones_.size());
+    if (boneCount == 0) return;
+
+    std::vector<std::vector<int>> adjacency(static_cast<std::size_t>(boneCount));
+    for (const auto& edge : edges_) {
+        if (edge.broken) continue;
+        if (edge.boneA < 0 || edge.boneB < 0 || edge.boneA >= boneCount || edge.boneB >= boneCount) continue;
+        adjacency[static_cast<std::size_t>(edge.boneA)].push_back(edge.boneB);
+        adjacency[static_cast<std::size_t>(edge.boneB)].push_back(edge.boneA);
+    }
+
+    std::vector<int> component(static_cast<std::size_t>(boneCount), -1);
+    int componentCount = 0;
+    bool anyAnchored = false;
+    for (int i = 0; i < boneCount; ++i) {
+        if (bones_[static_cast<std::size_t>(i)].anchored) anyAnchored = true;
+        if (component[static_cast<std::size_t>(i)] >= 0) continue;
+        std::queue<int> queue;
+        queue.push(i);
+        component[static_cast<std::size_t>(i)] = componentCount;
+        while (!queue.empty()) {
+            const int cur = queue.front();
+            queue.pop();
+            for (int next : adjacency[static_cast<std::size_t>(cur)]) {
+                if (component[static_cast<std::size_t>(next)] >= 0) continue;
+                component[static_cast<std::size_t>(next)] = componentCount;
+                queue.push(next);
+            }
+        }
+        ++componentCount;
+    }
+
+    std::vector<bool> componentHasAnchor(static_cast<std::size_t>(componentCount), false);
+    for (int i = 0; i < boneCount; ++i) {
+        if (bones_[static_cast<std::size_t>(i)].anchored)
+            componentHasAnchor[static_cast<std::size_t>(component[static_cast<std::size_t>(i)])] = true;
+    }
+
+    World3D* world = resolveWorld();
+    for (int i = 0; i < boneCount; ++i) {
+        auto& bone = bones_[static_cast<std::size_t>(i)];
+        if (bone.state == BoneRuntimeState::Sleeping) continue; // Sleep is sticky until Impulse/Anchor
+        const bool stayAttached =
+            bone.anchored ||
+            componentHasAnchor[static_cast<std::size_t>(component[static_cast<std::size_t>(i)])] ||
+            (!anyAnchored && componentCount == 1);
+        const BoneRuntimeState desired =
+            stayAttached ? BoneRuntimeState::Attached : BoneRuntimeState::Detached;
+        if (bone.state == desired) {
+            // Ensure Attached bones remain static even if a prior path made them dynamic.
+            if (desired == BoneRuntimeState::Attached && world) {
+                auto body = bone.link.resolve(*world);
+                if (body) setBoneBodyType(*body.value(), desired);
+            }
+            continue;
+        }
+        bone.state = desired;
+        if (!world) continue;
+        auto body = bone.link.resolve(*world);
+        if (body) setBoneBodyType(*body.value(), desired);
     }
 }
 
@@ -292,6 +373,7 @@ eve::Result<DestructionStepReceipt> GeometryCollectionInstance::step(SimulationS
         breakEdge(edgeIndex, tick, receipt);
         ++brokenThisStep;
     }
+    if (receipt.edgesBroken > 0) syncBoneActivationFromGraph();
     lastTick_ = tick;
     return eve::Result<DestructionStepReceipt>::success(receipt);
 }

@@ -76,10 +76,13 @@ public:
 
 private:
     void ensureUnitBox(graphics::Graphics& graphics);
-    void invalidateSleepBatch();
+    void releaseOwnedMeshes(graphics::Graphics* graphics);
+    void invalidateSleepBatch(graphics::Graphics* graphics = nullptr);
     [[nodiscard]] eve::Result<void> rebuildSleepBatch(graphics::Graphics& graphics);
 
     GeometryCollectionInstance* instance_ = nullptr;
+    /** @brief Borrowed Graphics that owns cached meshes; used only for releaseMesh. */
+    graphics::Graphics* meshOwner_ = nullptr;
     graphics::Mesh* unitBox_ = nullptr;
     graphics::Mesh* sleepBatch_ = nullptr;
     std::uint64_t sleepBatchRevision_ = 0;

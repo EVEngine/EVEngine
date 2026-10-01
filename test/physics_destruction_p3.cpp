@@ -252,6 +252,78 @@ TEST_CASE("physics_destruction_p3.instanceSnapshotRoundTripRestore") {
     REQUIRE(schemas.ok());
 }
 
+TEST_CASE("physics_destruction_p3.intactMultiEdgeKeepsBonesAttached") {
+    auto* mod = Physics::create();
+    std::unique_ptr<World3D> world(mod->newWorld3D(0.f, -9.8f, 0.f, true));
+    GeometryCollectionAsset asset;
+    for (int i = 0; i < 3; ++i) {
+        GeometryCollectionBone bone;
+        bone.halfExtentX = 0.3f;
+        bone.halfExtentY = 0.3f;
+        bone.halfExtentZ = 0.3f;
+        bone.localX      = static_cast<float>(i) * 0.7f;
+        bone.localY      = 1.f;
+        asset.bones.push_back(bone);
+    }
+    auto add = [&](int a, int b) {
+        GeometryCollectionEdge edge;
+        edge.boneA           = a;
+        edge.boneB           = b;
+        edge.strainThreshold = 1.f;
+        asset.edges.push_back(edge);
+    };
+    add(0, 1);
+    add(1, 2);
+    add(2, 0);
+    REQUIRE(asset.validate().ok());
+    auto instance = GeometryCollectionInstance::create(*world, asset, 0.f, 0.f, 0.f);
+    REQUIRE(instance.ok());
+    // Before break, Attached bones are static (do not drift under gravity).
+    auto body0 = instance.value()->boneLink(0).value().resolve(*world);
+    REQUIRE(body0.ok());
+    REQUIRE_EQ(body0.value()->getType(), std::string("static"));
+    world->update(1.f / 60.f);
+    REQUIRE_EQ(instance.value()->boneState(0), BoneRuntimeState::Attached);
+
+    DestructionStepBudget budget;
+    budget.maxEdgeBreaksPerStep = 1;
+    instance.value()->setStepBudget(budget);
+    // Strain only the 0-1 midpoint so a single edge breaks.
+    REQUIRE(instance.value()->applyField(strainAt(0.35f, 1.f, 0.f, 0.35f, 2.f)).ok());
+    REQUIRE(instance.value()->step(simStep(1)).ok());
+    // One broken edge still leaves a connected triangle path — stay Attached.
+    int broken = 0;
+    for (int i = 0; i < 3; ++i)
+        if (instance.value()->isEdgeBroken(i)) ++broken;
+    REQUIRE_EQ(broken, 1);
+    REQUIRE_EQ(instance.value()->boneState(0), BoneRuntimeState::Attached);
+    REQUIRE_EQ(instance.value()->boneState(1), BoneRuntimeState::Attached);
+    REQUIRE_EQ(instance.value()->boneState(2), BoneRuntimeState::Attached);
+}
+
+TEST_CASE("physics_destruction_p3.impulseSkipsAnchoredAndAttached") {
+    auto* mod = Physics::create();
+    std::unique_ptr<World3D> world(mod->newWorld3D(0.f, 0.f, 0.f, true));
+    auto asset = GeometryCollectionAsset::makeClusterPillarFixture(0.8f);
+    REQUIRE(asset.ok());
+    auto instance = GeometryCollectionInstance::create(*world, asset.value(), 0.f, 0.f, 0.f);
+    REQUIRE(instance.ok());
+    DestructionField impulse;
+    impulse.kind      = DestructionFieldKind::Impulse;
+    impulse.falloff   = DestructionFieldFalloff::None;
+    impulse.centerX   = 0.f;
+    impulse.centerY   = 1.f;
+    impulse.centerZ   = 0.f;
+    impulse.radius    = 5.f;
+    impulse.magnitude = 10.f;
+    auto applied = instance.value()->applyField(impulse);
+    REQUIRE(applied.ok());
+    REQUIRE_EQ(applied.value().bonesAffected, 0);
+    REQUIRE_EQ(instance.value()->boneState(0), BoneRuntimeState::Attached);
+    REQUIRE(instance.value()->boneClusterId(0) == 0);
+    REQUIRE(instance.value()->boneClusterId(3) == 1);
+}
+
 TEST_CASE("physics_destruction_p3.snapshotRejectsUnknownFields") {
     eve::Value::Object object;
     object["schema"]             = std::string(GeometryCollectionInstanceSnapshot::SchemaId);

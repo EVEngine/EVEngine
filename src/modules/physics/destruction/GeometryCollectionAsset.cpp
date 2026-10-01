@@ -346,4 +346,49 @@ eve::Result<GeometryCollectionAsset> GeometryCollectionAsset::makeWeldedBoxesFix
     return eve::Result<GeometryCollectionAsset>::success(std::move(asset));
 }
 
+eve::Result<GeometryCollectionAsset> GeometryCollectionAsset::makeClusterPillarFixture(float interClusterStrain) {
+    if (!std::isfinite(interClusterStrain) || interClusterStrain <= 0.f)
+        return eve::Result<GeometryCollectionAsset>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "interClusterStrain must be finite and positive",
+            "interClusterStrain"));
+    GeometryCollectionAsset asset;
+    asset.bones.reserve(6);
+    for (int cluster = 0; cluster < 2; ++cluster) {
+        for (int level = 0; level < 3; ++level) {
+            GeometryCollectionBone bone;
+            bone.halfExtentX     = 0.45f;
+            bone.halfExtentY     = 0.45f;
+            bone.halfExtentZ     = 0.45f;
+            bone.localX          = cluster == 0 ? -0.55f : 0.55f;
+            bone.localY          = 0.5f + static_cast<float>(level) * 0.95f;
+            bone.localZ          = 0.f;
+            bone.mass            = 1.5f;
+            bone.density         = 1.f;
+            bone.anchoredDefault = level == 0;
+            bone.clusterId       = cluster;
+            bone.fractureLevel   = 0;
+            asset.bones.push_back(bone);
+        }
+    }
+    auto addEdge = [&](int a, int b, float threshold) {
+        GeometryCollectionEdge edge;
+        edge.boneA           = a;
+        edge.boneB           = b;
+        edge.strainThreshold = threshold;
+        asset.edges.push_back(edge);
+    };
+    // Vertical edges inside each cluster (stronger).
+    addEdge(0, 1, interClusterStrain * 2.f);
+    addEdge(1, 2, interClusterStrain * 2.f);
+    addEdge(3, 4, interClusterStrain * 2.f);
+    addEdge(4, 5, interClusterStrain * 2.f);
+    // Horizontal welds between clusters (weaker — tend to break first).
+    addEdge(0, 3, interClusterStrain);
+    addEdge(1, 4, interClusterStrain);
+    addEdge(2, 5, interClusterStrain);
+    auto valid = asset.validate();
+    if (!valid) return eve::Result<GeometryCollectionAsset>::failure(valid.status());
+    return eve::Result<GeometryCollectionAsset>::success(std::move(asset));
+}
+
 }  // namespace eve::physics

@@ -38,7 +38,8 @@ if (has_module("destructionFx")) {
 }
 ```
 
-完整烟雾示例：[`examples/destruction-basic`](../../../examples/destruction-basic/)。
+完整烟雾示例：[`examples/destruction-basic`](../../../examples/destruction-basic/)、
+[`examples/destruction-clusters`](../../../examples/destruction-clusters/)（P3 预算/cluster/快照）。
 
 ## 目标导向指南
 
@@ -88,13 +89,16 @@ v1 文档在加载时迁移为 `clusterId=0`。完整父子层级 Body 仍延期
 
 - `registerGeometryCollectionSchema()`：注册 `physics:geometry-collection@2` 与
   `physics:geometry-collection-instance@1`。
-- `newWeldedBoxesFixture(size)`：返回脚本拥有的预置资产。
+- `newWeldedBoxesFixture(threshold)` / `newClusterPillarFixture(interClusterStrain)`：
+  预置资产（后者为双岛锚定柱）。
+- `assetFromJson(json)`：解码 v1/v2 资产文档。
 - `createInstance(world3, asset, x, y, z)`：在世界原点处实例化；失败抛脚本异常且不留半截 Body。
 
 ### `GeometryCollectionInstance`
 
 - `applyStrainField(x, y, z, radius, magnitude)` / `applyAnchorField(...)` /
-  `applySleepField(...)`：场应用失败时实例状态不变。
+  `applySleepField(...)` / `applyImpulseField(x,y,z,radius,mag,dirX,dirY,dirZ)`：
+  场应用失败时实例状态不变。Impulse 只击中已 Detached/Sleeping 碎块，不松锚。
 - `step(tick, dt)`：注入仿真时间；断边事件可查询。
 - `setStepBudget(maxEdgeBreaks, maxSleeps)` / `pendingEdgeBreakCount()`。
 - `boneCount()` / `edgeCount()` / `boneState(i)` / `boneClusterId(i)` /

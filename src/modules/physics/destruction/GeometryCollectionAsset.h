@@ -72,6 +72,15 @@ struct EVENGINE_API_DOMAINS GeometryCollectionAsset {
     /** @brief Build a two-box welded fixture used by tests and the smoke example. */
     [[nodiscard("check welded-boxes fixture construction")]]
     static eve::Result<GeometryCollectionAsset> makeWeldedBoxesFixture(float strainThreshold = 1.f);
+
+    /**
+     * @brief Build a 2×3 anchored pillar with two cook clusters for demos.
+     *
+     * Bottom bones are anchored. Intra-cluster edges are stronger than the
+     * inter-cluster welds so budgeted strain tends to split clusters first.
+     */
+    [[nodiscard("check cluster-pillar fixture construction")]]
+    static eve::Result<GeometryCollectionAsset> makeClusterPillarFixture(float interClusterStrain = 0.8f);
 };
 
 }  // namespace eve::physics

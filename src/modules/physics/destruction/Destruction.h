@@ -37,6 +37,10 @@ public:
     [[nodiscard("check welded-boxes fixture")]]
     eve::Result<GeometryCollectionAsset> makeWeldedBoxesFixture(float strainThreshold = 1.f);
 
+    /** @brief Build the two-cluster anchored pillar fixture used by demos. */
+    [[nodiscard("check cluster-pillar fixture")]]
+    eve::Result<GeometryCollectionAsset> makeClusterPillarFixture(float interClusterStrain = 0.8f);
+
     /**
      * @brief Instantiate a collection against a live World3D.
      * @ownership Caller owns the returned instance.
@@ -49,6 +53,10 @@ public:
 
     /** @brief Script facade: welded boxes fixture or throw. */
     GeometryCollectionAsset* newWeldedBoxesFixtureScript(float strainThreshold);
+    /** @brief Script facade: cluster pillar fixture or throw. */
+    GeometryCollectionAsset* newClusterPillarFixtureScript(float interClusterStrain);
+    /** @brief Script facade: decode asset JSON or throw; VM owns the pointer. */
+    GeometryCollectionAsset* assetFromJsonScript(const std::string& json);
     /** @brief Script facade: create instance or throw; VM owns the pointer. */
     GeometryCollectionInstance* createInstanceScript(World3D* world, GeometryCollectionAsset* asset, float originX,
                                                      float originY, float originZ);

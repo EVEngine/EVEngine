@@ -64,11 +64,11 @@ void clampColor(float& r, float& g, float& b, float& a) {
 GeometryCollectionRenderer::GeometryCollectionRenderer(GeometryCollectionInstance* instance) noexcept
     : instance_(instance) {}
 
-GeometryCollectionRenderer::~GeometryCollectionRenderer() = default;
+GeometryCollectionRenderer::~GeometryCollectionRenderer() { releaseOwnedMeshes(meshOwner_); }
 
 void GeometryCollectionRenderer::setInstance(GeometryCollectionInstance* instance) {
     instance_ = instance;
-    invalidateSleepBatch();
+    invalidateSleepBatch(meshOwner_);
 }
 
 void GeometryCollectionRenderer::setExteriorColor(float r, float g, float b, float a) {
@@ -95,13 +95,30 @@ void GeometryCollectionRenderer::setSleepColor(float r, float g, float b, float 
     clampColor(sleepR_, sleepG_, sleepB_, sleepA_);
 }
 
-void GeometryCollectionRenderer::invalidateSleepBatch() {
+void GeometryCollectionRenderer::releaseOwnedMeshes(graphics::Graphics* graphics) {
+    if (graphics) {
+        if (sleepBatch_) (void)graphics->releaseMesh(sleepBatch_);
+        if (unitBox_) (void)graphics->releaseMesh(unitBox_);
+    }
+    sleepBatch_ = nullptr;
+    unitBox_ = nullptr;
+    meshOwner_ = nullptr;
+    sleepBatchRevision_ = 0;
+    sleepBatchBoneCount_ = 0;
+}
+
+void GeometryCollectionRenderer::invalidateSleepBatch(graphics::Graphics* graphics) {
+    if (graphics && sleepBatch_) (void)graphics->releaseMesh(sleepBatch_);
     sleepBatch_ = nullptr;
     sleepBatchRevision_ = 0;
     sleepBatchBoneCount_ = 0;
 }
 
 void GeometryCollectionRenderer::ensureUnitBox(graphics::Graphics& graphics) {
+    if (meshOwner_ != &graphics) {
+        releaseOwnedMeshes(meshOwner_);
+        meshOwner_ = &graphics;
+    }
     if (unitBox_) return;
     std::vector<float> positions;
     std::vector<float> normals;
@@ -117,6 +134,11 @@ eve::Result<void> GeometryCollectionRenderer::rebuildSleepBatch(graphics::Graphi
     if (!instance_)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "geometry-collection renderer has no instance", "instance"));
+    if (meshOwner_ != &graphics) {
+        releaseOwnedMeshes(meshOwner_);
+        meshOwner_ = &graphics;
+    }
+    invalidateSleepBatch(&graphics);
     std::vector<float> positions;
     std::vector<float> normals;
     std::vector<float> uv;
@@ -133,10 +155,7 @@ eve::Result<void> GeometryCollectionRenderer::rebuildSleepBatch(graphics::Graphi
     }
     sleepBatchBoneCount_ = sleepCount;
     sleepBatchRevision_ = instance_->sleepBatchRevision();
-    if (sleepCount == 0) {
-        sleepBatch_ = nullptr;
-        return eve::Result<void>::success();
-    }
+    if (sleepCount == 0) return eve::Result<void>::success();
     sleepBatch_ = graphics.newMeshFromArrays(positions.data(), normals.data(), uv.data(),
                                              static_cast<int>(positions.size() / 3), indices.data(),
                                              static_cast<int>(indices.size()));

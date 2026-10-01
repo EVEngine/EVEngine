@@ -208,6 +208,15 @@ private:
     [[nodiscard]] eve::Result<Body3D*> resolveBoneBody(int boneIndex) const;
     [[nodiscard]] float falloffAt(const DestructionField& field, float x, float y, float z) const;
     void breakEdge(int edgeIndex, std::uint64_t tick, DestructionStepReceipt& receipt);
+    /**
+     * @brief Recompute Attached/Detached from the unbroken connection graph.
+     *
+     * Anchored bones and bones still connected to an anchor stay Attached+static.
+     * With no anchors, a still-single component stays Attached+static; once the
+     * graph splits, free islands become Detached+dynamic. Bumps sleepBatchRevision
+     * when leaving Sleeping.
+     */
+    void syncBoneActivationFromGraph();
     void destroyOwnedBodies(World3D& world);
 
     PhysicsWorldHandle worldHandle_ = PhysicsWorldHandle::invalid();
