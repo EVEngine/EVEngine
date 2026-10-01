@@ -59,10 +59,22 @@ public:
     [[nodiscard]] static Result<RoadNetwork> makeTee(float span = 32.f, int lanes = 2);
     /** @brief Scene 6: ground-level Y-junction (3 arms at 120°). */
     [[nodiscard]] static Result<RoadNetwork> makeY(float span = 32.f, int lanes = 2);
+    /**
+     * @brief Ground-level N-way fan from absolute arm angles (degrees).
+     *
+     * Angle 0° = +X (east), 90° = +Z (south), increasing CCW in XZ. Used for
+     * common-angle demos (60°/90°/120°/135°) and acute forks that may bend-to-dock.
+     * @param armAnglesDeg At least two finite angles; duplicates within 1° are merged.
+     */
+    [[nodiscard]] static Result<RoadNetwork> makeFan(float span, int lanes, std::vector<float> armAnglesDeg);
+    /** @brief Scene: 3-way with a 60° acute fork (may bend tips to dock). */
+    [[nodiscard]] static Result<RoadNetwork> makeFork(float span = 32.f, int lanes = 2);
+    /** @brief Scene: 3-way with 135° corners (skewed Y). */
+    [[nodiscard]] static Result<RoadNetwork> makeSkew(float span = 32.f, int lanes = 2);
 
     /**
      * @brief Dispatch a named debug/demo scene.
-     * @param scene One of: straight, curve, bridge, cross, tee, y, interchange.
+     * @param scene One of: straight, curve, bridge, cross, tee, y, fork, skew, interchange.
      */
     [[nodiscard]] static Result<RoadNetwork> makeScene(const std::string& scene, float span = 36.f,
                                                        float bridgeHeight = 6.f, int lanes = 2,
