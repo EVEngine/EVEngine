@@ -1,4 +1,5 @@
 #include "procgen/road/RoadBake.h"
+#include "procgen/road/RoadDecor.h"
 #include "procgen/road/RoadNetwork.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/road/RoadTypes.h"
@@ -761,5 +762,103 @@ TEST_CASE("procgen.road.bidirectional.markingsAndNav") {
         if (baked.value().mesh.getGroupName(i) == "markingYellow") sawYellow = true;
     }
     CHECK(sawYellow);
+}
+
+TEST_CASE("procgen.road.decor.builtinsAndCustom") {
+    auto straight = RoadNetwork::makeStraight(36.f, 2);
+    REQUIRE(straight.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge   = 24;
+    options.includeJunctions      = false;
+    options.includeNavigation     = false;
+    options.includePiers          = false;
+    options.includeMarkings       = false;
+    options.decor.trees           = true;
+    options.decor.greenbelt       = true;
+    options.decor.streetLights    = true;
+    options.decor.utilityPoles    = true;
+    options.decor.treeSpacing     = 6.f;
+    options.decor.lightSpacing    = 12.f;
+    options.decor.poleSpacing     = 15.f;
+    options.decor.seed            = 7;
+
+    RoadDecorSpec bench;
+    bench.id         = "bench";
+    bench.spacing    = 10.f;
+    bench.roadside   = true;
+    bench.bothSides  = false;
+    bench.lateralGap = 1.4f;
+    RoadDecorPrimitive seat;
+    seat.shape = RoadDecorPrimitive::Shape::Box;
+    seat.oy    = 0.35f;
+    seat.sx    = 0.55f;
+    seat.sy    = 0.08f;
+    seat.sz    = 0.22f;
+    seat.group = "decorCustom";
+    RoadDecorPrimitive back;
+    back.shape = RoadDecorPrimitive::Shape::Box;
+    back.oz    = -0.18f;
+    back.oy    = 0.55f;
+    back.sx    = 0.55f;
+    back.sy    = 0.28f;
+    back.sz    = 0.05f;
+    back.group = "decorCustom";
+    bench.parts = {seat, back};
+    REQUIRE(addCustomRoadDecor(options.decor, bench).ok());
+    CHECK(!addCustomRoadDecor(options.decor, bench).ok());  // duplicate id
+
+    auto baked = bakeRoadNetwork(straight.value(), options);
+    REQUIRE(baked.ok());
+
+    bool sawTrunk = false, sawFoliage = false, sawGrass = false, sawMetal = false, sawPole = false,
+         sawCustom = false;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        const auto name = baked.value().mesh.getGroupName(g);
+        if (name == "decorTrunk") sawTrunk = true;
+        if (name == "decorFoliage") sawFoliage = true;
+        if (name == "decorGrass") sawGrass = true;
+        if (name == "decorMetal") sawMetal = true;
+        if (name == "decorPole") sawPole = true;
+        if (name == "decorCustom") sawCustom = true;
+    }
+    CHECK(sawTrunk);
+    CHECK(sawFoliage);
+    CHECK(sawGrass);
+    CHECK(sawMetal);
+    CHECK(sawPole);
+    CHECK(sawCustom);
+}
+
+TEST_CASE("procgen.road.decor.medianOnBidirectional") {
+    RoadNetwork network;
+    auto        a = network.addNode(-20.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(20.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.deckThickness = 0.15f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-20.f, 0.f, 0.f}, RoadControlPoint{0.f, 0.f, 0.f},
+                                 RoadControlPoint{20.f, 0.f, 0.f}},
+                                2, 2, style);
+    REQUIRE(edge.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.includeJunctions    = false;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    options.includeMarkings     = false;
+    options.decor.medianStrip   = true;
+    options.decor.medianWidth   = 1.2f;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    bool sawMedian = false;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "decorMedian") sawMedian = true;
+    }
+    CHECK(sawMedian);
 }
 

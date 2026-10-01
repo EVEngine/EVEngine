@@ -33,6 +33,14 @@ function roadStyleForGroup(name) {
     if (name == "marking") return [0.98, 0.98, 0.96, 0.30, 0.0, false];
     if (name == "markingYellow") return [0.98, 0.82, 0.08, 0.35, 0.0, false];
     if (name == "nav") return [0.05, 0.95, 1.0, 0.18, 0.0, false];
+    if (name == "decorTrunk") return [0.42, 0.28, 0.16, 0.85, 0.0, true];
+    if (name == "decorFoliage") return [0.22, 0.55, 0.24, 0.78, 0.0, true];
+    if (name == "decorGrass") return [0.28, 0.58, 0.26, 0.90, 0.0, true];
+    if (name == "decorMedian") return [0.70, 0.70, 0.68, 0.70, 0.0, true];
+    if (name == "decorMetal") return [0.55, 0.58, 0.62, 0.45, 0.15, true];
+    if (name == "decorLamp") return [0.95, 0.90, 0.55, 0.35, 0.0, false];
+    if (name == "decorPole") return [0.48, 0.42, 0.34, 0.70, 0.0, true];
+    if (name == "decorCustom") return [0.70, 0.55, 0.40, 0.65, 0.0, true];
     return [0.55, 0.55, 0.52, 0.75, 0.0, true];
 }
 
@@ -74,7 +82,7 @@ function roadBuildScene(name) {
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
     params.setFloat("span", name == "interchange" ? 48.0 : (name == "cross" || name == "tee" || name == "y" ||
-                                                                  name == "fork" || name == "skew" ? 28.0 : 32.0));
+                                                                  name == "fork" || name == "skew" ? 36.0 : 32.0));
     params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
     params.setInt("lanes", 2);
     local segs = 28;
@@ -87,6 +95,17 @@ function roadBuildScene(name) {
     params.setBool("navigation", false);
     params.setBool("junctions", name == "cross" || name == "tee" || name == "y" || name == "fork" ||
                                     name == "skew" || name == "interchange");
+    // Roadside decor on ground scenes (skip interchange to keep the bake light).
+    local wantDecor = name != "interchange" && name != "bridge";
+    local shortArms = name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew";
+    params.setBool("decorTrees", wantDecor);
+    params.setBool("decorGreenbelt", wantDecor);
+    params.setBool("decorLights", wantDecor);
+    params.setBool("decorPoles", wantDecor && (name == "straight" || name == "curve" || name == "cross"));
+    params.setBool("decorMedian", false);
+    params.setFloat("decorTreeSpacing", shortArms ? 5.0 : 8.0);
+    params.setFloat("decorLightSpacing", shortArms ? 9.0 : 16.0);
+    params.setFloat("decorPoleSpacing", shortArms ? 11.0 : 20.0);
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
     local groupSummary = "";
@@ -108,8 +127,9 @@ function roadBuildScene(name) {
         }
         part.setMesh(mesh);
         part.setMaterial(roadMaterials[gname]);
-        part.setCastShadow(gname != "nav" && gname != "marking" && gname != "markingYellow");
-        part.setReceiveShadow(gname == "asphalt" || gname == "sidewalk" || gname == "deck" || gname == "curb");
+        part.setCastShadow(gname != "nav" && gname != "marking" && gname != "markingYellow" && gname != "decorLamp");
+        part.setReceiveShadow(gname == "asphalt" || gname == "sidewalk" || gname == "deck" || gname == "curb" ||
+                              gname == "decorGrass" || gname == "decorMedian");
         roadParts.append(part);
         groupSummary += gname + ":" + component.getVertexCount() + " ";
     }

@@ -19,12 +19,29 @@ RoadBakeOptions bakeOptionsFromParams(const Params& params) {
     options.includeMarkings     = params.getBool("markings", true);
     options.includeNavigation   = params.getBool("navigation", true);
     options.includeJunctions    = params.getBool("junctions", true);
+    options.decor.trees         = params.getBool("decorTrees", false);
+    options.decor.medianStrip   = params.getBool("decorMedian", false);
+    options.decor.greenbelt     = params.getBool("decorGreenbelt", false);
+    options.decor.streetLights  = params.getBool("decorLights", false);
+    options.decor.utilityPoles  = params.getBool("decorPoles", false);
+    options.decor.treeSpacing   = std::max(2.f, params.getFloat("decorTreeSpacing", 7.5f));
+    options.decor.lightSpacing  = std::max(4.f, params.getFloat("decorLightSpacing", 14.f));
+    options.decor.poleSpacing   = std::max(4.f, params.getFloat("decorPoleSpacing", 18.f));
+    options.decor.greenbeltWidth = std::max(0.2f, params.getFloat("decorGreenbeltWidth", 1.35f));
+    options.decor.medianWidth    = std::max(0.2f, params.getFloat("decorMedianWidth", 1.0f));
+    options.decor.seed           = params.getSeed();
     return options;
 }
 
 Result<RoadNetwork> networkFromParams(const Params& params) {
     const std::string scene = params.getString("scene", "straight");
-    return RoadNetwork::makeScene(scene, params.getFloat("span", 36.f), params.getFloat("bridgeHeight", 6.f),
+    float             span  = params.getFloat("span", 36.f);
+    // Junction scenes need enough arm length past curb-return trim.
+    if (scene == "cross" || scene == "tee" || scene == "t" || scene == "y" || scene == "fork" || scene == "skew" ||
+        scene == "interchange") {
+        span = std::max(16.f, span);
+    }
+    return RoadNetwork::makeScene(scene, span, params.getFloat("bridgeHeight", 6.f),
                                   std::max(1, params.getInt("lanes", 2)), params.getSeed());
 }
 
@@ -115,7 +132,7 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
         ParamDescriptor::choice("scene", "Scene", "straight",
                                 {"straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew",
                                  "interchange"}));
-    schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 8.f, 256.f, 1.f));
+    schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
     schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
@@ -123,6 +140,14 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
     schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Mesh", false));
     schema.params.push_back(ParamDescriptor::boolean("junctions", "Junctions", true));
+    schema.params.push_back(ParamDescriptor::boolean("decorTrees", "Street Trees", false));
+    schema.params.push_back(ParamDescriptor::boolean("decorMedian", "Median Strip", false));
+    schema.params.push_back(ParamDescriptor::boolean("decorGreenbelt", "Greenbelt", false));
+    schema.params.push_back(ParamDescriptor::boolean("decorLights", "Street Lights", false));
+    schema.params.push_back(ParamDescriptor::boolean("decorPoles", "Utility Poles", false));
+    schema.params.push_back(ParamDescriptor::floating("decorTreeSpacing", "Tree Spacing", 7.5f, 2.f, 40.f, 0.5f));
+    schema.params.push_back(ParamDescriptor::floating("decorLightSpacing", "Light Spacing", 14.f, 4.f, 60.f, 0.5f));
+    schema.params.push_back(ParamDescriptor::floating("decorPoleSpacing", "Pole Spacing", 18.f, 4.f, 80.f, 0.5f));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
 }
 
