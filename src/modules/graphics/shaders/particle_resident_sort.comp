@@ -1,0 +1,122 @@
+#version 450
+
+layout(local_size_x = 64) in;
+
+struct Particle {
+    vec4 positionVelocity;
+    vec4 lifeSizeRotation;
+    vec4 motion;
+    vec4 accelerationNoise;
+};
+
+struct SortRecord {
+    uint key;
+    uint index;
+};
+
+struct Meta {
+    uint vertexCount;
+    uint instanceCount;
+    uint firstVertex;
+    uint firstInstance;
+    uint alive;
+    uint spawned;
+    uint killed;
+    uint dropped;
+};
+
+layout(std430, set = 0, binding = 0) readonly buffer Particles {
+    Particle particles[];
+} state;
+layout(std430, set = 0, binding = 1) readonly buffer ParticleMeta {
+    Meta value;
+} meta;
+layout(std430, set = 0, binding = 2) buffer SortRecords {
+    SortRecord records[];
+} sortRecords;
+layout(std430, set = 0, binding = 3) writeonly buffer SortedIndices {
+    uint indices[];
+} sortedIndices;
+
+layout(push_constant) uniform PushConstants {
+    uint passKind;   // 0=build keys, 1=bitonic compare, 2=scatter
+    uint sortMode;   // 1=oldest, 2=youngest, 3=distance
+    uint paddedCount;
+    uint bitonicK;
+    uint bitonicJ;
+    uint _pad0;
+    vec2 camera;
+} pc;
+
+uint encodeAscendingFloat(float value) {
+    return floatBitsToUint(value);
+}
+
+uint encodeDescendingFloat(float value) {
+    return 0xFFFFFFFFu - floatBitsToUint(value);
+}
+
+uint makeKey(Particle particle) {
+    float lifetime = max(particle.lifeSizeRotation.y, 1e-6);
+    float age = clamp(1.0 - particle.lifeSizeRotation.x / lifetime, 0.0, 1.0);
+    if (pc.sortMode == 1u) {
+        return encodeDescendingFloat(age);
+    }
+    if (pc.sortMode == 2u) {
+        return encodeAscendingFloat(age);
+    }
+    if (pc.sortMode == 4u) {
+        // birthSerial is stored as uintBitsToFloat in accelerationNoise.w
+        return floatBitsToUint(particle.accelerationNoise.w);
+    }
+    // distance: far to near
+    vec2 delta = particle.positionVelocity.xy - pc.camera;
+    return encodeDescendingFloat(dot(delta, delta));
+}
+
+void buildKeys() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= pc.paddedCount) return;
+    uint alive = meta.value.alive;
+    if (i < alive) {
+        sortRecords.records[i].key = makeKey(state.particles[i]);
+        sortRecords.records[i].index = i;
+    } else {
+        sortRecords.records[i].key = 0xFFFFFFFFu;
+        sortRecords.records[i].index = 0xFFFFFFFFu;
+    }
+}
+
+void bitonicCompare() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= pc.paddedCount) return;
+    uint j = pc.bitonicJ;
+    uint ixj = i ^ j;
+    if (ixj <= i) return;
+
+    SortRecord a = sortRecords.records[i];
+    SortRecord b = sortRecords.records[ixj];
+    bool ascending = ((i & pc.bitonicK) == 0u);
+    bool swap = ascending ? (a.key > b.key) : (a.key < b.key);
+    if (swap) {
+        sortRecords.records[i] = b;
+        sortRecords.records[ixj] = a;
+    }
+}
+
+void scatterIndices() {
+    uint i = gl_GlobalInvocationID.x;
+    uint alive = meta.value.alive;
+    if (i >= alive) return;
+    sortedIndices.indices[i] = sortRecords.records[i].index;
+}
+
+void main() {
+    if (pc.passKind == 0u) {
+        buildKeys();
+    } else if (pc.passKind == 1u) {
+        bitonicCompare();
+    } else {
+        scatterIndices();
+    }
+}
