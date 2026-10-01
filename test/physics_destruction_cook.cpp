@@ -147,6 +147,17 @@ TEST_CASE("physics_destruction_cook.clusteredVoronoiUsesDualThresholds") {
     }
     REQUIRE(sawStrong);
     REQUIRE(sawWeak);
+    bool sawCluster0 = false;
+    bool sawCluster1 = false;
+    for (const auto& bone : asset.value().bones) {
+        if (bone.clusterId == 0) sawCluster0 = true;
+        if (bone.clusterId == 1) sawCluster1 = true;
+        REQUIRE(bone.clusterId >= 0);
+        REQUIRE(bone.clusterId < 2);
+        REQUIRE_EQ(bone.fractureLevel, 0);
+    }
+    REQUIRE(sawCluster0);
+    REQUIRE(sawCluster1);
 }
 
 TEST_CASE("physics_destruction_cook.rejectsThinMesh") {

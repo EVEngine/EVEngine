@@ -15,7 +15,9 @@ namespace eve::physics {
 Module_IMPL(Destruction, new Destruction());
 
 eve::Result<void> Destruction::registerGeometryCollectionSchema() {
-    return GeometryCollectionAsset::ensureSchemaRegistered();
+    auto asset = GeometryCollectionAsset::ensureSchemaRegistered();
+    if (!asset) return asset;
+    return GeometryCollectionInstanceSnapshot::ensureSchemaRegistered();
 }
 
 eve::Result<GeometryCollectionAsset> Destruction::assetFromJson(const std::string& json) {
@@ -145,6 +147,61 @@ int boneStateScript(GeometryCollectionInstance* self, int boneIndex) {
     return static_cast<int>(self->boneState(boneIndex));
 }
 
+void setStepBudgetScript(GeometryCollectionInstance* self, int maxEdgeBreaks, int maxSleeps) {
+    if (!self) throw Exception("GeometryCollectionInstance.setStepBudget: null");
+    if (maxEdgeBreaks < 0 || maxSleeps < 0)
+        throw Exception("GeometryCollectionInstance.setStepBudget: budgets must be non-negative");
+    DestructionStepBudget budget;
+    budget.maxEdgeBreaksPerStep = maxEdgeBreaks;
+    budget.maxSleepsPerStep     = maxSleeps;
+    self->setStepBudget(budget);
+}
+
+std::string captureSnapshotJsonScript(GeometryCollectionInstance* self) {
+    if (!self) throw Exception("GeometryCollectionInstance.captureSnapshotJson: null");
+    auto snapshot = self->captureSnapshot();
+    if (!snapshot.ok()) {
+        const auto* diagnostic = snapshot.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+    auto encoded = snapshot.value().toValue();
+    if (!encoded.ok()) {
+        const auto* diagnostic = encoded.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "encode failed");
+    }
+    auto json = encoded.value().toJson();
+    if (!json.ok()) {
+        const auto* diagnostic = json.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "json failed");
+    }
+    return json.value();
+}
+
+void restoreSnapshotJsonScript(GeometryCollectionInstance* self, const std::string& json) {
+    if (!self) throw Exception("GeometryCollectionInstance.restoreSnapshotJson: null");
+    auto parsed = eve::Value::fromJson(json);
+    if (!parsed.ok()) {
+        const auto* diagnostic = parsed.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "parse failed");
+    }
+    auto snapshot = GeometryCollectionInstanceSnapshot::fromValue(parsed.value());
+    if (!snapshot.ok()) {
+        const auto* diagnostic = snapshot.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "decode failed");
+    }
+    auto restored = self->restoreSnapshot(snapshot.value());
+    if (!restored.ok()) {
+        const auto* diagnostic = restored.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "restore failed");
+    }
+}
+
 }  // namespace
 
 void Destruction::expose(ssq::Table& table) {
@@ -165,9 +222,13 @@ void Destruction::expose(ssq::Table& table) {
     instance.addFunc("applyAnchorField", applyAnchorFieldScript);
     instance.addFunc("applySleepField", applySleepFieldScript);
     instance.addFunc("step", stepScript);
+    instance.addFunc("setStepBudget", setStepBudgetScript);
     instance.addFunc("boneCount", [](GeometryCollectionInstance* self) { return self->boneCount(); });
     instance.addFunc("edgeCount", [](GeometryCollectionInstance* self) { return self->edgeCount(); });
     instance.addFunc("boneState", boneStateScript);
+    instance.addFunc("boneClusterId", [](GeometryCollectionInstance* self, int boneIndex) {
+        return self->boneClusterId(boneIndex);
+    });
     instance.addFunc("edgeStrain", [](GeometryCollectionInstance* self, int edgeIndex) {
         return self->edgeStrain(edgeIndex);
     });
@@ -177,10 +238,18 @@ void Destruction::expose(ssq::Table& table) {
     instance.addFunc("detachEventCount", [](GeometryCollectionInstance* self) {
         return self->detachEventCount();
     });
+    instance.addFunc("clusterBreakEventCount", [](GeometryCollectionInstance* self) {
+        return self->clusterBreakEventCount();
+    });
+    instance.addFunc("pendingEdgeBreakCount", [](GeometryCollectionInstance* self) {
+        return self->pendingEdgeBreakCount();
+    });
     instance.addFunc("hasLiveWorld", [](GeometryCollectionInstance* self) { return self->hasLiveWorld(); });
     instance.addFunc("sleepBatchRevision", [](GeometryCollectionInstance* self) {
         return static_cast<int>(self->sleepBatchRevision());
     });
+    instance.addFunc("captureSnapshotJson", captureSnapshotJsonScript);
+    instance.addFunc("restoreSnapshotJson", restoreSnapshotJsonScript);
     instance.addFunc("releaseBodies", [](GeometryCollectionInstance* self) { self->releaseBodies(); });
 }
 

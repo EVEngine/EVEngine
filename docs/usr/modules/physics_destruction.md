@@ -61,11 +61,33 @@ bit-exact 骨块拓扑。模式：`UniformVoronoi`、`ClusteredVoronoi`、`Radia
 编辑侧可用 `eve::physics_editing::fractureRecipeSchema()` 拉取与默认值对齐的
 `PropertySchema`（无 UI 依赖）。
 
+## 生产强化（P3）
+
+### 步进预算
+
+`setStepBudget(maxEdgeBreaks, maxSleeps)`：`0` = 不限。超额断边进入
+`pendingEdgeBreakCount()`，下一 `step` 继续消化；超额 Sleep 记入场回执的
+`sleepsDeferred`（C++ `FieldApplicationReceipt`）。v1 在 `createInstance` 时已为
+全部叶子创建 Body，预算控制的是本帧激活/休眠工作量，不是运行时再分配 Body。
+
+### Cluster 成员
+
+Asset schema **v2** 在骨块上带 `clusterId` / `fractureLevel`（叶子一般为 0）。
+`ClusteredVoronoi` cook 写入岛 id；跨岛断边产生 `clusterBreakEventCount()`。
+v1 文档在加载时迁移为 `clusterId=0`。完整父子层级 Body 仍延期。
+
+### Instance 快照
+
+`captureSnapshotJson()` / `restoreSnapshotJson(json)`：schema
+`physics:geometry-collection-instance@1`。只存骨块状态/边应变/原点，不存
+`PhysicsLink`；restore 要求活 World 且骨边拓扑一致，失败不改拓扑。
+
 ## API 快查
 
 ### `Destruction`（模块）
 
-- `registerGeometryCollectionSchema()`：注册 `physics:geometry-collection@1`。
+- `registerGeometryCollectionSchema()`：注册 `physics:geometry-collection@2` 与
+  `physics:geometry-collection-instance@1`。
 - `newWeldedBoxesFixture(size)`：返回脚本拥有的预置资产。
 - `createInstance(world3, asset, x, y, z)`：在世界原点处实例化；失败抛脚本异常且不留半截 Body。
 
@@ -74,8 +96,11 @@ bit-exact 骨块拓扑。模式：`UniformVoronoi`、`ClusteredVoronoi`、`Radia
 - `applyStrainField(x, y, z, radius, magnitude)` / `applyAnchorField(...)` /
   `applySleepField(...)`：场应用失败时实例状态不变。
 - `step(tick, dt)`：注入仿真时间；断边事件可查询。
-- `boneCount()` / `edgeCount()` / `boneState(i)` / `edgeStrain(i)` / `isEdgeBroken(i)` /
-  `detachEventCount()` / `hasLiveWorld()` / `sleepBatchRevision()` / `releaseBodies()`。
+- `setStepBudget(maxEdgeBreaks, maxSleeps)` / `pendingEdgeBreakCount()`。
+- `boneCount()` / `edgeCount()` / `boneState(i)` / `boneClusterId(i)` /
+  `edgeStrain(i)` / `isEdgeBroken(i)` / `detachEventCount()` /
+  `clusterBreakEventCount()` / `hasLiveWorld()` / `sleepBatchRevision()` /
+  `captureSnapshotJson()` / `restoreSnapshotJson(json)` / `releaseBodies()`。
 - 骨块生命周期：`Attached` → `Detached` → `Sleeping`。Instance 拥有它创建的 Body；
   World 先毁或 Instance 先毁都通过 `PhysicsLink` 陈旧解析，不保留裸指针。
 
@@ -93,4 +118,4 @@ bit-exact 骨块拓扑。模式：`UniformVoronoi`、`ClusteredVoronoi`、`Radia
 - 物理宿主：[physics.md](physics.md)
 - 表现卫星：[physics_destruction_graphics.md](physics_destruction_graphics.md)
 - 测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
-  `test/physics_destruction_graphics.cpp`
+  `test/physics_destruction_graphics.cpp`、`test/physics_destruction_p3.cpp`

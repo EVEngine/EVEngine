@@ -5,6 +5,7 @@
 #include "common/Result.h"
 #include "physics/destruction/GeometryCollectionAsset.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
+#include "physics/destruction/GeometryCollectionSnapshot.h"
 
 #include <memory>
 #include <string>
@@ -22,7 +23,10 @@ class EVENGINE_API_DOMAINS Destruction final : public Module {
 public:
     Module_REG(Destruction);
 
-    /** @brief Registers `physics:geometry-collection@1`. */
+    /**
+     * @brief Registers asset `physics:geometry-collection@2` and instance snapshot
+     * `physics:geometry-collection-instance@1`.
+     */
     [[nodiscard("check destruction schema registration")]] eve::Result<void> registerGeometryCollectionSchema();
 
     /** @brief Decode a versioned asset document. */

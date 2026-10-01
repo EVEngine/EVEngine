@@ -338,9 +338,10 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 ### P3 — 生产强化
 
-- [ ] 预算：每 tick 最大解绑边数、最大新生 Body、Sleep 合并
-- [ ] 存档：Instance snapshot schema `physics:geometry-collection-instance/1`
-- [ ] 可选 `building` 表现桥；可选英雄物体 Joint3D 投影
+- [x] 预算：每 tick 最大解绑边数（`maxEdgeBreaksPerStep`，超额边进 pending 队列）、Sleep 合并（`maxSleepsPerStep` + `sleepsDeferred`）。v1 在 create 时预创建全部叶子 Body，故「新生 Body」由断边激活动态体预算代理。
+- [x] 存档：Instance snapshot schema `physics:geometry-collection-instance@1`（capture/restore，无 PhysicsLink）
+- [x] Asset schema v2：骨块 `clusterId` / `fractureLevel`；cook ClusteredVoronoi 写入；运行时 `ClusterBreakEvent`；v1 文档迁移
+- [ ] 可选 `building` 表现桥；可选英雄物体 Joint3D 投影（仍延期）
 
 每阶段单一 PR：接口 + 后端 + 消费者 + 测试 + 文档；禁止中间破坏 CI 的半截提交。
 

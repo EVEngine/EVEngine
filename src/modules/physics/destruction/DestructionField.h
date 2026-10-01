@@ -43,6 +43,8 @@ struct EVENGINE_API_DOMAINS DestructionField {
 struct EVENGINE_API_DOMAINS FieldApplicationReceipt {
     int bonesAffected = 0;
     int edgesAffected = 0;
+    /** @brief Sleep conversions skipped because of the per-step sleep budget. */
+    int sleepsDeferred = 0;
 };
 
 }  // namespace eve::physics

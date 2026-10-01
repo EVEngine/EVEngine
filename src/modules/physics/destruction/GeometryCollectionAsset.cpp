@@ -53,13 +53,23 @@ eve::Result<bool> boolean(const eve::Value::Object& object, std::string_view nam
     return eve::Result<bool>::success(value->asBool());
 }
 
-eve::Result<GeometryCollectionBone> decodeBone(const eve::Value& value) {
+eve::Result<GeometryCollectionBone> decodeBone(const eve::Value& value, std::uint32_t schemaVersion) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object)
         return eve::Result<GeometryCollectionBone>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "geometry-collection bone must be an object", "bones"));
-    if (!hasExactFields(*object, {"halfExtentX", "halfExtentY", "halfExtentZ", "localX", "localY", "localZ", "mass",
-                                  "density", "friction", "restitution", "anchoredDefault"}))
+    const bool v1 = schemaVersion == GeometryCollectionAsset::SchemaVersionV1;
+    const bool v2 = schemaVersion == GeometryCollectionAsset::SchemaVersion;
+    if (!v1 && !v2)
+        return eve::Result<GeometryCollectionBone>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "geometry-collection bone schema version is unsupported", "bones"));
+    if (v1 && !hasExactFields(*object, {"halfExtentX", "halfExtentY", "halfExtentZ", "localX", "localY", "localZ",
+                                        "mass", "density", "friction", "restitution", "anchoredDefault"}))
+        return eve::Result<GeometryCollectionBone>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "geometry-collection bone has unknown or missing fields", "bones"));
+    if (v2 && !hasExactFields(*object, {"halfExtentX", "halfExtentY", "halfExtentZ", "localX", "localY", "localZ",
+                                        "mass", "density", "friction", "restitution", "anchoredDefault", "clusterId",
+                                        "fractureLevel"}))
         return eve::Result<GeometryCollectionBone>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "geometry-collection bone has unknown or missing fields", "bones"));
     GeometryCollectionBone bone;
@@ -96,6 +106,22 @@ eve::Result<GeometryCollectionBone> decodeBone(const eve::Value& value) {
     bone.friction        = friction.value();
     bone.restitution     = restitution.value();
     bone.anchoredDefault = anchored.value();
+    bone.clusterId       = 0;
+    bone.fractureLevel   = 0;
+    if (v2) {
+        auto clusterId = integer64(*object, "clusterId");
+        if (!clusterId) return eve::Result<GeometryCollectionBone>::failure(clusterId.status());
+        auto fractureLevel = integer64(*object, "fractureLevel");
+        if (!fractureLevel) return eve::Result<GeometryCollectionBone>::failure(fractureLevel.status());
+        if (clusterId.value() < std::numeric_limits<int>::min() ||
+            clusterId.value() > std::numeric_limits<int>::max() ||
+            fractureLevel.value() < std::numeric_limits<int>::min() ||
+            fractureLevel.value() > std::numeric_limits<int>::max())
+            return eve::Result<GeometryCollectionBone>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "geometry-collection cluster fields out of int range", "bones"));
+        bone.clusterId     = static_cast<int>(clusterId.value());
+        bone.fractureLevel = static_cast<int>(fractureLevel.value());
+    }
     return eve::Result<GeometryCollectionBone>::success(std::move(bone));
 }
 
@@ -137,6 +163,8 @@ eve::Value encodeBone(const GeometryCollectionBone& bone) {
     object["friction"]        = static_cast<double>(bone.friction);
     object["restitution"]     = static_cast<double>(bone.restitution);
     object["anchoredDefault"] = bone.anchoredDefault;
+    object["clusterId"]       = static_cast<std::int64_t>(bone.clusterId);
+    object["fractureLevel"]   = static_cast<std::int64_t>(bone.fractureLevel);
     return eve::Value(std::move(object));
 }
 
@@ -178,6 +206,10 @@ eve::Result<void> GeometryCollectionAsset::validate() const {
             bone.restitution > 1.f)
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "bone friction/restitution must be in [0, 1]", "bones"));
+        if (bone.clusterId < 0 || bone.fractureLevel < 0)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "bone clusterId and fractureLevel must be non-negative",
+                "bones"));
         (void)i;
     }
     for (const auto& edge : edges) {
@@ -215,7 +247,8 @@ eve::schema::SchemaDefinition GeometryCollectionAsset::schemaDefinition() {
     schema.id                   = std::string(SchemaId);
     schema.version              = static_cast<int>(SchemaVersion);
     schema.title                = "Geometry Collection Asset";
-    schema.description          = "Pre-authored bones and connection graph for Chaos-style destruction.";
+    schema.description =
+        "Pre-authored bones (with cluster membership) and connection graph for Chaos-style destruction.";
     schema.additionalProperties = false;
     auto makeField = [](std::string name, ValueType type, bool required) {
         eve::schema::FieldDefinition field;
@@ -255,9 +288,11 @@ eve::Result<GeometryCollectionAsset> GeometryCollectionAsset::fromValue(const ev
             eve::DiagnosticCode::InvalidArgument, "geometry-collection schema id mismatch", "schema"));
     auto version = integer64(*object, "schemaVersion");
     if (!version) return eve::Result<GeometryCollectionAsset>::failure(version.status());
-    if (version.value() != static_cast<std::int64_t>(SchemaVersion))
+    if (version.value() != static_cast<std::int64_t>(SchemaVersion) &&
+        version.value() != static_cast<std::int64_t>(SchemaVersionV1))
         return eve::Result<GeometryCollectionAsset>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Unsupported, "geometry-collection schema version is unsupported", "schemaVersion"));
+    const auto schemaVersion = static_cast<std::uint32_t>(version.value());
     const eve::Value* bonesValue = field(*object, "bones");
     const auto* boneArray = bonesValue ? bonesValue->getIf<eve::Value::Array>() : nullptr;
     if (!boneArray)
@@ -271,7 +306,7 @@ eve::Result<GeometryCollectionAsset> GeometryCollectionAsset::fromValue(const ev
     GeometryCollectionAsset asset;
     asset.bones.reserve(boneArray->size());
     for (const auto& boneValue : *boneArray) {
-        auto bone = decodeBone(boneValue);
+        auto bone = decodeBone(boneValue, schemaVersion);
         if (!bone) return eve::Result<GeometryCollectionAsset>::failure(bone.status());
         asset.bones.push_back(std::move(bone.value()));
     }

@@ -395,6 +395,8 @@ eve::Result<GeometryCollectionAsset> cookGeometryCollection(const eve::asset::Ca
         bone.mass = std::max(0.05f, volume * recipe.defaultDensity);
         bone.friction = recipe.defaultFriction;
         bone.restitution = recipe.defaultRestitution;
+        bone.clusterId = cell.clusterId;
+        bone.fractureLevel = 0;
         asset.bones.push_back(bone);
     }
     buildConnectionGraph(cells, recipe, asset);
