@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World3D.h"
 #include "physics/destruction/Destruction.h"
@@ -155,7 +156,9 @@ TEST_CASE("physics_destruction_p3.clusterBreakEventsAcrossMembership") {
     REQUIRE(stepped.value().clusterBreaks >= 1);
     REQUIRE(instance.value()->clusterBreakEventCount() >= 1);
     auto event = instance.value()->clusterBreakEventAt(0);
-    REQUIRE((event.clusterA == 0 && event.clusterB == 1) || (event.clusterA == 1 && event.clusterB == 0));
+    const bool crossCluster =
+        (event.clusterA == 0 && event.clusterB == 1) || (event.clusterA == 1 && event.clusterB == 0);
+    REQUIRE(crossCluster);
 }
 
 TEST_CASE("physics_destruction_p3.sleepBudgetDefersRemainder") {
