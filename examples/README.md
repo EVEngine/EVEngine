@@ -121,6 +121,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [procgen](procgen/README.md) | 六种地图算法（BSP / Cellular / Drunkard / Maze / 地形 / WFC）+ 纹理配方 |
+| [procedural-textures](procedural-textures/README.md) | 程序化地板纹理：木地板 / 花纹地砖 / 瓷砖，参数排列组合实时预览 |
 | [procgen-script-pipeline](procgen-script-pipeline/README.md) | 纯脚本 PointSet 组合、确定性 seed、事务式 hot reload |
 | [tileworld-graph-dungeon](tileworld-graph-dungeon/README.md) | TileWorldCreator 风格 GridGraph + PointGraph + MeshGraph 混合地牢、分层构建、增量簇更新与可选物理碰撞 |
 | [pcg-biome](pcg-biome/README.md) | UE PCG 风格空间数据、多层运行时 Cell、时间预算与 Scene 实例批次 |

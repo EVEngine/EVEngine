@@ -7,12 +7,12 @@
 
 namespace eve::dialogue {
 namespace {
-std::string scalarText(const StateValue* value) {
+std::string scalarText(const eve::Value* value) {
     if (!value || value->isNull()) return {};
     if (value->isString()) return value->asString();
     if (value->isBool()) return value->asBool() ? "true" : "false";
-    if (value->isInt()) return std::to_string(value->asInt());
-    if (value->isFloat()) {
+    if (value->isInt64()) return std::to_string(value->asInt());
+    if (value->isDouble()) {
         std::ostringstream output;
         output << std::setprecision(12) << value->asDouble();
         return output.str();
@@ -30,7 +30,22 @@ std::string transform(std::string value, const std::string& operation) {
         value[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(value[0])));
     return value;
 }
-std::string renderToken(std::string token, const StateValue& bindings, const StateValue& locals) {
+
+const eve::Value* findPath(const eve::Value& root, const std::string& path) {
+    const eve::Value* current = &root;
+    std::size_t       begin   = 0;
+    while (begin <= path.size()) {
+        const std::size_t separator = path.find('.', begin);
+        const std::string key =
+            path.substr(begin, separator == std::string::npos ? std::string::npos : separator - begin);
+        current = current->find(key);
+        if (!current || separator == std::string::npos) return current;
+        begin = separator + 1;
+    }
+    return current;
+}
+
+std::string renderToken(std::string token, const eve::Value& bindings, const eve::Value& locals) {
     std::string operation;
     if (const size_t separator = token.find('|'); separator != std::string::npos) {
         operation = token.substr(separator + 1);
@@ -41,8 +56,8 @@ std::string renderToken(std::string token, const StateValue& bindings, const Sta
         fallback = token.substr(separator + 2);
         token.resize(separator);
     }
-    const StateValue* value = locals.get(token);
-    if (!value) value = bindings.get(token);
+    const eve::Value* value = findPath(locals, token);
+    if (!value) value = findPath(bindings, token);
     std::string rendered = scalarText(value);
     if (rendered.empty()) rendered = std::move(fallback);
     return transform(std::move(rendered), operation);
@@ -55,8 +70,8 @@ void replaceAll(std::string& text, const std::string& find, const std::string& r
 }
 }  // namespace
 
-std::string ConversationTextRenderer::render(const std::string& text, const StateValue& bindings,
-                                             const StateValue& locals, const Evaluator& evaluate) const {
+std::string ConversationTextRenderer::render(const std::string& text, const eve::Value& bindings,
+                                             const eve::Value& locals, const Evaluator& evaluate) const {
     std::string output;
     output.reserve(text.size());
     for (size_t cursor = 0; cursor < text.size();) {

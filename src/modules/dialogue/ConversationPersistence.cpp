@@ -141,7 +141,7 @@ eve::Result<StateValue> ConversationSaveMigrations::migrate(const StateValue& st
         StateValue* node    = frame.find("node");
         if (!asset || !asset->isString() || !version || !version->isInt() || !node || !node->isString())
             return failFrame("conversation: saved frame is malformed");
-        const ConversationAsset* current = resolve(asset->asString());
+        const eve::dnut::SequenceAsset* current = resolve(asset->asString());
         if (current && current->version == version->asInt()) return true;
         const auto rule = std::find_if(rules_.begin(), rules_.end(), [&](const Rule& item) {
             return item.assetId == asset->asString() && item.fromVersion == version->asInt();
