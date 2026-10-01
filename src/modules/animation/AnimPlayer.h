@@ -4,6 +4,8 @@
 
 #include "animation/AnimPose.h"
 #include "animation/AnimPoseSource.h"
+#include "animation/RootMotionPolicy.h"
+#include "common/Result.h"
 #include "common/Time.h"
 
 #include <cstdint>
@@ -76,6 +78,22 @@ public:
     /** @brief Select the bone whose per-frame motion is extracted (default 0). */
     void  setRootMotionBone(int boneIndex);
     int   getRootMotionBone() const { return rootMotionBone_; }
+
+    /**
+     * @brief Replace the root-motion filter/bake/apply policy used by subsequent updates.
+     * @return Applied on success; InvalidArgument leaves the previous policy unchanged.
+     * @thread Owner thread only, outside advance; no callbacks or reentrancy.
+     */
+    [[nodiscard]] eve::Result<void> setRootMotionPolicy(const RootMotionPolicy& policy);
+    /** @brief Copy of the active root-motion policy. */
+    [[nodiscard]] RootMotionPolicy getRootMotionPolicy() const { return rootMotionPolicy_; }
+    /**
+     * @brief Set CharacterFacing yaw in radians without replacing the rest of the policy.
+     * @return Applied on success; InvalidArgument when yaw is non-finite.
+     */
+    [[nodiscard]] eve::Result<void> setRootMotionCharacterYaw(float yawRadians);
+
+    /** @brief Controller-facing translation X after policy filtering (BoneLocal or CharacterFacing). */
     float getRootMotionX() const { return rootMotion_.px; }
     float getRootMotionY() const { return rootMotion_.py; }
     float getRootMotionZ() const { return rootMotion_.pz; }
@@ -134,6 +152,7 @@ private:
     bool                     hasLoopOverride_ = false;
     bool                     loopOverride_    = true;
     int                      rootMotionBone_  = 0;
+    RootMotionPolicy         rootMotionPolicy_{};
     TransformTRS             rootMotion_;
     std::vector<std::string> pendingEvents_;
     float                    updateRate_        = 0.f;
