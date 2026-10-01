@@ -126,7 +126,7 @@ eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT day
                    DEPS graphics
                    GROUP 3d web)
 eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
-                   DEPS graphics
+                   DEPS graphics stylize
                    GROUP 3d)
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
