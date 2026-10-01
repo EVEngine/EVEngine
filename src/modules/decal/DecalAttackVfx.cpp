@@ -49,6 +49,21 @@ graphics::Texture* resolveAlbedo(const eve::stylize::AttackVfxLayerStartRequest&
 
 class DecalAttackVfxExecutor final : public eve::stylize::IAttackVfxLayerExecutor {
 public:
+    ~DecalAttackVfxExecutor() {
+        // Same atexit hazard as ParticlesAttackVfx: this static may outlive Graphics.
+        // Drop albedo pointers without calling releaseTexture (process is exiting).
+        live_.clear();
+    }
+
+    void clearLive() {
+        for (auto& entry : live_) {
+            if (entry.second.decalId > 0) (void)DecalManager::inst().remove(entry.second.decalId);
+            releaseTexture(entry.second.albedo);
+            entry.second.albedo = nullptr;
+        }
+        live_.clear();
+    }
+
     eve::stylize::AttackVfxLayerRole role() const noexcept override {
         return eve::stylize::AttackVfxLayerRole::Decal;
     }
@@ -174,6 +189,7 @@ void registerDecalAttackVfxExecutor() {
 void unregisterDecalAttackVfxExecutor() {
     if (!gRegistered) return;
     eve::cap::removeListener<eve::stylize::IAttackVfxLayerExecutor>(&executor());
+    executor().clearLive();
     gRegistered = false;
 }
 

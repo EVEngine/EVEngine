@@ -507,13 +507,19 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
     auto skinId = impl_->resolveSkinId(recipe, request);
     if (!skinId) return Result<AttackVfxHandle>::failure(skinId.status());
 
-    std::size_t freeSlot = impl_->slots.size();
+    // Prefer a slot with no StopEmitting residuals so a new play does not share
+    // draining ParticleEffect/Decal GPU resources with the previous cycle.
+    std::size_t freeSlot     = impl_->slots.size();
+    std::size_t freeWithDrain = impl_->slots.size();
     for (std::size_t i = 0; i < impl_->slots.size(); ++i) {
-        if (!impl_->slots[i].state) {
+        if (impl_->slots[i].state) continue;
+        if (impl_->slots[i].draining.empty()) {
             freeSlot = i;
             break;
         }
+        if (freeWithDrain == impl_->slots.size()) freeWithDrain = i;
     }
+    if (freeSlot == impl_->slots.size()) freeSlot = freeWithDrain;
     if (freeSlot == impl_->slots.size())
         return failT<AttackVfxHandle>(DiagnosticCode::Failed, "attack VFX pool is full", "pool");
 
@@ -532,6 +538,12 @@ Result<AttackVfxHandle> AttackVfxRuntime::play(const LogicalId& recipeId, const 
     }
 
     auto& slot = impl_->slots[freeSlot];
+    // Reclaiming a slot that still drains must drop residuals immediately so the
+    // new play does not share layer handles / GPU resources with the prior cycle.
+    if (!slot.draining.empty()) {
+        AttackVfxFrame discard;
+        (void)impl_->finishInstance(freeSlot, discard, "reuse", true);
+    }
     slot.state = std::move(state);
     slot.phaseLayers.assign(recipe.phases.size(), Impl::LivePhase{});
     impl_->armTimedPhases(*slot.state);

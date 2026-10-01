@@ -6,6 +6,8 @@
 #include "particles/ParticlesCapabilities.h"
 #include "stylize/AttackVfxLayerExecutor.h"
 
+#include <ECS.hpp>
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -37,6 +39,29 @@ bool effectHasLiveParticles(const ParticleEffect& effect) {
 
 class ParticlesAttackVfxExecutor final : public eve::stylize::IAttackVfxLayerExecutor {
 public:
+    /**
+     * @brief Executor is a function-local static constructed during capability
+     * register — historically before any ParticleEmitter touched
+     * ecs::engine_default_table(). On abrupt exit() (e.g. X11 fatal IO), atexit
+     * can destroy the Table first; destroying live ParticleEffects would then
+     * DestroyEntity into freed ComponentManagers (SIGSEGV). Abandon pointers
+     * instead when tearing down via static destruction; process is exiting.
+     * registerParticlesAttackVfxExecutor() now touches the Table first so the
+     * common atexit order is executor-then-Table; abandon remains a guard.
+     */
+    ~ParticlesAttackVfxExecutor() { abandonEffects(); }
+
+    /** @brief Orderly shutdown while ECS is still alive (~Particles). */
+    void clearEffects() { effects_.clear(); }
+
+    /** @brief Drop ParticleEffect ownership without DestroyEntity (ECS may be gone). */
+    void abandonEffects() noexcept {
+        for (auto& entry : effects_) {
+            if (entry.second.effect) (void)entry.second.effect.release();
+        }
+        effects_.clear();
+    }
+
     eve::stylize::AttackVfxLayerRole role() const noexcept override {
         return eve::stylize::AttackVfxLayerRole::Particles;
     }
@@ -133,6 +158,10 @@ bool gRegistered = false;
 
 void registerParticlesAttackVfxExecutor() {
     if (gRegistered) return;
+    // Construct the process ECS Table before this function-local static so
+    // atexit destroys the executor (and any leftover effects) while managers
+    // are still alive. register() runs before any emitter is created.
+    (void)ecs::default_table();
     eve::cap::addListener<eve::stylize::IAttackVfxLayerExecutor>(&executor());
     gRegistered = true;
 }
@@ -140,6 +169,8 @@ void registerParticlesAttackVfxExecutor() {
 void unregisterParticlesAttackVfxExecutor() {
     if (!gRegistered) return;
     eve::cap::removeListener<eve::stylize::IAttackVfxLayerExecutor>(&executor());
+    // Destroy live ParticleEffects while ECS ComponentManagers still exist.
+    executor().clearEffects();
     gRegistered = false;
 }
 
