@@ -81,7 +81,7 @@ function eve_update(dt) {
     world3.update(dt);
     tick += 1;
     instance.step(tick, dt);
-    if (!brokenLogged && instance.edgeBroken(0)) {
+    if (!brokenLogged && instance.isEdgeBroken(0)) {
         brokenLogged = true;
         print("destruction-basic: edge broken, bones detached=" +
               instance.boneState(0) + "," + instance.boneState(1) +

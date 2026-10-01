@@ -27,5 +27,5 @@ cd examples/destruction-basic && \
 ## 相关
 
 - 设计：`docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md`
-- 用户文档：`docs/usr/modules/destruction.md`
+- 用户文档：`docs/usr/modules/physics_destruction.md`、`docs/usr/modules/physics_destruction_graphics.md`
 - 模块：`eve.Destruction()`（`physics_destruction`）、`eve.DestructionFx()`（`physics_destruction_graphics`）

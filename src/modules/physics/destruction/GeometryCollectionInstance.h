@@ -52,9 +52,11 @@ struct EVENGINE_API_DOMAINS BonePresentation {
 /**
  * @brief Runtime owner of bone state, connection strain, and PhysicsLink bindings.
  *
- * Borrows a World3D through a process-local world handle. Instance owns the
- * Body3D objects it creates and destroys them on teardown. Either destruction
- * order (instance first or world first) leaves links resolvable as StaleHandle.
+ * @ownership Owns Body3D objects it creates; never retains raw World3D or Body3D
+ * pointers across calls. Borrows World3D only through a process-local handle.
+ * @lifetime Instance-first teardown destroys owned bodies then clears links;
+ * world-first teardown makes later resolve/step/applyField return StaleHandle.
+ * Either order leaves PhysicsLinks resolvable without use-after-free.
  */
 class EVENGINE_API_DOMAINS GeometryCollectionInstance {
 public:
@@ -70,6 +72,9 @@ public:
      * @param originY Origin of the collection in world metres.
      * @param originZ Origin of the collection in world metres.
      * @return Owning instance, or a structured failure without partial bodies.
+     * @ownership Caller owns the returned unique_ptr; Instance owns created bodies.
+     * @lifetime World must remain live for physics writes until releaseBodies or
+     * Instance destruction; world destruction first yields StaleHandle.
      */
     [[nodiscard("check geometry-collection instantiation")]]
     static eve::Result<std::unique_ptr<GeometryCollectionInstance>> create(World3D& world,
@@ -94,7 +99,8 @@ public:
     [[nodiscard]] int edgeCount() const noexcept { return static_cast<int>(edges_.size()); }
     [[nodiscard]] BoneRuntimeState boneState(int boneIndex) const;
     [[nodiscard]] float edgeStrain(int edgeIndex) const;
-    [[nodiscard]] bool edgeBroken(int edgeIndex) const;
+    /** @brief Whether the edge at index has already broken. */
+    [[nodiscard]] bool isEdgeBroken(int edgeIndex) const;
     [[nodiscard]] int detachEventCount() const noexcept { return static_cast<int>(detachEvents_.size()); }
     [[nodiscard]] BoneDetachEvent detachEventAt(int index) const;
 

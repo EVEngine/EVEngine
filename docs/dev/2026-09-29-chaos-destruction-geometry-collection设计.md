@@ -23,7 +23,8 @@
 
 测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
 `test/physics_destruction_graphics.cpp`；示例：`examples/destruction-basic`；
-用户文档：`docs/usr/modules/destruction.md`。
+用户文档：`docs/usr/modules/physics_destruction.md`、
+`docs/usr/modules/physics_destruction_graphics.md`。
 
 **层纠正**：因绑定 `World3D`/`Body3D`，宿主为 **LAYER 5**；cook / graphics / editing
 同层依赖宿主（graphics 额外依赖 `graphics`，editing 额外依赖 `editing`）。
@@ -333,7 +334,7 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 - [x] `physics_destruction_graphics`：骨块 draw、内材、Sleep 后合批
 - [x] `physics_destruction_editing` schema（Fracture 面板 UI 壳留给 editor 阶段）
-- [x] 用户文档 `docs/usr/modules/destruction.md` + MODULES 索引
+- [x] 用户文档 `docs/usr/modules/physics_destruction.md` + graphics 章 + MODULES 索引
 
 ### P3 — 生产强化
 

@@ -949,7 +949,8 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 3D 绳索现为可独立裁剪的 `physics_rope` 子模块，详见 `physics_rope.md`。
 
 几何破碎（预切几何集合 / 连接图 / 场驱动）为可独立裁剪的 `physics_destruction`
-子模块，详见 [`destruction.md`](destruction.md)。
+子模块，详见 [`physics_destruction.md`](physics_destruction.md)；表现卫星见
+[`physics_destruction_graphics.md`](physics_destruction_graphics.md)。
 
 ## 常见问题
 

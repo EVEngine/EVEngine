@@ -171,8 +171,8 @@ void Destruction::expose(ssq::Table& table) {
     instance.addFunc("edgeStrain", [](GeometryCollectionInstance* self, int edgeIndex) {
         return self->edgeStrain(edgeIndex);
     });
-    instance.addFunc("edgeBroken", [](GeometryCollectionInstance* self, int edgeIndex) {
-        return self->edgeBroken(edgeIndex);
+    instance.addFunc("isEdgeBroken", [](GeometryCollectionInstance* self, int edgeIndex) {
+        return self->isEdgeBroken(edgeIndex);
     });
     instance.addFunc("detachEventCount", [](GeometryCollectionInstance* self) {
         return self->detachEventCount();

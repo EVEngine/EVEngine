@@ -81,7 +81,7 @@ TEST_CASE("physics_destruction.strainFieldBreaksEdgeAndDetachesBones") {
     REQUIRE(instance.ok());
     REQUIRE_EQ(instance.value()->boneCount(), 2);
     REQUIRE_EQ(instance.value()->edgeCount(), 1);
-    REQUIRE(!instance.value()->edgeBroken(0));
+    REQUIRE(!instance.value()->isEdgeBroken(0));
 
     auto applied = instance.value()->applyField(strainAt(0.f, 1.f, 0.f, 3.f, 1.5f));
     REQUIRE(applied.ok());
@@ -90,7 +90,7 @@ TEST_CASE("physics_destruction.strainFieldBreaksEdgeAndDetachesBones") {
 
     auto stepped = instance.value()->step(simStep(1));
     REQUIRE(stepped.ok());
-    REQUIRE(instance.value()->edgeBroken(0));
+    REQUIRE(instance.value()->isEdgeBroken(0));
     REQUIRE_EQ(instance.value()->detachEventCount(), 1);
     REQUIRE(instance.value()->boneState(0) == BoneRuntimeState::Detached);
     REQUIRE(instance.value()->boneState(1) == BoneRuntimeState::Detached);
@@ -165,7 +165,7 @@ TEST_CASE("physics_destruction.anchorAndSleepFields") {
 
     REQUIRE(instance.value()->applyField(strainAt(0.f, 1.f, 0.f, 3.f, 2.f)).ok());
     REQUIRE(instance.value()->step(simStep(1)).ok());
-    REQUIRE(instance.value()->edgeBroken(0));
+    REQUIRE(instance.value()->isEdgeBroken(0));
     // Bone 0 was anchored so it stays Attached; bone 1 detaches.
     REQUIRE(instance.value()->boneState(0) == BoneRuntimeState::Attached);
     REQUIRE(instance.value()->boneState(1) == BoneRuntimeState::Detached);

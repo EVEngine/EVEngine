@@ -260,7 +260,7 @@ float GeometryCollectionInstance::edgeStrain(int edgeIndex) const {
     return edges_[static_cast<std::size_t>(edgeIndex)].accumulatedStrain;
 }
 
-bool GeometryCollectionInstance::edgeBroken(int edgeIndex) const {
+bool GeometryCollectionInstance::isEdgeBroken(int edgeIndex) const {
     if (edgeIndex < 0 || edgeIndex >= static_cast<int>(edges_.size())) return false;
     return edges_[static_cast<std::size_t>(edgeIndex)].broken;
 }

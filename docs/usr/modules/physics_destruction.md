@@ -74,32 +74,23 @@ bit-exact 骨块拓扑。模式：`UniformVoronoi`、`ClusteredVoronoi`、`Radia
 - `applyStrainField(x, y, z, radius, magnitude)` / `applyAnchorField(...)` /
   `applySleepField(...)`：场应用失败时实例状态不变。
 - `step(tick, dt)`：注入仿真时间；断边事件可查询。
-- `boneCount()` / `edgeCount()` / `boneState(i)` / `edgeStrain(i)` / `edgeBroken(i)` /
-  `detachEventCount()` / `hasLiveWorld()` / `releaseBodies()`。
+- `boneCount()` / `edgeCount()` / `boneState(i)` / `edgeStrain(i)` / `isEdgeBroken(i)` /
+  `detachEventCount()` / `hasLiveWorld()` / `sleepBatchRevision()` / `releaseBodies()`。
 - 骨块生命周期：`Attached` → `Detached` → `Sleeping`。Instance 拥有它创建的 Body；
   World 先毁或 Instance 先毁都通过 `PhysicsLink` 陈旧解析，不保留裸指针。
 
-### `DestructionFx`（可选）
-
-- `createRenderer(instance)`：返回脚本 VM 拥有的 `GeometryCollectionRenderer`；
-  只借用 Instance，不拥有仿真状态。
-- Renderer：`setInstance` / `getInstance`、`setExteriorColor` / `setInteriorColor` /
-  `setSleepColor`、`draw(gfx)`、`lastActiveDrawCount()` / `lastSleepBatchCount()`。
-- `draw` 失败（无 Graphics、无 Instance、World 已 stale）抛脚本异常；成功时
-  Attached 用外材色、Detached 用内材色逐骨块画盒代理，Sleeping 走合批 Mesh。
+表现 API 见 [`physics_destruction_graphics.md`](physics_destruction_graphics.md)
+（`eve.DestructionFx()` / `GeometryCollectionRenderer`）。
 
 ## 生命周期
 
 - Instance 借用 World3D；销毁前应 `releaseBodies()`，或保证 World 与 Instance
   任一先毁后另一侧不再写入。
-- Renderer 借用 Instance 与 Graphics；销毁 Instance 前先 `setInstance(null)` 或
-  丢弃 renderer。
-- 不跨帧保留 Body3D / Mesh 裸指针以外的引擎对象；Sleep 合批 Mesh 由 Graphics
-  拥有，revision 变化时重建。
 
 ## 相关
 
 - 设计：[`docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md`](../../dev/2026-09-29-chaos-destruction-geometry-collection设计.md)
 - 物理宿主：[physics.md](physics.md)
+- 表现卫星：[physics_destruction_graphics.md](physics_destruction_graphics.md)
 - 测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
   `test/physics_destruction_graphics.cpp`

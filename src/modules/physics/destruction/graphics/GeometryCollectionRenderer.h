@@ -18,23 +18,39 @@ class GeometryCollectionInstance;
  * @brief Presentation bridge for a borrowed geometry-collection instance.
  *
  * Draws box-proxy bones. Attached bones use the exterior color; Detached bones
- * use the interior color (broken-face stand-in). Sleeping bones are merged into
- * one batched mesh rebuilt when `sleepBatchRevision()` changes.
+ * use the interior color as a broken-face stand-in. Sleeping bones are merged
+ * into one batched mesh rebuilt when `sleepBatchRevision()` changes.
  *
- * Borrows the instance and Graphics only for the duration of each call; never
- * retains Body3D pointers or invokes scripts.
+ * @ownership Never owns Instance, Graphics, or Body3D. Mesh caches are produced
+ * through Graphics and not retained as exclusive ownership.
+ * @lifetime Borrows Instance and Graphics only for each call; do not call draw
+ * after Instance or its World3D is destroyed.
  */
 class EVENGINE_API_DOMAINS GeometryCollectionRenderer final {
 public:
+    /**
+     * @brief Construct a renderer that borrows an instance.
+     * @param instance Borrowed instance, or null to disable drawing.
+     * @ownership Does not take ownership of instance.
+     * @lifetime instance must outlive draws, or be cleared via setInstance(null).
+     */
     explicit GeometryCollectionRenderer(GeometryCollectionInstance* instance) noexcept;
 
     GeometryCollectionRenderer(const GeometryCollectionRenderer&)            = delete;
     GeometryCollectionRenderer& operator=(const GeometryCollectionRenderer&) = delete;
     ~GeometryCollectionRenderer();
 
-    /** @brief Replace the borrowed instance; null disables drawing. */
+    /**
+     * @brief Replace the borrowed instance; null disables drawing.
+     * @ownership Does not take ownership of instance.
+     * @lifetime instance must outlive subsequent draws, or be cleared again.
+     */
     void setInstance(GeometryCollectionInstance* instance);
-    /** @brief Return the currently borrowed instance. */
+    /**
+     * @brief Return the currently borrowed instance.
+     * @ownership Borrowed; caller must not delete through this pointer.
+     * @lifetime Valid until setInstance or renderer destruction.
+     */
     [[nodiscard]] GeometryCollectionInstance* getInstance() const noexcept { return instance_; }
 
     /** @brief Exterior RGBA for Attached bones. */
@@ -46,7 +62,10 @@ public:
 
     /**
      * @brief Synchronize caches and draw all bones into the current 3D frame.
+     * @param graphics Borrowed Graphics used for mesh allocation and drawMesh.
      * @return Success, or StaleHandle/InvalidArgument when the instance/world is gone.
+     * @ownership Does not take ownership of graphics.
+     * @lifetime graphics must remain live for the duration of this call.
      */
     [[nodiscard("check geometry-collection draw")]] eve::Result<void> draw(graphics::Graphics* graphics);
 
