@@ -1,6 +1,7 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include "common/Exception.h"
 
@@ -102,6 +103,21 @@ void AnimPlayer::setRootMotionBone(int boneIndex) {
     rootMotionBone_ = boneIndex;
 }
 
+eve::Result<void> AnimPlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> AnimPlayer::setRootMotionCharacterYaw(float yawRadians) {
+    if (!std::isfinite(yawRadians))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "root motion characterYaw must be finite"));
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 std::string AnimPlayer::consumeEvent() {
     if (pendingEvents_.empty()) return {};
     std::string event = std::move(pendingEvents_.front());
@@ -177,9 +193,10 @@ void AnimPlayer::updateUnchecked(float dt) {
     clip_->sample(time_, &sampledPose_, skeleton_);
     const TransformTRS& fromRoot = rootPreviousPose_.local(rootMotionBone_);
     const TransformTRS& toRoot   = sampledPose_.local(rootMotionBone_);
-    rootMotion_.px               = toRoot.px - fromRoot.px;
-    rootMotion_.py               = toRoot.py - fromRoot.py;
-    rootMotion_.pz               = toRoot.pz - fromRoot.pz;
+    TransformTRS        rawMotion = TransformTRS::identity();
+    rawMotion.px                  = toRoot.px - fromRoot.px;
+    rawMotion.py                  = toRoot.py - fromRoot.py;
+    rawMotion.pz                  = toRoot.pz - fromRoot.pz;
     if (effectiveLoop() && clip_->getDuration() > 1e-8f) {
         const float duration = clip_->getDuration();
         const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
@@ -188,20 +205,21 @@ void AnimPlayer::updateUnchecked(float dt) {
             clip_->sampleClamped(duration, &rootEndPose_, skeleton_);
             const TransformTRS& startRoot = rootStartPose_.local(rootMotionBone_);
             const TransformTRS& endRoot   = rootEndPose_.local(rootMotionBone_);
-            rootMotion_.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
-            rootMotion_.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
-            rootMotion_.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
+            rawMotion.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
+            rawMotion.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
+            rawMotion.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
         }
     }
-    rootMotion_.qx =
+    rawMotion.qx =
         fromRoot.qw * toRoot.qx - fromRoot.qx * toRoot.qw - fromRoot.qy * toRoot.qz + fromRoot.qz * toRoot.qy;
-    rootMotion_.qy =
+    rawMotion.qy =
         fromRoot.qw * toRoot.qy + fromRoot.qx * toRoot.qz - fromRoot.qy * toRoot.qw - fromRoot.qz * toRoot.qx;
-    rootMotion_.qz =
+    rawMotion.qz =
         fromRoot.qw * toRoot.qz - fromRoot.qx * toRoot.qy + fromRoot.qy * toRoot.qx - fromRoot.qz * toRoot.qw;
-    rootMotion_.qw =
+    rawMotion.qw =
         fromRoot.qw * toRoot.qw + fromRoot.qx * toRoot.qx + fromRoot.qy * toRoot.qy + fromRoot.qz * toRoot.qz;
-    rootMotion_.normalizeRotation();
+    rawMotion.normalizeRotation();
+    rootMotion_ = applyRootMotionPolicy(rawMotion, rootMotionPolicy_);
 
     if (blending_ && prevClip_) {
         blendElapsed_ += dt;
@@ -220,6 +238,8 @@ void AnimPlayer::updateUnchecked(float dt) {
     } else {
         pose_.copyFrom(&sampledPose_);
     }
+    bakeRootMotionIntoPose(pose_, rootMotionBone_, fromRoot, rootMotionPolicy_)
+        .ignore("root motion bake skipped when bone/policy leaves pose unchanged");
 }
 
 eve::Result<void> AnimPlayer::advance(const eve::SimulationStep& step) {

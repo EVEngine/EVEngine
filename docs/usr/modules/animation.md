@@ -439,9 +439,15 @@ Player 还会从指定根骨骼提取本帧位移和旋转 delta，可交给角�
 ```squirrel
 clip.addEvent(0.18, "footstep.left");
 player.setRootMotionBone(sk.findBone("Hips"));
+// 物理/胶囊驱动位移时的推荐 policy：锁竖直轴、水平 bake 进 pose、按朝向发布
+player.setRootMotionLockAxes("y");                 // 重力/胶囊管 Y
+player.setBakeRootTranslationIntoPose(true);      // 避免网格再滑一次
+player.setRootMotionApplySpace("characterFacing");
+player.setRootMotionCharacterYaw(facingYaw);
 player.update(dt);
-controller.move(player.getRootMotionX(), player.getRootMotionY(),
-                player.getRootMotionZ());
+world3.moveCapsule(ax, ay, az, bx, by, bz, radius,
+                   player.getRootMotionX(), player.getRootMotionY(),
+                   player.getRootMotionZ());
 local eventName = player.consumeEvent();
 while (eventName != "") {
     // dispatch gameplay/audio/VFX event
@@ -452,6 +458,24 @@ while (eventName != "") {
 Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位四元数
 `getRootMotionRotationX/Y/Z/W()`。调用 `setTime()` 是 seek，不会生成 motion delta
 或 notify，下一次 `update()` 从 seek 后时间继续计算。
+
+### RootMotionPolicy
+
+`AnimPlayer` 在提取原始根骨 delta 后应用 `RootMotionPolicy`（默认与旧行为一致：无锁轴、不 bake、`boneLocal`）：
+
+| 字段 / API | 作用 |
+| --- | --- |
+| `setRootMotionLockAxes("none"\|"x"\|"y"\|"z"\|"xz"\|"horizontal"\|…)` | 锁轴：对应分量在控制器 delta 中清零；bake 时锁轴仍留在 pose（如竖直 bob） |
+| `setBakeRootTranslationIntoPose(bool)` | 把**未锁**平移从 pose 根骨撤掉，交给胶囊，避免双重位移 |
+| `setBakeRootRotationIntoPose(bool)` | 旋转同类处理（`lockRotation=true` 时不 bake） |
+| `setRootMotionLockRotation(bool)` | 控制器旋转 delta 置单位四元数 |
+| `setRootMotionApplySpace("boneLocal"\|"characterFacing")` | `characterFacing` 按 `characterYaw` 绕 Y 旋转平面 XZ；正向与 Motion Matching 一致：`(sin(yaw),0,cos(yaw))` |
+| `setRootMotionCharacterYaw(yaw)` | 每帧更新朝向；`{ok,message}` 必须检查 |
+| `getRootMotionPolicy()` | 返回当前 policy 表 |
+
+C++ 入口：`setRootMotionPolicy(RootMotionPolicy)` / `applyRootMotionPolicy` /
+`bakeRootMotionIntoPose`（见 `animation/RootMotionPolicy.h`）。失败返回
+`Result`，不得丢弃。
 
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
 
@@ -559,7 +583,7 @@ anim->advance(step);
 - AnimSmrSensorCloud：`fromSkeleton()` 生成骨骼附着传感器，`getSensorCount()` / `getSensorPart()` / `evaluateWorldPositions()` 供诊断或自定义交互查询。
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`aimBone()`、`solveTwoBoneIK()`、`getWorld*()`、`getWorldMatrixElement()`
 - `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`updateMatrixPalette()`、`getMatrixPaletteElement()`、`bindGpuMesh()`、`updateGpuMesh()`、`getBindPosition*()`、`getVertexBone()`、`getVertexSkinJoint()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`、`getSkinnedPositions()`、`updateSkinnedNormals()`、`hasSkinnedNormals()`、`getSkinnedNormals()`、`applyToMesh()`
-- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
+- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`setRootMotionBone()`、`getRootMotionBone()`、`setRootMotionLockAxes()`、`setRootMotionApplySpace()`、`setBakeRootTranslationIntoPose()`、`setBakeRootRotationIntoPose()`、`setRootMotionLockRotation()`、`setRootMotionCharacterYaw()`、`getRootMotionPolicy()`、`getRootMotionX()`、`getRootMotionY()`、`getRootMotionZ()`、`getRootMotionRotationX()`、`getRootMotionRotationY()`、`getRootMotionRotationZ()`、`getRootMotionRotationW()`、`consumeEvent()`、`setUpdateRate()`、`getUpdateRate()`、`update()`；每次更新跨过的事件由 `getEventCount()`、`getEventName()`、`getEventPayload()` 读取，`clearEvents()` 可提前清空。
 - `AnimGraph`：`addClip()`、`addBlend()`、`addAdditive()`、`addLayer()`、`addOneShot()`、`addBlendSpace1D()`、`addBlendSpace2D()`、`addBlendSpace1DPoint()`、`addBlendSpace2DPoint()`、`setBoneMask()`、`clearBoneMask()`、`setRoot()`、`getRoot()`、`getNodeCount()`、`setWeight()`、`setPosition1D()`、`setPosition2D()`、`setSpeed()`、`trigger()`、`isOneShotActive()`、`setAdditiveReference()`、`getAdditiveReference()`、`getPose()`、`update()`
 - `AnimBoneMask`：由 `newBoneMask()` 创建；`setAll()`、`setBoneWeight()`、`setBoneWeightByName()`、`setBoneAndChildren()`、`getBoneWeight()`、`getBoneCount()` 定义逐骨权重。
 - `AnimLayerMixer`：由 `newLayerMixer()` 创建；`setBasePlayer()` / `setBaseGraph()` / `setBaseStateMachine()` 设置基础姿态源，`getBasePlayer()` 读取当前基础 Player（若基础是 Graph/StateMachine 则为 `null`），`addLayer` / `addGraphLayer` / `addStateMachineLayer` 添加 `override` 或 `additive` 层。Additive 默认以骨架 bind pose 为参考，可用 `setLayerAdditiveReference(name, "bind"|"identity")` 切换。禁用层仍会推进时间。另有 `removeLayer()`、`setLayerWeight()`、`setLayerEnabled()`、`getLayerCount()`、`getLayerName()`、`getLayerWeight()`、`getLayerEnabled()`、`getLayerMode()`、`getLayerAdditiveReference()`、`update()`、`getPose()`。层事件通过 `getEventCount()`、`getEventLayer()`、`getEventName()`、`getEventPayload()`、`clearEvents()` 汇总。
