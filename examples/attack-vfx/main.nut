@@ -208,20 +208,22 @@ function buildDummy(cyl, cube, sphere) {
 
 function buildFxPools(cube, cyl, sphere) {
     avFxSegs = [];
-    for (local i = 0; i < 18; ++i) {
-        local s = makePart(cyl, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 1.0, 1.0, 1.0, 0.25);
+    for (local i = 0; i < 36; ++i) {
+        // Elongated spheres read better as whip/slash ribbons than upright cylinders.
+        local s = makePart(sphere, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 1.0, 1.0, 1.0, 0.2);
         s.setCastShadow(false);
         avFxSegs.push(s);
     }
     avFxCones = [];
-    for (local i = 0; i < 28; ++i) {
-        local c = makePart(cyl, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 0.6, 0.35, 0.2, 0.75);
+    for (local i = 0; i < 32; ++i) {
+        // Angular cube shards for earth / fire debris (video-like low-poly rocks).
+        local c = makePart(cube, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 0.6, 0.35, 0.2, 0.7);
         c.setCastShadow(false);
         avFxCones.push(c);
     }
     avFxOrbs = [];
-    for (local i = 0; i < 14; ++i) {
-        local o = makePart(sphere, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 1.0, 0.5, 0.1, 0.2);
+    for (local i = 0; i < 16; ++i) {
+        local o = makePart(sphere, 0.0, -20.0, 0.0, 0.001, 0.001, 0.001, 1.0, 0.5, 0.1, 0.15);
         o.setCastShadow(false);
         avFxOrbs.push(o);
     }
@@ -300,17 +302,17 @@ function setSeg(i, x, y, z, sx, sy, sz, yaw, pitch, r, g, b, aScale) {
     local s = avFxSegs[i];
     s.setPosition(x, y, z);
     s.setScale(sx * aScale, sy * aScale, sz * aScale);
-    s.setRotation(yaw, pitch, 0.0);
+    s.setRotation(yaw, pitch, yaw * 0.35);
     s.setTint(r, g, b, 1.0);
 }
 
-function setCone(i, x, y, z, rBase, h, r, g, b, visible) {
+function setRock(i, x, y, z, sx, sy, sz, yaw, pitch, roll, r, g, b, visible) {
     if (i < 0 || i >= avFxCones.len()) return;
     local c = avFxCones[i];
     if (!visible) { hideProp(c); return; }
-    c.setPosition(x, y + h * 0.5, z);
-    c.setScale(rBase, h, rBase);
-    c.setRotation(0.0, 0.0, 0.0);
+    c.setPosition(x, y, z);
+    c.setScale(sx, sy, sz);
+    c.setRotation(yaw, pitch, roll);
     c.setTint(r, g, b, 1.0);
 }
 
@@ -339,179 +341,181 @@ function updateChargeAura(skin, t) {
 }
 
 function updateWaterWhip(skin, t) {
-    // Arc whip from hand toward target with bulbous head.
-    local n = 14;
+    // Dense cyan arc whip + bulbous head + spray (video water whip shape).
+    local n = 20;
     for (local i = 0; i < n; ++i) {
         local u = (i.tofloat() + 0.5) / n.tofloat();
-        local travel = clamp01(t * 1.35 - u * 0.55);
+        local travel = clamp01(t * 1.55 - u * 0.45);
         if (travel <= 0.01) { hideProp(avFxSegs[i]); continue; }
         local p = smooth(travel);
-        local x = lerp(SRC_X + 0.4, TGT_X - 0.2, u);
-        local z = lerp(SRC_Z + 0.3, TGT_Z, u) + sin(u * 3.14) * 0.35;
-        local y = lerp(HAND_Y, 0.85, u) + sin(u * 3.14) * 1.1 * (1.0 - p * 0.3);
-        local thick = lerp(0.04, 0.22, u * u) * (0.55 + 0.45 * p);
-        local len = 0.28;
-        local yaw = atan2(TGT_Z - SRC_Z, TGT_X - SRC_X);
-        local pitch = -0.35 + u * 0.7;
-        local r = lerp(0.45, 0.85, u);
+        local x = lerp(SRC_X + 0.45, TGT_X - 0.15, u);
+        local z = lerp(SRC_Z + 0.35, TGT_Z + 0.1, u) + sin(u * 3.1416) * 0.55;
+        local y = lerp(HAND_Y + 0.1, 0.95, u) + sin(u * 3.1416) * 1.35;
+        local thick = lerp(0.05, 0.32, u * u) * (0.65 + 0.45 * p);
+        local stretch = lerp(0.16, 0.38, u);
+        local yaw = atan2(TGT_Z - SRC_Z, TGT_X - SRC_X) + sin(u * 4.0) * 0.2;
+        local pitch = -0.55 + u * 0.95;
+        local r = lerp(0.35, 0.75, u);
         local g = lerp(0.85, 0.55, u);
-        local b = 1.0;
-        setSeg(i, x, y, z, thick, len, thick, yaw, pitch, r, g, b, p);
+        local b = lerp(1.0, 0.95, u);
+        // Parallel ribbon strands.
+        setSeg(i, x, y, z, thick, stretch, thick * 0.7, yaw, pitch, r, g, b, p);
+        if (i < 8) {
+            setSeg(i + n, x, y + 0.08, z + 0.06, thick * 0.45, stretch * 0.8, thick * 0.35,
+                   yaw, pitch + 0.15, lerp(r, 1.0, 0.4), lerp(g, 1.0, 0.35), 1.0, p * 0.85);
+        }
     }
-    // Head splash orbs near tip.
-    local tip = smooth(clamp01(t * 1.2));
-    local hx = lerp(SRC_X + 0.4, TGT_X, tip);
-    local hz = lerp(SRC_Z + 0.3, TGT_Z, tip);
-    local hy = lerp(HAND_Y, 0.9, tip) + sin(tip * 3.14) * 0.9;
-    setOrb(0, hx, hy, hz, 0.18 + 0.22 * tip, 0.55, 0.8, 1.0);
-    setOrb(1, hx + 0.12, hy - 0.08, hz, 0.1, 0.75, 0.9, 1.0);
-    setOrb(2, hx - 0.1, hy + 0.05, hz + 0.08, 0.08, 0.9, 0.95, 1.0);
-    // Droplet spray after impact.
-    if (t > 0.55) {
-        local spray = clamp01((t - 0.55) / 0.35);
-        for (local i = 3; i < 10; ++i) {
-            local a = i * 0.9 + avTime;
-            setOrb(i, TGT_X + cos(a) * 0.55 * spray, 0.7 + (i % 3) * 0.15,
-                   TGT_Z + sin(a) * 0.4 * spray, 0.04 + 0.03 * (1.0 - spray),
-                   0.4, 0.75, 1.0);
+    local tip = smooth(clamp01(t * 1.25));
+    local hx = lerp(SRC_X + 0.45, TGT_X, tip);
+    local hz = lerp(SRC_Z + 0.35, TGT_Z, tip);
+    local hy = lerp(HAND_Y + 0.1, 1.0, tip) + sin(tip * 3.1416) * 1.15;
+    setOrb(0, hx, hy, hz, 0.28 + 0.35 * tip, 0.45, 0.75, 1.0);
+    setOrb(1, hx + 0.16, hy - 0.1, hz, 0.16, 0.7, 0.9, 1.0);
+    setOrb(2, hx - 0.12, hy + 0.08, hz + 0.1, 0.12, 0.85, 0.95, 1.0);
+    setOrb(3, hx + 0.05, hy + 0.14, hz - 0.08, 0.1, 0.95, 0.55, 0.9);
+    if (t > 0.4) {
+        local spray = smooth(clamp01((t - 0.4) / 0.35));
+        for (local i = 4; i < 14; ++i) {
+            local a = i * 0.75 + avTime * 2.0;
+            setOrb(i, TGT_X + cos(a) * 0.75 * spray, 0.55 + (i % 4) * 0.18,
+                   TGT_Z + sin(a) * 0.55 * spray, 0.05 + 0.04 * (1.0 - spray * 0.5),
+                   0.4, 0.8, 1.0);
         }
     }
 }
 
 function updateEarthCones(skin, t) {
     hideProp(avChargeRing);
-    local pathN = 10;
-    local coneIdx = 0;
+    local pathN = 12;
+    local idx = 0;
     for (local i = 0; i < pathN; ++i) {
         local u = (i.tofloat() + 0.5) / pathN.tofloat();
-        local appear = clamp01(t * 1.5 - u * 0.7);
+        local appear = clamp01(t * 1.8 - u * 0.55);
         if (appear <= 0.02) continue;
-        local x = lerp(SRC_X + 0.5, TGT_X + 0.3, u);
-        local z = lerp(SRC_Z, TGT_Z, u) + ((i % 2 == 0) ? -0.18 : 0.18) * (0.4 + u);
-        local h = (0.25 + u * 0.85) * appear;
-        local rBase = (0.12 + u * 0.22) * (1.15 - 0.3 * appear);
-        local shade = 0.85 - u * 0.25;
-        setCone(coneIdx, x, 0.0, z, rBase, h,
+        local x = lerp(SRC_X + 0.55, TGT_X + 0.35, u);
+        local z = lerp(SRC_Z, TGT_Z, u) + ((i % 2 == 0) ? -0.28 : 0.28) * (0.5 + u);
+        local h = (0.35 + u * 1.05) * appear;
+        local w = (0.16 + u * 0.28) * (1.1 - 0.2 * appear);
+        local shade = 0.95 - u * 0.2;
+        setRock(idx, x, h * 0.45, z, w, h, w * 0.75,
+                i * 0.4, 0.35 + i * 0.11, i * 0.25,
                 skin.tint[0] * shade, skin.tint[1] * shade, skin.tint[2] * shade, true);
-        coneIdx += 1;
-        // Secondary shard.
-        if (coneIdx < avFxCones.len()) {
-            setCone(coneIdx, x + 0.14, 0.0, z - 0.1, rBase * 0.55, h * 0.7,
-                    skin.tint[0] * 0.8, skin.tint[1] * 0.75, skin.tint[2] * 0.7, appear > 0.3);
-            coneIdx += 1;
+        idx += 1;
+        setRock(idx, x + 0.18, h * 0.28, z - 0.12, w * 0.55, h * 0.65, w * 0.5,
+                -i * 0.3, 0.6, i * 0.5,
+                skin.tint[0] * 0.8, skin.tint[1] * 0.75, skin.tint[2] * 0.7, appear > 0.25);
+        idx += 1;
+    }
+    // Impact cluster starts earlier so mid-release screenshots show rocks.
+    if (t > 0.28) {
+        local blast = smooth(clamp01((t - 0.28) / 0.35));
+        for (local k = 0; k < 12 && idx < avFxCones.len(); ++k) {
+            local a = k * 0.52 + 0.15;
+            local rad = 0.4 + (k % 4) * 0.16;
+            local h = (0.45 + (k % 3) * 0.35) * blast;
+            local w = 0.18 + (k % 3) * 0.08;
+            setRock(idx, TGT_X + cos(a) * rad * blast, h * 0.5,
+                    TGT_Z + sin(a) * rad * blast, w, h, w * 0.8,
+                    k * 0.7, 0.45 + k * 0.1, k * 0.35,
+                    0.7, 0.4, 0.2, true);
+            idx += 1;
+        }
+        for (local i = 0; i < 8; ++i) {
+            local a = i * 0.9 + avTime * 0.7;
+            setOrb(i, TGT_X + cos(a) * 0.85 * blast, 0.5 + i * 0.07,
+                   TGT_Z + sin(a) * 0.65 * blast, 0.1 * (1.0 - blast * 0.3),
+                   0.8, 0.72, 0.62);
         }
     }
-    // Impact cluster around dummy.
-    if (t > 0.45) {
-        local blast = smooth(clamp01((t - 0.45) / 0.35));
-        for (local k = 0; k < 8 && coneIdx < avFxCones.len(); ++k) {
-            local a = k * 0.785 + 0.2;
-            local rad = 0.35 + (k % 3) * 0.18;
-            setCone(coneIdx, TGT_X + cos(a) * rad * blast, 0.0,
-                    TGT_Z + sin(a) * rad * blast,
-                    0.16 + (k % 2) * 0.08, 0.55 + (k % 3) * 0.25 * blast,
-                    0.65, 0.38, 0.2, true);
-            coneIdx += 1;
-        }
-        // Dust orbs.
-        for (local i = 0; i < 6; ++i) {
-            local a = i * 1.1 + avTime * 0.5;
-            setOrb(i, TGT_X + cos(a) * 0.7 * blast, 0.4 + i * 0.08,
-                   TGT_Z + sin(a) * 0.5 * blast, 0.08 * (1.0 - blast * 0.4),
-                   0.75, 0.7, 0.65);
-        }
-    }
-    while (coneIdx < avFxCones.len()) { hideProp(avFxCones[coneIdx]); coneIdx += 1; }
+    while (idx < avFxCones.len()) { hideProp(avFxCones[idx]); idx += 1; }
 }
 
 function updateFireBurst(skin, t) {
-    // Traveling fire whip / projectile then impact sphere.
-    local travel = smooth(clamp01(t / 0.35));
-    local px = lerp(SRC_X + 0.45, TGT_X, travel);
-    local pz = lerp(SRC_Z + 0.25, TGT_Z, travel);
-    local py = lerp(HAND_Y, 1.1, travel) + sin(travel * 3.14) * 0.45;
-    // Trail segments.
-    for (local i = 0; i < 10; ++i) {
-        local u = i.tofloat() / 9.0;
-        local tt = clamp01(travel - (1.0 - u) * 0.35);
+    local travel = smooth(clamp01(t / 0.32));
+    local px = lerp(SRC_X + 0.5, TGT_X, travel);
+    local pz = lerp(SRC_Z + 0.3, TGT_Z, travel);
+    local py = lerp(HAND_Y + 0.15, 1.25, travel) + sin(travel * 3.1416) * 0.55;
+    for (local i = 0; i < 14; ++i) {
+        local u = i.tofloat() / 13.0;
+        local tt = clamp01(travel - (1.0 - u) * 0.28);
         if (tt <= 0.01) { hideProp(avFxSegs[i]); continue; }
-        local x = lerp(SRC_X + 0.45, px, u);
-        local z = lerp(SRC_Z + 0.25, pz, u);
-        local y = lerp(HAND_Y, py, u) + sin(u * 3.14) * 0.25;
-        local thick = lerp(0.03, 0.12, u) * tt;
-        setSeg(i, x, y, z, thick, 0.22, thick, 0.0, 0.4,
-               1.0, lerp(0.9, 0.35, u), lerp(0.5, 0.05, u), tt);
+        local x = lerp(SRC_X + 0.5, px, u);
+        local z = lerp(SRC_Z + 0.3, pz, u);
+        local y = lerp(HAND_Y + 0.15, py, u) + sin(u * 3.1416) * 0.35;
+        local thick = lerp(0.06, 0.2, u) * tt;
+        setSeg(i, x, y, z, thick * 1.6, thick * 0.7, thick,
+               0.2, 0.5, 1.0, lerp(0.95, 0.35, u), lerp(0.55, 0.05, u), tt);
     }
-    // Impact burst.
-    if (t > 0.32) {
-        local blast = smooth(clamp01((t - 0.32) / 0.4));
-        setOrb(0, TGT_X, 1.15, TGT_Z, 0.35 + 0.75 * blast, 1.0, 0.55, 0.1);
-        setOrb(1, TGT_X, 1.2, TGT_Z, 0.2 + 0.35 * blast, 1.0, 0.9, 0.45);
-        // Magic ring (flat cylinder).
-        avChargeRing.setPosition(TGT_X, 1.25, TGT_Z);
-        avChargeRing.setScale(0.55 + 0.35 * blast, 0.05, 0.55 + 0.35 * blast);
-        avChargeRing.setTint(1.0, 0.95, 0.75, 1.0);
-        // Ember cones around impact.
-        for (local i = 0; i < 10; ++i) {
-            local a = i * 0.628 + avTime * 2.0;
-            local rad = 0.4 + 0.5 * blast;
-            setCone(i, TGT_X + cos(a) * rad, 0.15,
-                    TGT_Z + sin(a) * rad * 0.7,
-                    0.08 + 0.06 * (i % 3), 0.35 + 0.4 * blast * (1.0 - (i % 4) * 0.1),
-                    1.0, 0.35 + (i % 3) * 0.1, 0.05, blast > 0.1);
+    if (t > 0.28) {
+        local blast = smooth(clamp01((t - 0.28) / 0.38));
+        setOrb(0, TGT_X, 1.25, TGT_Z, 0.55 + 0.95 * blast, 1.0, 0.45, 0.05);
+        setOrb(1, TGT_X, 1.35, TGT_Z, 0.32 + 0.45 * blast, 1.0, 0.85, 0.35);
+        setOrb(2, TGT_X, 1.45, TGT_Z, 0.18 + 0.2 * blast, 1.0, 0.98, 0.75);
+        avChargeRing.setPosition(TGT_X, 1.3, TGT_Z);
+        avChargeRing.setScale(0.7 + 0.55 * blast, 0.06, 0.7 + 0.55 * blast);
+        avChargeRing.setTint(1.0, 0.95, 0.7, 1.0);
+        for (local i = 0; i < 14; ++i) {
+            local a = i * 0.45 + avTime * 2.5;
+            local rad = 0.45 + 0.7 * blast;
+            setRock(i, TGT_X + cos(a) * rad, 0.35 + (i % 3) * 0.2 * blast,
+                    TGT_Z + sin(a) * rad * 0.75,
+                    0.1 + 0.08 * (i % 3), 0.35 + 0.45 * blast * (1.0 - (i % 4) * 0.08),
+                    0.1 + 0.06 * (i % 2),
+                    a, 0.5, i * 0.3,
+                    1.0, 0.35 + (i % 3) * 0.12, 0.04, blast > 0.08);
         }
-        for (local i = 2; i < 8; ++i) {
-            local a = i * 0.9;
-            setOrb(i, TGT_X + cos(a) * 0.9 * blast, 0.8 + sin(a + avTime) * 0.3,
-                   TGT_Z + sin(a) * 0.7 * blast, 0.08 + 0.05 * (1.0 - blast),
+        for (local i = 3; i < 12; ++i) {
+            local a = i * 0.7;
+            setOrb(i, TGT_X + cos(a) * 1.05 * blast, 0.9 + sin(a + avTime * 3.0) * 0.35,
+                   TGT_Z + sin(a) * 0.85 * blast, 0.1 + 0.06 * (1.0 - blast),
                    1.0, 0.4, 0.05);
         }
     } else {
-        setOrb(0, px, py, pz, 0.14 + 0.08 * travel, 1.0, 0.65, 0.15);
-        setOrb(1, px - 0.1, py, pz, 0.08, 1.0, 0.85, 0.35);
+        setOrb(0, px, py, pz, 0.18 + 0.12 * travel, 1.0, 0.6, 0.12);
+        setOrb(1, px - 0.12, py + 0.05, pz, 0.1, 1.0, 0.85, 0.35);
     }
 }
 
 function updateAirSlash(skin, t) {
-    // Wide curved mint/cyan ribbon with bright head + residual strands.
-    local n = 16;
-    local sweep = smooth(clamp01(t / 0.45));
+    local n = 20;
+    local sweep = smooth(clamp01(t / 0.4));
     for (local i = 0; i < n; ++i) {
         local u = n <= 1 ? 0.0 : i.tofloat() / (n.tofloat() - 1.0);
-        local appear = clamp01(sweep * 1.4 - u * 0.55);
+        local appear = clamp01(sweep * 1.5 - u * 0.4);
         if (appear <= 0.01) { hideProp(avFxSegs[i]); continue; }
-        local ang = -0.6 + u * 2.4;
-        local radius = 1.4 + u * 1.6;
-        local cx = lerp(SRC_X, TGT_X - 0.4, 0.55);
-        local cz = SRC_Z;
-        local x = cx + cos(ang) * radius * 0.55;
-        local z = cz + sin(ang) * radius * 0.85;
-        local y = 0.7 + sin(u * 3.14) * 1.35;
-        local thick = lerp(0.03, 0.16, u * u) * (0.5 + 0.5 * appear);
-        local len = 0.32 + u * 0.15;
-        local r = lerp(0.55, 0.85, u);
-        local g = lerp(0.95, 0.7, u);
-        local b = lerp(0.85, 1.0, u);
-        // Purple core near head.
-        if (u > 0.7) { r = lerp(r, 0.7, (u - 0.7) / 0.3); g = lerp(g, 0.45, (u - 0.7) / 0.3); b = lerp(b, 0.95, (u - 0.7) / 0.3); }
-        setSeg(i, x, y, z, thick, len, thick * 0.7, ang, 0.25, r, g, b, appear);
+        local ang = -0.85 + u * 2.7;
+        local radius = 1.55 + u * 1.85;
+        local cx = lerp(SRC_X + 0.2, TGT_X - 0.35, 0.5);
+        local cz = SRC_Z - 0.1;
+        local x = cx + cos(ang) * radius * 0.62;
+        local z = cz + sin(ang) * radius * 0.95;
+        local y = 0.55 + sin(u * 3.1416) * 1.55;
+        local thick = lerp(0.05, 0.22, u * u) * (0.55 + 0.55 * appear);
+        local stretch = 0.28 + u * 0.22;
+        local r = lerp(0.45, 0.8, u);
+        local g = lerp(0.98, 0.65, u);
+        local b = lerp(0.82, 1.0, u);
+        if (u > 0.65) {
+            local k = (u - 0.65) / 0.35;
+            r = lerp(r, 0.72, k); g = lerp(g, 0.42, k); b = lerp(b, 0.98, k);
+        }
+        setSeg(i, x, y, z, thick * 1.4, stretch, thick * 0.55, ang, 0.35, r, g, b, appear);
     }
-    // Bright slash flash at head.
-    if (t > 0.25) {
-        local flash = clamp01((t - 0.25) / 0.2);
-        local fade = 1.0 - clamp01((t - 0.45) / 0.4);
+    if (t > 0.2) {
+        local flash = clamp01((t - 0.2) / 0.18);
+        local fade = 1.0 - clamp01((t - 0.42) / 0.4);
         local a = flash * fade;
-        setOrb(0, TGT_X - 0.2, 1.5, TGT_Z + 0.3, 0.25 * a, 1.0, 1.0, 1.0);
-        setOrb(1, TGT_X, 1.3, TGT_Z, 0.35 * a, 0.65, 0.55, 0.95);
-        // Distortion stand-in: expanding translucent ring.
-        avChargeRing.setPosition(TGT_X, 0.9, TGT_Z);
-        avChargeRing.setScale(0.4 + 1.2 * flash, 0.04, 0.4 + 1.2 * flash);
-        avChargeRing.setTint(0.7, 0.95, 0.9, 1.0);
-        for (local i = 2; i < 8; ++i) {
-            local a2 = i * 0.9 + avTime * 3.0;
-            setOrb(i, TGT_X + cos(a2) * 0.8 * flash, 1.0 + sin(a2) * 0.3,
-                   TGT_Z + sin(a2) * 0.6 * flash, 0.05 * fade,
-                   0.55, 0.95, 0.85);
+        setOrb(0, TGT_X - 0.15, 1.65, TGT_Z + 0.35, 0.32 * a, 1.0, 1.0, 1.0);
+        setOrb(1, TGT_X, 1.4, TGT_Z, 0.45 * a, 0.7, 0.5, 0.98);
+        setOrb(2, TGT_X + 0.2, 1.55, TGT_Z - 0.15, 0.22 * a, 0.85, 0.95, 1.0);
+        avChargeRing.setPosition(TGT_X, 1.0, TGT_Z);
+        avChargeRing.setScale(0.55 + 1.4 * flash, 0.05, 0.55 + 1.4 * flash);
+        avChargeRing.setTint(0.65, 0.95, 0.88, 1.0);
+        for (local i = 3; i < 12; ++i) {
+            local a2 = i * 0.75 + avTime * 3.5;
+            setOrb(i, TGT_X + cos(a2) * 1.0 * flash, 1.05 + sin(a2) * 0.35,
+                   TGT_Z + sin(a2) * 0.75 * flash, 0.06 * fade,
+                   0.5, 0.95, 0.85);
         }
     }
 }
