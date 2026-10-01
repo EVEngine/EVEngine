@@ -3,6 +3,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
+#include "graphics/RenderSystem.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
@@ -182,6 +183,93 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
     for (auto* emitter : emitters) {
         emitter->setVisible(false);
         emitter->setGpuSimulation(false);
+    }
+    window->close();
+}
+
+TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
+    auto* window = eve::window::Window::create();
+    auto* gfx    = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 640;
+    settings.height   = 360;
+    settings.centered = true;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->supportsGpuParticles());
+    gfx->setScreenReadbackEnabled(true);
+
+    const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
+    auto*              texture       = gfx->newTexture(1, 1, whitePixel);
+    REQUIRE(texture != nullptr);
+    auto* camera = eve::graphics::Camera2D::createCamera();
+    REQUIRE(camera != nullptr);
+    camera->data()->x    = 320.f;
+    camera->data()->y    = 180.f;
+    camera->data()->zoom = 1.f;
+
+    const std::array<const char*, 3> modes{"oldest", "youngest", "distance"};
+    const std::array<float, 3>       xs{160.f, 320.f, 480.f};
+    std::array<ParticleEmitter*, 3>  emitters{};
+    for (std::size_t i = 0; i < emitters.size(); ++i) {
+        auto* emitter = Particles::create()->newEmitter(256);
+        emitter->setTexture(texture);
+        emitter->setRandomSeed(9100 + int(i));
+        emitter->setGpuSimulation(true);
+        emitter->setSortMode(modes[i]);
+        emitter->setCamera(camera);
+        emitter->setPosition(xs[i], 180.f);
+        emitter->setEmissionRate(240.f);
+        emitter->setMaxSpawnPerFrame(16);
+        emitter->setParticleLife(1.2f, 1.8f);
+        emitter->setParticleSize(28.f, 36.f);
+        emitter->setSizes(1.f, 0.2f);
+        emitter->setSpeed(20.f, 80.f);
+        emitter->setSpread(6.2831853f);
+        emitter->setBlendMode("alpha");
+        emitter->setColorStart(0.2f + 0.3f * float(i), 0.85f, 1.f - 0.25f * float(i), 0.9f);
+        emitter->setColorEnd(0.1f, 0.2f, 0.4f, 0.f);
+        REQUIRE(emitter->isGpuFeatureSetSupported());
+        REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string());
+        emitter->start();
+        emitters[i] = emitter;
+    }
+
+    gfx->setBackgroundColorRGBA(0.01f, 0.015f, 0.04f, 1.f);
+    for (int frame = 0; frame < 45; ++frame) {
+        ParticleSimSystem::update(1.f / 60.f);
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+    }
+
+    std::uint32_t totalInstances = 0;
+    for (std::size_t i = 0; i < emitters.size(); ++i) {
+        REQUIRE(emitters[i]->isGpuSimulationActive());
+        REQUIRE_EQ(emitters[i]->getSortMode(), std::string(modes[i]));
+        REQUIRE_EQ(emitters[i]->getSimulationBackend(), std::string("gpu"));
+        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        totalInstances += stats.instances;
+        REQUIRE_GT(stats.submittedFrames, std::uint64_t(20));
+    }
+    REQUIRE_GT(totalInstances, std::uint32_t(30));
+    REQUIRE_EQ(particleFrameStats().gpuResidentEmitters, 3);
+
+    const auto left   = gfx->getPixel(160, 180);
+    const auto middle = gfx->getPixel(320, 180);
+    const auto right  = gfx->getPixel(480, 180);
+    REQUIRE_GT(left.r + left.g + left.b, 0.15f);
+    REQUIRE_GT(middle.r + middle.g + middle.b, 0.15f);
+    REQUIRE_GT(right.r + right.g + right.b, 0.15f);
+
+    const std::string output = std::string(EVENGINE_TEST_BINARY_DIR) + "/particle_gpu_sort_modes.png";
+    CHECK(gfx->saveFramePng(output));
+    CHECK(std::filesystem::exists(output));
+
+    for (auto* emitter : emitters) {
+        emitter->setGpuSimulation(false);
+        emitter->release();
     }
     window->close();
 }

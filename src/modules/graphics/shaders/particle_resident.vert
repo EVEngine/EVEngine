@@ -10,6 +10,9 @@ struct Particle {
 layout(std430, set = 0, binding = 1) readonly buffer Particles {
     Particle particles[];
 } state;
+layout(std430, set = 0, binding = 3) readonly buffer SortedIndices {
+    uint indices[];
+} sortedIndices;
 
 layout(push_constant) uniform PushConstants {
     vec4 viewportCamera;
@@ -33,7 +36,9 @@ void main() {
     const vec2 baseUv[6] = vec2[6](vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(1.0, 1.0),
                                      vec2(0.0, 0.0), vec2(1.0, 1.0), vec2(0.0, 1.0));
 
-    Particle particle = state.particles[gl_InstanceIndex];
+    uint particleIndex = gl_InstanceIndex;
+    if (pc.flipbook.w != 0u) particleIndex = sortedIndices.indices[gl_InstanceIndex];
+    Particle particle = state.particles[particleIndex];
     float lifetime = max(particle.lifeSizeRotation.y, 1e-6);
     float age = clamp(1.0 - particle.lifeSizeRotation.x / lifetime, 0.0, 1.0);
     float scale = mix(pc.sizeMode.x, pc.sizeMode.y, age) * particle.lifeSizeRotation.z;

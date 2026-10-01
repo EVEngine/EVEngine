@@ -15,6 +15,20 @@ enum class GpuParticleFacingMode : std::uint32_t {
     Axis             = 2,
 };
 
+/**
+ * @brief Transparent ordering for the resident GPU particle renderer.
+ *
+ * Index permutation only: particle buffers stay compacted in nondeterministic
+ * atomic order. Oldest/youngest use normalized age; distance sorts far-to-near
+ * using the draw camera when enabled.
+ */
+enum class GpuParticleSortMode : std::uint32_t {
+    None     = 0,
+    Oldest   = 1,
+    Youngest = 2,
+    Distance = 3,
+};
+
 /** @brief Opaque backend-owned GPU particle emitter handle. */
 using GpuParticleHandle = std::uint64_t;
 
@@ -38,7 +52,8 @@ struct alignas(16) GpuParticleSpawn {
     float ax         = 0.f;
     float ay         = 0.f;
     float noisePhase = 0.f;
-    float reserved   = 0.f;
+    /** @brief Monotonic birth serial (uintBitsToFloat) for future ribbon ordering. */
+    float birthSerial = 0.f;
 };
 
 static_assert(sizeof(GpuParticleSpawn) == 64, "GPU particle layout must match GLSL std430");
@@ -79,6 +94,7 @@ struct GpuParticleDraw {
     float                 stretchFactor       = 1.f;
     GpuParticleFacingMode facing              = GpuParticleFacingMode::ParticleRotation;
     float                 axisRotationRadians = 0.f;
+    GpuParticleSortMode   sortMode            = GpuParticleSortMode::None;
     bool                  softParticles       = false;
     float                 particleDepth       = 0.5f;
     float                 softFadeDistance    = 0.05f;

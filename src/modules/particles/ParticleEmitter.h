@@ -386,6 +386,8 @@ public:
         /** @brief World-origin translation queued for the next resident GPU update. */
         float pendingWorldOffsetX = 0.f;
         float pendingWorldOffsetY = 0.f;
+        /** @brief Monotonic birth counter stamped into GPU spawn birthSerial. */
+        std::uint32_t nextBirthSerial = 1;
     };
 
     COMPONENT(Config, config)

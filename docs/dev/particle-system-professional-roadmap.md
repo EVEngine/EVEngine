@@ -58,8 +58,9 @@ and a six-emitter/150-frame rendered stress capture.
 ### P2 — production renderers and data interfaces
 
 - Camera-facing, velocity-aligned, and axis-aligned sprite modes now share one
-  renderer contract. Stable oldest/youngest/distance transparency policies are
-  available on CPU with explicit GPU fallback; GPU sorting remains pending.
+  renderer contract. Stable oldest/youngest/distance transparency policies run
+  on CPU (index reorder) and on the GPU resident path (bitonic index sort +
+  vertex indirection); distance without a camera stays unordered.
 - A CPU ribbon renderer connects stable birth-order control points, rejects
   undersized segments, and shares sprite material/color/size handling. GPU
   ribbon scan/index generation remains pending. Mesh and light renderers remain.
@@ -78,8 +79,8 @@ and a six-emitter/150-frame rendered stress capture.
 - Reference effect pack under `examples/particle-effects/` (fire, smoke, impact,
   trail, weather) plus screenshot coverage in `test/particles_p2_p3.cpp`.
 
-Remaining P2 work: GPU sorting/ribbon/lit data, mesh particle renderer inside
-the particles module, and active motion-vector buffer writes.
+Remaining P2 work: GPU ribbon/lit data, mesh particle renderer inside the
+particles module, and active motion-vector buffer writes.
 
 ### P3 — composable effect assets and tooling
 

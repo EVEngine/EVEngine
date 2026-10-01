@@ -11,6 +11,7 @@
 #include "common/Module.h"
 
 #include <algorithm>
+#include <bit>
 #include <chrono>
 #include <cmath>
 #include <functional>
@@ -213,23 +214,24 @@ int liveParticleCount(ParticleEmitter* emitter) {
     return gpu->residentActive ? gpu->estimatedAlive + emitter->sim()->alive : emitter->sim()->alive;
 }
 
-graphics::GpuParticleSpawn gpuSpawn(const Particle& particle) {
+graphics::GpuParticleSpawn gpuSpawn(const Particle& particle, std::uint32_t birthSerial) {
     graphics::GpuParticleSpawn out;
-    out.x          = particle.x;
-    out.y          = particle.y;
-    out.vx         = particle.vx;
-    out.vy         = particle.vy;
-    out.life       = particle.life;
-    out.lifetime   = particle.lifetime;
-    out.size       = particle.size;
-    out.rotation   = particle.rot;
-    out.spin       = particle.spin;
-    out.frame      = particle.frame;
-    out.radial     = particle.radial;
-    out.tangential = particle.tangential;
-    out.ax         = particle.ax;
-    out.ay         = particle.ay;
-    out.noisePhase = particle.noisePhase;
+    out.x           = particle.x;
+    out.y           = particle.y;
+    out.vx          = particle.vx;
+    out.vy          = particle.vy;
+    out.life        = particle.life;
+    out.lifetime    = particle.lifetime;
+    out.size        = particle.size;
+    out.rotation    = particle.rot;
+    out.spin        = particle.spin;
+    out.frame       = particle.frame;
+    out.radial      = particle.radial;
+    out.tangential  = particle.tangential;
+    out.ax          = particle.ax;
+    out.ay          = particle.ay;
+    out.noisePhase  = particle.noisePhase;
+    out.birthSerial = std::bit_cast<float>(birthSerial);
     return out;
 }
 
@@ -243,6 +245,7 @@ void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu
     gpu.deathTimes.clear();
     gpu.pendingWorldOffsetX = 0.f;
     gpu.pendingWorldOffsetY = 0.f;
+    gpu.nextBirthSerial     = 1;
 }
 
 eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *emitter, const eve::SimulationStep &step,
@@ -290,7 +293,7 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     for (int i = 0; i < accepted; ++i) {
         const Particle& particle = sim->particles[std::size_t(i)];
         if (particle.life <= 0.f) continue;
-        spawns.push_back(gpuSpawn(particle));
+        spawns.push_back(gpuSpawn(particle, gpu->nextBirthSerial++));
         gpu->deathTimes.push_back(float(gpu->timeline) + particle.life);
         std::push_heap(gpu->deathTimes.begin(), gpu->deathTimes.end(), minHeap);
     }
@@ -538,6 +541,10 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
         gpuDraw.colorEnd[0]=cfg->colorEnd.r; gpuDraw.colorEnd[1]=cfg->colorEnd.g;
         gpuDraw.colorEnd[2]=cfg->colorEnd.b; gpuDraw.colorEnd[3]=cfg->colorEnd.a;
         gpuDraw.hframes=cfg->hframes; gpuDraw.vframes=cfg->vframes;
+        gpuDraw.sortMode = cfg->sortMode == "oldest"   ? graphics::GpuParticleSortMode::Oldest
+                           : cfg->sortMode == "youngest" ? graphics::GpuParticleSortMode::Youngest
+                           : cfg->sortMode == "distance" ? graphics::GpuParticleSortMode::Distance
+                                                         : graphics::GpuParticleSortMode::None;
         if (gfx.drawGpuParticleEmitter(gpu->residentHandle, gpuDraw)) return gpu->estimatedAlive;
         culled = true; return 0;
     }
