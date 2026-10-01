@@ -1,2 +1,2 @@
-openai>=3.16.2
+openai>=3.19.2
 pytest>=9.1.1
