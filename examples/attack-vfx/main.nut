@@ -197,13 +197,13 @@ function buildMannequin(cube, cyl, sphere) {
 function buildDummy(cyl, cube, sphere) {
     avDummy = makePart(cyl, TGT_X, 0.95, TGT_Z, 0.55, 1.9, 0.55, 0.62, 0.32, 0.95, 0.55);
     avDummyCap = makePart(cyl, TGT_X, 1.92, TGT_Z, 0.52, 0.08, 0.52, 0.95, 0.95, 0.97, 0.4);
-    local base = makePart(cyl, TGT_X, 0.06, TGT_Z, 0.7, 0.12, 0.7, 0.5, 0.28, 0.82, 0.7);
+    local pedestal = makePart(cyl, TGT_X, 0.06, TGT_Z, 0.7, 0.12, 0.7, 0.5, 0.28, 0.82, 0.7);
     avDummyEyeL = makePart(sphere, TGT_X - 0.14, 1.45, TGT_Z + 0.48, 0.1, 0.12, 0.06, 0.98, 0.98, 1.0, 0.3);
     avDummyEyeR = makePart(sphere, TGT_X + 0.14, 1.45, TGT_Z + 0.48, 0.1, 0.12, 0.06, 0.98, 0.98, 1.0, 0.3);
     local pupilL = makePart(sphere, TGT_X - 0.14, 1.45, TGT_Z + 0.52, 0.04, 0.05, 0.04, 0.08, 0.08, 0.1, 0.2);
     local pupilR = makePart(sphere, TGT_X + 0.14, 1.45, TGT_Z + 0.52, 0.04, 0.05, 0.04, 0.08, 0.08, 0.1, 0.2);
-    // Keep base/pupils reachable via dummy list for lifetime; store on arrays.
-    avDummy = [avDummy, avDummyCap, base, avDummyEyeL, avDummyEyeR, pupilL, pupilR];
+    // Keep pedestal/pupils reachable via dummy list for lifetime; store on arrays.
+    avDummy = [avDummy, avDummyCap, pedestal, avDummyEyeL, avDummyEyeR, pupilL, pupilR];
 }
 
 function buildFxPools(cube, cyl, sphere) {
@@ -477,7 +477,7 @@ function updateAirSlash(skin, t) {
     local n = 16;
     local sweep = smooth(clamp01(t / 0.45));
     for (local i = 0; i < n; ++i) {
-        local u = i.tofloat() / (n - 1).tofloat();
+        local u = n <= 1 ? 0.0 : i.tofloat() / (n.tofloat() - 1.0);
         local appear = clamp01(sweep * 1.4 - u * 0.55);
         if (appear <= 0.01) { hideProp(avFxSegs[i]); continue; }
         local ang = -0.6 + u * 2.4;
