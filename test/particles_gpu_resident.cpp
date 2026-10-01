@@ -222,7 +222,7 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         emitter->setPosition(xs[i], 180.f);
         emitter->setEmissionRate(240.f);
         emitter->setMaxSpawnPerFrame(16);
-        emitter->setParticleLife(1.2f, 1.8f);
+        emitter->setParticleLifetime(1.2f, 1.8f);
         emitter->setParticleSize(28.f, 36.f);
         emitter->setSizes(1.f, 0.2f);
         emitter->setSpeed(20.f, 80.f);
@@ -231,7 +231,8 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         emitter->setColorStart(0.2f + 0.3f * float(i), 0.85f, 1.f - 0.25f * float(i), 0.9f);
         emitter->setColorEnd(0.1f, 0.2f, 0.4f, 0.f);
         REQUIRE(emitter->isGpuFeatureSetSupported());
-        REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string());
+        // Eligible for resident GPU; activation happens on the first sim submit.
+        REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string("pending_activation"));
         emitter->start();
         emitters[i] = emitter;
     }
@@ -249,6 +250,7 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         REQUIRE(emitters[i]->isGpuSimulationActive());
         REQUIRE_EQ(emitters[i]->getSortMode(), std::string(modes[i]));
         REQUIRE_EQ(emitters[i]->getSimulationBackend(), std::string("gpu"));
+        REQUIRE_EQ(std::string(emitters[i]->getGpuFallbackReason()), std::string());
         const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
         totalInstances += stats.instances;
         REQUIRE_GT(stats.submittedFrames, std::uint64_t(20));

@@ -469,11 +469,7 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         }
         slot.hasSortedIndices = false;
 
-        if (!runUpdate) {
-            // Sort-only path for camera-dependent distance ordering without a sim step.
-            goto sort_particles;
-        }
-
+        if (runUpdate) {
         if (slot.initialized && slot.serial > resource.statsSerial) {
             const auto* meta = static_cast<const ParticleMeta*>(slot.meta.map());
             if (meta) {
@@ -592,9 +588,7 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         afterCompute[0].buffer        = slot.state.buffer;
         afterCompute[0].size          = VK_WHOLE_SIZE;
         afterCompute[0].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-        afterCompute[0].dstAccessMask =
-            needsSort ? vk::AccessFlagBits::eShaderRead
-                      : (vk::AccessFlagBits::eShaderRead);
+        afterCompute[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
         afterCompute[1].buffer        = slot.meta.buffer;
         afterCompute[1].size          = VK_WHOLE_SIZE;
         afterCompute[1].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
@@ -612,8 +606,8 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         resource.pendingUpdate  = false;
         resource.pendingReset   = false;
         resource.spawns.clear();
+        }  // runUpdate
 
-    sort_particles:
         if (needsSort && slot.initialized && slot.state.buffer && slot.sortRecords.buffer) {
             if (!slot.sortSet) {
                 vk::DescriptorSetAllocateInfo allocate{};
