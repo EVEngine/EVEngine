@@ -270,15 +270,93 @@ Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
     return Result<RoadNetwork>::success(std::move(network));
 }
 
+Result<RoadNetwork> RoadNetwork::makeTee(float span, int lanes) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "tee"));
+    RoadNetwork network;
+    const float half = span * 0.5f;
+    RoadStyle style     = groundStyle();
+    style.deckThickness = 0.08f;
+    style.sidewalkWidth = 1.2f;
+    style.curbWidth     = 0.35f;
+    style.curbHeight    = 0.45f;
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
+    const float cornerR     = 2.8f;
+    const float jr          = asphaltHalf + cornerR;
+    // Stem to the south; through-road east-west. Missing north arm exercises the
+    // wide-angle straight curb chord on the junction back side.
+    auto nC = network.addNode(0.f, 0.f, 0.f, jr);
+    auto nS = network.addNode(0.f, 0.f, half, 2.f);
+    auto nW = network.addNode(-half, 0.f, 0.f, 2.f);
+    auto nE = network.addNode(half, 0.f, 0.f, 2.f);
+    for (auto* r : {&nC, &nS, &nW, &nE}) {
+        if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
+    }
+    auto e1 = network.addEdge(nW.value(), nC.value(),
+                              {P(-half, 0.f, 0.f), P(-half * 0.5f, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e2 = network.addEdge(nC.value(), nE.value(),
+                              {P(0.f, 0.f, 0.f), P(half * 0.5f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0, style);
+    auto e3 = network.addEdge(nC.value(), nS.value(),
+                              {P(0.f, 0.f, 0.f), P(0.f, 0.f, half * 0.5f), P(0.f, 0.f, half)}, lanes, 0, style);
+    for (auto* e : {&e1, &e2, &e3}) {
+        if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
+    }
+    auto turns = network.connectAllTurns(nC.value());
+    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeY(float span, int lanes) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "y"));
+    RoadNetwork network;
+    const float half = span * 0.5f;
+    RoadStyle style     = groundStyle();
+    style.deckThickness = 0.08f;
+    style.sidewalkWidth = 1.2f;
+    style.curbWidth     = 0.35f;
+    style.curbHeight    = 0.45f;
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
+    const float cornerR     = 2.8f;
+    const float jr          = asphaltHalf + cornerR;
+    auto nC = network.addNode(0.f, 0.f, 0.f, jr);
+    // Three arms at 120°: north, SE, SW.
+    const float x1 = 0.f, z1 = -half;
+    const float x2 = half * 0.8660254f, z2 = half * 0.5f;
+    const float x3 = -half * 0.8660254f, z3 = half * 0.5f;
+    auto n1 = network.addNode(x1, 0.f, z1, 2.f);
+    auto n2 = network.addNode(x2, 0.f, z2, 2.f);
+    auto n3 = network.addNode(x3, 0.f, z3, 2.f);
+    for (auto* r : {&nC, &n1, &n2, &n3}) {
+        if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
+    }
+    auto e1 = network.addEdge(n1.value(), nC.value(),
+                              {P(x1, 0.f, z1), P(x1 * 0.5f, 0.f, z1 * 0.5f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e2 = network.addEdge(nC.value(), n2.value(),
+                              {P(0.f, 0.f, 0.f), P(x2 * 0.5f, 0.f, z2 * 0.5f), P(x2, 0.f, z2)}, lanes, 0, style);
+    auto e3 = network.addEdge(nC.value(), n3.value(),
+                              {P(0.f, 0.f, 0.f), P(x3 * 0.5f, 0.f, z3 * 0.5f), P(x3, 0.f, z3)}, lanes, 0, style);
+    for (auto* e : {&e1, &e2, &e3}) {
+        if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
+    }
+    auto turns = network.connectAllTurns(nC.value());
+    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
 Result<RoadNetwork> RoadNetwork::makeScene(const std::string& scene, float span, float bridgeHeight, int lanes,
                                            std::uint32_t seed) {
     if (scene == "straight") return makeStraight(span, lanes);
     if (scene == "curve") return makeCurve(std::max(8.f, span * 0.5f), lanes);
     if (scene == "bridge") return makeBridge(span, bridgeHeight, lanes);
     if (scene == "cross") return makeCross(span, lanes);
+    if (scene == "tee" || scene == "t") return makeTee(span, lanes);
+    if (scene == "y") return makeY(span, lanes);
     if (scene == "interchange" || scene.empty()) return makeInterchange(span, bridgeHeight, lanes, seed);
     return Result<RoadNetwork>::failure(Diagnostic::error(
-        DiagnosticCode::InvalidArgument, "scene must be straight|curve|bridge|cross|interchange", "scene"));
+        DiagnosticCode::InvalidArgument, "scene must be straight|curve|bridge|cross|tee|y|interchange", "scene"));
 }
 
 Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight, int lanes, std::uint32_t seed) {
