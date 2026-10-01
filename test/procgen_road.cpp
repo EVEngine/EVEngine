@@ -476,3 +476,99 @@ TEST_CASE("procgen.road.scenes.crossJunctionArmApronSeam") {
     CHECK(covers(ah * 0.5f, hubJr));
 }
 
+TEST_CASE("procgen.road.scenes.teeAndYHaveFilletedJunctions") {
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 24;
+    options.includeJunctions    = true;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+
+    auto tee = RoadNetwork::makeTee(28.f, 2);
+    REQUIRE(tee.ok());
+    CHECK_EQ(tee.value().edgeCount(), 3);
+    auto bakedTee = bakeRoadNetwork(tee.value(), options);
+    REQUIRE(bakedTee.ok());
+
+    bool sawCurb = false, sawSidewalk = false, sawAsphalt = false;
+    for (int i = 0; i < bakedTee.value().mesh.getGroupCount(); ++i) {
+        const auto name = bakedTee.value().mesh.getGroupName(i);
+        if (name == "curb") sawCurb = true;
+        if (name == "sidewalk") sawSidewalk = true;
+        if (name == "asphalt") sawAsphalt = true;
+    }
+    CHECK(sawCurb);
+    CHECK(sawSidewalk);
+    CHECK(sawAsphalt);
+
+    // Hub asphalt must cover the origin and the wide northern back chord.
+    int asphaltGroup = -1;
+    for (int g = 0; g < bakedTee.value().mesh.getGroupCount(); ++g) {
+        if (bakedTee.value().mesh.getGroupName(g) == "asphalt") asphaltGroup = g;
+    }
+    REQUIRE(asphaltGroup >= 0);
+    auto asphalt = bakedTee.value().mesh.copyGroup(asphaltGroup);
+    REQUIRE(asphalt);
+    auto covers = [&](float x, float z) {
+        for (int t = 0; t < asphalt->getIndexCount() / 3; ++t) {
+            const int i0 = asphalt->getIndex(t * 3 + 0);
+            const int i1 = asphalt->getIndex(t * 3 + 1);
+            const int i2 = asphalt->getIndex(t * 3 + 2);
+            const float x0 = asphalt->getPositionX(i0), z0 = asphalt->getPositionZ(i0);
+            const float x1 = asphalt->getPositionX(i1), z1 = asphalt->getPositionZ(i1);
+            const float x2 = asphalt->getPositionX(i2), z2 = asphalt->getPositionZ(i2);
+            const float den = (z1 - z2) * (x0 - x2) + (x2 - x1) * (z0 - z2);
+            if (std::fabs(den) < 1e-8f) continue;
+            const float a = ((z1 - z2) * (x - x2) + (x2 - x1) * (z - z2)) / den;
+            const float b = ((z2 - z0) * (x - x2) + (x0 - x2) * (z - z2)) / den;
+            const float c = 1.f - a - b;
+            if (a >= -1e-3f && b >= -1e-3f && c >= -1e-3f) return true;
+        }
+        return false;
+    };
+    CHECK(covers(0.f, 0.f));
+    CHECK(covers(0.f, 2.f));   // toward stem
+    CHECK(covers(-2.f, 0.f));  // through road
+    CHECK(covers(2.f, 0.f));
+
+    auto yj = RoadNetwork::makeY(28.f, 2);
+    REQUIRE(yj.ok());
+    CHECK_EQ(yj.value().edgeCount(), 3);
+    auto bakedY = bakeRoadNetwork(yj.value(), options);
+    REQUIRE(bakedY.ok());
+    CHECK_GT(bakedY.value().mesh.getVertexCount(), 200);
+    CHECK(RoadNetwork::makeScene("tee", 24.f, 4.f, 2, 1).ok());
+    CHECK(RoadNetwork::makeScene("y", 24.f, 4.f, 2, 1).ok());
+}
+
+TEST_CASE("procgen.road.bidirectional.markingsAndNav") {
+    RoadNetwork network;
+    auto        a = network.addNode(-18.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(18.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.deckThickness = 0.2f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-18.f, 0.f, 0.f}, RoadControlPoint{0.f, 0.f, 0.f},
+                                 RoadControlPoint{18.f, 0.f, 0.f}},
+                                2, 2, style);
+    REQUIRE(edge.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 24;
+    options.includeJunctions    = false;
+    options.includeNavigation   = true;
+    options.includePiers        = false;
+    options.includeMarkings     = true;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    CHECK_EQ(baked.value().overlay.lanes.size(), 4u);  // 2 forward + 2 reverse
+
+    bool sawYellow = false;
+    for (int i = 0; i < baked.value().mesh.getGroupCount(); ++i) {
+        if (baked.value().mesh.getGroupName(i) == "markingYellow") sawYellow = true;
+    }
+    CHECK(sawYellow);
+}
+

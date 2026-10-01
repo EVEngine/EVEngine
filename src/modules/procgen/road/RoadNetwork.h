@@ -55,10 +55,14 @@ public:
     [[nodiscard]] static Result<RoadNetwork> makeBridge(float length = 36.f, float height = 6.f, int lanes = 2);
     /** @brief Scene 4: simple ground-level 4-way cross (one junction disc). */
     [[nodiscard]] static Result<RoadNetwork> makeCross(float span = 32.f, int lanes = 2);
+    /** @brief Scene 5: ground-level T-junction (3 arms, wide-back curb chord). */
+    [[nodiscard]] static Result<RoadNetwork> makeTee(float span = 32.f, int lanes = 2);
+    /** @brief Scene 6: ground-level Y-junction (3 arms at 120°). */
+    [[nodiscard]] static Result<RoadNetwork> makeY(float span = 32.f, int lanes = 2);
 
     /**
      * @brief Dispatch a named debug/demo scene.
-     * @param scene One of: straight, curve, bridge, cross, interchange.
+     * @param scene One of: straight, curve, bridge, cross, tee, y, interchange.
      */
     [[nodiscard]] static Result<RoadNetwork> makeScene(const std::string& scene, float span = 36.f,
                                                        float bridgeHeight = 6.f, int lanes = 2,
