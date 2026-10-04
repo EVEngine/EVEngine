@@ -103,6 +103,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
+| [destruction-basic](destruction-basic/README.md) | Chaos 风格破碎 P0：两块焊接盒子 + Strain 场断边 |
+| [destruction-clusters](destruction-clusters/README.md) | Chaos 破碎 P3：双岛锚定柱、步进预算、cluster 断边与快照 |
 | [lattice-deform](lattice-deform/README.md) | 3D 晶格缩放变形：squash & stretch、局部鼓起、波浪 |
 | [sprite-stack](sprite-stack/README.md) | 伪 3D：把 3D 模型切成多层 RGBA 叠片渲染 |
 | [armored-command-3d](armored-command-3d/README.md) | 3D RTS 展示：骨骼坦克、编队命令、齐射与指挥所坍塌；Tank/Shell ECS |
@@ -170,6 +172,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
+| [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |

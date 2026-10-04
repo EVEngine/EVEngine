@@ -28,6 +28,8 @@ namespace eve::particles {
 
 Particles::Particles() { registerParticlesCapabilities(); }
 
+Particles::~Particles() { unregisterParticlesAttackVfxExecutor(); }
+
 namespace {
 
 int bufferFromJson(const std::string &json, int fallback) {
