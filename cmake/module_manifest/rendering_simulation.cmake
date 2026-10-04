@@ -86,6 +86,29 @@ eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
+# Optional Chaos-style geometry-collection destruction (pre-fracture connection
+# graph + runtime fields). Depends on physics World3D/Body3D; LAYER 5 matches
+# rope / pixelworld_physics. Design originally sketched L3, but Body3D binding
+# requires the physics facade.
+eve_declare_module(NAME physics_destruction DIR physics/destruction LIB EVPhysicsDestruction
+                   LAYER 5 SCRIPT Destruction SLOT destruction
+                   DEPS physics schema
+                   GROUP 3d web)
+# Offline fracture cook for geometry collections. Same layer as the host is
+# allowed; nested DIR physics/destruction/cook is excluded from the host scan.
+eve_declare_module(NAME physics_destruction_cook DIR physics/destruction/cook
+                   LIB EVPhysicsDestruction_cook LAYER 5
+                   DEPS asset physics_destruction
+                   GROUP 3d web)
+eve_declare_module(NAME physics_destruction_graphics DIR physics/destruction/graphics
+                   LIB EVPhysicsDestruction_graphics LAYER 5
+                   SCRIPT DestructionFx SLOT destructionFx
+                   DEPS graphics physics_destruction
+                   GROUP 3d web)
+eve_declare_module(NAME physics_destruction_editing DIR physics/destruction/editing
+                   LIB EVPhysicsDestruction_editing LAYER 5
+                   DEPS editing physics_destruction
+                   GROUP 3d web)
 # Optional Action adapter for generation-safe 3D body-pair collision windows.
 eve_declare_module(NAME physics_action DIR physics/action LAYER 5
                    DEPS action physics
