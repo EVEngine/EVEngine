@@ -465,8 +465,8 @@ Root-motion 位移会补偿 loop 末尾到开头的跳变；旋转返回单位�
 
 | 字段 / API | 作用 |
 | --- | --- |
-| `setRootMotionLockAxes("none"\|"x"\|"y"\|"z"\|"xz"\|"horizontal"\|…)` | 锁轴：对应分量在控制器 delta 中清零；bake 时锁轴仍留在 pose（如竖直 bob） |
-| `setBakeRootTranslationIntoPose(bool)` | 把**未锁**平移从 pose 根骨撤掉，交给胶囊，避免双重位移 |
+| `setRootMotionLockAxes("none"\|"x"\|"y"\|"z"\|"xz"\|"horizontal"\|…)` | 锁轴：在**发布后的**控制器 delta 上清零（`characterFacing` 旋转之后）。非法名字返回 `{ok=false,message}`，不改 policy。bake 时锁的是 pose 本地轴（如竖直 bob） |
+| `setBakeRootTranslationIntoPose(bool)` | 把**未锁**平移种到骨架 bind，交给胶囊，避免双重位移；跨帧/循环/cross-fade 保持同一锚点 |
 | `setBakeRootRotationIntoPose(bool)` | 旋转同类处理（`lockRotation=true` 时不 bake） |
 | `setRootMotionLockRotation(bool)` | 控制器旋转 delta 置单位四元数 |
 | `setRootMotionApplySpace("boneLocal"\|"characterFacing")` | `characterFacing` 按 `characterYaw` 绕 Y 旋转平面 XZ；正向与 Motion Matching 一致：`(sin(yaw),0,cos(yaw))` |

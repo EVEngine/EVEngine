@@ -9,6 +9,22 @@
 #include <cmath>
 
 namespace eve::animation {
+namespace {
+
+TransformTRS rootMotionDelta(const TransformTRS& from, const TransformTRS& to) {
+    TransformTRS delta = TransformTRS::identity();
+    delta.px           = to.px - from.px;
+    delta.py           = to.py - from.py;
+    delta.pz           = to.pz - from.pz;
+    delta.qx           = from.qw * to.qx - from.qx * to.qw - from.qy * to.qz + from.qz * to.qy;
+    delta.qy           = from.qw * to.qy + from.qx * to.qz - from.qy * to.qw - from.qz * to.qx;
+    delta.qz           = from.qw * to.qz - from.qx * to.qy + from.qy * to.qx - from.qz * to.qw;
+    delta.qw           = from.qw * to.qw + from.qx * to.qx + from.qy * to.qy + from.qz * to.qz;
+    delta.normalizeRotation();
+    return delta;
+}
+
+}  // namespace
 
 AnimPlayer::AnimPlayer(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimPlayer: skeleton is null");
@@ -191,12 +207,9 @@ void AnimPlayer::updateUnchecked(float dt) {
     }
 
     clip_->sample(time_, &sampledPose_, skeleton_);
-    const TransformTRS& fromRoot = rootPreviousPose_.local(rootMotionBone_);
-    const TransformTRS& toRoot   = sampledPose_.local(rootMotionBone_);
-    TransformTRS        rawMotion = TransformTRS::identity();
-    rawMotion.px                  = toRoot.px - fromRoot.px;
-    rawMotion.py                  = toRoot.py - fromRoot.py;
-    rawMotion.pz                  = toRoot.pz - fromRoot.pz;
+    const TransformTRS& fromRoot  = rootPreviousPose_.local(rootMotionBone_);
+    const TransformTRS& toRoot    = sampledPose_.local(rootMotionBone_);
+    TransformTRS        rawMotion = rootMotionDelta(fromRoot, toRoot);
     if (effectiveLoop() && clip_->getDuration() > 1e-8f) {
         const float duration = clip_->getDuration();
         const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
@@ -210,16 +223,6 @@ void AnimPlayer::updateUnchecked(float dt) {
             rawMotion.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
         }
     }
-    rawMotion.qx =
-        fromRoot.qw * toRoot.qx - fromRoot.qx * toRoot.qw - fromRoot.qy * toRoot.qz + fromRoot.qz * toRoot.qy;
-    rawMotion.qy =
-        fromRoot.qw * toRoot.qy + fromRoot.qx * toRoot.qz - fromRoot.qy * toRoot.qw - fromRoot.qz * toRoot.qx;
-    rawMotion.qz =
-        fromRoot.qw * toRoot.qz - fromRoot.qx * toRoot.qy + fromRoot.qy * toRoot.qx - fromRoot.qz * toRoot.qw;
-    rawMotion.qw =
-        fromRoot.qw * toRoot.qw + fromRoot.qx * toRoot.qx + fromRoot.qy * toRoot.qy + fromRoot.qz * toRoot.qz;
-    rawMotion.normalizeRotation();
-    rootMotion_ = applyRootMotionPolicy(rawMotion, rootMotionPolicy_);
 
     if (blending_ && prevClip_) {
         blendElapsed_ += dt;
@@ -229,16 +232,19 @@ void AnimPlayer::updateUnchecked(float dt) {
             prevClip_ = nullptr;
             pose_.copyFrom(&sampledPose_);
         } else {
-            // Advance previous clip time during fade for continuity.
+            const TransformTRS outgoingFrom = prevPose_.local(rootMotionBone_);
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
+            const TransformTRS outgoingDelta = rootMotionDelta(outgoingFrom, prevPose_.local(rootMotionBone_));
             if (blendCurve_ == AnimBlendCurve::EaseInOut) t = t * t * (3.0f - 2.0f * t);
             pose_.blendFrom(&prevPose_, &sampledPose_, t);
+            rawMotion = blendTRS(outgoingDelta, rawMotion, t);
         }
     } else {
         pose_.copyFrom(&sampledPose_);
     }
-    bakeRootMotionIntoPose(pose_, rootMotionBone_, fromRoot, rootMotionPolicy_)
+    rootMotion_ = applyRootMotionPolicy(rawMotion, rootMotionPolicy_);
+    bakeRootMotionIntoPose(pose_, rootMotionBone_, skeleton_->bindLocal(rootMotionBone_), rootMotionPolicy_)
         .ignore("root motion bake skipped when bone/policy leaves pose unchanged");
 }
 

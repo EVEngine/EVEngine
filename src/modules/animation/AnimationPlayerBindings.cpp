@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <functional>
-#include <stdexcept>
 #include <string>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "animation/AnimClip.h"
@@ -10,18 +9,6 @@
 
 namespace eve::animation {
 namespace {
-
-RootMotionLockAxes parseLockAxes(const std::string& name) {
-    if (name == "none" || name.empty()) return RootMotionLockAxes::None;
-    if (name == "x") return RootMotionLockAxes::X;
-    if (name == "y" || name == "vertical") return RootMotionLockAxes::VerticalY;
-    if (name == "z") return RootMotionLockAxes::Z;
-    if (name == "xz" || name == "horizontal") return RootMotionLockAxes::HorizontalXZ;
-    if (name == "xy") return RootMotionLockAxes::X | RootMotionLockAxes::Y;
-    if (name == "yz") return RootMotionLockAxes::Y | RootMotionLockAxes::Z;
-    if (name == "xyz" || name == "all") return RootMotionLockAxes::All;
-    throw std::runtime_error("unknown root motion lockAxes: " + name);
-}
 
 std::string formatLockAxes(RootMotionLockAxes mask) {
     const auto bits = static_cast<std::uint8_t>(mask);
@@ -36,22 +23,20 @@ std::string formatLockAxes(RootMotionLockAxes mask) {
     return "xyz";
 }
 
-RootMotionApplySpace parseApplySpace(const std::string& name) {
-    if (name == "boneLocal" || name == "local") return RootMotionApplySpace::BoneLocal;
-    if (name == "characterFacing" || name == "facing") return RootMotionApplySpace::CharacterFacing;
-    throw std::runtime_error("unknown root motion applySpace: " + name);
-}
-
 std::string formatApplySpace(RootMotionApplySpace space) {
     return space == RootMotionApplySpace::CharacterFacing ? "characterFacing" : "boneLocal";
 }
 
-ssq::Table applyPolicy(HSQUIRRELVM vm, AnimPlayer* self, const RootMotionPolicy& policy) {
+ssq::Table resultTable(HSQUIRRELVM vm, bool ok, const std::string& message) {
     ssq::Table result(vm);
-    auto       applied = self->setRootMotionPolicy(policy);
-    result.set("ok", applied.ok());
-    result.set("message", applied.status().describe());
+    result.set("ok", ok);
+    result.set("message", message);
     return result;
+}
+
+ssq::Table applyPolicy(HSQUIRRELVM vm, AnimPlayer* self, const RootMotionPolicy& policy) {
+    auto applied = self->setRootMotionPolicy(policy);
+    return resultTable(vm, applied.ok(), applied.status().describe());
 }
 
 }  // namespace
@@ -78,14 +63,18 @@ void exposeAnimPlayerBindings(ssq::Table& table) {
     player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
     player.addFunc("setRootMotionLockAxes",
                    [vm = table.getHandle()](AnimPlayer* self, const std::string& axes) {
+                       auto parsed = parseRootMotionLockAxes(axes);
+                       if (!parsed) return resultTable(vm, false, parsed.status().describe());
                        RootMotionPolicy policy = self->getRootMotionPolicy();
-                       policy.lockAxes         = parseLockAxes(axes);
+                       policy.lockAxes         = parsed.value();
                        return applyPolicy(vm, self, policy);
                    });
     player.addFunc("setRootMotionApplySpace",
                    [vm = table.getHandle()](AnimPlayer* self, const std::string& space) {
+                       auto parsed = parseRootMotionApplySpace(space);
+                       if (!parsed) return resultTable(vm, false, parsed.status().describe());
                        RootMotionPolicy policy = self->getRootMotionPolicy();
-                       policy.applySpace       = parseApplySpace(space);
+                       policy.applySpace       = parsed.value();
                        return applyPolicy(vm, self, policy);
                    });
     player.addFunc("setBakeRootTranslationIntoPose",

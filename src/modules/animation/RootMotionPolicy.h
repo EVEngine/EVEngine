@@ -5,6 +5,7 @@
 #include "common/Result.h"
 
 #include <cstdint>
+#include <string_view>
 
 namespace eve::animation {
 
@@ -12,10 +13,10 @@ class AnimPose;
 
 /**
  * @brief Per-axis translation locks for extracted root-motion deltas.
- * @details Locked axes are zeroed in the controller-facing delta. When
- * bake-into-pose is enabled, locked axes keep their animated translation in the
- * pose so vertical bob (or similar) can remain while horizontal motion drives
- * a capsule.
+ * @details Locked axes are zeroed in the **published** controller delta (after
+ * CharacterFacing rotation). When bake-into-pose is enabled, locked **pose-local**
+ * axes keep their animated translation so vertical bob can remain while unlocked
+ * axes are planted on the skeleton bind pose.
  */
 enum class RootMotionLockAxes : std::uint8_t {
     None         = 0,
@@ -76,8 +77,9 @@ struct RootMotionPolicy {
 
 /**
  * @brief Filter a raw root-bone delta into a controller-facing delta.
- * @details Applies axis locks, optional rotation lock, then CharacterFacing yaw.
- * Does not modify any pose. Non-finite input components become zeroed components.
+ * @details Optional rotation lock, then CharacterFacing yaw, then axis locks in
+ * the published space. Does not modify any pose. Non-finite input components
+ * become zeroed components.
  */
 [[nodiscard]] EVENGINE_API_WORLD TransformTRS applyRootMotionPolicy(const TransformTRS& rawDelta,
                                                                     const RootMotionPolicy& policy);
@@ -86,13 +88,25 @@ struct RootMotionPolicy {
  * @brief Remove extracted root motion from a pose when bake flags are set.
  * @param pose Mutable local pose; borrowed for this call only.
  * @param boneIndex Root-motion bone; must be in range.
- * @param previousRoot Local TRS of the root bone before this frame's sample.
+ * @param referenceRoot Stable local TRS for unlocked axes, typically skeleton bind.
  * @param policy Bake and lock flags; locked translation axes are not baked.
  * @return Applied, NoOp when nothing changes, or InvalidArgument for a bad bone.
  */
-[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> bakeRootMotionIntoPose(AnimPose&             pose,
-                                                                          int                   boneIndex,
-                                                                          const TransformTRS&   previousRoot,
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> bakeRootMotionIntoPose(AnimPose&               pose,
+                                                                          int                     boneIndex,
+                                                                          const TransformTRS&     referenceRoot,
                                                                           const RootMotionPolicy& policy);
+
+/**
+ * @brief Parse a script/C++ lock-axis name.
+ * @details Accepts none, x, y/vertical, z, xz/horizontal, xy, yz, xyz/all.
+ */
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<RootMotionLockAxes> parseRootMotionLockAxes(std::string_view name);
+
+/**
+ * @brief Parse a script/C++ apply-space name.
+ * @details Accepts boneLocal/local and characterFacing/facing.
+ */
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<RootMotionApplySpace> parseRootMotionApplySpace(std::string_view name);
 
 }  // namespace eve::animation
