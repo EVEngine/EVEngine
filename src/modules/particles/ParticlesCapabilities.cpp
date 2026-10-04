@@ -9,6 +9,7 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleEffect.h"
 #include "particles/Particles.h"
+#include "particles/ParticlesCapabilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -472,6 +473,7 @@ void registerParticlesCapabilities() {
     eve::cap::provide<eve::action::IActionVfxDurationProvider>(&durationProvider);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
     eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
+    registerParticlesAttackVfxExecutor();
 }
 
 }  // namespace eve::particles

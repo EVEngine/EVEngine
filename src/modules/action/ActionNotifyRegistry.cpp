@@ -1,6 +1,7 @@
 #include "action/ActionNotifyRegistry.h"
 
 #include "action/ActionAudioBlock.h"
+#include "action/ActionAttackVfxBlock.h"
 #include "action/ActionCameraBlock.h"
 #include "action/ActionDamageBlock.h"
 #include "action/ActionGameplayEventBlock.h"
@@ -184,6 +185,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"combat:damage", "Apply Damage", "Combat", ActionNotifyShape::Instant, {"damageType", "amount"}},
         {"presentation:vfx", "Spawn VFX", "Presentation", ActionNotifyShape::Instant, {"uri", "lifetimeSeconds"}},
         {"presentation:vfx-state", "VFX State", "Presentation", ActionNotifyShape::State, {"uri"}},
+        {"presentation:attack-vfx", "Attack VFX", "Presentation", ActionNotifyShape::Instant, {"lifetimeSeconds"}},
+        {"presentation:attack-vfx-state", "Attack VFX State", "Presentation", ActionNotifyShape::State, {}},
         {"presentation:audio", "Play Audio", "Presentation", ActionNotifyShape::Instant, {"uri"}},
         {"presentation:audio-state", "Audio State", "Presentation", ActionNotifyShape::State, {"uri"}},
         {"gameplay:prefab-spawn", "Spawn Prefab", "Gameplay", ActionNotifyShape::State, {"uri"}},
@@ -303,6 +306,13 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
                                                                         : ActionVfxShape::State;
         auto vfx = ActionVfxBinding::fromPayload(event.payload, shape);
         if (!vfx) return Result<void>::failure(vfx.status());
+    }
+    if (event.type.format() == "presentation:attack-vfx" ||
+        event.type.format() == "presentation:attack-vfx-state") {
+        const auto shape = event.kind == ActionTimelineEventKind::Notify ? ActionAttackVfxShape::Instant
+                                                                        : ActionAttackVfxShape::State;
+        auto attack = ActionAttackVfxBinding::fromPayload(event.payload, shape);
+        if (!attack) return Result<void>::failure(attack.status());
     }
     if (event.type.format() == "presentation:parameter-curve") {
         auto curve = ActionParameterCurveBinding::fromPayload(event.payload);

@@ -1,0 +1,323 @@
+#include "physics/destruction/Destruction.h"
+
+#include "common/Exception.h"
+#include "common/Json.h"
+#include "common/Value.h"
+#include "physics/World3D.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <functional>
+#include <utility>
+
+namespace eve::physics {
+
+Module_IMPL(Destruction, new Destruction());
+
+eve::Result<void> Destruction::registerGeometryCollectionSchema() {
+    auto asset = GeometryCollectionAsset::ensureSchemaRegistered();
+    if (!asset) return asset;
+    return GeometryCollectionInstanceSnapshot::ensureSchemaRegistered();
+}
+
+eve::Result<GeometryCollectionAsset> Destruction::assetFromJson(const std::string& json) {
+    auto parsed = eve::Value::fromJson(json);
+    if (!parsed) return eve::Result<GeometryCollectionAsset>::failure(parsed.status());
+    return GeometryCollectionAsset::fromValue(parsed.value());
+}
+
+eve::Result<GeometryCollectionAsset> Destruction::makeWeldedBoxesFixture(float strainThreshold) {
+    return GeometryCollectionAsset::makeWeldedBoxesFixture(strainThreshold);
+}
+
+eve::Result<GeometryCollectionAsset> Destruction::makeClusterPillarFixture(float interClusterStrain) {
+    return GeometryCollectionAsset::makeClusterPillarFixture(interClusterStrain);
+}
+
+eve::Result<std::unique_ptr<GeometryCollectionInstance>> Destruction::createInstance(
+    World3D* world, const GeometryCollectionAsset& asset, float originX, float originY, float originZ) {
+    if (!world)
+        return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "geometry-collection create requires a World3D", "world"));
+    return GeometryCollectionInstance::create(*world, asset, originX, originY, originZ);
+}
+
+GeometryCollectionAsset* Destruction::newWeldedBoxesFixtureScript(float strainThreshold) {
+    auto created = makeWeldedBoxesFixture(strainThreshold);
+    if (!created.ok()) {
+        const auto* diagnostic = created.status().primaryDiagnostic();
+        throw Exception("Destruction.newWeldedBoxesFixture: %s",
+                        diagnostic ? diagnostic->message().c_str() : "creation failed");
+    }
+    return new GeometryCollectionAsset(std::move(created.value()));
+}
+
+GeometryCollectionAsset* Destruction::newClusterPillarFixtureScript(float interClusterStrain) {
+    auto created = makeClusterPillarFixture(interClusterStrain);
+    if (!created.ok()) {
+        const auto* diagnostic = created.status().primaryDiagnostic();
+        throw Exception("Destruction.newClusterPillarFixture: %s",
+                        diagnostic ? diagnostic->message().c_str() : "creation failed");
+    }
+    return new GeometryCollectionAsset(std::move(created.value()));
+}
+
+GeometryCollectionAsset* Destruction::assetFromJsonScript(const std::string& json) {
+    auto decoded = assetFromJson(json);
+    if (!decoded.ok()) {
+        const auto* diagnostic = decoded.status().primaryDiagnostic();
+        throw Exception("Destruction.assetFromJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "decode failed");
+    }
+    return new GeometryCollectionAsset(std::move(decoded.value()));
+}
+
+GeometryCollectionInstance* Destruction::createInstanceScript(World3D* world, GeometryCollectionAsset* asset,
+                                                              float originX, float originY, float originZ) {
+    if (!asset) throw Exception("Destruction.createInstance: asset is null");
+    auto created = createInstance(world, *asset, originX, originY, originZ);
+    if (!created.ok()) {
+        const auto* diagnostic = created.status().primaryDiagnostic();
+        throw Exception("Destruction.createInstance: %s",
+                        diagnostic ? diagnostic->message().c_str() : "creation failed");
+    }
+    return created.value().release();
+}
+
+namespace {
+
+DestructionField makeStrainField(float x, float y, float z, float radius, float magnitude) {
+    DestructionField field;
+    field.kind = DestructionFieldKind::Strain;
+    field.falloff = DestructionFieldFalloff::Linear;
+    field.centerX = x;
+    field.centerY = y;
+    field.centerZ = z;
+    field.radius = radius;
+    field.magnitude = magnitude;
+    return field;
+}
+
+DestructionField makeAnchorField(float x, float y, float z, float radius) {
+    DestructionField field;
+    field.kind = DestructionFieldKind::Anchor;
+    field.falloff = DestructionFieldFalloff::None;
+    field.centerX = x;
+    field.centerY = y;
+    field.centerZ = z;
+    field.radius = radius;
+    field.magnitude = 1.f;
+    return field;
+}
+
+DestructionField makeSleepField(float x, float y, float z, float radius) {
+    DestructionField field;
+    field.kind = DestructionFieldKind::Sleep;
+    field.falloff = DestructionFieldFalloff::None;
+    field.centerX = x;
+    field.centerY = y;
+    field.centerZ = z;
+    field.radius = radius;
+    field.magnitude = 1.f;
+    return field;
+}
+
+DestructionField makeImpulseField(float x, float y, float z, float radius, float magnitude, float dirX, float dirY,
+                                  float dirZ) {
+    DestructionField field;
+    field.kind = DestructionFieldKind::Impulse;
+    field.falloff = DestructionFieldFalloff::Linear;
+    field.centerX = x;
+    field.centerY = y;
+    field.centerZ = z;
+    field.radius = radius;
+    field.magnitude = magnitude;
+    field.dirX = dirX;
+    field.dirY = dirY;
+    field.dirZ = dirZ;
+    return field;
+}
+
+void applyStrainFieldScript(GeometryCollectionInstance* self, float x, float y, float z, float radius,
+                            float magnitude) {
+    if (!self) throw Exception("GeometryCollectionInstance.applyStrainField: null");
+    auto result = self->applyField(makeStrainField(x, y, z, radius, magnitude));
+    if (!result.ok()) {
+        const auto* diagnostic = result.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.applyStrainField: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+}
+
+void applyAnchorFieldScript(GeometryCollectionInstance* self, float x, float y, float z, float radius) {
+    if (!self) throw Exception("GeometryCollectionInstance.applyAnchorField: null");
+    auto result = self->applyField(makeAnchorField(x, y, z, radius));
+    if (!result.ok()) {
+        const auto* diagnostic = result.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.applyAnchorField: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+}
+
+void applySleepFieldScript(GeometryCollectionInstance* self, float x, float y, float z, float radius) {
+    if (!self) throw Exception("GeometryCollectionInstance.applySleepField: null");
+    auto result = self->applyField(makeSleepField(x, y, z, radius));
+    if (!result.ok()) {
+        const auto* diagnostic = result.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.applySleepField: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+}
+
+void applyImpulseFieldScript(GeometryCollectionInstance* self, float x, float y, float z, float radius,
+                             float magnitude, float dirX, float dirY, float dirZ) {
+    if (!self) throw Exception("GeometryCollectionInstance.applyImpulseField: null");
+    auto result = self->applyField(makeImpulseField(x, y, z, radius, magnitude, dirX, dirY, dirZ));
+    if (!result.ok()) {
+        const auto* diagnostic = result.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.applyImpulseField: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+}
+
+void stepScript(GeometryCollectionInstance* self, int tick, float dtSeconds) {
+    if (!self) throw Exception("GeometryCollectionInstance.step: null");
+    auto delta = eve::Duration::fromSeconds(dtSeconds);
+    if (!delta.ok()) throw Exception("GeometryCollectionInstance.step: invalid dt");
+    eve::SimulationStep step{eve::SimulationTick{static_cast<std::uint64_t>(tick)}, delta.value()};
+    auto result = self->step(step);
+    if (!result.ok()) {
+        const auto* diagnostic = result.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.step: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+}
+
+int boneStateScript(GeometryCollectionInstance* self, int boneIndex) {
+    if (!self) throw Exception("GeometryCollectionInstance.boneState: null");
+    return static_cast<int>(self->boneState(boneIndex));
+}
+
+void setStepBudgetScript(GeometryCollectionInstance* self, int maxEdgeBreaks, int maxSleeps) {
+    if (!self) throw Exception("GeometryCollectionInstance.setStepBudget: null");
+    if (maxEdgeBreaks < 0 || maxSleeps < 0)
+        throw Exception("GeometryCollectionInstance.setStepBudget: budgets must be non-negative");
+    DestructionStepBudget budget;
+    budget.maxEdgeBreaksPerStep = maxEdgeBreaks;
+    budget.maxSleepsPerStep     = maxSleeps;
+    self->setStepBudget(budget);
+}
+
+std::string captureSnapshotJsonScript(GeometryCollectionInstance* self) {
+    if (!self) throw Exception("GeometryCollectionInstance.captureSnapshotJson: null");
+    auto snapshot = self->captureSnapshot();
+    if (!snapshot.ok()) {
+        const auto* diagnostic = snapshot.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "failed");
+    }
+    auto encoded = snapshot.value().toValue();
+    if (!encoded.ok()) {
+        const auto* diagnostic = encoded.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "encode failed");
+    }
+    auto json = encoded.value().toJson();
+    if (!json.ok()) {
+        const auto* diagnostic = json.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.captureSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "json failed");
+    }
+    return json.value();
+}
+
+void restoreSnapshotJsonScript(GeometryCollectionInstance* self, const std::string& json) {
+    if (!self) throw Exception("GeometryCollectionInstance.restoreSnapshotJson: null");
+    auto parsed = eve::Value::fromJson(json);
+    if (!parsed.ok()) {
+        const auto* diagnostic = parsed.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "parse failed");
+    }
+    auto snapshot = GeometryCollectionInstanceSnapshot::fromValue(parsed.value());
+    if (!snapshot.ok()) {
+        const auto* diagnostic = snapshot.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "decode failed");
+    }
+    auto restored = self->restoreSnapshot(snapshot.value());
+    if (!restored.ok()) {
+        const auto* diagnostic = restored.status().primaryDiagnostic();
+        throw Exception("GeometryCollectionInstance.restoreSnapshotJson: %s",
+                        diagnostic ? diagnostic->message().c_str() : "restore failed");
+    }
+}
+
+}  // namespace
+
+void Destruction::expose(ssq::Table& table) {
+    auto cls = table.addClass(name, Destruction::create, false);
+    expose(cls);
+
+    auto asset = table.addClass<GeometryCollectionAsset>(
+        "GeometryCollectionAsset", std::function<GeometryCollectionAsset*()>([]() -> GeometryCollectionAsset* {
+            return nullptr;
+        }),
+        true);
+    (void)asset;
+
+    auto instance = table.addClass<GeometryCollectionInstance>(
+        "GeometryCollectionInstance",
+        std::function<GeometryCollectionInstance*()>([]() -> GeometryCollectionInstance* { return nullptr; }), true);
+    instance.addFunc("applyStrainField", applyStrainFieldScript);
+    instance.addFunc("applyAnchorField", applyAnchorFieldScript);
+    instance.addFunc("applySleepField", applySleepFieldScript);
+    instance.addFunc("applyImpulseField", applyImpulseFieldScript);
+    instance.addFunc("step", stepScript);
+    instance.addFunc("setStepBudget", setStepBudgetScript);
+    instance.addFunc("boneCount", [](GeometryCollectionInstance* self) { return self->boneCount(); });
+    instance.addFunc("edgeCount", [](GeometryCollectionInstance* self) { return self->edgeCount(); });
+    instance.addFunc("boneState", boneStateScript);
+    instance.addFunc("boneClusterId", [](GeometryCollectionInstance* self, int boneIndex) {
+        return self->boneClusterId(boneIndex);
+    });
+    instance.addFunc("edgeStrain", [](GeometryCollectionInstance* self, int edgeIndex) {
+        return self->edgeStrain(edgeIndex);
+    });
+    instance.addFunc("isEdgeBroken", [](GeometryCollectionInstance* self, int edgeIndex) {
+        return self->isEdgeBroken(edgeIndex);
+    });
+    instance.addFunc("detachEventCount", [](GeometryCollectionInstance* self) {
+        return self->detachEventCount();
+    });
+    instance.addFunc("clusterBreakEventCount", [](GeometryCollectionInstance* self) {
+        return self->clusterBreakEventCount();
+    });
+    instance.addFunc("pendingEdgeBreakCount", [](GeometryCollectionInstance* self) {
+        return self->pendingEdgeBreakCount();
+    });
+    instance.addFunc("hasLiveWorld", [](GeometryCollectionInstance* self) { return self->hasLiveWorld(); });
+    instance.addFunc("sleepBatchRevision", [](GeometryCollectionInstance* self) {
+        return static_cast<int>(self->sleepBatchRevision());
+    });
+    instance.addFunc("captureSnapshotJson", captureSnapshotJsonScript);
+    instance.addFunc("restoreSnapshotJson", restoreSnapshotJsonScript);
+    instance.addFunc("releaseBodies", [](GeometryCollectionInstance* self) { self->releaseBodies(); });
+}
+
+void Destruction::expose(ssq::Class& cls) {
+    cls.addFunc("registerGeometryCollectionSchema", [](Destruction* self) {
+        auto result = self->registerGeometryCollectionSchema();
+        if (!result.ok()) {
+            const auto* diagnostic = result.status().primaryDiagnostic();
+            throw Exception("Destruction.registerGeometryCollectionSchema: %s",
+                            diagnostic ? diagnostic->message().c_str() : "failed");
+        }
+    });
+    cls.addFunc("newWeldedBoxesFixture", &Destruction::newWeldedBoxesFixtureScript);
+    cls.addFunc("newClusterPillarFixture", &Destruction::newClusterPillarFixtureScript);
+    cls.addFunc("assetFromJson", &Destruction::assetFromJsonScript);
+    cls.addFunc("createInstance", &Destruction::createInstanceScript);
+}
+
+}  // namespace eve::physics

@@ -49,6 +49,8 @@ public:
     void stop(float fadeOutSeconds = 0.f);
     /** @brief Advance all owned deterministic runtime state. */
     void update(float dtSeconds);
+    /** @brief True when primary effect playback has stopped or finished. */
+    [[nodiscard]] bool isFinished() const noexcept;
     /** @brief Append one blade-edge sample or throw if the recipe has no trail. */
     [[nodiscard]] TrailAppendResult appendBlade(glm::vec3 root, glm::vec3 tip);
 

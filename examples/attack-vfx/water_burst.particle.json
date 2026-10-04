@@ -1,0 +1,53 @@
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.35 },
+  "emitters": [
+    {
+      "name": "spray",
+      "emitter": {
+        "buffer": 280,
+        "emitterLife": 0.9,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 48], [0.12, 28]],
+        "particleLifetime": [0.35, 0.85],
+        "particleSize": [10.0, 22.0],
+        "sizes": [1.3, 0.2],
+        "speed": [60.0, 190.0],
+        "spread": 6.2831853,
+        "gravity": [0.0, 140.0],
+        "damping": 0.16,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 0.55, 0.95, 1.0, 1.0],
+          [0.35, 0.35, 0.75, 1.0, 0.85],
+          [0.75, 0.55, 0.35, 0.95, 0.35],
+          [1.0, 0.2, 0.15, 0.45, 0.0]
+        ],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "foam",
+      "offset": [0.0, -8.0],
+      "emitter": {
+        "buffer": 160,
+        "emitterLife": 0.9,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 36]],
+        "particleLifetime": [0.25, 0.55],
+        "particleSize": [6.0, 14.0],
+        "sizes": [1.1, 0.15],
+        "speed": [40.0, 120.0],
+        "spread": 6.2831853,
+        "blendMode": "additive",
+        "colorStart": [0.85, 0.95, 1.0, 1.0],
+        "colorEnd": [0.35, 0.55, 0.95, 0.0]
+      }
+    }
+  ]
+}
