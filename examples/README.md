@@ -217,6 +217,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [agent](agent/README.md) | Squirrel 强化学习：定义环境、训练策略、选择动作与回放（C++ 侧 `eve.Agent`） |
 | [economy](economy/README.md) | `eve.Economy` 无窗口脚本演示：采集循环与满仓浪费（`eve run -r`） |
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
+| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
 
 ## 与设计目标对照

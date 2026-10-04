@@ -34,18 +34,18 @@ public:
         return std::sqrt(dx * dx + dy * dy) - radius_;
     }
 
-    bool gradient(float x, float y, float& outNx, float& outNy) const override {
+    eve::ParticleSdfGradientStatus gradient(float x, float y, float& outNx, float& outNy) const override {
         const float dx = x - x_;
         const float dy = y - y_;
         const float len = std::sqrt(dx * dx + dy * dy);
         if (len < 1e-5f) {
             outNx = 0.f;
             outNy = 1.f;
-            return true;
+            return eve::ParticleSdfGradientStatus::Defined;
         }
         outNx = dx / len;
         outNy = dy / len;
-        return true;
+        return eve::ParticleSdfGradientStatus::Defined;
     }
 
 private:

@@ -535,7 +535,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
                 const float distance = cfg.sdfField->sample(p.x, p.y);
                 if (std::isfinite(distance) && distance < rad) {
                     float gx = 0.f, gy = 0.f;
-                    if (cfg.sdfField->gradient(p.x, p.y, gx, gy)) {
+                    if (cfg.sdfField->gradient(p.x, p.y, gx, gy) ==
+                        eve::ParticleSdfGradientStatus::Defined) {
                         nx = gx;
                         ny = gy;
                         const float push = rad - distance;

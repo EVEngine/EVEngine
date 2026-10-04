@@ -536,7 +536,12 @@ public:
      * @param field Borrowed field, or null to clear. Does not take ownership.
      */
     void setSdfField(eve::IParticleSdfField* field);
-    /** @brief Return the borrowed SDF field, or null. */
+    /**
+     * @brief Return the borrowed SDF field, or null.
+     * @ownership Borrowed. The emitter does not own the field; do not delete it.
+     * @lifetime Valid until `setSdfField` replaces or clears it, or the emitter
+     *           is destroyed. Clear the binding before destroying the field.
+     */
     eve::IParticleSdfField* getSdfField();
     /**
      * @brief Set motion-vector policy: none, velocity, or spawn_delta.

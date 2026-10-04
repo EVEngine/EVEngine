@@ -4,6 +4,12 @@
 
 namespace eve {
 
+/** @brief Outcome of sampling an SDF gradient for particle collision. */
+enum class ParticleSdfGradientStatus {
+    Defined,    ///< Finite outward unit gradient written to the output components.
+    Undefined,  ///< Empty field or singularity; output components are unspecified.
+};
+
 /**
  * @brief Borrowed 2D signed-distance field consumed by particle collision.
  *
@@ -30,9 +36,13 @@ public:
 
     /**
      * @brief Approximate outward unit gradient at a world-space position.
-     * @return false when the gradient is undefined (empty field / singularity).
+     * @param[out] outNx X component of the unit gradient when the status is Defined.
+     * @param[out] outNy Y component of the unit gradient when the status is Defined.
+     * @return Defined when a finite gradient was written; Undefined at empty
+     *         fields or singularities.
      */
-    [[nodiscard]] virtual bool gradient(float x, float y, float& outNx, float& outNy) const = 0;
+    [[nodiscard]] virtual ParticleSdfGradientStatus gradient(float x, float y, float& outNx,
+                                                             float& outNy) const = 0;
 };
 
 }  // namespace eve

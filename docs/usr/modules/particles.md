@@ -82,13 +82,13 @@ if (impact == null) {
 }
 ```
 
-`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset`、命名层 `emit`、`updateTimeline` / `getTimelineSeconds` / `isTimelinePlaying`，以及事务式 `reloadFromFile`（解析失败时保留旧实例与世界变换）。组销毁时会一起回收所拥有的发射器。短命玩法特效可用 `ParticleEmitterPool.acquire/recycle`。
+`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset`、命名层 `emit`、`updateTimeline` / `getTimelineSeconds` / `isTimelinePlaying`，以及事务式 `reloadFromFile`（解析失败时保留旧实例与世界变换）。组销毁时会一起回收所拥有的发射器。短命玩法特效可用 `ParticleEmitterPool.acquire/recycle`；`idleCount()` 返回池中空闲发射器数量，`clear()` 释放全部空闲实例。
 
 ### SDF 碰撞与运动向量策略
 
 `IParticleSdfField`（`common/ParticleSdf.h`）是借用的 2D 有符号距离接口；`setSdfField` + `setCollision("bounce"|"kill"|"stop", …)` 在 CPU 路径采样。GPU 常驻回退原因为 `sdf`。
 
-`setMotionVectorPolicy("none"|"velocity"|"spawn_delta")` 记录资产策略；在图形后端真正写入速度缓冲前，`isMotionVectorActive()` 恒为 false。
+`setMotionVectorPolicy("none"|"velocity"|"spawn_delta")` 记录资产策略，`getMotionVectorPolicy()` 读回规范化后的策略名；在图形后端真正写入速度缓冲前，`isMotionVectorActive()` 恒为 false。
 
 ## 绑定到动态骨骼
 
