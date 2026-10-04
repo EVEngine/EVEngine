@@ -21,6 +21,8 @@ Decal::Decal() {
         });
 }
 
+Decal::~Decal() { unregisterDecalAttackVfxExecutor(); }
+
 int Decal::project(float x, float y, float z, float nx, float ny, float nz,
                    graphics::Texture *albedo, const std::string &kind, float size, float depth,
                    bool randomYaw, int seed, float fadeIn, float lifetime, float fadeOut) {
