@@ -10,7 +10,7 @@ persist roadReady = false
 persist roadMaterials = {}
 persist roadPrevKeys = {}
 persist roadSceneName = "straight"
-persist roadSceneList = ["straight", "curve", "bridge", "cross", "interchange"]
+persist roadSceneList = ["straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "interchange"]
 
 function roadRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -54,7 +54,7 @@ function roadCameraForScene(name) {
     } else if (name == "bridge") {
         roadCamera.setEye(20.0, 12.0, 18.0);
         roadCamera.setTarget(0.0, 2.5, 0.0);
-    } else if (name == "cross") {
+    } else if (name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew") {
         roadCamera.setEye(0.0, 28.0, 18.0);
         roadCamera.setTarget(0.0, 0.3, 0.0);
     } else {
@@ -73,7 +73,8 @@ function roadBuildScene(name) {
     local params = roadRequire(procgen.newParams(), "new params").value;
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
-    params.setFloat("span", name == "interchange" ? 48.0 : (name == "cross" ? 28.0 : 32.0));
+    params.setFloat("span", name == "interchange" ? 48.0 : (name == "cross" || name == "tee" || name == "y" ||
+                                                                  name == "fork" || name == "skew" ? 28.0 : 32.0));
     params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
     params.setInt("lanes", 2);
     local segs = 28;
@@ -84,7 +85,8 @@ function roadBuildScene(name) {
     params.setBool("markings", true);
     // Nav overlay is noisy on the complex scene; keep it off for the visual pass.
     params.setBool("navigation", false);
-    params.setBool("junctions", name == "cross" || name == "interchange");
+    params.setBool("junctions", name == "cross" || name == "tee" || name == "y" || name == "fork" ||
+                                    name == "skew" || name == "interchange");
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
     local groupSummary = "";
@@ -163,7 +165,8 @@ if (!roadReady) {
                     if (ch == "\n" || ch == "\r" || ch == " ") break;
                     s += ch;
                 }
-                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross" || s == "interchange")
+                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross" || s == "tee" || s == "y" ||
+                    s == "fork" || s == "skew" || s == "interchange")
                     boot = s;
             }
         }
@@ -179,7 +182,11 @@ function eve_update(dt) {
     if (roadPressed("2")) roadBuildScene("curve");
     if (roadPressed("3")) roadBuildScene("bridge");
     if (roadPressed("4")) roadBuildScene("cross");
-    if (roadPressed("5")) roadBuildScene("interchange");
+    if (roadPressed("5")) roadBuildScene("tee");
+    if (roadPressed("6")) roadBuildScene("y");
+    if (roadPressed("7")) roadBuildScene("fork");
+    if (roadPressed("8")) roadBuildScene("skew");
+    if (roadPressed("9")) roadBuildScene("interchange");
 
     if (!roadScreenshotSaved && roadFrame > 24) {
         local file = "procedural-road-" + roadSceneName + ".png";
