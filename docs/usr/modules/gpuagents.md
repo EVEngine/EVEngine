@@ -1,6 +1,6 @@
 # GPU Agents（鱼群 / 生命网格 / 鸟群 / 花瓣）
 
-**脚本入口：** `eve.GpuAgents()`
+**脚本入口：** `eve.GpuAgents()`；编辑器自动化：`eve.GpuAgentsEditorModule()`
 
 可扩展的 GPU Agents 实时模拟框架。模拟逻辑、环境数据与实例渲染拆为
 **EffectProfile → EffectBackend → Solver → Renderer** 四层；`GpuAgentWorld`
@@ -8,7 +8,8 @@
 负责固定步长、双缓冲与重置。四类效果共享 `AgentState`
 （position / velocity / rotation / age / customData）。
 
-P0 为 CPU 参考求解器（可测、固定步长确定性）；GPU compute 镜像为 P1。
+P0/P2：CPU 参考求解器 + editing/editor + SurfaceCapture + LifeField 材质打包。
+GPU compute 镜像为 P1。
 
 设计：[docs/dev/2026-10-05-gpu-agents-simulation-framework.md](../../dev/2026-10-05-gpu-agents-simulation-framework.md)
 
@@ -30,10 +31,11 @@ world.stepAll(dt);
 local n = school.instanceCount(); // 实例矩阵已在 Backend 内同步
 ```
 
-生命网格需先初始化表面：
+生命网格需先初始化表面（平面或三角 Capture）：
 
 ```squirrel
 world.initFlatSurface(-16, 0, -16, 32, 64);
+// 或：gpuAgents.captureSurface(world, positions, indices, ox, oy, oz, size, res);
 local life = gpuAgents.newBackend(1, 64);
 gpuAgents.spawnCloud(life, 32, 0, 0, 0, 4);
 gpuAgents.registerBackend(world, "life", life);
@@ -47,6 +49,14 @@ gpuAgents.registerBackend(world, "life", life);
 | 1 | LifeNetwork | 表面轨迹沉积/衰减/扩散；传感器跟随 |
 | 2 | Bird | 邻域 + 升力/阻力/失速/侧倾/净空 |
 | 3 | Petal | 被动刚体气动；落地 Settling；软边界回收 |
+
+## Editing / Preview（P2）
+
+- Schema：`eve::gpuagents_editing::gpuAgentsEffectSchema()`（`gpuagents:effect-document` v1）
+- 文档：`GpuAgentsDocumentTarget`（可逆 set/undo + snapshot）
+- Runtime：`GpuAgentsRuntimeApplier` → Backend + LifeNetwork 表面域
+- Preview：`GpuAgentsPreviewService` 固定步长 scrub（自动化 Target 类型 `gpuagents-effect`）
+- 材质：`LifeFieldMaterialBinding` 打包 `LifeFieldTexture` / `SurfaceDataTexture` + Origin/WorldSize/FieldResolution
 
 ## 与 crowd / fluids 的边界
 

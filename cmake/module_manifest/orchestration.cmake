@@ -76,6 +76,13 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
 eve_declare_module(NAME gpuagents LAYER 5 SCRIPT GpuAgents SLOT gpuAgents
                    DEPS gpgpu graphics
                    GROUP 3d web)
+eve_declare_module(NAME gpuagents_editing LAYER 6
+                   DEPS editing gpuagents
+                   GROUP 3d web)
+eve_declare_module(NAME gpuagents_editor LAYER 7
+                   SCRIPT GpuAgentsEditorModule SLOT gpuAgentsEditor
+                   DEPS editor gpuagents gpuagents_editing
+                   GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
                    GROUP 3d)

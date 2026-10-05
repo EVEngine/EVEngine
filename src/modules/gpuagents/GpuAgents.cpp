@@ -1,6 +1,8 @@
 #include "gpuagents/GpuAgents.h"
 
 #include "common/Diagnostic.h"
+#include "gpuagents/LifeFieldMaterialBinding.h"
+#include "gpuagents/SurfaceCapture.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -85,6 +87,34 @@ Result<void> GpuAgents::spawnCloud(EffectBackend* backend, int count, float cent
     });
 }
 
+Result<void> GpuAgents::captureSurface(GpuAgentWorld* world, const std::vector<float>& positions,
+                                       const std::vector<std::uint32_t>& indices, float originX, float originY,
+                                       float originZ, float worldSize, int resolution) const {
+    if (!world) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "world is null", "world", {}, "gpuagents"));
+    }
+    if (positions.size() % 3 != 0) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "positions must be interleaved xyz floats", "positions", {}, "gpuagents"));
+    }
+    std::vector<glm::vec3> verts;
+    verts.reserve(positions.size() / 3);
+    for (size_t i = 0; i + 2 < positions.size(); i += 3) {
+        verts.emplace_back(positions[i], positions[i + 1], positions[i + 2]);
+    }
+    return SurfaceCapture::captureFromTriangles(world->surface(), verts, indices, glm::vec3(originX, originY, originZ),
+                                                worldSize, resolution, originY);
+}
+
+Result<void> GpuAgents::syncLifeFieldBinding(GpuAgentWorld* world, LifeFieldMaterialBinding* binding) const {
+    if (!world || !binding) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "world or binding is null", "binding", {}, "gpuagents"));
+    }
+    return binding->syncFrom(world->surface());
+}
+
 void GpuAgents::expose(ssq::Table& table) {
     auto cls = table.addClass(name, GpuAgents::create, false);
     expose(cls);
@@ -139,6 +169,17 @@ void GpuAgents::expose(ssq::Class& cls) {
         if (!w || !b) return false;
         // Borrowed: script / VM retains ownership of the backend.
         return w->registerBackend(name, b).ok();
+    });
+    cls.addFunc("captureSurface", [](GpuAgents* m, GpuAgentWorld* w, ssq::Array positions, ssq::Array indices, float ox,
+                                     float oy, float oz, float size, int res) {
+        if (!m || !w) return false;
+        std::vector<float> pos;
+        pos.reserve(positions.size());
+        for (size_t i = 0; i < positions.size(); ++i) pos.push_back(positions.get<float>(i));
+        std::vector<std::uint32_t> idx;
+        idx.reserve(indices.size());
+        for (size_t i = 0; i < indices.size(); ++i) idx.push_back(static_cast<std::uint32_t>(indices.get<int>(i)));
+        return m->captureSurface(w, pos, idx, ox, oy, oz, size, res).ok();
     });
 }
 

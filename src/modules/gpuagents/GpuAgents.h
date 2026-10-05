@@ -6,8 +6,14 @@
 #include "gpuagents/EffectBackend.h"
 #include "gpuagents/EffectProfile.h"
 #include "gpuagents/GpuAgentWorld.h"
+#include "gpuagents/LifeFieldMaterialBinding.h"
+#include "gpuagents/SurfaceCapture.h"
+#include "gpuagents/SurfaceField.h"
 
+#include <cstdint>
 #include <memory>
+#include <span>
+#include <vector>
 
 namespace eve::gpuagents {
 
@@ -64,6 +70,35 @@ public:
      */
     [[nodiscard("check spawn")]] Result<void> spawnCloud(EffectBackend* backend, int count, float centerX,
                                                          float centerY, float centerZ, float spread) const;
+
+    /**
+     * @brief Orthographic triangle bake into a world's surface field.
+     * @param world Borrowed world whose surface is rewritten.
+     * @param positions Interleaved xyz floats.
+     * @param indices Triangle indices.
+     * @param originX Domain origin X.
+     * @param originY Domain origin Y (also base height).
+     * @param originZ Domain origin Z.
+     * @param worldSize Domain side length.
+     * @param resolution Field resolution.
+     * @ownership Borrowed world; positions/indices copied for the call only.
+     * @lifetime world must outlive the call.
+     */
+    [[nodiscard("check surface capture")]] Result<void> captureSurface(GpuAgentWorld*                    world,
+                                                                       const std::vector<float>&         positions,
+                                                                       const std::vector<std::uint32_t>& indices,
+                                                                       float originX, float originY, float originZ,
+                                                                       float worldSize, int resolution) const;
+
+    /**
+     * @brief Pack a world's surface into CPU LifeField / SurfaceData RGBA buffers.
+     * @param world Borrowed world with an initialized surface.
+     * @param binding Destination binding (caller-owned).
+     * @ownership Borrowed; does not take ownership of world or binding.
+     * @lifetime Both arguments must outlive the call.
+     */
+    [[nodiscard("check life-field sync")]] Result<void> syncLifeFieldBinding(GpuAgentWorld*            world,
+                                                                             LifeFieldMaterialBinding* binding) const;
 };
 
 }  // namespace eve::gpuagents

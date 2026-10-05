@@ -1,21 +1,31 @@
 # GPU Agents 实时模拟框架
 
-> 状态：P0 已落地（共享状态 + World/Simulation + 四类 CPU 参考 Solver + 实例缓冲 Renderer）。日期：2026-10-05  
+> 状态：P2 已落地（editing/editor 文档与预览 + LifeField 材质绑定 + 表面 Capture）。日期：2026-10-05  
 > 目标：基于 GPU Compute 架构搭建可扩展的 GPU Agents 实时模拟框架，覆盖鱼群、生命网格、鸟群与花瓣四类效果；模拟逻辑、环境数据与渲染表现解耦。  
 > 关联：[`模块编排与裁剪架构.md`](./模块编排与裁剪架构.md)、[`领域短根继承与跨域组合架构.md`](./领域短根继承与跨域组合架构.md)、[`Result检查与不得丢弃返回值规范.md`](./Result检查与不得丢弃返回值规范.md)、[`superpowers/specs/2026-08-10-gpgpu-backend-abstraction-design.md`](./superpowers/specs/2026-08-10-gpgpu-backend-abstraction-design.md)、[`群体行为与流场模块设计.md`](./群体行为与流场模块设计.md)。
 
-## 0. P0 落地备注
+## 0. P0–P2 落地备注
 
 已合入模块：
 
-- `gpuagents`（`eve.GpuAgents()`）：`GpuAgentWorld` / `GpuAgentSimulation` / `EffectProfile` / `EffectBackend` / 四类 Solver / `AgentInstanceRenderer`
+- `gpuagents`（`eve.GpuAgents()`）：`GpuAgentWorld` / `GpuAgentSimulation` / `EffectProfile` / `EffectBackend` / 四类 Solver / `AgentInstanceRenderer` / `SurfaceCapture` / `LifeFieldMaterialBinding`
+- `gpuagents_editing`：`GpuAgentsDocumentTarget` + `gpuAgentsEffectSchema` + `GpuAgentsRuntimeApplier`
+- `gpuagents_editor`（`eve.GpuAgentsEditorModule()`）：自动化 Target 工厂 + `GpuAgentsPreviewService`
 - 标准化 `AgentState`（position / velocity / rotation / age / customData）
 - 统一 SDF 障碍管线（静态场 + 动态球源，当前位置与速度外推位置双采样）
 - CPU 参考求解器（可测、确定性/容差契约）；GPU 内核路径为 P1
 
-测试：`test/gpuagents.cpp`；示例：`examples/gpu-agents`；用户文档：`docs/usr/modules/gpuagents.md`。
+测试：`test/gpuagents.cpp`、`test/editor_gpuagents.cpp`；示例：`examples/gpu-agents`；用户文档：`docs/usr/modules/gpuagents.md`。
 
-**层**：宿主 `LAYER 5`，`DEPS gpgpu graphics`；P0 步进不要求 Graphics 设备已初始化（纯 CPU 路径）。
+**层**：宿主 `LAYER 5`，`DEPS gpgpu graphics`；editing `LAYER 6`；editor `LAYER 7`。P0/P2 步进不要求 Graphics 设备已初始化（纯 CPU 路径）；材质纹理上传在有 Graphics 时可选。
+
+## 0.1 P2 备注（2026-10-05）
+
+- **SurfaceCapture**：三角网格正交投影到 XZ 高度场，中心差分重建法线，写入 `SurfaceField`
+- **LifeFieldMaterialBinding**：打包 `LifeFieldTexture` / `SurfaceDataTexture` RGBA8 + Origin/WorldSize/FieldResolution uniforms；可 `upload*` 到 Graphics
+- **editing**：可逆 PropertySchema 文档，RuntimeApplier 投影到 Backend/World 表面域
+- **editor**：自动化 `gpuagents-effect` Target；PreviewService 固定步长 scrub（含 LifeNetwork trail 能量）
+
 
 ## 1. 问题与非目标
 
@@ -153,9 +163,9 @@ Solver 同时采样当前位置 \(p\) 与外推位置 \(p + v\cdot t_{pred}\)：
 
 | 阶段 | 内容 |
 |------|------|
-| **P0**（本 PR） | 架构 + CPU 四 Solver + World/SDF + Instance 缓冲 + 测试 + 示例 |
+| **P0**（已落地） | 架构 + CPU 四 Solver + World/SDF + Instance 缓冲 + 测试 + 示例 |
 | **P1** | GLSL compute 内核镜像、双缓冲 SSBO、Sequence 提交、GPU/CPU 容差对照 |
-| **P2** | editing/editor 预览、材质绑定 LifeField、表面 Capture 接 Graphics |
+| **P2**（已落地） | editing/editor 预览、LifeField 材质绑定、表面 Capture |
 | **P3** | 动态网格障碍烘焙、尾流耦合 particles、性能缩放档位 |
 
 ## 8. 验证清单
@@ -165,4 +175,6 @@ Solver 同时采样当前位置 \(p\) 与外推位置 \(p + v\cdot t_{pred}\)：
 - [x] 鸟群：速度夹在 Stall–Max；失速下方有抬头恢复趋势
 - [x] 花瓣：落地后进入 Settling；软边界内回收
 - [x] `ARCHITECTURE_BASE=HEAD make check/architecture-contracts`（源码契约）
+- [x] P2：editing schema/undo、preview scrub、SurfaceCapture、LifeField RGBA pack
 - [ ] P1：GPU 路径与 CPU 对照（未做）
+- [ ] P2：Graphics depth-texture surface capture（CPU 三角正交投影已落地；深度纹理路径延后）
