@@ -70,6 +70,12 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    DEPS gpgpu graphics image physics physics_backend
                    OPTIONAL_DEPS model3d
                    GROUP 3d web)
+# GPU Agents FX: fish / life-network / bird / petal solvers with shared
+# AgentState, World environment, SDF obstacles, and instance renderer.
+# P0 is CPU reference; P1 mirrors kernels through gpgpu.
+eve_declare_module(NAME gpuagents LAYER 5 SCRIPT GpuAgents SLOT gpuAgents
+                   DEPS gpgpu graphics
+                   GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
                    GROUP 3d)
