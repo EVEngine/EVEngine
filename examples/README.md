@@ -149,6 +149,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [housegen](housegen/README.md) | 房屋布局生成 + GLB kit 实例化 |
 | [linear-structures](linear-structures/README.md) | 线性可拼接结构：栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马 |
 | [cable-chain-rope](cable-chain-rope/README.md) | 钢缆 / 铁链 / 麻绳：螺旋多股网格 + 配套 PBR 纹理 |
+| [iron-chain-bridge](iron-chain-bridge/README.md) | 铁锁桥：用 `mesh.chain` / `mesh.rope` / `mesh.bridge` 拼出简易吊桥 |
 | [hex-terrain](hex-terrain/README.md) | 无源美术的 3D 六边形世界：`mesh.hexterrain` 配方 |
 | [topdown-procmap](topdown-procmap/README.md) | 俯视角程序化地图：噪声大陆 + 生物群系 splat + 河湖 + 植被点缀与平移浏览 |
 | [procgen-nature-quality](procgen-nature-quality/README.md) | 近景程序化树/灌木/崖石材质画廊：`tex.tree_atlas` / `tex.moss` / cliff 造型 |
