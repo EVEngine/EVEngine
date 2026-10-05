@@ -75,6 +75,8 @@ public:
                 float emissiveStrength);
 
     bool remove(int id);
+    /** @brief Whether a projected decal id is still registered. */
+    [[nodiscard]] bool contains(int id) const;
     void clearAll();
     int count() const;
     bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,

@@ -141,6 +141,8 @@ public:
     [[nodiscard]] const MeshEffectInstance& layer(std::size_t index) const { return *layers_.at(index); }
     /** @brief Whether this composition owns a trail emitter. */
     [[nodiscard]] bool hasTrail() const noexcept { return trail_ != nullptr; }
+    /** @brief True when every layer is Stopped or Finished. */
+    [[nodiscard]] bool isFinished() const noexcept;
     /** @brief Return the owned trail; throws when this asset has no trail. */
     [[nodiscard]] TrailEmitter& trail();
 

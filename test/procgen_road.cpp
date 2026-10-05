@@ -862,3 +862,94 @@ TEST_CASE("procgen.road.decor.medianOnBidirectional") {
     CHECK(sawMedian);
 }
 
+TEST_CASE("procgen.road.scenes.yJunctionLaneLinks") {
+    // Classic Y topology: one north inbound arm, two outbound SE/SW exits.
+    // Alternating fan directions used to drop the north→southeast turn.
+    auto yj = RoadNetwork::makeY(28.f, 2);
+    REQUIRE(yj.ok());
+    CHECK_EQ(yj.value().edgeCount(), 3);
+
+    std::uint32_t hubId = 0;
+    std::uint32_t northIn = 0, seOut = 0, swOut = 0;
+    int           inbound = 0, outbound = 0;
+    for (const auto& n : yj.value().nodes()) {
+        if (std::fabs(n.x) < 1e-3f && std::fabs(n.z) < 1e-3f) hubId = n.id;
+    }
+    REQUIRE(hubId != 0);
+    for (const auto& e : yj.value().edges()) {
+        if (e.to == hubId) {
+            ++inbound;
+            northIn = e.id;
+        }
+        if (e.from == hubId) {
+            ++outbound;
+            auto leaf = yj.value().nodeResult(e.to);
+            REQUIRE(leaf.ok());
+            if (leaf.value().x > 0.f) seOut = e.id;
+            if (leaf.value().x < 0.f) swOut = e.id;
+        }
+    }
+    CHECK_EQ(inbound, 1);
+    CHECK_EQ(outbound, 2);
+    REQUIRE(northIn != 0);
+    REQUIRE(seOut != 0);
+    REQUIRE(swOut != 0);
+
+    // 1 inbound × 2 outbound × 2 forward lanes = 4 links covering both exits.
+    CHECK_EQ(yj.value().laneLinkCount(), 4);
+    bool northToSe = false, northToSw = false;
+    for (const auto& link : yj.value().laneLinks()) {
+        if (link.inEdge == northIn && link.outEdge == seOut) northToSe = true;
+        if (link.inEdge == northIn && link.outEdge == swOut) northToSw = true;
+    }
+    CHECK(northToSe);
+    CHECK(northToSw);
+}
+
+TEST_CASE("procgen.road.bidirectional.asymmetricLaneCenters") {
+    RoadNetwork network;
+    auto        a = network.addNode(-20.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(20.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.laneWidth     = 3.5f;
+    style.deckThickness = 0.2f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-20.f, 0.f, 0.f}, RoadControlPoint{20.f, 0.f, 0.f}}, 1, 2, style);
+    REQUIRE(edge.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 16;
+    options.includeJunctions    = false;
+    options.includeNavigation   = true;
+    options.includePiers        = false;
+    options.includeMarkings     = true;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    REQUIRE_EQ(baked.value().overlay.lanes.size(), 3u);
+
+    float fwdLat = 0.f, revLat = 0.f;
+    bool  foundFwd = false, foundRev = false;
+    for (const auto& poly : baked.value().overlay.lanes) {
+        for (std::size_t i = 0; i + 2 < poly.xyz.size(); i += 3) {
+            const float x = poly.xyz[i];
+            const float z = poly.xyz[i + 2];
+            if (std::fabs(x) > 2.f) continue;
+            if (!foundFwd && z > 1.f) {
+                fwdLat   = z;
+                foundFwd = true;
+            }
+            if (!foundRev && z < -1.f) {
+                revLat   = z;
+                foundRev = true;
+            }
+        }
+    }
+    CHECK(foundFwd);
+    CHECK(foundRev);
+    CHECK(std::fabs(fwdLat - 3.5f) < 0.25f);
+    CHECK(std::fabs(revLat + 3.5f) < 0.25f);
+}
+
