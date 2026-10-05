@@ -39,9 +39,8 @@ Result<ActionStateWindowBinding> ActionStateWindowBinding::fromPayload(std::stri
         const auto* priority = priorityFound->second.getIf<std::int64_t>();
         if (!priority || *priority < std::numeric_limits<std::int32_t>::min() ||
             *priority > std::numeric_limits<std::int32_t>::max())
-            return Result<ActionStateWindowBinding>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                  "state window priority must be a signed 32-bit integer", "priority"));
+            return Result<ActionStateWindowBinding>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "state window priority must be a signed 32-bit integer", "priority"));
         candidate.priority = static_cast<std::int32_t>(*priority);
     }
     const char* field = nullptr;
@@ -58,10 +57,10 @@ Result<ActionStateWindowBinding> ActionStateWindowBinding::fromPayload(std::stri
         field = "channel";
     } else if (type == "input:cancel-window") {
         candidate.kind = ActionStateWindowKind::Cancel;
-        field = "allows";
+        field          = "allows";
     } else if (type == "combat:guard-window") {
         candidate.kind = ActionStateWindowKind::Guard;
-        field = "mode";
+        field          = "mode";
     } else {
         return Result<ActionStateWindowBinding>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown built-in state window type", "type"));

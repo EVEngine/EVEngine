@@ -13,14 +13,7 @@
 namespace eve::action {
 
 /** @brief Stable semantic kind for one built-in state window. */
-enum class ActionStateWindowKind : std::uint8_t {
-    Hitbox,
-    Invulnerability,
-    Combo,
-    CollisionIgnore,
-    Cancel,
-    Guard
-};
+enum class ActionStateWindowKind : std::uint8_t { Hitbox, Invulnerability, Combo, CollisionIgnore, Cancel, Guard };
 
 /** @brief Owning validated state-window request authored on an action timeline. */
 struct EVENGINE_API_PLATFORM ActionStateWindowBinding {

@@ -90,8 +90,7 @@ TimelineItemVisual visualFor(std::string_view type) {
     if (type == "gameplay:prefab-spawn") return TimelineItemVisual::Prefab;
     if (type == "presentation:camera") return TimelineItemVisual::Camera;
     if (type == "combat:hitbox-window") return TimelineItemVisual::Hitbox;
-    if (type == "combat:invulnerability-window" || type == "combat:guard-window")
-        return TimelineItemVisual::Defense;
+    if (type == "combat:invulnerability-window" || type == "combat:guard-window") return TimelineItemVisual::Defense;
     if (type == "input:combo-window" || type == "input:cancel-window") return TimelineItemVisual::Input;
     if (type == "collision:ignore-window") return TimelineItemVisual::Collision;
     if (type == "movement:root-motion-window") return TimelineItemVisual::Movement;

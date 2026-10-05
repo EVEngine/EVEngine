@@ -55,7 +55,7 @@ public:
 };
 
 const WeaponDefinition* defOf(WeaponEntity& w);
-void pushFireEvent(WeaponEntity& w, const WeaponDefinition* def, const AttackRequest& req, int ammo);
+void                    pushFireEvent(WeaponEntity& w, const WeaponDefinition* def, const AttackRequest& req, int ammo);
 
 /** @brief 近战逻辑：开火事件携带 arc/aoe，几何命中由 combat::MeleeHitRuntime 消费。 */
 class MeleeLogic : public IWeaponLogic {

@@ -198,7 +198,10 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"input:cancel-window", "Cancel Window", "Input", ActionNotifyShape::State, {"allows"}},
         {"collision:ignore-window", "Collision Ignore", "Collision", ActionNotifyShape::State, {"channel"}},
         {"movement:root-motion-window", "Root Motion", "Movement", ActionNotifyShape::State, {"mode"}},
-        {"presentation:parameter-curve", "Parameter Curve", "Presentation", ActionNotifyShape::State,
+        {"presentation:parameter-curve",
+         "Parameter Curve",
+         "Presentation",
+         ActionNotifyShape::State,
          {"target", "keys"}},
     };
     for (auto descriptor : builtins) {
@@ -213,9 +216,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         registry.registerHandler("gameplay:event", std::make_shared<ActionGameplayEventHandler>());
     if (!gameplayEventHandler) return Result<ActionNotifyRegistry>::failure(gameplayEventHandler.status());
     auto stateWindowHandler = std::make_shared<ActionStateWindowHandler>();
-    for (const char* type :
-         {"collision:ignore-window", "combat:hitbox-window", "combat:invulnerability-window",
-          "combat:guard-window", "input:combo-window", "input:cancel-window"}) {
+    for (const char* type : {"collision:ignore-window", "combat:hitbox-window", "combat:invulnerability-window",
+                             "combat:guard-window", "input:combo-window", "input:cancel-window"}) {
         auto registered = registry.registerHandler(type, stateWindowHandler);
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
