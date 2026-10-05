@@ -25,12 +25,19 @@ SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
 
 # C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
 # declaration. Skip them before matching the return type so member bindings to
-# attributed getters stay resolvable.
+# attributed getters stay resolvable. Attribute bodies may contain '(' (message
+# arguments), so callers must take the function '(' from the end of the regex
+# match rather than the first '(' after match.start().
 CXX_ATTRIBUTE = r"(?:\[\[[^\]]*\]\]\s*)*"
 CXX_DECL_PREFIX = (
     r"(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+|"
     rf"{CXX_ATTRIBUTE})*"
 )
+
+
+def declaration_opening_paren(match: re.Match[str]) -> int:
+    """Return the index of the function '(' that ends a declaration regex match."""
+    return match.end() - 1
 
 
 @dataclass
@@ -278,7 +285,7 @@ class SignatureIndex:
         for block in self.classes.get(lookup_class, []):
             masked = mask_comments(block)
             for match in declaration_pattern.finditer(masked):
-                opening = masked.find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(block, opening)
                 if closing is None:
                     continue
@@ -293,7 +300,7 @@ class SignatureIndex:
                 if needle not in source:
                     continue
                 for match in definition_pattern.finditer(self.masked[path]):
-                    opening = self.masked[path].find("(", match.start())
+                    opening = declaration_opening_paren(match)
                     closing = matching(source, opening)
                     if closing is None:
                         continue
@@ -307,7 +314,7 @@ class SignatureIndex:
                 for block in blocks:
                     masked = mask_comments(block)
                     for match in declaration_pattern.finditer(masked):
-                        opening = masked.find("(", match.start())
+                        opening = declaration_opening_paren(match)
                         closing = matching(block, opening)
                         if closing is not None:
                             inherited.append((match.group(1).strip().splitlines()[-1].strip(),
@@ -338,7 +345,7 @@ class SignatureIndex:
             if needle not in source and f"{name} (" not in source:
                 continue
             for match in pattern.finditer(self.masked[path]):
-                opening = self.masked[path].find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(source, opening)
                 if closing is not None:
                     candidates.append((match.group(1).strip(), parse_parameters(source[opening + 1 : closing])))
