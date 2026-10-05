@@ -36,7 +36,7 @@ void emitOpenTube(MeshBuild& out, const std::vector<V3>& path, float radius, int
     radialSegs = std::clamp(radialSegs, 3, 48);
     const int rings = int(path.size());
 
-    std::vector<V3> tangents(size_t(rings));
+    std::vector<V3> tangents = std::vector<V3>(static_cast<size_t>(rings));
     for (int i = 0; i < rings; ++i) {
         if (i == 0)
             tangents[size_t(i)] = normalize(path[1] - path[0]);
@@ -47,31 +47,31 @@ void emitOpenTube(MeshBuild& out, const std::vector<V3>& path, float radius, int
     }
 
     // Parallel-transport frames to avoid sudden flips.
-    std::vector<V3> normals(size_t(rings));
-    std::vector<V3> binormals(size_t(rings));
-    V3               n0 = std::fabs(tangents[0].y) < 0.9f ? V3{0, 1, 0} : V3{0, 0, 1};
-    normals[0]          = normalize(n0 - tangents[0] * dot(n0, tangents[0]));
-    binormals[0]        = cross(tangents[0], normals[0]);
+    std::vector<V3> frameN = std::vector<V3>(static_cast<size_t>(rings));
+    std::vector<V3> frameB = std::vector<V3>(static_cast<size_t>(rings));
+    V3              n0     = std::fabs(tangents[0].y) < 0.9f ? V3{0, 1, 0} : V3{0, 0, 1};
+    frameN[0]              = normalize(n0 - tangents[0] * dot(n0, tangents[0]));
+    frameB[0]              = cross(tangents[0], frameN[0]);
     for (int i = 1; i < rings; ++i) {
-        const V3 axis = cross(tangents[size_t(i - 1)], tangents[size_t(i)]);
+        const V3    axis    = cross(tangents[size_t(i - 1)], tangents[size_t(i)]);
         const float axisLen = std::sqrt(dot(axis, axis));
         if (axisLen < 1e-6f) {
-            normals[size_t(i)]   = normals[size_t(i - 1)];
-            binormals[size_t(i)] = binormals[size_t(i - 1)];
+            frameN[size_t(i)] = frameN[size_t(i - 1)];
+            frameB[size_t(i)] = frameB[size_t(i - 1)];
         } else {
             const V3    a   = axis * (1.f / axisLen);
             const float ang = std::atan2(axisLen, dot(tangents[size_t(i - 1)], tangents[size_t(i)]));
             const float ca  = std::cos(ang);
             const float sa  = std::sin(ang);
-            auto rotate = [&](V3 v) {
+            auto        rotate = [&](V3 v) {
                 return v * ca + cross(a, v) * sa + a * (dot(a, v) * (1.f - ca));
             };
-            normals[size_t(i)]   = normalize(rotate(normals[size_t(i - 1)]));
-            binormals[size_t(i)] = cross(tangents[size_t(i)], normals[size_t(i)]);
+            frameN[size_t(i)] = normalize(rotate(frameN[size_t(i - 1)]));
+            frameB[size_t(i)] = cross(tangents[size_t(i)], frameN[size_t(i)]);
         }
     }
 
-    std::vector<float> arc(size_t(rings), 0.f);
+    std::vector<float> arc = std::vector<float>(static_cast<size_t>(rings), 0.f);
     for (int i = 1; i < rings; ++i) {
         const V3  d = path[size_t(i)] - path[size_t(i - 1)];
         arc[size_t(i)] = arc[size_t(i - 1)] + std::sqrt(dot(d, d));
@@ -83,7 +83,7 @@ void emitOpenTube(MeshBuild& out, const std::vector<V3>& path, float radius, int
             const float a  = 2.f * kPi * float(j) / float(radialSegs);
             const float ca = std::cos(a);
             const float sa = std::sin(a);
-            const V3    n  = normals[size_t(i)] * ca + binormals[size_t(i)] * sa;
+            const V3    n  = frameN[size_t(i)] * ca + frameB[size_t(i)] * sa;
             const V3    p  = path[size_t(i)] + n * radius;
             const float u  = (a * radius + uOffset) * uvScale;
             const float v  = arc[size_t(i)] * uvScale;
