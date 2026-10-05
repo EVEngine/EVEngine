@@ -65,8 +65,12 @@ public:
      * Angle 0° = +X (east), 90° = +Z (south), increasing CCW in XZ. Used for
      * common-angle demos (60°/90°/120°/135°) and acute forks that may bend-to-dock.
      * @param armAnglesDeg At least two finite angles; duplicates within 1° are merged.
+     * @param intoHub Optional per-input-angle edge direction (true = leaf→hub).
+     *        Empty defaults to alternating tip-at-to / tip-at-from after sort.
+     *        When provided, size must match `armAnglesDeg` (pre-merge).
      */
-    [[nodiscard]] static Result<RoadNetwork> makeFan(float span, int lanes, std::vector<float> armAnglesDeg);
+    [[nodiscard]] static Result<RoadNetwork> makeFan(float span, int lanes, std::vector<float> armAnglesDeg,
+                                                     std::vector<bool> intoHub = {});
     /** @brief Scene: 3-way with a 60° acute fork (may bend tips to dock). */
     [[nodiscard]] static Result<RoadNetwork> makeFork(float span = 32.f, int lanes = 2);
     /** @brief Scene: 3-way with 135° corners (skewed Y). */
