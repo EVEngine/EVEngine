@@ -63,6 +63,7 @@ float laneCenterOffset(const RoadStyle& style, int lanesForward, int lanesBackwa
     if (reverse) {
         return -asphaltHalf + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
     }
+    // Forward lanes start after the opposing block so unequal counts stay centered.
     const float boundary = -asphaltHalf + style.laneWidth * static_cast<float>(lanesBackward);
     return boundary + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
 }

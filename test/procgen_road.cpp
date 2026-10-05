@@ -931,6 +931,8 @@ TEST_CASE("procgen.road.bidirectional.asymmetricLaneCenters") {
     REQUIRE(baked.ok());
     REQUIRE_EQ(baked.value().overlay.lanes.size(), 3u);
 
+    // asphaltHalf = 5.25; boundary = -5.25 + 7 = 1.75
+    // forward lane0 center = 3.5; reverse lane0 = -3.5 (edge along +X → lateral in +Z)
     float fwdLat = 0.f, revLat = 0.f;
     bool  foundFwd = false, foundRev = false;
     for (const auto& poly : baked.value().overlay.lanes) {
