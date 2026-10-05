@@ -1,6 +1,7 @@
 #include "combat/CombatEnemyAI.h"
 
 #include <cmath>
+#include <optional>
 #include <utility>
 
 namespace eve::combat {
@@ -33,7 +34,7 @@ Result<void> CombatEnemyIntentSource::registerEnemy(CombatEnemyDefinition defini
     auto valid = definition.validate();
     if (!valid) return valid;
     EnemyState state;
-    state.definition = std::move(definition);
+    state.definition                            = std::move(definition);
     enemies_[state.definition.subject.format()] = std::move(state);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -59,7 +60,7 @@ Result<void> CombatEnemyIntentSource::setLightAction(SubjectRef subject, Logical
             Diagnostic::error(DiagnosticCode::NotFound, "enemy was not found", subject.format()));
     if (actionId.format().empty()) return invalid("light action id is empty", "actionId");
     found->second.lightAction = std::move(actionId);
-    found->second.hasAction = true;
+    found->second.hasAction   = true;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -68,30 +69,52 @@ Result<std::optional<action::AbilityIntent>> CombatEnemyIntentSource::nextIntent
         return Result<std::optional<action::AbilityIntent>>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "enemy target runtime is unavailable", "targets"));
 
+    std::optional<action::AbilityIntent> emitted;
     for (auto& [key, enemy] : enemies_) {
         (void)key;
+        if (enemy.phase == CombatEnemyPhase::Recover &&
+            tick.value() >= enemy.phaseStartTick + enemy.definition.recoverTicks)
+            enemy.phase = CombatEnemyPhase::Idle;
+        if (emitted) continue;
         if (!enemy.hasAction) continue;
         if (enemy.definition.lightGrant.isZero()) continue;
+
+        const auto emitAttack = [&]() {
+            action::AbilityIntent intent;
+            intent.grantId          = enemy.definition.lightGrant;
+            intent.request.actionId = enemy.lightAction;
+            enemy.lastAttackTick    = tick.value();
+            enemy.phase = enemy.definition.recoverTicks > 0 ? CombatEnemyPhase::Recover : CombatEnemyPhase::Idle;
+            enemy.phaseStartTick = tick.value();
+            emitted              = std::move(intent);
+        };
+
+        if (enemy.phase == CombatEnemyPhase::Telegraph) {
+            if (tick.value() >= enemy.phaseStartTick + enemy.definition.telegraphTicks) emitAttack();
+            continue;
+        }
+        if (enemy.phase == CombatEnemyPhase::Recover) continue;
+
         const auto selfPose = poses_.find(enemy.definition.subject.format());
         if (selfPose == poses_.end()) continue;
         auto lock = targets_->state(enemy.definition.subject);
         if (!lock || !lock.value().target) continue;
         const auto targetPose = poses_.find(lock.value().target->format());
         if (targetPose == poses_.end()) continue;
-        const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z,
-                                      targetPose->second.x, targetPose->second.y, targetPose->second.z);
+        const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z, targetPose->second.x,
+                                      targetPose->second.y, targetPose->second.z);
         if (dist > enemy.definition.nearRadius) continue;
-        if (enemy.lastAttackTick != 0 &&
-            tick.value() < enemy.lastAttackTick + enemy.definition.attackCooldownTicks)
+        if (enemy.lastAttackTick != 0 && tick.value() < enemy.lastAttackTick + enemy.definition.attackCooldownTicks)
             continue;
 
-        action::AbilityIntent intent;
-        intent.grantId = enemy.definition.lightGrant;
-        intent.request.actionId = enemy.lightAction;
-        enemy.lastAttackTick = tick.value();
-        return Result<std::optional<action::AbilityIntent>>::success(std::move(intent));
+        if (enemy.definition.telegraphTicks > 0) {
+            enemy.phase          = CombatEnemyPhase::Telegraph;
+            enemy.phaseStartTick = tick.value();
+            continue;
+        }
+        emitAttack();
     }
-    return Result<std::optional<action::AbilityIntent>>::success(std::nullopt);
+    return Result<std::optional<action::AbilityIntent>>::success(std::move(emitted));
 }
 
 CombatEnemyBand CombatEnemyIntentSource::band(SubjectRef subject) const {
@@ -103,11 +126,22 @@ CombatEnemyBand CombatEnemyIntentSource::band(SubjectRef subject) const {
     if (!lock || !lock.value().target) return CombatEnemyBand::Far;
     const auto targetPose = poses_.find(lock.value().target->format());
     if (targetPose == poses_.end()) return CombatEnemyBand::Far;
-    const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z,
-                                  targetPose->second.x, targetPose->second.y, targetPose->second.z);
+    const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z, targetPose->second.x,
+                                  targetPose->second.y, targetPose->second.z);
     if (dist <= found->second.definition.nearRadius) return CombatEnemyBand::Near;
     if (dist <= found->second.definition.midRadius) return CombatEnemyBand::Mid;
     return CombatEnemyBand::Far;
+}
+
+CombatEnemyPhase CombatEnemyIntentSource::phase(SubjectRef subject) const {
+    const auto found = enemies_.find(subject.format());
+    if (found == enemies_.end()) return CombatEnemyPhase::Idle;
+    return found->second.phase;
+}
+
+bool CombatEnemyIntentSource::isPunishable(SubjectRef subject) const {
+    const auto current = phase(subject);
+    return current == CombatEnemyPhase::Telegraph || current == CombatEnemyPhase::Recover;
 }
 
 }  // namespace eve::combat

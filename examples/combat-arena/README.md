@@ -8,7 +8,10 @@ Deterministic vertical-slice that composes the action-combat foundation:
 - Hitstop/hitstun feel
 - Guard/parry windows
 - Soft/hard lock-on
-- Simple near-band enemy AI
+- Lock-on camera framing (`CombatCameraFraming` + `CameraController` `lockon`)
+- Motion warp toward the locked target during attacks
+- Simple near-band enemy AI with optional telegraph / recover punish windows
+- `CombatLoopRuntime` welding the 3D slice for one simulation tick
 
 This example is a headless-friendly simulation loop driven from Squirrel. It
 proves the runtimes compose without copying HP/cooldown state into script.

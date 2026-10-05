@@ -17,14 +17,21 @@ namespace eve::combat {
 /** @brief Distance band used by the simple enemy brain. */
 enum class CombatEnemyBand : std::uint8_t { Far, Mid, Near };
 
+/** @brief Authored move-set phase; Telegraph and Recover are punish windows. */
+enum class CombatEnemyPhase : std::uint8_t { Idle, Telegraph, Recover };
+
 /** @brief Owning configuration for one enemy fighter. */
 struct CombatEnemyDefinition {
     SubjectRef             subject;
     std::string            ownerId;
     action::AbilityGrantId lightGrant{};
-    double                 nearRadius         = 1.8;
-    double                 midRadius          = 4.0;
+    double                 nearRadius          = 1.8;
+    double                 midRadius           = 4.0;
     std::uint64_t          attackCooldownTicks = 30;
+    /** @brief Ticks spent warning before the light attack; 0 emits immediately. */
+    std::uint64_t telegraphTicks = 0;
+    /** @brief Ticks spent recovering after the light attack; 0 returns to Idle immediately. */
+    std::uint64_t recoverTicks = 0;
 
     /** @brief Validate subject, owner and positive radii. */
     [[nodiscard]] Result<void> validate() const;
@@ -33,9 +40,10 @@ struct CombatEnemyDefinition {
 /**
  * @brief Deterministic enemy intent source for arena vertical slices.
  *
- * When the locked target is inside the near band and the cooldown elapsed, it
- * emits one light-attack intent. Otherwise it emits nothing and the game moves
- * the enemy via CombatCharacterRuntime / CombatLocomotionRuntime.
+ * When the locked target is inside the near band and the cooldown elapsed, the
+ * brain enters Telegraph (if authored), then emits one light-attack intent, then
+ * Recover. Telegraph and Recover are punishable. Zero telegraph/recover ticks
+ * keep the original immediate-attack contract.
  */
 class EVENGINE_API_BACKENDS CombatEnemyIntentSource final : public action::IAbilityIntentSource {
 public:
@@ -54,6 +62,10 @@ public:
     [[nodiscard]] Result<std::optional<action::AbilityIntent>> nextIntent(SimulationTick tick) override;
     /** @brief Current band for debugging; Far when unknown. */
     [[nodiscard]] CombatEnemyBand band(SubjectRef subject) const;
+    /** @brief Current move-set phase; Idle when the subject is unknown. */
+    [[nodiscard]] CombatEnemyPhase phase(SubjectRef subject) const;
+    /** @brief True while the enemy is in Telegraph or Recover. */
+    [[nodiscard]] bool isPunishable(SubjectRef subject) const;
 
 private:
     struct Pose {
@@ -64,8 +76,10 @@ private:
     struct EnemyState {
         CombatEnemyDefinition definition;
         LogicalId             lightAction;
-        bool                  hasAction = false;
+        bool                  hasAction      = false;
         std::uint64_t         lastAttackTick = 0;
+        CombatEnemyPhase      phase          = CombatEnemyPhase::Idle;
+        std::uint64_t         phaseStartTick = 0;
     };
 
     std::map<std::string, EnemyState, std::less<>> enemies_;

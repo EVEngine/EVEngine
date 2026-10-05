@@ -61,20 +61,34 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 | 运行时 / 窗口 | 职责 |
 |---|---|
 | `MeleeHitRuntime` | Hitbox 目录 + Hurtbox + 扫掠命中；可选部位倍率后提交 `DamageRuntime` |
-| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 攻击 Root Motion / 硬直 / 死亡 |
+| `CombatActionWindowState` | Montage hitbox/invuln 窗口；可借用 `MeleeHitRuntime` 自动 arm/disarm |
+| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 攻击 Root Motion / 硬直 / 死亡；可选地面与胶囊探针 |
+| `CombatCharacterPoseSource` | 把角色位置/朝向变成 melee pose（局部 +Z 为面朝方向） |
+| `CombatMotionWarp` | 攻击中向 lock-on 目标做有预算的水平校正 |
+| `CombatCameraFraming` | 锁定镜头数学（eye/lookAt）；camera 模块只负责 apply |
+| `CombatLoopRuntime` | 一帧顺序焊接 warp → character → hurtbox → melee → guard/feel → camera |
 | `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |
 | `GuardWindowState` | `combat:guard-window`（`block`/`parry`）并改写伤害请求 |
 | `ActionCancelWindowState` + `ActionInputBuffer` | `input:cancel-window` 允许列表与确定性输入缓冲 |
 | `ComboGraph` | 显式 Ability 转移图（与 cancel/combo 窗口联用） |
 | `CombatTargetRuntime` | Soft/hard lock-on 与切换 |
-| `CombatEnemyIntentSource` | 近距环敌人攻击意图（`IAbilityIntentSource`） |
+| `CombatEnemyIntentSource` | 近距环敌人；可选 Telegraph / Recover 惩罚窗 |
 | `BodyPartDamageRule` | 按部位倍率的 `IDamageRule` |
+
+`CombatCharacterRuntime` 默认落在平面 `y = 0`。游戏可以借用 `ICombatGroundProvider`
+（高度采样）和 `ICombatMoveProbe`（胶囊推进），缺省时行为与第一版平面控制器相同。
+`HitFeelRuntime` 的 hitstop 通过 `setTimeFrozen` 暂停角色积分，时长权威仍在 feel。
+
+`CombatLoopRuntime` 只排序借用对象，不引入 CombatActor。Motion warp 仅在 `Attacking`
+且存在 lock-on 时生效；超出 per-tick 预算的 warp 被跳过而不是静默吸附。
+`CombatCameraFraming` 属于 combat（L2）；`CameraController` 的 `lockon` 模式只消费
+世界坐标（`setTarget` + `setSecondaryTarget`），不依赖 combat 头文件。
 
 Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 `priority`）与
 `combat:guard-window`（payload `mode=block|parry`）。近战武器 `MeleeLogic::fire` 会推送与远程一致的
 `WeaponEventType::Fire` 事件，几何命中仍由 `MeleeHitRuntime` 拥有。
 
-可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定契约见 `test/combat_*.cpp`。
+可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定/循环契约见 `test/combat_*.cpp`。
 
 ## 组合边界
 

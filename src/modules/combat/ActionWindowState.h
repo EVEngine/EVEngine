@@ -14,6 +14,8 @@
 
 namespace eve::combat {
 
+class MeleeHitRuntime;
+
 /**
  * @brief Resolves an owning stable subject from a generation-qualified ECS handle.
  * @remarks Called synchronously on the owner thread without locks. It must not
@@ -36,6 +38,13 @@ public:
 
     /** @brief Opt this owner into or out of Action state-window dispatch. */
     void setEnabled(bool enabled);
+    /**
+     * @brief Borrow melee geometry so hitbox windows arm and disarm automatically.
+     * @lifetime The melee runtime must outlive this state or be cleared first.
+     */
+    void setMeleeHitRuntime(MeleeHitRuntime& melee) noexcept;
+    /** @brief Clear the borrowed melee geometry owner. */
+    void clearMeleeHitRuntime() noexcept;
     /** @brief Return whether this exact owner is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionStateWindowSink::supports */
@@ -65,6 +74,7 @@ private:
 
     ActionWindowSubjectResolver       resolver_;
     std::map<ActiveKey, ActiveWindow> active_;
+    MeleeHitRuntime*                  melee_ = nullptr;
 };
 
 }  // namespace eve::combat
