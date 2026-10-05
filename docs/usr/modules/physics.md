@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Physics()`
 
-创建 World、Body、Fixture（Box2D 2D 刚体）、World3D / Body3D / Shape3D（Box3D 3D 刚体），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid2D`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
+创建 World、Body、Fixture、Joint2D、Mechanism2D（Box2D 2D 刚体与机构）、World3D / Body3D / Shape3D / Joint3D / Mechanism3D（Box3D 3D 刚体与机构），以及可交互的 `Cloth`（2D Verlet 布料）、`Cloth3D`（3D Verlet 布料）与 `Fluid2D`（2D 粒子流体）。2D 脚本使用像素坐标并按 meter 换算；3D 使用米（Box3D 原生单位）；2D 布料/流体在像素空间模拟，3D 布料在米制空间模拟。
 
 ## 基本用法
 
@@ -16,6 +16,49 @@ local body = world.newBody("dynamic", 100, 60);
 body.newRectangleFixture(32, 32, 1.0, 0.3, 0.1);
 world.update(dt);
 ```
+
+### 2D 关节与机械机构
+
+`World` 拥有 `Joint2D` / `Mechanism2D`。锚点、长度与线速度使用像素空间（与 Body 一致）；角度与角速度使用弧度。支持 distance / revolute / prismatic / weld / wheel / motor / gear。
+
+```squirrel
+local hinge = world.newRevoluteJoint(frame, door, 100, 60, false);
+hinge.setRevoluteLimits(true, -0.5, 1.2);
+hinge.setRevoluteMotor(true, 2.0, 40.0);
+
+local rail = world.newPrismaticJoint(frame, platform, 200, 100, 1, 0, false);
+rail.setPrismaticLimits(true, -40, 40);
+rail.setPrismaticMotor(true, 30, 500); // 像素/秒，像素力
+
+local weld = world.newWeldJoint(bodyA, bodyB, 150, 80, false);
+weld.setWeldSpring(0.0, 1.0); // 0 Hz 为刚性
+
+local gear = world.newGearJoint(hinge, rail, 1.0);
+gear.setGearRatio(2.0);
+```
+
+在关节原语之上，`Mechanism2D` 提供转轴、棘轮与曲柄滑块。销毁机构会销毁其关节；棘轮单向锁定在每次 `world.update()` / `step()` 前自动同步。
+
+```squirrel
+local shaft = world.newShaft(bearing, rotor, 100, 100, false);
+shaft.setDrive(8.0, 60.0); // rad/s, N·m
+
+local ratchet = world.newRatchet(frame, wheel, 100, 100, 1, 200.0, false);
+ratchet.setDrive(3.0, 40.0); // 仅在自由方向驱动
+
+local cs = world.newCrankSlider(
+    frame, crank, rod, slider,
+    0, 0,       // 曲柄转轴锚点（像素）
+    40, 0,      // 曲柄销
+    120, 0,     // 滑块销
+    1, 0,       // 滑轨轴
+    false);
+cs.setDrive(4.0, 80.0);
+local stroke = cs.getSliderTranslation(); // 像素
+```
+
+`getDriveAngle()` / `getSpinSpeed()` 读取驱动铰链状态；曲柄滑块另有
+`getSliderTranslation()`。`getDriveJoint()` 等可取回底层 `Joint2D`。
 
 ### 刚体（Box3D，3D）
 
@@ -311,7 +354,7 @@ fluid.draw(gfx);
 示例：[`examples/softbody/`](../../../examples/softbody/)（2D 布料 + 流体）、[`examples/softbody3d/`](../../../examples/softbody3d/)（3D 布料）
 
 `Physics` 保存 2D 像素/米比例并创建 World / World3D / DistanceField3D / Cloth /
-Cloth3D / Fluid2D。World 管理 Body 与 Fixture；World3D 管理 Body3D、Shape3D 和 Joint3D。
+Cloth3D / Fluid2D。World 管理 Body、Fixture、Joint2D 与 Mechanism2D；World3D 管理 Body3D、Shape3D、Joint3D 与 Mechanism3D。
 布料、流体和距离场可按需组合；`Cloth.setCollideWorld(world)` /
 `Cloth3D.setCollideWorld(world3)` 可将布料接到刚体世界做碰撞。2D 碰撞消息为
 `begincontact` / `endcontact`；3D 普通碰撞为 `begincontact3d` / `endcontact3d`，Sensor
