@@ -23,6 +23,15 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "src" / "engine", ROOT / "src" / "modules")
 SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
 
+# C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
+# declaration. Skip them before matching the return type so member bindings to
+# attributed getters stay resolvable.
+CXX_ATTRIBUTE = r"(?:\[\[[^\]]*\]\]\s*)*"
+CXX_DECL_PREFIX = (
+    r"(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+|"
+    rf"{CXX_ATTRIBUTE})*"
+)
+
 
 @dataclass
 class Parameter:
@@ -264,7 +273,7 @@ class SignatureIndex:
         lookup_class = self.aliases.get(class_name, class_name)
         candidates: list[tuple[str, list[Parameter]]] = []
         declaration_pattern = re.compile(
-            rf"(?m)(?:^|[;{{}}])\s*(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+)*"
+            rf"(?m)(?:^|[;{{}}])\s*{CXX_DECL_PREFIX}"
             rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(method)}\s*\(")
         for block in self.classes.get(lookup_class, []):
             masked = mask_comments(block)
@@ -277,7 +286,8 @@ class SignatureIndex:
                                    parse_parameters(block[opening + 1 : closing])))
         if not candidates:
             definition_pattern = re.compile(
-                rf"(?m)([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
+                rf"(?m){CXX_DECL_PREFIX}"
+                rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
             needle = f"{lookup_class}::{method}"
             for path, source in self.sources.items():
                 if needle not in source:
@@ -319,7 +329,9 @@ class SignatureIndex:
     def free(self, name: str) -> tuple[str, list[Parameter]] | None:
         if name in self.free_cache:
             return self.free_cache[name]
-        pattern = re.compile(rf"(?m)^\s*(?:static\s+)?([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
+        pattern = re.compile(
+            rf"(?m)^\s*(?:static\s+|{CXX_ATTRIBUTE})*"
+            rf"([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
         candidates = []
         needle = f"{name}("
         for path, source in self.sources.items():

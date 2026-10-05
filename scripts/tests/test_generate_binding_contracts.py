@@ -68,6 +68,26 @@ class SignatureIndexTests(unittest.TestCase):
         self.assertIsNotNone(signature)
         self.assertEqual([parameter.name for parameter in signature[1]], ["pixelWidth"])
 
+    def test_member_signature_resolves_nodiscard_inline_getters(self) -> None:
+        source = (
+            Path("effect.h"),
+            "class ParticleEffect {\n"
+            "public:\n"
+            "    [[nodiscard]] float getTimelineSeconds() const { return 0.f; }\n"
+            '    [[nodiscard("check me")]] bool isTimelinePlaying() const;\n'
+            "};\n",
+        )
+
+        index = SignatureIndex(dict([source]))
+        seconds = index.member("ParticleEffect", "getTimelineSeconds")
+        playing = index.member("ParticleEffect", "isTimelinePlaying")
+
+        self.assertIsNotNone(seconds)
+        self.assertEqual(seconds[0], "float")
+        self.assertEqual(seconds[1], [])
+        self.assertIsNotNone(playing)
+        self.assertEqual(playing[0], "bool")
+
 
 class CatalogExportTests(unittest.TestCase):
     def test_json_and_dts_export_round_trip_fields(self) -> None:
