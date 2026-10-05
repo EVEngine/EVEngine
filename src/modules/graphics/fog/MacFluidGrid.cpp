@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+
 namespace eve::graphics::fog {
 
 Result<void> MacFluidGrid::configure(const FogDensityField& field, float fixedDt) {
@@ -60,7 +63,7 @@ std::size_t MacFluidGrid::wIndex(int x, int y, int k) const noexcept {
 Result<void> MacFluidGrid::pullDensity(const FogDensityField& field) {
     if (field.width() != width_ || field.height() != height_ || field.depth() != depth_) {
         return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::Rejected, "density field resolution mismatch", "pullDensity", {},
+            DiagnosticCode::Conflict, "density field resolution mismatch", "pullDensity", {},
             "graphics.fog"));
     }
     const auto src = field.densitySpan();
@@ -71,7 +74,7 @@ Result<void> MacFluidGrid::pullDensity(const FogDensityField& field) {
 Result<void> MacFluidGrid::pushDensity(FogDensityField& field) const {
     if (field.width() != width_ || field.height() != height_ || field.depth() != depth_) {
         return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::Rejected, "density field resolution mismatch", "pushDensity", {},
+            DiagnosticCode::Conflict, "density field resolution mismatch", "pushDensity", {},
             "graphics.fog"));
     }
     for (int z = 0; z < depth_; ++z)

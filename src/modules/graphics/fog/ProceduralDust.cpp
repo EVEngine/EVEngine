@@ -4,6 +4,8 @@
 
 #include <cmath>
 
+#include <glm/common.hpp>
+
 namespace eve::graphics::fog {
 namespace {
 

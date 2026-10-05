@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+
 namespace eve::graphics::fog {
 
 void BeerLightCache::invalidate() {

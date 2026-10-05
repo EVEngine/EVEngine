@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
+
 namespace eve::graphics::fog {
 
 std::optional<FogRayInterval> AnalyticalVolLight::intersectBeam(const glm::vec3& origin,

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/vec3.hpp>
+
 namespace eve::graphics::fog {
 
 Result<void> ContinuousArt::setParams(const ContinuousArtParams& params) {
