@@ -85,11 +85,13 @@ public:
     void applyMontageRootMotion(const eve::animation::TransformTRS& delta) noexcept override {
         x += delta.px;
         y += delta.py;
+        z += delta.pz;
         ++calls;
     }
 
     float x     = 0.0f;
     float y     = 0.0f;
+    float z     = 0.0f;
     int   calls = 0;
 };
 
@@ -605,4 +607,93 @@ TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
     REQUIRE(player.replaceClip("memory://clips/anticipation", std::move(cloned)).ok());
     CHECK_EQ(player.time(), eve::Duration::fromSeconds(0.5).takeValue());
     CHECK(std::fabs(player.pose().local(0).px - 1.5f) < 1e-4f);
+}
+
+TEST_CASE("actionMontage.rootMotionPolicyBakesAndFacesThroughOwnedPlayer") {
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontagePlayer player(skeleton);
+    eve::animation::RootMotionPolicy policy;
+    policy.bakeTranslationIntoPose = true;
+    policy.applySpace              = eve::animation::RootMotionApplySpace::CharacterFacing;
+    policy.characterYaw            = static_cast<float>(M_PI * 0.5);  // +X from local +Z
+    // Clip moves along +X; facing +90° publishes that as -Z after Ry mapping of X.
+    // Use a Z-travelling clip via custom assets below.
+    REQUIRE(player.setRootMotionPolicy(policy).ok());
+
+    auto clip = std::make_unique<eve::animation::AnimClip>("forward");
+    clip->setDuration(1.0f);
+    clip->setLoop(false);
+    clip->addPositionKey(0, 0.0f, 0.0f, 0.0f, 0.0f);
+    clip->addPositionKey(0, 1.0f, 0.0f, 0.0f, 2.0f);  // +Z travel
+    std::vector<eve::animation::MontageClipAsset> clips;
+    clips.push_back({"memory://clips/anticipation", std::move(clip)});
+    clips.push_back({"memory://clips/strike", rootClip("unused", 0.0f)});
+
+    auto timeline                       = montageTimeline();
+    timeline.montage.rootMotionVertical = false;
+    REQUIRE(player.prepare(timeline, std::move(clips)).ok());
+    // prepare overlays authored locks; bake / facing / yaw must survive.
+    CHECK(player.getRootMotionPolicy().bakeTranslationIntoPose);
+    CHECK(player.getRootMotionPolicy().applySpace == eve::animation::RootMotionApplySpace::CharacterFacing);
+    CHECK(std::fabs(player.getRootMotionPolicy().characterYaw - static_cast<float>(M_PI * 0.5)) < 1e-5f);
+    CHECK(!player.getRootMotionMask().translationY);
+
+    RootReceiver receiver;
+    player.setRootMotionReceiver(receiver);
+    const eve::action::ActionExecutionId execution(41);
+    REQUIRE(player.play(execution).ok());
+    eve::action::ActionAdvance advance;
+    advance.id           = execution;
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(player.present(advance, eve::SimulationTick(1)).ok());
+    CHECK(std::fabs(receiver.x - 1.0f) < 1e-4f);  // local +Z 1.0 after 0.5s @ 2 u/s, facing → +X
+    CHECK(std::fabs(receiver.z) < 1e-4f);
+    CHECK(std::fabs(player.pose().local(0).pz) < 1e-4f);  // baked out of pose
+}
+
+TEST_CASE("actionMontage.coordinatorLayerRootMotionPolicySurvivesPrepareLocks") {
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    eve::animation::MontageCoordinator coordinator(skeleton);
+    RootReceiver                       receiver;
+    REQUIRE(coordinator.setLayerRootMotionReceiver(0, receiver).ok());
+    eve::animation::RootMotionPolicy policy;
+    policy.bakeTranslationIntoPose = true;
+    policy.applySpace              = eve::animation::RootMotionApplySpace::CharacterFacing;
+    policy.characterYaw            = static_cast<float>(M_PI * 0.5);
+    REQUIRE(coordinator.setLayerRootMotionPolicy(0, policy).ok());
+
+    auto clip = std::make_unique<eve::animation::AnimClip>("forward");
+    clip->setDuration(1.0f);
+    clip->setLoop(false);
+    clip->addPositionKey(0, 0.0f, 0.0f, 0.0f, 0.0f);
+    clip->addPositionKey(0, 1.0f, 0.0f, 0.0f, 2.0f);
+    std::vector<eve::animation::MontageClipAsset> clips;
+    clips.push_back({"memory://clips/anticipation", std::move(clip)});
+    clips.push_back({"memory://clips/strike", rootClip("unused", 0.0f)});
+    auto timeline                       = montageTimeline();
+    timeline.montage.rootMotionVertical = false;
+    auto handle =
+        coordinator.play(0, timeline, std::move(clips), eve::action::ActionExecutionId(51), eve::SimulationTick(1));
+    REQUIRE(handle.ok());
+    auto resolved = coordinator.resolve(handle.value());
+    REQUIRE(resolved.ok());
+    CHECK(resolved.value().get().getRootMotionPolicy().bakeTranslationIntoPose);
+    CHECK(!resolved.value().get().getRootMotionMask().translationY);  // prepare overlays authored locks
+
+    eve::action::ActionAdvance advance;
+    advance.id           = eve::action::ActionExecutionId(51);
+    advance.phase        = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.5).takeValue();
+    REQUIRE(coordinator.present(handle.value(), advance, eve::SimulationTick(2)).ok());
+    CHECK(std::fabs(receiver.x - 1.0f) < 1e-4f);
+    CHECK(std::fabs(resolved.value().get().pose().local(0).pz) < 1e-4f);
 }

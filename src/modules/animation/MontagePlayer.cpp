@@ -4,6 +4,7 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,15 +14,21 @@
 namespace eve::animation {
 namespace {
 
-TransformTRS filtered(TransformTRS delta, MontageRootMotionMask mask) {
-    if (!mask.translationX) delta.px = 0.0f;
-    if (!mask.translationY) delta.py = 0.0f;
-    if (!mask.translationZ) delta.pz = 0.0f;
-    if (!mask.rotation) {
-        delta.qx = delta.qy = delta.qz = 0.0f;
-        delta.qw                       = 1.0f;
-    }
-    return delta;
+RootMotionLockAxes locksFromMask(MontageRootMotionMask mask) noexcept {
+    RootMotionLockAxes locks = RootMotionLockAxes::None;
+    if (!mask.translationX) locks = locks | RootMotionLockAxes::X;
+    if (!mask.translationY) locks = locks | RootMotionLockAxes::Y;
+    if (!mask.translationZ) locks = locks | RootMotionLockAxes::Z;
+    return locks;
+}
+
+MontageRootMotionMask maskFromPolicy(const RootMotionPolicy& policy) noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = !hasLock(policy.lockAxes, RootMotionLockAxes::X);
+    mask.translationY = !hasLock(policy.lockAxes, RootMotionLockAxes::Y);
+    mask.translationZ = !hasLock(policy.lockAxes, RootMotionLockAxes::Z);
+    mask.rotation     = !policy.lockRotation;
+    return mask;
 }
 
 void multiplyRotation(TransformTRS& total, float x, float y, float z, float w) {
@@ -38,7 +45,9 @@ void multiplyRotation(TransformTRS& total, float x, float y, float z, float w) {
 }  // namespace
 
 MontagePlayer::MontagePlayer(AnimSkeleton& skeleton)
-    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {}
+    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {
+    pushRootMotionPolicyToPlayer();
+}
 
 MontagePlayer::~MontagePlayer() = default;
 
@@ -97,18 +106,15 @@ Result<void> MontagePlayer::prepare(action::ActionTimeline timeline, std::vector
     clips_         = std::move(clips);
     activeSection_ = nullptr;
     player_->stop();
-    time_                        = Duration::zero();
-    lastTick_                    = SimulationTick::zero();
-    hasLastTick_                 = false;
-    started_                     = false;
-    playing_                     = false;
-    blendingOut_                 = false;
-    weight_                      = 1.0;
-    executionId_                 = {};
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    time_        = Duration::zero();
+    lastTick_    = SimulationTick::zero();
+    hasLastTick_ = false;
+    started_     = false;
+    playing_     = false;
+    blendingOut_ = false;
+    weight_      = 1.0;
+    executionId_ = {};
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -148,11 +154,8 @@ Result<void> MontagePlayer::setSettings(action::ActionMontageSettings settings) 
     candidate.montage = settings;
     auto valid        = candidate.validate();
     if (!valid) return Result<void>::failure(valid.status());
-    timeline_->montage           = std::move(settings);
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    timeline_->montage = std::move(settings);
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -285,6 +288,47 @@ void MontagePlayer::accumulateRootMotion(TransformTRS& total) const {
                      player_->getRootMotionRotationZ(), player_->getRootMotionRotationW());
 }
 
+void MontagePlayer::pushRootMotionPolicyToPlayer() noexcept {
+    player_->setRootMotionPolicy(rootMotionPolicy_)
+        .ignore("montage root-motion policy sync uses an already-validated policy snapshot");
+}
+
+void MontagePlayer::applyTimelineRootMotionChannels() noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = timeline_->montage.rootMotionHorizontal;
+    mask.translationZ = timeline_->montage.rootMotionHorizontal;
+    mask.translationY = timeline_->montage.rootMotionVertical;
+    mask.rotation     = timeline_->montage.rootMotionRotation;
+    rootMotionMask_                 = mask;
+    rootMotionPolicy_.lockAxes      = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation  = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+void MontagePlayer::setRootMotionMask(MontageRootMotionMask mask) noexcept {
+    rootMotionMask_                = mask;
+    rootMotionPolicy_.lockAxes     = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+Result<void> MontagePlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    rootMotionMask_   = maskFromPolicy(policy);
+    auto pushed       = player_->setRootMotionPolicy(policy);
+    if (!pushed) return pushed;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontagePlayer::setRootMotionCharacterYaw(float yawRadians) {
+    auto applied = player_->setRootMotionCharacterYaw(yawRadians);
+    if (!applied) return applied;
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advance, SimulationTick tick) {
     if (!timeline_)
         return Result<MontageAdvance>::failure(
@@ -353,8 +397,8 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
             weight_ = std::min(weight_, 1.0 - t * t * (3.0 - 2.0 * t));
         }
     }
-    result.weight     = weight_;
-    result.rootMotion = filtered(result.rootMotion, rootMotionMask_);
+    result.weight = weight_;
+    // Root motion is already policy-filtered (locks / facing / rotation) by the owned AnimPlayer.
     if (receiver_) receiver_->applyMontageRootMotion(result.rootMotion);
 
     time_        = result.current;
