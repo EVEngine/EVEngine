@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/Module.h"
+#include "stylize/AttackVfxRecipe.h"
+#include "stylize/AttackVfxRuntime.h"
 #include "stylize/MeshEffect.h"
 #include "stylize/MeshEffectRenderer.h"
 #include "stylize/MeshVfxAsset.h"
@@ -52,8 +54,8 @@ class StyleRecipe;
 class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
-    Stylize() = default;
-    ~Stylize() override = default;
+    Stylize();
+    ~Stylize() override;
 
     int         getStyleCount() const;
     std::string getStyleId(int index) const;
@@ -89,6 +91,8 @@ public:
     [[nodiscard]] std::unique_ptr<SkillMeshEffect> createSkillMeshEffect(SkillMeshEffectKind kind);
     /** @brief Instantiate all runtime layers, reporting incompatible authored style parameters. */
     [[nodiscard]] eve::Result<std::unique_ptr<MeshVfxAssetInstance>> createMeshVfxAssetInstance(const MeshVfxAsset& asset);
+    /** @brief Create an empty AttackVfxRuntime pool for layered attack presentation recipes. */
+    [[nodiscard]] std::unique_ptr<AttackVfxRuntime> createAttackVfxRuntime();
 
     /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);

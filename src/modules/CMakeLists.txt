@@ -445,6 +445,13 @@ if(_has_audio_editor AND _has_audio AND _has_sound)
   target_compile_definitions(EVAudio_editor PRIVATE EVE_AUDIO_EDITOR_LIVE=1)
 endif()
 
+# stylize_action's Audio AttackVfx executor is the same optional bridge: compile
+# the OpenAL path only when audio+sound are in the profile (not on WASM/web).
+eve_module_enabled(stylize_action _has_stylize_action)
+if(_has_stylize_action AND _has_audio AND _has_sound)
+  target_compile_definitions(EVStylize_action PRIVATE EVE_STYLIZE_ACTION_AUDIO=1)
+endif()
+
 eve_module_enabled(physics _has_physics)
 option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
   "Compile the physics domain core without graphics/gpgpu presentation paths" OFF)
