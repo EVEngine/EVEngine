@@ -653,3 +653,52 @@ TEST_CASE("procgen.road.bidirectional.markingsAndNav") {
     CHECK(sawYellow);
 }
 
+TEST_CASE("procgen.road.bidirectional.asymmetricLaneCenters") {
+    RoadNetwork network;
+    auto        a = network.addNode(-20.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(20.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.laneWidth     = 3.5f;
+    style.deckThickness = 0.2f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-20.f, 0.f, 0.f}, RoadControlPoint{20.f, 0.f, 0.f}}, 1, 2, style);
+    REQUIRE(edge.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 16;
+    options.includeJunctions    = false;
+    options.includeNavigation   = true;
+    options.includePiers        = false;
+    options.includeMarkings     = true;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    REQUIRE_EQ(baked.value().overlay.lanes.size(), 3u);
+
+    // asphaltHalf = 5.25; boundary = -5.25 + 7 = 1.75
+    // forward lane0 center = 3.5; reverse lane0 = -3.5 (edge along +X → lateral in +Z)
+    float fwdLat = 0.f, revLat = 0.f;
+    bool  foundFwd = false, foundRev = false;
+    for (const auto& poly : baked.value().overlay.lanes) {
+        for (std::size_t i = 0; i + 2 < poly.xyz.size(); i += 3) {
+            const float x = poly.xyz[i];
+            const float z = poly.xyz[i + 2];
+            if (std::fabs(x) > 2.f) continue;
+            if (!foundFwd && z > 1.f) {
+                fwdLat   = z;
+                foundFwd = true;
+            }
+            if (!foundRev && z < -1.f) {
+                revLat   = z;
+                foundRev = true;
+            }
+        }
+    }
+    CHECK(foundFwd);
+    CHECK(foundRev);
+    CHECK(std::fabs(fwdLat - 3.5f) < 0.25f);
+    CHECK(std::fabs(revLat + 3.5f) < 0.25f);
+}
+
