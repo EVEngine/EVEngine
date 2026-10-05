@@ -1,6 +1,7 @@
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PrototypeTextures.h"
+#include "procgen/texture/CableTextures.h"
 #include "procgen/texture/FloorTextures.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
@@ -965,6 +966,7 @@ void TextureRecipeRegistry::registerBuiltins() {
     }
     road::registerRoadTextureRecipes(*this);
     registerFloorTextureRecipes(*this);
+    registerCableTextureRecipes(*this);
     builtinsRegistered_ = true;
 }
 

@@ -268,6 +268,53 @@ C++ 可用 `generateWoodFloorTexture()` / `generateTileFloorTexture()` 获得 al
 `generateWoodFloorPbr()` / `generateTileFloorPbr()` 获得完整 `PbrTextureSet`；注册入口为
 `registerFloorTextureRecipes()` 与 `registerFloorPbrRecipes()`。
 
+## 程序化钢缆 / 铁链 / 麻绳
+
+`mesh.cable` / `mesh.chain` / `mesh.rope` 沿 +X 生成可拼接线性构件；配套纹理与完整
+PBR 配方为 `tex.cable.steel` / `pbr.cable.steel`、`tex.chain.iron` / `pbr.chain.iron`、
+`tex.rope.hemp` / `pbr.rope.hemp`。示例见 `examples/cable-chain-rope`。
+
+| 网格 | 材质 | 形态 |
+|------|------|------|
+| `mesh.cable` | 钢缆编织 albedo + PBR | 多股螺旋管（默认 6 股） |
+| `mesh.chain` | 铸铁/锈蚀金属 | 交替椭圆环互扣 |
+| `mesh.rope`  | 麻纤维编织 | 三股螺旋（股径更大、略鼓） |
+
+网格共享参数：`segments`、`segLength`、`radius`、`thickness`、`strands`、`twists`、
+`lengthSegs`、`radialSegs`、`majorSegs`、`minorSegs`、`scale`、`uvRepeat`。
+`twists` 取整数时，每股螺旋在单元接缝处相位闭合，可无缝拼接。
+
+纹理常用旋钮：`strands`、`twist`、`gap`、`wear`、`contrast`；钢缆另有 `polish`，
+铁链有 `rust`，麻绳有 `fiber`。PBR 额外旋钮与地板配方相同（`roughnessLow` /
+`roughnessHigh` / `metallic` / `normalStrength` / `aoStrength` / `heightStrength`）。
+
+```squirrel
+local pResult = gen.newParams();
+if (!pResult.ok) throw pResult.status.summary;
+local p = pResult.value;
+p.setInt("segments", 8);
+p.setFloat("segLength", 1.0);
+p.setFloat("radius", 0.08);
+p.setFloat("thickness", 0.022);
+p.setInt("strands", 6);
+p.setInt("twists", 1);
+local meshResult = gen.buildMesh("mesh.cable", p);
+if (!meshResult.ok) throw meshResult.status.summary;
+
+local tpResult = gen.newParams();
+if (!tpResult.ok) throw tpResult.status.summary;
+local tp = tpResult.value;
+tp.setSize(256, 256);
+tp.setInt("strands", 6);
+tp.setFloat("twist", 3.0);
+local pbrResult = gen.generatePbrMaterial("pbr.cable.steel", tp);
+if (!pbrResult.ok) throw pbrResult.status.summary;
+```
+
+C++ 入口：`generateCableChainRope()` / `registerCableChainRopeRecipes()`，以及
+`generateSteelCableTexture()` / `generateIronChainTexture()` / `generateHempRopeTexture()`
+与对应 `*Pbr` / `registerCableTextureRecipes()` / `registerCablePbrRecipes()`。
+
 ### Params 的类型与尺寸语义
 
 `Params` 的算法私有值由 owning 的 `Value::Object` 保存。`setInt`、`setFloat`、
@@ -1405,6 +1452,25 @@ local mesh = meshResult.value; // mesh.greatwall / mesh.hedge / mesh.chevaldefri
 ```
 
 共享参数：`segments`、`segLength`、`height`、`depth`、`thickness`、`scale`、`uvRepeat`。
+
+### 生成钢缆 / 铁链 / 麻绳
+
+```squirrel
+local paramsResult = gen.newParams();
+if (!paramsResult.ok) throw paramsResult.status.summary;
+local p = paramsResult.value;
+p.setInt("segments", 6);
+p.setFloat("segLength", 1.0);
+p.setFloat("radius", 0.10);
+p.setFloat("thickness", 0.045);
+p.setInt("strands", 3);
+p.setInt("twists", 1);
+local meshResult = gen.buildMesh("mesh.rope", p); // 或 mesh.cable / mesh.chain
+if (!meshResult.ok) throw meshResult.status.summary;
+```
+
+详见上文「程序化钢缆 / 铁链 / 麻绳」；配套 PBR 为 `pbr.cable.steel` /
+`pbr.chain.iron` / `pbr.rope.hemp`。
 
 ### 生成无缝材质
 
