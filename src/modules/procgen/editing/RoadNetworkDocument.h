@@ -13,6 +13,14 @@
 
 namespace eve::procgen_editing {
 
+using editing::CapabilityId;
+using editing::DomainOperation;
+using editing::IDomainOperationTarget;
+using editing::IDomainOperationTargetStaging;
+using editing::IEditableTarget;
+using editing::TargetDescriptor;
+using editing::TargetId;
+
 /** @brief Authoring junction node with a stable id. */
 struct RoadNodeRecord {
     StableId id;
