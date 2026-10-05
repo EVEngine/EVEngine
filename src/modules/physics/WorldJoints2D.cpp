@@ -31,16 +31,16 @@ b2Vec2 normalizedAxisPixels(float x, float y, const char *operation) {
     return b2Vec2(x / length, y / length);
 }
 
-Joint2D *adoptJoint(World *world, Body *bodyA, Body *bodyB, b2Joint *raw, Joint2D::Kind kind) {
-    const PhysicsJointHandle runtimeHandle = world->nextJointRuntimeHandle();
-    auto *joint = new Joint2D(world, bodyA, bodyB, raw, runtimeHandle, kind, world->nextJointId());
+}  // namespace
+
+Joint2D *World::adoptJoint(Body *bodyA, Body *bodyB, b2Joint *raw, Joint2D::Kind kind) {
+    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
+    auto *joint = new Joint2D(this, bodyA, bodyB, raw, runtimeHandle, kind, nextJointId());
     raw->SetUserData(joint);
-    world->joints_.insert(joint);
-    world->jointHandles_[runtimeHandle] = joint;
+    joints_.insert(joint);
+    jointHandles_[runtimeHandle] = joint;
     return joint;
 }
-
-}  // namespace
 
 void World::forgetJoint(Joint2D *joint) {
     if (!joint) return;
@@ -91,7 +91,7 @@ Joint2D *World::newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float
     def.localAnchorA = bodyA->raw()->GetLocalPoint(b2Vec2(toMeters(anchorAX), toMeters(anchorAY)));
     def.localAnchorB = bodyB->raw()->GetLocalPoint(b2Vec2(toMeters(anchorBX), toMeters(anchorBY)));
     def.length = toMeters(lengthPixels);
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Distance);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Distance);
 }
 
 Joint2D *World::newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
@@ -102,7 +102,7 @@ Joint2D *World::newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float 
     b2RevoluteJointDef def;
     def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)));
     def.collideConnected = collideConnected;
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Revolute);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Revolute);
 }
 
 Joint2D *World::newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
@@ -114,7 +114,7 @@ Joint2D *World::newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float
     b2PrismaticJointDef def;
     def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)), axis);
     def.collideConnected = collideConnected;
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Prismatic);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Prismatic);
 }
 
 Joint2D *World::newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
@@ -125,7 +125,7 @@ Joint2D *World::newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anch
     b2WeldJointDef def;
     def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)));
     def.collideConnected = collideConnected;
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Weld);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Weld);
 }
 
 Joint2D *World::newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
@@ -137,7 +137,7 @@ Joint2D *World::newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anc
     b2WheelJointDef def;
     def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)), axis);
     def.collideConnected = collideConnected;
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Wheel);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Wheel);
 }
 
 Joint2D *World::newMotorJoint(Body *bodyA, Body *bodyB, bool collideConnected) {
@@ -145,7 +145,7 @@ Joint2D *World::newMotorJoint(Body *bodyA, Body *bodyB, bool collideConnected) {
     b2MotorJointDef def;
     def.Initialize(bodyA->raw(), bodyB->raw());
     def.collideConnected = collideConnected;
-    return adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Motor);
+    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Motor);
 }
 
 Joint2D *World::newGearJoint(Joint2D *joint1, Joint2D *joint2, float ratio) {
@@ -170,7 +170,7 @@ Joint2D *World::newGearJoint(Joint2D *joint1, Joint2D *joint2, float ratio) {
     def.joint1 = joint1->raw();
     def.joint2 = joint2->raw();
     def.ratio = ratio;
-    Joint2D *gear = adoptJoint(this, bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Gear);
+    Joint2D *gear = adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Gear);
     gear->setGearMembers(joint1, joint2);
     return gear;
 }

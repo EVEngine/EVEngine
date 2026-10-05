@@ -30,15 +30,6 @@ const char *bodyTypeName(b2BodyType t) {
     }
 }
 
-void destroyAttachedJoints(Body *self, World *world) {
-    if (!self || !world) return;
-    std::vector<Joint2D *> joints(world->joints_.begin(), world->joints_.end());
-    for (Joint2D *joint : joints) {
-        if (joint && joint->isValid() && (joint->bodyA_ == self || joint->bodyB_ == self))
-            joint->destroy();
-    }
-}
-
 }  // namespace
 
 Body::Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle)
@@ -46,7 +37,11 @@ Body::Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle)
 
 Body::~Body() {
     if (body_ && world_ && world_->raw()) {
-        destroyAttachedJoints(this, world_);
+        std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
+        for (Joint2D *joint : joints) {
+            if (joint && joint->isValid() && (joint->bodyA_ == this || joint->bodyB_ == this))
+                joint->destroy();
+        }
         // Invalidate fixture wrappers before DestroyBody frees b2Fixtures.
         b2Fixture *f = body_->GetFixtureList();
         while (f) {
@@ -79,7 +74,11 @@ void Body::destroy() {
         invalidate();
         return;
     }
-    destroyAttachedJoints(this, world_);
+    std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
+    for (Joint2D *joint : joints) {
+        if (joint && joint->isValid() && (joint->bodyA_ == this || joint->bodyB_ == this))
+            joint->destroy();
+    }
     b2Fixture *f = body_->GetFixtureList();
     while (f) {
         b2Fixture *next = f->GetNext();

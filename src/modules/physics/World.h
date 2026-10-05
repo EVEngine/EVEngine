@@ -5,6 +5,7 @@
 #include "common/Snapshot.h"
 #include "common/Result.h"
 #include "physics/PhysicsHandles.h"
+#include "physics/Joint2D.h"
 #include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
@@ -17,6 +18,7 @@
 class b2World;
 class b2Body;
 class b2Fixture;
+class b2Joint;
 class b2Contact;
 struct b2Manifold;
 struct b2ContactImpulse;
@@ -30,7 +32,6 @@ namespace eve::physics {
 class Body;
 class Fixture;
 class ContactRelay;
-class Joint2D;
 class Mechanism2D;
 
 /**
@@ -411,6 +412,14 @@ private:
     friend class Fixture;
     friend class Joint2D;
     friend class Mechanism2D;
+
+    /**
+     * @brief Internal: wrap a newly created Box2D joint and register ownership.
+     * @return Borrowed joint owned by this world.
+     * @ownership World owns the returned joint; body/raw pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction.
+     */
+    Joint2D *adoptJoint(Body *bodyA, Body *bodyB, b2Joint *raw, Joint2D::Kind kind);
 
     b2World      *world_ = nullptr;
     ContactRelay *relay_ = nullptr;
