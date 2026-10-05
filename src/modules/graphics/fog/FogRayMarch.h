@@ -34,7 +34,7 @@ struct FogVolumeBound {
  * Rays intersect sky shell / height layer / OBB first, then sample the density
  * field in world units so camera and actor motion cannot crawl the fog texture.
  */
-class EVENGINE_API_BACKENDS FogRayMarch {
+class EVENGINE_API_WORLD FogRayMarch {
 public:
     /** @brief Intersect a ray with a volume bound; returns empty when misses. */
     [[nodiscard]] static std::optional<FogRayInterval> intersectBound(const glm::vec3& origin,

@@ -43,7 +43,7 @@ namespace eve::graphics::fog {
  * @thread Simulation / render thread that created it; not internally synchronized.
  * @reentrancy Public methods are not reentrant and invoke no script callbacks.
  */
-class EVENGINE_API_BACKENDS FogSystem {
+class EVENGINE_API_WORLD FogSystem {
 public:
     [[nodiscard]] FogQuality quality() const noexcept { return quality_; }
     [[nodiscard]] FogQualityBudget budget() const noexcept { return budgetFor(quality_); }

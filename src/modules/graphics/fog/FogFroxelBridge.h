@@ -21,7 +21,7 @@ namespace eve::graphics::fog {
  *
  * Occupancy skipping and temporal history follow the active FogQualityBudget.
  */
-class EVENGINE_API_BACKENDS FogFroxelBridge {
+class EVENGINE_API_WORLD FogFroxelBridge {
 public:
     /**
      * @brief Inject density-field media into an AtmosphereVolume froxel grid.

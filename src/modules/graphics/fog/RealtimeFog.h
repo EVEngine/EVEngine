@@ -18,7 +18,7 @@ namespace eve::graphics::fog {
  * @ownership Module owns no live systems; `newSystem` transfers unique ownership.
  * @thread Main / simulation thread; not synchronized for concurrent writers.
  */
-class EVENGINE_API_BACKENDS RealtimeFog final : public eve::Module {
+class EVENGINE_API_WORLD RealtimeFog final : public eve::Module {
 public:
     Module_REG(RealtimeFog);
 

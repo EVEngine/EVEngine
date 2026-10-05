@@ -18,7 +18,7 @@ namespace eve::graphics::fog {
  *
  * Sampling is always in world units so fog does not crawl with screen UVs.
  */
-class EVENGINE_API_BACKENDS FogDensityField {
+class EVENGINE_API_WORLD FogDensityField {
 public:
     /** @brief Allocate a regular lattice over world bounds. */
     [[nodiscard]] Result<void> resize(int width, int height, int depth, const FogWorldBounds& bounds);

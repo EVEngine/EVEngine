@@ -17,7 +17,7 @@ namespace eve::graphics::fog {
  *
  * Invalidates when density revision, light state, or view/light direction change.
  */
-class EVENGINE_API_BACKENDS BeerLightCache {
+class EVENGINE_API_WORLD BeerLightCache {
 public:
     struct LightKey {
         glm::vec3 direction{0.f, 1.f, 0.f};

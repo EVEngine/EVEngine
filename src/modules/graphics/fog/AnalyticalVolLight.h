@@ -32,7 +32,7 @@ struct AnalyticBeam {
  *
  * Segment counts of 2 / 4 / 8 map to Fast / Enhanced / PhysicalReference budgets.
  */
-class EVENGINE_API_BACKENDS AnalyticalVolLight {
+class EVENGINE_API_WORLD AnalyticalVolLight {
 public:
     /** @brief Intersect a view ray with a capped beam; empty on miss. */
     [[nodiscard]] static std::optional<FogRayInterval> intersectBeam(const glm::vec3& origin,

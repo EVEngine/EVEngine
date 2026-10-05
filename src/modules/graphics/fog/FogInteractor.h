@@ -21,7 +21,7 @@ class MacFluidGrid;
  * drag; interiors clear concentration. Bounded grid traversal prevents thin
  * proxies from being skipped in one advection step.
  */
-class EVENGINE_API_BACKENDS FogInteractor {
+class EVENGINE_API_WORLD FogInteractor {
 public:
     /** @brief Replace the proxy set atomically after validation. */
     [[nodiscard]] Result<void> setProxies(std::vector<FogSolidProxy> proxies);

@@ -15,7 +15,7 @@ namespace eve::graphics::fog {
  * and time scale can be authored separately. Changes are rate-limited before
  * they reach the velocity solver.
  */
-class EVENGINE_API_BACKENDS SceneWind {
+class EVENGINE_API_WORLD SceneWind {
 public:
     /** @brief Target main wind in m/s (world space). */
     [[nodiscard]] Result<void> setMainWind(const glm::vec3& metersPerSecond);

@@ -13,7 +13,7 @@ namespace eve::graphics::fog {
  *
  * Art layers must not write these fields; they only consume rendered results.
  */
-class EVENGINE_API_BACKENDS FogProfile {
+class EVENGINE_API_WORLD FogProfile {
 public:
     /** @brief Extinction coefficient per unit density (σ_t), non-negative. */
     [[nodiscard]] float extinctionPerDensity() const noexcept { return extinctionPerDensity_; }

@@ -23,7 +23,7 @@ class FogInteractor;
  * fixed substep applies forces, wind, velocity advection, pressure projection,
  * and density transport. An accumulator keeps wall-clock progress under low FPS.
  */
-class EVENGINE_API_BACKENDS MacFluidGrid {
+class EVENGINE_API_WORLD MacFluidGrid {
 public:
     static constexpr float kDefaultFixedDt = 1.f / 60.f;
     static constexpr float kMaxAccumulated = 0.25f;

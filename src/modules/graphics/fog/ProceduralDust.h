@@ -25,7 +25,7 @@ struct DustParticle {
  * Fine and Mid bands share a stable world-space hash distribution with a continuous
  * local turbulence offset so camera motion never leaves fixed screen-space noise.
  */
-class EVENGINE_API_BACKENDS ProceduralDust {
+class EVENGINE_API_WORLD ProceduralDust {
 public:
     /**
      * @brief Generate dust inside an AABB for the current view time.

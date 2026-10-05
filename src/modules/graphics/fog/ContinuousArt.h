@@ -12,7 +12,7 @@ namespace eve::graphics::fog {
  * Consumes FogRayResult only. Never writes density, velocity, extinction, or
  * transmittance — art parameters are presentation-only.
  */
-class EVENGINE_API_BACKENDS ContinuousArt {
+class EVENGINE_API_WORLD ContinuousArt {
 public:
     [[nodiscard]] const ContinuousArtParams& params() const noexcept { return params_; }
 
