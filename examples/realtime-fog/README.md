@@ -8,6 +8,9 @@ analytic sphere interactors, and froxel composite through the existing
 make run/linux-debug GAME=examples/realtime-fog
 ```
 
+Defaults to **fast** quality (friendly to software Vulkan). Press `2` / `3` on a
+real GPU for denser froxels.
+
 Controls:
 
 | Key | Action |
@@ -21,4 +24,5 @@ Controls:
 
 Each frame the example steps the MAC solver, syncs density into the Volumetric
 froxel grid (`FogSystem.syncToVolumetric`), uploads the slice atlas, and
-composites with GBuffer depth.
+composites with GBuffer depth. After a few frames it writes `realtime-fog.png`
+via `gfx.saveFramePng`.

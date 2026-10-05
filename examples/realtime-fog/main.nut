@@ -1,6 +1,8 @@
 // Realtime fog demo: MAC fluid + SceneWind + sphere interactor → froxel composite.
 // Requires has_module("realtimeFog"). Controls: 1/2/3 quality, WASD wind, arrows move
 // the solid sphere, Space pauses sim, R reseeds.
+// Default quality is "fast" so headless Lavapipe can advance frames; press 2/3 on a
+// real GPU for denser froxels.
 
 persist rfCamera = null
 persist rfVolume = null
@@ -16,6 +18,8 @@ persist rfProxyZ = -6.0
 persist rfProxyPrevX = 0.0
 persist rfProxyPrevZ = -6.0
 persist rfLightDir = [0.25, 1.0, 0.15]
+persist rfFrame = 0
+persist rfScreenshotSaved = false
 
 function rfObject(mesh, x, y, z, sx, sy, sz, r, g, b) {
     local object = eve.Renderable3D();
@@ -95,8 +99,8 @@ eve_init = function() {
     rfVolume.configureFroxelGrid(48, 27, 32, 0.1, 80.0);
 
     rfFog = eve.RealtimeFog().newSystem();
-    rfFog.setQuality("enhanced");
-    rfFog.configureDomain(20, 10, 20, -12.0, 0.0, -28.0, 12.0, 6.0, 4.0);
+    rfFog.setQuality("fast");
+    rfFog.configureDomain(16, 8, 16, -12.0, 0.0, -28.0, 12.0, 6.0, 4.0);
     rfFog.setWindResponseRate(6.0);
     rfFog.setCurlTimeScale(1.1);
     rfReseed();
@@ -141,6 +145,12 @@ eve_update = function(dt) {
         rfApplyProxy(dt);
         rfFog.stepSimulation(dt);
         rfSyncVolume();
+    }
+
+    rfFrame += 1;
+    if (!rfScreenshotSaved && rfFrame > 8 && gfx.saveFramePng("realtime-fog.png")) {
+        rfScreenshotSaved = true;
+        print("realtime-fog: screenshot saved\n");
     }
 };
 
