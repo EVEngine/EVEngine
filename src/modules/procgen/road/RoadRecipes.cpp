@@ -36,13 +36,17 @@ RoadBakeOptions bakeOptionsFromParams(const Params& params) {
 Result<RoadNetwork> networkFromParams(const Params& params) {
     const std::string scene = params.getString("scene", "straight");
     float             span  = params.getFloat("span", 36.f);
+    const int         lanes = std::max(1, params.getInt("lanes", 2));
+    int lanesBack           = std::max(0, params.getInt("lanesBackward", 0));
+    // Median strip needs opposing lanes; auto-enable on the straight scene when the toggle is on.
+    if (params.getBool("decorMedian", false) && lanesBack <= 0 && scene == "straight") lanesBack = lanes;
     // Junction scenes need enough arm length past curb-return trim.
     if (scene == "cross" || scene == "tee" || scene == "t" || scene == "y" || scene == "fork" || scene == "skew" ||
         scene == "interchange") {
         span = std::max(16.f, span);
     }
-    return RoadNetwork::makeScene(scene, span, params.getFloat("bridgeHeight", 6.f),
-                                  std::max(1, params.getInt("lanes", 2)), params.getSeed());
+    if (scene == "straight") return RoadNetwork::makeStraight(span, lanes, lanesBack);
+    return RoadNetwork::makeScene(scene, span, params.getFloat("bridgeHeight", 6.f), lanes, params.getSeed());
 }
 
 }  // namespace
@@ -135,6 +139,7 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
+    schema.params.push_back(ParamDescriptor::integer("lanesBackward", "Opposite Lanes", 0, 0, 4));
     schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
     schema.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
@@ -148,6 +153,9 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::floating("decorTreeSpacing", "Tree Spacing", 7.5f, 2.f, 40.f, 0.5f));
     schema.params.push_back(ParamDescriptor::floating("decorLightSpacing", "Light Spacing", 14.f, 4.f, 60.f, 0.5f));
     schema.params.push_back(ParamDescriptor::floating("decorPoleSpacing", "Pole Spacing", 18.f, 4.f, 80.f, 0.5f));
+    schema.params.push_back(
+        ParamDescriptor::floating("decorGreenbeltWidth", "Greenbelt Width", 1.35f, 0.2f, 8.f, 0.05f));
+    schema.params.push_back(ParamDescriptor::floating("decorMedianWidth", "Median Width", 1.0f, 0.2f, 6.f, 0.05f));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
 }
 

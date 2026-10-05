@@ -181,10 +181,11 @@ Result<RoadEdge> RoadNetwork::edgeResult(std::uint32_t id) const {
     return Result<RoadEdge>::success(edges_[static_cast<std::size_t>(idx)]);
 }
 
-Result<RoadNetwork> RoadNetwork::makeStraight(float length, int lanes) {
-    if (!std::isfinite(length) || length < 8.f || lanes < 1 || lanes > 4)
+Result<RoadNetwork> RoadNetwork::makeStraight(float length, int lanes, int lanesBackward) {
+    if (!std::isfinite(length) || length < 8.f || lanes < 1 || lanes > 4 || lanesBackward < 0 || lanesBackward > 4)
         return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "length>=8, lanes in [1,4] required", "straight"));
+            DiagnosticCode::InvalidArgument, "length>=8, lanes in [1,4], lanesBackward in [0,4] required",
+            "straight"));
     RoadNetwork network;
     const float half = length * 0.5f;
     auto a = network.addNode(-half, 0.f, 0.f, 2.f);
@@ -192,7 +193,7 @@ Result<RoadNetwork> RoadNetwork::makeStraight(float length, int lanes) {
     if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
     if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
     auto edge = network.addEdge(a.value(), b.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)},
-                                lanes, 0, groundStyle());
+                                lanes, lanesBackward, groundStyle());
     if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
     return Result<RoadNetwork>::success(std::move(network));
 }
