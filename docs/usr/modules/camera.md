@@ -86,8 +86,8 @@ ctrl.setSecondaryTarget(lockX, lockY, lockZ);
 ctrl.snap();
 ```
 
-`clearSecondaryTarget()` 清除锁定点。`hasSecondaryTarget()` / `getSecondaryTargetX/Y/Z`
-读取当前存储的坐标。
+`clearSecondaryTarget()` 清除锁定点。`hasSecondaryTarget()`、`getSecondaryTargetX()`、
+`getSecondaryTargetY()`、`getSecondaryTargetZ()` 读取当前存储的坐标。
 
 ## Modifier / Impulse
 
