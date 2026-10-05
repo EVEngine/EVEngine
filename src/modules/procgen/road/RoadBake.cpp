@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -84,18 +85,28 @@ float ccwAngleXZ(V3 a, V3 b) {
     return ang;
 }
 
+/** @brief Rotate a horizontal vector about +Y (CCW in atan2(z,x)). */
+V3 rotateY(V3 v, float rad) {
+    const float c = std::cos(rad);
+    const float s = std::sin(rad);
+    return {v.x * c - v.z * s, v.y, v.x * s + v.z * c};
+}
+
 /**
  * @brief One road arm arriving at a junction, with curb-return trim distance.
  *
  * For non-orthogonal junctions the true fillet tangency is closer to the hub
  * than junctionRadius; trimDist is that along-arm distance so the loft tip
- * docks flush with the curb-return arc.
+ * docks flush with the curb-return arc. When a corner cannot fillet at the
+ * authored approach, outDir is bent slightly (see planJunction) so common
+ * acute forks still dock without salmon gaps.
  */
 struct JunctionArm {
     std::uint32_t edgeId       = 0;
     bool          tipAtTo      = true;  ///< Tip is the edge.to end.
-    V3            outDir;               ///< Hub → arm, horizontal unit.
-    V3            right;                ///< Right when looking outward.
+    V3            outDir;               ///< Hub → arm dock direction (may be bent).
+    V3            naturalOutDir;        ///< Authored approach before bend-to-dock.
+    V3            right;                ///< Right when looking outward along outDir.
     float         asphaltHalf  = 0.f;
     float         halfWidth    = 0.f;
     float         curbWidth    = 0.f;
@@ -104,7 +115,14 @@ struct JunctionArm {
     float         sidewalkH    = 0.f;
     float         trimDist     = 0.f;  ///< Hub-distance where the arm loft ends.
     float         angle        = 0.f;
+    bool          bent         = false; ///< outDir was nudged so a fillet could dock.
 };
+
+void refreshArmBasis(JunctionArm& arm) {
+    arm.outDir = normalize(V3{arm.outDir.x, 0.f, arm.outDir.z});
+    arm.right  = normalize(cross(V3{0.f, 1.f, 0.f}, arm.outDir));
+    arm.angle  = std::atan2(arm.outDir.z, arm.outDir.x);
+}
 
 struct JunctionCorner {
     bool  filleted = false;
@@ -125,8 +143,12 @@ struct JunctionPlan {
 /**
  * @brief Plan polar curb-returns and per-arm trim distances for one node.
  *
- * Uses true circle-tangency on asphalt edge lines so 120° Y junctions dock
- * without salmon gaps. Orthogonal crosses keep trimDist == junctionRadius.
+ * Uses true circle-tangency on asphalt edge lines so common gaps (60°/90°/
+ * 120°/135°) dock without salmon gaps. Orthogonal crosses keep
+ * trimDist == junctionRadius. Wide gaps (>~140°) use a straight chord.
+ * When a corner cannot fillet at the authored approach, both arms are
+ * spread by a few degrees (bend-to-dock) so the tip loft curves into a
+ * dockable orientation.
  */
 JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
     JunctionPlan plan;
@@ -151,23 +173,21 @@ JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
         arm.tipAtTo = (edge.to == node.id);
         V3 out{f.sample.x - node.x, 0.f, f.sample.z - node.z};
         if (length(out) < 1e-4f) {
-            // Probe landed on the hub: use spline forward, flipped when the tip
-            // is the edge's `to` end so outDir always points hub → arm.
             out = V3{f.forwardX, 0.f, f.forwardZ};
             if (edge.to == node.id) out = out * -1.f;
             if (length(out) < 1e-4f) out = V3{1.f, 0.f, 0.f};
         }
         arm.outDir         = normalize(out);
-        arm.right          = normalize(cross(V3{0.f, 1.f, 0.f}, arm.outDir));
+        arm.naturalOutDir  = arm.outDir;
+        refreshArmBasis(arm);
         arm.asphaltHalf    = asphaltHalf;
         arm.halfWidth      = profile.value().halfWidth;
         arm.curbWidth      = edge.style.curbWidth;
         arm.sidewalkWidth  = edge.style.sidewalkWidth;
         arm.curbHeight     = edge.style.curbHeight;
         arm.sidewalkH      = edge.style.sidewalkHeight;
-        // Default trim = full junctionRadius (correct for orthogonal crosses).
         arm.trimDist       = node.junctionRadius;
-        arm.angle          = std::atan2(arm.outDir.z, arm.outDir.x);
+        arm.bent           = false;
         plan.arms.push_back(arm);
     }
     if (plan.arms.size() < 2) return plan;
@@ -176,35 +196,27 @@ JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
               [](const JunctionArm& a, const JunctionArm& b) { return a.angle < b.angle; });
 
     const float jr = node.junctionRadius;
-    plan.corners.resize(plan.arms.size());
-    bool allOk = true;
 
-    // Pass 1: resolve fillet corners and finalize every arm's trimDist first so
-    // later wide-angle chords use the shortened shared-arm trims.
-    for (std::size_t i = 0; i < plan.arms.size(); ++i) {
-        JunctionArm&   A = plan.arms[i];
-        JunctionArm&   B = plan.arms[(i + 1) % plan.arms.size()];
-        JunctionCorner corner;
-        const float    ang = ccwAngleXZ(A.outDir, B.outDir);
-
+    auto tryFillet = [&](JunctionArm& A, JunctionArm& B, JunctionCorner& corner) -> bool {
+        const float ang = ccwAngleXZ(A.outDir, B.outDir);
         if (ang > 2.45f) {
+            // Wide chord placeholders; aTan/bTan refreshed after all trims finalize.
             corner.filleted = false;
-            plan.corners[i] = corner;
-            continue;
+            corner.aTan     = {};
+            corner.bTan     = {};
+            return true;
         }
 
         const float ahA = A.asphaltHalf;
         const float ahB = B.asphaltHalf;
         float       r   = std::max(0.75f, jr - 0.5f * (ahA + ahB));
-        r = std::min(r, std::max(0.6f, std::tan(0.5f * std::min(ang, 3.0f)) * jr * 0.85f));
+        r = std::min(r, std::max(0.55f, std::tan(0.5f * std::min(ang, 3.0f)) * jr * 0.9f));
 
-        V3    center{};
-        bool  found = false;
-        float usedR = r;
-        for (int attempt = 0; attempt < 5 && !found; ++attempt) {
-            usedR       = r * (1.f - 0.12f * static_cast<float>(attempt));
-            const V3 pA = V3{node.x, 0.f, node.z} - A.right * (ahA + usedR);
-            const V3 pB = V3{node.x, 0.f, node.z} + B.right * (ahB + usedR);
+        for (int attempt = 0; attempt < 6; ++attempt) {
+            const float usedR = r * (1.f - 0.11f * static_cast<float>(attempt));
+            V3          center{};
+            const V3    pA = V3{node.x, 0.f, node.z} - A.right * (ahA + usedR);
+            const V3    pB = V3{node.x, 0.f, node.z} + B.right * (ahB + usedR);
             if (!intersectXZ(pA, A.outDir, pB, B.outDir, center)) continue;
             const V3 toC = V3{center.x - node.x, 0.f, center.z - node.z};
             if (dot(toC, A.outDir) < -0.25f * jr && dot(toC, B.outDir) < -0.25f * jr) continue;
@@ -213,12 +225,12 @@ JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
             const V3  bTan   = center - B.right * usedR;
             const float alongA = dot(V3{aTan.x - node.x, 0.f, aTan.z - node.z}, A.outDir);
             const float alongB = dot(V3{bTan.x - node.x, 0.f, bTan.z - node.z}, B.outDir);
-            if (alongA < 0.5f || alongB < 0.5f) continue;
-            if (alongA > jr * 1.35f || alongB > jr * 1.35f) continue;
+            if (alongA < 0.45f || alongB < 0.45f) continue;
+            if (alongA > jr * 1.55f || alongB > jr * 1.55f) continue;
 
             const float latA = std::fabs(dot(V3{aTan.x - node.x, 0.f, aTan.z - node.z}, A.right));
             const float latB = std::fabs(dot(V3{bTan.x - node.x, 0.f, bTan.z - node.z}, B.right));
-            if (std::fabs(latA - ahA) > 0.15f || std::fabs(latB - ahB) > 0.15f) continue;
+            if (std::fabs(latA - ahA) > 0.2f || std::fabs(latB - ahB) > 0.2f) continue;
 
             corner.center   = center;
             corner.radius   = usedR;
@@ -242,32 +254,113 @@ JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
             corner.filleted = true;
             A.trimDist      = std::min(A.trimDist, alongA);
             B.trimDist      = std::min(B.trimDist, alongB);
-            found           = true;
+            return true;
         }
-        if (!found) {
-            allOk = false;
-            break;
-        }
-        plan.corners[i] = corner;
-    }
+        return false;
+    };
 
-    if (!allOk) {
-        plan.ok = false;
+    auto resetTrims = [&]() {
+        for (auto& arm : plan.arms) arm.trimDist = jr;
+    };
+
+    auto planAllCorners = [&]() -> bool {
+        plan.corners.clear();
+        plan.corners.reserve(plan.arms.size());
+        resetTrims();
+        for (std::size_t i = 0; i < plan.arms.size(); ++i) {
+            JunctionArm&   A = plan.arms[i];
+            JunctionArm&   B = plan.arms[(i + 1) % plan.arms.size()];
+            JunctionCorner corner;
+            if (!tryFillet(A, B, corner)) return false;
+            plan.corners.push_back(corner);
+        }
+        // Refresh wide-angle chords from finalized shared-arm trims.
+        for (std::size_t i = 0; i < plan.corners.size(); ++i) {
+            if (plan.corners[i].filleted) continue;
+            const JunctionArm& A    = plan.arms[i];
+            const JunctionArm& B    = plan.arms[(i + 1) % plan.arms.size()];
+            const V3           tipA = V3{node.x, 0.f, node.z} + A.outDir * A.trimDist;
+            const V3           tipB = V3{node.x, 0.f, node.z} + B.outDir * B.trimDist;
+            plan.corners[i].aTan    = tipA - A.right * A.asphaltHalf;
+            plan.corners[i].bTan    = tipB + B.right * B.asphaltHalf;
+        }
+        return plan.corners.size() == plan.arms.size();
+    };
+
+    if (planAllCorners()) {
+        plan.ok = true;
         return plan;
     }
 
-    // Pass 2: wide-angle chords from the finalized trim distances.
-    for (std::size_t i = 0; i < plan.arms.size(); ++i) {
-        if (plan.corners[i].filleted) continue;
-        const JunctionArm& A    = plan.arms[i];
-        const JunctionArm& B    = plan.arms[(i + 1) % plan.arms.size()];
-        const V3           tipA = V3{node.x, 0.f, node.z} + A.outDir * A.trimDist;
-        const V3           tipB = V3{node.x, 0.f, node.z} + B.outDir * B.trimDist;
-        plan.corners[i].aTan    = tipA - A.right * A.asphaltHalf;
-        plan.corners[i].bTan    = tipB + B.right * B.asphaltHalf;
+    // Bend-to-dock: spread each acute corner's arms until a fillet fits.
+    // Cap at ~18° so the loft tip curves gently instead of kinking.
+    constexpr float kMaxBend = 0.31415927f;  // 18°
+    constexpr float kStep    = 0.034906585f; // 2°
+    const std::size_t nArms  = plan.arms.size();
+    std::vector<V3>   natural(nArms);
+    for (std::size_t i = 0; i < nArms; ++i) natural[i] = plan.arms[i].naturalOutDir;
+
+    std::vector<float> naturalGap(nArms);
+    for (std::size_t i = 0; i < nArms; ++i) {
+        naturalGap[i] = ccwAngleXZ(natural[i], natural[(i + 1) % nArms]);
     }
 
-    plan.ok = plan.corners.size() == plan.arms.size();
+    for (float bend = kStep; bend <= kMaxBend + 1e-4f; bend += kStep) {
+        // Detect which corners fail at the current natural dirs, then widen only
+        // those gaps so adjacent bends do not cancel to a zero net yaw.
+        std::vector<bool> needsWiden(nArms, false);
+        bool              anyFail = false;
+        for (std::size_t i = 0; i < nArms; ++i) {
+            if (naturalGap[i] > 2.45f) continue;
+            JunctionArm    A = plan.arms[i];
+            JunctionArm    B = plan.arms[(i + 1) % nArms];
+            A.outDir         = natural[i];
+            B.outDir         = natural[(i + 1) % nArms];
+            refreshArmBasis(A);
+            refreshArmBasis(B);
+            A.trimDist = jr;
+            B.trimDist = jr;
+            JunctionCorner corner;
+            if (!tryFillet(A, B, corner)) {
+                needsWiden[i] = true;
+                anyFail       = true;
+            }
+        }
+        if (!anyFail) break;
+
+        std::vector<float> yaw(nArms, 0.f);
+        for (std::size_t i = 0; i < nArms; ++i) {
+            if (!needsWiden[i]) continue;
+            // Only spread when the neighbouring gaps have room (wide or already ok).
+            const std::size_t prev = (i + nArms - 1) % nArms;
+            const std::size_t next = (i + 1) % nArms;
+            if (!needsWiden[prev] || naturalGap[prev] > 2.0f) yaw[i] -= bend;
+            if (!needsWiden[next] || naturalGap[next] > 2.0f) yaw[next] += bend;
+        }
+        float totalYaw = 0.f;
+        for (float y : yaw) totalYaw += std::fabs(y);
+        if (totalYaw < 1e-5f) break;
+
+        for (std::size_t i = 0; i < nArms; ++i) {
+            plan.arms[i].outDir = rotateY(natural[i], yaw[i]);
+            plan.arms[i].bent   = std::fabs(yaw[i]) > 1e-5f;
+            refreshArmBasis(plan.arms[i]);
+        }
+        if (planAllCorners()) {
+            plan.ok = true;
+            return plan;
+        }
+    }
+
+    // Restore natural dirs for disc fallback consumers.
+    for (std::size_t i = 0; i < nArms; ++i) {
+        plan.arms[i].outDir = natural[i];
+        plan.arms[i].bent   = false;
+        refreshArmBasis(plan.arms[i]);
+        plan.arms[i].trimDist = jr;
+    }
+    plan.corners.clear();
+    plan.ok = false;
     return plan;
 }
 
@@ -283,12 +376,18 @@ float trimFromPlan(const JunctionPlan& plan, const RoadNode& node, std::uint32_t
 /** @brief Hub-distance trim for one edge end at a junction node (falls back to jr). */
 float junctionTrimDistance(const RoadNetwork& network, const RoadNode& node, std::uint32_t edgeId) {
     if (static_cast<int>(network.edges().size()) == 0) return node.junctionRadius;
+    // Degree-1 nodes keep the authored radius (no fillet docking).
     int degree = 0;
     for (const auto& e : network.edges()) {
         if (e.from == node.id || e.to == node.id) ++degree;
     }
     if (degree < 2) return node.junctionRadius;
     return trimFromPlan(planJunction(network, node), node, edgeId);
+}
+
+/** @brief Safe bend window length shared by mid-frame culling and approach rings. */
+float bendLength(float armTrim, float effectiveTrim) {
+    return std::clamp(armTrim * 0.9f, 2.f, std::max(2.f, effectiveTrim));
 }
 
 void appendBox(MeshBuild& mesh, V3 center, V3 side, V3 up, V3 forward, float hx, float hy, float hz,
@@ -569,16 +668,15 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
     paintLine(asphaltHalf - style.markingWidth, false, RoadMaterial::Marking);
 
     if (edge.lanesBackward > 0) {
-        // Solid double-yellow on the directional boundary between opposing traffic.
-        const float boundary = -asphaltHalf + style.laneWidth * static_cast<float>(edge.lanesBackward);
-        paintLine(boundary - style.markingWidth * 0.65f, false, RoadMaterial::MarkingYellow);
-        paintLine(boundary + style.markingWidth * 0.65f, false, RoadMaterial::MarkingYellow);
+        // Solid double-yellow on the centerline between opposing traffic.
+        paintLine(-style.markingWidth * 0.65f, false, RoadMaterial::MarkingYellow);
+        paintLine(style.markingWidth * 0.65f, false, RoadMaterial::MarkingYellow);
         for (int lane = 1; lane < edge.lanesBackward; ++lane) {
             const float lateral = -asphaltHalf + style.laneWidth * static_cast<float>(lane);
             paintLine(lateral, true, RoadMaterial::Marking);
         }
         for (int lane = 1; lane < edge.lanesForward; ++lane) {
-            const float lateral = boundary + style.laneWidth * static_cast<float>(lane);
+            const float lateral = style.laneWidth * static_cast<float>(lane);
             paintLine(lateral, true, RoadMaterial::Marking);
         }
     } else {
@@ -633,12 +731,14 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
         }
         return planJunction(network, node);
     };
+    // Own plans for the lifetime of arm pointers used below (no dangling locals).
     const JunctionPlan fromPlan = resolvePlan(fromNode.value());
     const JunctionPlan toPlan   = resolvePlan(toNode.value());
 
     // Trim each end at the curb-return tangency distance (equals junctionRadius
     // for orthogonal crosses; shorter for obtuse Y corners so the loft tip
-    // docks flush with the fillet arc).
+    // docks flush with the fillet arc). Cap by half the edge so short links
+    // still leave a mid strip.
     const float maxTrim = std::max(0.f, pathLength.value() * 0.5f - 0.5f);
     const float trimStart =
         std::min(std::max(0.f, trimFromPlan(fromPlan, fromNode.value(), edge.id)), maxTrim);
@@ -649,6 +749,14 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     const int segments = std::max(4, options.pathSegmentsPerEdge);
     auto      frames   = spline.value().sampleFramesResult(segments, true, 0.f, 24);
     if (!frames.ok()) return Result<void>::failure(frames.status());
+
+    auto findArmIn = [&](const JunctionPlan& plan, bool tipAtTo) -> const JunctionArm* {
+        if (!plan.ok) return nullptr;
+        for (const auto& arm : plan.arms) {
+            if (arm.edgeId == edge.id && arm.tipAtTo == tipAtTo) return &arm;
+        }
+        return nullptr;
+    };
 
     // Snap tip XZ/lateral axes to the junction plan while preserving sampled
     // elevation and up so graded/ramp arms do not form a step at the dock.
@@ -663,9 +771,8 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
             tip.sample.x         = node.x + arm.outDir.x * arm.trimDist;
             tip.sample.y         = keepY;
             tip.sample.z         = node.z + arm.outDir.z * arm.trimDist;
-            // Horizontal dock direction with the sampled vertical slope preserved.
-            V3 fwdH = tipAtTo ? (arm.outDir * -1.f) : arm.outDir;
-            V3 fwd  = normalize(V3{fwdH.x, keepFwdY, fwdH.z});
+            V3 fwdH              = tipAtTo ? (arm.outDir * -1.f) : arm.outDir;
+            V3 fwd               = normalize(V3{fwdH.x, keepFwdY, fwdH.z});
             if (length(V3{fwd.x, 0.f, fwd.z}) < 1e-4f) fwd = normalize(V3{fwdH.x, 0.f, fwdH.z});
             V3 side = normalize(cross(keepUp, fwd));
             if (length(side) < 1e-4f) side = normalize(cross(V3{0.f, 1.f, 0.f}, fwd));
@@ -682,28 +789,95 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
         }
     };
 
+    auto makeDockFrame = [&](const RoadNode& node, const JunctionArm& arm, float alongFromHub, bool tipAtTo,
+                             float keepY, float keepFwdY, V3 keepUp) {
+        SplineFrameSample tip{};
+        tip.sample.x                  = node.x + arm.outDir.x * alongFromHub;
+        tip.sample.y                  = keepY;
+        tip.sample.z                  = node.z + arm.outDir.z * alongFromHub;
+        tip.sample.normalizedDistance = tipAtTo ? 1.f : 0.f;
+        V3 fwdH                       = tipAtTo ? (arm.outDir * -1.f) : arm.outDir;
+        V3 fwd                        = normalize(V3{fwdH.x, keepFwdY, fwdH.z});
+        if (length(V3{fwd.x, 0.f, fwd.z}) < 1e-4f) fwd = normalize(V3{fwdH.x, 0.f, fwdH.z});
+        V3 side = normalize(cross(keepUp, fwd));
+        if (length(side) < 1e-4f) side = normalize(cross(V3{0.f, 1.f, 0.f}, fwd));
+        tip.forwardX = fwd.x;
+        tip.forwardY = fwd.y;
+        tip.forwardZ = fwd.z;
+        tip.sideX    = side.x;
+        tip.sideY    = side.y;
+        tip.sideZ    = side.z;
+        tip.upX      = keepUp.x;
+        tip.upY      = keepUp.y;
+        tip.upZ      = keepUp.z;
+        return tip;
+    };
+
     // Keep mid frames, then force exact trim endpoints so the loft meets the
-    // junction apron (uniform samples alone leave ~segment-sized salmon gaps).
+    // junction apron. When bend-to-dock nudged the tip direction, drop mid
+    // frames inside the bend window and insert a short approach so the strip
+    // curves from the authored spline onto the dock ray.
+    auto appendBentApproach = [&](std::vector<SplineFrameSample>& out, const RoadNode& node,
+                                  const JunctionPlan& plan, bool tipAtTo, float trimDist) -> Result<void> {
+        const JunctionArm* arm = findArmIn(plan, tipAtTo);
+        if (!arm || !arm->bent) {
+            auto tip = spline.value().travelFrameResult(tipAtTo ? (pathLength.value() - trimDist) : trimDist,
+                                                        "clamp", 24);
+            if (!tip.ok()) return Result<void>::failure(tip.status());
+            auto sample = std::move(tip).takeValue();
+            snapTipToJunction(sample, node, plan, tipAtTo);
+            out.push_back(std::move(sample));
+            return Result<void>::success();
+        }
+        // Use the edge-capped trim for dock placement so short edges stay
+        // consistent with the mid-frame window and maxTrim overlap check.
+        const float dockTrim = trimDist;
+        const float bendLen  = bendLength(arm->trimDist, trimDist);
+        const float tipAlong = tipAtTo ? (pathLength.value() - trimDist) : trimDist;
+        const float approach = tipAtTo ? (tipAlong - bendLen) : (tipAlong + bendLen);
+        auto        approachFrame = spline.value().travelFrameResult(
+            std::clamp(approach, 0.f, pathLength.value()), "clamp", 24);
+        if (!approachFrame.ok()) return Result<void>::failure(approachFrame.status());
+        auto        approachVal = std::move(approachFrame).takeValue();
+        const float keepY       = approachVal.sample.y;
+        const float keepFwdY    = approachVal.forwardY;
+        const V3    keepUp      = normalize(V3{approachVal.upX, approachVal.upY, approachVal.upZ});
+        const float a1          = dockTrim + bendLen * 0.55f;
+        const float a2          = dockTrim;
+        if (!tipAtTo) {
+            // Tip first (near hub), then curve outward onto the authored approach.
+            out.push_back(makeDockFrame(node, *arm, a2, tipAtTo, keepY, keepFwdY, keepUp));
+            out.push_back(makeDockFrame(node, *arm, a1, tipAtTo, keepY, keepFwdY, keepUp));
+            out.push_back(std::move(approachVal));
+        } else {
+            out.push_back(std::move(approachVal));
+            out.push_back(makeDockFrame(node, *arm, a1, tipAtTo, keepY, keepFwdY, keepUp));
+            out.push_back(makeDockFrame(node, *arm, a2, tipAtTo, keepY, keepFwdY, keepUp));
+        }
+        return Result<void>::success();
+    };
+
     std::vector<SplineFrameSample> trimmed;
-    trimmed.reserve(frames.value().size() + 2);
+    trimmed.reserve(frames.value().size() + 8);
+    const JunctionArm* fromArm = findArmIn(fromPlan, false);
+    const JunctionArm* toArm   = findArmIn(toPlan, true);
+    const float fromBend = (fromArm && fromArm->bent) ? bendLength(fromArm->trimDist, trimStart) : 0.f;
+    const float toBend   = (toArm && toArm->bent) ? bendLength(toArm->trimDist, trimEnd) : 0.f;
+
     if (trimStart > 1e-3f) {
-        auto tip = spline.value().travelFrameResult(trimStart, "clamp", 24);
-        if (!tip.ok()) return Result<void>::failure(tip.status());
-        auto sample = std::move(tip).takeValue();
-        snapTipToJunction(sample, fromNode.value(), fromPlan, false);
-        trimmed.push_back(std::move(sample));
+        auto bent = appendBentApproach(trimmed, fromNode.value(), fromPlan, false, trimStart);
+        if (!bent.ok()) return bent;
     }
-    const float endDist = pathLength.value() - trimEnd;
+    const float endDist  = pathLength.value() - trimEnd;
+    const float midStart = trimStart + fromBend + 1e-3f;
+    const float midEnd   = endDist - toBend - 1e-3f;
     for (const auto& frame : frames.value()) {
         const float d = frame.sample.normalizedDistance * pathLength.value();
-        if (d > trimStart + 1e-3f && d < endDist - 1e-3f) trimmed.push_back(frame);
+        if (d > midStart && d < midEnd) trimmed.push_back(frame);
     }
     if (trimEnd > 1e-3f) {
-        auto tip = spline.value().travelFrameResult(endDist, "clamp", 24);
-        if (!tip.ok()) return Result<void>::failure(tip.status());
-        auto sample = std::move(tip).takeValue();
-        snapTipToJunction(sample, toNode.value(), toPlan, true);
-        trimmed.push_back(std::move(sample));
+        auto bent = appendBentApproach(trimmed, toNode.value(), toPlan, true, trimEnd);
+        if (!bent.ok()) return bent;
     }
     if (trimmed.size() < 2) return Result<void>::success();
 
@@ -755,7 +929,6 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
             float nextArrow = options.arrowSpacing * 0.5f;
             V3    prev{};
             bool  hasPrev = false;
-            // Reverse lanes travel opposite to the edge frame order.
             const int begin = reverse ? static_cast<int>(trimmed.size()) - 1 : 0;
             const int end   = reverse ? -1 : static_cast<int>(trimmed.size());
             const int step  = reverse ? -1 : 1;
@@ -807,7 +980,21 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
     const V3    hub{node.x, asphaltY, node.z};
     const V3    upN{0.f, 1.f, 0.f};
     const int   segs = 16;
-    const float jr   = node.junctionRadius;
+
+    float avgCurbW = 0.f, avgWalkW = 0.f, curbH = 0.45f, walkH = 0.14f;
+    for (const auto& a : plan.arms) {
+        avgCurbW += a.curbWidth;
+        avgWalkW += a.sidewalkWidth;
+        curbH = a.curbHeight;
+        walkH = a.sidewalkH;
+    }
+    avgCurbW /= static_cast<float>(plan.arms.size());
+    avgWalkW /= static_cast<float>(plan.arms.size());
+    const float curbW   = std::max(0.2f, avgCurbW);
+    const float walkW   = std::max(0.35f, avgWalkW);
+    const float walkY   = y + walkH;
+    const float curbTop = y + curbH;
+    const float jr      = node.junctionRadius;
 
     auto emitDiscFallback = [&]() {
         float maxHalfWidth = 0.f;
@@ -887,8 +1074,8 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
             // Curb/sidewalk docking ribbon: covers the tip shoulder so arm loft and
             // fillet rings share a continuous top (hides lateral step at 120° docks).
             // Use this arm's own profile dimensions so mixed styles still join cleanly.
-            const float armCurbW = std::max(0.2f, A.curbWidth);
-            const float armWalkY = y + A.sidewalkH;
+            const float armCurbW   = std::max(0.2f, A.curbWidth);
+            const float armWalkY   = y + A.sidewalkH;
             const float armCurbTop = y + A.curbHeight;
             for (int sideSign : {-1, 1}) {
                 const float s   = static_cast<float>(sideSign);
@@ -914,8 +1101,7 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                                V3{p0.x, y1, p0.z}, n * -1.f, 0.f, 1.f, 0.f, 1.f, mat);
         };
 
-        auto emitBand = [&](V3 c, float r0, float r1, float r2, float startAng, float sweep, float curbTop,
-                            float walkY, float groundY) {
+        auto emitBand = [&](V3 c, float r0, float r1, float r2, float startAng, float sweep) {
             const int n = std::max(4, static_cast<int>(std::ceil(std::fabs(sweep) / 1.5707963f * segs)));
             auto      arcPt = [&](float radius, float t) {
                 const float ang = startAng + sweep * t;
@@ -944,14 +1130,13 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                                    RoadMaterial::Curb);
                 appendOrientedQuad(mesh, V3{b0i.x, walkY, b0i.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
                                    V3{b1i.x, walkY, b1i.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-                wall(a0, a1, groundY, curbTop, outToRoad, RoadMaterial::Curb);
+                wall(a0, a1, y, curbTop, outToRoad, RoadMaterial::Curb);
                 wall(b0, b1, walkY, curbTop, outToRoad, RoadMaterial::Curb);
-                wall(s0, s1, groundY, walkY, outToRoad, RoadMaterial::Sidewalk);
+                wall(s0, s1, y, walkY, outToRoad, RoadMaterial::Sidewalk);
             }
         };
 
-        auto emitStraightBand = [&](V3 aLip, V3 bLip, float curbW, float walkW, float curbTop, float walkY,
-                                    float groundY) {
+        auto emitStraightBand = [&](V3 aLip, V3 bLip) {
             V3 along = V3{bLip.x - aLip.x, 0.f, bLip.z - aLip.z};
             if (length(along) < 1e-4f) return;
             along      = normalize(along);
@@ -972,28 +1157,20 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                                V3{b0.x, curbTop, b0.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
             appendOrientedQuad(mesh, V3{a1.x, walkY, a1.z}, V3{a3.x, walkY, a3.z}, V3{b3.x, walkY, b3.z},
                                V3{b1.x, walkY, b1.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-            wall(a0, b0, groundY, curbTop, outward * -1.f, RoadMaterial::Curb);
+            wall(a0, b0, y, curbTop, outward * -1.f, RoadMaterial::Curb);
             wall(a1, b1, walkY, curbTop, outward * -1.f, RoadMaterial::Curb);
-            wall(a2, b2, groundY, walkY, outward * -1.f, RoadMaterial::Sidewalk);
+            wall(a2, b2, y, walkY, outward * -1.f, RoadMaterial::Sidewalk);
         };
 
         for (std::size_t i = 0; i < plan.corners.size(); ++i) {
-            const auto&        C = plan.corners[i];
-            const JunctionArm& A = plan.arms[i];
-            const JunctionArm& B = plan.arms[(i + 1) % plan.arms.size()];
-            const float        curbW =
-                std::max(0.2f, 0.5f * (A.curbWidth + B.curbWidth));
-            const float walkW =
-                std::max(0.35f, 0.5f * (A.sidewalkWidth + B.sidewalkWidth));
-            const float curbTop = y + 0.5f * (A.curbHeight + B.curbHeight);
-            const float walkY   = y + 0.5f * (A.sidewalkH + B.sidewalkH);
+            const auto& C = plan.corners[i];
             if (C.filleted) {
                 const float r0 = C.radius;
                 const float r1 = std::max(0.2f, C.radius - curbW);
                 const float r2 = std::max(0.15f, C.radius - curbW - walkW);
-                emitBand(C.center, r0, r1, r2, C.startAng, C.sweep, curbTop, walkY, y);
+                emitBand(C.center, r0, r1, r2, C.startAng, C.sweep);
             } else {
-                emitStraightBand(C.aTan, C.bTan, curbW, walkW, curbTop, walkY, y);
+                emitStraightBand(C.aTan, C.bTan);
             }
         }
     }
