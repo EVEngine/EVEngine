@@ -47,8 +47,9 @@ public:
     [[nodiscard]] static Result<RoadNetwork> makeInterchange(float span = 48.f, float bridgeHeight = 8.f,
                                                              int lanes = 2, std::uint32_t seed = 1);
 
-    /** @brief Scene 1: single flat straight segment (no junction). */
-    [[nodiscard]] static Result<RoadNetwork> makeStraight(float length = 36.f, int lanes = 2);
+    /** @brief Scene 1: single flat straight segment (no junction).
+     * @param lanesBackward Opposite-direction lanes (0 = one-way). Enables median decor. */
+    [[nodiscard]] static Result<RoadNetwork> makeStraight(float length = 36.f, int lanes = 2, int lanesBackward = 0);
     /** @brief Scene 2: gentle horizontal curve (no junction). */
     [[nodiscard]] static Result<RoadNetwork> makeCurve(float radius = 18.f, int lanes = 2);
     /** @brief Scene 3: elevated straight with piers. */

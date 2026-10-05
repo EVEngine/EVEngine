@@ -1,4 +1,5 @@
 #include "procgen/road/RoadBake.h"
+#include "procgen/road/RoadDecor.h"
 #include "procgen/road/RoadNetwork.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/road/RoadTypes.h"
@@ -10,6 +11,7 @@
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -763,6 +765,104 @@ TEST_CASE("procgen.road.bidirectional.markingsAndNav") {
     CHECK(sawYellow);
 }
 
+TEST_CASE("procgen.road.decor.builtinsAndCustom") {
+    auto straight = RoadNetwork::makeStraight(36.f, 2);
+    REQUIRE(straight.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge   = 24;
+    options.includeJunctions      = false;
+    options.includeNavigation     = false;
+    options.includePiers          = false;
+    options.includeMarkings       = false;
+    options.decor.trees           = true;
+    options.decor.greenbelt       = true;
+    options.decor.streetLights    = true;
+    options.decor.utilityPoles    = true;
+    options.decor.treeSpacing     = 6.f;
+    options.decor.lightSpacing    = 12.f;
+    options.decor.poleSpacing     = 15.f;
+    options.decor.seed            = 7;
+
+    RoadDecorSpec bench;
+    bench.id         = "bench";
+    bench.spacing    = 10.f;
+    bench.roadside   = true;
+    bench.bothSides  = false;
+    bench.lateralGap = 1.4f;
+    RoadDecorPrimitive seat;
+    seat.shape = RoadDecorPrimitive::Shape::Box;
+    seat.oy    = 0.35f;
+    seat.sx    = 0.55f;
+    seat.sy    = 0.08f;
+    seat.sz    = 0.22f;
+    seat.group = "decorCustom";
+    RoadDecorPrimitive back;
+    back.shape = RoadDecorPrimitive::Shape::Box;
+    back.oz    = -0.18f;
+    back.oy    = 0.55f;
+    back.sx    = 0.55f;
+    back.sy    = 0.28f;
+    back.sz    = 0.05f;
+    back.group = "decorCustom";
+    bench.parts = {seat, back};
+    REQUIRE(addCustomRoadDecor(options.decor, bench).ok());
+    CHECK(!addCustomRoadDecor(options.decor, bench).ok());  // duplicate id
+
+    auto baked = bakeRoadNetwork(straight.value(), options);
+    REQUIRE(baked.ok());
+
+    bool sawTrunk = false, sawFoliage = false, sawGrass = false, sawMetal = false, sawPole = false,
+         sawCustom = false;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        const auto name = baked.value().mesh.getGroupName(g);
+        if (name == "decorTrunk") sawTrunk = true;
+        if (name == "decorFoliage") sawFoliage = true;
+        if (name == "decorGrass") sawGrass = true;
+        if (name == "decorMetal") sawMetal = true;
+        if (name == "decorPole") sawPole = true;
+        if (name == "decorCustom") sawCustom = true;
+    }
+    CHECK(sawTrunk);
+    CHECK(sawFoliage);
+    CHECK(sawGrass);
+    CHECK(sawMetal);
+    CHECK(sawPole);
+    CHECK(sawCustom);
+}
+
+TEST_CASE("procgen.road.decor.medianOnBidirectional") {
+    RoadNetwork network;
+    auto        a = network.addNode(-20.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(20.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.deckThickness = 0.15f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-20.f, 0.f, 0.f}, RoadControlPoint{0.f, 0.f, 0.f},
+                                 RoadControlPoint{20.f, 0.f, 0.f}},
+                                2, 2, style);
+    REQUIRE(edge.ok());
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.includeJunctions    = false;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    options.includeMarkings     = false;
+    options.decor.medianStrip   = true;
+    options.decor.medianWidth   = 1.2f;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    bool sawMedian = false;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "decorMedian") sawMedian = true;
+    }
+    CHECK(sawMedian);
+}
+
 TEST_CASE("procgen.road.scenes.yJunctionLaneLinks") {
     // Classic Y topology: one north inbound arm, two outbound SE/SW exits.
     // Alternating fan directions used to drop the north→southeast turn.
@@ -854,5 +954,125 @@ TEST_CASE("procgen.road.bidirectional.asymmetricLaneCenters") {
     CHECK(foundRev);
     CHECK(std::fabs(fwdLat - 3.5f) < 0.25f);
     CHECK(std::fabs(revLat + 3.5f) < 0.25f);
+}
+
+TEST_CASE("procgen.road.decor.rejectsInvalidSpecsAndSpacing") {
+    RoadDecorOptions options;
+    RoadDecorSpec    bad;
+    bad.id      = "bad";
+    bad.spacing = -1.f;
+    RoadDecorPrimitive part;
+    part.shape = RoadDecorPrimitive::Shape::Box;
+    bad.parts  = {part};
+    CHECK(!addCustomRoadDecor(options, bad).ok());
+
+    bad.spacing = 4.f;
+    bad.startOffset = -2.f;
+    CHECK(!addCustomRoadDecor(options, bad).ok());
+
+    bad.startOffset = 1.f;
+    part.ox         = std::numeric_limits<float>::quiet_NaN();
+    bad.parts       = {part};
+    CHECK(!addCustomRoadDecor(options, bad).ok());
+
+    // Built-in negative spacing must fail the bake, not spin for thousands of instances.
+    auto straight = RoadNetwork::makeStraight(40.f, 2);
+    REQUIRE(straight.ok());
+    RoadBakeOptions bakeOpts;
+    bakeOpts.includeJunctions  = false;
+    bakeOpts.includeNavigation = false;
+    bakeOpts.includePiers      = false;
+    bakeOpts.includeMarkings   = false;
+    bakeOpts.decor.trees       = true;
+    bakeOpts.decor.treeSpacing = -5.f;
+    CHECK(!bakeRoadNetwork(straight.value(), bakeOpts).ok());
+}
+
+TEST_CASE("procgen.road.decor.recipeMedianAndSchemaWidths") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    REQUIRE(MeshRecipeRegistry::instance().has("mesh.roadNetwork"));
+    const auto* schema = MeshRecipeRegistry::instance().descriptor("mesh.roadNetwork");
+    REQUIRE(schema != nullptr);
+    bool sawGreenbeltW = false, sawMedianW = false, sawLanesBack = false;
+    for (const auto& p : schema->params) {
+        if (p.key == "decorGreenbeltWidth") sawGreenbeltW = true;
+        if (p.key == "decorMedianWidth") sawMedianW = true;
+        if (p.key == "lanesBackward") sawLanesBack = true;
+    }
+    CHECK(sawGreenbeltW);
+    CHECK(sawMedianW);
+    CHECK(sawLanesBack);
+
+    Params params;
+    params.setString("scene", "straight");
+    params.setFloat("span", 36.f);
+    params.setInt("lanes", 2);
+    params.setBool("decorMedian", true);
+    params.setBool("piers", false);
+    params.setBool("markings", false);
+    params.setBool("navigation", false);
+    params.setBool("junctions", false);
+    MeshBuild mesh;
+    std::string error;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.roadNetwork", params, mesh, error));
+    bool sawMedian = false;
+    for (int g = 0; g < mesh.getGroupCount(); ++g) {
+        if (mesh.getGroupName(g) == "decorMedian") sawMedian = true;
+    }
+    CHECK(sawMedian);
+}
+
+TEST_CASE("procgen.road.decor.boxWindingMatchesNormal") {
+    // Bake a short median box and verify each triangle's geometric normal agrees
+    // with the stored vertex normal (outward-facing winding).
+    RoadNetwork network;
+    auto        a = network.addNode(-12.f, 0.f, 0.f, 2.f);
+    auto        b = network.addNode(12.f, 0.f, 0.f, 2.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    RoadStyle style;
+    style.deckThickness = 0.15f;
+    style.pierClearance = 100.f;
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {RoadControlPoint{-12.f, 0.f, 0.f}, RoadControlPoint{12.f, 0.f, 0.f}}, 2, 2, style);
+    REQUIRE(edge.ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 12;
+    options.includeJunctions    = false;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    options.includeMarkings     = false;
+    options.decor.medianStrip   = true;
+    options.decor.medianWidth   = 1.0f;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    int medianGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "decorMedian") medianGroup = g;
+    }
+    REQUIRE(medianGroup >= 0);
+    auto median = baked.value().mesh.copyGroup(medianGroup);
+    REQUIRE(median);
+    int checked = 0;
+    for (int t = 0; t < median->getIndexCount() / 3; ++t) {
+        const int i0 = median->getIndex(t * 3 + 0);
+        const int i1 = median->getIndex(t * 3 + 1);
+        const int i2 = median->getIndex(t * 3 + 2);
+        const float ax = median->getPositionX(i0), ay = median->getPositionY(i0), az = median->getPositionZ(i0);
+        const float bx = median->getPositionX(i1), by = median->getPositionY(i1), bz = median->getPositionZ(i1);
+        const float cx = median->getPositionX(i2), cy = median->getPositionY(i2), cz = median->getPositionZ(i2);
+        const float ex = bx - ax, ey = by - ay, ez = bz - az;
+        const float fx = cx - ax, fy = cy - ay, fz = cz - az;
+        const float gx = ey * fz - ez * fy;
+        const float gy = ez * fx - ex * fz;
+        const float gz = ex * fy - ey * fx;
+        const float nx = median->getNormalX(i0);
+        const float ny = median->getNormalY(i0);
+        const float nz = median->getNormalZ(i0);
+        const float dot = gx * nx + gy * ny + gz * nz;
+        CHECK(dot > 0.f);
+        ++checked;
+    }
+    CHECK_GT(checked, 8);
 }
 
