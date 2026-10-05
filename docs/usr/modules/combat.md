@@ -54,6 +54,28 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 更久，或者在销毁前调用 `clearNavigationProvider`；若清除时仍有活动目标，后续 `advance` 会明确失败，目标不会
 被悄悄丢弃。到达目标会返回 owning `CombatLocomotionEventKind::Arrived` 事件。
 
+## 动作战斗基础（3A 竖切积木）
+
+下列运行时与 Action Timeline 窗口一起构成动作战斗竖切基础，均不引入 CombatActor 大根类：
+
+| 运行时 / 窗口 | 职责 |
+|---|---|
+| `MeleeHitRuntime` | Hitbox 目录 + Hurtbox + 扫掠命中；可选部位倍率后提交 `DamageRuntime` |
+| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 攻击 Root Motion / 硬直 / 死亡 |
+| `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |
+| `GuardWindowState` | `combat:guard-window`（`block`/`parry`）并改写伤害请求 |
+| `ActionCancelWindowState` + `ActionInputBuffer` | `input:cancel-window` 允许列表与确定性输入缓冲 |
+| `ComboGraph` | 显式 Ability 转移图（与 cancel/combo 窗口联用） |
+| `CombatTargetRuntime` | Soft/hard lock-on 与切换 |
+| `CombatEnemyIntentSource` | 近距环敌人攻击意图（`IAbilityIntentSource`） |
+| `BodyPartDamageRule` | 按部位倍率的 `IDamageRule` |
+
+Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 `priority`）与
+`combat:guard-window`（payload `mode=block|parry`）。近战武器 `MeleeLogic::fire` 会推送与远程一致的
+`WeaponEventType::Fire` 事件，几何命中仍由 `MeleeHitRuntime` 拥有。
+
+可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定契约见 `test/combat_*.cpp`。
+
 ## 组合边界
 
 移动状态应由表现层投射到 Scene/Physics，由 Ability Active 阶段决定冲刺、闪避等动作何时写入移动意图。
