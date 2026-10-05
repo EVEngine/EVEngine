@@ -5,11 +5,13 @@
 /** @file MontageCoordinator.h @brief Layered dual-slot montage ownership and stable handles. */
 
 #include "animation/MontagePlayer.h"
+#include "animation/RootMotionPolicy.h"
 #include "common/RuntimeHandle.h"
 
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace eve::animation {
@@ -95,6 +97,16 @@ public:
                                                           IMontageRootMotionReceiver& receiver);
     /** @brief Clear the borrowed root-motion receiver from current and future slots of a layer. */
     [[nodiscard]] Result<void> clearLayerRootMotionReceiver(std::size_t layer);
+    /**
+     * @brief Install a root-motion policy for current and future slots of a layer.
+     * @details Future play() calls apply this policy before prepare(); prepare then overlays
+     * authored montage channel locks while preserving bake / apply-space / yaw. Live slots
+     * receive the full policy immediately (including lock axes).
+     * @return Applied on success; InvalidArgument leaves previous layer policy unchanged.
+     */
+    [[nodiscard]] Result<void> setLayerRootMotionPolicy(std::size_t layer, const RootMotionPolicy& policy);
+    /** @brief Clear a layer-owned root-motion policy so future slots use MontagePlayer defaults. */
+    [[nodiscard]] Result<void> clearLayerRootMotionPolicy(std::size_t layer);
     /** @brief Borrow the normalized full layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
     /**
@@ -122,9 +134,10 @@ private:
         std::unique_ptr<AnimPose>   rawPose;
         std::unique_ptr<AnimPose>   blendScratch;
         std::vector<float>        boneMask;
-        float                       weight             = 1.0f;
-        bool                        additive           = false;
-        IMontageRootMotionReceiver* rootMotionReceiver = nullptr;
+        float                           weight             = 1.0f;
+        bool                            additive           = false;
+        IMontageRootMotionReceiver*     rootMotionReceiver = nullptr;
+        std::optional<RootMotionPolicy> rootMotionPolicy;
     };
 
     [[nodiscard]] static std::size_t handleIndex(std::size_t layer, std::size_t slot) noexcept {
