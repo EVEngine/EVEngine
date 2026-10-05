@@ -58,11 +58,10 @@ eve_update = function(dt) {
         if (!hit.ok) print("frame error: apply damage");
     }
 
-    if (elapsed > 3.0) {
+    if (elapsed > 3.0 && !done) {
         local state = arena.state(enemyId);
         if (state.ok) print("combat-arena duel complete enemyHealth=" + state.value.health);
         done = true;
-        eve.quit();
     }
 };
 

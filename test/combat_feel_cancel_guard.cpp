@@ -82,7 +82,7 @@ TEST_CASE("combatFeelCancelGuardAndComboGraphCompose") {
     REQUIRE(outcome.ok());
     eve::combat::HitFeelRuntime feel;
     REQUIRE(feel.applyFromOutcome(outcome.value()).ok());
-    CHECK(feel.isFrozen(player) || feel.isStunned(player) || feel.activeCount() >= 1u);
+    CHECK(feel.activeCount() >= 1u);
 
     auto light = eve::LogicalId::fromParts("combat-ability", "light-attack");
     auto heavy = eve::LogicalId::fromParts("combat-ability", "heavy-attack");

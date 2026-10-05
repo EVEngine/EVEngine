@@ -74,7 +74,8 @@ TEST_CASE("combatArenaFoundation.composesSlicesABCDEF") {
     REQUIRE(buffer.push({player, "heavy-attack", eve::SimulationTick(1), 1}).ok());
     auto light = eve::LogicalId::fromParts("combat-ability", "light-attack");
     auto heavy = eve::LogicalId::fromParts("combat-ability", "heavy-attack");
-    REQUIRE(light && heavy);
+    REQUIRE(light.has_value());
+    REQUIRE(heavy.has_value());
     eve::combat::ComboGraph graph;
     REQUIRE(graph.addEdge({*light, *heavy, "heavy-attack", 1, true, false}).ok());
     REQUIRE(graph.match(*light, "heavy-attack", true, false).ok());
@@ -107,5 +108,5 @@ TEST_CASE("combatArenaFoundation.composesSlicesABCDEF") {
     REQUIRE(intent.value().has_value());
 
     CHECK(states.at(enemy.format()).health < 100.0);
-    CHECK(feel.activeCount() >= 1u || feel.isFrozen(enemy) || feel.isStunned(enemy) || true);
+    CHECK(feel.activeCount() >= 1u);
 }

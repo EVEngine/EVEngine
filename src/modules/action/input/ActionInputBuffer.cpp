@@ -26,7 +26,7 @@ Result<void> ActionInputBuffer::push(BufferedInput input) {
     if (capacity_ == 0 || lifetimeTicks_ == 0) return invalid("input buffer capacity/lifetime invalid", "capacity");
     if (entries_.size() >= capacity_)
         return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::Rejected, "action input buffer is full", "buffer"));
+            Diagnostic::error(DiagnosticCode::Failed, "action input buffer is full", "buffer"));
     entries_.push_back(std::move(input));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

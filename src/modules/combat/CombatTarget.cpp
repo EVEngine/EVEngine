@@ -63,7 +63,9 @@ Result<CombatLockState> CombatTargetRuntime::hardLock(SubjectRef owner, SubjectR
     if (found == locks_.end())
         return Result<CombatLockState>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "lock owner was not found", owner.format()));
-    if (!target.isValid() || target == owner) return invalid("hard-lock target is invalid", "target");
+    if (!target.isValid() || target == owner)
+        return Result<CombatLockState>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "hard-lock target is invalid", "target"));
     found->second.target = target;
     found->second.hardLock = true;
     return Result<CombatLockState>::success(found->second, Status::success(StatusCode::Applied));

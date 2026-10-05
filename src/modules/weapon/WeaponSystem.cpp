@@ -65,7 +65,7 @@ public:
     void        fire(WeaponEntity& w, const AttackRequest& req) override {
         const WeaponDefinition* def = defOf(w);
         if (!def) return;
-        pushFireEvent(w, def, req, w.state() ? w.state()->ammoInClip : 0);
+        pushFireEvent(w, def, req, static_cast<int>(w.state()->resource.value));
     }
     void update(WeaponEntity&, float) override {}
 };

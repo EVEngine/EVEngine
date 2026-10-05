@@ -81,7 +81,9 @@ Result<std::optional<action::AbilityIntent>> CombatEnemyIntentSource::nextIntent
         const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z,
                                       targetPose->second.x, targetPose->second.y, targetPose->second.z);
         if (dist > enemy.definition.nearRadius) continue;
-        if (tick.value() < enemy.lastAttackTick + enemy.definition.attackCooldownTicks) continue;
+        if (enemy.lastAttackTick != 0 &&
+            tick.value() < enemy.lastAttackTick + enemy.definition.attackCooldownTicks)
+            continue;
 
         action::AbilityIntent intent;
         intent.grantId = enemy.definition.lightGrant;
