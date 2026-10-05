@@ -3,6 +3,7 @@
 #include "physics/Shape3D.h"
 #include "physics/PhysicsCapabilities.h"
 #include "physics/Joint3D.h"
+#include "physics/Mechanism3D.h"
 
 #include "common/Exception.h"
 #include "common/Profile.h"
@@ -441,6 +442,12 @@ void World3D::destroy() {
     // registry. This keeps teardown safe for every static destruction order.
     queryLifetime_.reset();
 
+    std::vector<Mechanism3D *> mechanisms(mechanisms_.begin(), mechanisms_.end());
+    for (Mechanism3D *mechanism : mechanisms) {
+        if (mechanism) mechanism->invalidate();
+    }
+    mechanisms_.clear();
+
     std::vector<Joint3D *> joints(joints_.begin(), joints_.end());
     for (Joint3D *joint : joints) {
         if (joint) joint->invalidate();
@@ -737,6 +744,9 @@ eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const Simu
     }
     auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
+    for (Mechanism3D *mechanism : mechanisms_) {
+        if (mechanism) mechanism->syncBeforeStep();
+    }
     for (Shape3D *shape : shapes_) {
         if (shape && shape->isOneWay()) shape->refreshOneWayWorldData();
     }

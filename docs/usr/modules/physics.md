@@ -455,6 +455,43 @@ wheel.setWheelSteeringLimits(true, -0.6, 0.6);
 `getWheelSpinSpeed()` / `getWheelSpinTorque()` 可用于轮胎音效和牵引控制，
 `getWheelSteeringAngle()` / `getWheelSteeringTorque()` 可驱动视觉轮毂和反馈方向盘。
 
+`newWeldJoint(bodyA,bodyB,anchor,collideConnected)` 在共享世界锚点处焊接两刚体，并保持
+创建时的相对姿态；`setWeldLinearSpring()` / `setWeldAngularSpring()` 可配置柔度
+（0 Hz 为刚性）。`newMotorJoint()` 驱动两体相对线速度/角速度，适合舵机、传送带和
+相对位姿伺服。`newParallelJoint(bodyA,bodyB,axis,…)` 用弹簧约束两体局部 Z 轴与给定
+世界轴平行，常用于保持转轴直立。`newFilterJoint(bodyA,bodyB)` 仅禁用两体碰撞，不
+产生约束力，适合机构零件互穿过滤。
+
+### 机械机构：转轴、曲柄滑块、棘轮
+
+在关节原语之上，`Mechanism3D` 提供常用机械装配。世界拥有机构及其创建的关节；
+销毁机构会销毁其关节。棘轮的单向锁定在每次 `world3.update()` / `step()` 前自动同步。
+
+```squirrel
+// 转轴：支座 + 转子铰链，可选驱动电机
+local shaft = world3.newShaft(bearing, rotor, 0, 0, 0, 0, 0, 1, false);
+shaft.setDrive(8.0, 120.0); // rad/s, N·m
+
+// 棘轮：direction=+1 只允许正向自由转动，反向由 engagementTorque 锁止
+local ratchet = world3.newRatchet(frame, wheel, 0, 0, 0, 0, 0, 1, 1, 200.0, false);
+ratchet.setDrive(3.0, 40.0); // 仅在自由方向驱动
+
+// 曲柄滑块：机架 + 曲柄 + 连杆 + 滑块
+local cs = world3.newCrankSlider(
+    frame, crank, rod, slider,
+    0, 0, 0,        // 曲柄转轴锚点
+    0, 0, 1,        // 铰链轴（平面机构）
+    0.4, 0, 0,      // 曲柄销
+    1.2, 0, 0,      // 滑块销
+    1, 0, 0,        // 滑轨轴
+    false);
+cs.setDrive(4.0, 80.0);
+local stroke = cs.getSliderTranslation();
+```
+
+`getDriveAngle()` / `getSpinSpeed()` 读取驱动铰链状态；曲柄滑块另有
+`getSliderTranslation()`。`getDriveJoint()` 等可取回底层 `Joint3D` 做应力阈值或调试。
+
 所有关节均提供稳定 ID、连接 Body ID、`getConstraintForce*()`、
 `getConstraintTorque*()` 和分离误差，适合调试约束、声音与破坏判定。销毁任一连接 Body 或
 World 会使 Joint3D 包装器安全失效；也可显式调用 `joint.destroy()`。默认连接体互不碰撞，
@@ -463,7 +500,8 @@ World 会使 Joint3D 包装器安全失效；也可显式调用 `joint.destroy()
 需要可破坏结构时，用 `setForceThreshold(newtons)` 和
 `setTorqueThreshold(newtonMetres)` 配置关节应力事件。任一阈值被超过的物理帧会发送
 `jointstress3d`，四个整数参数依次为 Joint ID、Body A ID、Body B ID、关节类型代码
-（0 Distance、1 Revolute、2 Prismatic、3 Spherical、4 Wheel）。同一帧的精确求解器力和扭矩从
+（0 Distance、1 Revolute、2 Prismatic、3 Spherical、4 Wheel、5 Weld、6 Motor、
+7 Parallel、8 Filter）。同一帧的精确求解器力和扭矩从
 `getJointStressForceX/Y/Z()`、`getJointStressTorqueX/Y/Z()` 读取；事件缓冲会在下一次
 `world3.update()` 前清空。
 

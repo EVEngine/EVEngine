@@ -2,6 +2,7 @@
 #include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "physics/Joint3D.h"
+#include "physics/Mechanism3D.h"
 #include "physics/DistanceField3D.h"
 #include "physics/softbody/SoftBody3D.h"
 #include "physics/softbody/graphics/SoftBody3DRenderer.h"
@@ -206,6 +207,13 @@ void Physics::expose(ssq::Table &table) {
     world3.addFunc("newPrismaticJoint", &World3D::newPrismaticJoint);
     world3.addFunc("newSphericalJoint", &World3D::newSphericalJoint);
     world3.addFunc("newWheelJoint", &World3D::newWheelJoint);
+    world3.addFunc("newWeldJoint", &World3D::newWeldJoint);
+    world3.addFunc("newMotorJoint", &World3D::newMotorJoint);
+    world3.addFunc("newParallelJoint", &World3D::newParallelJoint);
+    world3.addFunc("newFilterJoint", &World3D::newFilterJoint);
+    world3.addFunc("newShaft", &World3D::newShaft);
+    world3.addFunc("newRatchet", &World3D::newRatchet);
+    world3.addFunc("newCrankSlider", &World3D::newCrankSlider);
     world3.addFunc("destroyBody", &World3D::destroyBody);
     world3.addFunc("destroy", &World3D::destroy);
     world3.addFunc("rayCast", &World3D::rayCast);
@@ -695,7 +703,50 @@ void Physics::expose(ssq::Table &table) {
     joint3.addFunc("getWheelSpinTorque", &Joint3D::getWheelSpinTorque);
     joint3.addFunc("getWheelSteeringAngle", &Joint3D::getWheelSteeringAngle);
     joint3.addFunc("getWheelSteeringTorque", &Joint3D::getWheelSteeringTorque);
+    joint3.addFunc("setWeldLinearSpring", &Joint3D::setWeldLinearSpring);
+    joint3.addFunc("setWeldAngularSpring", &Joint3D::setWeldAngularSpring);
+    joint3.addFunc("getWeldLinearHertz", &Joint3D::getWeldLinearHertz);
+    joint3.addFunc("getWeldLinearDampingRatio", &Joint3D::getWeldLinearDampingRatio);
+    joint3.addFunc("getWeldAngularHertz", &Joint3D::getWeldAngularHertz);
+    joint3.addFunc("getWeldAngularDampingRatio", &Joint3D::getWeldAngularDampingRatio);
+    joint3.addFunc("setMotorLinearVelocity", &Joint3D::setMotorLinearVelocity);
+    joint3.addFunc("setMotorAngularVelocity", &Joint3D::setMotorAngularVelocity);
+    joint3.addFunc("setMotorVelocityLimits", &Joint3D::setMotorVelocityLimits);
+    joint3.addFunc("setMotorLinearSpring", &Joint3D::setMotorLinearSpring);
+    joint3.addFunc("setMotorAngularSpring", &Joint3D::setMotorAngularSpring);
+    joint3.addFunc("getMotorLinearVelocityX", &Joint3D::getMotorLinearVelocityX);
+    joint3.addFunc("getMotorLinearVelocityY", &Joint3D::getMotorLinearVelocityY);
+    joint3.addFunc("getMotorLinearVelocityZ", &Joint3D::getMotorLinearVelocityZ);
+    joint3.addFunc("getMotorAngularVelocityX", &Joint3D::getMotorAngularVelocityX);
+    joint3.addFunc("getMotorAngularVelocityY", &Joint3D::getMotorAngularVelocityY);
+    joint3.addFunc("getMotorAngularVelocityZ", &Joint3D::getMotorAngularVelocityZ);
+    joint3.addFunc("setParallelSpring", &Joint3D::setParallelSpring);
+    joint3.addFunc("getParallelHertz", &Joint3D::getParallelHertz);
+    joint3.addFunc("getParallelDampingRatio", &Joint3D::getParallelDampingRatio);
+    joint3.addFunc("getParallelMaxTorque", &Joint3D::getParallelMaxTorque);
     joint3.addFunc("destroy", &Joint3D::destroy);
+
+    auto mechanism3 = table.addClass<Mechanism3D>(
+        "Mechanism3D", std::function<Mechanism3D *()>([]() -> Mechanism3D * { return nullptr; }),
+        true);
+    mechanism3.addFunc("getId", &Mechanism3D::getId);
+    mechanism3.addFunc("getKind", &Mechanism3D::getKind);
+    mechanism3.addFunc("isValid", &Mechanism3D::isValid);
+    mechanism3.addFunc("getDriveJoint", &Mechanism3D::getDriveJoint);
+    mechanism3.addFunc("getCrankPinJoint", &Mechanism3D::getCrankPinJoint);
+    mechanism3.addFunc("getSliderPinJoint", &Mechanism3D::getSliderPinJoint);
+    mechanism3.addFunc("getSliderJoint", &Mechanism3D::getSliderJoint);
+    mechanism3.addFunc("getDriveAngle", &Mechanism3D::getDriveAngle);
+    mechanism3.addFunc("getSliderTranslation", &Mechanism3D::getSliderTranslation);
+    mechanism3.addFunc("getSpinSpeed", &Mechanism3D::getSpinSpeed);
+    mechanism3.addFunc("setDrive", &Mechanism3D::setDrive);
+    mechanism3.addFunc("clearDrive", &Mechanism3D::clearDrive);
+    mechanism3.addFunc("isDriveEnabled", &Mechanism3D::isDriveEnabled);
+    mechanism3.addFunc("setRatchetDirection", &Mechanism3D::setRatchetDirection);
+    mechanism3.addFunc("getRatchetDirection", &Mechanism3D::getRatchetDirection);
+    mechanism3.addFunc("setRatchetEngagementTorque", &Mechanism3D::setRatchetEngagementTorque);
+    mechanism3.addFunc("getRatchetEngagementTorque", &Mechanism3D::getRatchetEngagementTorque);
+    mechanism3.addFunc("destroy", &Mechanism3D::destroy);
 
     auto fixture = table.addClass<Fixture>(
         "Fixture", std::function<Fixture *()>([]() -> Fixture * { return nullptr; }), true);

@@ -812,6 +812,15 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
                 const b3Vec3 suspension = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisX));
                 const b3Vec3 wheel = b3Body_GetWorldVector(bBody->raw(), b3RotateVector(qb, b3Vec3_axisZ));
                 joint = prepared->newWheelJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, suspension.x, suspension.y, suspension.z, wheel.x, wheel.y, wheel.z);
+            } else if (kind.value() == "weld") {
+                joint = prepared->newWeldJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z);
+            } else if (kind.value() == "motor") {
+                joint = prepared->newMotorJoint(aBody, bBody);
+            } else if (kind.value() == "parallel") {
+                const b3Vec3 axis = b3Body_GetWorldVector(aBody->raw(), b3RotateVector(qa, b3Vec3_axisZ));
+                joint = prepared->newParallelJoint(aBody, bBody, axis.x, axis.y, axis.z);
+            } else if (kind.value() == "filter") {
+                joint = prepared->newFilterJoint(aBody, bBody);
             }
             if (!joint)
                 return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
