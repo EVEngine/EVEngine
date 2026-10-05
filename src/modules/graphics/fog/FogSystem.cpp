@@ -3,6 +3,7 @@
 #include "common/Diagnostic.h"
 #include "common/Status.h"
 #include "graphics/AtmosphereVolume.h"
+#include "graphics/Volumetric.h"
 
 #include <algorithm>
 #include <cmath>
@@ -106,6 +107,46 @@ Result<int> FogSystem::renderToFroxel(AtmosphereVolume& volume, const glm::mat4&
         // intentionally skipped here; callers may keep an external history volume.
         (void)budget.historyWeight;
     }
+    return injected;
+}
+
+Result<int> FogSystem::syncToVolumetric(Volumetric* volumetric, const glm::vec3& lightDir,
+                                        const glm::vec3& lightColor, float intensity) {
+    if (!volumetric) {
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "volumetric is null", "volumetric", {}, "graphics.fog"));
+    }
+    AtmosphereVolume* volume = volumetric->getAtmosphereVolume();
+    if (!volume) {
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "volumetric has no AtmosphereVolume; call configureFroxelGrid first",
+            "atmosphereVolume", {}, "graphics.fog"));
+    }
+
+    // Keep Volumetric atlas metadata in sync with the quality grid. Resizing the
+    // AtmosphereVolume alone leaves froxelAtlasCols_/Rows_ stale and corrupts upload.
+    const auto budget = budgetFor(quality_);
+    float nearDistance = volume->getNearDistance();
+    float farDistance = volume->getFarDistance();
+    if (!(farDistance > nearDistance)) {
+        nearDistance = 0.1f;
+        farDistance = std::max(density_.bounds().size().z, 40.f);
+    }
+    volumetric->configureFroxelGrid(budget.froxelWidth, budget.froxelHeight, budget.froxelDepth,
+                                    nearDistance, farDistance);
+
+    auto cacheReady = ensureBeerCache(lightDir, lightColor, intensity);
+    if (!cacheReady.ok()) return Result<int>::failure(cacheReady.status());
+
+    auto injected = froxelBridge_.inject(*volume, density_, profile_, volumetric->getInvViewProj(),
+                                        budget.occupancySkip);
+    if (!injected.ok()) return injected;
+
+    const BeerLightCache* cache =
+        (budget.beerLightCache && beerCache_.valid()) ? &beerCache_ : nullptr;
+    auto integrated =
+        froxelBridge_.integrate(*volume, density_, profile_, lightDir, lightColor, intensity, cache);
+    if (!integrated.ok()) return Result<int>::failure(integrated.status());
     return injected;
 }
 

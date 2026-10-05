@@ -23,6 +23,7 @@
 
 namespace eve::graphics {
 class AtmosphereVolume;
+class Volumetric;
 }
 
 namespace eve::graphics::fog {
@@ -100,6 +101,18 @@ public:
     [[nodiscard]] Result<int> renderToFroxel(AtmosphereVolume& volume, const glm::mat4& invViewProj,
                                              const glm::vec3& lightDir, const glm::vec3& lightColor,
                                              float intensity);
+
+    /**
+     * @brief Map the live density field into a Volumetric froxel grid and integrate lighting.
+     * Caller still owns uploadFroxel / applyFroxel. Uses the Volumetric camera matrix.
+     * @param volumetric Borrowed for the call; not retained.
+     * @ownership Borrowed Volumetric; FogSystem does not take ownership.
+     * @lifetime Valid only for this call; do not retain across frames via this argument.
+     * @thread Simulation / render thread that owns both objects.
+     * @reentrancy Not reentrant; invokes no script callbacks.
+     */
+    [[nodiscard]] Result<int> syncToVolumetric(Volumetric* volumetric, const glm::vec3& lightDir,
+                                               const glm::vec3& lightColor, float intensity);
 
     /** @brief Analytic beam integration using the active quality segment count. */
     [[nodiscard]] Result<FogRayResult> integrateBeam(const AnalyticBeam& beam, const glm::vec3& origin,
