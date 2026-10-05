@@ -1575,6 +1575,15 @@ Always Draw Gizmos、Node Size 和颜色面板而无需改变 spline 文档本�
 `SceneQuerySplineBindingSource` 是可选 scene provider 的适配器：裁剪掉 scene 模块时显式返回 Unsupported，
 而不是静默冻结控制点。
 
+道路网络 authoring 使用同样的 UI 无关模式：`RoadNetworkDocument` 拥有稳定 id 的路口节点与有向边
+（控制折线 + 车道数），事务操作为 `road.node.set/delete.v1`、`road.edge.set/delete.v1` 与
+`road.snapshot.replace.v1`；`makeMoveNode()` 在一次撤销单元内同步节点位置与入射边端点控制点。
+持久化 schema 为 `eve.procgen.roadNetwork` version 1（未知字段忽略，校验失败不污染当前文档）。
+`compileNetwork()` / `previewBake()` 产出 owning 运行时 `RoadNetwork` 与 mesh 预览，不保留文档指针。
+`RoadNetworkGizmoBuilder` 投影 `road.node.*` / `road.cp.*` / `road.edge.*.segment.*` 拾取 ID；
+`RoadNetworkDragSession` 与 `RoadLaySession` 分别负责拖动预览与点击铺路（吸附既有路口、链式延边），
+pointer 阶段只更新 detached draft / rubber-band gizmo，宿主应用返回的 DomainOperation 后才改文档。
+
 ```squirrel
 local graphResult = procgen.newMeshModifierGraph();
 if (!graphResult.ok) throw graphResult.status.summary;
