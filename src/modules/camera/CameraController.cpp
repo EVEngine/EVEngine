@@ -976,7 +976,7 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("setLookAhead", &CameraController::setLookAhead);
     cc.addFunc("setSecondaryTarget", &CameraController::setSecondaryTarget);
     cc.addFunc("clearSecondaryTarget", &CameraController::clearSecondaryTarget);
-    cc.addFunc("hasSecondaryTarget", &CameraController::hasSecondaryTarget);
+    cc.addFunc("hasSecondaryTarget", [](const CameraController* self) { return self->hasSecondaryTarget(); });
     cc.addFunc("getSecondaryTargetX", &CameraController::getSecondaryTargetX);
     cc.addFunc("getSecondaryTargetY", &CameraController::getSecondaryTargetY);
     cc.addFunc("getSecondaryTargetZ", &CameraController::getSecondaryTargetZ);
