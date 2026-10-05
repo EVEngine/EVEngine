@@ -154,6 +154,10 @@ Result<void> MeleeHitboxDefinition::validate() const {
     if (!std::isfinite(healthDamage) || healthDamage < 0.0) return invalid("hitbox health damage is invalid", "healthDamage");
     if (!std::isfinite(poiseDamage) || poiseDamage < 0.0) return invalid("hitbox poise damage is invalid", "poiseDamage");
     if (damageType.empty()) return invalid("hitbox damage type is empty", "damageType");
+    if (!std::isfinite(knockbackSpeed) || knockbackSpeed < 0.0)
+        return invalid("hitbox knockback speed is invalid", "knockbackSpeed");
+    if (!std::isfinite(knockbackLift) || knockbackLift < 0.0)
+        return invalid("hitbox knockback lift is invalid", "knockbackLift");
     return shape.validate();
 }
 
@@ -286,6 +290,8 @@ Result<MeleeHitFrame> MeleeHitRuntime::advance(SimulationTick tick) {
             event.healthDamage = definition.healthDamage;
             event.poiseDamage = definition.poiseDamage;
             event.damageType = definition.damageType;
+            event.knockback       = {normal.x * definition.knockbackSpeed, definition.knockbackLift,
+                                     normal.z * definition.knockbackSpeed};
             event.actionExecution = armed.execution;
             hitMemory_[memory] = true;
             frame.hits.push_back(std::move(event));
@@ -313,6 +319,7 @@ Result<std::vector<DamageOutcome>> MeleeHitRuntime::applyHits(
         request.damageType = hit.damageType;
         request.healthDamage = hit.healthDamage;
         request.poiseDamage = hit.poiseDamage;
+        request.knockback       = hit.knockback;
         const auto mult = bodyPartMultipliers.find(hit.bodyPart);
         if (mult != bodyPartMultipliers.end()) request.incomingDamageMultiplier = mult->second;
         auto outcome = damage.apply(found->second, request);

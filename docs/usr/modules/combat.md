@@ -62,25 +62,34 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 |---|---|
 | `MeleeHitRuntime` | Hitbox 目录 + Hurtbox + 扫掠命中；可选部位倍率后提交 `DamageRuntime` |
 | `CombatActionWindowState` | Montage hitbox/invuln 窗口；可借用 `MeleeHitRuntime` 自动 arm/disarm |
-| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 攻击 Root Motion / 硬直 / 死亡；可选地面与胶囊探针 |
+| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 锁敌相对闪避 / 攻击 Root Motion / 硬直击退 / 死亡；可选地面与胶囊探针 |
 | `CombatCharacterPoseSource` | 把角色位置/朝向变成 melee pose（局部 +Z 为面朝方向） |
 | `CombatMotionWarp` | 攻击中向 lock-on 目标做有预算的水平校正 |
 | `CombatCameraFraming` | 锁定镜头数学（eye/lookAt）；camera 模块只负责 apply |
-| `CombatLoopRuntime` | 一帧顺序焊接 warp → character → hurtbox → melee → guard/feel → camera |
+| `CombatCancelResolver` | 输入缓冲 + cancel/combo 窗口 + `ComboGraph` 一帧解析（不激活 Ability） |
+| `CombatLoopRuntime` | 一帧顺序焊接 steering/cancel → warp → character → hurtbox → melee → dodge/guard/feel/reaction → camera |
 | `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |
 | `GuardWindowState` | `combat:guard-window`（`block`/`parry`）并改写伤害请求 |
 | `ActionCancelWindowState` + `ActionInputBuffer` | `input:cancel-window` 允许列表与确定性输入缓冲 |
 | `ComboGraph` | 显式 Ability 转移图（与 cancel/combo 窗口联用） |
 | `CombatTargetRuntime` | Soft/hard lock-on 与切换 |
-| `CombatEnemyIntentSource` | 近距环敌人；可选 Telegraph / Recover 惩罚窗 |
+| `CombatEnemyIntentSource` | 近距环攻击；Mid/Far 接近 steering；可选 Telegraph / Recover 惩罚窗 |
 | `BodyPartDamageRule` | 按部位倍率的 `IDamageRule` |
 
 `CombatCharacterRuntime` 默认落在平面 `y = 0`。游戏可以借用 `ICombatGroundProvider`
 （高度采样）和 `ICombatMoveProbe`（胶囊推进），缺省时行为与第一版平面控制器相同。
+`dodgeRelative` 按 lock-on 目标在 XZ 上解析前/后/左/右闪避。`applyImpulse` /
+`applyDamageReaction` 把击退写入速度；`Stunned` 期间仍积分水平滑动与重力，不再冻结位姿。
 `HitFeelRuntime` 的 hitstop 通过 `setTimeFrozen` 暂停角色积分，时长权威仍在 feel。
 
-`CombatLoopRuntime` 只排序借用对象，不引入 CombatActor。Motion warp 仅在 `Attacking`
-且存在 lock-on 时生效；超出 per-tick 预算的 warp 被跳过而不是静默吸附。
+`CombatCancelResolver` 消费缓冲输入、匹配 cancel（与可选 combo）窗口，再查询
+`ComboGraph`；缺匹配返回 `NotFound`，调用方再提交 `AbilityIntent`。
+
+`CombatLoopRuntime` 只排序借用对象，不引入 CombatActor。可选敌人 `nextSteering`
+在 Idle 的 Mid/Far 环写入 `setMoveIntent`；闪避 i-frame 命中记为 `perfectDodges` 且不结算伤害；
+其余命中走 guard → damage → feel → `applyDamageReaction`。`MeleeHitboxDefinition` 的
+`knockbackSpeed` / `knockbackLift` 沿接触法线写入 `DamageRequest.knockback`。Motion warp 仅在
+`Attacking` 且存在 lock-on 时生效；超出 per-tick 预算的 warp 被跳过而不是静默吸附。
 `CombatCameraFraming` 属于 combat（L2）；`CameraController` 的 `lockon` 模式只消费
 世界坐标（`setTarget` + `setSecondaryTarget`），不依赖 combat 头文件。
 

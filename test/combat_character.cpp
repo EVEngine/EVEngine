@@ -105,3 +105,28 @@ TEST_CASE("combatCharacter.freezeSkipsIntegration") {
     REQUIRE(characters.advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(50000000)}).ok());
     CHECK(characters.state(player).value().position.x > 0.0);
 }
+
+TEST_CASE("combatCharacter.dodgeRelativeAndKnockbackWhileStunned") {
+    const auto                          player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    eve::combat::CombatCharacterRuntime characters;
+    REQUIRE(characters.registerSubject({player, "fighter:player", {0.0, 0.0, 0.0}}).ok());
+    REQUIRE(characters.dodgeRelative(player, {4.0, 0.0, 0.0}, eve::combat::CombatDodgeRelative::Back).ok());
+    auto dodging = characters.state(player);
+    REQUIRE(dodging.ok());
+    CHECK(dodging.value().mode == eve::combat::CombatCharacterMode::Dodging);
+    CHECK(dodging.value().velocity.x < 0.0);
+
+    REQUIRE(characters
+                .applyDamageReaction(player, eve::combat::HitReaction::Stagger,
+                                     eve::Duration::fromNanoseconds(200000000), {3.0, 4.0, 0.0})
+                .ok());
+    auto stunned = characters.state(player);
+    REQUIRE(stunned.ok());
+    CHECK(stunned.value().mode == eve::combat::CombatCharacterMode::Stunned);
+    CHECK_EQ(stunned.value().velocity.x, 3.0);
+    CHECK_EQ(stunned.value().velocity.y, 4.0);
+    const double beforeX = stunned.value().position.x;
+    REQUIRE(characters.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(50000000)}).ok());
+    CHECK(characters.state(player).value().position.x > beforeX);
+    CHECK(characters.state(player).value().position.y > 0.0);
+}

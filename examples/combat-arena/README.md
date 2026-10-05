@@ -2,15 +2,17 @@
 
 Deterministic vertical-slice that composes the action-combat foundation:
 
-- 3D character controller (run / jump / dodge i-frames)
+- 3D character controller (run / jump / dodge i-frames / lock-relative dodge)
+- Knockback / stun reaction while stunned (slide + gravity)
 - Melee hitbox/hurtbox sweep + damage
-- Cancel buffer + combo graph
+- Cancel buffer + combo graph via `CombatCancelResolver`
 - Hitstop/hitstun feel
 - Guard/parry windows
+- Perfect-dodge audit when i-frames negate a melee hit
 - Soft/hard lock-on
 - Lock-on camera framing (`CombatCameraFraming` + `CameraController` `lockon`)
 - Motion warp toward the locked target during attacks
-- Simple near-band enemy AI with optional telegraph / recover punish windows
+- Enemy Mid/Far approach steering + near-band attack with optional telegraph / recover
 - `CombatLoopRuntime` welding the 3D slice for one simulation tick
 
 This example is a headless-friendly simulation loop driven from Squirrel. It

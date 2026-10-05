@@ -4,6 +4,7 @@
 /** @file CombatEnemyAI.h @brief Minimal ring-based combat enemy intent source. */
 
 #include "action/AbilityController.h"
+#include "combat/CombatCharacter.h"
 #include "combat/CombatTarget.h"
 #include "common/Identity.h"
 #include "common/SubjectRef.h"
@@ -11,6 +12,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace eve::combat {
 
@@ -19,6 +21,13 @@ enum class CombatEnemyBand : std::uint8_t { Far, Mid, Near };
 
 /** @brief Authored move-set phase; Telegraph and Recover are punish windows. */
 enum class CombatEnemyPhase : std::uint8_t { Idle, Telegraph, Recover };
+
+/** @brief Owning planar steering suggestion for Mid/Far bands. */
+struct CombatEnemySteering {
+    SubjectRef    subject;
+    CombatVector3 moveDirection;
+    double        speedFraction = 0.0;
+};
 
 /** @brief Owning configuration for one enemy fighter. */
 struct CombatEnemyDefinition {
@@ -60,6 +69,11 @@ public:
     [[nodiscard]] Result<void> setLightAction(SubjectRef subject, LogicalId actionId);
     /** @brief Emit at most one attack intent for the supplied tick. */
     [[nodiscard]] Result<std::optional<action::AbilityIntent>> nextIntent(SimulationTick tick) override;
+    /**
+     * @brief Emit approach steering for Mid/Far enemies that are Idle (not punishing).
+     * @remarks Near band and Telegraph/Recover return no steering for that enemy.
+     */
+    [[nodiscard]] Result<std::vector<CombatEnemySteering>> nextSteering(SimulationTick tick) const;
     /** @brief Current band for debugging; Far when unknown. */
     [[nodiscard]] CombatEnemyBand band(SubjectRef subject) const;
     /** @brief Current move-set phase; Idle when the subject is unknown. */

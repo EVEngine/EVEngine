@@ -3,6 +3,7 @@
 
 /** @file CombatCharacter.h @brief 3D action-combat character controller. */
 
+#include "combat/Damage.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
 #include "common/Time.h"
@@ -24,6 +25,9 @@ struct CombatVector3 {
 
 /** @brief High-level locomotion mode owned by the character controller. */
 enum class CombatCharacterMode : std::uint8_t { Grounded, Airborne, Dodging, Attacking, Stunned, Dead };
+
+/** @brief Lock-relative dodge direction on the XZ plane. */
+enum class CombatDodgeRelative : std::uint8_t { Forward, Back, Left, Right };
 
 /** @brief Immutable registration for one action-combat character. */
 struct CombatCharacterDefinition {
@@ -147,12 +151,30 @@ public:
      * @param direction Optional dodge direction; empty uses current facing.
      */
     [[nodiscard]] Result<void> dodge(SubjectRef subject, std::optional<CombatVector3> direction = std::nullopt);
+    /**
+     * @brief Dodge relative to a lock-on target on the XZ plane.
+     * @param lockTarget Finite world position of the locked subject.
+     * @param relative Forward = toward target, Back = away, Left/Right = strafe.
+     */
+    [[nodiscard]] Result<void> dodgeRelative(SubjectRef subject, CombatVector3 lockTarget,
+                                             CombatDodgeRelative relative);
     /** @brief Enter attacking mode; root motion may replace horizontal intent. */
     [[nodiscard]] Result<void> beginAttack(SubjectRef subject);
     /** @brief Leave attacking mode when recover completes. */
     [[nodiscard]] Result<void> endAttack(SubjectRef subject);
     /** @brief Apply a stun that blocks jump/dodge/attack for the supplied duration. */
     [[nodiscard]] Result<void> applyStun(SubjectRef subject, Duration duration);
+    /**
+     * @brief Add an instantaneous velocity impulse (knockback / launch).
+     * @remarks Dead subjects are NoOp. Positive Y leaves the subject airborne after stun ends.
+     */
+    [[nodiscard]] Result<void> applyImpulse(SubjectRef subject, CombatVector3 impulse);
+    /**
+     * @brief Apply death/stun and knockback from one damage outcome.
+     * @param stunDuration Hitstun remaining from HitFeelRuntime; ignored for Death.
+     */
+    [[nodiscard]] Result<void> applyDamageReaction(SubjectRef subject, HitReaction reaction, Duration stunDuration,
+                                                   Impulse3 knockback);
     /** @brief Mark the character dead; further locomotion intents become NoOp. */
     [[nodiscard]] Result<void> kill(SubjectRef subject);
     /**

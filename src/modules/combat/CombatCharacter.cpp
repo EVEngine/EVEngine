@@ -145,6 +145,26 @@ Result<void> CombatCharacterRuntime::dodge(SubjectRef subject, std::optional<Com
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+Result<void> CombatCharacterRuntime::dodgeRelative(SubjectRef subject, CombatVector3 lockTarget,
+                                                   CombatDodgeRelative relative) {
+    auto found = states_.find(subject.format());
+    if (found == states_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
+    if (!finite3(lockTarget)) return invalid("lock target is invalid", "lockTarget");
+    CombatVector3 toTarget =
+        normalizedXZ({lockTarget.x - found->second.position.x, 0.0, lockTarget.z - found->second.position.z});
+    if (lengthXZ(toTarget) <= 0.0) toTarget = found->second.facing;
+    CombatVector3 direction = toTarget;
+    switch (relative) {
+        case CombatDodgeRelative::Forward: direction = toTarget; break;
+        case CombatDodgeRelative::Back: direction = {-toTarget.x, 0.0, -toTarget.z}; break;
+        case CombatDodgeRelative::Left: direction = {toTarget.z, 0.0, -toTarget.x}; break;
+        case CombatDodgeRelative::Right: direction = {-toTarget.z, 0.0, toTarget.x}; break;
+    }
+    return dodge(subject, direction);
+}
+
 Result<void> CombatCharacterRuntime::beginAttack(SubjectRef subject) {
     auto found = states_.find(subject.format());
     if (found == states_.end())
@@ -181,9 +201,38 @@ Result<void> CombatCharacterRuntime::applyStun(SubjectRef subject, Duration dura
     found->second.mode              = CombatCharacterMode::Stunned;
     found->second.modeTimeRemaining = duration.seconds();
     found->second.invulnerable      = false;
-    found->second.velocity          = {};
+    found->second.moveSpeedFraction = 0.0;
+    found->second.moveDirection     = {};
     found->second.rootMotionDelta.reset();
     return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> CombatCharacterRuntime::applyImpulse(SubjectRef subject, CombatVector3 impulse) {
+    auto found = states_.find(subject.format());
+    if (found == states_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
+    if (!finite3(impulse)) return invalid("impulse is invalid", "impulse");
+    if (found->second.mode == CombatCharacterMode::Dead)
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    found->second.velocity.x += impulse.x;
+    found->second.velocity.y += impulse.y;
+    found->second.velocity.z += impulse.z;
+    if (impulse.y > 0.0 && found->second.mode == CombatCharacterMode::Grounded)
+        found->second.mode = CombatCharacterMode::Airborne;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> CombatCharacterRuntime::applyDamageReaction(SubjectRef subject, HitReaction reaction,
+                                                         Duration stunDuration, Impulse3 knockback) {
+    if (reaction == HitReaction::Death) return kill(subject);
+    if (reaction == HitReaction::Flinch || reaction == HitReaction::Stagger || reaction == HitReaction::Knockdown) {
+        auto stunned = applyStun(subject, stunDuration);
+        if (!stunned) return stunned;
+    }
+    if (knockback.x != 0.0 || knockback.y != 0.0 || knockback.z != 0.0)
+        return applyImpulse(subject, {knockback.x, knockback.y, knockback.z});
+    return Result<void>::success(Status::success(StatusCode::NoOp));
 }
 
 Result<void> CombatCharacterRuntime::kill(SubjectRef subject) {
@@ -281,7 +330,10 @@ Result<CombatCharacterAdvance> CombatCharacterRuntime::advance(const SimulationS
             unconstrained = {state.position.x + state.rootMotionDelta->x, state.position.y + state.rootMotionDelta->y,
                              state.position.z + state.rootMotionDelta->z};
             state.rootMotionDelta.reset();
-        } else if (state.mode != CombatCharacterMode::Stunned) {
+        } else if (state.mode == CombatCharacterMode::Stunned) {
+            unconstrained.x += state.velocity.x * dt;
+            unconstrained.z += state.velocity.z * dt;
+        } else {
             const double  targetSpeed = state.maximumSpeed * state.moveSpeedFraction;
             CombatVector3 desired     = {state.moveDirection.x * targetSpeed, 0.0, state.moveDirection.z * targetSpeed};
             CombatVector3 planar      = {state.velocity.x, 0.0, state.velocity.z};
@@ -312,6 +364,7 @@ Result<CombatCharacterAdvance> CombatCharacterRuntime::advance(const SimulationS
         }
 
         if (state.mode == CombatCharacterMode::Airborne || state.mode == CombatCharacterMode::Attacking ||
+            state.mode == CombatCharacterMode::Stunned ||
             (state.mode == CombatCharacterMode::Grounded && state.position.y > ground)) {
             state.velocity.y -= state.gravity * dt;
             state.position.y += state.velocity.y * dt;

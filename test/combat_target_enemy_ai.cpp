@@ -133,3 +133,46 @@ TEST_CASE("combatEnemyAi.telegraphThenRecoverArePunishable") {
     CHECK(ai.phase(enemy) == eve::combat::CombatEnemyPhase::Idle);
     CHECK(!ai.isPunishable(enemy));
 }
+
+TEST_CASE("combatEnemyAi.midAndFarBandsSteerTowardTarget") {
+    const auto player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    const auto enemy  = subject("01020304-0506-0708-890a-0b0c0d0e0f10");
+
+    eve::combat::CombatTargetRuntime targets;
+    REQUIRE(targets.registerOwner(enemy).ok());
+    REQUIRE(targets.hardLock(enemy, player).ok());
+
+    eve::combat::CombatEnemyDefinition definition;
+    definition.subject             = enemy;
+    definition.ownerId             = "fighter:enemy";
+    definition.nearRadius          = 2.0;
+    definition.midRadius           = 5.0;
+    definition.attackCooldownTicks = 10;
+
+    eve::combat::CombatEnemyIntentSource ai;
+    ai.setTargetRuntime(targets);
+    REQUIRE(ai.registerEnemy(definition).ok());
+    REQUIRE(ai.setPosition(enemy, 0.0, 0.0, 0.0).ok());
+    REQUIRE(ai.setPosition(player, 3.0, 0.0, 0.0).ok());
+    CHECK(ai.band(enemy) == eve::combat::CombatEnemyBand::Mid);
+
+    auto mid = ai.nextSteering(eve::SimulationTick(1));
+    REQUIRE(mid.ok());
+    REQUIRE_EQ(mid.value().size(), 1u);
+    CHECK_EQ(mid.value().front().subject.format(), enemy.format());
+    CHECK(mid.value().front().moveDirection.x > 0.9);
+    CHECK_EQ(mid.value().front().speedFraction, 0.7);
+
+    REQUIRE(ai.setPosition(player, 8.0, 0.0, 0.0).ok());
+    CHECK(ai.band(enemy) == eve::combat::CombatEnemyBand::Far);
+    auto far = ai.nextSteering(eve::SimulationTick(2));
+    REQUIRE(far.ok());
+    REQUIRE_EQ(far.value().size(), 1u);
+    CHECK_EQ(far.value().front().speedFraction, 1.0);
+
+    REQUIRE(ai.setPosition(player, 1.0, 0.0, 0.0).ok());
+    CHECK(ai.band(enemy) == eve::combat::CombatEnemyBand::Near);
+    auto near = ai.nextSteering(eve::SimulationTick(3));
+    REQUIRE(near.ok());
+    CHECK_EQ(near.value().size(), 0u);
+}

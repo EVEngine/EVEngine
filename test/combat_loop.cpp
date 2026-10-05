@@ -75,7 +75,9 @@ TEST_CASE("combatLoop.appliesMeleeDamageFeelAndHitstopFreeze") {
                                  {0.0, 0.0, 0.6},
                                  12.0,
                                  4.0,
-                                 "Damage.Physical.Slash"})
+                                 "Damage.Physical.Slash",
+                                 3.0,
+                                 2.0})
                 .ok());
     REQUIRE(melee.registerHurtbox({enemy, "torso", "torso", {eve::combat::MeleeShapeKind::Sphere, 0.4, 0.0}}).ok());
     REQUIRE(melee.armHitbox(player, "weapon.main", eve::action::ActionExecutionId(9)).ok());
@@ -97,11 +99,57 @@ TEST_CASE("combatLoop.appliesMeleeDamageFeelAndHitstopFreeze") {
     REQUIRE_EQ(frame.value().outcomes.size(), 1u);
     CHECK_EQ(states.at(enemy.format()).health, 88.0);
     CHECK(feel.isFrozen(player));
+    auto enemyState = characters.state(enemy);
+    REQUIRE(enemyState.ok());
+    CHECK(enemyState.value().mode == eve::combat::CombatCharacterMode::Stunned);
+    CHECK(enemyState.value().velocity.x > 0.0);
+    CHECK(enemyState.value().velocity.y > 0.0);
 
     REQUIRE(characters.setMoveIntent(player, {1.0, 0.0, 0.0}, 1.0).ok());
     const double frozenX = characters.state(player).value().position.x;
     REQUIRE(loop.advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(16000000)}).ok());
     CHECK_EQ(characters.state(player).value().position.x, frozenX);
+}
+
+TEST_CASE("combatLoop.recordsPerfectDodgeWithoutDamage") {
+    const auto player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    const auto enemy  = subject("01020304-0506-0708-890a-0b0c0d0e0f10");
+
+    eve::combat::CombatCharacterRuntime characters;
+    REQUIRE(characters.registerSubject({player, "fighter:player", {0.0, 0.0, 0.0}}).ok());
+    REQUIRE(characters.registerSubject({enemy, "fighter:enemy", {1.4, 0.0, 0.0}}).ok());
+    REQUIRE(characters.dodge(player, eve::combat::CombatVector3{0.0, 0.0, 1.0}).ok());
+
+    eve::combat::CombatCharacterPoseSource poses(characters);
+    eve::combat::MeleeHitRuntime           melee;
+    melee.setPoseSource(poses);
+    REQUIRE(melee
+                .registerHitbox({"weapon.main",
+                                 {eve::combat::MeleeShapeKind::Sphere, 0.5, 0.0},
+                                 {0.0, 0.0, -0.6},
+                                 12.0,
+                                 4.0,
+                                 "Damage.Physical.Slash"})
+                .ok());
+    REQUIRE(melee.registerHurtbox({player, "torso", "torso", {eve::combat::MeleeShapeKind::Sphere, 0.4, 0.0}}).ok());
+    REQUIRE(melee.armHitbox(enemy, "weapon.main", eve::action::ActionExecutionId(11)).ok());
+
+    std::map<std::string, eve::combat::CombatState, std::less<>> states;
+    states.emplace(player.format(), eve::combat::CombatState{player, 100.0, 100.0, 40.0, 40.0});
+
+    eve::combat::CombatLoopRuntime loop;
+    loop.setCharacters(characters);
+    loop.setMelee(melee);
+    loop.setDamageStates(&states);
+
+    auto frame = loop.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(16000000)});
+    REQUIRE(frame.ok());
+    REQUIRE_EQ(frame.value().melee.hits.size(), 1u);
+    REQUIRE_EQ(frame.value().perfectDodges.size(), 1u);
+    CHECK_EQ(frame.value().perfectDodges.front().defender.format(), player.format());
+    CHECK_EQ(frame.value().outcomes.size(), 0u);
+    CHECK_EQ(states.at(player.format()).health, 100.0);
+    CHECK(characters.state(player).value().mode == eve::combat::CombatCharacterMode::Dodging);
 }
 
 TEST_CASE("combatCharacterPoseSource.samplesChestHeightAndYaw") {

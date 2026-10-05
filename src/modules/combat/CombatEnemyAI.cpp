@@ -117,6 +117,37 @@ Result<std::optional<action::AbilityIntent>> CombatEnemyIntentSource::nextIntent
     return Result<std::optional<action::AbilityIntent>>::success(std::move(emitted));
 }
 
+Result<std::vector<CombatEnemySteering>> CombatEnemyIntentSource::nextSteering(SimulationTick) const {
+    if (!targets_)
+        return Result<std::vector<CombatEnemySteering>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "enemy target runtime is unavailable", "targets"));
+
+    std::vector<CombatEnemySteering> result;
+    for (const auto& [key, enemy] : enemies_) {
+        (void)key;
+        if (enemy.phase != CombatEnemyPhase::Idle) continue;
+        const auto selfPose = poses_.find(enemy.definition.subject.format());
+        if (selfPose == poses_.end()) continue;
+        auto lock = targets_->state(enemy.definition.subject);
+        if (!lock || !lock.value().target) continue;
+        const auto targetPose = poses_.find(lock.value().target->format());
+        if (targetPose == poses_.end()) continue;
+        const double dist = distance3(selfPose->second.x, selfPose->second.y, selfPose->second.z, targetPose->second.x,
+                                      targetPose->second.y, targetPose->second.z);
+        if (dist <= enemy.definition.nearRadius) continue;
+
+        CombatVector3 delta{targetPose->second.x - selfPose->second.x, 0.0, targetPose->second.z - selfPose->second.z};
+        const double  magnitude = std::hypot(delta.x, delta.z);
+        if (magnitude <= 1e-6) continue;
+        CombatEnemySteering steering;
+        steering.subject       = enemy.definition.subject;
+        steering.moveDirection = {delta.x / magnitude, 0.0, delta.z / magnitude};
+        steering.speedFraction = dist <= enemy.definition.midRadius ? 0.7 : 1.0;
+        result.push_back(steering);
+    }
+    return Result<std::vector<CombatEnemySteering>>::success(std::move(result), Status::success(StatusCode::Applied));
+}
+
 CombatEnemyBand CombatEnemyIntentSource::band(SubjectRef subject) const {
     const auto found = enemies_.find(subject.format());
     if (found == enemies_.end() || !targets_) return CombatEnemyBand::Far;

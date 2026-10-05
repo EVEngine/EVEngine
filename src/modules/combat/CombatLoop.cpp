@@ -14,6 +14,12 @@ bool invulnerable(const CombatActionWindowState* windows, const CombatCharacterR
     return state && state.value().invulnerable;
 }
 
+bool dodging(const CombatCharacterRuntime* characters, SubjectRef subject) {
+    if (!characters) return false;
+    auto state = characters->state(subject);
+    return state && state.value().mode == CombatCharacterMode::Dodging && state.value().invulnerable;
+}
+
 }  // namespace
 
 Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
@@ -23,6 +29,32 @@ Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
 
     CombatLoopFrame frame;
     frame.tick = step.tick;
+
+    if (enemies_) {
+        for (const auto& state : characters_->states()) {
+            auto posed = enemies_->setPosition(state.subject, state.position.x, state.position.y, state.position.z);
+            if (!posed) return Result<CombatLoopFrame>::failure(posed.status());
+        }
+        auto steering = enemies_->nextSteering(step.tick);
+        if (!steering) return Result<CombatLoopFrame>::failure(steering.status());
+        frame.enemySteering = steering.value();
+        for (const auto& steer : frame.enemySteering) {
+            auto moved = characters_->setMoveIntent(steer.subject, steer.moveDirection, steer.speedFraction);
+            if (!moved) return Result<CombatLoopFrame>::failure(moved.status());
+        }
+    }
+
+    if (cancelResolver_ && cancelSubject_.isValid() && !cancelAbility_.format().empty()) {
+        CombatCancelResolveRequest request;
+        request.subject        = cancelSubject_;
+        request.currentAbility = cancelAbility_;
+        request.tick           = step.tick;
+        auto resolved          = cancelResolver_->resolve(request);
+        if (resolved)
+            frame.cancels.push_back(std::move(resolved).takeValue());
+        else if (resolved.status().code() != StatusCode::NotFound)
+            return Result<CombatLoopFrame>::failure(resolved.status());
+    }
 
     if (feel_) {
         for (const auto& state : characters_->states()) {
@@ -78,6 +110,10 @@ Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
 
     if (states_) {
         for (const auto& hit : frame.melee.hits) {
+            if (dodging(characters_, hit.target)) {
+                frame.perfectDodges.push_back({hit.target, hit.source, hit.hitboxId});
+                continue;
+            }
             if (invulnerable(windows_, characters_, hit.target)) continue;
             DamageRequest request;
             request.source          = hit.source;
@@ -86,6 +122,7 @@ Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
             request.damageType      = hit.damageType;
             request.healthDamage    = hit.healthDamage;
             request.poiseDamage     = hit.poiseDamage;
+            request.knockback       = hit.knockback;
             if (guards_) {
                 auto guarded = guards_->mitigate(hit.target, request);
                 if (!guarded) return Result<CombatLoopFrame>::failure(guarded.status());
@@ -102,11 +139,11 @@ Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
             if (feel_) {
                 auto felt = feel_->applyFromOutcome(outcome.value());
                 if (!felt) return Result<CombatLoopFrame>::failure(felt.status());
-                if (feel_->isStunned(hit.target)) {
-                    auto stunned = characters_->applyStun(hit.target, feel_->state(hit.target).hitstunRemaining);
-                    if (!stunned) return Result<CombatLoopFrame>::failure(stunned.status());
-                }
             }
+            auto reacted = characters_->applyDamageReaction(
+                hit.target, outcome.value().reaction,
+                feel_ ? feel_->state(hit.target).hitstunRemaining : Duration::zero(), outcome.value().knockback);
+            if (!reacted) return Result<CombatLoopFrame>::failure(reacted.status());
             frame.outcomes.push_back(std::move(outcome).takeValue());
         }
     }

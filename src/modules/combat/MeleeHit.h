@@ -72,6 +72,10 @@ struct MeleeHitboxDefinition {
     double      healthDamage = 0.0;
     double      poiseDamage  = 0.0;
     std::string damageType   = "Damage.Physical.Slash";
+    /** @brief Horizontal impulse magnitude along the contact normal (attacker → target). */
+    double knockbackSpeed = 0.0;
+    /** @brief Upward impulse added on hit; independent of the contact normal. */
+    double knockbackLift = 0.0;
 
     /** @brief Validate id, shape and finite damage. */
     [[nodiscard]] Result<void> validate() const;
@@ -89,6 +93,7 @@ struct MeleeHitEvent {
     double                                   healthDamage = 0.0;
     double                                   poiseDamage  = 0.0;
     std::string                              damageType;
+    Impulse3                                 knockback;
     std::optional<action::ActionExecutionId> actionExecution;
 };
 
