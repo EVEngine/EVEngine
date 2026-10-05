@@ -3,6 +3,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <limits>
+
 TEST_CASE("combatMotionWarp.pullsTowardStandoffAndRejectsOverBudget") {
     eve::combat::CombatWarpRequest request;
     request.attacker        = {0.0, 0.0, 0.0};
@@ -42,7 +44,7 @@ TEST_CASE("combatMotionWarp.pullsTowardStandoffAndRejectsOverBudget") {
 
 TEST_CASE("combatMotionWarp.rejectsNonFiniteInput") {
     eve::combat::CombatWarpRequest request;
-    request.attacker = {0.0 / 0.0, 0.0, 0.0};
+    request.attacker = {std::numeric_limits<double>::quiet_NaN(), 0.0, 0.0};
     request.target   = {1.0, 0.0, 0.0};
     CHECK(!eve::combat::CombatMotionWarp::solve(request).ok());
 }
