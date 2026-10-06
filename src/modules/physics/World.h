@@ -3,7 +3,9 @@
 
 
 #include "common/Snapshot.h"
+#include "common/Result.h"
 #include "physics/PhysicsHandles.h"
+#include "physics/Joint2D.h"
 #include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
@@ -16,6 +18,7 @@
 class b2World;
 class b2Body;
 class b2Fixture;
+class b2Joint;
 class b2Contact;
 struct b2Manifold;
 struct b2ContactImpulse;
@@ -29,6 +32,7 @@ namespace eve::physics {
 class Body;
 class Fixture;
 class ContactRelay;
+class Mechanism2D;
 
 /**
  * @brief Box2D world wrapper (2D physics) with pixel-space coordinates.
@@ -166,6 +170,131 @@ public:
     Body *newBody(const std::string &bodyType, float x, float y);
     /** @brief Resolves a live body handle; returns null for a stale or foreign handle. */
     [[nodiscard]] Body *findBody(PhysicsBodyHandle handle) const;
+    /** @brief Resolves a live body by its world-local stable event/query id. */
+    [[nodiscard]] Body *findBodyById(int bodyId) const;
+    /** @brief Resolves a live joint handle; returns null when stale or foreign. */
+    [[nodiscard]] Joint2D *findJoint(PhysicsJointHandle handle) const;
+
+    /**
+     * @brief Connects two pixel-space anchors with a distance constraint.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies, anchors, length, or cross-world bodies.
+     */
+    Joint2D *newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float anchorAY,
+                              float anchorBX, float anchorBY, float lengthPixels,
+                              bool collideConnected = false);
+    /**
+     * @brief Creates a revolute hinge at a shared pixel-space anchor.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
+     */
+    Joint2D *newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
+                              bool collideConnected = false);
+    /**
+     * @brief Creates a prismatic slider along a pixel-space axis.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
+     */
+    Joint2D *newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
+                               float axisY, bool collideConnected = false);
+    /**
+     * @brief Welds two bodies at a shared pixel-space anchor.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
+     */
+    Joint2D *newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
+                          bool collideConnected = false);
+    /**
+     * @brief Creates a wheel joint with a pixel-space suspension axis.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
+     */
+    Joint2D *newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
+                           float axisY, bool collideConnected = false);
+    /**
+     * @brief Creates a motor joint that drives relative pose between bodies.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies.
+     */
+    Joint2D *newMotorJoint(Body *bodyA, Body *bodyB, bool collideConnected = false);
+    /**
+     * @brief Creates a gear joint that couples two revolute or prismatic joints.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the gear; joint1/joint2 are borrowed and must outlive the gear or be
+     *            destroyed first via Joint2D::destroy() / body teardown.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent joint/body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks.
+     * @throws eve::Exception for invalid/cross-world joints or a zero/non-finite ratio.
+     */
+    Joint2D *newGearJoint(Joint2D *joint1, Joint2D *joint2, float ratio);
+
+    /**
+     * @brief Builds a shaft (support↔rotor revolute) with optional drive motor helpers.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism2D *newShaft(Body *support, Body *rotor, float anchorX, float anchorY,
+                          bool collideConnected = false);
+    /**
+     * @brief Builds a one-way ratchet around a revolute hinge.
+     * @param direction Freewheel direction: +1 or -1.
+     * @param engagementTorque Maximum reverse-lock torque in newton-metres.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism2D *newRatchet(Body *frame, Body *wheel, float anchorX, float anchorY, int direction,
+                            float engagementTorque, bool collideConnected = false);
+    /**
+     * @brief Builds a planar crank-slider from frame, crank, connecting rod and slider bodies.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate the input bodies re-entrantly.
+     * @throws eve::Exception for invalid body chains or a zero/non-finite slide axis.
+     */
+    Mechanism2D *newCrankSlider(Body *frame, Body *crank, Body *rod, Body *slider,
+                                float crankAnchorX, float crankAnchorY, float crankPinX,
+                                float crankPinY, float sliderPinX, float sliderPinY,
+                                float slideAxisX, float slideAxisY, bool collideConnected = false);
 
     /** @brief Destroys a body (null is ignored). */
     void destroyBody(Body *body);
@@ -263,14 +392,34 @@ public:
 
     void forgetBody(Body *body);
     void forgetFixture(Fixture *fixture);
+    /** @brief Internal: removes a joint wrapper from ownership bookkeeping. */
+    void forgetJoint(Joint2D *joint);
+    /** @brief Internal: removes a mechanism wrapper from ownership bookkeeping. */
+    void forgetMechanism(Mechanism2D *mechanism);
 
     int nextBodyId();
     PhysicsBodyHandle nextBodyRuntimeHandle();
+    /** @brief Internal: next generation-qualified joint handle. */
+    PhysicsJointHandle nextJointRuntimeHandle();
+    /** @brief Internal: next stable joint id. */
+    int nextJointId();
+    /** @brief Internal: next stable mechanism id. */
+    int nextMechanismId();
 
 private:
     friend struct WorldSnapshotAccess;
     friend class Body;
     friend class Fixture;
+    friend class Joint2D;
+    friend class Mechanism2D;
+
+    /**
+     * @brief Internal: wrap a newly created Box2D joint and register ownership.
+     * @return Borrowed joint owned by this world.
+     * @ownership World owns the returned joint; body/raw pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction.
+     */
+    Joint2D *adoptJoint(Body *bodyA, Body *bodyB, b2Joint *raw, Joint2D::Kind kind);
 
     b2World      *world_ = nullptr;
     ContactRelay *relay_ = nullptr;
@@ -280,7 +429,10 @@ private:
     eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
     float         meter_ = 30.f;
     int           nextId_ = 1;
+    int           nextJointId_ = 1;
+    int           nextMechanismId_ = 1;
     std::uint32_t                       nextBodyHandleIndex_    = 1u;
+    std::uint32_t                       nextJointHandleIndex_   = 1u;
     bool          destroyed_ = false;
     eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
     eve::Status                         backendSelectionStatus_ = eve::Status::success();
@@ -288,6 +440,9 @@ private:
 
     std::unordered_set<Body *>    bodies_;
     std::unordered_set<Fixture *> fixtures_;
+    std::unordered_set<Joint2D *> joints_;
+    std::unordered_set<Mechanism2D *> mechanisms_;
+    std::unordered_map<PhysicsJointHandle, Joint2D *> jointHandles_;
 
     int   rayHitBodyId_   = -1;
     float rayHitX_        = 0.f;

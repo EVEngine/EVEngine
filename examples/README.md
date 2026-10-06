@@ -149,6 +149,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [urban-generator](urban-generator/README.md) | 城市配方 `mesh.urban` / `urban.parcels`：街区与地块 |
 | [housegen](housegen/README.md) | 房屋布局生成 + GLB kit 实例化 |
 | [linear-structures](linear-structures/README.md) | 线性可拼接结构：栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马 |
+| [cable-chain-rope](cable-chain-rope/README.md) | 钢缆 / 铁链 / 麻绳：螺旋多股网格 + 配套 PBR 纹理 |
+| [iron-chain-bridge](iron-chain-bridge/README.md) | 铁锁桥：用 `mesh.chain` / `mesh.rope` / `mesh.bridge` 拼出简易吊桥 |
 | [hex-terrain](hex-terrain/README.md) | 无源美术的 3D 六边形世界：`mesh.hexterrain` 配方 |
 | [topdown-procmap](topdown-procmap/README.md) | 俯视角程序化地图：噪声大陆 + 生物群系 splat + 河湖 + 植被点缀与平移浏览 |
 | [procgen-nature-quality](procgen-nature-quality/README.md) | 近景程序化树/灌木/崖石材质画廊：`tex.tree_atlas` / `tex.moss` / cliff 造型 |
@@ -219,6 +221,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [agent](agent/README.md) | Squirrel 强化学习：定义环境、训练策略、选择动作与回放（C++ 侧 `eve.Agent`） |
 | [economy](economy/README.md) | `eve.Economy` 无窗口脚本演示：采集循环与满仓浪费（`eve run -r`） |
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
+| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
 
 ## 与设计目标对照

@@ -1804,9 +1804,12 @@ private:
     GpuParticleHandle                                           nextGpuParticleHandle_ = 1;
     vk::DescriptorSetLayout                                     gpuParticleComputeSetLayout_{};
     vk::DescriptorSetLayout                                     gpuParticleDrawSetLayout_{};
+    vk::DescriptorSetLayout                                     gpuParticleSortSetLayout_{};
     vk::PipelineLayout                                          gpuParticleComputeLayout_{};
     vk::PipelineLayout                                          gpuParticleDrawLayout_{};
+    vk::PipelineLayout                                          gpuParticleSortLayout_{};
     vk::Pipeline                                                gpuParticleComputePipeline_{};
+    vk::Pipeline                                                gpuParticleSortPipeline_{};
     vk::Pipeline                                                gpuParticleAlphaPipeline_{};
     vk::Pipeline                                                gpuParticleAdditivePipeline_{};
     vk::Pipeline                                                gpuParticlePremultipliedPipeline_{};
