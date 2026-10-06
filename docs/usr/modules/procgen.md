@@ -77,6 +77,37 @@ if (!gridResult.ok) throw gridResult.status.summary;
 local grid = gridResult.value;
 ```
 
+Hexmap 地形不走 `generate` / `Grid2D`。`hex.terrain` 与 `hex.sphere` 只提供 Params
+schema（给 `applyAlgorithmDefaults` 用）；真正的出口是 `generateHexTerrain` /
+`generateHexSphere`，返回 hexmap 可 `applyTerrain` / `applySphereTerrain` 的 bake
+对象。`generate("hex.terrain", …)` 会失败并指向这两个入口。`width`/`height` 必须是
+hexmap 的 5×5 分块整数倍。
+
+```squirrel
+local p = procgen.newParams().value;
+p.setSeed(st.seed);
+p.setSize(hexmap.cellCountX(), hexmap.cellCountZ());
+procgen.applyAlgorithmDefaults("hex.terrain", p);
+p.setInt("landPercentage", 50);
+local baked = procgen.generateHexTerrain(p);
+if (!baked.ok) throw baked.status.summary;
+local applied = hexmap.applyTerrain(gfx, baked.value);
+if (!applied.ok) throw applied.status.summary;
+```
+
+球面拓扑由 `hexmap.newSphere` 先建好，bake 必须匹配同一 `subdivision`：
+
+```squirrel
+hexmap.newSphere(gfx, subdivision, radius, seed);
+local p = procgen.newParams().value;
+p.setSeed(seed);
+procgen.applyAlgorithmDefaults("hex.sphere", p);
+p.setInt("subdivision", subdivision);
+p.setFloat("radius", radius);
+local baked = procgen.generateHexSphere(p);
+hexmap.applySphereTerrain(gfx, baked.value);
+```
+
 `Grid2D` 的资产对象接口用于把生成布局与任意项目资产包解耦：
 `addAssetObject(name, role, asset, x, y, width, height, rotation, flags)` 添加带语义角色、
 资产标识、占地、旋转和标志位的对象；读取时使用 `getObjectAsset(index)`、

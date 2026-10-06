@@ -72,6 +72,7 @@ eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
+                   OPTIONAL_DEPS hexmap
                    GROUP 3d)
 # L5 -- RTS domain composition profile. Provider modules remain behind typed
 # links; these are the direct implementation dependencies of the profile.

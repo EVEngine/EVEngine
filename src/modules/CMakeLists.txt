@@ -15,6 +15,20 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# HexMapTerrain.cpp bakes hexmap cells. HexTerrain.cpp is the unrelated
+# mesh.hexterrain continent recipe and must stay compiled either way.
+# Without hexmap the absent stubs still expose generateHexTerrain /
+# generateHexSphere so scripts get a structured NotFound instead of a
+# missing method.
+eve_module_enabled(hexmap _has_hexmap)
+if(_has_hexmap)
+  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};HexTerrainAbsent.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+else()
+  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};HexMapTerrain.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 # editor/EditorParticleGraphRuntime.cpp applies compiled particle module graphs
 # to the real emitter only when the particles module is enabled.
 eve_module_enabled(particles _has_particles_editor_bridge)
