@@ -58,6 +58,10 @@ std::string Joint3D::getKind() const {
         case Kind::Prismatic: return "prismatic";
         case Kind::Spherical: return "spherical";
         case Kind::Wheel: return "wheel";
+        case Kind::Weld: return "weld";
+        case Kind::Motor: return "motor";
+        case Kind::Parallel: return "parallel";
+        case Kind::Filter: return "filter";
     }
     return "distance";
 }
@@ -329,6 +333,123 @@ float Joint3D::getWheelSteeringAngle() const {
 float Joint3D::getWheelSteeringTorque() const {
     requireKind(Kind::Wheel, "Joint3D.getWheelSteeringTorque");
     return b3WheelJoint_GetSteeringTorque(jointId_);
+}
+
+void Joint3D::setWeldLinearSpring(float hertz, float dampingRatio) {
+    requireKind(Kind::Weld, "Joint3D.setWeldLinearSpring");
+    nonNegative(hertz, "Joint3D.setWeldLinearSpring", "hertz");
+    nonNegative(dampingRatio, "Joint3D.setWeldLinearSpring", "dampingRatio");
+    b3WeldJoint_SetLinearHertz(jointId_, hertz);
+    b3WeldJoint_SetLinearDampingRatio(jointId_, dampingRatio);
+}
+void Joint3D::setWeldAngularSpring(float hertz, float dampingRatio) {
+    requireKind(Kind::Weld, "Joint3D.setWeldAngularSpring");
+    nonNegative(hertz, "Joint3D.setWeldAngularSpring", "hertz");
+    nonNegative(dampingRatio, "Joint3D.setWeldAngularSpring", "dampingRatio");
+    b3WeldJoint_SetAngularHertz(jointId_, hertz);
+    b3WeldJoint_SetAngularDampingRatio(jointId_, dampingRatio);
+}
+float Joint3D::getWeldLinearHertz() const {
+    requireKind(Kind::Weld, "Joint3D.getWeldLinearHertz");
+    return b3WeldJoint_GetLinearHertz(jointId_);
+}
+float Joint3D::getWeldLinearDampingRatio() const {
+    requireKind(Kind::Weld, "Joint3D.getWeldLinearDampingRatio");
+    return b3WeldJoint_GetLinearDampingRatio(jointId_);
+}
+float Joint3D::getWeldAngularHertz() const {
+    requireKind(Kind::Weld, "Joint3D.getWeldAngularHertz");
+    return b3WeldJoint_GetAngularHertz(jointId_);
+}
+float Joint3D::getWeldAngularDampingRatio() const {
+    requireKind(Kind::Weld, "Joint3D.getWeldAngularDampingRatio");
+    return b3WeldJoint_GetAngularDampingRatio(jointId_);
+}
+
+void Joint3D::setMotorLinearVelocity(float vx, float vy, float vz) {
+    requireKind(Kind::Motor, "Joint3D.setMotorLinearVelocity");
+    finite(vx, "Joint3D.setMotorLinearVelocity", "vx");
+    finite(vy, "Joint3D.setMotorLinearVelocity", "vy");
+    finite(vz, "Joint3D.setMotorLinearVelocity", "vz");
+    b3MotorJoint_SetLinearVelocity(jointId_, b3Vec3{vx, vy, vz});
+}
+void Joint3D::setMotorAngularVelocity(float wx, float wy, float wz) {
+    requireKind(Kind::Motor, "Joint3D.setMotorAngularVelocity");
+    finite(wx, "Joint3D.setMotorAngularVelocity", "wx");
+    finite(wy, "Joint3D.setMotorAngularVelocity", "wy");
+    finite(wz, "Joint3D.setMotorAngularVelocity", "wz");
+    b3MotorJoint_SetAngularVelocity(jointId_, b3Vec3{wx, wy, wz});
+}
+void Joint3D::setMotorVelocityLimits(float maxForce, float maxTorque) {
+    requireKind(Kind::Motor, "Joint3D.setMotorVelocityLimits");
+    nonNegative(maxForce, "Joint3D.setMotorVelocityLimits", "maxForce");
+    nonNegative(maxTorque, "Joint3D.setMotorVelocityLimits", "maxTorque");
+    b3MotorJoint_SetMaxVelocityForce(jointId_, maxForce);
+    b3MotorJoint_SetMaxVelocityTorque(jointId_, maxTorque);
+}
+void Joint3D::setMotorLinearSpring(float hertz, float dampingRatio, float maxForce) {
+    requireKind(Kind::Motor, "Joint3D.setMotorLinearSpring");
+    nonNegative(hertz, "Joint3D.setMotorLinearSpring", "hertz");
+    nonNegative(dampingRatio, "Joint3D.setMotorLinearSpring", "dampingRatio");
+    nonNegative(maxForce, "Joint3D.setMotorLinearSpring", "maxForce");
+    b3MotorJoint_SetLinearHertz(jointId_, hertz);
+    b3MotorJoint_SetLinearDampingRatio(jointId_, dampingRatio);
+    b3MotorJoint_SetMaxSpringForce(jointId_, maxForce);
+}
+void Joint3D::setMotorAngularSpring(float hertz, float dampingRatio, float maxTorque) {
+    requireKind(Kind::Motor, "Joint3D.setMotorAngularSpring");
+    nonNegative(hertz, "Joint3D.setMotorAngularSpring", "hertz");
+    nonNegative(dampingRatio, "Joint3D.setMotorAngularSpring", "dampingRatio");
+    nonNegative(maxTorque, "Joint3D.setMotorAngularSpring", "maxTorque");
+    b3MotorJoint_SetAngularHertz(jointId_, hertz);
+    b3MotorJoint_SetAngularDampingRatio(jointId_, dampingRatio);
+    b3MotorJoint_SetMaxSpringTorque(jointId_, maxTorque);
+}
+float Joint3D::getMotorLinearVelocityX() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorLinearVelocityX");
+    return b3MotorJoint_GetLinearVelocity(jointId_).x;
+}
+float Joint3D::getMotorLinearVelocityY() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorLinearVelocityY");
+    return b3MotorJoint_GetLinearVelocity(jointId_).y;
+}
+float Joint3D::getMotorLinearVelocityZ() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorLinearVelocityZ");
+    return b3MotorJoint_GetLinearVelocity(jointId_).z;
+}
+float Joint3D::getMotorAngularVelocityX() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorAngularVelocityX");
+    return b3MotorJoint_GetAngularVelocity(jointId_).x;
+}
+float Joint3D::getMotorAngularVelocityY() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorAngularVelocityY");
+    return b3MotorJoint_GetAngularVelocity(jointId_).y;
+}
+float Joint3D::getMotorAngularVelocityZ() const {
+    requireKind(Kind::Motor, "Joint3D.getMotorAngularVelocityZ");
+    return b3MotorJoint_GetAngularVelocity(jointId_).z;
+}
+
+void Joint3D::setParallelSpring(float hertz, float dampingRatio, float maxTorque) {
+    requireKind(Kind::Parallel, "Joint3D.setParallelSpring");
+    nonNegative(hertz, "Joint3D.setParallelSpring", "hertz");
+    nonNegative(dampingRatio, "Joint3D.setParallelSpring", "dampingRatio");
+    nonNegative(maxTorque, "Joint3D.setParallelSpring", "maxTorque");
+    b3ParallelJoint_SetSpringHertz(jointId_, hertz);
+    b3ParallelJoint_SetSpringDampingRatio(jointId_, dampingRatio);
+    b3ParallelJoint_SetMaxTorque(jointId_, maxTorque);
+}
+float Joint3D::getParallelHertz() const {
+    requireKind(Kind::Parallel, "Joint3D.getParallelHertz");
+    return b3ParallelJoint_GetSpringHertz(jointId_);
+}
+float Joint3D::getParallelDampingRatio() const {
+    requireKind(Kind::Parallel, "Joint3D.getParallelDampingRatio");
+    return b3ParallelJoint_GetSpringDampingRatio(jointId_);
+}
+float Joint3D::getParallelMaxTorque() const {
+    requireKind(Kind::Parallel, "Joint3D.getParallelMaxTorque");
+    return b3ParallelJoint_GetMaxTorque(jointId_);
 }
 
 }  // namespace eve::physics

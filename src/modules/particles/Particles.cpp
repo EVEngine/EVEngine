@@ -13,6 +13,7 @@
 #include "graphics/Graphics.h"
 #include "particles/ParticleConfig.h"
 #include "particles/ParticleEffect.h"
+#include "particles/ParticleEmitterPool.h"
 #include "particles/ParticleRuntime.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticlesCapabilities.h"
@@ -90,6 +91,7 @@ ParticleEffect* Particles::newEffectFromFile(const std::string& path) {
 void Particles::update(float dt) {
     EV_PROFILE_MODULE("particles", "Particles::update");
     ParticleConfigSystem::poll();
+    ParticleEffect::tickRegisteredTimelines(dt);
     ParticleSimSystem::update(dt);
     ParticleLightSystem::update();
 }
@@ -98,9 +100,20 @@ eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
     // Config polling is an asset-side concern. Simulation itself is driven
     // exclusively by the injected scheduler step below.
     ParticleConfigSystem::poll();
+    auto timelines = ParticleEffect::advanceRegisteredTimelines(step);
+    if (!timelines) return eve::Result<void>::failure(timelines.status());
     auto simulation = ParticleSimSystem::advance(step);
-    if (!simulation) return eve::Result<void>::failure(simulation.status());
+    if (!simulation) {
+        timelines.ignore();
+        return eve::Result<void>::failure(simulation.status());
+    }
     ParticleLightSystem::update();
+    if (timelines.status().code() == eve::StatusCode::Applied) {
+        timelines.ignore();
+        simulation.ignore();
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+    timelines.ignore();
     return simulation;
 }
 
@@ -244,6 +257,39 @@ void Particles::expose(ssq::Table &table) {
     effect.addFunc("setFloatParameter", &ParticleEffect::setFloatParameter);
     effect.addFunc("getFloatParameter", &ParticleEffect::getFloatParameter);
     effect.addFunc("hasFloatParameter", &ParticleEffect::hasFloatParameter);
+    effect.addFunc("getTimelineSeconds", &ParticleEffect::getTimelineSeconds);
+    effect.addFunc("isTimelinePlaying", &ParticleEffect::isTimelinePlaying);
+    effect.addFunc("updateTimeline", &ParticleEffect::updateTimeline);
+    effect.addFunc("reloadFromFile", [](ParticleEffect* self) {
+        if (!self) return false;
+        auto reloaded = self->reloadFromFile();
+        const bool ok = static_cast<bool>(reloaded);
+        reloaded.ignore();
+        return ok;
+    });
+    auto pool = table.addClass<ParticleEmitterPool>(
+        "ParticleEmitterPool",
+        std::function<ParticleEmitterPool*()>([]() { return new ParticleEmitterPool(); }), true);
+    pool.addFunc("acquire", [](ParticleEmitterPool* self, int minBuffer) -> ParticleEmitter* {
+        if (!self) return nullptr;
+        auto acquired = self->acquire(minBuffer);
+        if (!acquired) {
+            acquired.ignore();
+            return nullptr;
+        }
+        return acquired.value();
+    });
+    pool.addFunc("recycle", [](ParticleEmitterPool* self, ParticleEmitter* emitter) {
+        if (!self) return false;
+        auto recycled = self->recycle(emitter);
+        const bool ok = static_cast<bool>(recycled);
+        recycled.ignore();
+        return ok;
+    });
+    pool.addFunc("clear", &ParticleEmitterPool::clear);
+    pool.addFunc("idleCount", [](ParticleEmitterPool* self) {
+        return self ? static_cast<int>(self->idleCount()) : 0;
+    });
     em.addFunc("setPosition", &ParticleEmitter::setPosition);
     em.addFunc("moveTo", &ParticleEmitter::moveTo);
     em.addFunc("getX", &ParticleEmitter::getX);
@@ -330,6 +376,9 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setCollision", &ParticleEmitter::setCollision);
     em.addFunc("setCollisionBounds", &ParticleEmitter::setCollisionBounds);
     em.addFunc("setWorldCollision", &ParticleEmitter::setWorldCollision);
+    em.addFunc("setMotionVectorPolicy", &ParticleEmitter::setMotionVectorPolicy);
+    em.addFunc("getMotionVectorPolicy", &ParticleEmitter::getMotionVectorPolicy);
+    em.addFunc("isMotionVectorActive", &ParticleEmitter::isMotionVectorActive);
     em.addFunc("setRenderMode", &ParticleEmitter::setRenderMode);
     em.addFunc("setRibbon", &ParticleEmitter::setRibbon);
     em.addFunc("setSoftParticles", &ParticleEmitter::setSoftParticles);

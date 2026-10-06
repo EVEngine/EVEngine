@@ -68,6 +68,47 @@ class SignatureIndexTests(unittest.TestCase):
         self.assertIsNotNone(signature)
         self.assertEqual([parameter.name for parameter in signature[1]], ["pixelWidth"])
 
+    def test_member_signature_resolves_nodiscard_inline_getters(self) -> None:
+        source = (
+            Path("effect.h"),
+            "class ParticleEffect {\n"
+            "public:\n"
+            "    [[nodiscard]] float getTimelineSeconds() const { return 0.f; }\n"
+            '    [[nodiscard("check me")]] bool isTimelinePlaying() const;\n'
+            "};\n",
+        )
+
+        index = SignatureIndex(dict([source]))
+        seconds = index.member("ParticleEffect", "getTimelineSeconds")
+        playing = index.member("ParticleEffect", "isTimelinePlaying")
+
+        self.assertIsNotNone(seconds)
+        self.assertEqual(seconds[0], "float")
+        self.assertEqual(seconds[1], [])
+        self.assertIsNotNone(playing)
+        self.assertEqual(playing[0], "bool")
+        self.assertEqual(playing[1], [])
+
+    def test_nodiscard_message_paren_is_not_the_parameter_list(self) -> None:
+        """[[nodiscard("...")]] contains '('; that must not become arg0."""
+        source = (
+            Path("renderer.h"),
+            "class PixelWorldGraphics {\n"
+            "public:\n"
+            '    [[nodiscard("retain and delete the returned PixelWorldAtlasRenderer")]]\n'
+            "    PixelWorldAtlasRenderer* newRenderer(int originX, int originY, int width, int height);\n"
+            "};\n",
+        )
+
+        signature = SignatureIndex(dict([source])).member("PixelWorldGraphics", "newRenderer")
+
+        self.assertIsNotNone(signature)
+        self.assertEqual(signature[0], "PixelWorldAtlasRenderer*")
+        self.assertEqual(
+            [parameter.name for parameter in signature[1]],
+            ["originX", "originY", "width", "height"],
+        )
+
 
 class CatalogExportTests(unittest.TestCase):
     def test_json_and_dts_export_round_trip_fields(self) -> None:

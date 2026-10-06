@@ -398,6 +398,8 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     }
     if (obj->has("worldCollision"))
         emitter->setWorldCollision(asBool(obj->get("worldCollision"), false));
+    if (obj->has("motionVectorPolicy"))
+        emitter->setMotionVectorPolicy(asString(obj->get("motionVectorPolicy")));
 
     if (obj->has("renderMode")) {
         float stretch = obj->has("stretch") ? asFloat(obj->get("stretch"), 1.f)

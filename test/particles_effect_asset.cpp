@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -157,7 +158,7 @@ TEST_CASE("particles.effectAsset.versionedMultiEmitterContract") {
 TEST_CASE("particles.effectAsset.rejectsUnknownVersionAndDuplicateNames") {
     auto* particles   = Particles::create();
     auto* unsupported = particles->newEffectFromText(
-        R"({"type":"eve.particle-effect","version":2,"emitters":[{"name":"a","emitter":{}}]})");
+        R"({"type":"eve.particle-effect","version":3,"emitters":[{"name":"a","emitter":{}}]})");
     CHECK(unsupported == nullptr);
     CHECK(particles->getLastEffectError().find("unsupported") != std::string::npos);
 
@@ -168,6 +169,102 @@ TEST_CASE("particles.effectAsset.rejectsUnknownVersionAndDuplicateNames") {
     })");
     CHECK(duplicate == nullptr);
     CHECK(particles->getLastEffectError().find("duplicate") != std::string::npos);
+}
+
+TEST_CASE("particles.effectAsset.v2EventRoutesTimelineAndTransactionalReload") {
+    const char* json = R"({
+        "type": "eve.particle-effect",
+        "version": 2,
+        "parameters": { "intensity": 1.0 },
+        "eventRoutes": [
+            { "from": "core", "on": "death", "to": "haze", "inheritVelocity": 0.25 }
+        ],
+        "timeline": {
+            "duration": 0.5,
+            "looping": true,
+            "cues": [
+                { "time": 0.0, "action": "emit", "emitter": "core", "count": 4 },
+                { "time": 0.2, "action": "setParameter", "parameter": "intensity", "value": 2.0 }
+            ]
+        },
+        "emitters": [
+            {
+                "name": "core",
+                "emitter": {
+                    "buffer": 32,
+                    "emitterLife": 0.4,
+                    "emissionRate": 0.0,
+                    "particleLifetime": [0.05, 0.05],
+                    "parameterBindings": [
+                        { "parameter": "intensity", "target": "size", "scale": 1.0 }
+                    ]
+                }
+            },
+            {
+                "name": "haze",
+                "emitter": {
+                    "buffer": 32,
+                    "emitterLife": 0.4,
+                    "emissionRate": 0.0,
+                    "particleLifetime": [0.2, 0.2]
+                }
+            }
+        ]
+    })";
+
+    auto parsed = ParticleEffect::tryFromText(json);
+    REQUIRE(parsed.ok());
+    std::unique_ptr<ParticleEffect> effect(parsed.value());
+    CHECK_EQ(effect->getVersion(), 2);
+    CHECK_EQ(effect->eventRoutes().size(), 1u);
+    CHECK_EQ(effect->eventRoutes()[0].from, std::string("core"));
+    CHECK_EQ(effect->timeline().cues.size(), 2u);
+    CHECK(effect->timeline().looping);
+
+    auto* particles = Particles::create();
+    REQUIRE(particles != nullptr);
+    effect->start();
+    CHECK(effect->isTimelinePlaying());
+    CHECK_EQ(effect->getEmitterByName("core")->getCount(), 4);
+
+    particles->update(0.21f);
+    CHECK(std::abs(effect->getFloatParameter("intensity") - 2.f) < 0.001f);
+    CHECK(effect->getTimelineSeconds() > 0.19f);
+
+    const char* reloaded = R"({
+        "type":"eve.particle-effect","version":2,
+        "timeline":{"duration":1.0,"looping":false,"cues":[
+            {"time":0.0,"action":"emit","emitter":"only","count":2}
+        ]},
+        "emitters":[{"name":"only","emitter":{"buffer":16,"emissionRate":0.0,"particleLifetime":[0.2,0.2]}}]
+    })";
+    effect->setPosition(12.f, 34.f);
+    auto reload = effect->reloadFromText(reloaded);
+    REQUIRE(reload.ok());
+    CHECK_EQ(effect->getEmitterCount(), 1);
+    CHECK(effect->getEmitterByName("only") != nullptr);
+    CHECK(effect->getEmitterByName("core") == nullptr);
+    CHECK(std::abs(effect->getX() - 12.f) < 0.001f);
+    CHECK(std::abs(effect->getY() - 34.f) < 0.001f);
+
+    auto bad = effect->reloadFromText(R"({"type":"eve.particle-effect","version":2,"emitters":[]})");
+    CHECK(!bad.ok());
+    bad.ignore();
+    CHECK_EQ(effect->getEmitterCount(), 1);
+    CHECK(std::abs(effect->getX() - 12.f) < 0.001f);
+}
+
+TEST_CASE("particles.effectAsset.v1StillLoadsAndIgnoresUnknownOptionalFields") {
+    auto parsed = ParticleEffect::tryFromText(R"({
+        "type":"eve.particle-effect",
+        "version":1,
+        "artistNote":"ignored unknown field",
+        "emitters":[{"name":"a","emitter":{"buffer":8,"emissionRate":0.0}}]
+    })");
+    REQUIRE(parsed.ok());
+    std::unique_ptr<ParticleEffect> effect(parsed.value());
+    CHECK_EQ(effect->getVersion(), 1);
+    CHECK_EQ(effect->getEmitterCount(), 1);
 }
 
 TEST_CASE("particles.effectAsset.playbackLabAssetIsConsumable") {

@@ -7,6 +7,7 @@
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
 #include "procgen/algorithms/FlowerMesh.h"
+#include "procgen/algorithms/CableChainRope.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MeshDeformationGeometry.h"
 #include "procgen/algorithms/LSystemMesh.h"
@@ -696,6 +697,7 @@ void MeshRecipeRegistry::registerBuiltins() {
                                                   1000.f, 0.1f));
     registerRecipe(std::move(tower), generateSkyscraperMesh);
     registerLinearStructureRecipes(*this);
+    registerCableChainRopeRecipes(*this);
     registerLSystemRecipes(*this);
     urban::registerUrbanMeshRecipes(*this);
     road::registerRoadMeshRecipes(*this);
