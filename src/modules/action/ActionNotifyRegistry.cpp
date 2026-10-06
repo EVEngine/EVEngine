@@ -193,10 +193,15 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         {"presentation:camera", "Camera Cue", "Presentation", ActionNotifyShape::Instant, {"cue"}},
         {"combat:hitbox-window", "Hitbox Window", "Combat", ActionNotifyShape::State, {"hitbox"}},
         {"combat:invulnerability-window", "Invulnerability Window", "Combat", ActionNotifyShape::State, {}},
+        {"combat:guard-window", "Guard Window", "Combat", ActionNotifyShape::State, {"mode"}},
         {"input:combo-window", "Combo Window", "Input", ActionNotifyShape::State, {"input"}},
+        {"input:cancel-window", "Cancel Window", "Input", ActionNotifyShape::State, {"allows"}},
         {"collision:ignore-window", "Collision Ignore", "Collision", ActionNotifyShape::State, {"channel"}},
         {"movement:root-motion-window", "Root Motion", "Movement", ActionNotifyShape::State, {"mode"}},
-        {"presentation:parameter-curve", "Parameter Curve", "Presentation", ActionNotifyShape::State,
+        {"presentation:parameter-curve",
+         "Parameter Curve",
+         "Presentation",
+         ActionNotifyShape::State,
          {"target", "keys"}},
     };
     for (auto descriptor : builtins) {
@@ -211,8 +216,8 @@ Result<ActionNotifyRegistry> ActionNotifyRegistry::withBuiltins() {
         registry.registerHandler("gameplay:event", std::make_shared<ActionGameplayEventHandler>());
     if (!gameplayEventHandler) return Result<ActionNotifyRegistry>::failure(gameplayEventHandler.status());
     auto stateWindowHandler = std::make_shared<ActionStateWindowHandler>();
-    for (const char* type : {"collision:ignore-window", "combat:hitbox-window",
-                             "combat:invulnerability-window", "input:combo-window"}) {
+    for (const char* type : {"collision:ignore-window", "combat:hitbox-window", "combat:invulnerability-window",
+                             "combat:guard-window", "input:combo-window", "input:cancel-window"}) {
         auto registered = registry.registerHandler(type, stateWindowHandler);
         if (!registered) return Result<ActionNotifyRegistry>::failure(registered.status());
     }
@@ -331,7 +336,8 @@ Result<void> ActionNotifyRegistry::validate(const ActionTimelineEvent& event) co
         if (!gameplayEvent) return Result<void>::failure(gameplayEvent.status());
     }
     if (event.type.format() == "collision:ignore-window" || event.type.format() == "combat:hitbox-window" ||
-        event.type.format() == "combat:invulnerability-window" || event.type.format() == "input:combo-window") {
+        event.type.format() == "combat:invulnerability-window" || event.type.format() == "combat:guard-window" ||
+        event.type.format() == "input:combo-window" || event.type.format() == "input:cancel-window") {
         auto window = ActionStateWindowBinding::fromPayload(event.type.format(), event.payload);
         if (!window) return Result<void>::failure(window.status());
     }
