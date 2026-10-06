@@ -129,7 +129,7 @@ eve_init = function() {
 
     rfFog = eve.RealtimeFog().newSystem();
     rfFog.setQuality("enhanced");
-    rfFog.setProfile(0.04, 0.72, 0.82, 0.98, 0.15, 1.0, 0.55, 0.35);
+    rfFog.setOpticalProfile(0.04, 0.72, 0.82, 0.98, 0.15, 1.0, 0.55, 0.35);
     // Domain covers the camera and the pillar city so MAC is sampled by the frustum.
     rfFog.configureDomain(24, 12, 32, -16.0, -1.0, -48.0, 16.0, 10.0, 18.0);
     rfFog.setWindResponseRate(6.0);

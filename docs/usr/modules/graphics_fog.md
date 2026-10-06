@@ -7,7 +7,7 @@ MAC 流体输运 + 世界空间光线步进 + Froxel 积分 + 解析体积光。
 ```squirrel
 local fog = eve.RealtimeFog().newSystem();
 fog.configureDomain(24, 12, 32, -16, -1, -48, 16, 10, 18);
-fog.setProfile(0.04, 0.72, 0.82, 0.98, 0.15, 1.0, 0.55, 0.35);
+fog.setOpticalProfile(0.04, 0.72, 0.82, 0.98, 0.15, 1.0, 0.55, 0.35);
 fog.seedHeightFog(0.22, 0.0, 0.16, 0.45);
 fog.setQuality("enhanced");
 fog.setMainWind(0.5, 0.0, 0.1);
@@ -37,7 +37,7 @@ vol.uploadFroxel(gfx);
 | `setCurlStrength` | Curl 振幅（m/s） |
 | `setCurlTimeScale` | Curl 时间尺度 |
 | `setWindResponseRate` | 风向风速响应速率 |
-| `setProfile` | 光学剖面：σ_t、albedo、AO、上下环境、各向异性 |
+| `setOpticalProfile` | 光学剖面：σ_t、albedo、AO、上下环境、各向异性 |
 | `setSphereInteractor` | 球体固体代理（位置、半径、速度） |
 | `clearInteractors` | 清空固体代理 |
 | `stepSimulation` | 固定子步推进，返回 CFL 数 |

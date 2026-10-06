@@ -118,12 +118,14 @@ void RealtimeFog::expose(ssq::Table& table) {
     system.addFunc("stepSimulation", [](FogSystem* self, float dt) {
         return throwOrTake(self->stepSimulation(dt), "FogSystem.stepSimulation").cfl;
     });
-    system.addFunc("setProfile",
+    // Not `setProfile`: Binding Contracts match that name to ClimbingRuntime
+    // (last arg int), which rejects Fog's trailing anisotropy float (EVE2002).
+    system.addFunc("setOpticalProfile",
                    [](FogSystem* self, float extinction, float ar, float ag, float ab, float ao,
                       float up, float down, float anisotropy) {
                        throwIfFailed(self->profile().configure(extinction, glm::vec3(ar, ag, ab), ao,
                                                                up, down, anisotropy),
-                                     "FogSystem.setProfile");
+                                     "FogSystem.setOpticalProfile");
                    });
     system.addFunc("injectToVolumetric", [](FogSystem* self, Volumetric* volumetric) {
         return throwOrTake(self->injectToVolumetric(volumetric), "FogSystem.injectToVolumetric");
