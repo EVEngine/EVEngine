@@ -805,9 +805,10 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        # Run 35376121813 reached 5403/5451 passing cases before the former
-        # 30-minute guard terminated ctest; retain a bounded completion margin.
-        timeout-minutes: 40
+        # Run 37420229018 reached 5492/5868 passing cases before the 40-minute
+        # guard terminated ctest (Linux finished the same 5868 cases). Match the
+        # Windows 50-minute margin for hosted-runner variance.
+        timeout-minutes: 50
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
