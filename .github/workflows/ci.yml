@@ -1014,7 +1014,9 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios debug
-        timeout-minutes: 40
+        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
+        # jitter can push xcodebuild past 40 without a compile error.
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1072,7 +1074,7 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios release
-        timeout-minutes: 40
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
