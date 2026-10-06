@@ -28,6 +28,7 @@ class ActionCollisionIgnoreState;
 class Body3D;
 class Shape3D;
 class Joint3D;
+class Mechanism3D;
 struct CameraSphereHit3D {
     bool  hit = false;
     int   bodyId = -1;
@@ -387,6 +388,92 @@ public:
                            float anchorZ, float suspensionAxisX, float suspensionAxisY,
                            float suspensionAxisZ, float wheelAxisX, float wheelAxisY,
                            float wheelAxisZ, bool collideConnected = false);
+    /**
+     * @brief Welds two bodies at a shared world-space anchor, preserving current relative pose.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
+     */
+    Joint3D *newWeldJoint(Body3D *bodyA, Body3D *bodyB, float anchorX, float anchorY,
+                          float anchorZ, bool collideConnected = false);
+    /**
+     * @brief Creates a motor joint that drives relative linear/angular velocity between bodies.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies.
+     */
+    Joint3D *newMotorJoint(Body3D *bodyA, Body3D *bodyB, bool collideConnected = false);
+    /**
+     * @brief Creates a parallel joint that spring-aligns body local Z axes to a world axis.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
+     */
+    Joint3D *newParallelJoint(Body3D *bodyA, Body3D *bodyB, float axisX, float axisY, float axisZ,
+                              bool collideConnected = false);
+    /**
+     * @brief Disables collision between two specific bodies (filter joint).
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World3D owns the joint; body pointers are borrowed inputs and are not retained as caller ownership.
+     * @lifetime Valid until Joint3D::destroy(), World3D::destroy(), or dependent body destruction; use
+     * PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies.
+     */
+    Joint3D *newFilterJoint(Body3D *bodyA, Body3D *bodyB);
+
+    /**
+     * @brief Builds a shaft (support↔rotor revolute) with optional drive motor helpers.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World3D owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism3D::destroy() or World3D::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism3D *newShaft(Body3D *support, Body3D *rotor, float anchorX, float anchorY,
+                          float anchorZ, float axisX, float axisY, float axisZ,
+                          bool collideConnected = false);
+    /**
+     * @brief Builds a one-way ratchet around a revolute axis.
+     * @param direction Freewheel direction along the axis: +1 or -1.
+     * @param engagementTorque Maximum reverse-lock torque in newton-metres.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World3D owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism3D::destroy() or World3D::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism3D *newRatchet(Body3D *frame, Body3D *wheel, float anchorX, float anchorY,
+                            float anchorZ, float axisX, float axisY, float axisZ, int direction,
+                            float engagementTorque, bool collideConnected = false);
+    /**
+     * @brief Builds a planar crank-slider from frame, crank, connecting rod and slider bodies.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World3D owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism3D::destroy() or World3D::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate the input bodies re-entrantly.
+     * @throws eve::Exception for invalid body chains or parallel hinge/slide axes.
+     */
+    Mechanism3D *newCrankSlider(Body3D *frame, Body3D *crank, Body3D *rod, Body3D *slider,
+                                float crankAnchorX, float crankAnchorY, float crankAnchorZ,
+                                float axisX, float axisY, float axisZ, float crankPinX,
+                                float crankPinY, float crankPinZ, float sliderPinX,
+                                float sliderPinY, float sliderPinZ, float slideAxisX,
+                                float slideAxisY, float slideAxisZ, bool collideConnected = false);
 
     /** @brief Destroys a body (null is ignored). */
     void destroyBody(Body3D *body);
@@ -883,6 +970,8 @@ public:
     void forgetShape(Shape3D *shape);
     /** @brief Internal: removes a joint wrapper from ownership bookkeeping. */
     void forgetJoint(Joint3D *joint);
+    /** @brief Internal: removes a mechanism wrapper from ownership bookkeeping. */
+    void forgetMechanism(Mechanism3D *mechanism);
     /** @brief Internal: snapshots a backend handle for destruction-safe end events. */
     void registerShapeHandle(Shape3D *shape);
     /** @brief Internal: refreshes the tag snapshot for a live shape handle. */
@@ -900,6 +989,8 @@ public:
     int nextShapeId() { return nextShapeId_++; }
     /** @brief Internal: next stable joint id. */
     int nextJointId() { return nextJointId_++; }
+    /** @brief Internal: next stable mechanism id. */
+    int nextMechanismId();
 
     /** @brief Internal: collects Box3D contact events into the event buffers. */
     void emitContactEvents();
@@ -909,6 +1000,7 @@ private:
     friend struct WorldSnapshotAccess;
     friend class Body3D;
     friend class Joint3D;
+    friend class Mechanism3D;
     friend class Shape3D;
     friend class TargetingLineOfSightAdapter;
     friend void registerCameraObstructionWorld(World3D *world);
@@ -925,6 +1017,7 @@ private:
     int       nextId_    = 1;
     int       nextShapeId_ = 1;
     int       nextJointId_ = 1;
+    int       nextMechanismId_ = 1;
     std::uint32_t                       nextBodyHandleIndex_    = 1u;
     std::uint32_t                       nextShapeHandleIndex_   = 1u;
     std::uint32_t                       nextJointHandleIndex_   = 1u;
@@ -935,6 +1028,7 @@ private:
     std::unordered_set<Body3D *>  bodies_;
     std::unordered_set<Shape3D *> shapes_;
     std::unordered_set<Joint3D *> joints_;
+    std::unordered_set<Mechanism3D *> mechanisms_;
     std::unordered_set<uint64_t> disabledBodyPairs_;
     std::unordered_set<uint64_t> disabledShapePairs_;
     std::unordered_map<uint64_t, EventShape> shapeRecords_;
