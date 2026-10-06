@@ -321,8 +321,7 @@ local pose = mm.getPose();
 位移累计整周期行程，避免把回到起点误当作反向速度。`setDesiredVelocity` 输入
 世界 XZ 速度，`setDesiredYaw` 为绕 Y 轴的弧度，正向是 `(sin(yaw), cos(yaw))`。
 
-匹配器以当前播放时刻为连续候选；新候选须改善至少 10% 的代价才切换，避免反复
-重启交叉淡入。`setIgnoreRadius` 保留当前时刻邻域内的连续播放，也覆盖循环接缝。
+匹配器以当前播放时刻为连续候选。`setIgnoreRadius` 保留当前时刻邻域内的连续播放，也覆盖循环接缝。
 `setPlayRateRange(minimum, maximum)` 返回 `{ok,message}`，配置 Motion Matching
 播放速率的闭区间。可变特征布局会按 UE Pose Search 的规则，累加查询与选中姿势中
 所有未归一化轨迹速度通道的长度，以二者比值作为播放速率并夹到该区间；搜索节流仍按
@@ -336,6 +335,24 @@ local pose = mm.getPose();
 不会再额外施加非源自 UE 的百分比改善门槛。
 若物理由角色控制器负责，先复制 `getPose()`，再从渲染副本移除平面 root 位移；
 不要修改匹配器持有的姿态。参考 `examples/climbing-motion-matching`。
+
+### Orientation warping
+
+`eve.OrientationWarping()` owns interpolation state and borrows a skeleton after
+`configure(skeleton, rootBone, spineBones, ikBones)`, which returns `{ok,message}`.
+`apply(pose, locomotionX, locomotionZ, animatedX, animatedZ, dt)` yaws the copied
+display pose so authored planar velocity aligns with locomotion velocity. Root
+receives `(1 - distributedAlpha) * angle`; remaining yaw is split across the spine
+list. Optional IK bones restore their pre-warp world orientation. Speeds use
+metres/second. Magnitudes above the threshold (default 135°) or below
+`minRootMotionSpeed` (0.1 m/s) target zero. `setRotationInterpSpeed` matches Unreal
+`FInterpTo`; zero snaps. Disabled apply calls still update the target/smoothed
+angle but leave the pose unchanged.
+
+Call this on a **copy** of `MotionMatcher.getPose()`, never on the matcher pose
+itself: the next search must keep reading unwarped matching features. Native
+`OrientationWarping` uses checked `Result` and does not retain the pose. See
+`examples/climbing-motion-matching`.
 
 ## 基本用法（控制论程序动画）
 
@@ -602,6 +619,7 @@ anim->advance(step);
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`setPlayRateRange()`、`getPlayRateMinimum()`、`getPlayRateMaximum()`、`getPlayRate()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
+- `OrientationWarping`：`configure()`、`setDistributedAlpha()`、`setAngleThreshold()`、`setRotationInterpSpeed()`、`setMinRootMotionSpeed()`、`setEnabled()`、`reset()`、`apply()`、`getAppliedAngle()`、`getTargetAngle()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`

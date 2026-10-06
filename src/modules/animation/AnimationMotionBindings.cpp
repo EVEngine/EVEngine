@@ -14,6 +14,7 @@ namespace eve::animation {
 using eve::script::Owned;
 void exposeMotionMatcherBindings(ssq::Table& table) {
     exposeAnimInertializerBindings(table);
+    exposeOrientationWarpingBindings(table);
     auto db = table.addClass<MotionDatabase>(
         "MotionDatabase", std::function<MotionDatabase*()>([]() -> MotionDatabase* { return nullptr; }), true);
     db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
