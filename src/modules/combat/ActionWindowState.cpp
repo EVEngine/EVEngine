@@ -1,5 +1,6 @@
 #include "combat/ActionWindowState.h"
 
+#include "combat/MeleeHit.h"
 #include "common/Capability.h"
 
 #include <utility>
@@ -31,6 +32,10 @@ void CombatActionWindowState::setEnabled(bool value) {
     else if (!value && current)
         cap::removeListener<action::IActionStateWindowSink>(this);
 }
+
+void CombatActionWindowState::setMeleeHitRuntime(MeleeHitRuntime& melee) noexcept { melee_ = &melee; }
+
+void CombatActionWindowState::clearMeleeHitRuntime() noexcept { melee_ = nullptr; }
 
 bool CombatActionWindowState::supports(action::ActionStateWindowKind kind) const noexcept {
     return kind == action::ActionStateWindowKind::Hitbox || kind == action::ActionStateWindowKind::Invulnerability;
@@ -65,6 +70,10 @@ Result<void> CombatActionWindowState::enter(const action::ActionStateWindowBindi
         if (same) return Result<void>::success(Status::success(StatusCode::NoOp));
         return failure(DiagnosticCode::Conflict, "state-window key is already active with different data", "itemId");
     }
+    if (binding.kind == action::ActionStateWindowKind::Hitbox && melee_) {
+        auto armed = melee_->armHitbox(subject.value(), binding.resource, context.executionId);
+        if (!armed) return armed;
+    }
     active_.emplace(std::move(key), ActiveWindow{binding, subject.value()});
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -79,7 +88,14 @@ Result<void> CombatActionWindowState::exit(const action::ActionStateWindowBindin
     if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
     if (found->second.binding.kind != binding.kind)
         return failure(DiagnosticCode::Conflict, "state-window exit kind does not match active key", "kind");
+    const auto subject  = found->second.subject;
+    const auto resource = found->second.binding.resource;
+    const auto kind     = found->second.binding.kind;
     active_.erase(found);
+    if (kind == action::ActionStateWindowKind::Hitbox && melee_) {
+        auto disarmed = melee_->disarmHitbox(subject, resource, context.executionId);
+        if (!disarmed) return disarmed;
+    }
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 

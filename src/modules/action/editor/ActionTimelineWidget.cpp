@@ -90,8 +90,8 @@ TimelineItemVisual visualFor(std::string_view type) {
     if (type == "gameplay:prefab-spawn") return TimelineItemVisual::Prefab;
     if (type == "presentation:camera") return TimelineItemVisual::Camera;
     if (type == "combat:hitbox-window") return TimelineItemVisual::Hitbox;
-    if (type == "combat:invulnerability-window") return TimelineItemVisual::Defense;
-    if (type == "input:combo-window") return TimelineItemVisual::Input;
+    if (type == "combat:invulnerability-window" || type == "combat:guard-window") return TimelineItemVisual::Defense;
+    if (type == "input:combo-window" || type == "input:cancel-window") return TimelineItemVisual::Input;
     if (type == "collision:ignore-window") return TimelineItemVisual::Collision;
     if (type == "movement:root-motion-window") return TimelineItemVisual::Movement;
     if (type == "presentation:parameter-curve") return TimelineItemVisual::Curve;
@@ -120,6 +120,8 @@ std::string detailFor(std::string_view type, const Value::Object& payload) {
     if (type == "presentation:camera") return payloadText(payload, "cue");
     if (type == "combat:hitbox-window") return payloadText(payload, "hitbox");
     if (type == "input:combo-window") return payloadText(payload, "input");
+    if (type == "input:cancel-window") return payloadText(payload, "allows");
+    if (type == "combat:guard-window") return payloadText(payload, "mode");
     if (type == "collision:ignore-window") return payloadText(payload, "channel");
     if (type == "movement:root-motion-window") return payloadText(payload, "mode");
     if (type == "presentation:parameter-curve") return payloadText(payload, "target");
