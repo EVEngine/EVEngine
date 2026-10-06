@@ -17,36 +17,38 @@ float yawOf(const AnimPose& pose, int bone) {
     return std::atan2(2.f * (t.qw * t.qy + t.qx * t.qz), 1.f - 2.f * (t.qx * t.qx + t.qy * t.qy));
 }
 
-AnimSkeleton makeWarpSkeleton() {
-    AnimSkeleton skeleton;
+void makeWarpSkeleton(AnimSkeleton& skeleton) {
     skeleton.addBone("root");
     skeleton.addBone("spine", 0);
     skeleton.addBone("head", 1);
     skeleton.addBone("foot", 0);
-    return skeleton;
 }
 
-AnimPose identityPose(int bones) {
-    AnimPose pose(bones);
-    return pose;
-}
+AnimPose identityPose(int bones) { return AnimPose(bones); }
 }  // namespace
 
 TEST_CASE("animation.orientationWarping.rotatesRootTowardLocomotionAndLeavesMatcherUntouched") {
-    AnimSkeleton skeleton = makeWarpSkeleton();
+    AnimSkeleton skeleton;
+    makeWarpSkeleton(skeleton);
     OrientationWarping warp;
     REQUIRE(warp.configure(skeleton, 0).ok());
     REQUIRE(warp.setRotationInterpSpeed(0.f).ok());
-    AnimPose pose = identityPose(4);
-    pose.setLocalPosition(0, 0.f, 0.f, 1.f);
-    REQUIRE(warp.apply(pose, 1.f, 0.f, 0.f, 2.f, 1.f / 60.f).ok());
-    pose.computeWorld(&skeleton);
-    CHECK(std::fabs(yawOf(pose, 0) - kPi * 0.5f) < 0.02f);
+    AnimPose matcherPose = identityPose(4);
+    matcherPose.setLocalPosition(0, 0.f, 0.f, 1.f);
+    AnimPose display = identityPose(4);
+    display.copyFrom(&matcherPose);
+    REQUIRE(warp.apply(display, 1.f, 0.f, 0.f, 2.f, 1.f / 60.f).ok());
+    display.computeWorld(&skeleton);
+    CHECK(std::fabs(yawOf(display, 0) - kPi * 0.5f) < 0.02f);
     CHECK(std::fabs(warp.getAppliedAngle() - kPi * 0.5f) < 0.02f);
+    CHECK_EQ(matcherPose.getLocalPositionZ(0), 1.f);
+    CHECK_EQ(matcherPose.getLocalRotationY(0), 0.f);
+    CHECK_EQ(matcherPose.getLocalRotationW(0), 1.f);
 }
 
 TEST_CASE("animation.orientationWarping.distributesSpineShareAndRestoresIkWorldYaw") {
-    AnimSkeleton skeleton = makeWarpSkeleton();
+    AnimSkeleton skeleton;
+    makeWarpSkeleton(skeleton);
     OrientationWarping warp;
     const std::array<int, 2> spine{1, 2};
     const std::array<int, 1> ik{3};
@@ -62,7 +64,8 @@ TEST_CASE("animation.orientationWarping.distributesSpineShareAndRestoresIkWorldY
 }
 
 TEST_CASE("animation.orientationWarping.thresholdAndLowSpeedTargetZero") {
-    AnimSkeleton skeleton = makeWarpSkeleton();
+    AnimSkeleton skeleton;
+    makeWarpSkeleton(skeleton);
     OrientationWarping warp;
     REQUIRE(warp.configure(skeleton, 0).ok());
     REQUIRE(warp.setRotationInterpSpeed(0.f).ok());
@@ -78,7 +81,8 @@ TEST_CASE("animation.orientationWarping.thresholdAndLowSpeedTargetZero") {
 }
 
 TEST_CASE("animation.orientationWarping.invalidInputsAndDisabledApplyLeavePoseUnchanged") {
-    AnimSkeleton skeleton = makeWarpSkeleton();
+    AnimSkeleton skeleton;
+    makeWarpSkeleton(skeleton);
     OrientationWarping warp;
     AnimPose pose = identityPose(4);
     pose.setLocalPosition(0, 3.f, 0.f, 0.f);
@@ -106,7 +110,8 @@ TEST_CASE("animation.orientationWarping.invalidInputsAndDisabledApplyLeavePoseUn
 }
 
 TEST_CASE("animation.orientationWarping.interpolationUsesInjectedTime") {
-    AnimSkeleton skeleton = makeWarpSkeleton();
+    AnimSkeleton skeleton;
+    makeWarpSkeleton(skeleton);
     OrientationWarping warp;
     REQUIRE(warp.configure(skeleton, 0).ok());
     REQUIRE(warp.setRotationInterpSpeed(8.f).ok());
