@@ -45,21 +45,21 @@ public:
      * @ownership Borrowed; ownership remains with the animation source.
      * @lifetime Valid until this object or the skeleton is destroyed.
      */
-    [[nodiscard]] AnimSkeleton* getSkeleton() const { return skeleton_; }
+    [[nodiscard]] AnimSkeleton* getSkeleton() const;
 
     /**
      * @brief Bone whose world XZ is the support point (typically pelvis/root).
      * @return Applied, or InvalidArgument when the index is out of range.
      */
     [[nodiscard]] eve::Result<void> setSupportBone(int boneIndex);
-    [[nodiscard]] int               getSupportBone() const { return supportBone_; }
+    [[nodiscard]] int               getSupportBone() const;
 
     /**
      * @brief Bone that receives whole-body lean (typically spine/chest).
      * @return Applied, or InvalidArgument when the index is out of range.
      */
     [[nodiscard]] eve::Result<void> setBalanceBone(int boneIndex);
-    [[nodiscard]] int               getBalanceBone() const { return balanceBone_; }
+    [[nodiscard]] int               getBalanceBone() const;
 
     /**
      * @brief Mass used for center-of-mass; zero excludes the bone.
@@ -74,35 +74,35 @@ public:
      * ζ in (0, 1) wobbles while returning upright; ζ ≥ 1 settles without overshoot.
      */
     [[nodiscard]] eve::Result<void> setRecovery(float frequencyHz, float dampingZeta);
-    [[nodiscard]] float             getRecoveryFrequency() const { return recoveryHz_; }
-    [[nodiscard]] float             getRecoveryDamping() const { return recoveryZeta_; }
+    [[nodiscard]] float             getRecoveryFrequency() const;
+    [[nodiscard]] float             getRecoveryDamping() const;
 
     /**
      * @brief Local-bone recoil frequency and damping toward the authored rotation.
      */
     [[nodiscard]] eve::Result<void> setRecoil(float frequencyHz, float dampingZeta);
-    [[nodiscard]] float             getRecoilFrequency() const { return recoilHz_; }
-    [[nodiscard]] float             getRecoilDamping() const { return recoilZeta_; }
+    [[nodiscard]] float             getRecoilFrequency() const;
+    [[nodiscard]] float             getRecoilDamping() const;
 
     /** @brief Gravity magnitude (m/s², Y-up). Zero disables the fall-away term. */
     [[nodiscard]] eve::Result<void> setGravity(float metersPerSecondSquared);
-    [[nodiscard]] float             getGravity() const { return gravity_; }
+    [[nodiscard]] float             getGravity() const;
 
     /** @brief Pendulum length used as g/h (meters). */
     [[nodiscard]] eve::Result<void> setPendulumHeight(float meters);
-    [[nodiscard]] float             getPendulumHeight() const { return pendulumHeight_; }
+    [[nodiscard]] float             getPendulumHeight() const;
 
     /** @brief Whole-body rotational inertia for lean (kg·m²). */
     [[nodiscard]] eve::Result<void> setInertia(float inertia);
-    [[nodiscard]] float             getInertia() const { return inertia_; }
+    [[nodiscard]] float             getInertia() const;
 
     /** @brief Per-bone recoil inertia (kg·m²). */
     [[nodiscard]] eve::Result<void> setRecoilInertia(float inertia);
-    [[nodiscard]] float             getRecoilInertia() const { return recoilInertia_; }
+    [[nodiscard]] float             getRecoilInertia() const;
 
     /** @brief Clamp for lean angle in radians. */
     [[nodiscard]] eve::Result<void> setMaxLean(float radians);
-    [[nodiscard]] float             getMaxLean() const { return maxLean_; }
+    [[nodiscard]] float             getMaxLean() const;
 
     /**
      * @brief Copy the authored pose that recovery tracks.
@@ -145,16 +145,16 @@ public:
      */
     [[nodiscard]] AnimPose* getTargetPose();
 
-    [[nodiscard]] float getLeanX() const { return leanX_; }
-    [[nodiscard]] float getLeanZ() const { return leanZ_; }
-    [[nodiscard]] float getLeanVelocityX() const { return leanVelX_; }
-    [[nodiscard]] float getLeanVelocityZ() const { return leanVelZ_; }
-    [[nodiscard]] float getCenterOfMassX() const { return comX_; }
-    [[nodiscard]] float getCenterOfMassY() const { return comY_; }
-    [[nodiscard]] float getCenterOfMassZ() const { return comZ_; }
-    [[nodiscard]] float getSupportX() const { return supportX_; }
-    [[nodiscard]] float getSupportY() const { return supportY_; }
-    [[nodiscard]] float getSupportZ() const { return supportZ_; }
+    [[nodiscard]] float getLeanX() const;
+    [[nodiscard]] float getLeanZ() const;
+    [[nodiscard]] float getLeanVelocityX() const;
+    [[nodiscard]] float getLeanVelocityZ() const;
+    [[nodiscard]] float getCenterOfMassX() const;
+    [[nodiscard]] float getCenterOfMassY() const;
+    [[nodiscard]] float getCenterOfMassZ() const;
+    [[nodiscard]] float getSupportX() const;
+    [[nodiscard]] float getSupportY() const;
+    [[nodiscard]] float getSupportZ() const;
 
 private:
     struct Recoil {

@@ -373,4 +373,27 @@ void PhysicalBalancePose::update(float dt) {
 AnimPose* PhysicalBalancePose::getPose() { return &pose_; }
 AnimPose* PhysicalBalancePose::getTargetPose() { return &target_; }
 
+AnimSkeleton* PhysicalBalancePose::getSkeleton() const { return skeleton_; }
+int           PhysicalBalancePose::getSupportBone() const { return supportBone_; }
+int           PhysicalBalancePose::getBalanceBone() const { return balanceBone_; }
+float         PhysicalBalancePose::getRecoveryFrequency() const { return recoveryHz_; }
+float         PhysicalBalancePose::getRecoveryDamping() const { return recoveryZeta_; }
+float         PhysicalBalancePose::getRecoilFrequency() const { return recoilHz_; }
+float         PhysicalBalancePose::getRecoilDamping() const { return recoilZeta_; }
+float         PhysicalBalancePose::getGravity() const { return gravity_; }
+float         PhysicalBalancePose::getPendulumHeight() const { return pendulumHeight_; }
+float         PhysicalBalancePose::getInertia() const { return inertia_; }
+float         PhysicalBalancePose::getRecoilInertia() const { return recoilInertia_; }
+float         PhysicalBalancePose::getMaxLean() const { return maxLean_; }
+float         PhysicalBalancePose::getLeanX() const { return leanX_; }
+float         PhysicalBalancePose::getLeanZ() const { return leanZ_; }
+float         PhysicalBalancePose::getLeanVelocityX() const { return leanVelX_; }
+float         PhysicalBalancePose::getLeanVelocityZ() const { return leanVelZ_; }
+float         PhysicalBalancePose::getCenterOfMassX() const { return comX_; }
+float         PhysicalBalancePose::getCenterOfMassY() const { return comY_; }
+float         PhysicalBalancePose::getCenterOfMassZ() const { return comZ_; }
+float         PhysicalBalancePose::getSupportX() const { return supportX_; }
+float         PhysicalBalancePose::getSupportY() const { return supportY_; }
+float         PhysicalBalancePose::getSupportZ() const { return supportZ_; }
+
 }  // namespace eve::animation
