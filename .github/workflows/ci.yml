@@ -792,11 +792,12 @@ jobs:
 
       - name: Build macosx debug
         # Same reasoning as the win32 guard above: a cache-cold pull-request ref
-        # compiles the whole engine, and run 35611511939 was killed standing at
-        # 40m13s with 1442 sccache hits / 2576 misses and no compiler error, while
-        # the same step finished in 38.2 min on the warm run 35554916566. Keep a
-        # bounded hang guard with room for the cold case.
-        timeout-minutes: 60
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
