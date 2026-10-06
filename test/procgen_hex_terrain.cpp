@@ -101,16 +101,33 @@ TEST_CASE("procgen.hexTerrain.schemaDefaultsAndGenerateToRefuseTheBake") {
     REQUIRE(GeneratorRegistry::instance().has("hex.terrain"));
     REQUIRE(GeneratorRegistry::instance().has("hex.sphere"));
 
+    const auto* terrain = GeneratorRegistry::instance().descriptor("hex.terrain");
+    REQUIRE(terrain != nullptr);
+    const auto* width  = terrain->find("width");
+    const auto* height = terrain->find("height");
+    REQUIRE(width != nullptr);
+    REQUIRE(height != nullptr);
+    REQUIRE_EQ(width->defaultValue, "20");
+    REQUIRE_EQ(height->defaultValue, "15");
+
+    // Params always owns seed/width/height, so applyDefaults fills only the
+    // generator tunables. Callers must setSize() to a 5x5 chunk multiple.
     Params defaults;
     REQUIRE(GeneratorRegistry::instance().applyDefaults("hex.terrain", defaults));
-    REQUIRE_EQ(defaults.getWidth(), 20);
-    REQUIRE_EQ(defaults.getHeight(), 15);
+    REQUIRE_EQ(defaults.getWidth(), 32);
+    REQUIRE_EQ(defaults.getHeight(), 32);
     REQUIRE_EQ(defaults.getInt("landPercentage", 0), 50);
 
     Grid2D      grid;
     std::string error;
     CHECK(!GeneratorRegistry::instance().generate("hex.terrain", defaults, grid, error));
     CHECK(error.find("generateHexTerrain") != std::string::npos);
+
+    const auto* sphere = GeneratorRegistry::instance().descriptor("hex.sphere");
+    REQUIRE(sphere != nullptr);
+    const auto* subdivision = sphere->find("subdivision");
+    REQUIRE(subdivision != nullptr);
+    REQUIRE_EQ(subdivision->defaultValue, "4");
 
     Params sphereDefaults;
     REQUIRE(GeneratorRegistry::instance().applyDefaults("hex.sphere", sphereDefaults));
