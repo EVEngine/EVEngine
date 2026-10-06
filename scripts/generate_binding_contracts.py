@@ -23,6 +23,22 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "src" / "engine", ROOT / "src" / "modules")
 SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
 
+# C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
+# declaration. Skip them before matching the return type so member bindings to
+# attributed getters stay resolvable. Attribute bodies may contain '(' (message
+# arguments), so callers must take the function '(' from the end of the regex
+# match rather than the first '(' after match.start().
+CXX_ATTRIBUTE = r"(?:\[\[[^\]]*\]\]\s*)*"
+CXX_DECL_PREFIX = (
+    r"(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+|"
+    rf"{CXX_ATTRIBUTE})*"
+)
+
+
+def declaration_opening_paren(match: re.Match[str]) -> int:
+    """Return the index of the function '(' that ends a declaration regex match."""
+    return match.end() - 1
+
 
 @dataclass
 class Parameter:
@@ -264,12 +280,12 @@ class SignatureIndex:
         lookup_class = self.aliases.get(class_name, class_name)
         candidates: list[tuple[str, list[Parameter]]] = []
         declaration_pattern = re.compile(
-            rf"(?m)(?:^|[;{{}}])\s*(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+)*"
+            rf"(?m)(?:^|[;{{}}])\s*{CXX_DECL_PREFIX}"
             rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(method)}\s*\(")
         for block in self.classes.get(lookup_class, []):
             masked = mask_comments(block)
             for match in declaration_pattern.finditer(masked):
-                opening = masked.find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(block, opening)
                 if closing is None:
                     continue
@@ -277,13 +293,14 @@ class SignatureIndex:
                                    parse_parameters(block[opening + 1 : closing])))
         if not candidates:
             definition_pattern = re.compile(
-                rf"(?m)([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
+                rf"(?m){CXX_DECL_PREFIX}"
+                rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
             needle = f"{lookup_class}::{method}"
             for path, source in self.sources.items():
                 if needle not in source:
                     continue
                 for match in definition_pattern.finditer(self.masked[path]):
-                    opening = self.masked[path].find("(", match.start())
+                    opening = declaration_opening_paren(match)
                     closing = matching(source, opening)
                     if closing is None:
                         continue
@@ -297,7 +314,7 @@ class SignatureIndex:
                 for block in blocks:
                     masked = mask_comments(block)
                     for match in declaration_pattern.finditer(masked):
-                        opening = masked.find("(", match.start())
+                        opening = declaration_opening_paren(match)
                         closing = matching(block, opening)
                         if closing is not None:
                             inherited.append((match.group(1).strip().splitlines()[-1].strip(),
@@ -319,14 +336,16 @@ class SignatureIndex:
     def free(self, name: str) -> tuple[str, list[Parameter]] | None:
         if name in self.free_cache:
             return self.free_cache[name]
-        pattern = re.compile(rf"(?m)^\s*(?:static\s+)?([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
+        pattern = re.compile(
+            rf"(?m)^\s*(?:static\s+|{CXX_ATTRIBUTE})*"
+            rf"([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
         candidates = []
         needle = f"{name}("
         for path, source in self.sources.items():
             if needle not in source and f"{name} (" not in source:
                 continue
             for match in pattern.finditer(self.masked[path]):
-                opening = self.masked[path].find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(source, opening)
                 if closing is not None:
                     candidates.append((match.group(1).strip(), parse_parameters(source[opening + 1 : closing])))

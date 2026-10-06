@@ -150,7 +150,7 @@ std::vector<EditorDiagnostic> PhysicsJointTarget::validate() const {
             eve::DiagnosticCode::InvariantViolation, RuleId("editor.physics.joint-bodies"),
             DiagnosticSeverity::Error, "Joint requires two distinct body references"));
     const std::string kind = text("joint.kind");
-    if (kind == "prismatic" || kind == "wheel") {
+    if (kind == "prismatic" || kind == "wheel" || kind == "parallel") {
         const auto& axis          = *values_.at("joint.axis").getIf<EditorValue::Array>();
         double      lengthSquared = 0.0;
         for (const EditorValue& component : axis) {
@@ -173,7 +173,8 @@ PropertySchema PhysicsJointTarget::jointSchema() {
     PropertySchema result;
     result.typeId  = "physics.joint3d";
     auto kind      = jointProperty("joint.kind", "editor.physics.joint-kind", "joint", PropertyType::Enum, "distance");
-    kind.enumItems = {"distance", "revolute", "prismatic", "spherical", "wheel"};
+    kind.enumItems = {"distance", "revolute", "prismatic", "spherical", "wheel", "weld", "motor",
+                      "parallel", "filter"};
     result.properties.push_back(std::move(kind));
     result.properties.push_back(jointProperty("body.a", "editor.physics.body-a", "joint", PropertyType::ObjectRef, ""));
     result.properties.push_back(jointProperty("body.b", "editor.physics.body-b", "joint", PropertyType::ObjectRef, ""));
