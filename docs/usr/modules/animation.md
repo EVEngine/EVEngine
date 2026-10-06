@@ -340,14 +340,16 @@ local pose = mm.getPose();
 
 `eve.OrientationWarping()` owns interpolation state and borrows a skeleton after
 `configure(skeleton, rootBone, spineBones, ikBones)`, which returns `{ok,message}`.
-`apply(pose, locomotionX, locomotionZ, animatedX, animatedZ, dt)` yaws the copied
-display pose so authored planar velocity aligns with locomotion velocity. Root
-receives `(1 - distributedAlpha) * angle`; remaining yaw is split across the spine
-list. Optional IK bones restore their pre-warp world orientation. Speeds use
-metres/second. Magnitudes above the threshold (default 135°) or below
-`minRootMotionSpeed` (0.1 m/s) target zero. `setRotationInterpSpeed` matches Unreal
-`FInterpTo`; zero snaps. Disabled apply calls still update the target/smoothed
-angle but leave the pose unchanged.
+`getSkeleton()` / `getRootBone()` / `getSpineBoneCount()` / `getIkBoneCount()`
+read that configuration. `apply(pose, locomotionX, locomotionZ, animatedX, animatedZ, dt)`
+yaws the copied display pose so authored planar velocity aligns with locomotion
+velocity. Root receives `(1 - getDistributedAlpha()) * angle`; remaining yaw is
+split across the spine list. Optional IK bones restore their pre-warp world
+orientation. Speeds use metres/second. Magnitudes above `getAngleThreshold()`
+(default 135°) or below `getMinRootMotionSpeed()` (0.1 m/s) target zero.
+`setRotationInterpSpeed` / `getRotationInterpSpeed` match Unreal `FInterpTo`;
+zero snaps. `setEnabled` / `isEnabled` gate pose mutation: disabled apply calls
+still update the target/smoothed angle but leave the pose unchanged.
 
 Call this on a **copy** of `MotionMatcher.getPose()`, never on the matcher pose
 itself: the next search must keep reading unwarped matching features. Native
@@ -619,7 +621,7 @@ anim->advance(step);
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`setPlayRateRange()`、`getPlayRateMinimum()`、`getPlayRateMaximum()`、`getPlayRate()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
-- `OrientationWarping`：`configure()`、`setDistributedAlpha()`、`setAngleThreshold()`、`setRotationInterpSpeed()`、`setMinRootMotionSpeed()`、`setEnabled()`、`reset()`、`apply()`、`getAppliedAngle()`、`getTargetAngle()`
+- `OrientationWarping`：`configure()`、`setDistributedAlpha()`、`getDistributedAlpha()`、`setAngleThreshold()`、`getAngleThreshold()`、`setRotationInterpSpeed()`、`getRotationInterpSpeed()`、`setMinRootMotionSpeed()`、`getMinRootMotionSpeed()`、`setEnabled()`、`isEnabled()`、`reset()`、`apply()`、`getAppliedAngle()`、`getTargetAngle()`、`getSkeleton()`、`getRootBone()`、`getSpineBoneCount()`、`getIkBoneCount()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
