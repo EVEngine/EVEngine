@@ -352,7 +352,7 @@ JunctionPlan planJunction(const RoadNetwork& network, const RoadNode& node) {
         }
     }
 
-    // Restore natural dirs for disc-path consumers when the bent plan fails.
+    // Restore natural dirs for disc-path consumers.
     for (std::size_t i = 0; i < nArms; ++i) {
         plan.arms[i].outDir = natural[i];
         plan.arms[i].bent   = false;
