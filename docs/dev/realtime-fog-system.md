@@ -43,8 +43,11 @@ Camera rays intersect a sky shell, height layer, or local OBB, then sample
 **world-space** density. Extinction uses Beer–Lambert; scattering uses dual-lobe
 Henyey–Greenstein. Stable media segments use a closed-form transmittance step.
 
-Froxel mapping reconstructs world centers from `invViewProj`, injects media,
-optionally skips empty cells, and integrates with cached light transmittance.
+Froxel mapping reconstructs world centers with the same `invViewProj` mix as
+`AtmosphereVolume::injectHeightFogFrustum`, injects MAC density **additively**,
+optionally skips empty cells, and integrates Beer visibility at those same
+world points. Display lighting for the demo path is `Volumetric::integrateFroxel`
+after frustum height fog + emissive proxies.
 
 Analytic beams are capped cone/pyramid frustums clipped by scene depth, using
 2 / 4 / 8 short segments. Dust Fine/Mid motes are hashed in world space with a

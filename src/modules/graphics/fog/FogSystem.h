@@ -103,7 +103,30 @@ public:
                                              float intensity);
 
     /**
+     * @brief Add MAC density into an existing froxel grid without clearing or integrating.
+     *
+     * Use after `injectFroxelHeightFog` / local `FogVolume` injection so the fluid
+     * is a perturbation on the display path, not a replacement for it.
+     * @param volume Borrowed froxel grid; caller owns clear / integrate / upload.
+     * @param invViewProj Inverse view-projection of the active camera.
+     */
+    [[nodiscard]] Result<int> injectToFroxel(AtmosphereVolume& volume, const glm::mat4& invViewProj);
+
+    /**
+     * @brief Additive MAC inject into a Volumetric that already holds height fog / volumes.
+     * Does not resize, clear, or integrate. Caller still owns uploadFroxel / applyFroxel.
+     * @param volumetric Borrowed for the call; not retained.
+     * @ownership Borrowed Volumetric; FogSystem does not take ownership.
+     * @lifetime Valid only for this call; do not retain across frames via this argument.
+     * @thread Simulation / render thread that owns both objects.
+     * @reentrancy Not reentrant; invokes no script callbacks.
+     */
+    [[nodiscard]] Result<int> injectToVolumetric(Volumetric* volumetric);
+
+    /**
      * @brief Map the live density field into a Volumetric froxel grid and integrate lighting.
+     * Resizes the atlas to the quality budget and replaces prior media. Prefer
+     * injectToVolumetric when the caller already injected frustum height fog.
      * Caller still owns uploadFroxel / applyFroxel. Uses the Volumetric camera matrix.
      * @param volumetric Borrowed for the call; not retained.
      * @ownership Borrowed Volumetric; FogSystem does not take ownership.

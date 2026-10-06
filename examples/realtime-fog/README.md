@@ -1,28 +1,28 @@
-# Realtime Fog (MAC + Froxel)
+# Realtime Fog (MAC on the atmospheric froxel path)
 
-Demonstrates the `graphics_fog` satellite: MAC fluid transport, SceneWind,
-analytic sphere interactors, and froxel composite through the existing
-`Volumetric` atlas path.
+The pillar-city scene and display path match `examples/atmospheric-fog`: frustum
+height fog, an emissive light proxy, `integrateFroxel`, then `applyFroxel`.
+A GPU `mode="fog"` layer (`volumetric_fog.frag`) adds height/distance noise
+wisps the same way `examples/bush-fog-volumes` does.
+
+`graphics_fog` only **adds** MAC fluid + SceneWind + the sphere interactor into
+that grid (`injectToVolumetric`). It does not replace the Volumetric atlas.
 
 ```bash
 make run/linux-debug GAME=examples/realtime-fog
 ```
 
-Defaults to **fast** quality (friendly to software Vulkan). Press `2` / `3` on a
-real GPU for denser froxels.
-
 Controls:
 
 | Key | Action |
 | --- | --- |
-| `1` / `2` / `3` | Fast / Enhanced / Physical Reference quality |
+| `1` / `2` / `3` | Thin / medium / dense height fog (same presets as atmospheric-fog) |
 | `A` / `D` | Steer main wind left / right |
 | `W` / `S` | Increase / decrease curl strength |
 | `←` `→` `↑` `↓` | Move the solid sphere interactor |
-| `Space` | Pause / resume simulation |
-| `R` | Reseed height fog |
+| `Space` | Pause / resume MAC simulation |
+| `R` | Reseed the MAC height band |
 
-Each frame the example steps the MAC solver, syncs density into the Volumetric
-froxel grid (`FogSystem.syncToVolumetric`), uploads the slice atlas, and
-composites with GBuffer depth. After a few frames it writes `realtime-fog.png`
-via `gfx.saveFramePng`.
+Froxel resolution is the atmospheric-fog default (`80×45×32`, near 0.1, far 100).
+MAC lives in a world AABB that covers the camera and the city so the frustum
+actually samples it. After a few frames the example writes `realtime-fog.png`.

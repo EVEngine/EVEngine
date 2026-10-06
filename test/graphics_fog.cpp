@@ -178,6 +178,21 @@ TEST_CASE("graphics_fog.froxelInjectsOccupiedMedia") {
     CHECK(sample.a <= 1.f);
 }
 
+TEST_CASE("graphics_fog.froxelInjectIsAdditiveOverHeightFog") {
+    FogSystem system = makeSeeded(FogQuality::Fast);
+    AtmosphereVolume volume;
+    volume.resize(16, 9, 16);
+    volume.setDepthRange(0.1f, 40.f);
+    glm::mat4 inv(1.f);
+    volume.injectHeightFogFrustum(0.035f, glm::vec3(0.72f, 0.82f, 0.98f), 0.f, 0.16f, -2.f, 10.f,
+                                  inv);
+    const float before = volume.at(8, 4, 4).extinction;
+    CHECK(before > 0.f);
+    auto written = system.injectToFroxel(volume, inv);
+    REQUIRE(written.ok());
+    CHECK(volume.at(8, 4, 4).extinction >= before);
+}
+
 TEST_CASE("graphics_fog.analyticBeamIsOccludedBySceneDepth") {
     FogProfile profile;
     REQUIRE(profile.configure(0.2f, glm::vec3(0.9f), 0.1f, 1.f, 0.5f, 0.4f).ok());

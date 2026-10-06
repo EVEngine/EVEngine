@@ -98,8 +98,8 @@ Result<int> FogSystem::renderToFroxel(AtmosphereVolume& volume, const glm::mat4&
 
     const BeerLightCache* cache =
         (budget.beerLightCache && beerCache_.valid()) ? &beerCache_ : nullptr;
-    auto integrated =
-        froxelBridge_.integrate(volume, density_, profile_, lightDir, lightColor, intensity, cache);
+    auto integrated = froxelBridge_.integrate(volume, density_, profile_, invViewProj, lightDir,
+                                              lightColor, intensity, cache);
     if (!integrated.ok()) return Result<int>::failure(integrated.status());
 
     if (budget.temporalHistory && frameIndex_ > 1) {
@@ -108,6 +108,30 @@ Result<int> FogSystem::renderToFroxel(AtmosphereVolume& volume, const glm::mat4&
         (void)budget.historyWeight;
     }
     return injected;
+}
+
+Result<int> FogSystem::injectToFroxel(AtmosphereVolume& volume, const glm::mat4& invViewProj) {
+    if (volume.getWidth() <= 0 || density_.width() <= 0) {
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                      "froxel/density volumes are empty",
+                                                      "injectToFroxel", {}, "graphics.fog"));
+    }
+    const auto budget = budgetFor(quality_);
+    return froxelBridge_.inject(volume, density_, profile_, invViewProj, budget.occupancySkip);
+}
+
+Result<int> FogSystem::injectToVolumetric(Volumetric* volumetric) {
+    if (!volumetric) {
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "volumetric is null", "volumetric", {}, "graphics.fog"));
+    }
+    AtmosphereVolume* volume = volumetric->getAtmosphereVolume();
+    if (!volume) {
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "volumetric has no AtmosphereVolume; call configureFroxelGrid first",
+            "atmosphereVolume", {}, "graphics.fog"));
+    }
+    return injectToFroxel(*volume, volumetric->getInvViewProj());
 }
 
 Result<int> FogSystem::syncToVolumetric(Volumetric* volumetric, const glm::vec3& lightDir,
@@ -134,18 +158,25 @@ Result<int> FogSystem::syncToVolumetric(Volumetric* volumetric, const glm::vec3&
     }
     volumetric->configureFroxelGrid(budget.froxelWidth, budget.froxelHeight, budget.froxelDepth,
                                     nearDistance, farDistance);
+    volume = volumetric->getAtmosphereVolume();
+    if (!volume) {
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "configureFroxelGrid left AtmosphereVolume empty",
+            "atmosphereVolume", {}, "graphics.fog"));
+    }
 
     auto cacheReady = ensureBeerCache(lightDir, lightColor, intensity);
     if (!cacheReady.ok()) return Result<int>::failure(cacheReady.status());
 
-    auto injected = froxelBridge_.inject(*volume, density_, profile_, volumetric->getInvViewProj(),
-                                        budget.occupancySkip);
+    const glm::mat4& invViewProj = volumetric->getInvViewProj();
+    auto injected =
+        froxelBridge_.inject(*volume, density_, profile_, invViewProj, budget.occupancySkip);
     if (!injected.ok()) return injected;
 
     const BeerLightCache* cache =
         (budget.beerLightCache && beerCache_.valid()) ? &beerCache_ : nullptr;
-    auto integrated =
-        froxelBridge_.integrate(*volume, density_, profile_, lightDir, lightColor, intensity, cache);
+    auto integrated = froxelBridge_.integrate(*volume, density_, profile_, invViewProj, lightDir,
+                                              lightColor, intensity, cache);
     if (!integrated.ok()) return Result<int>::failure(integrated.status());
     return injected;
 }

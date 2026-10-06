@@ -35,11 +35,12 @@ public:
 
     /**
      * @brief Integrate froxels with optional Beer-cache visibility.
+     * @param invViewProj Inverse view-projection; must match the matrix used by inject().
      */
     [[nodiscard]] Result<void> integrate(AtmosphereVolume& volume, const FogDensityField& field,
-                                         const FogProfile& profile, const glm::vec3& lightDir,
-                                         const glm::vec3& lightColor, float intensity,
-                                         const BeerLightCache* beerCache);
+                                         const FogProfile& profile, const glm::mat4& invViewProj,
+                                         const glm::vec3& lightDir, const glm::vec3& lightColor,
+                                         float intensity, const BeerLightCache* beerCache);
 };
 
 }  // namespace eve::graphics::fog
