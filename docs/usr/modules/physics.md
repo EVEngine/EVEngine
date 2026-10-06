@@ -1064,7 +1064,7 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `setRestDensity()`、`setRestitution()`、`setRotation()`、`setSensor()`、`setSmoothingRadius()`、`setStiffness()`、`setType()`、`setViscosity()`、`testPoint()`
 - `setSelfCollision()`、`unpin()`、`update()`、`updateFull()`
 
-+### 3D 高级接口补充索引
+### 3D 高级接口补充索引
 
 以下方法补充了 3D 碰撞查询结果、接触事件、关节状态、距离场采样、材质参数和世界诊断的脚本索引。坐标分量方法按 `X/Y/Z` 成组使用；索引类 getter 的有效范围由对应的 `*Count()` 返回值决定。
 
@@ -1091,6 +1091,21 @@ world3.moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz);
 - `getTriangleMeshMaterialId()`、`getTriangleMeshMaterialIndex()`、`getTriangleMeshMaterialRestitution()`、`getTriangleMeshMaterialRollingResistance()`、`getWorldCenterZ()`、`hasClosestPoint()`、`hasShapeCastHit()`、`isAngularXLocked()`
 - `isAngularYLocked()`、`isAngularZLocked()`、`isContinuousCollisionEnabled()`、`isLinearXLocked()`、`isLinearYLocked()`、`isLinearZLocked()`、`isSleepEnabled()`、`isWarmStartingEnabled()`
 - `sample()`、`sampleNormal()`、`setDistanceLength()`、`setSleepThreshold()`
+
+### 关节与机械机构补充索引
+
+下列方法覆盖 2D `Joint2D` / `Mechanism2D` 与 3D `Joint3D` / `Mechanism3D` 的脚本绑定；
+与上文机构示例中的 `setDrive` / `getDriveAngle` / `getSpinSpeed` / `getDriveJoint` /
+`getSliderTranslation` 一并使用。
+
+- `clearDrive()`、`getCrankPinJoint()`、`getDistanceDampingRatio()`、`getDistanceFrequency()`、`getGearJoint1()`、`getGearJoint2()`、`getGearRatio()`
+- `getMotorAngularOffset()`、`getMotorAngularVelocityX()`、`getMotorAngularVelocityY()`、`getMotorAngularVelocityZ()`、`getMotorLinearOffsetX()`、`getMotorLinearOffsetY()`
+- `getMotorLinearVelocityX()`、`getMotorLinearVelocityY()`、`getMotorLinearVelocityZ()`、`getParallelDampingRatio()`、`getParallelHertz()`、`getParallelMaxTorque()`
+- `getRatchetDirection()`、`getRatchetEngagementTorque()`、`getRevoluteSpeed()`、`getSliderJoint()`、`getSliderPinJoint()`
+- `getWeldAngularDampingRatio()`、`getWeldAngularHertz()`、`getWeldDampingRatio()`、`getWeldFrequency()`、`getWeldLinearDampingRatio()`、`getWeldLinearHertz()`
+- `getWheelSpeed()`、`getWheelTranslation()`、`isDriveEnabled()`、`isValid()`
+- `setMotorAngularOffset()`、`setMotorAngularSpring()`、`setMotorAngularVelocity()`、`setMotorLimits()`、`setMotorLinearOffset()`、`setMotorLinearSpring()`
+- `setMotorLinearVelocity()`、`setMotorVelocityLimits()`、`setParallelSpring()`、`setRatchetDirection()`、`setRatchetEngagementTorque()`、`setWheelMotor()`、`setWheelSpring()`
 
 ## 等待流送地形后激活刚体
 
