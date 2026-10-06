@@ -21,14 +21,20 @@ local world = gpuAgents.newWorld();
 world.bakeEmptyObstacles(-10, -10, -10, 16, 16, 16, 1.0);
 world.carveSphere(0, 0, 0, 2.0);
 world.setWaterCurrent(0.2, 0.0, 0.0);
+world.setWind(0.0, 0.0, -0.5);
+world.setVerticalBounds(0.0, 20.0);
 
 local school = gpuAgents.newBackend(0, 128); // 0=Fish, 1=Life, 2=Bird, 3=Petal
 gpuAgents.spawnCloud(school, 64, 0.0, 1.0, 6.0, 2.0);
 gpuAgents.registerBackend(world, "school", school);
+print(world.backendCount()); // 已注册后端数
 
 // eve_update:
 world.stepAll(dt);
+// 也可对单个后端：school.step(world, dt);
 local n = school.instanceCount(); // 实例矩阵已在 Backend 内同步
+local alive = school.aliveCount();
+if (alive == 0) school.reset();
 ```
 
 生命网格需先初始化表面（平面或三角 Capture）：
