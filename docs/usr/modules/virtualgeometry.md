@@ -58,6 +58,8 @@ function eve_render() {
 
 ## 生命周期
 
-- Vulkan 与 WebGPU 后端均可用；WebGPU 使用 WGSL compute 和 storage buffer。
+- Vulkan 与原生 WebGPU（Dawn）后端均可用；WebGPU 使用 WGSL compute 和 storage
+  buffer。浏览器 `EVENGINE_PROFILE=web` 默认不编本模块（精简 WASM 闭包），
+  不等于 WebGPU 没有 VG 路径。
 - `resolve()` 返回的 ByteData 归调用方；每次相机/模型变化后需重新 `update()`
   再 resolve。

@@ -15,6 +15,20 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# weather::Snow applies SnowField onto procgen::Heightmap. Without procgen the
+# precipitation Weather surface stays, but Snow sources and the boot slot drop
+# so web/WASM (and any trim that leaves weather without procgen) never pull
+# procgen → map → Poco.
+eve_module_enabled(weather _has_weather_snow_bridge)
+eve_module_enabled(procgen _has_procgen_for_snow)
+if(_has_weather_snow_bridge AND NOT _has_procgen_for_snow)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};Snow.cpp;SnowField.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
+  set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
+endif()
+
 # editor/EditorParticleGraphRuntime.cpp applies compiled particle module graphs
 # to the real emitter only when the particles module is enabled.
 eve_module_enabled(particles _has_particles_editor_bridge)

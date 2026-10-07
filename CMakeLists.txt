@@ -1118,10 +1118,12 @@ macro(get_available_build)
 
     # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
     # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
-    # DataModule files that require Poco. Font/FreeType is supported on WASM.
+    # DataModule files that require Poco. Font/FreeType is supported on WASM
+    # via the Emscripten port. Snow.cpp follows weather's OPTIONAL_DEPS procgen
+    # (see src/modules/CMakeLists.txt) rather than an Emscripten-only list.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(_eve_excluded_module_files
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp;Snow.cpp;SnowField.cpp")
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;ImGuiHostPanels.cpp")
         set(_eve_module_exclusion_help
             "Exact basenames excluded from module source scan on Emscripten")
     else()

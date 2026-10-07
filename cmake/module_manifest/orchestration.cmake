@@ -100,6 +100,9 @@ eve_declare_module(NAME climbing LAYER 5 SCRIPT Climbing SLOT climbing
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)
+# Native Dawn has a WGSL VG path; web/WASM still omits this module because the
+# browser profile keeps the heavier 3d-only aggregate (and avoids growing the
+# WASM closure). Do not read "no GROUP web" as "WebGPU cannot render VG".
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
                    GROUP 3d)
@@ -225,10 +228,12 @@ eve_declare_module(NAME fluids_editing LAYER 6
 eve_declare_module(NAME gpuagents_editing LAYER 6
                    DEPS editing gpuagents
                    GROUP 3d web)
+# Authoring documents stay available without the dialogue runtime (audio/avatar
+# are trimmed on WASM). Runtime bridges drop out via OPTIONAL_DEPS.
 eve_declare_module(NAME dialogue_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS dialogue
-                   GROUP web)
+                   GROUP 3d web)
 eve_declare_module(NAME localization_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS audio dialogue
@@ -269,17 +274,15 @@ eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
                    SCRIPT ProcgenAnimation SLOT procgenAnimation
                    DEPS animation procgen
                    GROUP 3d)
+# Precipitation (Weather) only needs graphics. Interactive Snow applies to
+# procgen heightmaps and is an OPTIONAL_DEPS bridge: when procgen is off
+# (web/WASM, or an explicit trim), Snow.cpp is excluded and the Snow script
+# slot is dropped in src/modules/CMakeLists.txt so the profile does not pull
+# procgen -> map -> Poco.
 eve_declare_module(NAME weather LAYER 6 SCRIPT Weather Snow SLOT weather snow
-                   DEPS graphics procgen
+                   DEPS graphics
+                   OPTIONAL_DEPS procgen
                    GROUP 3d web)
-if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    # Browser weather keeps the pre-merge surface. Interactive snow has always
-    # been a native 3D feature and would otherwise pull procgen -> map -> Poco
-    # into the WASM closure, where Poco is intentionally unavailable.
-    set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
-    set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
-    set(EVE_MODULE_weather_DEPS graphics CACHE INTERNAL "" FORCE)
-endif()
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp

@@ -126,10 +126,10 @@ eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
                    GROUP 2d 3d)
 eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
-                   GROUP 2d)
+                   GROUP 2d web)
 eve_declare_module(NAME scene_physics DIR scene/physics LAYER 5 SCRIPT ScenePhysics SLOT scenePhysics
                    DEPS physics scene
-                   GROUP 3d)
+                   GROUP 3d web)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5
@@ -154,17 +154,25 @@ eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
                    DEPS graphics
                    GROUP 3d web)
+# stylize / decal keep GROUP web: native Dawn and the browser profile already
+# ship their WGSL paths, and several web-tagged editors hard-depend on them.
 eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
                    DEPS graphics stylize
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
-                   GROUP 3d)
+                   GROUP 3d web)
 # L5 -- voxel aggregate
+# WebGPU implements voxel face instances in graphics/webgpu/GraphicsVoxel.cpp.
+# The web profile still omits this module: it depends on procgen (and thus map /
+# Poco on a naive closure). Native Dawn full/3d builds keep the WGSL path.
 eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    DEPS graphics procgen thread
                    GROUP 3d)
 # L4 -- rendering extensions (continued)
+# SpriteStack has a dedicated WebGPU WGSL card shader; web/WASM still excludes
+# the module because it depends on model3d → Assimp, which the Emscripten
+# aggregate does not link.
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
                    GROUP 2d)
