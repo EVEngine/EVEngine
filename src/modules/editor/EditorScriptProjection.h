@@ -124,14 +124,33 @@ class ScriptBind {
 public:
     /**
      * @brief Construct a binder for one expose() translation unit.
-     * @param vm Active Squirrel VM.
+     * @param vm Active Squirrel VM; must remain valid for the binder's lifetime.
      * @param source Stable diagnostic source tag for this binding file.
+     * @ownership @p source is borrowed; it must outlive every use of this binder
+     *            (typically a file-scope `kBindingSource` string literal).
      */
     constexpr ScriptBind(HSQUIRRELVM vm, const char* source) noexcept : vm_(vm), source_(source) {}
 
-    /** @brief Active Squirrel VM handle. */
+    /**
+     * @brief Active Squirrel VM handle.
+     * @return Borrowed VM pointer stored at construction.
+     * @ownership Borrowed from the caller that constructed this binder; this
+     *            accessor never retains or frees the VM.
+     * @nullable Yes, when constructed with a null VM.
+     * @lifetime Valid while the owning Runtime/VM remains alive and this binder
+     *           is used only on the VM's owning thread.
+     */
     [[nodiscard]] constexpr HSQUIRRELVM vm() const noexcept { return vm_; }
-    /** @brief Diagnostic source tag for this binder. */
+
+    /**
+     * @brief Diagnostic source tag for this binder.
+     * @return Borrowed C-string pointer to the tag passed at construction.
+     * @ownership Borrowed from the caller that constructed this binder; callers
+     *            must not free or modify the returned text.
+     * @nullable Yes, when constructed with a null source.
+     * @lifetime Valid for at least as long as this binder; typically a
+     *           file-scope string literal that outlives the process.
+     */
     [[nodiscard]] constexpr const char* source() const noexcept { return source_; }
 
     /**
