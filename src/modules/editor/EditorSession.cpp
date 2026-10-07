@@ -38,7 +38,7 @@ EditorResult<void> EditorSession::executeChecked(std::unique_ptr<IEditCommand> c
     EditorResult<void> constrained = constraints_.evaluateChecked(context_, *command);
     if (!constrained.ok()) return constrained;
     auto appended = transactions_.append(std::move(command));
-    if (!appended.ok()) return std::move(appended);
+    if (!appended.ok()) return appended;
     return EditorResult<void>::success(eve::Status(EditorStatus::Applied, constrained.diagnostics()));
 }
 

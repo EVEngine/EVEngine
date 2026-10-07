@@ -35,6 +35,7 @@ TransactionReceipt projectRecord(const EditorTransactionRecord& record) {
 
 EditorResult<TransactionId> LocalTransactionBackend::project(eve::Result<TransactionId>&& result) {
     // EditorResult is eve::Result; no projection envelope exists at this boundary.
+    // Named rvalue-ref parameters are lvalues; move explicitly (not a local NRVO candidate).
     return std::move(result);
 }
 
