@@ -43,6 +43,6 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 
 ## 相关文件
 
-- `main.nut`：场景、光照、光追开关与 HUD。
+- `main.nut`：场景、光照、光追开关与 HUD；约第 36 帧后自动写出 `lighting-showcase.png`。
 - `config.nut`：1280×720，标题 `EVEngine Lighting Showcase`。
 - `README.md`：本文件。
