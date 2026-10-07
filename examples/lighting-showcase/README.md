@@ -29,7 +29,9 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 - **发光体**：暖 / 冷 / 品红点光源 + bloom 网格。按 `3` 开关。
 - **阴影方案**（进程级）：`gfx.setShadowSchemeDirectionalEnabled` /
   `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled` /
-  `setShadowSchemeMaxSpotCasters`。点光源 cube 阴影路径已预留，默认关闭。
+  `setShadowSchemeMaxSpotCasters`。本地阴影 atlas 固定 4 槽，候选更多时按屏幕重要性分页；
+  `setShadowSchemePagingEnabled` / `setShadowSchemeMaxLocalUpdates` /
+  `setShadowSchemeHysteresisBonus` 控制分页与每帧重绘预算。点光 cube 路径预留，默认关闭。
 - **可选光追**：硬件 RTX 或 portable `reflectionChain`。按 `Space` 开关。
 
 ## 操作

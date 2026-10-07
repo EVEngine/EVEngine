@@ -543,8 +543,23 @@ void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
 
 namespace {
 
-void selectFrameShadowCasters(const std::vector<PackedLight3D>& packed, Light3D::Data*& directionalCaster,
-                              std::vector<LocalShadowSlot>& localSlots) {
+ShadowPagingView makeShadowPagingView(Camera3D* cam, float aspect) {
+    ShadowPagingView view{};
+    if (!cam) return view;
+    auto cd = cam->data();
+    view.eye = glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ);
+    const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
+    const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+    const glm::mat4 v = glm::lookAtRH(view.eye, target, up);
+    const float fov = cd->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 p = perspectiveVulkanRH_ZO(fov, std::max(aspect, 1e-3f), cd->nearZ, cd->farZ);
+    view.viewProj = p * v;
+    view.valid = true;
+    return view;
+}
+
+void selectFrameShadowCasters(const std::vector<PackedLight3D>& packed, const ShadowPagingView& view,
+                              Light3D::Data*& directionalCaster, std::vector<LocalShadowSlot>& localSlots) {
     std::vector<Light3D::Data*> lights;
     std::vector<bool>           isPoint;
     lights.reserve(packed.size());
@@ -553,7 +568,7 @@ void selectFrameShadowCasters(const std::vector<PackedLight3D>& packed, Light3D:
         lights.push_back(pl.data);
         isPoint.push_back(pl.isPoint);
     }
-    selectShadowCasters(lights, isPoint, ShadowSchemeSettings::current(), directionalCaster, localSlots);
+    selectShadowCasters(lights, isPoint, ShadowSchemeSettings::current(), view, directionalCaster, localSlots);
 }
 
 void prioritizeShadowCaster(std::vector<PackedLight3D>& packed, Light3D::Data* caster) {
@@ -713,7 +728,11 @@ void RenderSystem3D::render(Graphics& gfx) {
     promoteDirectional(packed);
     Light3D::Data*              shadowCaster = nullptr;
     std::vector<LocalShadowSlot> localShadowSlots;
-    if (doShadow) selectFrameShadowCasters(packed, shadowCaster, localShadowSlots);
+    const float aspectEarly =
+        (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    if (doShadow)
+        selectFrameShadowCasters(packed, makeShadowPagingView(defaultCam, aspectEarly), shadowCaster,
+                                 localShadowSlots);
     prioritizeShadowCaster(packed, shadowCaster);
     // CSM promotion may swap packed indices; refresh local slot → light mapping.
     for (LocalShadowSlot& slot : localShadowSlots) {
@@ -728,7 +747,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
     const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
 
-    const float aspect = (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    const float aspect = aspectEarly;
 
     ShadowUpload shadowUpload{};
     shadowUpload.active = false;
@@ -1008,9 +1027,11 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
 
     // Spot (perspective) local shadow slots — layers after the three CSM cascades.
+    // Paging may keep a slot resident without redrawing when needsUpdate is false.
     if (doShadow && !localShadowSlots.empty() && (haveManager || haveExtraShadowCasters) && defaultCam) {
         auto cd = defaultCam->data();
         for (const LocalShadowSlot& slot : localShadowSlots) {
+            if (!slot.needsUpdate) continue;
             eve::debug::rtPassBegin("LocalShadowPass");
             gfx.beginShadowPass(slot.layer);
             const FrustumPlanes localFrustum = extractFrustum(slot.lightVP);

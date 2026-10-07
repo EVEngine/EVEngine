@@ -1414,6 +1414,17 @@ void Graphics::expose(ssq::Class& cls) {
     });
     cls.addFunc("getShadowSchemeMaxSpotCasters",
                 [](Graphics*) { return ShadowSchemeSettings::current().maxSpotShadowCasters; });
+    cls.addFunc("setShadowSchemePagingEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableLocalPaging = enabled;
+    });
+    cls.addFunc("setShadowSchemeMaxLocalUpdates", [](Graphics*, int count) {
+        ShadowSchemeSettings::current().maxLocalUpdatesPerFrame = count;
+    });
+    cls.addFunc("getShadowSchemeMaxLocalUpdates",
+                [](Graphics*) { return ShadowSchemeSettings::current().maxLocalUpdatesPerFrame; });
+    cls.addFunc("setShadowSchemeHysteresisBonus", [](Graphics*, float bonus) {
+        ShadowSchemeSettings::current().hysteresisBonus = bonus;
+    });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);

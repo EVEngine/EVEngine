@@ -193,11 +193,14 @@ eve_init = function() {
     resetCamera();
     applyAmbient();
 
-    // Shadow scheme: dir CSM + spot perspective on; point cube reserved/off.
+    // Shadow scheme: dir CSM + spot perspective; local atlas pages by importance.
     gfx.setShadowSchemeDirectionalEnabled(true);
     gfx.setShadowSchemeSpotEnabled(true);
     gfx.setShadowSchemePointEnabled(false);
-    gfx.setShadowSchemeMaxSpotCasters(2);
+    gfx.setShadowSchemeMaxSpotCasters(4);
+    gfx.setShadowSchemePagingEnabled(true);
+    gfx.setShadowSchemeMaxLocalUpdates(2);  // time-slice redraws within the 4-slot atlas
+    gfx.setShadowSchemeHysteresisBonus(0.35);
 
     // Shadow-casting directional (gfx.setDirectionalLight alone does not cast shadows).
     litSun = eve.Light3D();
