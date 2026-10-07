@@ -18,7 +18,7 @@ class DialogueVoice;
 
 namespace eve::localization_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-template<class T>using EditorResult=editing::Result<T>; using EditorStatus=editing::Status;
+using editing::EditorResult; using EditorStatus=editing::Status;
 using EditorValue=editing::Value; using Revision=editing::Revision; using RuleId=editing::RuleId;
 
 /** @brief One locale's editable translation and voice-production metadata. */

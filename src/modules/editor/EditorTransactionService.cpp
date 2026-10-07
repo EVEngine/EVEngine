@@ -1,7 +1,5 @@
 #include "editor/EditorTransactionService.h"
 
-#include "editor/EditorResultProjection.h"
-
 #include <utility>
 
 namespace eve::editor {
@@ -36,21 +34,22 @@ TransactionReceipt projectRecord(const EditorTransactionRecord& record) {
 }  // namespace
 
 EditorResult<TransactionId> LocalTransactionBackend::project(eve::Result<TransactionId>&& result) {
-    return projectCommonResult(std::move(result));
+    // EditorResult is eve::Result; no projection envelope exists at this boundary.
+    return std::move(result);
 }
 
 EditorResult<void> LocalTransactionBackend::project(eve::Result<void>&& result) {
-    return projectCommonResult(std::move(result));
+    return std::move(result);
 }
 
 EditorResult<TransactionReceipt> LocalTransactionBackend::project(eve::Result<EditorTransactionRecord>&& result) {
-    if (!result.ok()) return projectCommonFailure<TransactionReceipt>(result.status());
+    if (!result.ok()) return EditorResult<TransactionReceipt>::failure(result.status());
     EditorTransactionRecord record = std::move(result).takeValue();
     return eve::editing::applied<TransactionReceipt>(projectRecord(record));
 }
 
 EditorResult<EditorDryRunReport> LocalTransactionBackend::project(eve::Result<EditorDryRunReport>&& result) {
-    return projectCommonResult(std::move(result));
+    return std::move(result);
 }
 
 EditorResult<void> LocalTransactionBackend::setAuthority(IEditAuthority* authority) {

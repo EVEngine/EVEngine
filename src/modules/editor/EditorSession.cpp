@@ -38,7 +38,7 @@ EditorResult<void> EditorSession::executeChecked(std::unique_ptr<IEditCommand> c
     EditorResult<void> constrained = constraints_.evaluateChecked(context_, *command);
     if (!constrained.ok()) return constrained;
     auto appended = transactions_.append(std::move(command));
-    if (!appended.ok()) return projectCommonResult(std::move(appended));
+    if (!appended.ok()) return std::move(appended);
     return EditorResult<void>::success(eve::Status(EditorStatus::Applied, constrained.diagnostics()));
 }
 
@@ -120,7 +120,7 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
     const bool ownsTransaction          = descriptor && descriptor->createsTransaction && !transactions_.isActive();
     if (ownsTransaction) {
         auto begun = transactions_.beginTransaction(descriptor->displayName.empty() ? id.value() : descriptor->displayName);
-        if (!begun.ok()) return projectCommonFailure<EditorValue>(begun.status());
+        if (!begun.ok()) return EditorResult<EditorValue>::failure(begun.status());
     }
 
     CommandContext commandContext;
@@ -144,7 +144,7 @@ EditorResult<EditorValue> EditorSession::executeCommand(const CommandId& id, con
                     return EditorResult<EditorValue>::failure(
                         eve::Status(EditorStatus::Failed, std::move(diagnostics)));
                 }
-                return projectCommonFailure<EditorValue>(committed.status());
+                return EditorResult<EditorValue>::failure(committed.status());
             }
         } else {
             auto discarded = transactions_.rollbackTransaction();

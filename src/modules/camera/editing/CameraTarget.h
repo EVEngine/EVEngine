@@ -17,7 +17,7 @@ namespace eve::graphics { class Camera3D; }
 namespace eve::camera_editing {
 
 using CapabilityId=editing::CapabilityId;using DiagnosticSeverity=editing::DiagnosticSeverity;using DomainOperation=editing::DomainOperation;
-using EditRegion=editing::EditRegion;using EditorDiagnostic=editing::Diagnostic;template<class T>using EditorResult=editing::Result<T>;
+using EditRegion=editing::EditRegion;using EditorDiagnostic=editing::Diagnostic;using editing::EditorResult;
 using EditorStatus=editing::Status;using EditorValue=editing::Value;using IDomainOperationTarget=editing::IDomainOperationTarget;
 using IDomainOperationTargetStaging=editing::IDomainOperationTargetStaging;using IEditableTarget=editing::IEditableTarget;
 using IPropertyProvider=editing::IPropertyProvider;using ObjectId=editing::ObjectId;using PropertyDescriptor=editing::PropertyDescriptor;

@@ -19,8 +19,7 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template <class T>
-using EditorResult = eve::editing::Result<T>;
+using editing::EditorResult;
 
 /** @brief Stable cross-definition reference exposed to picker and validation hosts. */
 struct DefinitionReferenceField {

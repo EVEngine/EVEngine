@@ -9,7 +9,7 @@
 namespace eve::network { class Network; }
 namespace eve::network_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-template<class T>using EditorResult=editing::Result<T>; using EditorStatus=editing::Status;
+using editing::EditorResult; using EditorStatus=editing::Status;
 using RuleId=editing::RuleId;
 /** @brief One copied network telemetry sample; safe after the runtime module changes. */
 struct NetworkTelemetrySample {

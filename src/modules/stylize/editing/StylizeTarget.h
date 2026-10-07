@@ -45,8 +45,7 @@ using editing::RuleId;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-template <class T>
-using EditorResult     = editing::Result<T>;
+using editing::EditorResult;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;

@@ -16,8 +16,7 @@ namespace eve::procgen_editing {
 using EditorDiagnostic = editing::Diagnostic;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::EditorResult;
 
 /**
  * @brief Authored identity and reflected parameter schema for one script generator.

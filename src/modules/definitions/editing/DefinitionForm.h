@@ -15,8 +15,7 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template <class T>
-using EditorResult = eve::editing::Result<T>;
+using editing::EditorResult;
 
 /** @brief Schema-driven property adapter for one definition document. */
 class EVENGINE_API_BACKENDS DefinitionSchemaFormTarget final : public IPropertyProvider {

@@ -14,8 +14,7 @@ using namespace eve::editing;
 using EditorValue      = eve::editing::Value;
 using EditorStatus     = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template <class T>
-using EditorResult = eve::editing::Result<T>;
+using editing::EditorResult;
 /** @brief Renderer-neutral persisted scene importer settings. */
 struct SceneImportValue {
     std::string sourceAsset;

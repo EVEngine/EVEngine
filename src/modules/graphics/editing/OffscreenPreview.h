@@ -23,7 +23,7 @@ class ImageData;
 namespace eve::graphics_editing {
 using EditorStatus=editing::Status; using StableId=editing::StableId;
 using Revision=editing::Revision; using RuleId=editing::RuleId;
-template<class T>using EditorResult=editing::Result<T>;
+using editing::EditorResult;
 
 /** @brief Immutable request for one isolated Canvas render and CPU readback. */
 struct OffscreenPreviewRequest {

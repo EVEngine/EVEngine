@@ -20,7 +20,7 @@ using PhysicsColliderTarget=physics_editing::PhysicsColliderTarget;
 using PhysicsJointTarget=physics_editing::PhysicsJointTarget;
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorStatus=editing::Status;
 using EditorValue=editing::Value; using Revision=editing::Revision; using RuleId=editing::RuleId;
-template<class T>using EditorResult=editing::Result<T>;
+using editing::EditorResult;
 
 using EditorGizmoPrimitive = editing::GizmoPrimitive;
 using EditorGizmoSnapshot  = editing::GizmoSnapshot;

@@ -31,8 +31,7 @@ using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
 using EditorValue = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::EditorResult;
 
 /**
  * @brief Transactional editor target for one canonical MeshVfxAsset document.

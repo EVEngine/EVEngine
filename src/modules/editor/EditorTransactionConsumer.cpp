@@ -1,7 +1,5 @@
 #include "editor/EditorTransactionConsumer.h"
 
-#include "editor/EditorResultProjection.h"
-
 #include <charconv>
 #include <exception>
 #include <limits>

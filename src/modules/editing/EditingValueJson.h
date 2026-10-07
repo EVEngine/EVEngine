@@ -11,8 +11,6 @@ namespace eve::editing {
 
 using EditorValue = Value;
 using EditorStatus = Status;
-template <class T>
-using EditorResult = Result<T>;
 
 /** @brief Serialize an EditorValue to deterministic compact JSON. */
 EVENGINE_API_PLATFORM std::string editorValueToJson(const EditorValue& value);

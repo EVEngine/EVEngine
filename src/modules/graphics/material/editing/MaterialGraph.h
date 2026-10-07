@@ -33,8 +33,7 @@ using editing::TaskOutcome;
 using editing::TaskService;
 using editing::TaskState;
 using editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::EditorResult;
 using EditorStatus = editing::Status;
 using EditorValue = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;

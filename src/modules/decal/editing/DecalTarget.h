@@ -21,7 +21,7 @@ using editing::PropertyDescriptor; using editing::PropertyFlag; using editing::P
 using editing::PropertyReadResult; using editing::PropertyReadState; using editing::PropertySchema;
 using editing::PropertySetMode; using editing::PropertyType; using editing::Revision; using editing::RuleId;
 using editing::SelectionSnapshot; using editing::TargetDescriptor; using editing::TargetId;
-template <class T> using EditorResult = editing::Result<T>;
+using editing::EditorResult;
 using EditorStatus=editing::Status; using EditorValue=editing::Value; using EditorDiagnostic=editing::Diagnostic;
 using EditorGizmoSnapshot=editing::GizmoSnapshot; using EditorGizmoPrimitive=editing::GizmoPrimitive;
 

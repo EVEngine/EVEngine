@@ -5,9 +5,6 @@
 #include <utility>
 
 namespace eve::camera_editing {
-namespace {
-template<class T> EditorResult<T> fail(EditorStatus status,const char* rule,std::string message){return eve::editing::failed<T>(status,RuleId(rule),std::move(message));}
-}
 
 CameraDocumentRuntime::CameraDocumentRuntime() = default;
 CameraDocumentRuntime::~CameraDocumentRuntime() = default;
@@ -37,8 +34,7 @@ EditorResult<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& do
         if (!candidate->addRig(rig.id.value(), rig.mode, rig.priority) ||
             !candidate->saveRigState(rig.id.value()) ||
             !candidate->setRigEnabled(rig.id.value(), rig.enabled))
-            return fail<void>(EditorStatus::Failed, "editor.camera.runtime-rig",
-                              "Camera runtime rejected a validated rig");
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.camera.runtime-rig"), "Camera runtime rejected a validated rig");
     }
     for (const auto& key : document.timeline()) {
         bool accepted = false;
@@ -46,8 +42,7 @@ EditorResult<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& do
         else if (key.kind == "float") accepted = candidate->addTimelineFloat(key.time, key.property, key.value);
         else if (key.kind == "event") accepted = candidate->addTimelineEvent(key.time, key.name, key.data);
         if (!accepted)
-            return fail<void>(EditorStatus::Failed, "editor.camera.runtime-key",
-                              "Camera runtime rejected a validated timeline key");
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.camera.runtime-key"), "Camera runtime rejected a validated timeline key");
     }
     controller_ = std::move(candidate);
     revision_ = document.revision();

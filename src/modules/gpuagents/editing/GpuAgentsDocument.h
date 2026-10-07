@@ -20,8 +20,7 @@ using CapabilityId       = editing::CapabilityId;
 using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult           = editing::Result<T>;
+using editing::EditorResult;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;

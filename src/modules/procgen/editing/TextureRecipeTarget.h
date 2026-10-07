@@ -11,7 +11,7 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template<class T> using EditorResult = eve::editing::Result<T>;
+using editing::EditorResult;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
 class EVENGINE_API_ORCHESTRATION TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
                                                              public virtual IEditableTarget,
