@@ -994,7 +994,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
 
     // CSM shadow passes — replay the collected casters, culled per cascade.
-    // Extra drawers may run without a Light3D caster (fallback gLightDir CSM).
+    // Extra drawers may run without a Light3D caster (default gLightDir CSM).
     if (shadowActive && (shadowCaster || haveExtraShadowCasters) &&
         (haveManager || haveExtraShadowCasters)) {
         auto cd = defaultCam->data();

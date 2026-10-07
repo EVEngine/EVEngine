@@ -120,7 +120,7 @@ function configureRayTracing(enabled) {
             rc.disable("reflectionChain");
             litRtModeLabel = "hardware RTX";
         } else {
-            // Portable fallback used by rendering-chain-lab on software Vulkan.
+            // Portable path used by rendering-chain-lab on software Vulkan.
             rc.disable("rtx");
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
