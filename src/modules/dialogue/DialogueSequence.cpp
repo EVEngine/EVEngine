@@ -20,7 +20,7 @@ std::string mutationKindName(eve::MutationKind kind) {
 
 eve::Result<eve::StateMutation> decodeMutation(const eve::Value& value, std::size_t index) {
     const std::string path = "stateMutations." + std::to_string(index);
-    if (!value.isObject()) return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation must be an object"),
+    if (!value.isObject()) return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation must be an object",
                                                           std::move(path), {}, "dialogue.sequence"));
     for (const auto& key : value.keys())
         if (key != "subject" && key != "key" && key != "kind" && key != "value" && key != "persistent")
@@ -33,13 +33,13 @@ eve::Result<eve::StateMutation> decodeMutation(const eve::Value& value, std::siz
     const eve::Value* rawValue   = value.find("value");
     const eve::Value* persistent = value.find("persistent");
     if (!subject || !subject->isString() || subject->asString().empty())
-        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation subject must be a non-empty string"),
+        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation subject must be a non-empty string",
                                                           std::move(path + ".subject"), {}, "dialogue.sequence"));
     if (!key || !key->isString() || key->asString().empty())
-        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation key must be a non-empty string"),
+        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation key must be a non-empty string",
                                                           std::move(path + ".key"), {}, "dialogue.sequence"));
     if (!kind || !kind->isString())
-        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation kind must be a string"),
+        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation kind must be a string",
                                                           std::move(path + ".kind"), {}, "dialogue.sequence"));
 
     eve::StateMutation mutation;
@@ -61,15 +61,15 @@ eve::Result<eve::StateMutation> decodeMutation(const eve::Value& value, std::siz
 
     const bool needsValue = mutation.kind == eve::MutationKind::Set || mutation.kind == eve::MutationKind::AddNumber;
     if (needsValue && !rawValue)
-        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation requires value"),
+        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation requires value",
                                                           std::move(path + ".value"), {}, "dialogue.sequence"));
     if (!needsValue && rawValue)
-        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation kind does not accept value"),
+        return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation kind does not accept value",
                                                           std::move(path + ".value"), {}, "dialogue.sequence"));
     if (rawValue) mutation.value = *rawValue;
     if (persistent) {
         if (!persistent->isBool())
-            return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("state mutation persistent must be boolean"),
+            return eve::Result<eve::StateMutation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state mutation persistent must be boolean",
                                                           std::move(path + ".persistent"), {}, "dialogue.sequence"));
         mutation.persistent = persistent->asBool();
     }
@@ -90,12 +90,12 @@ eve::Result<void> validateCommand(const eve::dnut::SequenceNode& node) {
     const eve::Value* name = node.payload.find("name");
     if (!name) name = node.payload.find("target");
     if (!name || !name->isString() || name->asString().empty())
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("dialogue command requires a non-empty name"),
-                                                          std::move("payload.name"), {}, "dialogue.sequence"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue command requires a non-empty name",
+                                                          "payload.name", {}, "dialogue.sequence"));
     const eve::Value* kind = node.payload.find("kind");
     if (kind && (!kind->isString() || (kind->asString() != "operation" && kind->asString() != "gameplay")))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("dialogue command kind must be operation or gameplay"),
-                                                          std::move("payload.kind"), {}, "dialogue.sequence"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue command kind must be operation or gameplay",
+                                                          "payload.kind", {}, "dialogue.sequence"));
     auto payment = decodeSequencePayment(node.payload);
     if (!payment.ok()) return eve::Result<void>::failure(payment.status());
     auto mutations = decodeSequenceStateMutations(node.payload);
@@ -116,8 +116,8 @@ std::string sequenceRoutePayloadString(const eve::dnut::SequenceRoute& route, st
 }
 
 eve::Result<PaymentSpec> decodeSequencePayment(const eve::Value& payload) {
-    if (!payload.isObject()) return eve::Result<PaymentSpec>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("dialogue payload must be an object"),
-                                                          std::move("payload"), {}, "dialogue.sequence"));
+    if (!payload.isObject()) return eve::Result<PaymentSpec>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue payload must be an object",
+                                                          "payload", {}, "dialogue.sequence"));
     const eve::Value* payment = payload.find("payment");
     if (!payment) return eve::Result<PaymentSpec>::success(PaymentSpec{});
     return PaymentSpec::fromValue(*payment);
@@ -125,13 +125,13 @@ eve::Result<PaymentSpec> decodeSequencePayment(const eve::Value& payload) {
 
 eve::Result<std::vector<eve::StateMutation>> decodeSequenceStateMutations(const eve::Value& payload) {
     if (!payload.isObject())
-        return eve::Result<std::vector<eve::StateMutation>>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("dialogue payload must be an object"),
-                                                          std::move("payload"), {}, "dialogue.sequence"));
+        return eve::Result<std::vector<eve::StateMutation>>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue payload must be an object",
+                                                          "payload", {}, "dialogue.sequence"));
     const eve::Value* values = payload.find("stateMutations");
     if (!values) return eve::Result<std::vector<eve::StateMutation>>::success({});
     if (!values->isArray())
-        return eve::Result<std::vector<eve::StateMutation>>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("stateMutations must be an array"),
-                                                          std::move("payload.stateMutations"), {}, "dialogue.sequence"));
+        return eve::Result<std::vector<eve::StateMutation>>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "stateMutations must be an array",
+                                                          "payload.stateMutations", {}, "dialogue.sequence"));
     std::vector<eve::StateMutation> mutations;
     mutations.reserve(values->arraySize());
     for (std::size_t index = 0; index < values->arraySize(); ++index) {
@@ -202,11 +202,11 @@ eve::Result<void> validateDialogueSequenceAsset(const eve::dnut::SequenceAsset& 
             if (!validated.ok()) return validated;
         }
         if (node.type != "command" && (node.payload.find("payment") || node.payload.find("stateMutations")))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("payment and stateMutations are valid only on command nodes"),
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "payment and stateMutations are valid only on command nodes",
                                                           std::move("nodes." + node.id + ".payload"), {}, "dialogue.sequence"));
         for (const auto& route : node.routes)
             if (node.type != "choice" && (route.payload.find("payment") || route.payload.find("stateMutations")))
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("payment and stateMutations are valid only on choice routes"),
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "payment and stateMutations are valid only on choice routes",
                                                           std::move("nodes." + node.id + ".routes"), {}, "dialogue.sequence"));
     }
     return eve::Result<void>::success();

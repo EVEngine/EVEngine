@@ -70,7 +70,7 @@ bool color(const glm::vec3& value) {
 Result<void> WaterStyleConfig::validate() const {
     if (!color(deepColor) || !color(shallowColor) || !color(foamColor) || !color(reflectionTint))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("water colors must be finite and in [0, 8]"), std::move("$.colors"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "water colors must be finite and in [0, 8]", "$.colors", {}, "graphics.water"));
     if (!std::isfinite(waveSpeed) || waveSpeed < -20.0F || waveSpeed > 20.0F ||
         !std::isfinite(waveAmplitude) || waveAmplitude < 0.0F || waveAmplitude > 4.0F ||
         !std::isfinite(waveScale) || waveScale < 0.01F || waveScale > 256.0F ||
@@ -79,30 +79,30 @@ Result<void> WaterStyleConfig::validate() const {
         rippleCount < 0 || rippleCount > 8 || !std::isfinite(rippleInterval) || rippleInterval < 0.05F ||
         rippleInterval > 60.0F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid wave or ripple parameter"), std::move("$.waves"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid wave or ripple parameter", "$.waves", {}, "graphics.water"));
     if (!std::isfinite(depthDistance) || depthDistance <= 0.0F || depthDistance > 10000.0F ||
         !std::isfinite(opacity) || opacity < 0.0F || opacity > 1.0F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid depth parameter"), std::move("$.depth"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid depth parameter", "$.depth", {}, "graphics.water"));
     if (!std::isfinite(foamWidth) || foamWidth <= 0.0F || foamWidth > 1000.0F ||
         !std::isfinite(foamSoftness) || foamSoftness < 0.0F || foamSoftness > 1.0F ||
         !std::isfinite(foamStrength) || foamStrength < 0.0F || foamStrength > 4.0F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid foam parameter"), std::move("$.foam"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid foam parameter", "$.foam", {}, "graphics.water"));
     if (!std::isfinite(fresnelPower) || fresnelPower < 0.01F || fresnelPower > 32.0F ||
         !std::isfinite(reflectionIntensity) || reflectionIntensity < 0.0F || reflectionIntensity > 4.0F ||
         !std::isfinite(sunIntensity) || sunIntensity < 0.0F || sunIntensity > 8.0F ||
         !std::isfinite(screenSpaceReflectionStrength) || screenSpaceReflectionStrength < 0.0F ||
         screenSpaceReflectionStrength > 4.0F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid lighting parameter"), std::move("$.lighting"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid lighting parameter", "$.lighting", {}, "graphics.water"));
     if (!std::isfinite(refractionStrength) || refractionStrength < 0.0F || refractionStrength > 0.25F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid refraction strength"), std::move("$.refraction.strength"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid refraction strength", "$.refraction.strength", {}, "graphics.water"));
     if (!std::isfinite(causticsStrength) || causticsStrength < 0.0F || causticsStrength > 4.0F ||
         !std::isfinite(causticsScale) || causticsScale < 0.01F || causticsScale > 256.0F)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid caustics parameter"), std::move("$.caustics"), {}, "graphics.water"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid caustics parameter", "$.caustics", {}, "graphics.water"));
     return Result<void>::success();
 }
 

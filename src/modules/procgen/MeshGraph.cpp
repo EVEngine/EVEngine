@@ -108,9 +108,9 @@ MeshBuild buildTiles(const Grid2D& grid, float cellSize, float height, std::stri
 }  // namespace
 
 Result<void> MeshGraph::addNode(std::string id, std::string operation) {
-    if (id.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("node id is empty"), std::move({}), {}, "procgen.meshGraph"));
+    if (id.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "node id is empty", {}, {}, "procgen.meshGraph"));
     if (!specFor(operation)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown operation: " + operation), std::move(id), {}, "procgen.meshGraph"));
-    if (nodes_.contains(id)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("duplicate node id"), std::move(id), {}, "procgen.meshGraph"));
+    if (nodes_.contains(id)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate node id", std::move(id), {}, "procgen.meshGraph"));
     Node node;
     node.id        = id;
     node.operation = std::move(operation);
@@ -124,13 +124,13 @@ Result<void> MeshGraph::connect(std::string_view fromId, std::string_view toId, 
     const auto from = nodes_.find(std::string(fromId));
     const auto to   = nodes_.find(std::string(toId));
     if (from == nodes_.end() || to == nodes_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("connection references an unknown node"), std::move(std::string(toId)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "connection references an unknown node", std::move(std::string(toId)), {}, "procgen.meshGraph"));
     const Spec* source = specFor(from->second.operation);
     const Spec* target = specFor(to->second.operation);
     if (inputIndex < 0 || inputIndex >= target->inputs)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("input slot is outside the operation contract"), std::move(std::string(toId)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "input slot is outside the operation contract", std::move(std::string(toId)), {}, "procgen.meshGraph"));
     if (source->output != target->input[inputIndex])
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("typed graph ports are incompatible"), std::move(std::string(toId)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "typed graph ports are incompatible", std::move(std::string(toId)), {}, "procgen.meshGraph"));
     to->second.inputs[inputIndex] = std::string(fromId);
     invalidateFrom(toId);
     ++revision_;
@@ -140,7 +140,7 @@ Result<void> MeshGraph::connect(std::string_view fromId, std::string_view toId, 
 Result<void> MeshGraph::setNodeGrid(std::string_view id, const Grid2D& value) {
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end() || found->second.operation != "grid.input")
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("node is not grid.input"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "node is not grid.input", std::move(std::string(id)), {}, "procgen.meshGraph"));
     found->second.value    = value;
     found->second.hasValue = true;
     invalidateFrom(id);
@@ -151,7 +151,7 @@ Result<void> MeshGraph::setNodeGrid(std::string_view id, const Grid2D& value) {
 Result<void> MeshGraph::setNodePoints(std::string_view id, const PointSet& value) {
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end() || found->second.operation != "point.input")
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("node is not point.input"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "node is not point.input", std::move(std::string(id)), {}, "procgen.meshGraph"));
     found->second.value    = value;
     found->second.hasValue = true;
     invalidateFrom(id);
@@ -162,7 +162,7 @@ Result<void> MeshGraph::setNodePoints(std::string_view id, const PointSet& value
 Result<void> MeshGraph::setNodeMesh(std::string_view id, const MeshBuild& value) {
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end() || found->second.operation != "mesh.input")
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("node is not mesh.input"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "node is not mesh.input", std::move(std::string(id)), {}, "procgen.meshGraph"));
     found->second.value    = value;
     found->second.hasValue = true;
     invalidateFrom(id);
@@ -172,11 +172,11 @@ Result<void> MeshGraph::setNodeMesh(std::string_view id, const MeshBuild& value)
 
 Result<void> MeshGraph::setNodeFloat(std::string_view id, std::string key, float value) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown node", std::move(std::string(id)), {}, "procgen.meshGraph"));
     if (!acceptsFloat(found->second.operation, key))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("parameter is not declared by this operation: " + key), std::move(std::string(id)), {}, "procgen.meshGraph"));
     if (!std::isfinite(value))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("mesh parameter must be finite"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh parameter must be finite", std::move(std::string(id)), {}, "procgen.meshGraph"));
     found->second.floats[std::move(key)] = value;
     invalidateFrom(id);
     ++revision_;
@@ -185,7 +185,7 @@ Result<void> MeshGraph::setNodeFloat(std::string_view id, std::string key, float
 
 Result<void> MeshGraph::setNodeString(std::string_view id, std::string key, std::string value) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.meshGraph"));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown node", std::move(std::string(id)), {}, "procgen.meshGraph"));
     if (!acceptsString(found->second.operation, key))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("parameter is not declared by this operation: " + key), std::move(std::string(id)), {}, "procgen.meshGraph"));
     found->second.strings[std::move(key)] = std::move(value);
@@ -338,7 +338,7 @@ Result<void> MeshGraph::deserializeDefinition(std::string_view definition) {
     std::string        magic;
     int                version = 0;
     if (!(input >> magic >> version) || magic != "EVPCG_MESH_GRAPH" || version != 1)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid mesh graph header"), std::move({}), {}, "procgen.meshGraph"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid mesh graph header", {}, {}, "procgen.meshGraph"));
     std::string line;
     std::getline(input, line);
     bool ended = false;
@@ -356,45 +356,45 @@ Result<void> MeshGraph::deserializeDefinition(std::string_view definition) {
             if (kind == "NODE") {
                 std::string operation;
                 if (!(record >> std::quoted(id) >> std::quoted(operation)))
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid NODE record"), std::move({}), {}, "procgen.meshGraph"));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid NODE record", {}, {}, "procgen.meshGraph"));
                 return replacement.addNode(std::move(id), std::move(operation));
             }
             if (kind == "EDGE") {
                 std::string target;
                 int         slot = -1;
                 if (!(record >> std::quoted(id) >> std::quoted(target) >> slot))
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid EDGE record"), std::move({}), {}, "procgen.meshGraph"));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid EDGE record", {}, {}, "procgen.meshGraph"));
                 return replacement.connect(id, target, slot);
             }
             if (kind == "FLOAT") {
                 std::string key;
                 float       value = 0.f;
                 if (!(record >> std::quoted(id) >> std::quoted(key) >> value))
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid FLOAT record"), std::move({}), {}, "procgen.meshGraph"));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid FLOAT record", {}, {}, "procgen.meshGraph"));
                 return replacement.setNodeFloat(id, std::move(key), value);
             }
             if (kind == "STRING") {
                 std::string key;
                 std::string value;
                 if (!(record >> std::quoted(id) >> std::quoted(key) >> std::quoted(value)))
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid STRING record"), std::move({}), {}, "procgen.meshGraph"));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid STRING record", {}, {}, "procgen.meshGraph"));
                 return replacement.setNodeString(id, std::move(key), std::move(value));
             }
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("unknown mesh graph record: " + kind), std::move({}), {}, "procgen.meshGraph"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("unknown mesh graph record: " + kind), {}, {}, "procgen.meshGraph"));
         }();
         if (!result.ok()) return result;
         record >> std::ws;
-        if (!record.eof()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("trailing mesh graph record data"), std::move({}), {}, "procgen.meshGraph"));
+        if (!record.eof()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "trailing mesh graph record data", {}, {}, "procgen.meshGraph"));
     }
-    if (!ended) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("mesh graph END record is missing"), std::move({}), {}, "procgen.meshGraph"));
+    if (!ended) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "mesh graph END record is missing", {}, {}, "procgen.meshGraph"));
 
     std::unordered_map<std::string, int> states;
     const auto                           visit = [&](const auto& self, const std::string& id) -> Result<void> {
         if (states[id] == 2) return Result<void>::success();
-        if (states[id] == 1) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("cycle in serialized graph"), std::move(id), {}, "procgen.meshGraph"));
+        if (states[id] == 1) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "cycle in serialized graph", std::move(id), {}, "procgen.meshGraph"));
         states[id]       = 1;
         const auto found = replacement.nodes_.find(id);
-        if (found == replacement.nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(id), {}, "procgen.meshGraph"));
+        if (found == replacement.nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown node", std::move(id), {}, "procgen.meshGraph"));
         for (const auto& dependency : found->second.inputs) {
             if (dependency.empty()) continue;
             auto result = self(self, dependency);

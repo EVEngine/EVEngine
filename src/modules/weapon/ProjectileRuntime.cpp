@@ -53,17 +53,17 @@ ProjectileVector steer(ProjectileVector velocity, ProjectileVector desired, doub
 }  // namespace
 
 Result<void> ProjectileDefinition::validate() const {
-    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile id must not be empty"), std::move("id")));
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile id must not be empty", "id"));
     if (!std::isfinite(speed) || speed <= 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile speed must be finite and positive"), std::move("speed")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile speed must be finite and positive", "speed"));
     if (!std::isfinite(gravity) || gravity < 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile gravity must be finite and non-negative"), std::move("gravity")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile gravity must be finite and non-negative", "gravity"));
     if (!std::isfinite(maxTurnRateDegrees) || maxTurnRateDegrees < 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile turn rate must be finite and non-negative"), std::move("maxTurnRateDegrees")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile turn rate must be finite and non-negative", "maxTurnRateDegrees"));
     if (lifetime <= Duration::zero())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile lifetime must be positive"), std::move("lifetime")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile lifetime must be positive", "lifetime"));
     if (mode == ProjectileMode::Homing && maxTurnRateDegrees <= 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Homing projectile turn rate must be positive"), std::move("maxTurnRateDegrees")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing projectile turn rate must be positive", "maxTurnRateDegrees"));
     return Result<void>::success();
 }
 
@@ -71,9 +71,9 @@ ProjectileRuntime::ProjectileRuntime() : slots_(kDefaultCapacity) {}
 
 Result<void> ProjectileRuntime::configurePool(std::uint32_t capacity) {
     if (activeCount_ != 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("Projectile pool cannot be resized while active"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Projectile pool cannot be resized while active", {}));
     if (capacity == 0 || capacity > kMaximumCapacity)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile pool capacity must be in 1..1048576"), std::move("capacity")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile pool capacity must be in 1..1048576", "capacity"));
     slots_.assign(capacity, Slot{});
     return Result<void>::success();
 }
@@ -83,11 +83,11 @@ Result<void> ProjectileRuntime::validateSpawn(const ProjectileDefinition&   defi
     auto valid = definition.validate();
     if (!valid) return valid;
     if (!finite(request.position) || !finite(request.direction))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile transform must contain finite values"), std::move("request")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile transform must contain finite values", "request"));
     if (length(request.direction) <= 1e-12)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile direction must be non-zero"), std::move("direction")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile direction must be non-zero", "direction"));
     if (definition.mode == ProjectileMode::Homing && !request.target)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Homing projectile requires a target"), std::move("target")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing projectile requires a target", "target"));
     return Result<void>::success();
 }
 
@@ -164,7 +164,7 @@ Result<ProjectileUpdate> ProjectileRuntime::update(Duration delta, const IProjec
 Result<void> ProjectileRuntime::release(ProjectileHandle handle) {
     if (handle.slot >= slots_.size() || !slots_[handle.slot].state ||
         slots_[handle.slot].generation != handle.generation)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("Projectile handle is stale"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Projectile handle is stale", {}));
     slots_[handle.slot].state.reset();
     --activeCount_;
     return Result<void>::success();
@@ -194,7 +194,7 @@ ProjectileRuntimeSnapshot ProjectileRuntime::snapshot() const {
 
 Result<void> ProjectileRuntime::restore(const ProjectileRuntimeSnapshot& snapshot) {
     if (snapshot.slots.empty() || snapshot.slots.size() > 1048576)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile snapshot pool capacity is outside 1..1048576"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile snapshot pool capacity is outside 1..1048576", {}));
     std::vector<Slot> staged(snapshot.slots.size());
     std::size_t active = 0;
     for (std::size_t index = 0; index < snapshot.slots.size(); ++index) {
@@ -214,7 +214,7 @@ Result<void> ProjectileRuntime::restore(const ProjectileRuntimeSnapshot& snapsho
             !std::isfinite(state.maxTurnRateDegrees) || state.maxTurnRateDegrees < 0.0 ||
             state.age.nanoseconds() < 0 || state.lifetime.nanoseconds() <= 0 || state.age >= state.lifetime ||
             (state.mode == ProjectileMode::Homing && !state.target))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Projectile snapshot contains an invalid live slot"), std::move({})));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile snapshot contains an invalid live slot", {}));
         staged[index].state = state;
         ++active;
     }

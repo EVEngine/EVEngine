@@ -25,14 +25,14 @@ AttributeProjection::AttributeProjection(std::string subject) : values_(std::mov
 Result<void> AttributeProjection::bindOwner(ecs::EntityHandle owner) {
     if (owner.table == nullptr || ecs::try_get(owner) == nullptr)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::StaleHandle, std::move("attribute projection owner is not a live ECS generation"), std::move("owner"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::StaleHandle, "attribute projection owner is not a live ECS generation", "owner", {}, "attributes.projection"));
     if (owner_.table == nullptr) {
         owner_ = owner;
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
     if (!sameOwner(owner_, owner))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Conflict, std::move("attribute projection cannot be rebound to another owner"), std::move("owner"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::Conflict, "attribute projection cannot be rebound to another owner", "owner", {}, "attributes.projection"));
     return Result<void>::success(Status::success(StatusCode::NoOp));
 }
 
@@ -48,7 +48,7 @@ Result<void> AttributeProjection::advanceRevision() {
     const auto next = revision_.incremented();
     if (!next)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("attribute projection revision overflowed"), std::move("revision"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvariantViolation, "attribute projection revision overflowed", "revision", {}, "attributes.projection"));
     revision_ = *next;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -59,7 +59,7 @@ Result<void> AttributeProjection::initialize(std::span<const AttributeSnapshotBa
     for (const auto& entry : values) {
         if (entry.attribute.empty() || !std::isfinite(entry.base))
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute projection seed requires finite named bases"), std::move("bases"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute projection seed requires finite named bases", "bases", {}, "attributes.projection"));
         candidate.setBase(entry.attribute, entry.base);
     }
     values_      = std::move(candidate);
@@ -70,7 +70,7 @@ Result<void> AttributeProjection::initialize(std::span<const AttributeSnapshotBa
 Result<void> AttributeProjection::setBase(std::string_view attribute, double value) {
     if (attribute.empty() || !std::isfinite(value))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute base requires a non-empty finite value"), std::move("attribute"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute base requires a non-empty finite value", "attribute", {}, "attributes.projection"));
     auto next = advanceRevision();
     if (!next) return next;
     values_.setBase(std::string(attribute), value);
@@ -81,7 +81,7 @@ Result<void> AttributeProjection::setBase(std::string_view attribute, double val
 Result<void> AttributeProjection::modifyBase(std::string_view attribute, double delta) {
     if (attribute.empty() || !std::isfinite(delta))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute delta requires a non-empty finite value"), std::move("attribute"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute delta requires a non-empty finite value", "attribute", {}, "attributes.projection"));
     auto next = advanceRevision();
     if (!next) return next;
     values_.modifyBase(std::string(attribute), delta);
@@ -134,17 +134,17 @@ Result<AttributeProjectionSnapshot> AttributeProjection::snapshot(std::span<cons
 Result<void> AttributeProjection::restore(const AttributeProjectionSnapshot& snapshotValue, Revision expectedRevision) {
     if (!ownsSameLiveEntity(snapshotValue.owner))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::StaleHandle, std::move("attribute snapshot owner is stale or does not match"), std::move("owner"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::StaleHandle, "attribute snapshot owner is stale or does not match", "owner", {}, "attributes.projection"));
     if (revision_ != expectedRevision)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Conflict, std::move("attribute snapshot revision does not match current state"), std::move("revision"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::Conflict, "attribute snapshot revision does not match current state", "revision", {}, "attributes.projection"));
 
     std::vector<std::string_view> names;
     names.reserve(snapshotValue.bases.size());
     for (const auto& base : snapshotValue.bases) {
         if (base.attribute.empty() || !std::isfinite(base.base))
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute snapshot contains invalid base data"), std::move("bases"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute snapshot contains invalid base data", "bases", {}, "attributes.projection"));
         names.push_back(base.attribute);
     }
 
@@ -158,7 +158,7 @@ Result<void> AttributeProjection::restore(const AttributeProjectionSnapshot& sna
         auto removed = candidate.removeModifier(id);
         if (!removed)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("attribute snapshot could not remove candidate modifier"), std::move("modifiers"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvariantViolation, "attribute snapshot could not remove candidate modifier", "modifiers", {}, "attributes.projection"));
     }
     for (const auto& base : snapshotValue.bases) candidate.setBase(base.attribute, base.base);
 
@@ -168,11 +168,11 @@ Result<void> AttributeProjection::restore(const AttributeProjectionSnapshot& sna
     for (const auto& modifier : modifiers) {
         if (!contains(names, modifier.attribute))
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute snapshot modifier is outside its allow-list"), std::move("modifiers"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute snapshot modifier is outside its allow-list", "modifiers", {}, "attributes.projection"));
         auto added = candidate.addModifier(modifier);
         if (!added)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute snapshot contains an invalid modifier"), std::move("modifiers"), {}, "attributes.projection"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute snapshot contains an invalid modifier", "modifiers", {}, "attributes.projection"));
     }
 
     auto next = advanceRevision();

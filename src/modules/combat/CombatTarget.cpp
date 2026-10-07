@@ -26,7 +26,7 @@ std::vector<CombatTargetCandidate> sortedUnique(std::vector<CombatTargetCandidat
 
 Result<void> CombatTargetRuntime::registerOwner(SubjectRef owner) {
     if (!owner.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("owner is nil"), std::move("owner")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "owner is nil", "owner"));
     locks_.emplace(owner.format(), CombatLockState{owner, std::nullopt, false});
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -104,7 +104,7 @@ Result<CombatLockState> CombatTargetRuntime::clear(SubjectRef owner) {
 
 Result<void> CombatTargetRuntime::forgetTarget(SubjectRef target) {
     if (!target.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("target is nil"), std::move("target")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "target is nil", "target"));
     for (auto& [key, lock] : locks_) {
         (void)key;
         if (lock.target && *lock.target == target) {

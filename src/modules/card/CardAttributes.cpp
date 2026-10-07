@@ -36,7 +36,7 @@ std::array<std::string_view, 2> selectedAttributes() {
 eve::Result<void> CardAttributeAdapter::ensure(CardData& card) {
     auto bound = card.attributes()->values.bindOwner(ecs::handle_of(&card));
     if (!bound) return eve::Result<void>::failure(
-        eve::Diagnostic::error(bound.code(), std::move("card attribute owner could not be bound"), std::move("owner"), {}, "card.attributes"));
+        eve::Diagnostic::error(bound.code(), "card attribute owner could not be bound", "owner", {}, "card.attributes"));
     if (!card.attributes()->values.initialized()) {
         const std::array<eve::attributes::AttributeSnapshotBase, 2> bases = {
             eve::attributes::AttributeSnapshotBase{std::string(attackAttribute),
@@ -46,7 +46,7 @@ eve::Result<void> CardAttributeAdapter::ensure(CardData& card) {
         auto initialized = card.attributes()->values.initialize(bases);
         if (!initialized)
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(initialized.code(), std::move("card attribute state could not be initialized"), std::move("attributes"), {}, "card.attributes"));
+        eve::Diagnostic::error(initialized.code(), "card attribute state could not be initialized", "attributes", {}, "card.attributes"));
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
 }
@@ -54,20 +54,20 @@ eve::Result<void> CardAttributeAdapter::ensure(CardData& card) {
 eve::Result<void> CardAttributeAdapter::project(CardData& card) {
     auto ready = ensure(card);
     if (!ready) return eve::Result<void>::failure(
-        eve::Diagnostic::error(ready.code(), std::move("card attributes are not available"), std::move("attributes"), {}, "card.attributes"));
+        eve::Diagnostic::error(ready.code(), "card attributes are not available", "attributes", {}, "card.attributes"));
 
     auto attack = card.attributes()->values.getFinal(attackAttribute);
     if (!attack) return eve::Result<void>::failure(
-        eve::Diagnostic::error(attack.code(), std::move("card attack attribute could not be read"), std::move("attack"), {}, "card.attributes"));
+        eve::Diagnostic::error(attack.code(), "card attack attribute could not be read", "attack", {}, "card.attributes"));
     auto health = card.attributes()->values.getFinal(healthAttribute);
     if (!health) return eve::Result<void>::failure(
-        eve::Diagnostic::error(health.code(), std::move("card health attribute could not be read"), std::move("health"), {}, "card.attributes"));
+        eve::Diagnostic::error(health.code(), "card health attribute could not be read", "health", {}, "card.attributes"));
     const double values[] = {attack.value(), health.value()};
     for (const double value : values) {
         if (!std::isfinite(value) || value < static_cast<double>(std::numeric_limits<int>::min()) ||
             value > static_cast<double>(std::numeric_limits<int>::max()))
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("card attribute cannot be represented by the legacy integer projection"), std::move("stats"), {}, "card.attributes"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "card attribute cannot be represented by the legacy integer projection", "stats", {}, "card.attributes"));
     }
     card.stats()->attack = static_cast<int>(std::llround(attack.value()));
     card.stats()->health = static_cast<int>(std::llround(health.value()));
@@ -96,10 +96,10 @@ eve::Result<double> CardAttributeAdapter::read(CardData& card, std::string_view 
 eve::Result<void> CardAttributeAdapter::setBase(CardData& card, std::string_view attribute, double value) {
     if (!selected(attribute))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move("card attribute is outside the selective combat projection"), std::move("attribute"), {}, "card.attributes"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "card attribute is outside the selective combat projection", "attribute", {}, "card.attributes"));
     auto ready = ensure(card);
     if (!ready) return eve::Result<void>::failure(
-        eve::Diagnostic::error(ready.code(), std::move("card attributes are not available"), std::move("attributes"), {}, "card.attributes"));
+        eve::Diagnostic::error(ready.code(), "card attributes are not available", "attributes", {}, "card.attributes"));
     auto changed = card.attributes()->values.setBase(attribute, value);
     if (!changed) return changed;
     return project(card);
@@ -144,7 +144,7 @@ eve::Result<void> CardAttributeAdapter::restore(CardData&                       
                                                 eve::Revision                                       expectedRevision) {
     auto ready = ensure(card);
     if (!ready) return eve::Result<void>::failure(
-        eve::Diagnostic::error(ready.code(), std::move("card attributes are not available"), std::move("attributes"), {}, "card.attributes"));
+        eve::Diagnostic::error(ready.code(), "card attributes are not available", "attributes", {}, "card.attributes"));
     auto restored = card.attributes()->values.restore(snapshotValue, expectedRevision);
     if (!restored) return restored;
     return project(card);

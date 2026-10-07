@@ -421,7 +421,7 @@ std::function<eve::Result<void>(const SequenceNode&)> equipRequiresSlot() {
             const eve::Value* slot = node.payload.find("slot");
             if (!slot || !slot->isString() || slot->asString().empty())
                 return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, std::move("step 'equipment' requires 'slot' when 'equip' is set"), {}, {}, "rpg.dnut-story"));
+        eve::DiagnosticCode::InvalidArgument, "step 'equipment' requires 'slot' when 'equip' is set", {}, {}, "rpg.dnut-story"));
         }
         return eve::Result<void>::success();
     };
@@ -660,7 +660,7 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
     impl_->binding = binding;
     if (!impl_->snapshot(storyId))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), "storyId", {}, "rpg.dnut-story"));
 
     if (binding && binding->gameState) {
         const std::string scope = completionScope(storyId);
@@ -668,12 +668,12 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
         const double      completed    = hasCompleted ? binding->gameState->getSelfVariable(scope, "completed") : 0.0;
         if (hasCompleted && completed != 0.0 && completed != 1.0)
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("persisted story-completion flag is invalid"), std::move(scope + ".completed"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "persisted story-completion flag is invalid", std::move(scope + ".completed"), {}, "rpg.dnut-story"));
         if (completed == 1.0) {
             const auto definition = impl_->assets.find(storyId);
             if (definition != impl_->assets.end() && !definition->second.repeatable)
                 return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("non-repeatable story '" + storyId + "' is already complete"), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("non-repeatable story '" + storyId + "' is already complete"), "storyId", {}, "rpg.dnut-story"));
             binding->gameState->setSelfVariable(scope, "completed", 0.0);
             binding->gameState->clearSelfString(scope, "cursor");
         }
@@ -683,7 +683,7 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
             auto              parsed  = eve::Value::fromJson(encoded);
             if (!parsed.ok())
                 return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("persisted story cursor is not valid JSON"), std::move(scope + ".cursor"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "persisted story cursor is not valid JSON", std::move(scope + ".cursor"), {}, "rpg.dnut-story"));
             impl_->storyId = storyId;
             impl_->configureRuntime();
             if (auto restored = impl_->runtime.restoreState(parsed.value()); !restored.ok()) {
@@ -703,13 +703,13 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
     const auto definition = impl_->assets.find(storyId);
     if (definition == impl_->assets.end())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), "storyId", {}, "rpg.dnut-story"));
     if (auto started = impl_->runtime.start(&definition->second); !started.ok()) {
         const auto* diagnostic = started.error();
         const std::string message = diagnostic ? diagnostic->message() : "story could not start";
         stop();
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message), "storyId", {}, "rpg.dnut-story"));
     }
     impl_->publishCompletion();
     return eve::Result<void>::success();
@@ -718,11 +718,11 @@ eve::Result<void> RpgStorySession::begin(const std::string& storyId, RpgStoryBin
 eve::Result<void> RpgStorySession::advance() {
     if (!impl_->runtime.isActive())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("story session is not active"), std::move("advance"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "story session is not active", "advance", {}, "rpg.dnut-story"));
     if (auto result = impl_->runtime.advance(); !result.ok()) {
         const auto* diagnostic = result.error();
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "story could not advance"), std::move("advance"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "story could not advance"), "advance", {}, "rpg.dnut-story"));
     }
     impl_->publishCompletion();
     return eve::Result<void>::success();
@@ -731,11 +731,11 @@ eve::Result<void> RpgStorySession::advance() {
 eve::Result<void> RpgStorySession::select(const std::string& routeLabel) {
     if (!impl_->runtime.isActive())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("story session is not active"), std::move("select"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "story session is not active", "select", {}, "rpg.dnut-story"));
     if (auto result = impl_->runtime.select(routeLabel); !result.ok()) {
         const auto* diagnostic = result.error();
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "choice could not be selected"), std::move("select"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "choice could not be selected"), "select", {}, "rpg.dnut-story"));
     }
     impl_->publishCompletion();
     return eve::Result<void>::success();
@@ -744,11 +744,11 @@ eve::Result<void> RpgStorySession::select(const std::string& routeLabel) {
 eve::Result<void> RpgStorySession::resume(eve::Value result) {
     if (!impl_->runtime.isActive())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("story session is not active"), std::move("resume"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "story session is not active", "resume", {}, "rpg.dnut-story"));
     if (auto applied = impl_->runtime.resumeStep(std::move(result)); !applied.ok()) {
         const auto* diagnostic = applied.error();
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "story could not resume"), std::move("resume"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(diagnostic ? diagnostic->message() : "story could not resume"), "resume", {}, "rpg.dnut-story"));
     }
     impl_->publishCompletion();
     return eve::Result<void>::success();
@@ -793,7 +793,7 @@ eve::Result<void> RpgStorySession::restoreState(const std::string& storyId, cons
     impl_->binding = binding;
     if (!impl_->snapshot(storyId))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("story '" + storyId + "' is not published"), "storyId", {}, "rpg.dnut-story"));
     impl_->storyId = storyId;
     impl_->configureRuntime();
     if (auto restored = impl_->runtime.restoreState(in); !restored.ok()) {
@@ -801,7 +801,7 @@ eve::Result<void> RpgStorySession::restoreState(const std::string& storyId, cons
         const std::string message = diagnostic ? diagnostic->message() : "story cursor could not be restored";
         stop();
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message), std::move("storyId"), {}, "rpg.dnut-story"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message), "storyId", {}, "rpg.dnut-story"));
     }
     return eve::Result<void>::success();
 }

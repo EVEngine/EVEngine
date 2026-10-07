@@ -9,11 +9,11 @@ namespace eve::tactics {
 
 Result<void> BoardState::addCell(Cell cellValue, CellState state) {
     if (state.moveCost <= 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics cell movement cost must be positive"), std::move("cell.moveCost")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics cell movement cost must be positive", "cell.moveCost"));
     std::sort(state.tags.begin(), state.tags.end());
     state.tags.erase(std::unique(state.tags.begin(), state.tags.end()), state.tags.end());
     if (cells_.contains(cellValue))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics board cell already exists"), std::move("cell")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics board cell already exists", "cell"));
     cells_.emplace(cellValue, std::move(state));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -30,17 +30,17 @@ Result<CellState> BoardState::cell(Cell cellValue) const {
 
 Result<void> BoardState::place(SubjectRef subject, Cell cellValue) {
     if (!subject.isValid())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics placement requires a valid subject"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics placement requires a valid subject", "subject"));
     const auto target = cells_.find(cellValue);
     if (target == cells_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics placement cell does not exist"), std::move("cell")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics placement cell does not exist", "cell"));
     if (!target->second.passable)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics placement cell is not passable"), std::move("cell")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics placement cell is not passable", "cell"));
     if (occupantByCell_.contains(cellValue))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics placement cell is occupied"), std::move("cell")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics placement cell is occupied", "cell"));
     const std::string key = subjectKey(subject);
     if (cellBySubject_.contains(key))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics subject is already placed"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics subject is already placed", "subject"));
     occupantByCell_.emplace(cellValue, subject);
     cellBySubject_.emplace(key, cellValue);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -48,18 +48,18 @@ Result<void> BoardState::place(SubjectRef subject, Cell cellValue) {
 
 Result<void> BoardState::move(SubjectRef subject, Cell destination) {
     if (!subject.isValid())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics movement requires a valid subject"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics movement requires a valid subject", "subject"));
     const std::string key    = subjectKey(subject);
     const auto        source = cellBySubject_.find(key);
     if (source == cellBySubject_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics movement subject is not placed"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics movement subject is not placed", "subject"));
     const auto target = cells_.find(destination);
     if (target == cells_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics movement destination does not exist"), std::move("destination")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics movement destination does not exist", "destination"));
     if (!target->second.passable)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics movement destination is not passable"), std::move("destination")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics movement destination is not passable", "destination"));
     if (occupantByCell_.contains(destination))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics movement destination is occupied"), std::move("destination")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics movement destination is occupied", "destination"));
     const Cell oldCell = source->second;
     occupantByCell_.erase(oldCell);
     occupantByCell_.emplace(destination, subject);
@@ -69,10 +69,10 @@ Result<void> BoardState::move(SubjectRef subject, Cell destination) {
 
 Result<void> BoardState::remove(SubjectRef subject) {
     if (!subject.isValid())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics removal requires a valid subject"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics removal requires a valid subject", "subject"));
     const auto found = cellBySubject_.find(subjectKey(subject));
     if (found == cellBySubject_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics subject is not placed"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics subject is not placed", "subject"));
     occupantByCell_.erase(found->second);
     cellBySubject_.erase(found);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -128,17 +128,17 @@ std::vector<Cell> BoardState::neighbours(Cell origin) const {
 
 Result<void> BoardState::addEdge(Cell from, Cell to, EdgeState state) {
     if (!cells_.contains(from))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics edge source cell does not exist"), std::move("board.edge.from")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics edge source cell does not exist", "board.edge.from"));
     if (!cells_.contains(to))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics edge destination cell does not exist"), std::move("board.edge.to")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "tactics edge destination cell does not exist", "board.edge.to"));
     const std::vector<Cell> adjacent = neighbours(from);
     if (std::find(adjacent.begin(), adjacent.end(), to) == adjacent.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics edge endpoints are not adjacent"), std::move("board.edge")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics edge endpoints are not adjacent", "board.edge"));
     if (state.extraCost < 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics edge extra cost must be non-negative"), std::move("board.edge.extraCost")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics edge extra cost must be non-negative", "board.edge.extraCost"));
     const std::pair<Cell, Cell> key{from, to};
     if (edges_.contains(key))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics edge is already declared"), std::move("board.edge")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics edge is already declared", "board.edge"));
     edges_.emplace(key, std::move(state));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -167,16 +167,16 @@ std::vector<BoardEdgeRecord> BoardState::edgeRecords() const {
 Result<void> BoardState::validateInvariants() const {
     for (const auto& [key, state] : edges_) {
         if (!cells_.contains(key.first) || !cells_.contains(key.second))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics edge references a missing cell"), std::move("board.edge")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics edge references a missing cell", "board.edge"));
     }
     if (occupantByCell_.size() != cellBySubject_.size())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics occupancy indexes differ in size"), std::move("board")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics occupancy indexes differ in size", "board"));
     for (const auto& [cellValue, subject] : occupantByCell_) {
         if (!cells_.contains(cellValue))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics occupancy references a missing cell"), std::move("board.occupancy")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics occupancy references a missing cell", "board.occupancy"));
         const auto reverse = cellBySubject_.find(subjectKey(subject));
         if (reverse == cellBySubject_.end() || reverse->second != cellValue)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics occupancy reverse index is inconsistent"), std::move("board.occupancy")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics occupancy reverse index is inconsistent", "board.occupancy"));
     }
     return Result<void>::success(Status::success(StatusCode::NoOp));
 }
@@ -185,7 +185,7 @@ std::string BoardState::subjectKey(SubjectRef subject) { return subject.format()
 
 Result<void> TurnResourceSpec::validate() const {
     if (actionPoints < 0 || movePoints < 0 || reactionPoints < 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics consumable turn resources must be non-negative"), std::move("turnResources")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics consumable turn resources must be non-negative", "turnResources"));
     return Result<void>::success(Status::success(StatusCode::NoOp));
 }
 

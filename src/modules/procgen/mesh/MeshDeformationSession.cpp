@@ -52,7 +52,7 @@ void recalculateNormals(MeshBuild& mesh) {
 Result<void> MeshDeformationSession::initializeResult(const MeshBuild& mesh) {
     if (!validMesh(mesh))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("sculpting source mesh is empty or invalid"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "sculpting source mesh is empty or invalid", "mesh", {}, "procgen.meshDeformationSession"));
     original_           = mesh;
     current_            = mesh;
     surfaceEquilibrium_ = mesh.positions();
@@ -79,10 +79,10 @@ void MeshDeformationSession::invalidateImpactVertexBlocks() noexcept {
 Result<void> MeshDeformationSession::prepareImpactVertexBlocksResult(int divisionsPerAxis) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("damage session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "damage session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if (divisionsPerAxis < 1 || divisionsPerAxis > 128)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("impact block divisions must be in [1, 128]"), std::move("divisionsPerAxis"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "impact block divisions must be in [1, 128]", "divisionsPerAxis", {}, "procgen.meshDeformationSession"));
     const auto& positions = current_.positions();
     impactBlockMinX_ = impactBlockMaxX_ = positions[0];
     impactBlockMinY_ = impactBlockMaxY_ = positions[1];
@@ -154,12 +154,12 @@ Result<void> MeshDeformationSession::applyBrushResult(std::string_view mode, flo
                                                       float directionZ) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("sculpting session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "sculpting session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if ((mode != "inflate" && mode != "dent" && mode != "flatten" && mode != "smooth" && mode != "directional") ||
         !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(radius) ||
         !std::isfinite(strength) || !std::isfinite(falloff) || radius <= 0.f || falloff <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid sculpting brush parameters"), std::move("brush"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid sculpting brush parameters", "brush", {}, "procgen.meshDeformationSession"));
     MeshBuild                                      candidate       = current_;
     auto&                                          positions       = candidate.positions();
     const auto                                     sourcePositions = current_.positions();
@@ -178,7 +178,7 @@ Result<void> MeshDeformationSession::applyBrushResult(std::string_view mode, flo
     float directionLength = std::sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
     if (mode == "directional" && directionLength < 1e-7f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("directional brush requires a direction"), std::move("direction"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "directional brush requires a direction", "direction", {}, "procgen.meshDeformationSession"));
     directionLength = std::max(directionLength, 1e-7f);
     for (int vertex = 0; vertex < candidate.getVertexCount(); ++vertex) {
         const std::size_t base = static_cast<std::size_t>(vertex) * 3u;
@@ -226,20 +226,20 @@ Result<void> MeshDeformationSession::applyBrushGpuResult(std::string_view mode, 
                                                          float directionY, float directionZ) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("sculpting session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "sculpting session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if ((mode != "inflate" && mode != "dent" && mode != "flatten" && mode != "smooth" && mode != "directional") ||
         !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(radius) ||
         !std::isfinite(strength) || !std::isfinite(falloff) || radius <= 0.f || falloff <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid GPU sculpting brush parameters"), std::move("brush"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid GPU sculpting brush parameters", "brush", {}, "procgen.meshDeformationSession"));
     const float directionLength = std::sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
     if (mode == "directional" && directionLength < 1e-7f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("directional brush requires a direction"), std::move("direction"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "directional brush requires a direction", "direction", {}, "procgen.meshDeformationSession"));
     auto* provider = eve::cap::query<IMeshDeformationCompute>();
     if (!provider)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, std::move("GPU mesh deformation provider is not installed"), std::move("backend"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::Unsupported, "GPU mesh deformation provider is not installed", "backend", {}, "procgen.meshDeformationSession"));
 
     MeshDeformationComputeRequest request;
     request.positions = current_.positions();
@@ -278,7 +278,7 @@ Result<void> MeshDeformationSession::applyBrushGpuResult(std::string_view mode, 
     if (deformed.value().size() != current_.positions().size() ||
         !std::all_of(deformed.value().begin(), deformed.value().end(), [](float value) { return std::isfinite(value); }))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Failed, std::move("GPU returned an invalid mesh deformation"), std::move("backend"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::Failed, "GPU returned an invalid mesh deformation", "backend", {}, "procgen.meshDeformationSession"));
     MeshBuild candidate = current_;
     candidate.positions() = std::move(deformed).takeValue();
     recalculateNormals(candidate);
@@ -295,14 +295,14 @@ Result<void> MeshDeformationSession::applyImpactResult(float x, float y, float z
                                                        float maxDisplacement) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("damage session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "damage session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     const float impulseLength = std::sqrt(impulseX * impulseX + impulseY * impulseY + impulseZ * impulseZ);
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(impulseLength) ||
         !std::isfinite(radius) || !std::isfinite(plasticity) || !std::isfinite(hardness) ||
         !std::isfinite(maxDisplacement) || impulseLength <= 1e-7f || radius <= 0.f || plasticity < 0.f ||
         hardness <= 0.f || maxDisplacement <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid mesh impact parameters"), std::move("impact"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid mesh impact parameters", "impact", {}, "procgen.meshDeformationSession"));
 
     MeshBuild   candidate       = current_;
     auto&       positions       = candidate.positions();
@@ -348,18 +348,18 @@ Result<void> MeshDeformationSession::applyImpactGpuResult(float x, float y, floa
                                                           float hardness, float maxDisplacement) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("damage session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "damage session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     const float impulseLength = std::sqrt(impulseX * impulseX + impulseY * impulseY + impulseZ * impulseZ);
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(impulseLength) ||
         !std::isfinite(radius) || !std::isfinite(plasticity) || !std::isfinite(hardness) ||
         !std::isfinite(maxDisplacement) || impulseLength <= 1e-7f || radius <= 0.f || plasticity < 0.f ||
         hardness <= 0.f || maxDisplacement <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid GPU mesh impact parameters"), std::move("impact"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid GPU mesh impact parameters", "impact", {}, "procgen.meshDeformationSession"));
     auto* provider = eve::cap::query<IMeshDeformationCompute>();
     if (!provider)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, std::move("GPU mesh deformation provider is not installed"), std::move("backend"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::Unsupported, "GPU mesh deformation provider is not installed", "backend", {}, "procgen.meshDeformationSession"));
     MeshDeformationComputeRequest request;
     request.operation = MeshDeformationComputeOperation::Impact;
     request.positions = current_.positions(); request.normals = current_.normals(); request.baseline = original_.positions();
@@ -372,7 +372,7 @@ Result<void> MeshDeformationSession::applyImpactGpuResult(float x, float y, floa
     if (deformed.value().size() != current_.positions().size() ||
         !std::all_of(deformed.value().begin(), deformed.value().end(), [](float value) { return std::isfinite(value); }))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Failed, std::move("GPU returned invalid impact positions"), std::move("backend"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::Failed, "GPU returned invalid impact positions", "backend", {}, "procgen.meshDeformationSession"));
     MeshBuild candidate = current_;
     candidate.positions() = std::move(deformed).takeValue();
     recalculateNormals(candidate);
@@ -387,7 +387,7 @@ Result<void> MeshDeformationSession::applySurfaceContactResult(float x, float y,
                                                                float falloff, float plasticity) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("interactive surface is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "interactive surface is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     const float normalLength = std::sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(normalLength) ||
         !std::isfinite(velocityX) || !std::isfinite(velocityY) || !std::isfinite(velocityZ) || !std::isfinite(radius) ||
@@ -395,7 +395,7 @@ Result<void> MeshDeformationSession::applySurfaceContactResult(float x, float y,
         normalLength <= 1e-7f || radius <= 0.f || depth < 0.f || drag < 0.f || falloff <= 0.f || plasticity < 0.f ||
         plasticity > 1.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid interactive surface contact"), std::move("contact"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid interactive surface contact", "contact", {}, "procgen.meshDeformationSession"));
     normalX /= normalLength;
     normalY /= normalLength;
     normalZ /= normalLength;
@@ -435,10 +435,10 @@ Result<void> MeshDeformationSession::applySurfaceContactResult(float x, float y,
 Result<void> MeshDeformationSession::recoverSurfaceResult(float dt, float recoveryRate) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("interactive surface is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "interactive surface is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if (!std::isfinite(dt) || !std::isfinite(recoveryRate) || dt < 0.f || recoveryRate <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid interactive surface recovery step"), std::move("recovery"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid interactive surface recovery step", "recovery", {}, "procgen.meshDeformationSession"));
     if (dt == 0.f) return Result<void>::success();
     MeshBuild   candidate = current_;
     auto&       positions = candidate.positions();
@@ -461,12 +461,12 @@ Result<void> MeshDeformationSession::applySlimeImpulseResult(float x, float y, f
                                                              float impulseZ, float radius, float falloff) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("mesh slime is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh slime is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(impulseX) ||
         !std::isfinite(impulseY) || !std::isfinite(impulseZ) || !std::isfinite(radius) || !std::isfinite(falloff) ||
         radius <= 0.f || falloff <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid mesh slime impulse"), std::move("slime.impulse"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid mesh slime impulse", "slime.impulse", {}, "procgen.meshDeformationSession"));
     auto        candidateVelocity = surfaceVelocity_;
     const auto& positions         = current_.positions();
     for (int vertex = 0; vertex < current_.getVertexCount(); ++vertex) {
@@ -488,11 +488,11 @@ Result<void> MeshDeformationSession::applySlimeImpulseResult(float x, float y, f
 Result<void> MeshDeformationSession::stepSlimeResult(float dt, float stiffness, float damping, float maxSpeed) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("mesh slime is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh slime is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if (!std::isfinite(dt) || !std::isfinite(stiffness) || !std::isfinite(damping) || !std::isfinite(maxSpeed) ||
         dt <= 0.f || stiffness < 0.f || damping < 0.f || maxSpeed <= 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid mesh slime simulation step"), std::move("slime.step"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid mesh slime simulation step", "slime.step", {}, "procgen.meshDeformationSession"));
     MeshBuild   candidate     = current_;
     auto&       positions     = candidate.positions();
     auto        velocity      = surfaceVelocity_;
@@ -528,12 +528,12 @@ Result<void> MeshDeformationSession::configureColliderRefreshResult(std::string_
                                                                     float offsetX, float offsetY, float offsetZ) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("collider refresh session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "collider refresh session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if ((mode != "once" && mode != "everyFrame" && mode != "interval" && mode != "manual") ||
         !std::isfinite(intervalSeconds) || !std::isfinite(offsetX) || !std::isfinite(offsetY) ||
         !std::isfinite(offsetZ) || (mode == "interval" && intervalSeconds <= 0.f) || intervalSeconds < 0.f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("invalid collider refresh configuration"), std::move("colliderRefresh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid collider refresh configuration", "colliderRefresh", {}, "procgen.meshDeformationSession"));
     colliderRefreshMode_        = mode;
     colliderRefreshInterval_    = intervalSeconds;
     colliderRefreshAccumulator_ = 0.f;
@@ -549,7 +549,7 @@ Result<void> MeshDeformationSession::configureColliderRefreshResult(std::string_
 Result<void> MeshDeformationSession::requestColliderRefreshResult() {
     if (!initialized_ || !colliderRefreshConfigured_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("collider refresh is not configured"), std::move("colliderRefresh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "collider refresh is not configured", "colliderRefresh", {}, "procgen.meshDeformationSession"));
     colliderRefreshPending_ = true;
     return Result<void>::success();
 }
@@ -670,13 +670,13 @@ Result<MeshVertexSelectionCenter> MeshDeformationSession::selectedVertexCenterRe
 Result<void> MeshDeformationSession::moveSelectedVerticesResult(float x, float y, float z) {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("vertex editor is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "vertex editor is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("vertex move delta must be finite"), std::move("move"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "vertex move delta must be finite", "move", {}, "procgen.meshDeformationSession"));
     if (selectedVertexCount() == 0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("vertex move requires a selection"), std::move("selection"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "vertex move requires a selection", "selection", {}, "procgen.meshDeformationSession"));
     MeshBuild candidate = current_;
     auto&     positions = candidate.positions();
     for (int vertex = 0; vertex < candidate.getVertexCount(); ++vertex) {
@@ -701,16 +701,16 @@ Result<void> MeshDeformationSession::manipulateSelectedVerticesResult(std::strin
                                                                       float distance) {
     if (mode != "pull" && mode != "push" && mode != "grab")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("vertex manipulation mode must be pull, push, or grab"), std::move("mode"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "vertex manipulation mode must be pull, push, or grab", "mode", {}, "procgen.meshDeformationSession"));
     if (!std::isfinite(originX) || !std::isfinite(originY) || !std::isfinite(originZ) || !std::isfinite(directionX) ||
         !std::isfinite(directionY) || !std::isfinite(directionZ) || !std::isfinite(distance))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("vertex manipulation values must be finite"), std::move("input"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "vertex manipulation values must be finite", "input", {}, "procgen.meshDeformationSession"));
     if (mode == "grab")
         return moveSelectedVerticesResult(directionX * distance, directionY * distance, directionZ * distance);
     if (!initialized_ || selectedVertexCount() == 0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("vertex manipulation requires a selection"), std::move("selection"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "vertex manipulation requires a selection", "selection", {}, "procgen.meshDeformationSession"));
     MeshBuild   candidate = current_;
     auto&       positions = candidate.positions();
     const float sign      = mode == "push" ? -1.f : 1.f;
@@ -736,7 +736,7 @@ Result<void> MeshDeformationSession::manipulateSelectedVerticesResult(std::strin
 Result<void> MeshDeformationSession::restoreResult() {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("sculpting session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "sculpting session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     current_            = original_;
     surfaceEquilibrium_ = original_.positions();
     surfaceVelocity_.assign(surfaceEquilibrium_.size(), 0.f);
@@ -749,7 +749,7 @@ Result<void> MeshDeformationSession::restoreResult() {
 Result<void> MeshDeformationSession::bakeResult() {
     if (!initialized_)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("sculpting session is not initialized"), std::move("mesh"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "sculpting session is not initialized", "mesh", {}, "procgen.meshDeformationSession"));
     original_           = current_;
     surfaceEquilibrium_ = current_.positions();
     surfaceVelocity_.assign(surfaceEquilibrium_.size(), 0.f);
@@ -761,7 +761,7 @@ Result<void> MeshDeformationSession::bakeResult() {
 
 Result<void> MeshDeformationSession::undoResult() {
     if (undo_.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, std::move("sculpting undo history is empty"), std::move("undo"), {}, "procgen.meshDeformationSession"));
+        Diagnostic::error(DiagnosticCode::NotFound, "sculpting undo history is empty", "undo", {}, "procgen.meshDeformationSession"));
     current_            = std::move(undo_.back().mesh);
     surfaceEquilibrium_ = std::move(undo_.back().equilibrium);
     surfaceVelocity_    = std::move(undo_.back().velocity);

@@ -36,19 +36,19 @@ const SequenceNode* SequenceAsset::findNode(const std::string& nodeId) const noe
 eve::Result<void> SequenceAsset::validate() const {
     if (id.empty())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence asset has no id"), std::move("id"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence asset has no id", "id", {}, "dnut.sequence"));
     if (entry.empty())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence asset has no entry node"), std::move("entry"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence asset has no entry node", "entry", {}, "dnut.sequence"));
     if (version < 1)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence asset version must be positive"), std::move("version"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence asset version must be positive", "version", {}, "dnut.sequence"));
 
     std::unordered_set<std::string> parameterNames;
     for (const auto& parameter : parameters) {
         if (parameter.name.empty())
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence parameter has an empty name"), std::move("parameters"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence parameter has an empty name", "parameters", {}, "dnut.sequence"));
         if (!parameterNames.insert(parameter.name).second)
             return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, std::move("duplicate sequence parameter '" + parameter.name + "'"), std::move("parameters." + parameter.name), {}, "dnut.sequence"));
@@ -61,7 +61,7 @@ eve::Result<void> SequenceAsset::validate() const {
     for (const auto& node : nodes) {
         if (node.id.empty())
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence node has an empty id"), std::move("nodes"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence node has an empty id", "nodes", {}, "dnut.sequence"));
         if (!ids.insert(node.id).second)
             return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, std::move("duplicate sequence node id '" + node.id + "'"), std::move("nodes." + node.id), {}, "dnut.sequence"));
@@ -74,13 +74,13 @@ eve::Result<void> SequenceAsset::validate() const {
         for (const auto& route : node.routes) {
             if (!route.payload.isObject())
                 return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("sequence route payload must be an object"), std::move("nodes." + node.id + ".routes"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "sequence route payload must be an object", std::move("nodes." + node.id + ".routes"), {}, "dnut.sequence"));
         }
     }
 
     if (!findNode(entry))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("entry node '" + entry + "' does not exist"), std::move("entry"), {}, "dnut.sequence"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("entry node '" + entry + "' does not exist"), "entry", {}, "dnut.sequence"));
 
     const auto checkReference = [&](const std::string& owner, const std::string& field,
                                     const std::string& reference) -> eve::Result<void> {

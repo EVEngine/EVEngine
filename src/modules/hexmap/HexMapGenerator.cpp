@@ -1219,14 +1219,14 @@ void finalizeGrid(HexMap& map) { map.markAllChunksDirty(); }
 }  // namespace
 
 Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings) {
-    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cannot generate a hex map into an empty grid"), "hexmap"));
+    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "cannot generate a hex map into an empty grid", "hexmap"));
 
     const NormalizedSettings normalized = normalize(settings);
 
     std::vector<MapRegion> regions;
     createRegions(normalized.regionCount, map.cellCountX(), map.cellCountZ(), normalized, regions);
     if (!regionsUsable(regions, normalized.regionCount))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("generator regions do not fit the hex map; enlarge the map or shrink the borders"), "hexmap"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "generator regions do not fit the hex map; enlarge the map or shrink the borders", "hexmap"));
 
     GeneratorScratch scratch;
     scratch.search.resize(map.cellCount());

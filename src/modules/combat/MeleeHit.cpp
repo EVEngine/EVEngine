@@ -124,49 +124,49 @@ std::string hurtKey(SubjectRef subject, std::string_view hurtboxId) {
 
 Result<void> MeleeShape::validate() const {
     if (!std::isfinite(radius) || radius <= 0.0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("melee shape radius is invalid"), std::move("radius")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "melee shape radius is invalid", "radius"));
     if (kind == MeleeShapeKind::Capsule && (!std::isfinite(halfHeight) || halfHeight < 0.0))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("melee capsule halfHeight is invalid"), std::move("halfHeight")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "melee capsule halfHeight is invalid", "halfHeight"));
     if (kind != MeleeShapeKind::Sphere && kind != MeleeShapeKind::Capsule)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("melee shape kind is invalid"), std::move("kind")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "melee shape kind is invalid", "kind"));
     return Result<void>::success();
 }
 
 Result<void> MeleePose::validate() const {
     if (!finitePoint(position) || !std::isfinite(yawRadians)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("melee pose is invalid"), std::move("pose")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "melee pose is invalid", "pose"));
     return Result<void>::success();
 }
 
 Result<void> MeleeHurtboxDefinition::validate() const {
     if (!subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hurtbox subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hurtbox subject is nil", "subject"));
     if (hurtboxId.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hurtbox id is empty"), std::move("hurtboxId")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hurtbox id is empty", "hurtboxId"));
     if (bodyPart.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hurtbox body part is empty"), std::move("bodyPart")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hurtbox body part is empty", "bodyPart"));
     return shape.validate();
 }
 
 Result<void> MeleeHitboxDefinition::validate() const {
     if (hitboxId.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox id is empty"), std::move("hitboxId")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox id is empty", "hitboxId"));
     if (!finitePoint(localOffset)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox local offset is invalid"), std::move("localOffset")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox local offset is invalid", "localOffset"));
     if (!std::isfinite(healthDamage) || healthDamage < 0.0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox health damage is invalid"), std::move("healthDamage")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox health damage is invalid", "healthDamage"));
     if (!std::isfinite(poiseDamage) || poiseDamage < 0.0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox poise damage is invalid"), std::move("poiseDamage")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox poise damage is invalid", "poiseDamage"));
     if (damageType.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox damage type is empty"), std::move("damageType")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox damage type is empty", "damageType"));
     if (!std::isfinite(knockbackSpeed) || knockbackSpeed < 0.0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox knockback speed is invalid"), std::move("knockbackSpeed")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox knockback speed is invalid", "knockbackSpeed"));
     if (!std::isfinite(knockbackLift) || knockbackLift < 0.0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox knockback lift is invalid"), std::move("knockbackLift")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox knockback lift is invalid", "knockbackLift"));
     return shape.validate();
 }
 
@@ -189,7 +189,7 @@ Result<void> MeleeHitRuntime::registerHurtbox(MeleeHurtboxDefinition definition)
 
 Result<void> MeleeHitRuntime::clearHurtboxes(SubjectRef subject) {
     if (!subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "subject is nil", "subject"));
     const std::string prefix = subject.format() + "|";
     for (auto it = hurtboxes_.begin(); it != hurtboxes_.end();) {
         if (it->first.rfind(prefix, 0) == 0)
@@ -214,9 +214,9 @@ Result<void> MeleeHitRuntime::setHurtboxPose(SubjectRef subject, std::string_vie
 Result<void> MeleeHitRuntime::armHitbox(SubjectRef subject, std::string_view hitboxId,
                                         action::ActionExecutionId execution) {
     if (!subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "subject is nil", "subject"));
     if (hitboxId.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hitbox id is empty"), std::move("hitboxId")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hitbox id is empty", "hitboxId"));
     if (!hitboxes_.contains(std::string(hitboxId)))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "hitbox catalog entry missing",
                                                        std::string(hitboxId)));

@@ -21,9 +21,9 @@ namespace {
  * @return Success, or the InvalidArgument failure both entry points raise.
  */
 [[nodiscard]] Result<void> validateView(const HexMap& map, const HexVisibility& visibility, HexCoordinates from) {
-    if (!map.contains(from)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("view origin is outside the hex map"), "hexmap"));
+    if (!map.contains(from)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "view origin is outside the hex map", "hexmap"));
     if (visibility.cellCount() != map.cellCount())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("visibility counters must be reset to map.cellCount() before a view update"), "hexmap"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "visibility counters must be reset to map.cellCount() before a view update", "hexmap"));
     return Result<void>::success();
 }
 

@@ -18,14 +18,14 @@ double distance3(double ax, double ay, double az, double bx, double by, double b
 
 Result<void> CombatEnemyDefinition::validate() const {
     if (!subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("enemy subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy subject is nil", "subject"));
     if (ownerId.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("enemy owner id is empty"), std::move("ownerId")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy owner id is empty", "ownerId"));
     if (!std::isfinite(nearRadius) || nearRadius <= 0.0 || !std::isfinite(midRadius) || midRadius < nearRadius)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("enemy radii are invalid"), std::move("radius")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy radii are invalid", "radius"));
     if (attackCooldownTicks == 0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("enemy attack cooldown must be positive"), std::move("attackCooldownTicks")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy attack cooldown must be positive", "attackCooldownTicks"));
     return Result<void>::success();
 }
 
@@ -47,9 +47,9 @@ Result<void> CombatEnemyIntentSource::unregisterEnemy(SubjectRef subject) {
 
 Result<void> CombatEnemyIntentSource::setPosition(SubjectRef subject, double x, double y, double z) {
     if (!subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "subject is nil", "subject"));
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("pose is invalid"), std::move("pose")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "pose is invalid", "pose"));
     poses_[subject.format()] = Pose{x, y, z};
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -60,7 +60,7 @@ Result<void> CombatEnemyIntentSource::setLightAction(SubjectRef subject, Logical
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "enemy was not found", subject.format()));
     if (actionId.format().empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("light action id is empty"), std::move("actionId")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "light action id is empty", "actionId"));
     found->second.lightAction = std::move(actionId);
     found->second.hasAction   = true;
     return Result<void>::success(Status::success(StatusCode::Applied));

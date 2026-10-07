@@ -42,30 +42,30 @@ Result<void> GuardWindowState::enter(const action::ActionStateWindowBinding& bin
                                      const action::ActionTimelineEvent& event,
                                      const action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("combat guard does not own this state-window kind"), std::move("kind")));
-    if (!resolver_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("guard subject resolver is unavailable"), std::move("resolver")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "combat guard does not own this state-window kind", "kind"));
+    if (!resolver_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "guard subject resolver is unavailable", "resolver"));
     auto mode = parseMode(binding.resource);
     if (!mode) return Result<void>::failure(mode.status());
     std::optional<ecs::EntityHandle> handle;
     if (binding.targetIndex) {
         if (*binding.targetIndex >= context.targets.size())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("guard target index is unavailable"), std::move("targetIndex")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "guard target index is unavailable", "targetIndex"));
         handle = context.targets[*binding.targetIndex];
     } else {
         handle = context.source;
     }
-    if (!handle) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("guard window has no source or target"), std::move("subject")));
+    if (!handle) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "guard window has no source or target", "subject"));
     auto subject = resolver_(*handle);
     if (!subject) return Result<void>::failure(subject.status());
     if (!subject.value().isValid())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("guard-window subject is nil"), std::move("subject")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "guard-window subject is nil", "subject"));
 
     ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
     if (found != active_.end()) {
         const bool same = found->second.subject == subject.value() && found->second.mode == mode.value();
         if (same) return Result<void>::success(Status::success(StatusCode::NoOp));
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("guard-window key is already active with different data"), std::move("itemId")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "guard-window key is already active with different data", "itemId"));
     }
     active_.emplace(std::move(key), ActiveGuard{binding, subject.value(), mode.value()});
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -75,12 +75,12 @@ Result<void> GuardWindowState::exit(const action::ActionStateWindowBinding& bind
                                     const action::ActionTimelineEvent& event,
                                     const action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("combat guard does not own this state-window kind"), std::move("kind")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "combat guard does not own this state-window kind", "kind"));
     const ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
     if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
     if (found->second.binding.kind != binding.kind)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("guard-window exit kind does not match active key"), std::move("kind")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "guard-window exit kind does not match active key", "kind"));
     active_.erase(found);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

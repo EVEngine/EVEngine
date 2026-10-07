@@ -14,7 +14,7 @@ namespace {
 
 Result<void> Graphics::replaceShaderFromSpv(Shader &, const std::vector<uint32_t> &,
                                             const std::vector<uint32_t> &) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("SPIR-V shader replacement is unavailable on the WebGPU backend"), std::move("source"), {},
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "SPIR-V shader replacement is unavailable on the WebGPU backend", "source", {},
                                                    "graphics.webgpu.shader_reload"));
 }
 
@@ -25,10 +25,10 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                                      return owned.get() == &shader;
                                  });
     if (shaderIt == ownedShaders.end() || !shader.gpuHandle)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("shader is not a live resource owned by this Graphics instance"), std::move("shader"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "shader is not a live resource owned by this Graphics instance", "shader", {},
                                                    "graphics.webgpu.shader_reload"));
     if (fragWgsl.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("fragment WGSL must not be empty"), std::move("fragWgsl"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "fragment WGSL must not be empty", "fragWgsl", {},
                                                    "graphics.webgpu.shader_reload"));
 
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
@@ -37,7 +37,7 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                                   return owned.get() == current;
                               });
     if (gpuIt == ownedGpuShaders.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("shader GPU resource is no longer owned by this Graphics instance"), std::move("shader.gpuHandle"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "shader GPU resource is no longer owned by this Graphics instance", "shader.gpuHandle", {},
                                                    "graphics.webgpu.shader_reload"));
 
     GpuShader candidate;
@@ -48,7 +48,7 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
     candidate.wgslVert = vertWgsl.empty() ? current->wgslVert : vertWgsl;
     candidate.wgslFrag = fragWgsl;
     if (candidate.wgslVert.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("shader has no reusable default vertex WGSL"), std::move("vertWgsl"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "shader has no reusable default vertex WGSL", "vertWgsl", {},
                                                    "graphics.webgpu.shader_reload"));
 
     try {
@@ -69,10 +69,10 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                     false, false, false, mesh3dPipelineLayout);
         }
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), std::move("pipeline"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), "pipeline", {},
                                                    "graphics.webgpu.shader_reload"));
     } catch (...) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move("failed to prepare replacement pipeline"), std::move("pipeline"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "failed to prepare replacement pipeline", "pipeline", {},
                                                    "graphics.webgpu.shader_reload"));
     }
 
@@ -87,7 +87,7 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
 
 Result<void> Graphics::replaceShaderFromGlsl(Shader &, const std::string &,
                                              const std::string &) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("runtime GLSL replacement is unavailable on the WebGPU backend"), std::move("source"), {},
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "runtime GLSL replacement is unavailable on the WebGPU backend", "source", {},
                                                    "graphics.webgpu.shader_reload"));
 }
 

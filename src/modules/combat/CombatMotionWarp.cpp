@@ -20,16 +20,16 @@ CombatVector3 normalizedXZ(CombatVector3 value) {
 Result<void> CombatWarpRequest::validate() const {
     if (!finite3(attacker) || !finite3(target) || !finite3(attackerFacing))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("warp poses are invalid"), std::move("pose")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "warp poses are invalid", "pose"));
     if (!std::isfinite(desiredDistance) || desiredDistance < 0.0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("desired warp distance is invalid"), std::move("desiredDistance")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "desired warp distance is invalid", "desiredDistance"));
     if (!std::isfinite(maxTranslation) || maxTranslation < 0.0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("max warp translation is invalid"), std::move("maxTranslation")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "max warp translation is invalid", "maxTranslation"));
     if (!std::isfinite(remainingBudget) || remainingBudget < 0.0)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("warp budget is invalid"), std::move("remainingBudget")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "warp budget is invalid", "remainingBudget"));
     return Result<void>::success();
 }
 

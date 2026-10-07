@@ -19,13 +19,13 @@ CombatVector3 normalizedXZ(CombatVector3 value) {
 
 Result<void> CombatCameraFramingRequest::validate() const {
     if (!finite3(player) || !finite3(playerFacing)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera player pose is invalid"), std::move("player")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "camera player pose is invalid", "player"));
     if (lockTarget && !finite3(*lockTarget)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera lock target is invalid"), std::move("lockTarget")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "camera lock target is invalid", "lockTarget"));
     if (!std::isfinite(distance) || distance <= 0.0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera distance is invalid"), std::move("distance")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "camera distance is invalid", "distance"));
     if (!std::isfinite(height) || !std::isfinite(lookHeight)) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera height is invalid"), std::move("height")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "camera height is invalid", "height"));
     return Result<void>::success();
 }
 

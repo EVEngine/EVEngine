@@ -52,7 +52,7 @@ const char* stepShapeName(StepShape shape) noexcept {
 eve::Result<void> StepKindRegistry::registerStep(StepKindDescriptor descriptor) {
     if (!isBareWord(descriptor.type))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step type must be a non-empty bare word"), std::move("type"), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step type must be a non-empty bare word", "type", {}, "dnut.step-registry"));
     if (descriptors_.contains(descriptor.type))
         return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, std::move("step type '" + descriptor.type + "' is already registered"), std::move(descriptor.type), {}, "dnut.step-registry"));

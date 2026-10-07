@@ -12,13 +12,13 @@ Duration maxDuration(Duration a, Duration b) { return a < b ? b : a; }
 
 Result<void> HitFeelRequest::validate() const {
     if (!attacker.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attacker is nil"), std::move("attacker")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attacker is nil", "attacker"));
     if (!victim.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("victim is nil"), std::move("victim")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "victim is nil", "victim"));
     if (attackerHitstop < Duration::zero() || victimHitstop < Duration::zero() ||
         victimHitstun < Duration::zero())
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hit-feel durations must be non-negative"), std::move("duration")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "hit-feel durations must be non-negative", "duration"));
     return Result<void>::success();
 }
 

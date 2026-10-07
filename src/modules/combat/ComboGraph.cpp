@@ -8,9 +8,9 @@ namespace eve::combat {
 
 Result<void> ComboGraphEdge::validate() const {
     if (from.format().empty() || to.format().empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("combo edge ids are empty"), std::move("id")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "combo edge ids are empty", "id"));
     if (requiredInput.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("combo edge input is empty"), std::move("requiredInput")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "combo edge input is empty", "requiredInput"));
     return Result<void>::success();
 }
 

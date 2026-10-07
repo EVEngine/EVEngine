@@ -8,9 +8,9 @@ namespace eve::combat {
 
 Result<void> BodyPartDamageRule::setMultiplier(std::string bodyPart, double multiplier) {
     if (bodyPart.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("body part is empty"), std::move("bodyPart")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "body part is empty", "bodyPart"));
     if (!std::isfinite(multiplier) || multiplier < 0.0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("body-part multiplier is invalid"), std::move("multiplier")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "body-part multiplier is invalid", "multiplier"));
     multipliers_[std::move(bodyPart)] = multiplier;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

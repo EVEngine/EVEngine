@@ -95,12 +95,12 @@ int intervalIndex(Duration age, Duration interval) {
 
 Result<void> validateVolley(const CarrierVolleySpec& volley) {
     if (volley.count <= 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Volley count must be positive"), std::move("count")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Volley count must be positive", "count"));
     if (volley.count > 256)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Volley count must be <= 256"), std::move("count")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Volley count must be <= 256", "count"));
     if (volley.pattern == CarrierVolleyPattern::Fan) {
         if (!std::isfinite(volley.spreadDegrees) || volley.spreadDegrees < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Fan volley spreadDegrees must be finite and non-negative"), std::move("spreadDegrees")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Fan volley spreadDegrees must be finite and non-negative", "spreadDegrees"));
     }
     return Result<void>::success();
 }
@@ -143,13 +143,13 @@ Result<std::vector<ProjectileVector>> volleyDirections(const ProjectileVector& b
 }  // namespace
 
 Result<void> CarrierRecipe::validate() const {
-    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier recipe id must not be empty"), std::move("id")));
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier recipe id must not be empty", "id"));
     if (lifetime <= Duration::zero())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier lifetime must be positive"), std::move("lifetime")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier lifetime must be positive", "lifetime"));
     if (!std::isfinite(speed) || speed <= 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier speed must be finite and positive"), std::move("speed")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier speed must be finite and positive", "speed"));
     if (motionOps.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier recipe requires at least one motion op"), std::move("motionOps")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier recipe requires at least one motion op", "motionOps"));
 
     bool hasIntegrate = false;
     for (std::size_t i = 0; i < motionOps.size(); ++i) {
@@ -158,32 +158,32 @@ Result<void> CarrierRecipe::validate() const {
         switch (op.kind) {
             case CarrierMotionOpKind::SteerHoming:
                 if (!std::isfinite(op.maxTurnRateDegrees) || op.maxTurnRateDegrees <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Homing turn rate must be finite and positive"), std::move(path + ".maxTurnRateDegrees")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing turn rate must be finite and positive", std::move(path + ".maxTurnRateDegrees")));
                 break;
             case CarrierMotionOpKind::SteerAvoidBody:
                 if (!std::isfinite(op.avoidLookAhead) || op.avoidLookAhead <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Body-avoid look-ahead must be finite and positive"), std::move(path + ".avoidLookAhead")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid look-ahead must be finite and positive", std::move(path + ".avoidLookAhead")));
                 if (!std::isfinite(op.avoidStrength) || op.avoidStrength < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Body-avoid strength must be finite and non-negative"), std::move(path + ".avoidStrength")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid strength must be finite and non-negative", std::move(path + ".avoidStrength")));
                 if (!std::isfinite(op.avoidRadiusPadding) || op.avoidRadiusPadding < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Body-avoid radius padding must be finite and non-negative"), std::move(path + ".avoidRadiusPadding")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid radius padding must be finite and non-negative", std::move(path + ".avoidRadiusPadding")));
                 if (!std::isfinite(op.maxTurnRateDegrees) || op.maxTurnRateDegrees <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Body-avoid turn rate must be finite and positive"), std::move(path + ".maxTurnRateDegrees")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid turn rate must be finite and positive", std::move(path + ".maxTurnRateDegrees")));
                 break;
             case CarrierMotionOpKind::ApplyGravity:
                 if (!std::isfinite(op.gravity) || op.gravity < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Gravity must be finite and non-negative"), std::move(path + ".gravity")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Gravity must be finite and non-negative", std::move(path + ".gravity")));
                 break;
             case CarrierMotionOpKind::Accelerate:
                 if (!std::isfinite(op.acceleration) || op.acceleration < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Acceleration must be finite and non-negative"), std::move(path + ".acceleration")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Acceleration must be finite and non-negative", std::move(path + ".acceleration")));
                 break;
             case CarrierMotionOpKind::CurveSway:
             case CarrierMotionOpKind::CurveHelix:
                 if (!std::isfinite(op.curveAmplitude) || op.curveAmplitude < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Curve amplitude must be finite and non-negative"), std::move(path + ".curveAmplitude")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve amplitude must be finite and non-negative", std::move(path + ".curveAmplitude")));
                 if (!std::isfinite(op.curveFrequencyHz) || op.curveFrequencyHz <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Curve frequency must be finite and positive"), std::move(path + ".curveFrequencyHz")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve frequency must be finite and positive", std::move(path + ".curveFrequencyHz")));
                 break;
             case CarrierMotionOpKind::IntegrateLinear:
                 hasIntegrate = true;
@@ -191,10 +191,10 @@ Result<void> CarrierRecipe::validate() const {
         }
     }
     if (!hasIntegrate)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier recipe must include IntegrateLinear so position advances"), std::move("motionOps")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier recipe must include IntegrateLinear so position advances", "motionOps"));
 
     if (triggers.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier recipe requires at least one trigger"), std::move("triggers")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier recipe requires at least one trigger", "triggers"));
 
     for (std::size_t i = 0; i < triggers.size(); ++i) {
         const auto& trigger = triggers[i];
@@ -202,15 +202,15 @@ Result<void> CarrierRecipe::validate() const {
         switch (trigger.kind) {
             case CarrierTriggerKind::OnFuse:
                 if (trigger.fuse <= Duration::zero())
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Fuse trigger requires positive fuse"), std::move(path + ".fuse")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Fuse trigger requires positive fuse", std::move(path + ".fuse")));
                 break;
             case CarrierTriggerKind::OnInterval:
                 if (trigger.interval <= Duration::zero())
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Interval trigger requires positive interval"), std::move(path + ".interval")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Interval trigger requires positive interval", std::move(path + ".interval")));
                 break;
             case CarrierTriggerKind::OnProximity:
                 if (!std::isfinite(trigger.proximityRadius) || trigger.proximityRadius <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Proximity trigger requires positive radius"), std::move(path + ".proximityRadius")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Proximity trigger requires positive radius", std::move(path + ".proximityRadius")));
                 break;
             case CarrierTriggerKind::OnExpire:
             case CarrierTriggerKind::OnHit:
@@ -222,17 +222,17 @@ Result<void> CarrierRecipe::validate() const {
         const auto& impact = impacts[i];
         const auto  path   = "impacts[" + std::to_string(i) + "]";
         if (!std::isfinite(impact.damage) || impact.damage < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Impact damage must be finite and non-negative"), std::move(path + ".damage")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Impact damage must be finite and non-negative", std::move(path + ".damage")));
         if (!std::isfinite(impact.splashRadius) || impact.splashRadius < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Splash radius must be finite and non-negative"), std::move(path + ".splashRadius")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash radius must be finite and non-negative", std::move(path + ".splashRadius")));
         if (!std::isfinite(impact.restitution) || impact.restitution < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Bounce restitution must be finite and non-negative"), std::move(path + ".restitution")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Bounce restitution must be finite and non-negative", std::move(path + ".restitution")));
         if (impact.pierceCount < 0 || impact.bounceCount < 0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Pierce/bounce budgets must be non-negative"), std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Pierce/bounce budgets must be non-negative", std::move(path)));
         if (impact.kind == CarrierImpactKind::SpawnChild && !impact.childRecipeId.isValid())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("SpawnChild requires childRecipeId"), std::move(path + ".childRecipeId")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SpawnChild requires childRecipeId", std::move(path + ".childRecipeId")));
         if (impact.kind == CarrierImpactKind::Splash && impact.splashRadius <= 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Splash impact requires positive splashRadius"), std::move(path + ".splashRadius")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash impact requires positive splashRadius", std::move(path + ".splashRadius")));
     }
     return Result<void>::success();
 }
@@ -279,9 +279,9 @@ CombatCarrierRuntime::CombatCarrierRuntime() : slots_(kDefaultCapacity) {}
 
 Result<void> CombatCarrierRuntime::configurePool(std::uint32_t capacity) {
     if (activeCount_ != 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("Carrier pool cannot be resized while active"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Carrier pool cannot be resized while active", {}));
     if (capacity == 0 || capacity > kMaximumCapacity)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier pool capacity must be in 1..1048576"), std::move("capacity")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier pool capacity must be in 1..1048576", "capacity"));
     slots_.assign(capacity, Slot{});
     return Result<void>::success();
 }
@@ -335,9 +335,9 @@ Result<void> CombatCarrierRuntime::validateSpawn(const CarrierRecipe&       reci
     auto valid = recipe.validate();
     if (!valid) return valid;
     if (!finite(request.position) || !finite(request.direction))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier transform must contain finite values"), std::move("request")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier transform must contain finite values", "request"));
     if (length(request.direction) <= 0.0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier direction must be non-zero"), std::move("direction")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier direction must be non-zero", "direction"));
 
     bool needsTarget = false;
     for (const auto& op : recipe.motionOps) {
@@ -347,7 +347,7 @@ Result<void> CombatCarrierRuntime::validateSpawn(const CarrierRecipe&       reci
         if (trigger.kind == CarrierTriggerKind::OnProximity) needsTarget = true;
     }
     if (needsTarget && !request.target.has_value())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Homing/proximity carrier requires a target handle"), std::move("target")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing/proximity carrier requires a target handle", "target"));
     return Result<void>::success();
 }
 
@@ -814,10 +814,10 @@ Result<CarrierFrame> CombatCarrierRuntime::update(Duration                      
 
 Result<void> CombatCarrierRuntime::release(CarrierHandle handle) {
     if (handle.slot >= slots_.size())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("Carrier handle slot is out of range"), std::move("handle")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Carrier handle slot is out of range", "handle"));
     Slot& cell = slots_[handle.slot];
     if (!cell.state.has_value() || cell.generation != handle.generation)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("Carrier handle is stale"), std::move("handle")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Carrier handle is stale", "handle"));
     cell.state.reset();
     --activeCount_;
     return Result<void>::success();
@@ -848,7 +848,7 @@ CarrierRuntimeSnapshot CombatCarrierRuntime::snapshot() const {
 
 Result<void> CombatCarrierRuntime::restore(const CarrierRuntimeSnapshot& snapshot) {
     if (snapshot.slots.empty() || snapshot.slots.size() > kMaximumCapacity)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier snapshot capacity must be in 1..1048576"), std::move("slots")));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier snapshot capacity must be in 1..1048576", "slots"));
 
     std::vector<Slot> staged;
     staged.reserve(snapshot.slots.size());
@@ -856,9 +856,9 @@ Result<void> CombatCarrierRuntime::restore(const CarrierRuntimeSnapshot& snapsho
     for (const auto& slot : snapshot.slots) {
         if (slot.state.has_value()) {
             if (slot.state->handle.slot >= snapshot.slots.size() || slot.state->handle.generation != slot.generation)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Carrier snapshot state handle does not match slot metadata"), std::move("slots")));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Carrier snapshot state handle does not match slot metadata", "slots"));
             if (!findRecipe(slot.state->recipeId).has_value())
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("Carrier snapshot references an unregistered recipe"), std::move("recipeId")));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Carrier snapshot references an unregistered recipe", "recipeId"));
             ++active;
         }
         staged.push_back({slot.generation, slot.state});

@@ -39,14 +39,14 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
                                      return owned.get() == &shader;
                                  });
     if (shaderIt == ownedShaders.end() || !shader.gpuHandle)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("shader is not a live resource owned by this Graphics instance"), std::move("shader"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "shader is not a live resource owned by this Graphics instance", "shader", {},
                                                    "graphics.vulkan.shader_reload"));
     if (fragSpv.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("fragment SPIR-V must not be empty"), std::move("fragSpv"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "fragment SPIR-V must not be empty", "fragSpv", {},
                                                    "graphics.vulkan.shader_reload"));
     if (fragSpv.front() != 0x07230203 ||
         (!vertSpv.empty() && vertSpv.front() != 0x07230203))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("SPIR-V magic mismatch"), std::move("source"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "SPIR-V magic mismatch", "source", {},
                                                    "graphics.vulkan.shader_reload"));
 
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
@@ -57,7 +57,7 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
                                   return owned.get() == current;
                               });
     if (gpuIt == ownedGpuShaders.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("shader GPU resource is no longer owned by this Graphics instance"), std::move("shader.gpuHandle"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "shader GPU resource is no longer owned by this Graphics instance", "shader.gpuHandle", {},
                                                    "graphics.vulkan.shader_reload"));
 
     std::vector<uint32_t> vert = vertSpv;
@@ -115,11 +115,11 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         }
     } catch (const std::exception &error) {
         destroyCandidate(device, candidate);
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), std::move("pipeline"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), "pipeline", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (...) {
         destroyCandidate(device, candidate);
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move("failed to prepare replacement pipeline"), std::move("pipeline"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "failed to prepare replacement pipeline", "pipeline", {},
                                                    "graphics.vulkan.shader_reload"));
     }
 
@@ -152,26 +152,26 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
 
 Result<void> Graphics::replaceShaderFromWgsl(Shader &, const std::string &,
                                              const std::string &) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("WGSL shader replacement is unavailable on the Vulkan backend"), std::move("source"), {},
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "WGSL shader replacement is unavailable on the Vulkan backend", "source", {},
                                                    "graphics.vulkan.shader_reload"));
 }
 
 Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &vertGlsl,
                                              const std::string &fragGlsl) {
     if (fragGlsl.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("fragment GLSL must not be empty"), std::move("fragGlsl"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "fragment GLSL must not be empty", "fragGlsl", {},
                                                    "graphics.vulkan.shader_reload"));
     auto shaderIt = std::find_if(ownedShaders.begin(), ownedShaders.end(),
                                  [&](const std::unique_ptr<Shader> &owned) {
                                      return owned.get() == &shader;
                                  });
     if (shaderIt == ownedShaders.end() || !shader.gpuHandle)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("shader is not a live resource owned by this Graphics instance"), std::move("shader"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "shader is not a live resource owned by this Graphics instance", "shader", {},
                                                    "graphics.vulkan.shader_reload"));
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
     if (current->isHair3D)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("runtime GLSL replacement does not yet provide the hair vertex "
-                             "contract; publish SPIR-V stages instead"), std::move("shader.kind"), {},
+                             "contract; publish SPIR-V stages instead"), "shader.kind", {},
                                                    "graphics.vulkan.shader_reload"));
 
     Shader *candidate = nullptr;
@@ -180,13 +180,13 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
                         ? newMeshShader(vertGlsl, fragGlsl)
                         : newShader(vertGlsl, fragGlsl);
     } catch (const Exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error.what()), std::move("source"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error.what()), "source", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(error.what()), std::move("compiler"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(error.what()), "compiler", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (...) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move("GLSL compilation failed"), std::move("compiler"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "GLSL compilation failed", "compiler", {},
                                                    "graphics.vulkan.shader_reload"));
     }
 
@@ -195,7 +195,7 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
     const bool released = releaseShader(candidate);
     if (released) delete candidate;
     if (!released && replaced.ok())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("temporary compiled shader could not be released"), std::move("candidate"), {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "temporary compiled shader could not be released", "candidate", {},
                                                    "graphics.vulkan.shader_reload"));
     return replaced;
 }

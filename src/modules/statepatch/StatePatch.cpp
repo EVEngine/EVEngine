@@ -381,28 +381,28 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
     auto        document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(parseError.empty() ? "invalid state patch snapshot" : std::move(parseError)),
-                                                             std::move("$"), {}, "statepatch.store.restoreJson"));
+                                                             "$", {}, "statepatch.store.restoreJson"));
 
     const auto root = document.root();
-    if (!root.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("snapshot root must be an object"),
-                                                             std::move("$"), {}, "statepatch.store.restoreJson"));
+    if (!root.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot root must be an object",
+                                                             "$", {}, "statepatch.store.restoreJson"));
 
     uint64_t restoredRevision = 0;
     uint64_t restoredSequence = 0;
-    if (root.getInt("version") != 1) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("unsupported state patch snapshot version"),
-                                                             std::move("$.version"), {}, "statepatch.store.restoreJson"));
+    if (root.getInt("version") != 1) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unsupported state patch snapshot version",
+                                                             "$.version", {}, "statepatch.store.restoreJson"));
     if (!parseU64(root.get("revision"), restoredRevision))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("snapshot revision must be a decimal string"),
-                                                             std::move("$.revision"), {}, "statepatch.store.restoreJson"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot revision must be a decimal string",
+                                                             "$.revision", {}, "statepatch.store.restoreJson"));
     if (!parseU64(root.get("nextSequence"), restoredSequence) || restoredSequence == 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("snapshot nextSequence must be a non-zero decimal string"),
-                                                             std::move("$.nextSequence"), {}, "statepatch.store.restoreJson"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot nextSequence must be a non-zero decimal string",
+                                                             "$.nextSequence", {}, "statepatch.store.restoreJson"));
 
     const auto values = root.get("values");
     const auto dirty  = root.get("dirty");
     if (!values.isArray() || !dirty.isArray()) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("values and dirty must be arrays"),
-                                                             std::move("$"), {}, "statepatch.store.restoreJson"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "values and dirty must be arrays",
+                                                             "$", {}, "statepatch.store.restoreJson"));
     }
     Values                                        restoredValues;
     std::set<std::pair<std::string, std::string>> restoredDirty;
@@ -417,7 +417,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
         const auto subject = item.getString("subject");
         const auto key     = item.getString("key");
         if (restoredValues[subject].contains(key)) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("duplicate subject and key"),
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "duplicate subject and key",
                                                              std::move("$.values[" + std::to_string(i) + "]"), {}, "statepatch.store.restoreJson"));
         }
         restoredValues[subject][key] = {canonicalJson(item.get("value")), valueRevision};

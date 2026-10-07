@@ -169,7 +169,7 @@ eve::Result<eve::container::ContainerSnapshot> InventoryContainerAdapter::snapsh
 
 eve::Result<void> InventoryContainerAdapter::validateObject(const InventoryContainerObject& object) const {
     if (object.stack.empty() || object.stack.instanceId <= 0 || object.stack.itemId.empty())
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("inventory transfer stack is incomplete")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "inventory transfer stack is incomplete"));
     return eve::Result<void>::success();
 }
 
@@ -177,37 +177,37 @@ eve::Result<void> InventoryContainerAdapter::validateInsert(
     const eve::container::ContainerObject& object, std::optional<eve::container::SlotIndex> destination,
     std::optional<eve::container::MembershipId> ignoredObject) const {
     const auto* payload = dynamic_cast<const InventoryContainerObject*>(object.payload.get());
-    if (payload == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::move("inventory payload is stale")));
+    if (payload == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "inventory payload is stale"));
     auto validObject = validateObject(*payload);
     if (!validObject) return validObject;
     if (object.id != objectId(payload->stack))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::move("inventory membership identity is stale")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "inventory membership identity is stale"));
     if (object.type != payload->stack.itemId || object.quantity != static_cast<std::uint32_t>(payload->stack.quantity))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::move("inventory object facts are stale")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "inventory object facts are stale"));
     const auto* definition = ItemRegistry::find(payload->stack.itemId);
-    if (definition == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("inventory item definition was not found")));
+    if (definition == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "inventory item definition was not found"));
     if (definition->maxStack <= 0 || payload->stack.quantity > definition->maxStack)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("inventory stack exceeds item definition maxStack")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "inventory stack exceeds item definition maxStack"));
 
     if (kind_ == InventoryContainerKind::Bag) {
-        if (bag_ == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("bag adapter is unbound")));
+        if (bag_ == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "bag adapter is unbound"));
         const std::size_t slotCount = static_cast<std::size_t>(bag_->getSlotCount());
         const std::size_t slotLimit =
             descriptor_.capacity.isUnlimited() ? slotCount : std::min(slotCount, descriptor_.capacity.value());
         if (hasId(*bag_, object.id) && (!ignoredObject || *ignoredObject != object.id))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("bag already contains inventory object")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "bag already contains inventory object"));
         if (destination) {
             if (!destination->isValid() || static_cast<std::size_t>(destination->value()) >= slotLimit)
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("bag destination slot is out of range")));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "bag destination slot is out of range"));
             if (!bag_->slots()[static_cast<std::size_t>(destination->value())].empty() &&
                 (!ignoredObject || *ignoredObject != object.id))
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("bag destination slot is occupied")));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "bag destination slot is occupied"));
         } else {
             const bool hasEmptySlot =
                 std::any_of(bag_->slots().begin(), bag_->slots().begin() + static_cast<std::ptrdiff_t>(slotLimit),
                             [](const ItemStack& stack) { return stack.empty(); });
             if (!hasEmptySlot && (!ignoredObject || *ignoredObject != object.id))
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("bag has no empty membership slot")));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "bag has no empty membership slot"));
         }
         if (!ignoredObject || *ignoredObject != object.id) {
             std::string reason;
@@ -217,24 +217,24 @@ eve::Result<void> InventoryContainerAdapter::validateInsert(
         return eve::Result<void>::success();
     }
 
-    if (equipment_ == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("equipment is unbound")));
+    if (equipment_ == nullptr) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "equipment is unbound"));
     if (!destination || !destination->isValid() ||
         static_cast<std::size_t>(destination->value()) >= static_cast<std::size_t>(equipment_->getSlotCount()))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("equipment transfer requires a valid destination slot")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "equipment transfer requires a valid destination slot"));
     const std::string target = slotName(*destination);
-    if (target.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("equipment slot was not found")));
+    if (target.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "equipment slot was not found"));
     const auto* current = equipment_->stackAt(target);
     if (current != nullptr && !current->empty() && (!ignoredObject || object.id != objectId(*current)))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("equipment destination slot is occupied")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "equipment destination slot is occupied"));
     if (!definition->equipSlot.empty() && definition->equipSlot != target)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("inventory item does not fit equipment slot")));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "inventory item does not fit equipment slot"));
     const auto* allowed = equipment_->allowedTags(target);
     if (allowed != nullptr && !allowed->empty()) {
         const bool accepted = std::any_of(allowed->begin(), allowed->end(), [&](const std::string& tag) {
             return definition->hasTag(tag) || payload->stack.hasTag(tag);
         });
         if (!accepted)
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("equipment slot rejected inventory tags")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "equipment slot rejected inventory tags"));
     }
     return eve::Result<void>::success();
 }

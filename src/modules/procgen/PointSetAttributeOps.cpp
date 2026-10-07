@@ -147,14 +147,14 @@ Result<float> readPointFloatChannel(const PointSet& points, int index, std::stri
 
 Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value) {
     if (index < 0 || index >= points.getCount()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("point index is out of range"), std::move("index")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "point index is out of range", "index"));
     if (name.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute channel must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute channel must not be empty", "name"));
     if (name.front() != '$') {
         std::string_view domain = "elements";
         const std::string_view leaf = stripDomainPrefix(name, &domain);
         if (leaf.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute channel must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute channel must not be empty", "name"));
         if (domain == "data") {
             ensurePointSetDataRow(points);
             return points.mutableDataAttributes().setFloat(0, leaf, value);
@@ -163,7 +163,7 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
     }
     if (!isPointFloatSelector(name))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), "name"));
 
     ProcgenPoint& point = points.mutablePoint(std::size_t(index));
     if (name == "$Density") {
@@ -267,7 +267,7 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
         return Result<void>::success();
     }
     return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), "name"));
 }
 
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,

@@ -84,22 +84,22 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     (void)filename;
     (void)text;
     return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move("atomic save replacement is unavailable on the WebGPU filesystem"), std::move({}), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "atomic save replacement is unavailable on the WebGPU filesystem", {}, {}, "filesystem.atomic-write"));
 #else
     const std::string relativeText(filename);
     const std::filesystem::path relative = pathFromUtf8(relativeText).lexically_normal();
     if (!validRelativeSavePath(relative))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("atomic save path must be relative and cannot traverse parents"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "atomic save path must be relative and cannot traverse parents", std::move(relativeText), {}, "filesystem.atomic-write"));
     const std::string saveDirectory = getSaveDirectory();
     if (saveDirectory.empty())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("filesystem write directory is not configured"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "filesystem write directory is not configured", std::move(relativeText), {}, "filesystem.atomic-write"));
     const std::filesystem::path base = pathFromUtf8(saveDirectory).lexically_normal();
     const std::filesystem::path target = (base / relative).lexically_normal();
     if (target.parent_path().empty() || !std::filesystem::exists(target.parent_path()))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("atomic save parent directory does not exist"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "atomic save parent directory does not exist", std::move(relativeText), {}, "filesystem.atomic-write"));
 
     const auto sequence = atomicWriteSequence().fetch_add(1, std::memory_order_relaxed);
 #if defined(EVENGINE_WINDOWS)
@@ -110,7 +110,7 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
                               FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, nullptr);
     if (file == INVALID_HANDLE_VALUE)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not create atomic save temporary file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not create atomic save temporary file", std::move(relativeText), {}, "filesystem.atomic-write"));
     bool written = true;
     std::size_t offset = 0;
     while (offset < text.size()) {
@@ -127,13 +127,13 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     if (!written) {
         DeleteFileW(temporaryPath.c_str());
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not write or flush atomic save temporary file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not write or flush atomic save temporary file", std::move(relativeText), {}, "filesystem.atomic-write"));
     }
     if (!MoveFileExW(temporaryPath.c_str(), targetPath.c_str(),
                      MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
         DeleteFileW(temporaryPath.c_str());
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not atomically replace save file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not atomically replace save file", std::move(relativeText), {}, "filesystem.atomic-write"));
     }
 #else
     const std::string targetPath = target.string();
@@ -142,7 +142,7 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     const int file = ::open(temporaryPath.c_str(), O_WRONLY | O_CREAT | O_EXCL, 0600);
     if (file < 0)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not create atomic save temporary file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not create atomic save temporary file", std::move(relativeText), {}, "filesystem.atomic-write"));
     bool written = true;
     std::size_t offset = 0;
     while (offset < text.size()) {
@@ -159,12 +159,12 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     if (!written) {
         ::unlink(temporaryPath.c_str());
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not write or flush atomic save temporary file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not write or flush atomic save temporary file", std::move(relativeText), {}, "filesystem.atomic-write"));
     }
     if (::rename(temporaryPath.c_str(), targetPath.c_str()) != 0) {
         ::unlink(temporaryPath.c_str());
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("could not atomically replace save file"), std::move(relativeText), {}, "filesystem.atomic-write"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not atomically replace save file", std::move(relativeText), {}, "filesystem.atomic-write"));
     }
 #ifdef O_DIRECTORY
     const int directory = ::open(target.parent_path().string().c_str(), O_RDONLY | O_DIRECTORY);

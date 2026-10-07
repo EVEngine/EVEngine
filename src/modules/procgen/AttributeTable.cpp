@@ -52,7 +52,7 @@ Result<std::size_t> AttributeTable::appendRowFrom(const AttributeTable& source, 
 }
 Result<void> AttributeTable::clearRow(std::size_t row) {
     if (row >= rows_) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute row is out of range"), std::move("row")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute row is out of range", "row"));
     for (auto& entry : columns_) std::visit([row](auto& values) { values[row].reset(); }, entry.second.storage);
     return Result<void>::success();
 }
@@ -77,13 +77,13 @@ bool AttributeTable::has(std::size_t row, std::string_view name) const {
 
 Result<void> AttributeTable::renameColumn(std::string_view from, std::string_view to) {
     if (from.empty() || to.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute name must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (!from.empty() && from.front() == '$')
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("builtin selectors cannot be renamed"), std::move("from")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be renamed", "from"));
     if (!to.empty() && to.front() == '$')
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("builtin selectors cannot be rename targets"), std::move("to")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be rename targets", "to"));
     if (from == to) return Result<void>::success();
     const std::string fromKey(from);
     const std::string toKey(to);
@@ -110,9 +110,9 @@ Result<void> AttributeTable::renameColumn(std::string_view from, std::string_vie
 
 Result<void> AttributeTable::removeColumn(std::string_view name) {
     if (name.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute name must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (name.front() == '$') return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("builtin selectors cannot be deleted"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "builtin selectors cannot be deleted", "name"));
     const std::string key(name);
     if (columns_.find(key) == columns_.end())
         return Result<void>::failure(
@@ -127,10 +127,10 @@ Result<void> AttributeTable::removeColumn(std::string_view name) {
 
 Result<void> AttributeTable::copyColumn(std::string_view from, std::string_view to) {
     if (from.empty() || to.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute name must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (from.front() == '$' || to.front() == '$')
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("copyColumn only supports metadata column names"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "copyColumn only supports metadata column names", "name"));
     if (from == to) return Result<void>::success();
     const std::string fromKey(from);
     const std::string toKey(to);
@@ -192,9 +192,9 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
 template <class T>
 Result<void> AttributeTable::set(std::size_t row, std::string_view name, ProcgenAttributeType type, T value) {
     if (name.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute name must not be empty"), std::move("name")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute name must not be empty", "name"));
     if (row >= rows_) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attribute row is out of range"), std::move("row")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "attribute row is out of range", "row"));
     auto column = ensureColumn(name, type);
     if (!column.ok()) return Result<void>::failure(column.status());
     std::get<std::vector<std::optional<T>>>(column.value()->storage)[row] = std::move(value);

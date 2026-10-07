@@ -35,16 +35,16 @@ namespace {
 
 [[nodiscard]] Result<void> validateSnapshot(const ContainerSnapshot& snapshot, const IContainer& container) {
     if (!snapshot.id.isValid() || snapshot.id != container.descriptor().id)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot identity does not match adapter"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "container snapshot identity does not match adapter", {}));
     if (hasDuplicateMemberships(snapshot))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("container snapshot contains duplicate or invalid membership"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "container snapshot contains duplicate or invalid membership", {}));
     const auto& descriptor = container.descriptor();
     if (!descriptor.capacity.isUnlimited() && snapshot.entries.size() > descriptor.capacity.value())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot exceeds capacity"), std::move({})));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "container snapshot exceeds capacity", {}));
     if (!descriptor.capacity.isUnlimited()) {
         for (const auto& entry : snapshot.entries) {
             if (static_cast<std::size_t>(entry.membership.slot.value()) >= descriptor.capacity.value())
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot contains a slot outside capacity"), std::move({})));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "container snapshot contains a slot outside capacity", {}));
         }
     }
     return Result<void>::success();

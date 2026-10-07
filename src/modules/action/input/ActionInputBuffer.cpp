@@ -17,11 +17,11 @@ ActionInputBuffer::ActionInputBuffer(std::uint32_t capacity, std::uint32_t lifet
 
 Result<void> ActionInputBuffer::push(BufferedInput input) {
     if (!input.subject.isValid()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("buffered subject is nil"), std::move("subject")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "buffered subject is nil", "subject"));
     if (input.input.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("buffered input is empty"), std::move("input")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "buffered input is empty", "input"));
     if (capacity_ == 0 || lifetimeTicks_ == 0) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("input buffer capacity/lifetime invalid"), std::move("capacity")));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "input buffer capacity/lifetime invalid", "capacity"));
     if (entries_.size() >= capacity_)
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::Failed, "action input buffer is full", "buffer"));

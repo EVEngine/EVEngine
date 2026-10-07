@@ -202,18 +202,18 @@ public:
     eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio)
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("Audio parameter target is unavailable"), std::move("audio")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio parameter target is unavailable", "audio"));
         const ActiveKey key{sample.executionId, sample.itemId.format()};
         auto candidate = active_;
         if (sample.phase == eve::action::ActionParameterPhase::Begin) {
             if (candidate.contains(key))
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("Audio parameter curve is already active"), std::move("itemId")));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "Audio parameter curve is already active", "itemId"));
             if (candidate.empty()) baseline_ = audio->getVolume();
             candidate.emplace(key, ActiveValue{sample.operation, sample.value});
         } else if (sample.phase == eve::action::ActionParameterPhase::Update) {
             const auto found = candidate.find(key);
             if (found == candidate.end())
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("Audio parameter curve has no active state"), std::move("itemId")));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio parameter curve has no active state", "itemId"));
             found->second = ActiveValue{sample.operation, sample.value};
         } else {
             if (!candidate.erase(key))
@@ -221,7 +221,7 @@ public:
         }
         const double value = compose(candidate);
         if (!std::isfinite(value) || value < 0.0 || value > static_cast<double>(std::numeric_limits<float>::max()))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("Audio parameter curves produced an invalid master volume"), std::move("value")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Audio parameter curves produced an invalid master volume", "value"));
         active_ = std::move(candidate);
         audio->setVolume(static_cast<float>(value));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -278,21 +278,21 @@ public:
         }
         const bool instant = event.kind == eve::action::ActionTimelineEventKind::Notify;
         if (!instant && event.kind != eve::action::ActionTimelineEventKind::StateEnter)
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("audio state requires enter or exit"), std::move("event.kind")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind"));
         if (!instant && active_.contains(key))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("audio state is already active"), std::move("itemId")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "audio state is already active", "itemId"));
         const auto shape = instant ? eve::action::ActionAudioShape::Instant : eve::action::ActionAudioShape::State;
         auto binding = eve::action::ActionAudioBinding::fromPayload(event.payload, shape);
         if (!binding) return eve::Result<void>::failure(binding.status());
         auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return eve::Result<void>::failure(pose.status());
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
-        if (!audio) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("Audio module is unavailable"), std::move("audio")));
+        if (!audio) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
         try {
             const auto seed = stableAudioSeed(context.executionId, event.itemId);
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding.value(), seed));
             auto       dataPin = eve::ResourceManager::getInstance().pin(data);
-            if (!dataPin.ok()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("audio resource is no longer cached"), std::move("uri")));
+            if (!dataPin.ok()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "audio resource is no longer cached", "uri"));
             eve::ResourcePin        keepAlive = std::move(dataPin).takeValue();
             auto*                   live      = static_cast<eve::sound::SoundData*>(keepAlive.get());
             std::unique_ptr<Source> source(audio->newSource(live));
@@ -312,7 +312,7 @@ public:
                 active_.emplace(key, std::move(owned));
             }
         } catch (const std::exception& error) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(error.what()), std::move("uri")));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(error.what()), "uri"));
         }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -320,7 +320,7 @@ public:
     eve::Result<void> update(const eve::action::ActionActiveBlock& block,
                              const eve::action::ActionNotifyContext& context) override {
         const auto found = active_.find({context.executionId, block.itemId.format()});
-        if (found == active_.end()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("active audio has no source"), std::move("itemId")));
+        if (found == active_.end()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "active audio has no source", "itemId"));
         if (found->second.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
             auto pose = resolvePose(found->second.spatial, context);
             if (!pose) return eve::Result<void>::failure(pose.status());
