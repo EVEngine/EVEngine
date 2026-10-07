@@ -267,8 +267,8 @@ inline void registerDirectEditorWorkspace(ssq::Class& cls, const ScriptBind& bin
 }
 
 /**
- * @brief Register shared undo/redo/can*/getRevision methods for a Script* wrapper.
- * @tparam ScriptT Wrapper type with `editor().undo/redo/canUndo/canRedo/revision()`.
+ * @brief Register shared undo, redo, canUndo, canRedo, and getRevision methods.
+ * @tparam ScriptT Wrapper type with editor undo, redo, canUndo, canRedo, and revision().
  * @param cls Script class being filled.
  * @param bind Per-file binder.
  * @param nullMessage Failure text when self is null (undo/redo).
