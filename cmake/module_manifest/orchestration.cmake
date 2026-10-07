@@ -51,13 +51,11 @@ eve_declare_module(NAME building_editing LAYER 5
 eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
-# Browser web still omits particles: config/effect JSON goes through Poco
-# (ParticleConfig/ParticleEffect), and skeletal attach hard-includes animation
-# → Assimp. Soft-dep + web membership wait on common/Json migration and an
-# animation OPTIONAL_DEPS bridge TU split.
+# Browser web still omits particles: skeletal attach hard-includes animation
+# → Assimp. Soft-dep + web membership wait on an animation OPTIONAL_DEPS
+# bridge TU split. Config/effect JSON already uses common/Json (eve::json).
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS action animation data filesystem graphics ik stylize
-                   THIRDPARTY poco
                    GROUP 2d 3d)
 # Optional Action adapter for layered AttackVfx recipes (presentation:attack-vfx*).
 # audio/sound are optional: WASM/web profiles do not ship Wuff/OpenAL; the Audio

@@ -1,12 +1,9 @@
 #pragma once
 
+#include "common/Json.h"
 #include "particles/ParticleEmitter.h"
 
 #include <string>
-
-namespace eve::data {
-class JsonDocument;
-}
 
 namespace eve::particles {
 
@@ -15,7 +12,7 @@ namespace eve::particles {
  * Does not change buffer size or clear live particles.
  * Returns false on invalid / missing object root.
  */
-bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc);
+bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root);
 
 /** @brief Parse JSON text and apply. */
 bool applyConfigText(ParticleEmitter *emitter, const std::string &json, std::string *error = nullptr);
