@@ -2,7 +2,6 @@
 
 #include "common/Exception.h"
 #include "image/ImageData.h"
-#include "model3d/ModelData.h"
 
 #include <algorithm>
 #include <cmath>
@@ -11,8 +10,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-struct aiMesh;
 
 namespace eve::spritestack {
 namespace {
@@ -330,45 +327,6 @@ void makeLathe(const std::string &kind, int slices, std::vector<float> &pos,
 std::vector<image::ImageData *> sliceMeshToLayers(const SliceInput &input, const SliceOptions &opt) {
     return sliceArrays(input.posXYZ, input.nrmXYZ, input.rgb, input.vertexCount, input.indices,
                        input.indexCount, opt);
-}
-
-std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *model,
-                                                   const SliceOptions &opt) {
-    if (!model) throw eve::Exception("SpriteStack.sliceModel: null model");
-    std::vector<float> pos, nrm, rgb;
-    std::vector<uint32_t> idx;
-    const int meshCount = model->getMeshCount();
-    for (int m = 0; m < meshCount; ++m) {
-        const aiMesh *am = model->getMesh(m);
-        if (!am) continue;
-        const uint32_t base = uint32_t(pos.size() / 3);
-        for (unsigned v = 0; v < am->mNumVertices; ++v) {
-            const aiVector3D &p = am->mVertices[v];
-            pos.insert(pos.end(), {p.x, p.y, p.z});
-            if (am->mNormals) {
-                const aiVector3D &n = am->mNormals[v];
-                nrm.insert(nrm.end(), {n.x, n.y, n.z});
-            }
-            if (am->mColors[0] != nullptr) {
-                const aiColor4D &c = am->mColors[0][v];
-                rgb.insert(rgb.end(), {c.r, c.g, c.b});
-            }
-        }
-        for (unsigned f = 0; f < am->mNumFaces; ++f) {
-            const auto &face = am->mFaces[f];
-            if (face.mNumIndices != 3) continue;
-            idx.insert(idx.end(), {base + face.mIndices[0], base + face.mIndices[1],
-                                   base + face.mIndices[2]});
-        }
-    }
-    SliceInput in{};
-    in.posXYZ = pos.data();
-    in.nrmXYZ = nrm.empty() ? nullptr : nrm.data();
-    in.rgb = rgb.empty() ? nullptr : rgb.data();
-    in.vertexCount = int(pos.size() / 3);
-    in.indices = idx.data();
-    in.indexCount = int(idx.size());
-    return sliceArrays(in.posXYZ, in.nrmXYZ, in.rgb, in.vertexCount, in.indices, in.indexCount, opt);
 }
 
 std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &kind,

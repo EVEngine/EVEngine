@@ -46,20 +46,20 @@ module delete list.
   `-sUSE_FREETYPE=1`). Kept from the vendored aggregate: squirrel/simplesquirrel,
   physfs, lz4, Box2D/box3d, xxHash, imgui, and `medialoader_image` (stb/lodepng/dds/
   tinyexr for `image`).
-- **Typical modules outside `web`**: anything that needs the skipped deps —
-  `model3d` / `animation` / `sceneloader` / `avatar` (Assimp), `audio` / `sound`,
-  `network` / `database` / `plugins` / `devtools`, `particles` (pulls animation),
-  `procgen` / `map` / `voxel` / `hd2d`, `virtualgeometry`, `spritestack`, and most
-  gameplay shells (`rpg`, `dialogue`, `building`, …). `font` **is** in `web`
-  (FreeType port). `stylize` / `decal` / precipitation `weather` are in `web`;
-  interactive `Snow` drops out when `procgen` is absent.
+- **In `web` (among others)**: `virtualgeometry`, `hexmap`, `archspace`,
+  `spritestack` (primitive/atlas path; no Assimp), `inventory` / `dnut_interpreter`
+  / `card` / `weapon` / `vehicle`, `stylize` / `decal` / precipitation `weather`,
+  `font` (FreeType port). Interactive `Snow` drops when `procgen` is absent;
+  `spritestack.sliceModel` drops when `model3d` is absent.
+- **Still outside `web`**: `model3d` / `animation` / `sceneloader` / `avatar`
+  (Assimp), `audio` / `sound`, `network` / `database` / `plugins` / `devtools`,
+  `particles` (Poco JSON + animation), `procgen` / `map` / `voxel` / `hd2d`
+  (map→Poco; voxel embeds procgen types in its public header), and shells that
+  need those (`rpg`, `dialogue`, `building`, …).
 - **File blacklists**: Emscripten still drops Poco-heavy data sources
   (`DataModule.cpp` / `JsonDocument.cpp` / `XmlDocument.cpp`). Optional bridges
-  such as `Snow.cpp` follow `OPTIONAL_DEPS` like every other profile.
-- **Not the same as “WebGPU cannot render X”**: native Dawn (`BUILD_PLATFORM=webgpu`
-  with the default `full`/`3d` profile) keeps Assimp and the modules above. Several
-  of them already have WGSL backends (`voxel`, `virtualgeometry`, `spritestack`);
-  the browser profile omits them for dependency/size reasons.
+  (`Snow.cpp`, `SpriteStackModel.cpp`) follow `OPTIONAL_DEPS` like every other
+  profile.
 - **Threads**: `main()` runs on the browser main thread so the WebGPU surface
   can reach the DOM canvas directly (no `PROXY_TO_PTHREAD`); pthreads stay
   available for the Thread module, and **all TUs are compiled with `-matomics

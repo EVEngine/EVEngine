@@ -51,6 +51,10 @@ eve_declare_module(NAME building_editing LAYER 5
 eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
+# Browser web still omits particles: config/effect JSON goes through Poco
+# (ParticleConfig/ParticleEffect), and skeletal attach hard-includes animation
+# → Assimp. Soft-dep + web membership wait on common/Json migration and an
+# animation OPTIONAL_DEPS bridge TU split.
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS action animation data filesystem graphics ik stylize
                    THIRDPARTY poco
@@ -100,12 +104,11 @@ eve_declare_module(NAME climbing LAYER 5 SCRIPT Climbing SLOT climbing
 eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
                    DEPS gpgpu
                    GROUP 3d web)
-# Native Dawn has a WGSL VG path; web/WASM still omits this module because the
-# browser profile keeps the heavier 3d-only aggregate (and avoids growing the
-# WASM closure). Do not read "no GROUP web" as "WebGPU cannot render VG".
+# WGSL compute path is shared by native Dawn and the browser profile. No Assimp
+# / Poco / OpenAL in the closure (only data + gpgpu + graphics).
 eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
                    DEPS data gpgpu graphics
-                   GROUP 3d)
+                   GROUP 3d web)
 # HD-2D: extrudes a 2D map::TileLayer into a 3D terrain mesh (TileMap3D) and
 # renders 2D sprite sheets / characters as camera-facing 3D billboards
 # (Sprite3D) via the ECS Renderable3D forward path.
@@ -209,7 +212,7 @@ eve_declare_module(NAME voxel_editor LAYER 7 DEPS editor voxel_editing
 # L6 -- orchestration (continued)
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME hd2d_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS hd2d

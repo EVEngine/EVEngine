@@ -65,7 +65,7 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
 # city walls, decorations and the fog overlay).
 eve_declare_module(NAME hexmap LAYER 4 SCRIPT HexMap SLOT hexmap
                    DEPS graphics
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME map_editing LAYER 4
                    DEPS editing
                    OPTIONAL_DEPS map
@@ -76,7 +76,7 @@ eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SL
 # vehicles / turrets all attach the same WeaponMount system.
 eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 # L5 -- vehicle adapter
 # Cloth is a host-owned physics satellite: rigid-body physics stays usable in
 # trimmed builds without cloth topology, rendering, or compute backends. Its
@@ -145,7 +145,7 @@ eve_declare_module(NAME physics_softbody_editing DIR physics/softbody/editing LA
 eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    DEPS attributes definitions effects orders weapon settlement game_event
                    OPTIONAL_DEPS physics
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 # L4 -- rendering extensions and simulation (continued)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
                    DEPS action data filesystem graphics image model3d
@@ -163,26 +163,27 @@ eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d web)
 # L5 -- voxel aggregate
-# WebGPU implements voxel face instances in graphics/webgpu/GraphicsVoxel.cpp.
-# The web profile still omits this module: it depends on procgen (and thus map /
-# Poco on a naive closure). Native Dawn full/3d builds keep the WGSL path.
+# WebGPU face instances live in graphics/webgpu/GraphicsVoxel.cpp, but the
+# public VoxelWorld API embeds procgen::TerrainStreamingCache / TerrainSampler.
+# Soft-dep + web membership wait on that API split (procgen still pulls map/Poco).
 eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    DEPS graphics procgen thread
                    GROUP 3d)
 # L4 -- rendering extensions (continued)
-# SpriteStack has a dedicated WebGPU WGSL card shader; web/WASM still excludes
-# the module because it depends on model3d → Assimp, which the Emscripten
-# aggregate does not link.
+# Pure-2D stacks + WGSL card path need only graphics/image. Assimp-backed
+# sliceModel lives in SpriteStackModel.cpp and follows OPTIONAL_DEPS model3d.
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
-                   DEPS graphics image model3d
-                   GROUP 2d)
+                   DEPS graphics image
+                   OPTIONAL_DEPS model3d
+                   GROUP 2d web)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d
                    GROUP 3d)
 eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT archspace
                    DEPS data
-                   GROUP 3d)
+                   GROUP 3d web)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
-                   DEPS attributes decision definitions effects graphics settlement transaction)
+                   DEPS attributes decision definitions effects graphics settlement transaction
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
                    DEPS graphics sound)

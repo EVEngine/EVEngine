@@ -212,6 +212,16 @@ if(NOT _has_spritestack_editor_bridge)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# Assimp-backed sliceModel + the editor bake path that calls it. Primitive /
+# atlas SpriteStack2D remains available when model3d is trimmed (web/WASM).
+eve_module_enabled(model3d _has_model3d_for_spritestack)
+eve_module_enabled(spritestack _has_spritestack_model_bridge)
+if(_has_spritestack_model_bridge AND NOT _has_model3d_for_spritestack)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SpriteStackModel.cpp;SpriteStackRuntime.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 eve_module_enabled(virtualgeometry _has_virtualgeometry_editor_bridge)
 if(NOT _has_virtualgeometry_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
@@ -297,6 +307,10 @@ if(TARGET EVAnimation_editor AND _has_animation_editor_bridge)
   # Runtime clip/skeleton import is an optional bridge. Web authoring profiles
   # retain the standalone clip editor without pulling Assimp/model3d into WASM.
   target_compile_definitions(EVAnimation_editor PRIVATE EVE_ANIMATION_EDITOR_RUNTIME=1)
+endif()
+
+if(TARGET EVSpriteStack AND _has_spritestack_model_bridge AND _has_model3d_for_spritestack)
+  target_compile_definitions(EVSpriteStack PRIVATE EVE_SPRITESTACK_MODEL3D=1)
 endif()
 
 # create_module() globs both physics bridge TUs; keep exactly one.
