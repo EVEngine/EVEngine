@@ -69,7 +69,7 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                     false, false, false, mesh3dPipelineLayout);
         }
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), "pipeline", {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::string("failed to prepare replacement pipeline: ") + error.what(), "pipeline", {},
                                                    "graphics.webgpu.shader_reload"));
     } catch (...) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "failed to prepare replacement pipeline", "pipeline", {},

@@ -43,7 +43,7 @@ Result<const Value::Object*> object(const Value& value, std::string path) {
     const auto* result = value.getIf<Value::Object>();
     if (!result)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected object", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected object", path));
     return Result<const Value::Object*>::success(result);
 }
 
@@ -59,7 +59,7 @@ Result<std::int64_t> integer(const Value& value, std::string path) {
     const auto* result = value.getIf<std::int64_t>();
     if (!result)
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", path));
     return Result<std::int64_t>::success(*result);
 }
 
@@ -67,12 +67,12 @@ Result<std::uint64_t> decimal(const Value& value, std::string path) {
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<std::uint64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected decimal string", path));
     std::uint64_t result = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
         return Result<std::uint64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid decimal string", path));
     return Result<std::uint64_t>::success(result);
 }
 
@@ -85,7 +85,7 @@ Result<std::int64_t> signedDecimal(const Value& value, std::string path) {
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid signed decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid signed decimal string", path));
     return Result<std::int64_t>::success(result);
 }
 
@@ -93,12 +93,12 @@ Result<SubjectRef> subject(const Value& value, std::string path, bool allowNil =
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected subject UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected subject UUID", path));
     if (allowNil && text->empty()) return Result<SubjectRef>::success(SubjectRef::nil());
     const auto id = PersistentId::parse(*text);
     if (!id || id->isNil())
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", path));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
@@ -106,11 +106,11 @@ Result<LogicalId> logicalId(const Value& value, std::string path) {
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<LogicalId>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected logical ID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected logical ID", path));
     const auto result = LogicalId::parse(*text);
     if (!result)
         return Result<LogicalId>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", path));
     return Result<LogicalId>::success(*result);
 }
 
@@ -119,7 +119,7 @@ Result<Cell> parseCell(const Value& value, std::string path) {
     if (!candidate) return Result<Cell>::failure(candidate.status());
     if (candidate.value()->size() != 3)
         return Result<Cell>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "cell has unknown or missing fields", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "cell has unknown or missing fields", path));
     Cell result;
     for (const auto& [name, target] : {std::pair{"x", &result.x}, {"y", &result.y}, {"layer", &result.layer}}) {
         auto member = field(*candidate.value(), name, path);

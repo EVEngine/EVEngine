@@ -177,7 +177,7 @@ std::vector<std::int32_t> signedIndices(const std::vector<std::uint32_t>& indice
 eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepareFailure(eve::DiagnosticCode code,
                                                                                 std::string         message) {
     return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-        eve::Diagnostic::error(code, std::move(message)));
+        eve::Diagnostic::error(code, message));
 }
 
 }  // namespace
@@ -592,7 +592,7 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
             candidate.push_back(std::move(runtime));
         }
     } catch (const std::exception& error) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(std::string("Box3D restore failed: ") + error.what())));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("Box3D restore failed: ") + error.what()));
     } catch (...) {
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, "Box3D restore failed"));
     }

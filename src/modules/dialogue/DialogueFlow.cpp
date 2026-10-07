@@ -142,7 +142,7 @@ public:
             auto        restored = runner_.restoreState(before_);
             if (!restored && error.empty()) error = restored.status().describe();
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(error.empty() ? "dialogue choice selection failed" : error), "route", {}, "dialogue.flow"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.empty() ? "dialogue choice selection failed" : error, "route", {}, "dialogue.flow"));
         }
         phase_ = Phase::Committed;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -161,7 +161,7 @@ public:
         auto restored = runner_.restoreState(before_);
         if (!restored)
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(restored.status().describe()), "route", {}, "dialogue.flow"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, restored.status().describe(), "route", {}, "dialogue.flow"));
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -866,13 +866,13 @@ eve::Result<void> DialogueFlow::startChecked(const std::string& id, ssq::Object 
         if (!ok) {
             failureMessage_ = "conversation bindings must be a scalar-only table";
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(failureMessage_), "dialogue.bindings", {}, "dialogue.flow"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, failureMessage_, "dialogue.bindings", {}, "dialogue.flow"));
         }
     }
     const eve::dnut::SequenceAsset* asset = find(id);
     if (!asset)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("conversation was not found: " + id), std::move("dialogue." + id), {}, "dialogue.flow"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "conversation was not found: " + id, "dialogue." + id, {}, "dialogue.flow"));
     auto started = runner_.start(asset, toCanonicalValue(converted));
     if (!started) return eve::Result<void>::failure(started.status());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));

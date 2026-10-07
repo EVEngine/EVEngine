@@ -133,7 +133,7 @@ Result<void> validateResourceShaderStages(std::span<const uint32_t> vertex, std:
         }
         return stage(fragment, false, inputs);
     } catch (const std::exception& error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error.what()), "shader.resources"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, error.what(), "shader.resources"));
     }
 #else
     (void)vertex;

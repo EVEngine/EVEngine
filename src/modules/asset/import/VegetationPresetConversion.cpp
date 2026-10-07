@@ -12,7 +12,7 @@ Result<void> applyOutputPlan(VegetationConversionResult& result) {
                                                                                              : &found->second.front();
     };
     const auto invalid = [](std::string message) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), {}, {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, message, {}, {},
                                                        "asset.import.vegetation-preset.conversion"));
     };
     if (result.candidate.outputDirectives.contains("OutputMeshes")) {

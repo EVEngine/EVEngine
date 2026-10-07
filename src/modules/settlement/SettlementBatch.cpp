@@ -10,7 +10,7 @@ namespace {
 
 template <class T>
 eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, message, path));
 }
 
 template <class T>

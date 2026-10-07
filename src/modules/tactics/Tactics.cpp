@@ -43,7 +43,7 @@ Result<SubjectRef> bindingSubject(const std::string& text, std::string path) {
     const auto id = PersistentId::parse(text);
     if (!id || id->isNil())
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID", path));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
@@ -62,7 +62,7 @@ Result<LogicalId> bindingLogicalId(const std::string& text, std::string path) {
     const auto id = LogicalId::parse(text);
     if (!id)
         return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "expected a namespace:name logical ID", std::move(path)));
+                                                            "expected a namespace:name logical ID", path));
     return Result<LogicalId>::success(*id);
 }
 
@@ -1534,7 +1534,7 @@ void Tactics::expose(ssq::Table& table) {
                 registered += id;
             }
             return script::projectResult(
-                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown tactics turn policy '" + policy + "'; registered: " + registered), "policy")));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics turn policy '" + policy + "'; registered: " + registered, "policy")));
         }
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {

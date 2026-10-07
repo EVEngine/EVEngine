@@ -14,7 +14,7 @@ eve::Result<void> SoftBodyModel::validate() const {
         const auto& particle = particles[index];
         if (!std::isfinite(particle.x) || !std::isfinite(particle.y) || !std::isfinite(particle.z))
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "particle position must be finite", std::move("particles[" + std::to_string(index) + "]")));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "particle position must be finite", "particles[" + std::to_string(index) + "]"));
     }
     if (surfaceIndices.empty() || surfaceIndices.size() % 3 != 0)
         return eve::Result<void>::failure(

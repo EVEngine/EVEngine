@@ -625,7 +625,7 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commitAttempt(
     };
     auto reject = [&](eve::DiagnosticCode code, std::string message, std::string path) {
         auto result = eve::Result<EditorTransactionRecord>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+            eve::Diagnostic::error(code, message, path));
         const bool preserveRetryBlock = impl_->state == EditorCommitState::FailedRetryable;
         impl_->state                  = EditorCommitState::FailedRetryable;
         if (!preserveRetryBlock) {

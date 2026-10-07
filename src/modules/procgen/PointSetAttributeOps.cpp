@@ -12,7 +12,7 @@ namespace {
 
 Result<float> invalidChannelFloat(std::string message, std::string path) {
     return Result<float>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 bool isMetadataName(std::string_view name) noexcept {
@@ -163,7 +163,7 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
     }
     if (!isPointFloatSelector(name))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), "name"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown float selector '" + std::string(name) + "'", "name"));
 
     ProcgenPoint& point = points.mutablePoint(std::size_t(index));
     if (name == "$Density") {
@@ -267,7 +267,7 @@ Result<void> writePointFloatChannel(PointSet& points, int index, std::string_vie
         return Result<void>::success();
     }
     return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float selector '" + std::string(name) + "'"), "name"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown float selector '" + std::string(name) + "'", "name"));
 }
 
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,

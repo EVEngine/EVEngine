@@ -115,7 +115,7 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         }
     } catch (const std::exception &error) {
         destroyCandidate(device, candidate);
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(std::string("failed to prepare replacement pipeline: ") + error.what()), "pipeline", {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::string("failed to prepare replacement pipeline: ") + error.what(), "pipeline", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (...) {
         destroyCandidate(device, candidate);
@@ -170,8 +170,8 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
                                                    "graphics.vulkan.shader_reload"));
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
     if (current->isHair3D)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("runtime GLSL replacement does not yet provide the hair vertex "
-                             "contract; publish SPIR-V stages instead"), "shader.kind", {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "runtime GLSL replacement does not yet provide the hair vertex "
+                             "contract; publish SPIR-V stages instead", "shader.kind", {},
                                                    "graphics.vulkan.shader_reload"));
 
     Shader *candidate = nullptr;
@@ -180,10 +180,10 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
                         ? newMeshShader(vertGlsl, fragGlsl)
                         : newShader(vertGlsl, fragGlsl);
     } catch (const Exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error.what()), "source", {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, error.what(), "source", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(error.what()), "compiler", {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "compiler", {},
                                                    "graphics.vulkan.shader_reload"));
     } catch (...) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "GLSL compilation failed", "compiler", {},

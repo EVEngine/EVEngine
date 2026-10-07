@@ -75,7 +75,7 @@ eve::Result<std::vector<AccountCost>> buildCosts(const DialogueAccountBindings& 
 
 eve::Result<void> eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::string message, "transaction.lifecycle", {}, "dialogue.payment")) {
     return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "transaction.lifecycle", {}, "dialogue.payment"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "transaction.lifecycle", {}, "dialogue.payment"));
 }
 
 }  // namespace

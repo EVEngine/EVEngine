@@ -389,15 +389,15 @@ void applyMaskedVertexOperation(const auto& node, Vec3& position, Vec3& normal) 
 
 Result<void> validateMesh(const MeshBuild& mesh, std::string_view path) {
     if (mesh.empty()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh input is empty", std::move(std::string(path)), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh input is empty", std::string(path), {}, "procgen.meshModifierGraph"));
     if (mesh.positions().size() % 3u != 0u || mesh.normals().size() != mesh.positions().size() ||
         mesh.uvs().size() != (mesh.positions().size() / 3u) * 2u || mesh.indices().size() % 3u != 0u)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvariantViolation, "mesh streams have incompatible lengths", std::move(std::string(path)), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvariantViolation, "mesh streams have incompatible lengths", std::string(path), {}, "procgen.meshModifierGraph"));
     for (const auto index : mesh.indices())
         if (index >= static_cast<std::uint32_t>(mesh.getVertexCount()))
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvariantViolation, "mesh index is outside the vertex stream", std::move(std::string(path)), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvariantViolation, "mesh index is outside the vertex stream", std::string(path), {}, "procgen.meshModifierGraph"));
     return Result<void>::success();
 }
 
@@ -1388,10 +1388,10 @@ Result<void> MeshModifierGraph::addNode(std::string id, std::string operation) {
     const auto* spec = findSpec(operation);
     if (!spec)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown mesh modifier operation: " + operation), "node.operation", {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::NotFound, "unknown mesh modifier operation: " + operation, "node.operation", {}, "procgen.meshModifierGraph"));
     if (nodes_.contains(id))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::AlreadyExists, std::move("duplicate mesh modifier node: " + id), "node.id", {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::AlreadyExists, "duplicate mesh modifier node: " + id, "node.id", {}, "procgen.meshModifierGraph"));
     Node node;
     node.id        = id;
     node.operation = std::move(operation);
@@ -1414,7 +1414,7 @@ Result<void> MeshModifierGraph::removeNode(std::string_view id) {
     const std::string key(id);
     if (!nodes_.erase(key))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, std::move("mesh modifier node not found: " + key), "node.id", {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::NotFound, "mesh modifier node not found: " + key, "node.id", {}, "procgen.meshModifierGraph"));
     std::erase(nodeOrder_, key);
     for (auto& [_, node] : nodes_)
         for (auto& input : node.inputs)
@@ -1475,7 +1475,7 @@ Result<void> MeshModifierGraph::setNodeSplinePath(std::string_view id, const Spl
     if (found->second.operation != "deform.splinePath" && found->second.operation != "mesh.splineTube" &&
         found->second.operation != "mesh.splineRibbon" && found->second.operation != "mesh.splineExtrude")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::TypeMismatch, "spline paths can only be bound to spline deformation or generation nodes", std::move(std::string(id)), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "spline paths can only be bound to spline deformation or generation nodes", std::string(id), {}, "procgen.meshModifierGraph"));
     auto ready = path.evaluateResult(0.f);
     if (!ready.ok()) return Result<void>::failure(ready.status());
     found->second.splinePath    = path;
@@ -1490,7 +1490,7 @@ Result<void> MeshModifierGraph::setNodeSplineProfile(std::string_view id, const 
         Diagnostic::error(DiagnosticCode::NotFound, "mesh modifier node not found", "node.id", {}, "procgen.meshModifierGraph"));
     if (found->second.operation != "mesh.splineExtrude")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::TypeMismatch, "profiles can only be bound to mesh.splineExtrude", std::move(std::string(id)), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "profiles can only be bound to mesh.splineExtrude", std::string(id), {}, "procgen.meshModifierGraph"));
     const std::size_t minimum = profile.closed ? 3u : 2u;
     if (profile.points.size() < minimum || profile.points.size() > 256u)
         return Result<void>::failure(
@@ -1519,7 +1519,7 @@ Result<void> MeshModifierGraph::setNodeSplineProfile(std::string_view id, const 
 Result<void> MeshModifierGraph::setNodeFloat(std::string_view id, std::string key, float value) {
     if (!std::isfinite(value))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh modifier float must be finite", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh modifier float must be finite", key, {}, "procgen.meshModifierGraph"));
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end()) return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::NotFound, "mesh modifier node not found", "node.id", {}, "procgen.meshModifierGraph"));
@@ -1527,7 +1527,7 @@ Result<void> MeshModifierGraph::setNodeFloat(std::string_view id, std::string ke
     const auto* param = spec ? findParam(*spec, key) : nullptr;
     if (!param || std::string_view(param->kind) != "float")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-float mesh modifier parameter", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-float mesh modifier parameter", key, {}, "procgen.meshModifierGraph"));
     found->second.floats[std::move(key)] = value;
     invalidate();
     return Result<void>::success();
@@ -1541,7 +1541,7 @@ Result<void> MeshModifierGraph::setNodeInt(std::string_view id, std::string key,
     const auto* param = spec ? findParam(*spec, key) : nullptr;
     if (!param || std::string_view(param->kind) != "int")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-integer mesh modifier parameter", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-integer mesh modifier parameter", key, {}, "procgen.meshModifierGraph"));
     found->second.ints[std::move(key)] = value;
     invalidate();
     return Result<void>::success();
@@ -1555,7 +1555,7 @@ Result<void> MeshModifierGraph::setNodeString(std::string_view id, std::string k
     const auto* param = spec ? findParam(*spec, key) : nullptr;
     if (!param || std::string_view(param->kind) != "string")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-string mesh modifier parameter", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "unknown or non-string mesh modifier parameter", key, {}, "procgen.meshModifierGraph"));
     found->second.strings[std::move(key)] = std::move(value);
     invalidate();
     return Result<void>::success();
@@ -1565,23 +1565,23 @@ Result<void> MeshModifierGraph::validateNode(std::string_view id, std::unordered
     const std::string key(id);
     if (states[key] == 2) return Result<void>::success();
     if (states[key] == 1) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Conflict, std::move("cycle at mesh modifier node: " + key), std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::Conflict, "cycle at mesh modifier node: " + key, key, {}, "procgen.meshModifierGraph"));
     const auto found = nodes_.find(key);
     if (found == nodes_.end()) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown mesh modifier node: " + key), std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::NotFound, "unknown mesh modifier node: " + key, key, {}, "procgen.meshModifierGraph"));
     states[key]      = 1;
     const Node& node = found->second;
     if (node.operation == "mesh.input") {
         if (!node.hasInputMesh)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh.input has no bound mesh", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh.input has no bound mesh", key, {}, "procgen.meshModifierGraph"));
         auto valid = validateMesh(node.inputMesh, key);
         if (!valid.ok()) return valid;
     }
     for (std::size_t input = 0; input < node.inputs.size(); ++input) {
         if (node.inputs[input].empty())
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move(node.operation + " requires mesh input " + std::to_string(input)), std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, node.operation + " requires mesh input " + std::to_string(input), key, {}, "procgen.meshModifierGraph"));
         auto valid = validateNode(node.inputs[input], states);
         if (!valid.ok()) return valid;
     }
@@ -1591,16 +1591,16 @@ Result<void> MeshModifierGraph::validateNode(std::string_view id, std::unordered
          node.operation == "deform.splinePath") &&
         axis != "x" && axis != "y" && axis != "z")
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "deformation axis must be x, y, or z", std::move(key + ".axis"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "deformation axis must be x, y, or z", key + ".axis", {}, "procgen.meshModifierGraph"));
     if ((node.operation == "deform.splinePath" || node.operation == "mesh.splineTube" ||
          node.operation == "mesh.splineRibbon" || node.operation == "mesh.splineExtrude") &&
         !node.hasSplinePath)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move(node.operation + " has no bound spline path"), std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, node.operation + " has no bound spline path", key, {}, "procgen.meshModifierGraph"));
     if (node.hasSplinePath && node.splinePath.chunkCount() > 1) {
         if (node.operation == "deform.splinePath")
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, "deform.splinePath requires one connected chunk", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "deform.splinePath requires one connected chunk", key, {}, "procgen.meshModifierGraph"));
         for (int chunk = 0; chunk < node.splinePath.chunkCount(); ++chunk) {
             auto path = node.splinePath.chunkPathResult(chunk);
             if (!path.ok()) return Result<void>::failure(path.status());
@@ -1608,19 +1608,19 @@ Result<void> MeshModifierGraph::validateNode(std::string_view id, std::unordered
     }
     if (node.operation == "deform.splinePath" && std::abs(parameter(node, "scale", 1.f)) < 1e-7f)
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline path scale must be non-zero", std::move(key + ".scale"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline path scale must be non-zero", key + ".scale", {}, "procgen.meshModifierGraph"));
     if (node.operation == "mesh.splineTube") {
         const int pathSegments   = intParameter(node, "pathSegments", 32);
         const int radialSegments = intParameter(node, "radialSegments", 12);
         if (parameter(node, "radius", 0.5f) <= 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube radius must be positive", std::move(key + ".radius"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube radius must be positive", key + ".radius", {}, "procgen.meshModifierGraph"));
         if (pathSegments < 1 || pathSegments > 4096)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube pathSegments must be in [1, 4096]", std::move(key + ".pathSegments"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube pathSegments must be in [1, 4096]", key + ".pathSegments", {}, "procgen.meshModifierGraph"));
         if (radialSegments < 3 || radialSegments > 256)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube radialSegments must be in [3, 256]", std::move(key + ".radialSegments"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube radialSegments must be in [3, 256]", key + ".radialSegments", {}, "procgen.meshModifierGraph"));
         const std::uint64_t capVertices = node.splinePath.isClosed() || intParameter(node, "cap", 1) == 0
                                               ? 0u
                                               : 2u * static_cast<std::uint64_t>(radialSegments + 2);
@@ -1628,67 +1628,67 @@ Result<void> MeshModifierGraph::validateNode(std::string_view id, std::unordered
             static_cast<std::uint64_t>(pathSegments + 1) * static_cast<std::uint64_t>(radialSegments + 1) + capVertices;
         if (vertexCount > 1'000'000u)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube exceeds the one-million vertex budget", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline tube exceeds the one-million vertex budget", key, {}, "procgen.meshModifierGraph"));
     }
     if (node.operation == "mesh.splineRibbon") {
         const int pathSegments = intParameter(node, "pathSegments", 32);
         if (parameter(node, "width", 2.f) <= 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon width must be positive", std::move(key + ".width"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon width must be positive", key + ".width", {}, "procgen.meshModifierGraph"));
         if (parameter(node, "thickness", 0.f) < 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon thickness must be non-negative", std::move(key + ".thickness"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon thickness must be non-negative", key + ".thickness", {}, "procgen.meshModifierGraph"));
         if (pathSegments < 1 || pathSegments > 4096)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon pathSegments must be in [1, 4096]", std::move(key + ".pathSegments"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline ribbon pathSegments must be in [1, 4096]", key + ".pathSegments", {}, "procgen.meshModifierGraph"));
     }
     if (node.operation == "mesh.splineExtrude") {
         if (!node.hasSplineProfile)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh.splineExtrude has no bound profile", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, "mesh.splineExtrude has no bound profile", key, {}, "procgen.meshModifierGraph"));
         const int pathSegments = intParameter(node, "pathSegments", 32);
         if (pathSegments < 1 || pathSegments > 4096)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline extrusion pathSegments must be in [1, 4096]", std::move(key + ".pathSegments"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline extrusion pathSegments must be in [1, 4096]", key + ".pathSegments", {}, "procgen.meshModifierGraph"));
         const std::uint64_t stride = node.splineProfile.points.size() + (node.splineProfile.closed ? 1u : 0u);
         if (static_cast<std::uint64_t>(pathSegments + 1) * stride > 1'000'000u)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline extrusion exceeds the one-million vertex budget", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "spline extrusion exceeds the one-million vertex budget", key, {}, "procgen.meshModifierGraph"));
     }
     if (node.operation == "deform.transform" &&
         (std::abs(parameter(node, "scaleX", 1.f)) < 1e-7f || std::abs(parameter(node, "scaleY", 1.f)) < 1e-7f ||
          std::abs(parameter(node, "scaleZ", 1.f)) < 1e-7f))
         return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "deformation scale components must be non-zero", std::move(key), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "deformation scale components must be non-zero", key, {}, "procgen.meshModifierGraph"));
     if (node.operation == "deform.soundReact") {
         const float       level = parameter(node, "level", 0.f), threshold = parameter(node, "threshold", 0.f);
         const std::string axis = stringParameter(node, "axis", "y");
         if (level < 0.f || level > 1.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react level must be in [0, 1]", std::move(key + ".level"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react level must be in [0, 1]", key + ".level", {}, "procgen.meshModifierGraph"));
         if (threshold < 0.f || threshold > 1.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react threshold must be in [0, 1]", std::move(key + ".threshold"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react threshold must be in [0, 1]", key + ".threshold", {}, "procgen.meshModifierGraph"));
         if (axis != "x" && axis != "y" && axis != "z")
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react axis must be x, y, or z", std::move(key + ".axis"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react axis must be x, y, or z", key + ".axis", {}, "procgen.meshModifierGraph"));
         if (parameter(node, "frequency", 1.f) < 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react frequency must be non-negative", std::move(key + ".frequency"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "sound-react frequency must be non-negative", key + ".frequency", {}, "procgen.meshModifierGraph"));
     }
     if (node.operation == "deform.effector") {
         const int pointCount = intParameter(node, "pointCount", 1);
         if (pointCount < 1 || pointCount > 4)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector pointCount must be in [1, 4]", std::move(key + ".pointCount"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector pointCount must be in [1, 4]", key + ".pointCount", {}, "procgen.meshModifierGraph"));
         if (parameter(node, "density", 1.f) <= 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector density must be positive", std::move(key + ".density"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector density must be positive", key + ".density", {}, "procgen.meshModifierGraph"));
         for (int point = 0; point < pointCount; ++point) {
             const std::string radius = "p" + std::to_string(point) + "radius";
             if (parameter(node, radius, 1.f) <= 0.f)
                 return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector radius must be positive", std::move(key + "." + radius), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh effector radius must be positive", key + "." + radius, {}, "procgen.meshModifierGraph"));
         }
     }
     if (node.operation == "deform.meshFit") {
@@ -1696,10 +1696,10 @@ Result<void> MeshModifierGraph::validateNode(std::string_view id, std::unordered
         const float z = parameter(node, "directionZ", 0.f);
         if (x * x + y * y + z * z < 1e-12f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh fit direction must be non-zero", std::move(key + ".direction"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh fit direction must be non-zero", key + ".direction", {}, "procgen.meshModifierGraph"));
         if (parameter(node, "maxDistance", 10.f) <= 0.f)
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh fit maxDistance must be positive", std::move(key + ".maxDistance"), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh fit maxDistance must be positive", key + ".maxDistance", {}, "procgen.meshModifierGraph"));
     }
     states[key] = 2;
     return Result<void>::success();
@@ -1720,16 +1720,16 @@ Result<std::vector<MeshModifierGraph::Segment>> MeshModifierGraph::compilePlan(s
     std::function<Result<void>(const std::string&)> visit = [&](const std::string& id) -> Result<void> {
         if (states[id] == 2) return Result<void>::success();
         if (states[id] == 1) return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Conflict, std::move("cycle at mesh modifier node: " + id), std::move(id), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::Conflict, "cycle at mesh modifier node: " + id, id, {}, "procgen.meshModifierGraph"));
         const auto found = nodes_.find(id);
         if (found == nodes_.end())
             return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown mesh modifier output: " + id), std::move(id), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::NotFound, "unknown mesh modifier output: " + id, id, {}, "procgen.meshModifierGraph"));
         states[id] = 1;
         for (const auto& input : found->second.inputs) {
             if (input.empty())
                 return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move(found->second.operation + " has an unconnected input"), std::move(id), {}, "procgen.meshModifierGraph"));
+        Diagnostic::error(DiagnosticCode::PreconditionViolation, found->second.operation + " has an unconnected input", id, {}, "procgen.meshModifierGraph"));
             auto result = visit(input);
             if (!result.ok()) return result;
         }

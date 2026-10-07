@@ -158,32 +158,32 @@ Result<void> CarrierRecipe::validate() const {
         switch (op.kind) {
             case CarrierMotionOpKind::SteerHoming:
                 if (!std::isfinite(op.maxTurnRateDegrees) || op.maxTurnRateDegrees <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing turn rate must be finite and positive", std::move(path + ".maxTurnRateDegrees")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing turn rate must be finite and positive", path + ".maxTurnRateDegrees"));
                 break;
             case CarrierMotionOpKind::SteerAvoidBody:
                 if (!std::isfinite(op.avoidLookAhead) || op.avoidLookAhead <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid look-ahead must be finite and positive", std::move(path + ".avoidLookAhead")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid look-ahead must be finite and positive", path + ".avoidLookAhead"));
                 if (!std::isfinite(op.avoidStrength) || op.avoidStrength < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid strength must be finite and non-negative", std::move(path + ".avoidStrength")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid strength must be finite and non-negative", path + ".avoidStrength"));
                 if (!std::isfinite(op.avoidRadiusPadding) || op.avoidRadiusPadding < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid radius padding must be finite and non-negative", std::move(path + ".avoidRadiusPadding")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid radius padding must be finite and non-negative", path + ".avoidRadiusPadding"));
                 if (!std::isfinite(op.maxTurnRateDegrees) || op.maxTurnRateDegrees <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid turn rate must be finite and positive", std::move(path + ".maxTurnRateDegrees")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Body-avoid turn rate must be finite and positive", path + ".maxTurnRateDegrees"));
                 break;
             case CarrierMotionOpKind::ApplyGravity:
                 if (!std::isfinite(op.gravity) || op.gravity < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Gravity must be finite and non-negative", std::move(path + ".gravity")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Gravity must be finite and non-negative", path + ".gravity"));
                 break;
             case CarrierMotionOpKind::Accelerate:
                 if (!std::isfinite(op.acceleration) || op.acceleration < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Acceleration must be finite and non-negative", std::move(path + ".acceleration")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Acceleration must be finite and non-negative", path + ".acceleration"));
                 break;
             case CarrierMotionOpKind::CurveSway:
             case CarrierMotionOpKind::CurveHelix:
                 if (!std::isfinite(op.curveAmplitude) || op.curveAmplitude < 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve amplitude must be finite and non-negative", std::move(path + ".curveAmplitude")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve amplitude must be finite and non-negative", path + ".curveAmplitude"));
                 if (!std::isfinite(op.curveFrequencyHz) || op.curveFrequencyHz <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve frequency must be finite and positive", std::move(path + ".curveFrequencyHz")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Curve frequency must be finite and positive", path + ".curveFrequencyHz"));
                 break;
             case CarrierMotionOpKind::IntegrateLinear:
                 hasIntegrate = true;
@@ -202,15 +202,15 @@ Result<void> CarrierRecipe::validate() const {
         switch (trigger.kind) {
             case CarrierTriggerKind::OnFuse:
                 if (trigger.fuse <= Duration::zero())
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Fuse trigger requires positive fuse", std::move(path + ".fuse")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Fuse trigger requires positive fuse", path + ".fuse"));
                 break;
             case CarrierTriggerKind::OnInterval:
                 if (trigger.interval <= Duration::zero())
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Interval trigger requires positive interval", std::move(path + ".interval")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Interval trigger requires positive interval", path + ".interval"));
                 break;
             case CarrierTriggerKind::OnProximity:
                 if (!std::isfinite(trigger.proximityRadius) || trigger.proximityRadius <= 0.0)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Proximity trigger requires positive radius", std::move(path + ".proximityRadius")));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Proximity trigger requires positive radius", path + ".proximityRadius"));
                 break;
             case CarrierTriggerKind::OnExpire:
             case CarrierTriggerKind::OnHit:
@@ -222,17 +222,17 @@ Result<void> CarrierRecipe::validate() const {
         const auto& impact = impacts[i];
         const auto  path   = "impacts[" + std::to_string(i) + "]";
         if (!std::isfinite(impact.damage) || impact.damage < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Impact damage must be finite and non-negative", std::move(path + ".damage")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Impact damage must be finite and non-negative", path + ".damage"));
         if (!std::isfinite(impact.splashRadius) || impact.splashRadius < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash radius must be finite and non-negative", std::move(path + ".splashRadius")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash radius must be finite and non-negative", path + ".splashRadius"));
         if (!std::isfinite(impact.restitution) || impact.restitution < 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Bounce restitution must be finite and non-negative", std::move(path + ".restitution")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Bounce restitution must be finite and non-negative", path + ".restitution"));
         if (impact.pierceCount < 0 || impact.bounceCount < 0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Pierce/bounce budgets must be non-negative", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Pierce/bounce budgets must be non-negative", path));
         if (impact.kind == CarrierImpactKind::SpawnChild && !impact.childRecipeId.isValid())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SpawnChild requires childRecipeId", std::move(path + ".childRecipeId")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SpawnChild requires childRecipeId", path + ".childRecipeId"));
         if (impact.kind == CarrierImpactKind::Splash && impact.splashRadius <= 0.0)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash impact requires positive splashRadius", std::move(path + ".splashRadius")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Splash impact requires positive splashRadius", path + ".splashRadius"));
     }
     return Result<void>::success();
 }

@@ -189,7 +189,7 @@ private:
     static eve::Result<eve::action::ActionAudioWaveform> failure(
         eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<eve::action::ActionAudioWaveform>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+            eve::Diagnostic::error(code, message, path));
     }
 };
 
@@ -312,7 +312,7 @@ public:
                 active_.emplace(key, std::move(owned));
             }
         } catch (const std::exception& error) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(error.what()), "uri"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "uri"));
         }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }

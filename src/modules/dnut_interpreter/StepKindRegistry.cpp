@@ -55,11 +55,11 @@ eve::Result<void> StepKindRegistry::registerStep(StepKindDescriptor descriptor) 
         eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step type must be a non-empty bare word", "type", {}, "dnut.step-registry"));
     if (descriptors_.contains(descriptor.type))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, std::move("step type '" + descriptor.type + "' is already registered"), std::move(descriptor.type), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, "step type '" + descriptor.type + "' is already registered", descriptor.type, {}, "dnut.step-registry"));
     for (const auto& field : descriptor.fields) {
         if (!isBareWord(field.name))
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step '" + descriptor.type + "' declares an invalid field name"), std::move(field.name), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step '" + descriptor.type + "' declares an invalid field name", field.name, {}, "dnut.step-registry"));
     }
     if (descriptor.displayName.empty()) descriptor.displayName = descriptor.type;
     descriptors_.emplace(descriptor.type, std::move(descriptor));
@@ -70,10 +70,10 @@ eve::Result<void> StepKindRegistry::registerHandler(std::string_view type, StepH
     const std::string key(type);
     if (!descriptors_.contains(key))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("step type '" + key + "' must be declared before a handler is bound"), std::move(key), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "step type '" + key + "' must be declared before a handler is bound", key, {}, "dnut.step-registry"));
     if (!handler)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step handler for '" + key + "' must be callable"), std::move(key), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step handler for '" + key + "' must be callable", key, {}, "dnut.step-registry"));
     handlers_[key] = std::move(handler);
     return eve::Result<void>::success();
 }
@@ -104,24 +104,24 @@ eve::Result<void> StepKindRegistry::validate(const SequenceNode& node) const {
     const auto* contract = descriptor(node.type);
     if (!contract)
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move("node '" + node.id + "' uses unregistered step type '" + node.type + "'"), std::move("nodes." + node.id + ".type"), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "node '" + node.id + "' uses unregistered step type '" + node.type + "'", "nodes." + node.id + ".type", {}, "dnut.step-registry"));
     if (!node.payload.isObject())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("node '" + node.id + "' payload must be an object"), std::move("nodes." + node.id + ".payload"), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "node '" + node.id + "' payload must be an object", "nodes." + node.id + ".payload", {}, "dnut.step-registry"));
 
     for (const auto& field : contract->fields) {
         const eve::Value* value = node.payload.find(field.name);
         if (!value) {
             if (field.required)
                 return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step '" + node.type + "' on node '" + node.id + "' requires field '" +
-                                           field.name + "'"), std::move("nodes." + node.id + ".payload." + field.name), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step '" + node.type + "' on node '" + node.id + "' requires field '" +
+                                           field.name + "'", "nodes." + node.id + ".payload." + field.name, {}, "dnut.step-registry"));
             continue;
         }
         if (!matchesFieldType(*value, field.type))
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step '" + node.type + "' field '" + field.name + "' must be " +
-                                       fieldTypeName(field.type)), std::move("nodes." + node.id + ".payload." + field.name), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step '" + node.type + "' field '" + field.name + "' must be " +
+                                       fieldTypeName(field.type), "nodes." + node.id + ".payload." + field.name, {}, "dnut.step-registry"));
     }
 
     for (const auto& key : node.payload.keys()) {
@@ -134,12 +134,12 @@ eve::Result<void> StepKindRegistry::validate(const SequenceNode& node) const {
         }
         if (!declared)
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("step '" + node.type + "' does not accept field '" + key + "'"), std::move("nodes." + node.id + ".payload." + key), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "step '" + node.type + "' does not accept field '" + key + "'", "nodes." + node.id + ".payload." + key, {}, "dnut.step-registry"));
     }
 
     if (contract->shape == StepShape::Instant && !hasHandler(node.type))
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move("step '" + node.type + "' is instant but has no handler bound"), std::move("nodes." + node.id + ".type"), {}, "dnut.step-registry"));
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "step '" + node.type + "' is instant but has no handler bound", "nodes." + node.id + ".type", {}, "dnut.step-registry"));
     if (contract->validate) {
         auto domainResult = contract->validate(node);
         if (!domainResult.ok()) return domainResult;

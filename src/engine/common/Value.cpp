@@ -59,7 +59,7 @@ Result<Value> Value::fromJson(std::string_view jsonText) {
     std::string       error;
     json::Document    document = json::Document::parse(input, &error);
     if (!document.valid()) {
-        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error)));
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, error));
     }
     return copyJsonValue(document.root());
 }

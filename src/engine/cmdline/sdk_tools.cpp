@@ -409,7 +409,7 @@ eve::Result<void> installEveSdk(Platform p) {
     fs::create_directories(work, ec);
     if (ec) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot create SDK download workspace: " + ec.message()), std::move(work.string()), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create SDK download workspace: " + ec.message(), work.string(), {}, "cmdline.sdk"));
     }
     const std::string zipPath = (work / zipName).string();
     const std::string sumsPath = (work / "SHA256SUMS").string();
@@ -418,22 +418,22 @@ eve::Result<void> installEveSdk(Platform p) {
     if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + zipUrl + "\"") != 0) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK archive download failed", std::move(zipUrl), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK archive download failed", zipUrl, {}, "cmdline.sdk"));
     }
     if (!nonEmptyRegularFile(zipPath, ec)) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK archive download returned an empty or unreadable response", std::move(zipUrl), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK archive download returned an empty or unreadable response", zipUrl, {}, "cmdline.sdk"));
     }
     if (runShell("curl -fL --retry 3 -o \"" + sumsPath + "\" \"" + sumsUrl + "\"") != 0) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK checksum file download failed", std::move(sumsUrl), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK checksum file download failed", sumsUrl, {}, "cmdline.sdk"));
     }
     if (!nonEmptyRegularFile(sumsPath, ec)) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK checksum download returned an empty or unreadable response", std::move(sumsUrl), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "SDK checksum download returned an empty or unreadable response", sumsUrl, {}, "cmdline.sdk"));
     }
     {
         std::ifstream in(sumsPath);
@@ -444,7 +444,7 @@ eve::Result<void> installEveSdk(Platform p) {
         if (expected.empty() || actual.empty() || lower(expected) != lower(actual)) {
             fs::remove_all(work, ec);
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::HashMismatch, std::move("SDK SHA-256 verification failed for " + zipName), std::move(zipPath), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::HashMismatch, "SDK SHA-256 verification failed for " + zipName, zipPath, {}, "cmdline.sdk"));
         }
     }
 
@@ -453,18 +453,18 @@ eve::Result<void> installEveSdk(Platform p) {
     if (ec) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot create SDK extraction directory: " + ec.message()), std::move(extractDir), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create SDK extraction directory: " + ec.message(), extractDir, {}, "cmdline.sdk"));
     }
     if (!extractZip(zipPath, extractDir)) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "SDK archive is empty, truncated, or not a supported ZIP archive", std::move(zipPath), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "SDK archive is empty, truncated, or not a supported ZIP archive", zipPath, {}, "cmdline.sdk"));
     }
     const auto srcRoot = fs::path(extractDir) / "eve-sdk" / plat;
     if (!fs::is_directory(srcRoot, ec)) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("unexpected SDK archive layout; expected eve-sdk/" + plat + "/"), std::move(zipPath), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected SDK archive layout; expected eve-sdk/" + plat + "/", zipPath, {}, "cmdline.sdk"));
     }
     {
         const std::string platMarker = sdkTargetPlatform(srcRoot.string());
@@ -472,12 +472,12 @@ eve::Result<void> installEveSdk(Platform p) {
         if (platMarker != plat) {
             fs::remove_all(work, ec);
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("SDK archive targets '" + platMarker + "', not '" + plat + "'"), std::move((srcRoot / "share" / "eve" / "TARGET_PLATFORM").string()), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "SDK archive targets '" + platMarker + "', not '" + plat + "'", (srcRoot / "share" / "eve" / "TARGET_PLATFORM").string(), {}, "cmdline.sdk"));
         }
         if (verMarker != expectedVer) {
             fs::remove_all(work, ec);
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("SDK archive contains version '" + verMarker + "', expected '" + expectedVer + "'"), std::move((srcRoot / "share" / "eve" / "VERSION").string()), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "SDK archive contains version '" + verMarker + "', expected '" + expectedVer + "'", (srcRoot / "share" / "eve" / "VERSION").string(), {}, "cmdline.sdk"));
         }
     }
 
@@ -485,12 +485,12 @@ eve::Result<void> installEveSdk(Platform p) {
     if (ec) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot create SDK install directory: " + ec.message()), std::move(installRoot), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create SDK install directory: " + ec.message(), installRoot, {}, "cmdline.sdk"));
     }
     if (!moveOrCopy(srcRoot, fs::path(destRoot))) {
         fs::remove_all(work, ec);
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install the SDK", std::move(destRoot), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install the SDK", destRoot, {}, "cmdline.sdk"));
     }
     fs::remove_all(work, ec);
     std::cout << "eve get: EVEngine " << plat << " SDK " << tag << " installed at "
@@ -639,27 +639,27 @@ bool jdkHomeExists(const std::string& home) {
                                                    const std::string& extractDir) {
     if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + url + "\"") != 0) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "download failed", std::move(url), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "download failed", url, {}, "cmdline.sdk"));
     }
     std::error_code ec;
     if (!nonEmptyRegularFile(zipPath, ec)) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "download returned an empty or unreadable response", std::move(url), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "download returned an empty or unreadable response", url, {}, "cmdline.sdk"));
     }
     std::filesystem::remove_all(extractDir, ec);
     std::filesystem::create_directories(extractDir, ec);
     if (ec) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot create extraction directory: " + ec.message()), std::move(extractDir), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create extraction directory: " + ec.message(), extractDir, {}, "cmdline.sdk"));
     }
     if (!extractZip(zipPath, extractDir)) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "downloaded archive is empty, truncated, or unsupported", std::move(zipPath), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "downloaded archive is empty, truncated, or unsupported", zipPath, {}, "cmdline.sdk"));
     }
     std::filesystem::remove(zipPath, ec);
     if (ec) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot remove temporary downloaded archive: " + ec.message()), std::move(zipPath), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot remove temporary downloaded archive: " + ec.message(), zipPath, {}, "cmdline.sdk"));
     }
     return eve::Result<void>::success();
 }
@@ -694,7 +694,7 @@ bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& 
     }
     if (ec || jdkDir.empty() || !moveOrCopy(jdkDir, std::filesystem::path(root) / "jdk17")) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected JDK archive layout", std::move(tmp), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected JDK archive layout", tmp, {}, "cmdline.sdk"));
     }
     std::filesystem::remove_all(tmp, ec);
     return eve::Result<void>::success();
@@ -711,7 +711,7 @@ bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& 
     if (!moveOrCopy(std::filesystem::path(tmp) / ("gradle-" + std::string(kGradleVersion)),
                     gradleDir)) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected Gradle archive layout", std::move(tmp), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected Gradle archive layout", tmp, {}, "cmdline.sdk"));
     }
     std::filesystem::remove_all(tmp, ec);
     return eve::Result<void>::success();
@@ -746,7 +746,7 @@ eve::Result<void> installAndroidSdk() {
     std::filesystem::create_directories(root, ec);
     if (ec) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("cannot create Android SDK directory: " + ec.message()), std::move(root), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create Android SDK directory: " + ec.message(), root, {}, "cmdline.sdk"));
     }
 
     const std::string sdkManager =
@@ -762,12 +762,12 @@ eve::Result<void> installAndroidSdk() {
         if (!downloaded.ok()) return eve::Result<void>::failure(downloaded.status());
         if (!std::filesystem::is_directory(std::filesystem::path(tmp) / "cmdline-tools", ec)) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected Android command-line tools archive layout", std::move(tmp), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "unexpected Android command-line tools archive layout", tmp, {}, "cmdline.sdk"));
         }
         if (!moveOrCopy(std::filesystem::path(tmp) / "cmdline-tools",
                         std::filesystem::path(root) / "cmdline-tools" / "latest")) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install Android command-line tools", std::move(root + "/cmdline-tools/latest"), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install Android command-line tools", root + "/cmdline-tools/latest", {}, "cmdline.sdk"));
         }
         std::filesystem::remove_all(tmp, ec);
     }
@@ -792,12 +792,12 @@ eve::Result<void> installAndroidSdk() {
         std::ofstream f(lic, std::ios::binary | std::ios::trunc);
         if (!f) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create Android SDK license input", std::move(lic), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot create Android SDK license input", lic, {}, "cmdline.sdk"));
         }
         for (int i = 0; i < 200; ++i) f << "y\n";
         if (!f) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot write Android SDK license input", std::move(lic), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot write Android SDK license input", lic, {}, "cmdline.sdk"));
         }
     }
 #if defined(_WIN32)
@@ -810,7 +810,7 @@ eve::Result<void> installAndroidSdk() {
     std::cout << "eve get: accepting Android SDK licenses...\n";
     if (runShell(sdkCmd + " --licenses < \"" + lic + "\"") != 0) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to accept Android SDK licenses", std::move(sdkManager), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to accept Android SDK licenses", sdkManager, {}, "cmdline.sdk"));
     }
     std::cout << "eve get: installing SDK packages (platform-tools, android-34, "
                  "build-tools)...\n";
@@ -818,7 +818,7 @@ eve::Result<void> installAndroidSdk() {
                                  "\" \"" + std::string(kAndroidBuildTools) + "\"";
     if (runShell(sdkCmd + " " + packages) != 0) {
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install Android SDK packages", std::move(sdkManager), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to install Android SDK packages", sdkManager, {}, "cmdline.sdk"));
     }
     std::filesystem::remove(lic, ec);
 
@@ -837,7 +837,7 @@ eve::Result<void> installAndroidSdk() {
                         std::ios::binary | std::ios::trunc);
         if (!f) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot write Android SDK environment file", std::move((std::filesystem::path(root) / "eve-android.env").string()), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot write Android SDK environment file", (std::filesystem::path(root) / "eve-android.env").string(), {}, "cmdline.sdk"));
         }
         f << "ANDROID_HOME=" << root << "\n"
           << "ANDROID_SDK_ROOT=" << root << "\n"
@@ -846,7 +846,7 @@ eve::Result<void> installAndroidSdk() {
           << "EVENGINE_SDK=" << eveSdkRoot << "\n";
         if (!f) {
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot finish writing Android SDK environment file", std::move((std::filesystem::path(root) / "eve-android.env").string()), {}, "cmdline.sdk"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "cannot finish writing Android SDK environment file", (std::filesystem::path(root) / "eve-android.env").string(), {}, "cmdline.sdk"));
         }
     }
 

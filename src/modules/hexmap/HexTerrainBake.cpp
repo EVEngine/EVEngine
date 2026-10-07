@@ -17,7 +17,7 @@ namespace {
 [[nodiscard]] 
 [[nodiscard]] Result<HexTerrainBake> invalidBake(std::string message) {
     return Result<HexTerrainBake>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
 }
 
 void writeU32LE(unsigned char* bytes, std::uint32_t value) noexcept {

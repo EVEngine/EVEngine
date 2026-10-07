@@ -31,7 +31,7 @@ Result<void> AbilityDefinition::validate() const {
     if (!actionValid) return Result<void>::failure(actionValid.status());
     for (std::size_t i = 0; i < triggers.size(); ++i) {
         if (!tags::isValidGameplayTagName(triggers[i].gameplayTag))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability trigger tag is invalid", std::move("triggers[" + std::to_string(i) + "].gameplayTag")));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability trigger tag is invalid", "triggers[" + std::to_string(i) + "].gameplayTag"));
     }
     return Result<void>::success();
 }
@@ -41,7 +41,7 @@ Result<void> AbilityRuntime::registerDefinition(AbilityDefinition definition) {
     if (!valid) return valid;
     const std::string key = definition.id.format();
     if (definitions_.contains(key))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "Ability definition is already registered", std::move(key)));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "Ability definition is already registered", key));
     definitions_.emplace(key, std::move(definition));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -52,7 +52,7 @@ Result<void> AbilityRuntime::replaceDefinition(AbilityDefinition definition) {
     const std::string key   = definition.id.format();
     const auto        found = definitions_.find(key);
     if (found == definitions_.end())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Ability definition is not registered", std::move(key)));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Ability definition is not registered", key));
     if (found->second.instancing != definition.instancing) {
         const bool hasGrant = std::any_of(grants_.begin(), grants_.end(), [&](const auto& item) {
             return item.second.state.definitionId == definition.id;

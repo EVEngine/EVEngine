@@ -15,7 +15,7 @@ namespace {
 Result<std::vector<action::ActionPreviewPoint3>> sampleError(DiagnosticCode code, std::string message,
                                                              std::string path = {}) {
     return Result<std::vector<action::ActionPreviewPoint3>>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path)));
+        Diagnostic::error(code, message, path));
 }
 
 }  // namespace

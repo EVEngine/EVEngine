@@ -355,7 +355,7 @@ void Plan::emit(const std::string& type, const std::string& operationId, const s
 eve::Result<eve::OperationId> Plan::stage(const std::string& kind, const std::string& target,
                                           const std::string& payloadJson, eve::OperationId operationId) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(code, message));
     };
     error_.clear();
     if (state_ != State::Open) return failure(eve::DiagnosticCode::Conflict, "transaction plan is frozen");
@@ -449,13 +449,13 @@ eve::Result<void> Plan::validate() {
     if (operations_.empty()) {
         error_ = "transaction has no operations";
         emit("validation_failed", {}, error_);
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(error_), {}, {}, "transaction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error_, {}, {}, "transaction"));
     }
     for (const auto& operation : operations_) {
         if (!operation.checked || !operation.valid) {
             error_ = operation.checked ? operation.error : "operation was not validated: " + operation.id;
             emit("validation_failed", operation.id, error_);
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(error_), {}, {}, "transaction"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error_, {}, {}, "transaction"));
         }
     }
     state_ = State::Validated;
@@ -541,7 +541,7 @@ std::string Plan::snapshotJson() const {
 eve::Result<Plan*> Ledger::create(const std::string& correlation, const std::string& causation,
                                   eve::TransactionId identity) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<Plan*>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<Plan*>::failure(eve::Diagnostic::error(code, message));
     };
     if (identity.isNil()) {
         if (!transactionIdGenerator_)
@@ -586,7 +586,7 @@ std::string Ledger::snapshotJson() const {
 
 eve::Result<void> Ledger::restore(std::string_view json) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), "transaction.ledger"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, "transaction.ledger"));
     };
     auto     document     = eve::json::Document::parse(std::string(json));
     auto     root         = document.root();

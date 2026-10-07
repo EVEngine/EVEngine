@@ -13,15 +13,15 @@ namespace eve::weapon {
 namespace {
 
 eve::Result<void> eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::Status status, std::move(std::string), std::move(std::string = {}), {}, "weapon.attributes")) {
+        eve::Diagnostic::error(eve::Status status, std::string, std::string = {}, {}, "weapon.attributes")) {
     return eve::Result<void>::failure(std::move(status));
 }
 
 eve::Result<void> eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::StatusCode code, std::move(std::string message), std::move(std::string path = {}), {}, "weapon.attributes")) {
+        eve::Diagnostic::error(eve::StatusCode code, std::string message, std::string path = {}, {}, "weapon.attributes")) {
     return eve::Result<void>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
-                                                          std::move(path), {}, "weapon.attributes")));
+        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, message,
+                                                          path, {}, "weapon.attributes")));
 }
 
 bool selected(std::string_view name) noexcept {

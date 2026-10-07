@@ -105,7 +105,7 @@ Result<void> validateShaderAssetGpu(const asset::ShaderAsset& shader) {
             if (diagnostics.size() < 4096) diagnostics += text;
         });
         if (!validator.Validate(shader.vertex) || !validator.Validate(shader.fragment))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("SPIR-V validation failed: " + diagnostics), {}, {}, "asset.shader.gpu-layout"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "SPIR-V validation failed: " + diagnostics, {}, {}, "asset.shader.gpu-layout"));
         spirv_cross::Compiler vertex(shader.vertex), fragment(shader.fragment);
         vertex.set_entry_point("main", spv::ExecutionModelVertex);
         fragment.set_entry_point("main", spv::ExecutionModelFragment);
@@ -130,7 +130,7 @@ Result<void> validateShaderAssetGpu(const asset::ShaderAsset& shader) {
         }
         return Result<void>::success();
     } catch (const std::exception& error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(error.what()), {}, {}, "asset.shader.gpu-layout"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, error.what(), {}, {}, "asset.shader.gpu-layout"));
     }
 #endif
 }

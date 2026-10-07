@@ -212,7 +212,7 @@ eve::Result<void> InventoryContainerAdapter::validateInsert(
         if (!ignoredObject || *ignoredObject != object.id) {
             std::string reason;
             if (!InventorySystem::canAdd(bag_, payload->stack.itemId, payload->stack.quantity, &reason))
-                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, std::move(reason.empty() ? "bag rejected inventory object" : reason)));
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, reason.empty() ? "bag rejected inventory object" : reason));
         }
         return eve::Result<void>::success();
     }

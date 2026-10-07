@@ -354,12 +354,12 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
     for (auto& bn : b.keys()) {
         auto v = b.get(bn.c_str());
         if (!v.isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "blackboard must be an object", std::move("boards." + bn), {}, "decision"));
+                                                             "blackboard must be an object", "boards." + bn, {}, "decision"));
         for (auto& k : v.keys()) {
             const auto value = v.get(k.c_str());
             if (!isScalar(value))
                 return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "blackboard value must be a JSON scalar", std::move("boards." + bn + "." + k), {}, "decision"));
+                                                             "blackboard value must be a JSON scalar", "boards." + bn + "." + k, {}, "decision"));
             auto result = n.set(bn, k, canonicalize(value));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }
@@ -370,7 +370,7 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
     for (auto& m : st.keys()) {
         const auto state = st.get(m.c_str());
         if (!state.isString()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "FSM state must be a string", std::move("states." + m), {}, "decision"));
+                                                             "FSM state must be a string", "states." + m, {}, "decision"));
         auto result = n.setState(m, state.asString());
         if (!result.ok()) return eve::Result<void>::failure(result.status());
     }
@@ -381,11 +381,11 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         auto v = tr.at(i);
         if (!v.isArray() || v.size() != 4)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "FSM transition must contain four strings", std::move("transitions[" + std::to_string(i) + "]"), {}, "decision"));
+                                                             "FSM transition must contain four strings", "transitions[" + std::to_string(i) + "]", {}, "decision"));
         for (size_t field = 0; field < 4; ++field)
             if (!v.at(field).isString())
                 return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "FSM transition must contain four strings", std::move("transitions[" + std::to_string(i) + "]"), {}, "decision"));
+                                                             "FSM transition must contain four strings", "transitions[" + std::to_string(i) + "]", {}, "decision"));
         auto result = n.addTransition(v.at(0).asString(), v.at(1).asString(), v.at(2).asString(), v.at(3).asString());
         if (!result.ok()) return eve::Result<void>::failure(result.status());
     }
@@ -396,7 +396,7 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         auto v = gs.at(i);
         if (!v.isObject())
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "influence grid must be an object", std::move("grids[" + std::to_string(i) + "]"), {}, "decision"));
+                                                             "influence grid must be an object", "grids[" + std::to_string(i) + "]", {}, "decision"));
         int        w = v.getInt("w"), h = v.getInt("h");
         const auto name = v.get("name");
         const auto cell = v.get("cell");
@@ -404,19 +404,19 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
         const auto oy   = v.get("oy");
         if (!name.isString() || !cell.isNumber() || !ox.isNumber() || !oy.isNumber())
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "influence grid fields are malformed", std::move("grids[" + std::to_string(i) + "]"), {}, "decision"));
+                                                             "influence grid fields are malformed", "grids[" + std::to_string(i) + "]", {}, "decision"));
         auto grid =
             n.newGrid(name.asString(), w, h, float(cell.asDouble()), float(ox.asDouble()), float(oy.asDouble()));
         if (!grid.ok()) return eve::Result<void>::failure(grid.status());
         auto vals = v.get("values");
         if (!vals.isArray() || vals.size() != size_t(w) * h)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "influence grid values have the wrong size", std::move("grids[" + std::to_string(i) + "].values"), {}, "decision"));
+                                                             "influence grid values have the wrong size", "grids[" + std::to_string(i) + "].values", {}, "decision"));
         for (size_t z = 0; z < vals.size(); ++z) {
             const auto value = vals.at(z);
             if (!value.isNumber() || !std::isfinite(value.asDouble()))
                 return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
-                                                             "influence grid cell must be a finite number", std::move("grids[" + std::to_string(i) + "].values[" + std::to_string(z) + "]"), {}, "decision"));
+                                                             "influence grid cell must be a finite number", "grids[" + std::to_string(i) + "].values[" + std::to_string(z) + "]", {}, "decision"));
             auto result = n.setCell(name.asString(), int(z % size_t(w)), int(z / size_t(w)), float(value.asDouble()));
             if (!result.ok()) return eve::Result<void>::failure(result.status());
         }

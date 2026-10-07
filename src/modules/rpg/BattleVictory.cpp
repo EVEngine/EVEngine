@@ -16,7 +16,7 @@ eve::Result<BattleVictoryReceipt> victoryFailure(eve::DiagnosticCode code, std::
                                                   std::string path,
                                                   const BattleVictoryRequest &request) {
     return eve::Result<BattleVictoryReceipt>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path),
+        code, message, path,
         {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.battle-victory"));
 }
 

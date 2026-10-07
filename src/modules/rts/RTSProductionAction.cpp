@@ -30,7 +30,7 @@ public:
             before_ = queue_;
             staged_ = queue_;
         } catch (const std::exception& exception) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(std::string("failed to stage RTS order: ") + exception.what()), "orders"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to stage RTS order: ") + exception.what(), "orders"));
         }
         auto id = staged_->append(kind_, priority_, timeout_);
         if (!id) return eve::Result<void>::failure(id.status());
@@ -49,7 +49,7 @@ public:
         try {
             queue_ = *staged_;
         } catch (const std::exception& exception) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(std::string("failed to publish RTS order: ") + exception.what()), "orders"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to publish RTS order: ") + exception.what(), "orders"));
         }
         committed_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -69,7 +69,7 @@ public:
         try {
             queue_ = *before_;
         } catch (const std::exception& exception) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(std::string("failed to compensate RTS order: ") + exception.what()), "orders"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to compensate RTS order: ") + exception.what(), "orders"));
         }
         staged_.reset();
         before_.reset();

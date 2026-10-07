@@ -50,7 +50,7 @@ template <class T>
 eve::Result<T> ownedQueryFailure(eve::DiagnosticCode code, std::string message,
                                  std::string path = {}) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "physics.query3d"));
+        eve::Diagnostic::error(code, message, path, {}, "physics.query3d"));
 }
 
 }  // namespace

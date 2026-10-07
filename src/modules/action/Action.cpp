@@ -32,7 +32,7 @@ Status notFoundStatus() {
 
 Status invalidStatus(std::string message, std::string path = {}) {
     return Status::failure(StatusCode::Rejected,
-                           Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+                           Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 Status pendingStatus() { return Status::success(StatusCode::Pending); }
@@ -190,7 +190,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
             details.emplace_back("reason", decision::conditionReasonCodeName(checked.reasonCode()));
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                            "action condition was rejected", "condition",
-                                                           std::move(details)));
+                                                           details));
         }
     }
 
@@ -228,7 +228,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
             }
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                            "action resource cost is not affordable", "cost",
-                                                           std::move(details)));
+                                                           details));
         }
     }
     return Result<void>::success(Status::success(StatusCode::Applied));

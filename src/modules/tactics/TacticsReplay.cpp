@@ -56,20 +56,20 @@ Result<void> BattleReplay::replay(Battle& battle, std::span<const BattleCommand>
         const BattleCommand& command = commands[index];
         const std::string path = "commands[" + std::to_string(index) + "]";
         if (command.sequence == 0 || (index > 0 && command.sequence != previousSequence + 1))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence is not contiguous", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence is not contiguous", path));
         if (battle.commands()->nextSequence != command.sequence)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence differs from target", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence differs from target", path));
         if (battle.turn()->revision != command.expectedRevision)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay expected revision differs from target", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay expected revision differs from target", path));
         auto applied = apply(battle, command);
         if (!applied) return Result<void>::failure(applied.status());
         if (battle.turn()->revision != command.resultingRevision)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay produced a different revision", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay produced a different revision", path));
         const auto& recorded = battle.commands()->values.back();
         if (recorded.kind != command.kind || recorded.sequence != command.sequence ||
             recorded.expectedRevision != command.expectedRevision ||
             recorded.resultingRevision != command.resultingRevision)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay recorded a different command", std::move(path)));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay recorded a different command", path));
         previousSequence = command.sequence;
     }
     return Result<void>::success(Status::success(StatusCode::Applied));

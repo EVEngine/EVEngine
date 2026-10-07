@@ -101,8 +101,8 @@ Result<void> HexMapModule::newGrid(graphics::Graphics* gfx, std::int32_t cellCou
     // let std::bad_alloc escape a native binding. The save format caps the same
     // quantity at kMaxHexGridDimension.
     if (cellCountX > kMaxHexGridDimension || cellCountZ > kMaxHexGridDimension)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hex map size exceeds the " + std::to_string(kMaxHexGridDimension) +
-                               " cell per side limit"), "hexmap"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "hex map size exceeds the " + std::to_string(kMaxHexGridDimension) +
+                               " cell per side limit", "hexmap"));
     // Reset before releasing: `HexMap::reset` validates before it mutates, so a
     // rejected size now leaves the old grid *and* its meshes untouched. Releasing
     // first detached every GPU mesh while the renderables scripts already hold kept

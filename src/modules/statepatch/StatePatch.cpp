@@ -380,7 +380,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(parseError.empty() ? "invalid state patch snapshot" : std::move(parseError)),
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid state patch snapshot" : parseError,
                                                              "$", {}, "statepatch.store.restoreJson"));
 
     const auto root = document.root();
@@ -411,14 +411,14 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
         uint64_t   valueRevision = 0;
         if (!item.isObject() || item.getString("subject").empty() || item.getString("key").empty() ||
             !parseU64(item.get("revision"), valueRevision) || valueRevision > restoredRevision || !item.get("value")) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("invalid value at index " + std::to_string(i)),
-                                                             std::move("$.values[" + std::to_string(i) + "]"), {}, "statepatch.store.restoreJson"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid value at index " + std::to_string(i),
+                                                             "$.values[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         const auto subject = item.getString("subject");
         const auto key     = item.getString("key");
         if (restoredValues[subject].contains(key)) {
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "duplicate subject and key",
-                                                             std::move("$.values[" + std::to_string(i) + "]"), {}, "statepatch.store.restoreJson"));
+                                                             "$.values[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         restoredValues[subject][key] = {canonicalJson(item.get("value")), valueRevision};
     }
@@ -426,8 +426,8 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
         const auto item = dirty.at(i);
         if (!item.isArray() || item.size() != 2 || !item.at(0).isString() || !item.at(1).isString() ||
             item.at(0).asString().empty() || item.at(1).asString().empty()) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("invalid dirty key at index " + std::to_string(i)),
-                                                             std::move("$.dirty[" + std::to_string(i) + "]"), {}, "statepatch.store.restoreJson"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid dirty key at index " + std::to_string(i),
+                                                             "$.dirty[" + std::to_string(i) + "]", {}, "statepatch.store.restoreJson"));
         }
         restoredDirty.emplace(item.at(0).asString(), item.at(1).asString());
     }

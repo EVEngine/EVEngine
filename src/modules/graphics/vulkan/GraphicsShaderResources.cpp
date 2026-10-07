@@ -322,7 +322,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         for (auto pipeline :
              {candidate->mesh3dPipeline, candidate->mesh3dOffscreenPipeline, candidate->mesh3dHdrOffscreenPipeline})
             if (pipeline) device->destroyPipeline(pipeline);
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move(error.what()), "shader.resources"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader.resources"));
     }
     auto& old = **found;
     for (auto pipeline :
