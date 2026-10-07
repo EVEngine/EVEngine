@@ -16,6 +16,7 @@
 - [模块边界审查清单](模块边界审查清单.md)（对单个模块执行上述规范的逐项判据与取证方式）
 - [模块边界审查台账（首轮全量）](2026-09-15-模块边界审查台账.md)（194 个模块的逐条结论与实测数据）
 - [EveScript 语言设计](EveScript语言设计.md)（统一 `.nut` 前端、脚本模块、类型、持久变量与异步 lowering）
+- [Squirrel 绑定风格](Squirrel绑定风格.md)（`BindContext` / `projectResult` / Contracts 刮取约定；不拆 `editing_script`）
 - [依赖项](依赖项.md)
 - [命令行设计](命令行设计.md)
 - [测试覆盖](测试覆盖.md)

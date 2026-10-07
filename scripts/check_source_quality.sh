@@ -57,6 +57,8 @@ group "examples layout and overview registration" \
     python3 scripts/check_examples.py
 group "critical return-value diagnostics" \
     python3 scripts/check_nodiscard.py
+group "no new ad-hoc Result tables" \
+    python3 scripts/check_adhoc_result_tables.py
 group "release version consistency" \
     python3 scripts/release.py check-versions
 group "bounded quality debt" \
