@@ -6,29 +6,17 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
 #endif
-#include "common/SquirrelBinding.h"
-#include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include <cstdint>
-#include <memory>
 #include <string>
-#include <utility>
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::animation_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.animation.clip.squirrel";
-
-using eve::editor::project;
-
-ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
-}
 
 class ScriptAnimationClipEditor {
 public:
@@ -44,145 +32,102 @@ private:
 }  // namespace
 
 void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
-    const HSQUIRRELVM vm = table.getHandle();
-    auto clipEditor      = table.addClass<ScriptAnimationClipEditor>(
-        "AnimationClipEditor",
-        std::function<ScriptAnimationClipEditor*()>([]() -> ScriptAnimationClipEditor* { return nullptr; }), true);
-
-    clipEditor.addFunc("configureWorkspace",
-                       [vm](ScriptAnimationClipEditor* self, editor::EditorWorkspace* workspace) {
-                           if (!self || !workspace)
-                               return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                     "animation clip editor and workspace must not be null",
-                                                     "workspace");
-                           return project(vm, self->editor().configureWorkspace(*workspace));
-                       });
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto clipEditor = editor::addScriptClass<ScriptAnimationClipEditor>(table, "AnimationClipEditor");
+    editor::registerEditorWorkspace<ScriptAnimationClipEditor>(
+        clipEditor, bind, "animation clip editor and workspace must not be null");
 #if defined(EVE_ANIMATION_EDITOR_RUNTIME)
-    clipEditor.addFunc("loadRuntimeClip", [vm](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
-                                                animation::AnimClip* clip) {
-        if (!self || !skeleton || !clip)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                  "animation clip editor, skeleton and clip must not be null");
-        return project(vm, self->editor().loadRuntimeClip(*skeleton, *clip));
+    clipEditor.addFunc("loadRuntimeClip", [bind](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
+                                                 animation::AnimClip* clip) {
+        return bind.checked(self && skeleton && clip, "animation clip editor, skeleton and clip must not be null",
+                            [&] { return self->editor().loadRuntimeClip(*skeleton, *clip); });
     });
-    clipEditor.addFunc("writeRuntimeClip", [vm](ScriptAnimationClipEditor* self, animation::AnimClip* clip,
-                                                 animation::AnimSkeleton* skeleton) {
-        if (!self || !skeleton || !clip)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                  "animation clip editor, clip and skeleton must not be null");
-        return project(vm, self->editor().writeRuntimeClip(*clip, *skeleton));
+    clipEditor.addFunc("writeRuntimeClip", [bind](ScriptAnimationClipEditor* self, animation::AnimClip* clip,
+                                                  animation::AnimSkeleton* skeleton) {
+        return bind.checked(self && skeleton && clip, "animation clip editor, clip and skeleton must not be null",
+                            [&] { return self->editor().writeRuntimeClip(*clip, *skeleton); });
     });
 #endif
-    clipEditor.addFunc("setViewport",
-                       [vm](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
-                           if (!self)
-                               return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                     "animation clip editor must not be null");
-                           return project(vm, self->editor().setViewport(width, rowHeight, labelWidth));
-                       });
-    clipEditor.addFunc("seekX", [vm](ScriptAnimationClipEditor* self, float x) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().seekX(x));
+    clipEditor.addFunc(
+        "setViewport", [bind](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
+            return bind.checked(self, "animation clip editor must not be null",
+                                [&] { return self->editor().setViewport(width, rowHeight, labelWidth); });
+        });
+    clipEditor.addFunc("seekX", [bind](ScriptAnimationClipEditor* self, float x) {
+        return bind.checked(self, "animation clip editor must not be null", [&] { return self->editor().seekX(x); });
     });
-    clipEditor.addFunc("seekSeconds", [vm](ScriptAnimationClipEditor* self, float seconds) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().seekSeconds(static_cast<double>(seconds)));
+    clipEditor.addFunc("seekSeconds", [bind](ScriptAnimationClipEditor* self, float seconds) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().seekSeconds(static_cast<double>(seconds)); });
     });
-    clipEditor.addFunc("pointerDown", [vm](ScriptAnimationClipEditor* self, float x, float y) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().pointerDown(x, y));
+    clipEditor.addFunc("pointerDown", [bind](ScriptAnimationClipEditor* self, float x, float y) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().pointerDown(x, y); });
     });
-    clipEditor.addFunc("selectBone", [vm](ScriptAnimationClipEditor* self, const std::string& bone) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().selectBone(bone));
+    clipEditor.addFunc("selectBone", [bind](ScriptAnimationClipEditor* self, const std::string& bone) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().selectBone(bone); });
     });
-    clipEditor.addFunc("setMaskWeight", [vm](ScriptAnimationClipEditor* self, float weight) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setMaskWeight(static_cast<double>(weight)));
+    clipEditor.addFunc("setMaskWeight", [bind](ScriptAnimationClipEditor* self, float weight) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setMaskWeight(static_cast<double>(weight)); });
     });
-    clipEditor.addFunc("setDuration", [vm](ScriptAnimationClipEditor* self, float duration) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setDuration(static_cast<double>(duration)));
+    clipEditor.addFunc("setDuration", [bind](ScriptAnimationClipEditor* self, float duration) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setDuration(static_cast<double>(duration)); });
     });
-    clipEditor.addFunc("setSampleRate", [vm](ScriptAnimationClipEditor* self, float sampleRate) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setSampleRate(static_cast<double>(sampleRate)));
+    clipEditor.addFunc("setSampleRate", [bind](ScriptAnimationClipEditor* self, float sampleRate) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setSampleRate(static_cast<double>(sampleRate)); });
     });
-    clipEditor.addFunc("setLoop", [vm](ScriptAnimationClipEditor* self, bool loop) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setLoop(loop));
+    clipEditor.addFunc("setLoop", [bind](ScriptAnimationClipEditor* self, bool loop) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setLoop(loop); });
     });
-    clipEditor.addFunc("moveSelectedKey", [vm](ScriptAnimationClipEditor* self, float time) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().moveSelectedKey(static_cast<double>(time)));
+    clipEditor.addFunc("moveSelectedKey", [bind](ScriptAnimationClipEditor* self, float time) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().moveSelectedKey(static_cast<double>(time)); });
     });
-    clipEditor.addFunc("keySelectedBone", [vm](ScriptAnimationClipEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().keySelectedBone());
+    clipEditor.addFunc("keySelectedBone", [bind](ScriptAnimationClipEditor* self) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().keySelectedBone(); });
     });
-    clipEditor.addFunc("deleteSelectedKey", [vm](ScriptAnimationClipEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().deleteSelectedKey());
+    clipEditor.addFunc("deleteSelectedKey", [bind](ScriptAnimationClipEditor* self) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().deleteSelectedKey(); });
     });
-    clipEditor.addFunc("setSelectedPosition", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setSelectedPosition(x, y, z));
+    clipEditor.addFunc("setSelectedPosition", [bind](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setSelectedPosition(x, y, z); });
     });
-    clipEditor.addFunc("setSelectedRotation", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setSelectedRotation(x, y, z));
+    clipEditor.addFunc("setSelectedRotation", [bind](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setSelectedRotation(x, y, z); });
     });
-    clipEditor.addFunc("setSelectedScale", [vm](ScriptAnimationClipEditor* self, float x, float y, float z) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        return project(vm, self->editor().setSelectedScale(x, y, z));
+    clipEditor.addFunc("setSelectedScale", [bind](ScriptAnimationClipEditor* self, float x, float y, float z) {
+        return bind.checked(self, "animation clip editor must not be null",
+                            [&] { return self->editor().setSelectedScale(x, y, z); });
     });
-    clipEditor.addFunc("undo", [vm](ScriptAnimationClipEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        auto result = self->editor().undo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
-    });
-    clipEditor.addFunc("redo", [vm](ScriptAnimationClipEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        auto result = self->editor().redo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
-    });
+    editor::registerEditorHistory<ScriptAnimationClipEditor>(clipEditor, bind,
+                                                             "animation clip editor must not be null");
     clipEditor.addFunc("play", [](ScriptAnimationClipEditor* self) {
         if (self) self->editor().play();
     });
     clipEditor.addFunc("pause", [](ScriptAnimationClipEditor* self) {
         if (self) self->editor().pause();
     });
-    clipEditor.addFunc("stop", [vm](ScriptAnimationClipEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
-        self->editor().stop();
-        return project(vm, self->editor().update(0.0));
+    clipEditor.addFunc("stop", [bind](ScriptAnimationClipEditor* self) {
+        return bind.checked(self, "animation clip editor must not be null", [&] {
+            self->editor().stop();
+            return self->editor().update(0.0);
+        });
     });
-    clipEditor.addFunc("update", [vm](ScriptAnimationClipEditor* self, float deltaSeconds) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
+    clipEditor.addFunc("update", [bind](ScriptAnimationClipEditor* self, float deltaSeconds) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "animation clip editor must not be null");
         auto result = self->editor().update(static_cast<double>(deltaSeconds));
-        return project(vm, result, Value(self->editor().playhead()));
+        return editor::project(bind.vm(), result, Value(self->editor().playhead()));
     });
-    clipEditor.addFunc("canUndo", [](ScriptAnimationClipEditor* self) { return self && self->editor().canUndo(); });
-    clipEditor.addFunc("canRedo", [](ScriptAnimationClipEditor* self) { return self && self->editor().canRedo(); });
     clipEditor.addFunc("isPlaying", [](ScriptAnimationClipEditor* self) { return self && self->editor().isPlaying(); });
-    clipEditor.addFunc("getRevision", [](ScriptAnimationClipEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
     clipEditor.addFunc("getDuration", [](ScriptAnimationClipEditor* self) {
         return self ? static_cast<float>(self->editor().duration()) : 0.0f;
     });
@@ -289,19 +234,8 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? self->editor().primitiveB(index) : 0.0f;
     });
 
-    moduleClass.addFunc("create", [vm](AnimationEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "animation clip target id must not be empty",
-                                  "targetId");
-        auto object = script::makeOwnedSquirrelInstance<ScriptAnimationClipEditor>(
-            vm, std::make_unique<ScriptAnimationClipEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
-    });
+    editor::registerEditorOwnedCreate<ScriptAnimationClipEditor, AnimationEditorModule>(
+        moduleClass, bind, "animation clip target id must not be empty");
 }
 
 }  // namespace eve::animation_editor
