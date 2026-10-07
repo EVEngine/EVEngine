@@ -143,8 +143,9 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
-	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
-	check/profile-matrix check/architecture-contracts check/quality check/examples check \
+	check/test-manifest check/module-layers check/bindings check/nodiscard check/adhoc-result-tables \
+	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
+	check/examples check \
 	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
@@ -209,6 +210,10 @@ check/quality-metadata:
 check/nodiscard:
 	python3 scripts/check_nodiscard.py
 
+# Forbid new hand-built `{ok,...}` Squirrel Result tables; allowlist is shrink-only.
+check/adhoc-result-tables:
+	python3 scripts/check_adhoc_result_tables.py
+
 # Validate the ten top-level architecture contracts and lint changed C/C++
 # lines. The source-only gate never configures or builds the engine.
 # The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
@@ -239,7 +244,8 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard \
+	check/adhoc-result-tables check/architecture-contracts
 
 # Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
 check/format:

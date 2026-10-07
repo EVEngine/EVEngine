@@ -45,8 +45,7 @@ constexpr const char* kBindingSource = "editor.action.timeline.squirrel";
 using eve::editor::project;
 
 ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
+    return ::eve::editor::bindingFailure(vm, kBindingSource, code, std::move(message), std::move(path));
 }
 
 Result<Duration> seconds(float value) {
@@ -2265,14 +2264,8 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
                                                     const std::string& projectRoot) {
         if (projectRoot.empty())
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "project root must not be empty");
-        auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineAssetCatalog>(
+        return ::eve::editor::projectOwnedInstance<ScriptActionTimelineAssetCatalog>(
             vm, std::make_unique<ScriptActionTimelineAssetCatalog>(std::filesystem::path(projectRoot)));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned  = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
     });
     moduleClass.addFunc("create", [vm, clipboard](eve::action_editor::ActionEditorModule*, const std::string& targetId,
                                                   const ssq::Object& timelineObject) {
@@ -2287,15 +2280,9 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         if (!timeline) return script::projectStatusResult(vm, timeline.status());
         auto registry = action::ActionNotifyRegistry::withBuiltins();
         if (!registry) return script::projectStatusResult(vm, registry.status());
-        auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(
+        return ::eve::editor::projectOwnedInstance<ScriptActionTimelineEditor>(
             vm, std::make_unique<ScriptActionTimelineEditor>(targetId, std::move(timeline).takeValue(),
                                                              std::move(registry).takeValue(), clipboard));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned  = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
     });
     moduleClass.addFunc(
         "openDocument",
@@ -2328,13 +2315,7 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
             auto instance = std::make_unique<ScriptActionTimelineEditor>(
                 assetGuid, std::move(timeline).takeValue(), std::move(registry).takeValue(), clipboard);
             instance->attachDocument(std::move(store), std::move(documents), opened.value());
-            auto object = script::makeOwnedSquirrelInstance<ScriptActionTimelineEditor>(vm, std::move(instance));
-            if (!object) return script::projectStatusResult(vm, object.status());
-            ssq::Object owned  = std::move(object).takeValue();
-            auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-            result.set("value", owned);
-            result.set("ownership", std::string("owned"));
-            return result;
+            return ::eve::editor::projectOwnedInstance<ScriptActionTimelineEditor>(vm, std::move(instance));
         });
 }
 

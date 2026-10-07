@@ -139,5 +139,39 @@ class CatalogExportTests(unittest.TestCase):
             self.assertIn("drawSolidRect(x: float, y: float): void;", dts_path.read_text(encoding="utf-8"))
 
 
+class BindMethodScrapeTests(unittest.TestCase):
+    def test_bind_method_literal_names_are_scraped(self) -> None:
+        from generate_binding_contracts import extract_contracts
+
+        root = Path(__file__).resolve().parents[2]
+        sources = {
+            root / "src/modules/animation/OrientationWarping.h": (
+                "namespace eve::animation {\n"
+                "class OrientationWarping {\n"
+                "public:\n"
+                "    void setEnabled(bool enabled);\n"
+                "    bool isEnabled() const;\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/animation/OrientationWarpingBindings.cpp": (
+                "namespace eve::animation {\n"
+                "void expose(ssq::Table& table) {\n"
+                "    auto cls = table.addClass<OrientationWarping>(\n"
+                '        "OrientationWarping", std::function<OrientationWarping*()>([]() { return nullptr; }), true);\n'
+                '    script::bindMethod(cls, "setEnabled", &OrientationWarping::setEnabled);\n'
+                '    script::bindMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
+                "}\n"
+                "}\n"
+            ),
+        }
+
+        contracts, unresolved = extract_contracts(sources)
+        keys = {contract.key for contract in contracts}
+        self.assertEqual(unresolved, [])
+        self.assertIn("animation/OrientationWarping.setEnabled", keys)
+        self.assertIn("animation/OrientationWarping.isEnabled", keys)
+
+
 if __name__ == "__main__":
     unittest.main()
