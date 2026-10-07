@@ -20,6 +20,7 @@ namespace eve::gpgpu {
  * Ownership stays with the caller; one workspace must not be used concurrently.
  */
 template <typename Comp>
+/** @brief EcsGpuWorkspace public API. */
 class EcsGpuWorkspace {
 public:
     static_assert(std::is_trivially_copyable_v<Comp>, "EcsGpu component must be trivially copyable");
@@ -47,16 +48,19 @@ private:
 };
 
 template <typename Comp>
+/** @brief Component float count. */
 constexpr int componentFloatCount() {
     static_assert(std::is_trivially_copyable_v<Comp>,
                   "EcsGpu component must be trivially copyable");
     static_assert(sizeof(Comp) % sizeof(float) == 0,
                   "EcsGpu component size must be a multiple of float");
+    /** @brief Int. */
     return int(sizeof(Comp) / sizeof(float));
 }
 
 /** @brief Count live entities matching View<Base, Comp>. */
 template <typename Base, typename Comp>
+/** @brief Returns the number of view entities. */
 int countViewEntities() {
     int n = 0;
     auto view = ecs::View<Base, Comp>();
@@ -70,6 +74,7 @@ int countViewEntities() {
  * Returns entity count (0 if empty).
  */
 template <typename Base, typename Comp>
+/** @brief Pack view component. */
 int packViewComponent(ShaderSystem &sys, int binding, EcsGpuWorkspace<Comp> &workspace) {
     const int floatsPer = componentFloatCount<Comp>();
     int n = 0;
@@ -85,6 +90,7 @@ int packViewComponent(ShaderSystem &sys, int binding, EcsGpuWorkspace<Comp> &wor
     auto view = ecs::View<Base, Comp>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [comp] = *it;
+        /** @brief Memcpy. */
         std::memcpy(workspace.floats_.data() + size_t(i) * size_t(floatsPer), static_cast<const void *>(comp),
                     sizeof(Comp));
         ++i;
@@ -95,6 +101,7 @@ int packViewComponent(ShaderSystem &sys, int binding, EcsGpuWorkspace<Comp> &wor
 
 /** @brief Compatibility overload that uses a temporary staging workspace. */
 template <typename Base, typename Comp>
+/** @brief Pack view component. */
 int packViewComponent(ShaderSystem &sys, int binding) {
     EcsGpuWorkspace<Comp> workspace;
     return packViewComponent<Base, Comp>(sys, binding, workspace);
@@ -105,6 +112,7 @@ int packViewComponent(ShaderSystem &sys, int binding) {
  * `count` should be the value returned by packViewComponent.
  */
 template <typename Base, typename Comp>
+/** @brief Unpack view component. */
 void unpackViewComponent(ShaderSystem &sys, int binding, int count, EcsGpuWorkspace<Comp> &workspace) {
     if (count <= 0) return;
     const int floatsPer = componentFloatCount<Comp>();
@@ -114,6 +122,7 @@ void unpackViewComponent(ShaderSystem &sys, int binding, int count, EcsGpuWorksp
     auto view = ecs::View<Base, Comp>();
     for (auto it = view.begin(); it != view.end() && i < count; ++it) {
         auto [comp] = *it;
+        /** @brief Memcpy. */
         std::memcpy(static_cast<void *>(comp), workspace.floats_.data() + size_t(i) * size_t(floatsPer), sizeof(Comp));
         ++i;
     }
@@ -121,6 +130,7 @@ void unpackViewComponent(ShaderSystem &sys, int binding, int count, EcsGpuWorksp
 
 /** @brief Compatibility overload that uses a temporary staging workspace. */
 template <typename Base, typename Comp>
+/** @brief Unpack view component. */
 void unpackViewComponent(ShaderSystem &sys, int binding, int count) {
     EcsGpuWorkspace<Comp> workspace;
     unpackViewComponent<Base, Comp>(sys, binding, count, workspace);
@@ -131,6 +141,7 @@ void unpackViewComponent(ShaderSystem &sys, int binding, int count) {
  * The full buffer must have been allocated by a prior full pack/ensureBuffer.
  */
 template <typename Base, typename Comp>
+/** @brief Pack view component range. */
 int packViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, int entityCount,
                            EcsGpuWorkspace<Comp> &workspace) {
     if (firstEntity < 0 || entityCount <= 0) return 0;
@@ -142,6 +153,7 @@ int packViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, int 
     for (auto it = view.begin(); it != view.end() && packed < entityCount; ++it, ++viewIndex) {
         if (viewIndex < firstEntity) continue;
         auto [comp] = *it;
+        /** @brief Memcpy. */
         std::memcpy(workspace.floats_.data() + size_t(packed) * size_t(floatsPer), static_cast<const void *>(comp),
                     sizeof(Comp));
         ++packed;
@@ -152,6 +164,7 @@ int packViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, int 
 
 /** @brief Unpack a stable contiguous resident-buffer range into a matching View range. */
 template <typename Base, typename Comp>
+/** @brief Unpack view component range. */
 int unpackViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, int entityCount,
                              EcsGpuWorkspace<Comp> &workspace) {
     if (firstEntity < 0 || entityCount <= 0) return 0;
@@ -167,6 +180,7 @@ int unpackViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, in
     for (auto it = view.begin(); it != view.end() && unpacked < count; ++it, ++viewIndex) {
         if (viewIndex < firstEntity) continue;
         auto [comp] = *it;
+        /** @brief Memcpy. */
         std::memcpy(static_cast<void *>(comp), workspace.floats_.data() + size_t(unpacked) * size_t(floatsPer),
                     sizeof(Comp));
         ++unpacked;
@@ -180,6 +194,7 @@ int unpackViewComponentRange(ShaderSystem &sys, int binding, int firstEntity, in
  * ShaderSystem manually for multi-buffer systems.
  */
 template <typename Base, typename Comp>
+/** @brief Run view component system. */
 int runViewComponentSystem(ShaderSystem &sys, int binding, float dt) {
     const int n = packViewComponent<Base, Comp>(sys, binding);
     if (n <= 0) return 0;

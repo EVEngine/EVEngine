@@ -20,6 +20,7 @@ namespace eve::tensor {
  *  - a single specialized op kernel (softmax, layernorm, attention, ...);
  *  - an Alias (reshape / flatten / cast): no kernel, output aliases input.
  */
+/** @brief GroupKind public API. */
 enum class GroupKind : uint8_t {
     Elementwise,
     MatMul,
@@ -41,6 +42,7 @@ enum class GroupKind : uint8_t {
     Alias,
 };
 
+/** @brief FusedGroup public API. */
 struct FusedGroup {
     GroupKind kind = GroupKind::Elementwise;
     /** Actual op for polymorphic groups (Reduce sum/mean/min/max, Softmax/LogSoftmax). */
@@ -71,6 +73,7 @@ struct FusedGroup {
  * Result of the graph optimizer: execution order, fused groups, and a static
  * memory plan that reuses buffers when node lifetimes don't overlap.
  */
+/** @brief OptimizedGraph public API. */
 struct OptimizedGraph {
     /** Topological order of all live nodes (CPU interpreter uses this). */
     std::vector<int> order;
@@ -95,9 +98,11 @@ struct OptimizedGraph {
  *  4. matmul/conv bias + activation epilogue fusion;
  *  5. static memory planning with buffer reuse.
  */
+/** @brief Optimize graph. */
 EVENGINE_API_DOMAINS OptimizedGraph optimizeGraph(const Graph &graph, int outputNode);
 
 /** Number of groups that need GPU kernels (i.e. not Alias). */
+/** @brief Group kernel count. */
 int groupKernelCount(const OptimizedGraph &opt);
 
 }  // namespace eve::tensor
