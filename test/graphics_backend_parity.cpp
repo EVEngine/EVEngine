@@ -773,9 +773,10 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
     for (const char *technique : {"dither", "coverage"}) {
         auto dithered = render(0.5f, technique, technique);
         const int visible = visiblePixels(*dithered);
-        // Alpha hashing is backend-specific at fragment-coordinate precision. Validate the
-        // material contract (partial coverage) relative to the rendered quad instead of a
-        // Vulkan-tuned absolute pixel count.
+        // Alpha hashing is backend-specific. Validate partial coverage relative to the
+        // rendered quad instead of a Vulkan-tuned absolute pixel count. Near-full coverage
+        // (visible ~= fullyCovered) means the hash path did not discard — historically seen
+        // on Dawn Metal when the hash depended only on a degenerate fragment position.
         REQUIRE(visible * 5 > fullyCovered);
         REQUIRE(visible * 20 < fullyCovered * 17);
     }
