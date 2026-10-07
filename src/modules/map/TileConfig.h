@@ -24,8 +24,9 @@ struct RpgMakerImportReceipt {
 /**
  * @brief Apply map/layer JSON onto an existing TileLayer (Config + Tiles + Tileset + Draw).
  * Multi-layer documents only apply the first tile layer when called on one entity.
+ * @return Success, or InvalidArgument / Failed when the root is unusable or layer data fails.
  */
-bool applyConfigDocument(TileLayer *layer, eve::json::Value root);
+[[nodiscard]] eve::Result<void> applyConfigDocument(TileLayer* layer, eve::json::Value root);
 
 /** @brief Parse JSON text and apply onto one layer. */
 EVENGINE_API_WORLD bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);

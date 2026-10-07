@@ -114,8 +114,10 @@ int64_t fileModtime(const std::string &path) {
 
 }  // namespace
 
-bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root) {
-    if (!emitter || !root.isObject()) return false;
+[[nodiscard]] eve::Result<void> applyConfigDocument(ParticleEmitter* emitter, eve::json::Value root) {
+    if (!emitter || !root.isObject())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "config root must be an object", "particles.config"));
     const Json obj = root;
 
     // Optional named preset first; later keys override.
@@ -444,7 +446,7 @@ bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root) {
 
     if (obj.has("autoStart") && obj.getBool("autoStart", false)) emitter->start();
 
-    return true;
+    return eve::Result<void>::success();
 }
 
 bool applyConfigText(ParticleEmitter *emitter, const std::string &json, std::string *error) {
@@ -459,8 +461,12 @@ bool applyConfigText(ParticleEmitter *emitter, const std::string &json, std::str
         if (error) *error = "config root must be object";
         return false;
     }
-    if (!applyConfigDocument(emitter, root)) {
-        if (error) *error = "config root must be object";
+    auto applied = applyConfigDocument(emitter, root);
+    if (!applied) {
+        if (error) {
+            const auto* diag = applied.error();
+            *error           = (diag && !diag->message().empty()) ? diag->message() : "config root must be object";
+        }
         return false;
     }
     return true;

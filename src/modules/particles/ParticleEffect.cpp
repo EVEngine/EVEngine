@@ -242,8 +242,12 @@ Result<ParticleEffect*> ParticleEffect::parse(const std::string& json, const std
         std::string configError;
         bool        configured = false;
         if (embeddedConfig.isObject()) {
-            configured = applyConfigDocument(emitter, embeddedConfig);
-            if (!configured) configError = "config root must be object";
+            auto applied = applyConfigDocument(emitter, embeddedConfig);
+            configured   = static_cast<bool>(applied);
+            if (!configured) {
+                const auto* diag = applied.error();
+                configError      = (diag && !diag->message().empty()) ? diag->message() : "config root must be object";
+            }
         } else {
             configured = loadConfigFile(emitter, resolveAssetPath(sourcePath, configPath), &configError);
         }

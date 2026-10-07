@@ -978,23 +978,34 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
 
 }  // namespace
 
-bool applyConfigDocument(TileLayer *layer, eve::json::Value root) {
-    if (!layer || !root || !root.isObject()) return false;
+[[nodiscard]] eve::Result<void> applyConfigDocument(TileLayer* layer, eve::json::Value root) {
+    auto fail = [](eve::DiagnosticCode code, const std::string& message) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, "map.config"));
+    };
+    if (!layer || !root || !root.isObject())
+        return fail(eve::DiagnosticCode::InvalidArgument, "config root must be an object");
 
     std::string err;
-    if (!applyMapGlobals(layer, root, &err)) return false;
+    if (!applyMapGlobals(layer, root, &err))
+        return fail(eve::DiagnosticCode::Failed, err.empty() ? "map globals rejected" : err);
 
     if (root.has("layers")) {
         const Json arr = root.get("layers");
         for (size_t i = 0; arr.isArray() && i < arr.size(); ++i) {
             const Json lo = arr.at(i);
             if (!isTileLayerObject(lo)) continue;
-            return applyOneLayerObject(layer, lo, layer->getMapWidth(), layer->getMapHeight(), nullptr);
+            if (!applyOneLayerObject(layer, lo, layer->getMapWidth(), layer->getMapHeight(), &err))
+                return fail(eve::DiagnosticCode::Failed, err.empty() ? "tile layer apply failed" : err);
+            return eve::Result<void>::success();
         }
     }
 
-    if (root.has("data")) return applyFlatLayerData(layer, root, nullptr);
-    return true;
+    if (root.has("data")) {
+        if (!applyFlatLayerData(layer, root, &err))
+            return fail(eve::DiagnosticCode::Failed, err.empty() ? "layer data apply failed" : err);
+        return eve::Result<void>::success();
+    }
+    return eve::Result<void>::success();
 }
 
 bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error) {

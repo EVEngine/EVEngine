@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Json.h"
+#include "common/Result.h"
 #include "particles/ParticleEmitter.h"
 
 #include <string>
@@ -10,9 +11,9 @@ namespace eve::particles {
 /**
  * @brief Apply particle JSON config onto an emitter, including material texture resources.
  * Does not change buffer size or clear live particles.
- * Returns false on invalid / missing object root.
+ * @return Success, or InvalidArgument when the root is missing / not an object.
  */
-bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root);
+[[nodiscard]] eve::Result<void> applyConfigDocument(ParticleEmitter* emitter, eve::json::Value root);
 
 /** @brief Parse JSON text and apply. */
 bool applyConfigText(ParticleEmitter *emitter, const std::string &json, std::string *error = nullptr);
