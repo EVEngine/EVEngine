@@ -14,6 +14,10 @@
 #include <unordered_map>
 #include <vector>
 
+namespace ssq {
+class Class;
+}
+
 namespace eve::model3d {
 class ModelData;
 }
@@ -344,5 +348,11 @@ private:
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };
+
+/**
+ * @brief Register ModelData/Assimp import factories when AnimationModelImport.cpp
+ *        is linked (`OPTIONAL_DEPS model3d`).
+ */
+void exposeAnimationModelImportBindings(ssq::Class &cls);
 
 }  // namespace eve::animation

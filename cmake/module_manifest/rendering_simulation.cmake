@@ -146,9 +146,13 @@ eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    OPTIONAL_DEPS physics
                    GROUP 2d 3d web)
 # L4 -- rendering extensions and simulation (continued)
+# Runtime pose/clip/skin/lattice stay Assimp-free. ModelData/Assimp import
+# (AnimImporterAssimp, *FromModel, AnimationModelImport) is an OPTIONAL_DEPS
+# model3d bridge excluded when model3d is trimmed — mirrors spritestack.
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS action data filesystem graphics image model3d
-                   THIRDPARTY poco assimp
+                   DEPS action data filesystem graphics image
+                   OPTIONAL_DEPS model3d
+                   THIRDPARTY poco
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
                    DEPS graphics

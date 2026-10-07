@@ -237,6 +237,16 @@ if(_has_spritestack_model_bridge AND NOT _has_model3d_for_spritestack)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# Assimp/ModelData import for skeletons, clips, skins and lattices. Fixture text
+# import and all pose/skin runtime stay compiled without model3d.
+eve_module_enabled(model3d _has_model3d_for_animation)
+eve_module_enabled(animation _has_animation_model_bridge)
+if(_has_animation_model_bridge AND NOT _has_model3d_for_animation)
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};AnimImporterAssimp.cpp;AnimImporterModel.cpp;AnimSkinFromModel.cpp;AnimLatticeFromModel.cpp;AnimationModelImport.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 eve_module_enabled(virtualgeometry _has_virtualgeometry_editor_bridge)
 if(NOT _has_virtualgeometry_editor_bridge)
   set(EVENGINE_EXCLUDED_MODULE_FILES
@@ -326,6 +336,10 @@ endif()
 
 if(TARGET EVSpriteStack AND _has_spritestack_model_bridge AND _has_model3d_for_spritestack)
   target_compile_definitions(EVSpriteStack PRIVATE EVE_SPRITESTACK_MODEL3D=1)
+endif()
+
+if(TARGET EVAnimation AND _has_animation_model_bridge AND _has_model3d_for_animation)
+  target_compile_definitions(EVAnimation PRIVATE EVE_ANIMATION_MODEL3D=1)
 endif()
 
 # create_module() globs both physics bridge TUs; keep exactly one.
@@ -460,9 +474,9 @@ if(_has_ik)
 endif()
 
 eve_module_enabled(animation _has_animation)
-if(_has_animation)
-  # AnimImporter uses Assimp headers (same install tree as model3d / medialoader).
-  # Spine JSON uses Poco via data/JsonDocument; atlas/skeleton loaders use filesystem.
+eve_module_enabled(model3d _has_model3d_for_animation_includes)
+if(_has_animation AND _has_model3d_for_animation_includes)
+  # Assimp import bridge TUs only; runtime animation sources do not include Assimp.
   target_include_directories(EVAnimation PRIVATE
     ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
     ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include

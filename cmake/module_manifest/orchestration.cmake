@@ -51,9 +51,9 @@ eve_declare_module(NAME building_editing LAYER 5
 eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
-# Browser web still omits particles: skeletal attach hard-includes animation
-# → Assimp. Soft-dep + web membership wait on an animation OPTIONAL_DEPS
-# bridge TU split. Config/effect JSON already uses common/Json (eve::json).
+# Bone/skin attach uses animation runtime (Assimp-free). Animation's Assimp
+# import is OPTIONAL_DEPS model3d. Web membership still waits on animation's
+# Spine JSON (Poco) path. Config/effect JSON already uses common/Json.
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS action animation data filesystem graphics ik stylize
                    GROUP 2d 3d)
