@@ -118,10 +118,14 @@ function configureRayTracing(enabled) {
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
         }
+        // GI / SSR add a lot of energy on Lavapipe; pull exposure down so
+        // emitter colors and contact shadows stay readable.
+        litCamera.setExposure(0.62);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
         litRtModeLabel = "off";
+        litCamera.setExposure(0.90);
     }
     rc.compile();
     refreshHud();
