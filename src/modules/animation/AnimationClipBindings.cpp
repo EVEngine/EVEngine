@@ -3,6 +3,7 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimSkeleton.h"
+#include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
@@ -10,8 +11,20 @@
 #include <functional>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace eve::animation {
+namespace {
+
+constexpr const char* kSource = "animation.bindings";
+
+ssq::Table bindingFailure(HSQUIRRELVM vm, std::string message) {
+    return script::projectResult(vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                             std::move(message), {}, {}, kSource)));
+}
+
+}  // namespace
 
 // A provider read hands over a freshly allocated FileData that this call owns until
 // the batch load finishes; `Owned` is std::unique_ptr under the ownership vocabulary.
@@ -21,15 +34,14 @@ void exposeAnimClipBindings(ssq::Table& table) {
     exposeAnimCurveLibraryBindings(table);
     table.addFunc("loadAnimationTrackBatch", [vm = table.getHandle()](ssq::Array clips, ssq::Array paths,
                                                                       AnimSkeleton* skeleton, int workers) {
-        ssq::Table result(vm);
         try {
             if (!skeleton || clips.size() != paths.size() || clips.size() > 64)
                 throw std::runtime_error("invalid animation batch arguments");
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
             if (!fs) throw std::runtime_error("filesystem unavailable");
-            std::vector<Owned<eve::filesystem::FileData>>    buffers;
-            std::vector<AnimationTrackInput>                 inputs;
-            std::size_t                                      total = 0;
+            std::vector<Owned<eve::filesystem::FileData>> buffers;
+            std::vector<AnimationTrackInput>              inputs;
+            std::size_t                                   total = 0;
             for (std::size_t i = 0; i < clips.size(); ++i) {
                 auto* destination = clips.get<AnimClip*>(i);
                 if (!destination) throw std::runtime_error("missing animation batch destination");
@@ -42,16 +54,11 @@ void exposeAnimClipBindings(ssq::Table& table) {
                 inputs.push_back({*destination, {static_cast<const std::byte*>(data->getData()), data->getSize()}});
                 buffers.push_back(std::move(data));
             }
-            auto loaded = loadAnimationTrackBatch(inputs, *skeleton, workers);
-            result.set("ok", loaded.ok());
-            result.set("message", loaded.status().describe());
-            result.set("workers", loaded.ok() ? loaded.value() : 0);
+            return script::projectResult(vm, loadAnimationTrackBatch(inputs, *skeleton, workers),
+                                         [](int usedWorkers) { return Value(usedWorkers); });
         } catch (const std::exception& error) {
-            result.set("ok", false);
-            result.set("message", std::string(error.what()));
-            result.set("workers", 0);
+            return bindingFailure(vm, error.what());
         }
-        return result;
     });
     auto retarget = table.addClass<AnimRetargetProfile>(
         "AnimRetargetProfile", std::function<AnimRetargetProfile*()>([]() { return new AnimRetargetProfile(); }), true);
@@ -89,7 +96,6 @@ void exposeAnimClipBindings(ssq::Table& table) {
 
     auto clip = table.addClass<AnimClip>("AnimClip", std::function<AnimClip*()>([]() { return new AnimClip(); }), true);
     clip.addFunc("loadBinary", [vm = table.getHandle()](AnimClip* self, std::string path, AnimSkeleton* skeleton) {
-        ssq::Table result(vm);
         try {
             if (!self || !skeleton) throw std::runtime_error("missing clip or skeleton");
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
@@ -97,15 +103,12 @@ void exposeAnimClipBindings(ssq::Table& table) {
             auto* raw = fs->read(path);
             if (!raw) throw std::runtime_error("animation track file unavailable");
             Owned<eve::filesystem::FileData> data(raw);
-            auto loaded = loadAnimationTracks(*self, {static_cast<const std::byte*>(data->getData()), data->getSize()},
-                                              *skeleton);
-            result.set("ok", loaded.ok());
-            result.set("message", loaded.status().describe());
+            return script::projectResult(
+                vm, loadAnimationTracks(*self, {static_cast<const std::byte*>(data->getData()), data->getSize()},
+                                        *skeleton));
         } catch (const std::exception& error) {
-            result.set("ok", false);
-            result.set("message", std::string(error.what()));
+            return bindingFailure(vm, error.what());
         }
-        return result;
     });
     clip.addFunc("setName", &AnimClip::setName);
     clip.addFunc("getName", &AnimClip::getName);

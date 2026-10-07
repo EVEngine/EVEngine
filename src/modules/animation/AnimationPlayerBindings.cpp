@@ -1,11 +1,13 @@
 #include <cstdint>
 #include <functional>
-#include <string>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+
 #include "animation/AnimClip.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimationBindings.h"
 #include "animation/RootMotionPolicy.h"
+#include "common/SquirrelBinding.h"
 
 namespace eve::animation {
 namespace {
@@ -27,16 +29,8 @@ std::string formatApplySpace(RootMotionApplySpace space) {
     return space == RootMotionApplySpace::CharacterFacing ? "characterFacing" : "boneLocal";
 }
 
-ssq::Table resultTable(HSQUIRRELVM vm, bool ok, const std::string& message) {
-    ssq::Table result(vm);
-    result.set("ok", ok);
-    result.set("message", message);
-    return result;
-}
-
 ssq::Table applyPolicy(HSQUIRRELVM vm, AnimPlayer* self, const RootMotionPolicy& policy) {
-    auto applied = self->setRootMotionPolicy(policy);
-    return resultTable(vm, applied.ok(), applied.status().describe());
+    return script::projectResult(vm, self->setRootMotionPolicy(policy));
 }
 
 }  // namespace
@@ -61,40 +55,35 @@ void exposeAnimPlayerBindings(ssq::Table& table) {
     player.addFunc("getClip", &AnimPlayer::getClip);
     player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);
     player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
-    player.addFunc("setRootMotionLockAxes",
-                   [vm = table.getHandle()](AnimPlayer* self, const std::string& axes) {
-                       auto parsed = parseRootMotionLockAxes(axes);
-                       if (!parsed) return resultTable(vm, false, parsed.status().describe());
-                       RootMotionPolicy policy = self->getRootMotionPolicy();
-                       policy.lockAxes         = parsed.value();
-                       return applyPolicy(vm, self, policy);
-                   });
-    player.addFunc("setRootMotionApplySpace",
-                   [vm = table.getHandle()](AnimPlayer* self, const std::string& space) {
-                       auto parsed = parseRootMotionApplySpace(space);
-                       if (!parsed) return resultTable(vm, false, parsed.status().describe());
-                       RootMotionPolicy policy = self->getRootMotionPolicy();
-                       policy.applySpace       = parsed.value();
-                       return applyPolicy(vm, self, policy);
-                   });
-    player.addFunc("setBakeRootTranslationIntoPose",
-                   [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
-                       RootMotionPolicy policy         = self->getRootMotionPolicy();
-                       policy.bakeTranslationIntoPose  = enabled;
-                       return applyPolicy(vm, self, policy);
-                   });
-    player.addFunc("setBakeRootRotationIntoPose",
-                   [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
-                       RootMotionPolicy policy     = self->getRootMotionPolicy();
-                       policy.bakeRotationIntoPose = enabled;
-                       return applyPolicy(vm, self, policy);
-                   });
-    player.addFunc("setRootMotionLockRotation",
-                   [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
-                       RootMotionPolicy policy = self->getRootMotionPolicy();
-                       policy.lockRotation     = enabled;
-                       return applyPolicy(vm, self, policy);
-                   });
+    player.addFunc("setRootMotionLockAxes", [vm = table.getHandle()](AnimPlayer* self, const std::string& axes) {
+        auto parsed = parseRootMotionLockAxes(axes);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
+        RootMotionPolicy policy = self->getRootMotionPolicy();
+        policy.lockAxes         = parsed.value();
+        return applyPolicy(vm, self, policy);
+    });
+    player.addFunc("setRootMotionApplySpace", [vm = table.getHandle()](AnimPlayer* self, const std::string& space) {
+        auto parsed = parseRootMotionApplySpace(space);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
+        RootMotionPolicy policy = self->getRootMotionPolicy();
+        policy.applySpace       = parsed.value();
+        return applyPolicy(vm, self, policy);
+    });
+    player.addFunc("setBakeRootTranslationIntoPose", [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
+        RootMotionPolicy policy        = self->getRootMotionPolicy();
+        policy.bakeTranslationIntoPose = enabled;
+        return applyPolicy(vm, self, policy);
+    });
+    player.addFunc("setBakeRootRotationIntoPose", [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
+        RootMotionPolicy policy     = self->getRootMotionPolicy();
+        policy.bakeRotationIntoPose = enabled;
+        return applyPolicy(vm, self, policy);
+    });
+    player.addFunc("setRootMotionLockRotation", [vm = table.getHandle()](AnimPlayer* self, bool enabled) {
+        RootMotionPolicy policy = self->getRootMotionPolicy();
+        policy.lockRotation     = enabled;
+        return applyPolicy(vm, self, policy);
+    });
     player.addFunc("getRootMotionPolicy", [vm = table.getHandle()](AnimPlayer* self) {
         const RootMotionPolicy policy = self->getRootMotionPolicy();
         ssq::Table             tableOut(vm);
@@ -107,11 +96,7 @@ void exposeAnimPlayerBindings(ssq::Table& table) {
         return tableOut;
     });
     player.addFunc("setRootMotionCharacterYaw", [vm = table.getHandle()](AnimPlayer* self, float yaw) {
-        ssq::Table result(vm);
-        auto       applied = self->setRootMotionCharacterYaw(yaw);
-        result.set("ok", applied.ok());
-        result.set("message", applied.status().describe());
-        return result;
+        return script::projectResult(vm, self->setRootMotionCharacterYaw(yaw));
     });
     player.addFunc("getRootMotionX", &AnimPlayer::getRootMotionX);
     player.addFunc("getRootMotionY", &AnimPlayer::getRootMotionY);
