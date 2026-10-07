@@ -203,8 +203,10 @@ public:
     PhysicalBalancePose* newPhysicalBalancePose(AnimSkeleton* skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
-     * `*.anim.txt` test fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData.
+     * @remarks Linked only when `OPTIONAL_DEPS model3d` is enabled
+     *          (`AnimationModelImport.cpp`). Prefer fixture text helpers when
+     *          model3d is trimmed.
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
