@@ -73,10 +73,6 @@ eve::Result<std::vector<AccountCost>> buildCosts(const DialogueAccountBindings& 
     return eve::Result<std::vector<AccountCost>>::success(std::move(result));
 }
 
-eve::Result<void> eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::string message, "transaction.lifecycle", {}, "dialogue.payment")) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "transaction.lifecycle", {}, "dialogue.payment"));
-}
 
 }  // namespace
 
@@ -130,13 +126,15 @@ eve::Result<void> DialogueStateMutationParticipant::prepare(const eve::transacti
     if (context.transactionId().empty())
         return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dialogue state transaction requires a transaction id", "transactionId", {}, "dialogue.payment"));
-    if (phase_ != Phase::Idle) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant is not idle", "transaction.lifecycle", {}, "dialogue.payment"));
+    if (phase_ != Phase::Idle) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant is not idle", "transaction.lifecycle", {}, "dialogue.payment"));
     phase_ = Phase::Prepared;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> DialogueStateMutationParticipant::commit(const eve::transaction::TransactionContext& context) {
-    if (phase_ != Phase::Prepared) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage", "transaction.lifecycle", {}, "dialogue.payment"));
+    if (phase_ != Phase::Prepared) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage", "transaction.lifecycle", {}, "dialogue.payment"));
     auto applied = provider_.apply(
         mutations_, eve::MutationContext{context.transactionId(), context.correlationId(), context.causationId()});
     if (!applied) return eve::Result<void>::failure(applied.status());
@@ -147,7 +145,8 @@ eve::Result<void> DialogueStateMutationParticipant::commit(const eve::transactio
 
 eve::Result<void> DialogueStateMutationParticipant::rollback(const eve::transaction::TransactionContext&) {
     if (phase_ != Phase::Prepared)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage to roll back", "transaction.lifecycle", {}, "dialogue.payment"));
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "dialogue state participant has no prepared stage to roll back", "transaction.lifecycle", {}, "dialogue.payment"));
     phase_ = Phase::RolledBack;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }

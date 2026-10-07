@@ -9,18 +9,6 @@
 namespace eve::rts {
 namespace {
 
-eve::Result<void> eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::Status status, std::string, std::string = {}, {}, "rts.attributes")) {
-    return eve::Result<void>::failure(std::move(status));
-}
-
-eve::Result<void> eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::StatusCode code, std::string message, std::string path = {}, {}, "rts.attributes")) {
-    return eve::Result<void>::failure(
-        eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, message,
-                                                          path, {}, "rts.attributes")));
-}
-
 bool selected(std::string_view name) noexcept {
     return name == RTSUnitAttributeAdapter::attackAttribute || name == RTSUnitAttributeAdapter::healthAttribute ||
            name == RTSUnitAttributeAdapter::maxHealthAttribute || name == RTSUnitAttributeAdapter::armorAttribute;
@@ -36,7 +24,7 @@ std::array<std::string_view, 4> selectedAttributes() {
 eve::Result<void> RTSUnitAttributeAdapter::ensure(Unit& unit) {
     auto bound = unit.attributes()->values.bindOwner(ecs::handle_of(&unit));
     if (!bound) return eve::Result<void>::failure(
-        eve::Diagnostic::error(bound.code(), "RTS unit attribute owner could not be bound", "owner", {}, "rts.attributes"));
+        eve::Status::failure(bound.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attribute owner could not be bound", "owner", {}, "rts.attributes")));
     if (!unit.attributes()->values.initialized()) {
         const std::array<eve::attributes::AttributeSnapshotBase, 4> bases = {
             eve::attributes::AttributeSnapshotBase{std::string(attackAttribute), 0.0},
@@ -46,7 +34,7 @@ eve::Result<void> RTSUnitAttributeAdapter::ensure(Unit& unit) {
         auto initialized = unit.attributes()->values.initialize(bases);
         if (!initialized)
             return eve::Result<void>::failure(
-        eve::Diagnostic::error(initialized.code(), "RTS unit attribute state could not be initialized", "attributes", {}, "rts.attributes"));
+        eve::Status::failure(initialized.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attribute state could not be initialized", "attributes", {}, "rts.attributes")));
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
 }
@@ -70,7 +58,7 @@ eve::Result<void> RTSUnitAttributeAdapter::setBase(Unit& unit, std::string_view 
         eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "RTS unit attribute is outside the selective combat projection", "attribute", {}, "rts.attributes"));
     auto ready = ensure(unit);
     if (!ready) return eve::Result<void>::failure(
-        eve::Diagnostic::error(ready.code(), "RTS unit attributes are not available", "attributes", {}, "rts.attributes"));
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available", "attributes", {}, "rts.attributes")));
     return unit.attributes()->values.setBase(attribute, value);
 }
 
@@ -105,7 +93,7 @@ eve::Result<void> RTSUnitAttributeAdapter::restore(Unit&                        
                                                    eve::Revision expectedRevision) {
     auto ready = ensure(unit);
     if (!ready) return eve::Result<void>::failure(
-        eve::Diagnostic::error(ready.code(), "RTS unit attributes are not available", "attributes", {}, "rts.attributes"));
+        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available", "attributes", {}, "rts.attributes")));
     return unit.attributes()->values.restore(snapshotValue, expectedRevision);
 }
 
