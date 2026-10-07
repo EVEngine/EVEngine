@@ -187,6 +187,8 @@ public:
                              float farDistance);
     /** @brief Access the froxel media grid for native density/light injection. */
     AtmosphereVolume *getAtmosphereVolume() const { return atmosphereVolume_.get(); }
+    /** @brief Inverse view-projection last written by setCamera / setInvViewProj. */
+    const glm::mat4 &getInvViewProj() const { return invViewProj_; }
     /** @brief Clear all media in the configured froxel grid. */
     void clearFroxelGrid();
     /** @brief Inject an exponential global height layer into the froxel grid. */
