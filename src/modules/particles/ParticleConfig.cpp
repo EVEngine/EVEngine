@@ -137,17 +137,17 @@ bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root) {
         emitter->setEmissionRateOverDistance(
             obj.getFloat("emissionRateOverDistance", emitter->getEmissionRateOverDistance()));
 
-    float lifeMin = emitter->getParticleLifeMin();
-    float lifeMax = emitter->getParticleLifeMax();
+    float lifeMin = emitter->getParticleLifetimeMin();
+    float lifeMax = emitter->getParticleLifetimeMax();
     if (readVec2(obj, "particleLife", lifeMin, lifeMax))
-        emitter->setParticleLife(lifeMin, lifeMax);
+        emitter->setParticleLifetime(lifeMin, lifeMax);
     else {
         if (obj.has("lifeMin")) lifeMin = obj.getFloat("lifeMin", lifeMin);
         if (obj.has("lifeMax")) lifeMax = obj.getFloat("lifeMax", lifeMax);
-        if (obj.has("lifeMin") || obj.has("lifeMax")) emitter->setParticleLife(lifeMin, lifeMax);
+        if (obj.has("lifeMin") || obj.has("lifeMax")) emitter->setParticleLifetime(lifeMin, lifeMax);
     }
 
-    if (obj.has("emitterLife")) emitter->setEmitterLife(obj.getFloat("emitterLife", emitter->getEmitterLife()));
+    if (obj.has("emitterLife")) emitter->setEmitterLifetime(obj.getFloat("emitterLife", emitter->getEmitterLifetime()));
     if (obj.has("looping")) emitter->setLooping(obj.getBool("looping", emitter->getLooping()));
     if (obj.has("playbackSpeed")) emitter->setPlaybackSpeed(obj.getFloat("playbackSpeed", emitter->getPlaybackSpeed()));
     if (obj.has("fixedTimeStep")) {
@@ -261,7 +261,7 @@ bool applyConfigDocument(ParticleEmitter *emitter, eve::json::Value root) {
             float       restitution =
                 col.has("restitution") ? col.getFloat("restitution", 0.6f) : emitter->config()->collisionRestitution;
             float loss =
-                col.has("lifetimeLoss") ? col.getFloat("lifetimeLoss", 0.f) : emitter->config()->collisionLifeLoss;
+                col.has("lifetimeLoss") ? col.getFloat("lifetimeLoss", 0.f) : emitter->config()->collisionLifetimeLoss;
             emitter->setCollision(mode, radius, restitution, loss);
         }
     }
