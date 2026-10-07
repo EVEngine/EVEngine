@@ -85,6 +85,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
+| [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
 | [composable-rebellion](composable-rebellion/README.md) | 可组合玩法：引擎只存事实、叛乱语义全在脚本（15 个 `eve.*` 模块协作） |
 
 ## 3D 玩法与镜头

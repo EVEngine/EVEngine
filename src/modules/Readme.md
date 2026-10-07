@@ -175,6 +175,10 @@
 42. 群体 — `crowd`（`eve.Crowd`）
     连续流场寻路 + 海量单位转向；Boids；与渲染解耦
 
+42b. GPU Agents — `gpuagents`（`eve.GpuAgents`）
+    鱼群 / 生命网格 / 鸟群 / 花瓣：共享 AgentState + World/SDF + 固定步长 Solver
+    设计：`docs/dev/2026-10-05-gpu-agents-simulation-framework.md`
+
 43. 转向数学 — `math/Steering`（`eve.Math().steering*2/steering*3`）
     无状态 2D/3D seek、flee、arrive、separation、path target 与 avoidance 计算
 
