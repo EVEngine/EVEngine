@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Result.h"
+#include "common/SquirrelBindContext.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "common/Value.h"
@@ -116,10 +117,11 @@ template <class T>
 }
 
 /**
- * @brief Per-file binding helper that pins VM + diagnostic source for editor facades.
+ * @brief Editor facade binder: common `script::BindContext` plus history/owned-create helpers.
  *
  * Use this instead of copying `bindingFailure` / null-self / owned-create stamps into
  * every `*EditorScriptBindings.cpp`. Public `addFunc` names and arities stay unchanged.
+ * Non-editor domains should prefer `eve::script::BindContext` directly.
  */
 class ScriptBind {
 public:
@@ -130,7 +132,15 @@ public:
      * @ownership @p source is borrowed; it must outlive every use of this binder
      *            (typically a file-scope `kBindingSource` string literal).
      */
-    constexpr ScriptBind(HSQUIRRELVM vm, const char* source) noexcept : vm_(vm), source_(source) {}
+    constexpr ScriptBind(HSQUIRRELVM vm, const char* source) noexcept : ctx_(vm, source) {}
+
+    /**
+     * @brief Underlying common binder (VM + source + fail/checked).
+     * @return Borrowed view of the embedded `script::BindContext`.
+     * @ownership Borrowed from this `ScriptBind`; valid for this object's lifetime.
+     * @lifetime Same as this binder.
+     */
+    [[nodiscard]] constexpr const script::BindContext& context() const noexcept { return ctx_; }
 
     /**
      * @brief Active Squirrel VM handle.
@@ -141,7 +151,7 @@ public:
      * @lifetime Valid while the owning Runtime/VM remains alive and this binder
      *           is used only on the VM's owning thread.
      */
-    [[nodiscard]] constexpr HSQUIRRELVM vm() const noexcept { return vm_; }
+    [[nodiscard]] constexpr HSQUIRRELVM vm() const noexcept { return ctx_.vm(); }
 
     /**
      * @brief Diagnostic source tag for this binder.
@@ -152,7 +162,7 @@ public:
      * @lifetime Valid for at least as long as this binder; typically a
      *           file-scope string literal that outlives the process.
      */
-    [[nodiscard]] constexpr const char* source() const noexcept { return source_; }
+    [[nodiscard]] constexpr const char* source() const noexcept { return ctx_.source(); }
 
     /**
      * @brief Project a binding-layer argument failure.
@@ -162,7 +172,7 @@ public:
      * @return The common script result table.
      */
     [[nodiscard]] ssq::Table fail(DiagnosticCode code, std::string message, std::string path = {}) const {
-        return bindingFailure(vm_, source_, code, std::move(message), std::move(path));
+        return ctx_.fail(code, std::move(message), std::move(path));
     }
 
     /**
@@ -176,7 +186,7 @@ public:
     template <class Fn>
     [[nodiscard]] ssq::Table checked(bool ready, std::string nullMessage, Fn&& fn, std::string path = {}) const {
         if (!ready) return fail(DiagnosticCode::InvalidArgument, std::move(nullMessage), std::move(path));
-        return project(vm_, std::forward<Fn>(fn)());
+        return project(vm(), std::forward<Fn>(fn)());
     }
 
     /**
@@ -204,7 +214,7 @@ public:
     template <class T, class Fn>
     [[nodiscard]] ssq::Table history(T* self, std::string nullMessage, Fn&& fn) const {
         if (!self) return fail(DiagnosticCode::InvalidArgument, std::move(nullMessage));
-        return projectHistoryRevision(vm_, std::forward<Fn>(fn)());
+        return projectHistoryRevision(vm(), std::forward<Fn>(fn)());
     }
 
     /**
@@ -216,7 +226,7 @@ public:
      */
     template <class T>
     [[nodiscard]] ssq::Table ownedCreate(std::string emptyIdMessage, const std::string& targetId) const {
-        return projectOwnedCreate<T>(vm_, source_, std::move(emptyIdMessage), targetId);
+        return projectOwnedCreate<T>(vm(), source(), std::move(emptyIdMessage), targetId);
     }
 
     /**
@@ -227,12 +237,11 @@ public:
      */
     template <class T>
     [[nodiscard]] ssq::Table ownedInstance(std::unique_ptr<T> instance) const {
-        return projectOwnedInstance<T>(vm_, std::move(instance));
+        return projectOwnedInstance<T>(vm(), std::move(instance));
     }
 
 private:
-    HSQUIRRELVM vm_     = nullptr;
-    const char* source_ = nullptr;
+    script::BindContext ctx_;
 };
 
 /**
@@ -245,11 +254,10 @@ private:
  */
 template <class ScriptT>
 inline void registerEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
-    cls.addFunc("configureWorkspace",
-                [bind, nullMessage](ScriptT* self, EditorWorkspace* workspace) {
-                    return bind.checked(self && workspace, nullMessage,
-                                        [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                });
+    cls.addFunc("configureWorkspace", [bind, nullMessage](ScriptT* self, EditorWorkspace* workspace) {
+        return bind.checked(
+            self && workspace, nullMessage, [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+    });
 }
 
 /**
@@ -284,8 +292,7 @@ inline void registerEditorHistory(ssq::Class& cls, const ScriptBind& bind, const
     });
     cls.addFunc("canUndo", [](ScriptT* self) { return self && self->editor().canUndo(); });
     cls.addFunc("canRedo", [](ScriptT* self) { return self && self->editor().canRedo(); });
-    cls.addFunc("getRevision",
-                [](ScriptT* self) { return self ? static_cast<int>(self->editor().revision()) : 0; });
+    cls.addFunc("getRevision", [](ScriptT* self) { return self ? static_cast<int>(self->editor().revision()) : 0; });
 }
 
 /**

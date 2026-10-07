@@ -6,7 +6,11 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdint>
 #include <string>
+
+#include "common/SquirrelBindContext.h"
+#include "common/Value.h"
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::ui_editor {
@@ -32,7 +36,7 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
     auto                     themeEditor = editor::addScriptClass<ScriptUiThemeEditor>(table, "UiThemeEditor");
 
     editor::registerEditorWorkspace<ScriptUiThemeEditor>(themeEditor, bind,
-                                   "theme editor and workspace must not be null");
+                                                         "theme editor and workspace must not be null");
     themeEditor.addFunc("selectTheme", [bind](ScriptUiThemeEditor* self, const std::string& id) {
         return bind.checked(self, "theme editor must not be null", [&] { return self->editor().selectTheme(id); });
     });
@@ -73,28 +77,31 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
                             [&] { return self->editor().applyPreviewHost(hostName); });
     });
     editor::registerEditorHistory<ScriptUiThemeEditor>(themeEditor, bind, "theme editor must not be null");
-    themeEditor.addFunc("getPreviewRevision", [](ScriptUiThemeEditor* self) {
-        return self ? static_cast<int>(self->editor().previewRevision()) : 0;
-    });
-    themeEditor.addFunc("getSelectedId",
-                        [](ScriptUiThemeEditor* self) { return self ? self->editor().selectedId() : std::string{}; });
-    themeEditor.addFunc("getActiveId",
-                        [](ScriptUiThemeEditor* self) { return self ? self->editor().activeId() : std::string{}; });
-    themeEditor.addFunc("getPreviewRuntimeName", [](ScriptUiThemeEditor* self) {
-        return self ? self->editor().previewRuntimeName() : std::string{};
-    });
-    themeEditor.addFunc("getThemeCount",
-                        [](ScriptUiThemeEditor* self) { return self ? self->editor().themeCount() : 0; });
+    script::bindNullSafe<ScriptUiThemeEditor>(
+        themeEditor, "getPreviewRevision",
+        [](ScriptUiThemeEditor& self) { return static_cast<int>(self.editor().previewRevision()); }, 0);
+    script::bindNullSafe<ScriptUiThemeEditor>(
+        themeEditor, "getSelectedId", [](ScriptUiThemeEditor& self) { return self.editor().selectedId(); },
+        std::string{});
+    script::bindNullSafe<ScriptUiThemeEditor>(
+        themeEditor, "getActiveId", [](ScriptUiThemeEditor& self) { return self.editor().activeId(); }, std::string{});
+    script::bindNullSafe<ScriptUiThemeEditor>(
+        themeEditor, "getPreviewRuntimeName",
+        [](ScriptUiThemeEditor& self) { return self.editor().previewRuntimeName(); }, std::string{});
+    script::bindNullSafe<ScriptUiThemeEditor>(
+        themeEditor, "getThemeCount", [](ScriptUiThemeEditor& self) { return self.editor().themeCount(); }, 0);
     themeEditor.addFunc("getThemeId", [](ScriptUiThemeEditor* self, int index) {
         return self ? self->editor().themeId(index) : std::string{};
     });
     themeEditor.addFunc("getThemeName", [](ScriptUiThemeEditor* self, int index) {
         return self ? self->editor().themeName(index) : std::string{};
     });
-    themeEditor.addFunc("getThemeSelected",
-                        [](ScriptUiThemeEditor* self, int index) { return self && self->editor().isThemeSelected(index); });
-    themeEditor.addFunc("getThemeActive",
-                        [](ScriptUiThemeEditor* self, int index) { return self && self->editor().isThemeActive(index); });
+    themeEditor.addFunc("getThemeSelected", [](ScriptUiThemeEditor* self, int index) {
+        return self && self->editor().isThemeSelected(index);
+    });
+    themeEditor.addFunc("getThemeActive", [](ScriptUiThemeEditor* self, int index) {
+        return self && self->editor().isThemeActive(index);
+    });
     themeEditor.addFunc("getColorR", [](ScriptUiThemeEditor* self, const std::string& path) {
         return self ? self->editor().getColorChannel(path, 0) : 0.0f;
     });
@@ -110,8 +117,28 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
     themeEditor.addFunc("getFloat", [](ScriptUiThemeEditor* self, const std::string& path) {
         return self ? self->editor().getFloat(path) : 0.0f;
     });
+    // Additive structured snapshot; atomic getters above remain the compatibility surface.
+    themeEditor.addFunc("getState", [vm = table.getHandle()](ScriptUiThemeEditor* self) {
+        if (!self) {
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "theme editor must not be null",
+                                                      {}, {}, kBindingSource)));
+        }
+        const auto& editor = self->editor();
+        return script::projectStatusResult(
+            vm, Status::success(StatusCode::Applied),
+            Value(Value::Object{
+                {"selectedId", Value(editor.selectedId())},
+                {"activeId", Value(editor.activeId())},
+                {"previewRuntimeName", Value(editor.previewRuntimeName())},
+                {"revision", Value(static_cast<std::int64_t>(editor.revision()))},
+                {"previewRevision", Value(static_cast<std::int64_t>(editor.previewRevision()))},
+                {"themeCount", Value(editor.themeCount())},
+            }));
+    });
 
-    editor::registerEditorOwnedCreate<ScriptUiThemeEditor, UiEditorModule>(moduleClass, bind, "theme catalog id must not be empty");
+    editor::registerEditorOwnedCreate<ScriptUiThemeEditor, UiEditorModule>(moduleClass, bind,
+                                                                           "theme catalog id must not be empty");
 }
 
 }  // namespace eve::ui_editor
