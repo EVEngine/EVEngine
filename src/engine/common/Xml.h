@@ -7,7 +7,7 @@
 // (Poco) only for legacy mutable encode/decode round-trips.
 //
 // Accessors never throw: a missing attribute or tag yields the supplied
-// fallback (or an empty Element).
+// default (or an empty Element).
 
 #include "common/Export.h"
 
