@@ -13,6 +13,7 @@
 7. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
 8. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
 9. **程序化骨骼**：`DynamicBoneSolver` 提供弹簧骨、碰撞、风场和距离休眠；`FootIKSolver` 提供地面探测、脚掌对齐、锁足和骨盆补偿
+10. **受击晃动与平衡恢复**：`PhysicalBalancePose` 把世界冲量叠到姿态上，倒立摆 + PD 让角色主动回正（物理模块只注入冲量，不反向依赖）
 
 ## Motion（LitMotion 风格 Push 补间）
 
@@ -321,8 +322,7 @@ local pose = mm.getPose();
 位移累计整周期行程，避免把回到起点误当作反向速度。`setDesiredVelocity` 输入
 世界 XZ 速度，`setDesiredYaw` 为绕 Y 轴的弧度，正向是 `(sin(yaw), cos(yaw))`。
 
-匹配器以当前播放时刻为连续候选；新候选须改善至少 10% 的代价才切换，避免反复
-重启交叉淡入。`setIgnoreRadius` 保留当前时刻邻域内的连续播放，也覆盖循环接缝。
+匹配器以当前播放时刻为连续候选。`setIgnoreRadius` 保留当前时刻邻域内的连续播放，也覆盖循环接缝。
 `setPlayRateRange(minimum, maximum)` 返回 `{ok,message}`，配置 Motion Matching
 播放速率的闭区间。可变特征布局会按 UE Pose Search 的规则，累加查询与选中姿势中
 所有未归一化轨迹速度通道的长度，以二者比值作为播放速率并夹到该区间；搜索节流仍按
@@ -336,6 +336,26 @@ local pose = mm.getPose();
 不会再额外施加非源自 UE 的百分比改善门槛。
 若物理由角色控制器负责，先复制 `getPose()`，再从渲染副本移除平面 root 位移；
 不要修改匹配器持有的姿态。参考 `examples/climbing-motion-matching`。
+
+### Orientation warping
+
+`eve.OrientationWarping()` owns interpolation state and borrows a skeleton after
+`configure(skeleton, rootBone, spineBones, ikBones)`, which returns `{ok,message}`.
+`getSkeleton()` / `getRootBone()` / `getSpineBoneCount()` / `getIkBoneCount()`
+read that configuration. `apply(pose, locomotionX, locomotionZ, animatedX, animatedZ, dt)`
+yaws the copied display pose so authored planar velocity aligns with locomotion
+velocity. Root receives `(1 - getDistributedAlpha()) * angle`; remaining yaw is
+split across the spine list. Optional IK bones restore their pre-warp world
+orientation. Speeds use metres/second. Magnitudes above `getAngleThreshold()`
+(default 135°) or below `getMinRootMotionSpeed()` (0.1 m/s) target zero.
+`setRotationInterpSpeed` / `getRotationInterpSpeed` match Unreal `FInterpTo`;
+zero snaps. `setEnabled` / `isEnabled` gate pose mutation: disabled apply calls
+still update the target/smoothed angle but leave the pose unchanged.
+
+Call this on a **copy** of `MotionMatcher.getPose()`, never on the matcher pose
+itself: the next search must keep reading unwarped matching features. Native
+`OrientationWarping` uses checked `Result` and does not retain the pose. See
+`examples/climbing-motion-matching`.
 
 ## 基本用法（控制论程序动画）
 
@@ -369,6 +389,28 @@ cp.setTargetPose(target);
 cp.update(dt);
 local pose = cp.getPose();
 ```
+
+## 受击晃动与平衡恢复（PhysicalBalancePose）
+
+动画仍是目标姿态。`PhysicalBalancePose` 在骨骼上叠一层倒立摆：世界空间冲量产生倾角角速度，恢复 PD 必须强过 `g/h`，角色会晃一下再站稳。命中骨还有局部 recoil 弹簧。模块不 include 物理；从 `World3D` 接触点取冲量后调用 `applyImpulse`。
+
+```squirrel
+local anim = eve.Animation();
+local bal = anim.newPhysicalBalancePose(sk);
+local set = bal.setBalanceBone(spine);
+if (!set.ok) return;
+bal.setSupportBone(root);
+bal.setRecovery(2.0, 0.45); // f, ζ；ζ<1 会回摆
+bal.setTargetPose(player.getPose());
+
+// 来自 World3D 接触：冲量 × 接触点
+local hit = bal.applyImpulse(chest, ix, iy, iz, px, py, pz);
+if (!hit.ok) return;
+bal.update(dt);
+local pose = bal.getPose(); // 蒙皮用这个
+```
+
+`{ok,message}` 必须检查。恢复频率过低、无法对抗重力时 setter 失败且不改当前参数。
 
 ## 基本用法（拖尾轨迹）
 
@@ -501,11 +543,12 @@ C++ 入口：`setRootMotionPolicy(RootMotionPolicy)` / `applyRootMotionPolicy` /
 - `SpriteSheet` 定义图集格子；`SpriteClip` 引用格子索引；`SpriteAnim` 推进时间并可 `bindQuad`。
 - `SpineAtlas` + `SpineSkeletonData` 为资源；`SpineSkeleton` 为运行时姿态；`SpineAnim` 采样动画并 `collectDrawItems`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
-- `AnimPlayer` / `AnimGraph` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
+- `AnimPlayer` / `AnimGraph` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` / `PhysicalBalancePose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
 - `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
 - Motion Database 在 bake 时按通道计算均值/标准差并标准化；搜索使用当前最优代价提前终止候选计算，避免量纲较大的通道意外支配结果。
 - `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
+- `PhysicalBalancePose`：先 `setTargetPose` 再 `applyImpulse`，然后 `update(dt)`；蒙皮读 `getPose()`。
 
 ## 目标导向指南
 
@@ -588,7 +631,7 @@ anim->advance(step);
 - `SpineSkeletonData`：`loadFromJson()`、`loadFromFile()`、`findBone()`、`findSlot()`、`findAnimation()`、`getAnimationDuration()`
 - `SpineSkeleton`：`setSkin()`、`setToSetupPose()`、`updateWorldTransform()`、`getBoneWorld*()`、`getSlotAttachmentName()`
 - `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
-- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newGraph()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newPhysicalBalancePose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`compress()`、`retarget()`、`sample()`、`wrapTime()`。自定义时间轴可通过 `getTrackCount()`、`getPositionKeyCount()`、`getPositionKeyTime()`、`getPositionKeyX()`、`getPositionKeyY()`、`getPositionKeyZ()`、`getRotationKeyCount()`、`getRotationKeyTime()`、`getRotationKeyX()`、`getRotationKeyY()`、`getRotationKeyZ()`、`getRotationKeyW()`、`getScaleKeyCount()`、`getScaleKeyTime()`、`getScaleKeyX()`、`getScaleKeyY()`、`getScaleKeyZ()` 枚举关键帧，通过 `setPositionKey()`、`setRotationKey()`、`setScaleKey()`、`removePositionKey()`、`removeRotationKey()`、`removeScaleKey()` 和 `clearTrack()` 原位编辑；事件标记使用 `addEvent()`、`setEvent()`、`removeEvent()`、`getEventCount()`、`getEventTime()`、`getEventName()`、`getEventPayload()`；步态同步标记使用 `addSyncMarker()`、`setSyncMarker()`、`removeSyncMarker()`、`getSyncMarkerCount()`、`getSyncMarkerTime()`、`getSyncMarkerName()`。这些是 UI 无关的数据接口，项目可以组合成骨骼时间轴、Avatar 动作面板或游戏内动画工具，无需引擎内置固定窗口。
 - AnimRetargetProfile：用 `addBoneMapping()` / `clearBoneMappings()` 管理 Avatar 式骨骼映射；`setNormalizedNameMatching()` / `getNormalizedNameMatching()` 配置自动匹配；`setRootBones()`、`setAutoRootScale()`、`getAutoRootScale()`、`setRootTranslationScale()`、`getRootHorizontalScale()`、`getRootVerticalScale()`、`setUseSkeletonSpaceRotation()`、`getUseSkeletonSpaceRotation()` 配置重定向；`setSkinnedInteractionPreserve()` / `getSkinnedInteractionPreserve()`、`setInteractionContactThreshold()` / `getInteractionContactThreshold()`、`setInteractionCorrectionWeight()` / `getInteractionCorrectionWeight()`、`addInteractionIkChain()` / `clearInteractionIkChains()` 配置 MeshRet 风格蒙皮交互保持；`setNeuralRetargetEnabled()` / `getNeuralRetargetEnabled()`、`setNeuralBackend()` / `getNeuralBackend()`、`setNeuralModelPath()` / `getNeuralModelPath()` 配置可选神经 MeshRet 路径；通过 `getMatchedBoneCount()`、`getUnmatchedBoneCount()`、`getUnmatchedTargetBone()`、`getInteractionCorrectionCount()`、`getNeuralInferenceCount()` 读取最近一次烘焙诊断；配合 `retargetWithProfile()` 使用。
@@ -602,8 +645,10 @@ anim->advance(step);
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`setPlayRateRange()`、`getPlayRateMinimum()`、`getPlayRateMaximum()`、`getPlayRate()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
+- `OrientationWarping`：`configure()`、`setDistributedAlpha()`、`getDistributedAlpha()`、`setAngleThreshold()`、`getAngleThreshold()`、`setRotationInterpSpeed()`、`getRotationInterpSpeed()`、`setMinRootMotionSpeed()`、`getMinRootMotionSpeed()`、`setEnabled()`、`isEnabled()`、`reset()`、`apply()`、`getAppliedAngle()`、`getTargetAngle()`、`getSkeleton()`、`getRootBone()`、`getSpineBoneCount()`、`getIkBoneCount()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
+- `PhysicalBalancePose`：`getSkeleton()`、`setSupportBone()`、`getSupportBone()`、`setBalanceBone()`、`getBalanceBone()`、`setBoneMass()`、`getBoneMass()`、`setRecovery()`、`getRecoveryFrequency()`、`getRecoveryDamping()`、`setRecoil()`、`getRecoilFrequency()`、`getRecoilDamping()`、`setGravity()`、`getGravity()`、`setPendulumHeight()`、`getPendulumHeight()`、`setInertia()`、`getInertia()`、`setRecoilInertia()`、`getRecoilInertia()`、`setMaxLean()`、`getMaxLean()`、`setTargetPose()`、`snapToTarget()`、`applyImpulse()`、`update()`、`getPose()`、`getTargetPose()`、`getLeanX()`、`getLeanZ()`、`getLeanVelocityX()`、`getLeanVelocityZ()`、`getCenterOfMassX()`、`getCenterOfMassY()`、`getCenterOfMassZ()`、`getSupportX()`、`getSupportY()`、`getSupportZ()`
 - `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
 - 程序化骨骼工厂：`newDynamicBoneSolver()`、`newFootIKSolver()`；发卡便捷：`setupHairChain()`、`setupHairHeadCollider()`。
 - `DynamicBoneSolver`：`setSkeleton()`、`addChain()`、`addChainByName()`、`clearChains()`、`getChainCount()`、`setChainEnabled()`、`isChainEnabled()`、`isChainSleeping()`、`setChainParticleParameters()`、`setChainFreezeAxis()`、`setChainEndLength()`、`setChainEndOffset()`、`clearChainEnd()`、`setChainSelfCollision()`、`setGlobalGravity()`、`getGlobalGravityX()`、`getGlobalGravityY()`、`getGlobalGravityZ()`、`setExternalForce()`、`setWeight()`、`getWeight()`、`setPositionResponse()`、`setRotationResponse()`、`setObjectMoveResponse()`、`getObjectMoveResponse()`、`setTeleportThreshold()`、`getTeleportThreshold()`、`setDistanceReference()`、`setDistanceLimit()`、`addColliderSphere()`、`addColliderCapsule()`、`addBoneColliderSphere()`、`addBoneColliderCapsule()`、`removeCollider()`、`clearColliders()`、`getColliderCount()`、`setColliderEnabled()`、`setColliderRadius()`、`setColliderInside()`、`update()`。

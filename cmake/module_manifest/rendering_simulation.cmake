@@ -37,6 +37,12 @@ eve_declare_module(NAME graphics_raytracing DIR graphics/raytracing LAYER 4
                    SCRIPT RayTracing SLOT rayTracing
                    DEPS graphics
                    GROUP 3d)
+# Realtime fog satellite: MAC transport, SceneWind, analytic interactors, world-space
+# ray march, froxel mapping, Beer cache, analytic volumetric lights and art layer.
+eve_declare_module(NAME graphics_fog DIR graphics/fog LAYER 4
+                   LIB EVGraphicsFog SCRIPT RealtimeFog SLOT realtimeFog
+                   DEPS graphics
+                   GROUP 3d web)
 eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    DEPS platform_event filesystem graphics image property_access timer window
                    OPTIONAL_DEPS animation

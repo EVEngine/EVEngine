@@ -46,7 +46,7 @@
 - [PixelWorld 确定性重放](modules/pixelworld_replay.md)：命令日志、周期 checkpoint 与首个 Tick/Chunk 分歧定位。
 - [PixelWorld 兴趣区 Streaming](modules/pixelworld_streaming.md)：Chunk 兴趣区、增量更新、驱逐 tombstone 与权威校正。
 - [PixelWorld Catalog 编辑器](modules/pixelworld_editor.md)：可挂载的材质浏览、属性、反应与相变规则事务式编辑面板。
-- [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、以及拖尾轨迹（`AnimTrail`）。
+- [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、受击晃动与平衡恢复（`PhysicalBalancePose`）、以及拖尾轨迹（`AnimTrail`）。
 - [攀爬与跑酷](modules/climbing.md)：前方障碍/顶部落点探测、确定性动作选择，以及受 Physics 胶囊体约束的 vault / mantle 执行。
 - [行动与 Ability 协议](modules/action.md)：脚本拥有的 `ActionRuntime` / `AbilityRuntime`；grant、冷却、激活与直接 action 提交。
 - [通用结算](modules/settlement.md)：确定性结算管线与规则文档；脚本 ledger runtime 与各玩法域 `configureSettlementRulesJson`。
@@ -72,6 +72,7 @@
 ## 表现与场景
 
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
+- [实时雾气](modules/graphics_fog.md)：MAC 流体、世界空间光线步进、Froxel 积分与解析体积光；艺术层不回写密度。
 - [体素](modules/voxel.md)：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。

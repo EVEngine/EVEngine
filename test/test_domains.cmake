@@ -40,6 +40,7 @@ set(EVE_TEST_DOMAINS
     animation
     physics
     fluids
+    gpuagents
     procgen
     map
     voxel
@@ -130,6 +131,7 @@ set(EVE_TEST_MODULE_DOMAIN
 
     # --- simulation-heavy domains
     "fluids;fluids"
+    "gpuagents;gpuagents"
     "procgen;procgen"
     "map;map"
     "hexmap;map"

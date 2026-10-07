@@ -79,6 +79,8 @@ TEST_CASE("climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary")
     source << input.rdbuf();
     CHECK(source.str().find("eve.Climbing()") != std::string::npos);
     CHECK(source.str().find("newMotionMatcher") != std::string::npos);
+    CHECK(source.str().find("OrientationWarping") != std::string::npos);
+    CHECK(source.str().find("displayPose.copyFrom") != std::string::npos);
     CHECK(source.str().find("assets/ue-only") == std::string::npos);
 
     eve::Runtime runtime(4096, ssq::Libs::ALL);

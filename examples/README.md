@@ -85,6 +85,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
+| [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
 | [composable-rebellion](composable-rebellion/README.md) | 可组合玩法：引擎只存事实、叛乱语义全在脚本（15 个 `eve.*` 模块协作） |
 
 ## 3D 玩法与镜头
@@ -173,6 +174,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [silpom-ssdm-compare](silpom-ssdm-compare/README.md) | 平面 SilPOM vs SSDM：硬砖 heightfield、轮廓挤出与 FragDepth 取舍对比 |
 | [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
+| [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
