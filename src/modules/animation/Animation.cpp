@@ -20,6 +20,7 @@
 #include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
+#include "animation/PhysicalBalancePose.h"
 #include "animation/MotionBuilder.h"
 #include "animation/MotionSequence.h"
 #include "animation/MotionScriptBindings.h"
@@ -385,6 +386,10 @@ ControlAnim *Animation::newControlAnim(float frequencyHz, float dampingZeta, flo
 }
 
 ControlPose *Animation::newControlPose(AnimSkeleton *skeleton) { return new ControlPose(skeleton); }
+
+PhysicalBalancePose* Animation::newPhysicalBalancePose(AnimSkeleton* skeleton) {
+    return new PhysicalBalancePose(skeleton);
+}
 
 AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
     return AnimImporter::loadSkeletonFromModel(model);
@@ -860,6 +865,7 @@ void Animation::expose(ssq::Table &table) {
     lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
 
     exposeAnimPlayerBindings(table);
+    exposePhysicalBalancePoseBindings(table);
 
     auto graph = table.addClass<AnimGraph>(
         "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
@@ -1344,6 +1350,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
     cls.addFunc("newControlAnim", &Animation::newControlAnim);
     cls.addFunc("newControlPose", &Animation::newControlPose);
+    cls.addFunc("newPhysicalBalancePose", &Animation::newPhysicalBalancePose);
     cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
     cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
     cls.addFunc("newSkeletonFromAnimationFixtureText", &Animation::newSkeletonFromAnimationFixtureText);
