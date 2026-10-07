@@ -121,6 +121,19 @@ channel)` 的整数哈希直接导出五个分量，因此不需要分配表、�
 区域参数在改动地图之前就以 `InvalidArgument` 拒绝。生成后的地图**全部格子未探索**，
 因此调用方必须重新放置单位并重建全部块。
 
+脚本不直接调用 `generateHexMap`。`procgen.generateHexTerrain(params)` 在临时网格上
+跑同一条流水线，产出 `hex.terrain` bake（`kind`、尺寸、seed、按格子打包的
+`values`/`flags`）；`hexmap.applyTerrain(gfx, bake)` 把 bake 写进活动地图并丢掉
+单位与迷雾。C++ 测试与工具仍可直接调用 `generateHexMap`。
+
+### 地形 Bake（[HexTerrainBake.h](../../../src/modules/hexmap/HexTerrainBake.h)）
+
+`HexTerrainBake` 是 hexmap 的消费契约：格子快照，不是生成算法。`snapshotHexTerrain` /
+`snapshotHexSphereTerrain` 从已填好的地图取出格子；`hexTerrainBakeToValue` /
+`hexTerrainBakeFromValue` 把 payload 编成脚本 Value；`applyHexTerrain` /
+`applyHexSphereTerrain` 写回活动地图。打包格式是每格 8 字节小端
+`HexValues` 然后 `HexFlags`。
+
 ### 搜索与寻路（[HexSearch.h](../../../src/modules/hexmap/HexSearch.h)）
 
 - `HexSearchContext`：可复用的搜索草稿（每格一条 `HexSearchData` + 按优先级分桶
@@ -247,7 +260,7 @@ hexmap.travelUnit(id, path) / advanceUnits(dt)
 hexmap.findPath(fx, fz, tx, tz)   // -> {ok, value=[[x, z, turn], ...]}
 hexmap.saveMap()                  // -> {ok, value=<二进制安全字符串>}
 hexmap.loadMap(gfx, blob)         // -> Result
-hexmap.generateMap(gfx, seed, landPercentage, waterLevel, riverPercentage)   // -> Result
+hexmap.applyTerrain(gfx, bake)    // -> Result；bake 来自 procgen.generateHexTerrain
 
 // 球面（与平面地图相互独立，可同时存在）
 hexmap.newSphere(gfx, subdivision, radius, seed)     // -> Result；重建拓扑并释放上一颗星球的网格
@@ -260,7 +273,7 @@ hexmap.sphereCellAt(x, y, z) / sphereDistance(a, b)
 hexmap.spherePickCell(ox, oy, oz, dx, dy, dz)        // -> {ok, value=<cell>}
 hexmap.sphereSetElevation(cell, v) / sphereSetTerrainType(cell, v)
 hexmap.sphereEditElevation(cell, radius, delta) / sphereEditTerrainType(cell, radius, terrainType)
-hexmap.generateSphere(gfx, seed, landPercentage, waterLevel)   // -> Result；生成并重建两个网格
+hexmap.applySphereTerrain(gfx, bake)                 // -> Result；bake 来自 procgen.generateHexSphere，写入单元并重建两个网格
 hexmap.rebuildSphere(gfx)                            // -> Result；批量编辑后重建
 hexmap.sphereTerrainMesh() / sphereWaterMesh()       // -> Mesh（借用），无几何时为 null
 hexmap.sphereReleaseMeshes(gfx)
@@ -270,14 +283,14 @@ hexmap.sphereReleaseMeshes(gfx)
 `x, z` 是偏移坐标（列、行）——`pickCell` 的返回值同样是偏移坐标，与 `elevation` /
 `editElevation` / `cellPositionX` 等所有格子接口同一坐标系，因此拾取结果可以直接回喂
 给它们（`findPath` 与 `unitSample` 返回的格子也已经是偏移坐标）。`unitSample` 复用
-`advance(dt=0)`，因此返回的是含高程与扰动的插值位姿，不是地格中心。`generateMap` 按
-**当前网格尺寸**重新生成，会丢弃全部单位与迷雾状态，调用方必须在成功后重新放置单位
+`advance(dt=0)`，因此返回的是含高程与扰动的插值位姿，不是地格中心。`applyTerrain` 按
+bake 的尺寸与种子重建网格，会丢弃全部单位与迷雾状态，调用方必须在成功后重新放置单位
 并重建全部块。
 
 球面接口用 `cell`（稠密 id，`0 .. sphereCellCount()-1`），与平面接口的偏移坐标 `(x, z)`
 是**两套互不相通的地址空间**：不要拿平面坐标去喂球面接口，反之亦然。`sphereDirection`
 与 `sphereCornerDirection` 返回 `[x, y, z]` 单位向量。`newSphere` 只重建拓扑，
-`generateSphere` 才写入单元并重建网格；两者都会释放上一颗星球的网格，因此调用方必须在
+`applySphereTerrain` 才写入单元并重建网格；两者都会释放上一颗星球的网格，因此调用方必须在
 成功后重新绑定 renderable。`rebuildSphere` 是批量编辑后的重建入口——球面是**整张一个
 网格**（没有分块），每次重建都是全量，应当攒够一批编辑再调一次，而不是每改一格就调。
 

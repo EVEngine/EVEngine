@@ -6,8 +6,8 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "hexmap/HexFeatures.h"
-#include "hexmap/HexMapGenerator.h"
 #include "hexmap/HexSphereMesh.h"
+#include "hexmap/HexTerrainBake.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -56,27 +56,21 @@ void HexMapModule::syncScratch() {
     scratch_.resize(map_.cellCount());
 }
 
-Result<void> HexMapModule::generateMap(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
-                                       std::int32_t waterLevel, std::int32_t riverPercentage) {
-    if (!gfx) return invalidArgument("generateMap requires a graphics device");
-    if (map_.empty()) return invalidArgument("generateMap requires an existing grid");
+Result<void> HexMapModule::applyTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake) {
+    if (!gfx) return invalidArgument("applyTerrain requires a graphics device");
+    if (bake.kind != HexTerrainBake::Kind::Planar)
+        return invalidArgument("applyTerrain requires a planar hex.terrain bake");
 
+    // `applyHexTerrain` validates through `HexMap::reset` before it mutates, so a
+    // rejected bake leaves the live grid and its meshes untouched.
+    auto applied = applyHexTerrain(map_, bake);
+    if (!applied) return applied;
     if (!meshes_.empty()) releaseMeshes(gfx);
-    const std::int32_t cellCountX = map_.cellCountX();
-    const std::int32_t cellCountZ = map_.cellCountZ();
-    auto               reset      = map_.reset(cellCountX, cellCountZ, seed);
-    if (!reset) return reset;
     visibility_.reset(map_.cellCount());
     units_.removeAll(map_, visibility_);
     syncScratch();
     clearMeshSlots();
-
-    HexMapGeneratorSettings settings;
-    settings.seed            = seed;
-    settings.landPercentage  = landPercentage;
-    settings.waterLevel      = waterLevel;
-    settings.riverPercentage = riverPercentage;
-    return generateHexMap(map_, settings);
+    return Result<void>::success();
 }
 
 Result<void> HexMapModule::adoptGrid(graphics::Graphics* gfx, HexMap&& restored,
@@ -221,20 +215,14 @@ Result<void> HexMapModule::newSphere(graphics::Graphics* gfx, std::int32_t subdi
     return Result<void>::success();
 }
 
-Result<void> HexMapModule::generateSphere(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
-                                          std::int32_t waterLevel) {
+Result<void> HexMapModule::applySphereTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake) {
     if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
     if (sphere_.empty()) return invalidArgument("hex sphere map has no cells");
+    if (bake.kind != HexTerrainBake::Kind::Sphere)
+        return invalidArgument("applySphereTerrain requires a hex.sphere bake");
 
-    HexSphereGeneratorSettings settings{};
-    settings.seed           = seed;
-    settings.landPercentage = landPercentage;
-    settings.waterLevel     = waterLevel;
-
-    // The generator's only failure is an empty map, which the guard above already
-    // rejected, so it cannot leave the cells half-written.
-    auto generated = generateSphereMap(sphere_, settings);
-    if (!generated.ok()) return Result<void>::failure(generated.status());
+    auto applied = applyHexSphereTerrain(sphere_, bake);
+    if (!applied.ok()) return Result<void>::failure(applied.status());
     return rebuildSphere(gfx);
 }
 
@@ -466,13 +454,15 @@ void HexMapModule::expose(ssq::Class& cls) {
         return script::projectResult(vm, self->map().editFeatureLevel(fromScriptCell(x, z), radius, feature, delta));
     });
 
-    // --- generation ---
-    cls.addFunc("generateMap", [vm](HexMapModule* self, graphics::Graphics* gfx, int seed, int landPercentage,
-                                    int waterLevel, int riverPercentage) {
+    // --- terrain apply (procgen produces the bake) ---
+    cls.addFunc("applyTerrain", [vm](HexMapModule* self, graphics::Graphics* gfx, ssq::Object bake) {
         if (!self || !gfx) return script::projectResult(vm, invalidArgument("hex map module is not available"));
-        if (seed < 0) seed = 0;
-        return script::projectResult(vm, self->generateMap(gfx, static_cast<std::uint32_t>(seed), landPercentage,
-                                                           waterLevel, riverPercentage));
+        auto owned = script::valueFromSquirrel(bake);
+        if (!owned)
+            return script::projectResult(vm, invalidArgument("applyTerrain requires a hex.terrain bake object"));
+        auto decoded = hexTerrainBakeFromValue(owned.value());
+        if (!decoded) return script::projectResult(vm, Result<void>::failure(decoded.status()));
+        return script::projectResult(vm, self->applyTerrain(gfx, decoded.value()));
     });
 
     // --- fog of war ---
@@ -635,12 +625,14 @@ void HexMapModule::expose(ssq::Class& cls) {
             return script::projectResult(vm,
                                          self->newSphere(gfx, subdivision, radius, static_cast<std::uint32_t>(seed)));
         });
-    cls.addFunc("generateSphere", [vm](HexMapModule* self, graphics::Graphics* gfx, int seed, int landPercentage,
-                                       int waterLevel) {
+    cls.addFunc("applySphereTerrain", [vm](HexMapModule* self, graphics::Graphics* gfx, ssq::Object bake) {
         if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
-        if (seed < 0) seed = 0;
-        return script::projectResult(
-            vm, self->generateSphere(gfx, static_cast<std::uint32_t>(seed), landPercentage, waterLevel));
+        auto owned = script::valueFromSquirrel(bake);
+        if (!owned)
+            return script::projectResult(vm, invalidArgument("applySphereTerrain requires a hex.sphere bake object"));
+        auto decoded = hexTerrainBakeFromValue(owned.value());
+        if (!decoded) return script::projectResult(vm, Result<void>::failure(decoded.status()));
+        return script::projectResult(vm, self->applySphereTerrain(gfx, decoded.value()));
     });
     cls.addFunc("rebuildSphere", [vm](HexMapModule* self, graphics::Graphics* gfx) {
         if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));

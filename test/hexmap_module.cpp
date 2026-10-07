@@ -3,7 +3,12 @@
 
 #include "Fixtures.h"
 
+#include "hexmap/HexMap.h"
+#include "hexmap/HexMapGenerator.h"
 #include "hexmap/HexMapModule.h"
+#include "hexmap/HexSphereGenerator.h"
+#include "hexmap/HexSphereMap.h"
+#include "hexmap/HexTerrainBake.h"
 
 #include <cstdint>
 
@@ -69,6 +74,73 @@ TEST_CASE("hexmap.module.rejectedSphereShapeKeepsTheLiveMeshes") {
     CHECK(!module.newSphere(gfx.gfx, -1, 100.f, 3u).ok());
     REQUIRE(module.sphereTerrainMesh() == live);
     REQUIRE(!module.sphere().empty());
+
+    module.releaseSphereMeshes(gfx.gfx);
+}
+
+TEST_CASE("hexmap.module.applyTerrainRebuildsFromAProcgenBake") {
+    GfxFixture   gfx(320, 240, /*useHeadless=*/true);
+    HexMapModule module;
+    REQUIRE(module.newGrid(gfx.gfx, kGridCells, kGridCells, 1u).ok());
+    REQUIRE(module.rebuildDirtyChunks(gfx.gfx) > 0);
+    eve::graphics::Mesh* live = module.chunkMeshAt(0, HexSurface::Terrain);
+    REQUIRE(live != nullptr);
+
+    HexTerrainBake rejected;
+    rejected.kind       = HexTerrainBake::Kind::Planar;
+    rejected.cellCountX = 7;
+    rejected.cellCountZ = 7;
+    CHECK(!module.applyTerrain(gfx.gfx, rejected).ok());
+    REQUIRE_EQ(module.map().seed(), 1u);
+    REQUIRE(module.chunkMeshAt(0, HexSurface::Terrain) == live);
+
+    HexMap scratch;
+    REQUIRE(scratch.reset(kGridCells, kGridCells, 9u).ok());
+    HexMapGeneratorSettings settings;
+    settings.seed           = 9u;
+    settings.landPercentage = 50;
+    settings.mapBorderX     = 0;
+    settings.mapBorderZ     = 0;
+    settings.regionBorder   = 0;
+    REQUIRE(generateHexMap(scratch, settings).ok());
+    const HexTerrainBake bake = snapshotHexTerrain(scratch);
+
+    REQUIRE(module.applyTerrain(gfx.gfx, bake).ok());
+    REQUIRE_EQ(module.map().seed(), 9u);
+    REQUIRE_EQ(module.map().cellCount(), kGridCells * kGridCells);
+    REQUIRE_EQ(module.map().values(module.map().coordinatesAt(0)).raw(),
+               scratch.values(scratch.coordinatesAt(0)).raw());
+    REQUIRE(module.chunkMeshAt(0, HexSurface::Terrain) == nullptr);
+    REQUIRE(module.rebuildDirtyChunks(gfx.gfx) > 0);
+    REQUIRE(module.chunkMeshAt(0, HexSurface::Terrain) != nullptr);
+
+    HexTerrainBake sphereBake = bake;
+    sphereBake.kind           = HexTerrainBake::Kind::Sphere;
+    CHECK(!module.applyTerrain(gfx.gfx, sphereBake).ok());
+    REQUIRE_EQ(module.map().seed(), 9u);
+
+    module.releaseMeshes(gfx.gfx);
+}
+
+TEST_CASE("hexmap.module.applySphereTerrainRebuildsMeshes") {
+    GfxFixture   gfx(320, 240, /*useHeadless=*/true);
+    HexMapModule module;
+    REQUIRE(module.newSphere(gfx.gfx, 1, 100.f, 3u).ok());
+
+    HexSphereMap scratch;
+    REQUIRE(scratch.reset(1, 100.f, 3u).ok());
+    HexSphereGeneratorSettings settings;
+    settings.seed           = 3u;
+    settings.landPercentage = 45;
+    REQUIRE(generateSphereMap(scratch, settings).ok());
+    const HexTerrainBake bake = snapshotHexSphereTerrain(scratch);
+
+    REQUIRE(module.applySphereTerrain(gfx.gfx, bake).ok());
+    REQUIRE(module.sphereTerrainMesh() != nullptr);
+    REQUIRE_EQ(module.sphere().values(0).raw(), scratch.values(0).raw());
+
+    HexMap emptyPlanar;
+    CHECK(!module.applySphereTerrain(gfx.gfx, snapshotHexTerrain(emptyPlanar)).ok());
 
     module.releaseSphereMeshes(gfx.gfx);
 }

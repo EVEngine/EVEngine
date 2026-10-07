@@ -978,7 +978,8 @@ TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
 }
 
 TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
-    // `examples/hex-planet` fills its cells with `hexmap.generateSphere(gfx, seed, 45, 0)`, and it
+    // `examples/hex-planet` fills its cells with `procgen.generateHexSphere` then
+    // `hexmap.applySphereTerrain`, and it
     // lets the seed and the subdivision change at run time - `R` and `[` / `]`. The generator is a
     // pure function of the topology, the radius and its settings, so each case here is one of those
     // planets cell for cell.

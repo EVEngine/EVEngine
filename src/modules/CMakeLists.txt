@@ -15,6 +15,21 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# HexMapTerrain.cpp bakes hexmap cells. HexTerrain.cpp is the unrelated
+# mesh.hexterrain continent recipe and must stay compiled either way.
+# Without hexmap the absent stubs still expose generateHexTerrain /
+# generateHexSphere so scripts get a structured NotFound instead of a
+# missing method.
+#
+# Append to the *normal* variable: root already FORCE-set the CACHE entry, and
+# CMP0126 leaves that normal value as what create_module() reads.
+eve_module_enabled(hexmap _has_hexmap)
+if(_has_hexmap)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HexTerrainAbsent.cpp)
+else()
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HexMapTerrain.cpp)
+endif()
+
 # editor/EditorParticleGraphRuntime.cpp applies compiled particle module graphs
 # to the real emitter only when the particles module is enabled.
 eve_module_enabled(particles _has_particles_editor_bridge)
@@ -296,6 +311,18 @@ if(_has_vehicle)
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
   endif()
   set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
+endif()
+
+# Same exclusive-pair rule as VehiclePhysics: the scan may still have both
+# names until cmake rewrites procgen_src.txt.
+if(TARGET EVProcgen)
+  get_target_property(_eve_procgen_hex_srcs EVProcgen SOURCES)
+  if(_has_hexmap)
+    list(FILTER _eve_procgen_hex_srcs EXCLUDE REGEX "HexTerrainAbsent\\.cpp$")
+  else()
+    list(FILTER _eve_procgen_hex_srcs EXCLUDE REGEX "HexMapTerrain\\.cpp$")
+  endif()
+  set_target_properties(EVProcgen PROPERTIES SOURCES "${_eve_procgen_hex_srcs}")
 endif()
 
 # Poco's MSVC #pragma comment auto-link names libraries without the md/mdd

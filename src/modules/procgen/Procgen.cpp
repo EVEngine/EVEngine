@@ -8,10 +8,11 @@
 #include "procgen/GridMeshGraphScript.h"
 #include "procgen/PointGraphScript.h"
 #include "procgen/ProcgenCapabilities.h"
-#include "procgen/RuntimeGenerationScript.h"
-#include "procgen/ShapeGrammarScript.h"
 #include "procgen/ProcgenScriptObjects.h"
+#include "procgen/RuntimeGenerationScript.h"
 #include "procgen/ScriptGeneratorHost.h"
+#include "procgen/ShapeGrammarScript.h"
+#include "procgen/algorithms/HexTerrainBindings.h"
 #include "procgen/mesh/DynamicMeshUvPaintSession.h"
 #include "procgen/mesh/MeshModifierGraphScript.h"
 
@@ -4216,6 +4217,7 @@ void Procgen::expose(ssq::Table& table) {
 void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Procgen::getName);
     exposeScriptGeneratorHost(cls);
+    exposeHexTerrain(cls);
     cls.addFunc("newParams", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         return makeOwnedProxy<ProcgenParamsHandleRef, ScriptProcgenParams>(
             vm, Procgen::newParamsHandle(), [](ProcgenParamsHandleRef ref) { return Procgen::release(ref); });

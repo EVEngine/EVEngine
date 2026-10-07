@@ -44,7 +44,9 @@ struct HexSphereGeneratorSettings {
  * The result is a pure function of the map's topology, its radius and the settings,
  * so two runs of the same settings produce identical cells.
  *
- * @param map Map to fill; must not be empty.
+ * @param map Map to fill; must not be empty. Scripts do not call this: they
+ *            bake through `procgen.generateHexSphere` and apply with
+ *            `hexmap.applySphereTerrain`.
  * @param settings Generator tunables.
  * @return Success, or InvalidArgument when the map has no cells.
  * @cost One 3D fBm evaluation per cell for the continents and one more for the

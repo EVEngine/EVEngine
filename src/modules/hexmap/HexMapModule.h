@@ -8,8 +8,8 @@
 #include "hexmap/HexMapMesh.h"
 #include "hexmap/HexSearch.h"
 #include "hexmap/HexSerializer.h"
-#include "hexmap/HexSphereGenerator.h"
 #include "hexmap/HexSphereMap.h"
+#include "hexmap/HexTerrainBake.h"
 #include "hexmap/HexUnits.h"
 #include "hexmap/HexVisibility.h"
 
@@ -127,21 +127,6 @@ public:
                                          std::uint32_t seed);
 
     /**
-     * @brief Regenerates the spherical map procedurally and rebuilds both its meshes.
-     *
-     * @param gfx Device that owns the sphere meshes; required.
-     * @param seed Deterministic seed for the generator.
-     * @param landPercentage Target share of land, in percent.
-     * @param waterLevel Cells at or below this elevation are flooded.
-     * @return Success, InvalidArgument when there is no sphere or no device, or the
-     *         generator's own failure status.
-     * @cost Overwrites every cell, then one CPU mesh build and one GPU upload for the
-     *       terrain and for the ocean.
-     */
-    [[nodiscard]] Result<void> generateSphere(graphics::Graphics* gfx, std::uint32_t seed,
-                                              std::int32_t landPercentage, std::int32_t waterLevel);
-
-    /**
      * @brief Rebuilds the whole-sphere terrain and ocean meshes from the current cells.
      *
      * @param gfx Device that owns the sphere meshes; required.
@@ -206,25 +191,35 @@ public:
     void syncScratch();
 
     /**
-     * @brief Regenerates the active grid procedurally and drops every unit.
+     * @brief Apply a procgen planar terrain bake and drop every unit.
      *
-     * The grid is rebuilt from `seed` first, because the terrain perturbation has
-     * to match the generation seed; that releases every mesh, unit and visibility
-     * counter of the previous grid. The caller must rebuild every chunk afterwards
-     * and place new units: a generated map has **no explored cells**, so nothing is
-     * visible until a unit grants vision.
+     * The grid is rebuilt from the bake's size and seed first, because terrain
+     * perturbation has to match the generation seed; that releases every mesh,
+     * unit and visibility counter of the previous grid. The caller must rebuild
+     * every chunk afterwards and place new units: a generated map has **no
+     * explored cells**, so nothing is visible until a unit grants vision.
      *
      * @param gfx Device that owns the current meshes; required.
-     * @param seed Deterministic seed for both the grid noise and the generator.
-     * @param landPercentage Target share of land, in percent; clamped by the generator.
-     * @param waterLevel Cells at or below this elevation are flooded; clamped by the generator.
-     * @param riverPercentage Target share of the map covered by rivers, in percent; clamped by the generator.
-     * @return Success, or InvalidArgument when there is no grid or no device, or a
-     *         failure forwarded from the generator.
-     * @cost Releases every owned mesh and allocates the whole grid; proportional to the cell count.
+     * @param bake Planar bake produced by `procgen.generateHexTerrain`.
+     * @return Success, or InvalidArgument when there is no device, or a failure
+     *         forwarded from apply.
+     * @cost Releases every owned mesh and allocates the whole grid.
      */
-    [[nodiscard]] Result<void> generateMap(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
-                                           std::int32_t waterLevel, std::int32_t riverPercentage);
+    [[nodiscard]] Result<void> applyTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake);
+
+    /**
+     * @brief Apply a procgen sphere terrain bake and rebuild both meshes.
+     *
+     * The live topology must already exist (`newSphere`) and match the bake.
+     * Units are not part of the spherical map. GPU meshes are rebuilt here
+     * because the sphere is a single pair of streams rather than dirty chunks.
+     *
+     * @param gfx Device that owns the sphere meshes; required.
+     * @param bake Sphere bake produced by `procgen.generateHexSphere`.
+     * @return Success, InvalidArgument when there is no sphere or no device, or
+     *         the apply/rebuild failure.
+     */
+    [[nodiscard]] Result<void> applySphereTerrain(graphics::Graphics* gfx, const HexTerrainBake& bake);
 
 private:
     [[nodiscard]] std::int32_t meshSlot(std::int32_t chunkIndex, HexSurface surface) const noexcept;

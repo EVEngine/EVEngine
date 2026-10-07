@@ -687,7 +687,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
-    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    // Screen-space primary; UV secondary so coverage still varies if fragment
+    // position is degenerate (Dawn Metal CI once kept every pixel with fragCoord-only).
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)) +
+                          dot(uv * 64.0, vec2f(0.7548777, 0.5698403)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     var albedo = base.rgb;
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
@@ -1142,7 +1145,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     if (ubo.surface.x > 0.5 && ubo.surface.x < 1.5 && base.a < ubo.surface.y) {
         discard;
     }
-    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)));
+    // Screen-space primary; UV secondary so coverage still varies if fragment
+    // position is degenerate (Dawn Metal CI once kept every pixel with fragCoord-only).
+    let alphaHash = fract(dot(floor(in.fragCoord.xy), vec2f(0.06711056, 0.00583715)) +
+                          dot(in.vUV * 64.0, vec2f(0.7548777, 0.5698403)));
     if (ubo.surface.x > 2.5 && base.a < alphaHash) { discard; }
     var albedo = base.rgb;
     var metallic = clamp(ubo.ambient.w, 0.0, 1.0);
