@@ -31,7 +31,7 @@ public:
 
 class Publisher final : public IVegetationConversionPublisher {
 public:
-    EditorResult<std::uint64_t> publish(const PreparedAssetImport& candidate,
+    Result<std::uint64_t> publish(const PreparedAssetImport& candidate,
                                         std::uint64_t              expectedGeneration) override {
         ++calls;
         observedAssets = candidate.manifest.assets.size();
