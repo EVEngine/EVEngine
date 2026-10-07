@@ -692,6 +692,16 @@ macro(create_module libname folder)
 
     file(READ ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt module_src)
     string(REPLACE "\n" ";" module_src "${module_src}")
+    # Drop empty entries from trailing newlines. A module whose only TUs were
+    # optional-bridge exclusions must not call add_library with no SOURCES.
+    list(FILTER module_src EXCLUDE REGEX "^$")
+    if(NOT module_src)
+        message(FATAL_ERROR
+            "Module '${folder}' (${libname}) has no sources after "
+            "EVENGINE_EXCLUDED_MODULE_FILES filtering. Either keep a stub TU, "
+            "remove the module from this profile, or make its optional dep a "
+            "hard DEPS so the module is disabled when the bridge is absent.")
+    endif()
 
     # Xcode + OBJECT libraries often emit hashed object filenames that the
     # dependent link phase still references without the hash (duplicate basenames

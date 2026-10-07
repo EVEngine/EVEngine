@@ -44,10 +44,11 @@ eve_declare_module(NAME archspace_editing LAYER 5
 eve_declare_module(NAME camera_editing LAYER 5
                    DEPS camera editing
                    GROUP 3d web)
+# BuildingTarget.cpp is the only TU; without building the module would be empty.
+# building itself is off on web (Poco), so this satellite is not in GROUP web.
 eve_declare_module(NAME building_editing LAYER 5
-                   DEPS editing
-                   OPTIONAL_DEPS building
-                   GROUP 2d 3d web)
+                   DEPS building editing
+                   GROUP 2d 3d)
 eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
@@ -159,7 +160,8 @@ eve_declare_module(NAME avatar_editor LAYER 7 SCRIPT AvatarEditorModule SLOT ava
                    DEPS avatar_editing editor GROUP 3d)
 eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor procgen
                    SCRIPT BiomeEditorModule SLOT biomeEditor GROUP 3d)
-eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d web)
+# building_editing requires building (Poco); keep off web/WASM with building.
+eve_declare_module(NAME building_editor LAYER 7 DEPS building_editing editor GROUP 2d 3d)
 eve_declare_module(NAME domain_gizmo_editor LAYER 7 DEPS domain_gizmo_editing editor GROUP 3d web)
 eve_declare_module(NAME camera_editor LAYER 7 DEPS camera_editing domain_gizmo_editor editor GROUP 3d web)
 eve_declare_module(NAME crowd_editor LAYER 7 DEPS crowd_editing editor GROUP 2d 3d web)
