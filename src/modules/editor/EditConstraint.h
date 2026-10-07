@@ -43,7 +43,7 @@ public:
     /** @brief Compatibility-only boolean facade over evaluateChecked(). */
     bool evaluate(EditorContext &context, IEditCommand &command);
     /** @brief Evaluate the chain and return structured allow/warning/reject diagnostics. */
-    [[nodiscard]] EditorResult<void> evaluateChecked(EditorContext &context, IEditCommand &command);
+    [[nodiscard]] Result<void> evaluateChecked(EditorContext &context, IEditCommand &command);
     int diagnosticCount() const { return static_cast<int>(diagnostics_.size()); }
     const std::string &diagnostic(int index) const;
     bool rejected() const { return rejected_; }

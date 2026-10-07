@@ -10,10 +10,6 @@
 namespace eve::tactics {
 namespace {
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) noexcept {
     return left.table == right.table && left.type == right.type && left.id == right.id &&
            left.generation == right.generation;
@@ -237,20 +233,19 @@ bool scheduleEntryAlive(const ecs::EntityHandle& handle) {
 
 Result<void> BattleSystem::addSide(Battle& battle, ecs::EntityHandle sideHandle) {
     if (battle.turn()->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics sides can only be added during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics sides can only be added during setup"), std::move("battle.status")));
     auto* side = resolve<TacticalSide>(sideHandle);
     if (side == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics side handle is stale or has the wrong type", "side");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics side handle is stale or has the wrong type"), std::move("side")));
     auto& sides = battle.turn()->sides;
     if (containsHandle(sides, sideHandle))
-        return failure(DiagnosticCode::Conflict, "tactics side is already registered", "side");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics side is already registered"), std::move("side")));
     for (const auto& existingHandle : sides) {
         auto* existing = resolve<TacticalSide>(existingHandle);
         if (!existing)
-            return failure(DiagnosticCode::StaleHandle, "tactics battle contains a stale side", "battle.sides");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics battle contains a stale side"), std::move("battle.sides")));
         if (existing->identity()->subject == side->identity()->subject)
-            return failure(DiagnosticCode::Conflict, "tactics side subject is already registered", "side.subject");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics side subject is already registered"), std::move("side.subject")));
     }
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
@@ -262,23 +257,22 @@ Result<void> BattleSystem::addSide(Battle& battle, ecs::EntityHandle sideHandle)
 Result<void> BattleSystem::addUnit(Battle& battle, ecs::EntityHandle unitHandle, ecs::EntityHandle sideHandle,
                                    Cell cellValue) {
     if (battle.turn()->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics units can only be added during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics units can only be added during setup"), std::move("battle.status")));
     TacticalUnit* unit = resolve<TacticalUnit>(unitHandle);
     if (unit == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics unit handle is stale or has the wrong type", "unit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics unit handle is stale or has the wrong type"), std::move("unit")));
     if (resolve<TacticalSide>(sideHandle) == nullptr || !containsHandle(battle.turn()->sides, sideHandle))
-        return failure(DiagnosticCode::NotFound, "tactics unit side is not registered with the battle", "side");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics unit side is not registered with the battle"), std::move("side")));
     if (containsHandle(battle.turn()->units, unitHandle))
-        return failure(DiagnosticCode::Conflict, "tactics unit is already registered", "unit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics unit is already registered"), std::move("unit")));
     if (!unit->identity()->subject.isValid())
-        return failure(DiagnosticCode::InvalidArgument, "tactics unit requires a valid SubjectRef", "unit.subject");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics unit requires a valid SubjectRef"), std::move("unit.subject")));
     for (const auto& existingHandle : battle.turn()->units) {
         auto* existing = resolve<TacticalUnit>(existingHandle);
         if (!existing)
-            return failure(DiagnosticCode::StaleHandle, "tactics battle contains a stale unit", "battle.units");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics battle contains a stale unit"), std::move("battle.units")));
         if (existing->identity()->subject == unit->identity()->subject)
-            return failure(DiagnosticCode::Conflict, "tactics unit subject is already registered", "unit.subject");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics unit subject is already registered"), std::move("unit.subject")));
     }
 
     auto placed = battle.board()->value.place(unit->identity()->subject, cellValue);
@@ -303,10 +297,9 @@ Result<void> BattleSystem::start(Battle& battle, std::string policyId) {
     auto turn = battle.turn();
     const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::Conflict, "tactics battle has already started", "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics battle has already started"), std::move("battle.status")));
     if (turn->sides.empty() || turn->units.empty())
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle requires sides and units",
-                       "battle.setup");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle requires sides and units"), std::move("battle.setup")));
     // Resolve the policy before mutating anything: an unregistered id must be a
     // refusal that leaves the battle in Setup, not a battle that starts and then
     // cannot schedule.
@@ -568,14 +561,12 @@ Result<void> BattleSystem::endTurn(Battle& battle, SubjectRef actor) {
     auto turn = battle.turn();
     const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Acting || !turn->activeUnit)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting end-turn",
-                       "battle.phase");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle is not accepting end-turn"), std::move("battle.phase")));
     TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
     if (unit == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics active unit is stale"), std::move("battle.activeUnit")));
     if (unit->identity()->subject != actor)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn",
-                       "actor");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics actor does not own the active turn"), std::move("actor")));
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
     unit->turn()->acted = true;
@@ -639,8 +630,7 @@ Result<void> BattleSystem::faceUnit(Battle& battle, SubjectRef actor, int facing
 
 Result<void> BattleSystem::faceUnit(Battle& battle, SubjectRef actor, int facing, SimulationTick commandTick) {
     if (commandTick < battle.turn()->tick)
-        return failure(DiagnosticCode::InvalidArgument, "tactics facing command tick cannot move backward",
-                       "commandTick");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics facing command tick cannot move backward"), std::move("commandTick")));
     auto preview = previewFace(battle, actor, facing);
     if (!preview) return preview;
     auto turn = battle.turn();
@@ -666,19 +656,17 @@ Result<void> BattleSystem::faceUnit(Battle& battle, SubjectRef actor, int facing
 Result<void> BattleSystem::previewFace(Battle& battle, SubjectRef actor, int facing) {
     auto turn = battle.turn();
     if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Acting || !turn->activeUnit)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting facing changes",
-                       "battle.phase");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle is not accepting facing changes"), std::move("battle.phase")));
     TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
     if (!unit)
-        return failure(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics active unit is stale"), std::move("battle.activeUnit")));
     if (unit->identity()->subject != actor)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn",
-                       "actor");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics actor does not own the active turn"), std::move("actor")));
     const int facingCount = battle.board()->value.topology() == BoardTopology::Square4   ? 4
                             : battle.board()->value.topology() == BoardTopology::Square8 ? 8
                                                                                          : 6;
     if (facing < 0 || facing >= facingCount)
-        return failure(DiagnosticCode::InvalidArgument, "tactics facing is invalid for board topology", "facing");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics facing is invalid for board topology"), std::move("facing")));
     return Result<void>::success(
         Status::success(unit->position()->facing == facing ? StatusCode::NoOp : StatusCode::Ok));
 }
@@ -689,8 +677,7 @@ Result<void> BattleSystem::waitUnit(Battle& battle, SubjectRef actor) {
 
 Result<void> BattleSystem::waitUnit(Battle& battle, SubjectRef actor, SimulationTick commandTick) {
     if (commandTick < battle.turn()->tick)
-        return failure(DiagnosticCode::InvalidArgument, "tactics wait command tick cannot move backward",
-                       "commandTick");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics wait command tick cannot move backward"), std::move("commandTick")));
     auto preview = previewWait(battle, actor);
     if (!preview) return preview;
     auto turn = battle.turn();
@@ -715,13 +702,12 @@ Result<void> BattleSystem::waitUnit(Battle& battle, SubjectRef actor, Simulation
 Result<void> BattleSystem::previewWait(Battle& battle, SubjectRef actor) {
     auto turn = battle.turn();
     if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Acting || !turn->activeUnit)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting wait", "battle.phase");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle is not accepting wait"), std::move("battle.phase")));
     TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
     if (!unit)
-        return failure(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, std::move("tactics active unit is stale"), std::move("battle.activeUnit")));
     if (unit->identity()->subject != actor)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn",
-                       "actor");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics actor does not own the active turn"), std::move("actor")));
     return Result<void>::success();
 }
 
@@ -756,8 +742,7 @@ Result<void> BattleSystem::finish(Battle& battle) {
     auto turn = battle.turn();
     const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Running)
-        return failure(DiagnosticCode::PreconditionViolation, "only a running tactics battle can finish",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("only a running tactics battle can finish"), std::move("battle.status")));
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
     const auto from = turn->phase;
@@ -888,8 +873,7 @@ Result<void> BattleSystem::declineReaction(Battle& battle) {
     const Revision expectedRevision = turn->revision;
     auto reactions = battle.reactions();
     if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Reaction || reactions->stack.empty())
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle has no open reaction window",
-                       "reaction");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle has no open reaction window"), std::move("reaction")));
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
     const std::uint64_t trigger = reactions->stack.back().triggerSequence;
@@ -908,42 +892,35 @@ Result<void> BattleSystem::declineReaction(Battle& battle) {
 Result<void> BattleSystem::addObjective(Battle& battle, ObjectiveSpec objective) {
     auto turn = battle.turn();
     if (turn->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics objectives can only be added during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics objectives can only be added during setup"), std::move("battle.status")));
     if (!objective.id.isValid() || !objective.beneficiarySide.isValid())
-        return failure(DiagnosticCode::InvalidArgument, "tactics objective requires valid identities",
-                       "objective");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("tactics objective requires valid identities"), std::move("objective")));
     const auto sideExists = [&](SubjectRef subject) {
         return std::any_of(turn->sides.begin(), turn->sides.end(), [&](const auto& handle) {
             return sideSubject(handle) == subject;
         });
     };
     if (!sideExists(objective.beneficiarySide))
-        return failure(DiagnosticCode::NotFound, "tactics objective beneficiary side is not registered",
-                       "objective.beneficiarySide");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics objective beneficiary side is not registered"), std::move("objective.beneficiarySide")));
     if (objective.kind == ObjectiveKind::EliminateSide &&
         (!objective.targetSide.isValid() || !sideExists(objective.targetSide)))
-        return failure(DiagnosticCode::NotFound, "tactics elimination target side is not registered",
-                       "objective.targetSide");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics elimination target side is not registered"), std::move("objective.targetSide")));
     if (objective.kind == ObjectiveKind::SurviveRounds && objective.requiredRound == 0)
-        return failure(DiagnosticCode::InvalidArgument, "survive-rounds objective requires a positive round",
-                       "objective.requiredRound");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("survive-rounds objective requires a positive round"), std::move("objective.requiredRound")));
     if (objective.kind == ObjectiveKind::OccupyCells) {
         if (objective.requiredCells.empty())
-            return failure(DiagnosticCode::InvalidArgument, "occupy-cells objective requires cells",
-                           "objective.requiredCells");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("occupy-cells objective requires cells"), std::move("objective.requiredCells")));
         std::sort(objective.requiredCells.begin(), objective.requiredCells.end());
         objective.requiredCells.erase(std::unique(objective.requiredCells.begin(), objective.requiredCells.end()),
                                       objective.requiredCells.end());
         for (const Cell cell : objective.requiredCells)
             if (!battle.board()->value.contains(cell))
-                return failure(DiagnosticCode::NotFound, "objective cell does not exist on the board",
-                               "objective.requiredCells");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("objective cell does not exist on the board"), std::move("objective.requiredCells")));
     }
     const auto duplicate = std::find_if(battle.objectives()->values.begin(), battle.objectives()->values.end(),
                                         [&](const auto& value) { return value.spec.id == objective.id; });
     if (duplicate != battle.objectives()->values.end())
-        return failure(DiagnosticCode::Conflict, "tactics objective ID already exists", "objective.id");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics objective ID already exists"), std::move("objective.id")));
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
     battle.objectives()->values.push_back({std::move(objective), ObjectiveStatus::Pending, {}});
@@ -955,10 +932,9 @@ Result<void> BattleSystem::defeatUnit(Battle& battle, SubjectRef subject) {
     auto turn = battle.turn();
     const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Running)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting outcomes",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("tactics battle is not accepting outcomes"), std::move("battle.status")));
     TacticalUnit* target = findUnit(battle, subject);
-    if (!target) return failure(DiagnosticCode::NotFound, "tactics defeat target is not in the battle", "unit");
+    if (!target) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("tactics defeat target is not in the battle"), std::move("unit")));
     if (!target->turn()->alive)
         return Result<void>::success(Status::success(StatusCode::NoOp));
     auto revision = nextRevision(battle);

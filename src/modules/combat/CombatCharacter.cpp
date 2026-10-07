@@ -21,21 +21,19 @@ CombatVector3 normalizedXZ(CombatVector3 value) {
 
 CombatVector3 scaleXZ(CombatVector3 value, double scale) { return {value.x * scale, 0.0, value.z * scale}; }
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 Result<void> CombatCharacterDefinition::validate() const {
-    if (!subject.isValid()) return invalid("subject is nil", "subject");
-    if (ownerId.empty()) return invalid("owner id is empty", "ownerId");
+    if (!subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subject is nil"), std::move("subject")));
+    if (ownerId.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("owner id is empty"), std::move("ownerId")));
     if (!finite3(initialPosition) || !std::isfinite(maximumSpeed) || maximumSpeed <= 0.0 ||
         !std::isfinite(acceleration) || acceleration <= 0.0 || !std::isfinite(jumpSpeed) || jumpSpeed < 0.0 ||
         !std::isfinite(gravity) || gravity < 0.0 || !std::isfinite(dodgeSpeed) || dodgeSpeed <= 0.0 ||
         !std::isfinite(dodgeDuration) || dodgeDuration <= 0.0 || !std::isfinite(capsuleRadius) || capsuleRadius <= 0.0)
-        return invalid("character movement limits are invalid", "movement");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("character movement limits are invalid"), std::move("movement")));
     return Result<void>::success();
 }
 
@@ -65,7 +63,8 @@ Result<void> CombatCharacterRuntime::registerSubject(CombatCharacterDefinition d
 }
 
 Result<void> CombatCharacterRuntime::unregisterSubject(SubjectRef subject) {
-    if (!subject.isValid()) return invalid("subject is nil", "subject");
+    if (!subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subject is nil"), std::move("subject")));
     if (!states_.erase(subject.format()))
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
@@ -89,7 +88,8 @@ Result<void> CombatCharacterRuntime::setMoveIntent(SubjectRef subject, CombatVec
         return Result<void>::success(Status::success(StatusCode::NoOp));
     if (!finite2(direction.x, direction.z) || !std::isfinite(speedFraction) || speedFraction < 0.0 ||
         speedFraction > 1.0)
-        return invalid("move intent is invalid", "moveIntent");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("move intent is invalid"), std::move("moveIntent")));
     found->second.moveDirection     = normalizedXZ(direction);
     found->second.moveSpeedFraction = speedFraction;
     if (lengthXZ(found->second.moveDirection) > 0.0) found->second.facing = found->second.moveDirection;
@@ -132,7 +132,8 @@ Result<void> CombatCharacterRuntime::dodge(SubjectRef subject, std::optional<Com
         return Result<void>::success(Status::success(StatusCode::NoOp));
     CombatVector3 dodgeDir = state.facing;
     if (direction) {
-        if (!finite2(direction->x, direction->z)) return invalid("dodge direction is invalid", "direction");
+        if (!finite2(direction->x, direction->z)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("dodge direction is invalid"), std::move("direction")));
         dodgeDir = normalizedXZ(*direction);
         if (lengthXZ(dodgeDir) <= 0.0) dodgeDir = state.facing;
     }
@@ -151,7 +152,8 @@ Result<void> CombatCharacterRuntime::dodgeRelative(SubjectRef subject, CombatVec
     if (found == states_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
-    if (!finite3(lockTarget)) return invalid("lock target is invalid", "lockTarget");
+    if (!finite3(lockTarget)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("lock target is invalid"), std::move("lockTarget")));
     CombatVector3 toTarget =
         normalizedXZ({lockTarget.x - found->second.position.x, 0.0, lockTarget.z - found->second.position.z});
     if (lengthXZ(toTarget) <= 0.0) toTarget = found->second.facing;
@@ -195,7 +197,8 @@ Result<void> CombatCharacterRuntime::applyStun(SubjectRef subject, Duration dura
     if (found == states_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
-    if (duration < Duration::zero()) return invalid("stun duration is invalid", "duration");
+    if (duration < Duration::zero()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("stun duration is invalid"), std::move("duration")));
     if (found->second.mode == CombatCharacterMode::Dead)
         return Result<void>::success(Status::success(StatusCode::NoOp));
     found->second.mode              = CombatCharacterMode::Stunned;
@@ -212,7 +215,8 @@ Result<void> CombatCharacterRuntime::applyImpulse(SubjectRef subject, CombatVect
     if (found == states_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
-    if (!finite3(impulse)) return invalid("impulse is invalid", "impulse");
+    if (!finite3(impulse)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("impulse is invalid"), std::move("impulse")));
     if (found->second.mode == CombatCharacterMode::Dead)
         return Result<void>::success(Status::success(StatusCode::NoOp));
     found->second.velocity.x += impulse.x;
@@ -254,7 +258,8 @@ Result<void> CombatCharacterRuntime::setRootMotionDelta(SubjectRef subject, Comb
     if (found == states_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
-    if (!finite3(delta)) return invalid("root motion delta is invalid", "delta");
+    if (!finite3(delta)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("root motion delta is invalid"), std::move("delta")));
     found->second.rootMotionDelta = delta;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -264,9 +269,11 @@ Result<void> CombatCharacterRuntime::setFacing(SubjectRef subject, CombatVector3
     if (found == states_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "character subject was not found", subject.format()));
-    if (!finite2(facing.x, facing.z)) return invalid("facing is invalid", "facing");
+    if (!finite2(facing.x, facing.z)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("facing is invalid"), std::move("facing")));
     CombatVector3 planar = normalizedXZ(facing);
-    if (lengthXZ(planar) <= 0.0) return invalid("facing is degenerate", "facing");
+    if (lengthXZ(planar) <= 0.0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("facing is degenerate"), std::move("facing")));
     found->second.facing = planar;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

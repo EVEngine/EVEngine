@@ -5,7 +5,7 @@
 
 namespace eve::animation_editing {
 
-EditorResult<animation::AnimClip*> AnimationClipRuntimeBuilder::build(
+Result<animation::AnimClip*> AnimationClipRuntimeBuilder::build(
     const AnimationClipDocumentTarget& document, const animation::AnimSkeleton* skeleton) const {
     if (!skeleton)
         return eve::editing::failed<animation::AnimClip*>(EditorStatus::Rejected,

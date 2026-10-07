@@ -4,7 +4,7 @@
 
 namespace eve::editor {
 
-EditorResult<SelectionSnapshot> EditorSelectionService::set(std::string channel, std::vector<SelectionItem> items,
+Result<SelectionSnapshot> EditorSelectionService::set(std::string channel, std::vector<SelectionItem> items,
                                                             std::optional<SelectionItem> primary) {
     if (channel.empty())
         return eve::editing::failed<SelectionSnapshot>(
@@ -26,7 +26,7 @@ EditorResult<SelectionSnapshot> EditorSelectionService::set(std::string channel,
     return eve::editing::applied<SelectionSnapshot>(std::move(value));
 }
 
-EditorResult<SelectionSnapshot> EditorSelectionService::clear(const std::string& channel) { return set(channel, {}); }
+Result<SelectionSnapshot> EditorSelectionService::clear(const std::string& channel) { return set(channel, {}); }
 
 SelectionSnapshot EditorSelectionService::snapshot(const std::string& channel) const {
     const auto found = selections_.find(channel);
@@ -36,7 +36,7 @@ SelectionSnapshot EditorSelectionService::snapshot(const std::string& channel) c
     return empty;
 }
 
-EditorResult<void> EditorSelectionService::subscribe(std::string owner, Listener listener) {
+Result<void> EditorSelectionService::subscribe(std::string owner, Listener listener) {
     if (owner.empty() || !listener)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.selection.invalid-listener"),
                                          "Selection listener owner and callback are required");
@@ -46,7 +46,7 @@ EditorResult<void> EditorSelectionService::subscribe(std::string owner, Listener
 
 bool EditorSelectionService::unsubscribe(const std::string& owner) { return listeners_.erase(owner) != 0; }
 
-EditorResult<EditorFocusSnapshot> EditorFocusService::focus(std::string channel, StableId surface, StableId item) {
+Result<EditorFocusSnapshot> EditorFocusService::focus(std::string channel, StableId surface, StableId item) {
     if (channel.empty() || surface.empty())
         return eve::editing::failed<EditorFocusSnapshot>(EditorStatus::Rejected, RuleId("editor.focus.invalid"),
                                                         "Focus channel and surface are required");

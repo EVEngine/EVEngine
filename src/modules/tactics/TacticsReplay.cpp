@@ -5,10 +5,6 @@
 namespace eve::tactics {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 template <class T>
 Result<void> consume(Result<T>&& result) {
     if (!result) return Result<void>::failure(result.status());
@@ -41,7 +37,7 @@ Result<void> apply(Battle& battle, const BattleCommand& command) {
             return consume(BattleSystem::useAbility(battle, command.actor, command.action, command.cell,
                                                     command.targetUnit, command.payload));
     }
-    return fail(DiagnosticCode::UnknownVersion, "unknown tactics replay command kind", "command.kind");
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion, std::move("unknown tactics replay command kind"), std::move("command.kind")));
 }
 
 }  // namespace
@@ -60,20 +56,20 @@ Result<void> BattleReplay::replay(Battle& battle, std::span<const BattleCommand>
         const BattleCommand& command = commands[index];
         const std::string path = "commands[" + std::to_string(index) + "]";
         if (command.sequence == 0 || (index > 0 && command.sequence != previousSequence + 1))
-            return fail(DiagnosticCode::Conflict, "tactics replay command sequence is not contiguous", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics replay command sequence is not contiguous"), std::move(path)));
         if (battle.commands()->nextSequence != command.sequence)
-            return fail(DiagnosticCode::Conflict, "tactics replay command sequence differs from target", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics replay command sequence differs from target"), std::move(path)));
         if (battle.turn()->revision != command.expectedRevision)
-            return fail(DiagnosticCode::Conflict, "tactics replay expected revision differs from target", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("tactics replay expected revision differs from target"), std::move(path)));
         auto applied = apply(battle, command);
         if (!applied) return Result<void>::failure(applied.status());
         if (battle.turn()->revision != command.resultingRevision)
-            return fail(DiagnosticCode::InvariantViolation, "tactics replay produced a different revision", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics replay produced a different revision"), std::move(path)));
         const auto& recorded = battle.commands()->values.back();
         if (recorded.kind != command.kind || recorded.sequence != command.sequence ||
             recorded.expectedRevision != command.expectedRevision ||
             recorded.resultingRevision != command.resultingRevision)
-            return fail(DiagnosticCode::InvariantViolation, "tactics replay recorded a different command", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("tactics replay recorded a different command"), std::move(path)));
         previousSequence = command.sequence;
     }
     return Result<void>::success(Status::success(StatusCode::Applied));

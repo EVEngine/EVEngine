@@ -180,10 +180,6 @@ eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepareFailure(
         eve::Diagnostic::error(code, std::move(message)));
 }
 
-eve::Result<void> restoreFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
-}
-
 }  // namespace
 
 /** @brief Staged, owning Box3D construction for one provider mutation. */
@@ -528,8 +524,7 @@ eve::Result<eve::Value> PhysicsArtifactProvider::snapshotState() const {
 
 eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state) {
     if (state_->pendingStages != 0)
-        return restoreFailure(eve::DiagnosticCode::Conflict,
-                              "cannot restore physics artifacts while a publication is staged");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("cannot restore physics artifacts while a publication is staged")));
     const auto* object           = state.getIf<eve::Value::Object>();
     const auto* provider         = object ? member(*object, "provider") : nullptr;
     const auto* providerName     = provider ? provider->getIf<std::string>() : nullptr;
@@ -537,10 +532,9 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
     const auto* colliders        = encodedColliders ? encodedColliders->getIf<eve::Value::Array>() : nullptr;
     if (!object || !providerName || *providerName != "physics.box3d-collider" || !hasSupportedVersion(*object) ||
         !colliders)
-        return restoreFailure(eve::DiagnosticCode::ParseError, "invalid physics artifact provider state");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("invalid physics artifact provider state")));
     if (boundWorld().isValid() && !colliders->empty())
-        return restoreFailure(eve::DiagnosticCode::Unsupported,
-                              "restore into a shared physics world requires explicit republishing");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move("restore into a shared physics world requires explicit republishing")));
 
     std::vector<State::RuntimeCollider>   candidate;
     std::unordered_set<eve::PersistentId> identities;
@@ -560,18 +554,16 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
                 !readU64(*item, "handle", packed) || !readBounds(*item, collider.bounds) ||
                 !readArray(member(*item, "vertices"), collider.vertices) ||
                 !readArray(member(*item, "indices"), collider.indices))
-                return restoreFailure(eve::DiagnosticCode::ParseError, "invalid physics artifact collider state");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move("invalid physics artifact collider state")));
             const auto parsedId        = eve::PersistentId::parse(idText);
             const auto persistedHandle = PhysicsArtifactHandle::fromPacked(packed);
             if (!parsedId || parsedId->isNil() || persistedHandle.isInvalid() || backend != "box3d" ||
                 shape != "triangle_mesh" || !identities.emplace(*parsedId).second ||
                 !validGeometry(collider.vertices, collider.indices))
-                return restoreFailure(eve::DiagnosticCode::Unsupported,
-                                      "physics artifact state has unsupported backend or geometry");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move("physics artifact state has unsupported backend or geometry")));
 
             if (next == PhysicsArtifactHandle::invalidIndex)
-                return restoreFailure(eve::DiagnosticCode::Failed,
-                                      "physics artifact handle index exhausted during restore");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("physics artifact handle index exhausted during restore")));
             collider.id       = *parsedId;
             collider.buildKey = std::move(buildKey);
             collider.shape    = std::move(shape);
@@ -585,11 +577,11 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
             collider.world = world->runtimeHandle();
             auto body  = std::unique_ptr<Body3D>(world->newBody("static", 0.f, 0.f, 0.f));
             if (!body)
-                return restoreFailure(eve::DiagnosticCode::Failed, "Box3D did not recreate the restored collider body");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("Box3D did not recreate the restored collider body")));
             const auto mesh        = signedIndices(collider.indices);
             auto       shapeObject = std::unique_ptr<Shape3D>(body->newTriangleMeshShape(collider.vertices, mesh));
             if (!body || !shapeObject)
-                return restoreFailure(eve::DiagnosticCode::Failed, "Box3D did not recreate a restored collider");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("Box3D did not recreate a restored collider")));
             State::RuntimeCollider runtime;
             runtime.descriptor = std::move(collider);
             runtime.world         = world.get();
@@ -600,9 +592,9 @@ eve::Result<void> PhysicsArtifactProvider::restoreState(const eve::Value& state)
             candidate.push_back(std::move(runtime));
         }
     } catch (const std::exception& error) {
-        return restoreFailure(eve::DiagnosticCode::Failed, std::string("Box3D restore failed: ") + error.what());
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(std::string("Box3D restore failed: ") + error.what())));
     } catch (...) {
-        return restoreFailure(eve::DiagnosticCode::Failed, "Box3D restore failed");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move("Box3D restore failed")));
     }
 
     state_->records.swap(candidate);

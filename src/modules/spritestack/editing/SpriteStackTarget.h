@@ -46,7 +46,7 @@ using editing::RuleId;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -77,26 +77,26 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     const SpriteStackAssetValue&  value() const { return value_; }
     /** @brief Validate source, sampling limits, output memory and presentation values. */
     std::vector<EditorDiagnostic> validate() const;
     EditorValue                   snapshotValue() const;
-    EditorResult<void>            loadSnapshot(const EditorValue& snapshot);
+    Result<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool                          matches(const SelectionSnapshot& selection) const;
     EditorValue                   contentValue() const;
-    EditorResult<DomainOperation> replacement(EditorValue content, std::string property) const;
+    Result<DomainOperation> replacement(EditorValue content, std::string property) const;
     std::string                   id_;
     SpriteStackAssetValue         value_;
 };
@@ -113,7 +113,7 @@ class ISpriteStackModelResolver {
 public:
     virtual ~ISpriteStackModelResolver() = default;
     /** @brief Resolve a ready, borrowed ModelData for the duration of bake(). */
-    virtual EditorResult<model3d::ModelData*> resolveModel(const std::string& assetId) const = 0;
+    virtual Result<model3d::ModelData*> resolveModel(const std::string& assetId) const = 0;
 };
 
 /** @brief Candidate-first CPU baker and optional live SpriteStack2D publisher. */
@@ -129,10 +129,10 @@ public:
     SpriteStackBakeRuntime(const SpriteStackBakeRuntime&)            = delete;
     SpriteStackBakeRuntime& operator=(const SpriteStackBakeRuntime&) = delete;
     /** @brief Bake all layers in temporary ownership before replacing the generation. */
-    EditorResult<std::vector<SpriteStackLayerArtifact>> bake(const SpriteStackDocumentTarget& document,
+    Result<std::vector<SpriteStackLayerArtifact>> bake(const SpriteStackDocumentTarget& document,
                                                              const ISpriteStackModelResolver* resolver = nullptr);
     /** @brief Create and populate a live stack from the current baked generation. */
-    EditorResult<spritestack::SpriteStack2D*> publish(graphics::Graphics* graphics, Revision expectedRevision);
+    Result<spritestack::SpriteStack2D*> publish(graphics::Graphics* graphics, Revision expectedRevision);
     const std::vector<std::unique_ptr<image::ImageData>>& layers() const { return layers_; }
     Revision                                              revision() const { return revision_; }
 

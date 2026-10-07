@@ -4,7 +4,7 @@
 
 namespace eve::fluids_editing {
 
-EditorResult<void> FluidSimulationRuntimeApplier::apply(const FluidSimulationTarget& target,
+Result<void> FluidSimulationRuntimeApplier::apply(const FluidSimulationTarget& target,
                                                         fluids::FluidSimulation*     simulation) const {
     if (!simulation)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.fluid.runtime-required"),

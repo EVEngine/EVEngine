@@ -9,7 +9,7 @@ using EditorStatus       = eve::StatusCode;
 using DiagnosticSeverity = eve::Severity;
 using EditorDiagnostic   = eve::Diagnostic;
 
-/** @brief Editor-facing Result name; same type as editing::Result / eve::Result. */
-using editing::EditorResult;
+/** @brief Editor-facing Result; same type as editing::Result / eve::Result. */
+using editing::Result;
 
 }  // namespace eve::editor

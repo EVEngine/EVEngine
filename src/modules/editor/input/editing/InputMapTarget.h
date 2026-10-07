@@ -14,7 +14,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation = editing::DomainOperation;
 using EditRegion = editing::EditRegion;
 using EditorDiagnostic = editing::Diagnostic;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus = editing::Status;
 using EditorValue = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -44,12 +44,12 @@ class EVENGINE_API_BACKENDS InputMapTarget final : public virtual IEditableTarge
                                                    public IDomainOperationTarget,
                                                    public IDomainOperationTargetStaging,
                                                    public IPropertyProvider {
-public:explicit InputMapTarget(std::string id);TargetId targetId() const override{ return TargetId(id_);}std::uint64_t revision() const override{return revision_;}EditRegion dirtyRegion()const override{return dirty_;}void clearDirtyRegion()override{dirty_.clear();}TargetDescriptor describe()const override;void*queryCapability(const CapabilityId&)override;EditorResult<void>applyDomainOperation(const DomainOperation&)override;std::unique_ptr<IDomainOperationTarget>cloneDomainState()const override;EditorResult<void>commitDomainState(std::unique_ptr<IDomainOperationTarget>)override;eve::Result<eve::Revision>currentRevision(const SelectionSnapshot&)const override;PropertySchema schema(const SelectionSnapshot&)const override;PropertyReadResult read(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeSet(const SelectionSnapshot&,const PropertyPath&,const EditorValue&,PropertySetMode)const override;EditorResult<DomainOperation>makeReset(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeCreateAction(InputActionValue)const;EditorResult<DomainOperation>makeDeleteAction(const ObjectId&)const;EditorResult<DomainOperation>makeCreateBinding(InputBindingValue)const;EditorResult<DomainOperation>makeDeleteBinding(const ObjectId&)const;const std::vector<InputActionValue>&actions()const{return actions_;}const std::vector<InputBindingValue>&bindings()const{return bindings_;}std::vector<EditorDiagnostic>validate()const;EditorValue snapshotValue()const;EditorResult<void>loadSnapshot(const EditorValue&);
+public:explicit InputMapTarget(std::string id);TargetId targetId() const override{ return TargetId(id_);}std::uint64_t revision() const override{return revision_;}EditRegion dirtyRegion()const override{return dirty_;}void clearDirtyRegion()override{dirty_.clear();}TargetDescriptor describe()const override;void*queryCapability(const CapabilityId&)override;Result<void>applyDomainOperation(const DomainOperation&)override;std::unique_ptr<IDomainOperationTarget>cloneDomainState()const override;Result<void>commitDomainState(std::unique_ptr<IDomainOperationTarget>)override;eve::Result<eve::Revision>currentRevision(const SelectionSnapshot&)const override;PropertySchema schema(const SelectionSnapshot&)const override;PropertyReadResult read(const SelectionSnapshot&,const PropertyPath&)const override;Result<DomainOperation>makeSet(const SelectionSnapshot&,const PropertyPath&,const EditorValue&,PropertySetMode)const override;Result<DomainOperation>makeReset(const SelectionSnapshot&,const PropertyPath&)const override;Result<DomainOperation>makeCreateAction(InputActionValue)const;Result<DomainOperation>makeDeleteAction(const ObjectId&)const;Result<DomainOperation>makeCreateBinding(InputBindingValue)const;Result<DomainOperation>makeDeleteBinding(const ObjectId&)const;const std::vector<InputActionValue>&actions()const{return actions_;}const std::vector<InputBindingValue>&bindings()const{return bindings_;}std::vector<EditorDiagnostic>validate()const;EditorValue snapshotValue()const;Result<void>loadSnapshot(const EditorValue&);
 
 private:
     bool                           matches(const SelectionSnapshot&) const;
     EditorValue                    contentValue() const;
-    EditorResult<DomainOperation>  replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation>  replacement(EditorValue, std::string = {}) const;
     std::string                    id_;
     Revision                       revision_ = 1;
     EditRegion                     dirty_;
@@ -60,7 +60,7 @@ struct InputControlSample{std::string device,control;double value=0;};
 /** @brief Deterministically evaluates raw device samples against an authored action map. */
 class EVENGINE_API_BACKENDS InputMapEvaluator {
 public:
-    EditorResult<std::map<std::string, double>> evaluate(const InputMapTarget&,
+    Result<std::map<std::string, double>> evaluate(const InputMapTarget&,
                                                          const std::vector<InputControlSample>&) const;
 };
 /** @brief Captures the first intentional control movement for a rebind UI. */

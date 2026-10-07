@@ -18,7 +18,7 @@ class ProcgenEditorModule::TargetFactory final : public editor::IEditorAutomatio
 public:
     std::vector<std::string_view> types() const override { return {"procgen-script"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object&) override {
         editor::AutomationOwnedTarget owned;
         owned.target = std::make_unique<procgen_editing::ProcgenScriptDocumentTarget>(target.value());

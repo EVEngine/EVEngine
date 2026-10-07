@@ -9,10 +9,7 @@
 namespace eve::container {
 namespace {
 
-[[nodiscard]] Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
+[[nodiscard]] 
 [[nodiscard]] const MembershipEntry* findEntry(const ContainerSnapshot& snapshot, const MembershipId& id) {
     const MembershipEntry* found = nullptr;
     for (const auto& entry : snapshot.entries) {
@@ -38,17 +35,16 @@ namespace {
 
 [[nodiscard]] Result<void> validateSnapshot(const ContainerSnapshot& snapshot, const IContainer& container) {
     if (!snapshot.id.isValid() || snapshot.id != container.descriptor().id)
-        return failure(DiagnosticCode::InvariantViolation, "container snapshot identity does not match adapter");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot identity does not match adapter"), std::move({})));
     if (hasDuplicateMemberships(snapshot))
-        return failure(DiagnosticCode::Conflict, "container snapshot contains duplicate or invalid membership");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("container snapshot contains duplicate or invalid membership"), std::move({})));
     const auto& descriptor = container.descriptor();
     if (!descriptor.capacity.isUnlimited() && snapshot.entries.size() > descriptor.capacity.value())
-        return failure(DiagnosticCode::InvariantViolation, "container snapshot exceeds capacity");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot exceeds capacity"), std::move({})));
     if (!descriptor.capacity.isUnlimited()) {
         for (const auto& entry : snapshot.entries) {
             if (static_cast<std::size_t>(entry.membership.slot.value()) >= descriptor.capacity.value())
-                return failure(DiagnosticCode::InvariantViolation,
-                               "container snapshot contains a slot outside capacity");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("container snapshot contains a slot outside capacity"), std::move({})));
         }
     }
     return Result<void>::success();

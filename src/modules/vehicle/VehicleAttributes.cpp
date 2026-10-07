@@ -11,16 +11,13 @@
 namespace eve::vehicle {
 namespace {
 
-eve::Result<void> failureVoid(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "vehicle.attributes"));
-}
-
-eve::Result<void> failureVoid(eve::Status status, std::string, std::string = {}) {
+eve::Result<void> eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::Status status, std::move(std::string), std::move(std::string = {}), {}, "vehicle.attributes")) {
     return eve::Result<void>::failure(std::move(status));
 }
 
-eve::Result<void> failureVoid(eve::StatusCode code, std::string message, std::string path = {}) {
+eve::Result<void> eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::StatusCode code, std::move(std::string message), std::move(std::string path = {}), {}, "vehicle.attributes")) {
     return eve::Result<void>::failure(
         eve::Status::failure(code, eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message),
                                                           std::move(path), {}, "vehicle.attributes")));
@@ -40,7 +37,8 @@ std::array<std::string_view, 3> selectedAttributes() {
 
 eve::Result<void> VehicleAttributeAdapter::ensure(VehicleEntity& vehicle) {
     auto bound = vehicle.attributes()->values.bindOwner(ecs::handle_of(&vehicle));
-    if (!bound) return failureVoid(bound.code(), "vehicle attribute owner could not be bound", "owner");
+    if (!bound) return eve::Result<void>::failure(
+        eve::Diagnostic::error(bound.code(), std::move("vehicle attribute owner could not be bound"), std::move("owner"), {}, "vehicle.attributes"));
     if (!vehicle.attributes()->values.initialized()) {
         const std::array<eve::attributes::AttributeSnapshotBase, 3> bases = {
             eve::attributes::AttributeSnapshotBase{std::string(healthAttribute),
@@ -50,23 +48,27 @@ eve::Result<void> VehicleAttributeAdapter::ensure(VehicleEntity& vehicle) {
             eve::attributes::AttributeSnapshotBase{std::string(armorAttribute), 0.0}};
         auto initialized = vehicle.attributes()->values.initialize(bases);
         if (!initialized)
-            return failureVoid(initialized.code(), "vehicle attribute state could not be initialized", "attributes");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(initialized.code(), std::move("vehicle attribute state could not be initialized"), std::move("attributes"), {}, "vehicle.attributes"));
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
 }
 
 eve::Result<void> VehicleAttributeAdapter::project(VehicleEntity& vehicle) {
     auto ready = ensure(vehicle);
-    if (!ready) return failureVoid(ready.code(), "vehicle attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Diagnostic::error(ready.code(), std::move("vehicle attributes are not available"), std::move("attributes"), {}, "vehicle.attributes"));
     auto hp = vehicle.attributes()->values.getFinal(healthAttribute);
-    if (!hp) return failureVoid(hp.code(), "vehicle health attribute could not be read", "health");
+    if (!hp) return eve::Result<void>::failure(
+        eve::Diagnostic::error(hp.code(), std::move("vehicle health attribute could not be read"), std::move("health"), {}, "vehicle.attributes"));
     auto maxHp = vehicle.attributes()->values.getFinal(maxHealthAttribute);
-    if (!maxHp) return failureVoid(maxHp.code(), "vehicle max health attribute could not be read", "max_health");
+    if (!maxHp) return eve::Result<void>::failure(
+        eve::Diagnostic::error(maxHp.code(), std::move("vehicle max health attribute could not be read"), std::move("max_health"), {}, "vehicle.attributes"));
     if (!std::isfinite(hp.value()) || !std::isfinite(maxHp.value()) || hp.value() < 0.0 || maxHp.value() < 0.0 ||
         hp.value() > maxHp.value() || hp.value() > static_cast<double>(std::numeric_limits<float>::max()) ||
         maxHp.value() > static_cast<double>(std::numeric_limits<float>::max()))
-        return failureVoid(eve::DiagnosticCode::InvariantViolation,
-                           "vehicle health attributes are outside validated bounds", "health");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move("vehicle health attributes are outside validated bounds"), std::move("health"), {}, "vehicle.attributes"));
     vehicle.health()->hp    = static_cast<float>(hp.value());
     vehicle.health()->maxHp = static_cast<float>(maxHp.value());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -93,10 +95,11 @@ eve::Result<double> VehicleAttributeAdapter::read(VehicleEntity& vehicle, std::s
 
 eve::Result<void> VehicleAttributeAdapter::setBase(VehicleEntity& vehicle, std::string_view attribute, double value) {
     if (!selected(attribute))
-        return failureVoid(eve::DiagnosticCode::Unsupported,
-                           "vehicle attribute is outside the selective combat projection", "attribute");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move("vehicle attribute is outside the selective combat projection"), std::move("attribute"), {}, "vehicle.attributes"));
     auto ready = ensure(vehicle);
-    if (!ready) return failureVoid(ready.code(), "vehicle attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Diagnostic::error(ready.code(), std::move("vehicle attributes are not available"), std::move("attributes"), {}, "vehicle.attributes"));
     auto changed = vehicle.attributes()->values.setBase(attribute, value);
     if (!changed) return changed;
     return project(vehicle);
@@ -140,7 +143,8 @@ eve::Result<void> VehicleAttributeAdapter::restore(VehicleEntity&               
                                                    const eve::attributes::AttributeProjectionSnapshot& snapshotValue,
                                                    eve::Revision expectedRevision) {
     auto ready = ensure(vehicle);
-    if (!ready) return failureVoid(ready.code(), "vehicle attributes are not available", "attributes");
+    if (!ready) return eve::Result<void>::failure(
+        eve::Diagnostic::error(ready.code(), std::move("vehicle attributes are not available"), std::move("attributes"), {}, "vehicle.attributes"));
     auto restored = vehicle.attributes()->values.restore(snapshotValue, expectedRevision);
     if (!restored) return restored;
     return project(vehicle);

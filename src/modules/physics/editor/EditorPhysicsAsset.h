@@ -15,7 +15,7 @@ class EVENGINE_API_EDITORS AssetDatabasePhysicsColliderResolver final : public I
 public:
     explicit AssetDatabasePhysicsColliderResolver(const MemoryAssetDatabase* database) : database_(database) {}
 
-    [[nodiscard]] EditorResult<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
+    [[nodiscard]] Result<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
                                                                      const std::string& expectedKind) const override;
 
 private:

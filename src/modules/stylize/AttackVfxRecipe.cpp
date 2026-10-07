@@ -10,16 +10,12 @@
 namespace eve::stylize {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
-}
-
 Result<void> rejectUnknown(const Value::Object& object, const std::set<std::string>& allowed,
                            const std::string& path) {
     for (const auto& [key, value] : object) {
         (void)value;
         if (!allowed.contains(key))
-            return fail(DiagnosticCode::InvalidArgument, "unknown attack VFX field", path + "." + key);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown attack VFX field"), std::string(path + "." + key)));
     }
     return Result<void>::success();
 }
@@ -484,14 +480,12 @@ std::string_view attackVfxSpatialAnchorName(AttackVfxSpatialAnchor anchor) noexc
 Result<void> AttackVfxSpatial::validate(std::string_view path) const {
     const auto finite = [](float v) { return std::isfinite(v); };
     if (!finite(positionOffset.x) || !finite(positionOffset.y) || !finite(positionOffset.z))
-        return fail(DiagnosticCode::InvalidArgument, "positionOffset must be finite", std::string(path) + ".positionOffset");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("positionOffset must be finite"), std::string(std::string(path) + ".positionOffset")));
     if (!finite(rotationOffsetDegrees.x) || !finite(rotationOffsetDegrees.y) || !finite(rotationOffsetDegrees.z))
-        return fail(DiagnosticCode::InvalidArgument, "rotationOffsetDegrees must be finite",
-                    std::string(path) + ".rotationOffsetDegrees");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("rotationOffsetDegrees must be finite"), std::string(std::string(path) + ".rotationOffsetDegrees")));
     if (!(std::isfinite(scale.x) && scale.x > 0.f) || !(std::isfinite(scale.y) && scale.y > 0.f) ||
         !(std::isfinite(scale.z) && scale.z > 0.f))
-        return fail(DiagnosticCode::InvalidArgument, "scale components must be finite and > 0",
-                    std::string(path) + ".scale");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("scale components must be finite and > 0"), std::string(std::string(path) + ".scale")));
     return Result<void>::success();
 }
 
@@ -501,23 +495,20 @@ Result<void> AttackVfxLayer::validate(std::string_view path) const {
     const bool uriOptional =
         role == AttackVfxLayerRole::Camera || role == AttackVfxLayerRole::Distortion;
     if (!uriOptional && uri.empty())
-        return fail(DiagnosticCode::InvalidArgument, "uri is required for this layer role", std::string(path) + ".uri");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("uri is required for this layer role"), std::string(std::string(path) + ".uri")));
     for (const auto& [name, value] : floatParams) {
         (void)name;
         if (!std::isfinite(value))
-            return fail(DiagnosticCode::InvalidArgument, "floatParams values must be finite",
-                        std::string(path) + ".floatParams");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("floatParams values must be finite"), std::string(std::string(path) + ".floatParams")));
     }
     return Result<void>::success();
 }
 
 Result<void> AttackVfxPhase::validate(std::string_view path) const {
     if (!std::isfinite(startOffsetSeconds) || startOffsetSeconds < 0.0)
-        return fail(DiagnosticCode::InvalidArgument, "startOffsetSeconds must be finite and >= 0",
-                    std::string(path) + ".startOffsetSeconds");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("startOffsetSeconds must be finite and >= 0"), std::string(std::string(path) + ".startOffsetSeconds")));
     if (!std::isfinite(durationSeconds) || durationSeconds < 0.0)
-        return fail(DiagnosticCode::InvalidArgument, "durationSeconds must be finite and >= 0",
-                    std::string(path) + ".durationSeconds");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("durationSeconds must be finite and >= 0"), std::string(std::string(path) + ".durationSeconds")));
     for (std::size_t i = 0; i < layers.size(); ++i) {
         auto status = layers[i].validate(std::string(path) + ".layers[" + std::to_string(i) + "]");
         if (!status) return status;
@@ -526,10 +517,10 @@ Result<void> AttackVfxPhase::validate(std::string_view path) const {
 }
 
 Result<void> AttackVfxSkin::validate() const {
-    if (!id.isValid()) return fail(DiagnosticCode::InvalidArgument, "skin id is required", "id");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("skin id is required"), std::string("id")));
     const auto checkColor = [](const AttackVfxVec3& c, std::string_view path) -> Result<void> {
         if (!finiteUnit(c.x) || !finiteUnit(c.y) || !finiteUnit(c.z))
-            return fail(DiagnosticCode::InvalidArgument, "palette channel must be in [0,1]", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("palette channel must be in [0,1]"), std::string(path)));
         return Result<void>::success();
     };
     if (auto s = checkColor(palette.primary, "palette.primary"); !s) return s;
@@ -538,23 +529,22 @@ Result<void> AttackVfxSkin::validate() const {
     for (const auto& [name, value] : shakeProfile) {
         (void)name;
         if (!std::isfinite(value))
-            return fail(DiagnosticCode::InvalidArgument, "shakeProfile values must be finite", "shakeProfile");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("shakeProfile values must be finite"), std::string("shakeProfile")));
     }
     for (const auto& [name, value] : distortionProfile) {
         (void)name;
         if (!std::isfinite(value))
-            return fail(DiagnosticCode::InvalidArgument, "distortionProfile values must be finite",
-                        "distortionProfile");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("distortionProfile values must be finite"), std::string("distortionProfile")));
     }
     return Result<void>::success();
 }
 
 Result<void> AttackVfxRecipe::validate() const {
-    if (!id.isValid()) return fail(DiagnosticCode::InvalidArgument, "recipe id is required", "id");
-    if (phases.empty()) return fail(DiagnosticCode::InvalidArgument, "recipe requires at least one phase", "phases");
-    if (budget.lod < 0) return fail(DiagnosticCode::InvalidArgument, "lod must be >= 0", "budget.lod");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("recipe id is required"), std::string("id")));
+    if (phases.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("recipe requires at least one phase"), std::string("phases")));
+    if (budget.lod < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("lod must be >= 0"), std::string("budget.lod")));
     if (budget.maxParticles < 0)
-        return fail(DiagnosticCode::InvalidArgument, "maxParticles must be >= 0", "budget.maxParticles");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("maxParticles must be >= 0"), std::string("budget.maxParticles")));
     for (std::size_t i = 0; i < phases.size(); ++i) {
         auto status = phases[i].validate("phases[" + std::to_string(i) + "]");
         if (!status) return status;
@@ -563,7 +553,7 @@ Result<void> AttackVfxRecipe::validate() const {
         auto status = skin->validate();
         if (!status) return status;
         if (skinId && skinId->format() != skin->id.format())
-            return fail(DiagnosticCode::InvalidArgument, "inline skin.id must match skinId", "skin.id");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("inline skin.id must match skinId"), std::string("skin.id")));
     }
     return Result<void>::success();
 }

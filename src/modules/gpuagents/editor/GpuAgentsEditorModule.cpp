@@ -12,14 +12,14 @@
 namespace eve::gpuagents_editor {
 namespace {
 
-editor::EditorResult<editor::AutomationOwnedTarget> makeTarget(const editor::TargetId&            id,
+editor::Result<editor::AutomationOwnedTarget> makeTarget(const editor::TargetId&            id,
                                                                const editor::EditorValue::Object& request) {
     auto       target   = std::make_unique<gpuagents_editing::GpuAgentsDocumentTarget>(id.value());
     const auto snapshot = request.find("snapshot");
     if (snapshot != request.end()) {
         auto loaded = target->loadSnapshot(snapshot->second);
         if (!loaded.ok()) {
-            return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+            return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
     }
     editor::AutomationOwnedTarget owned;
@@ -33,7 +33,7 @@ Module_IMPL(GpuAgentsEditorModule, new GpuAgentsEditorModule());
 
 std::vector<std::string_view> GpuAgentsAutomationTargetFactory::types() const { return {"gpuagents-effect"}; }
 
-editor::EditorResult<editor::AutomationOwnedTarget> GpuAgentsAutomationTargetFactory::create(
+editor::Result<editor::AutomationOwnedTarget> GpuAgentsAutomationTargetFactory::create(
     const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) {
     if (type != "gpuagents-effect") {
         return eve::editing::failed<editor::AutomationOwnedTarget>(editor::EditorStatus::Rejected,

@@ -13,10 +13,6 @@ namespace {
 
 constexpr std::uint32_t kDefaultCapacity = 32;
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
-}
-
 IAttackVfxLayerExecutor* findExecutor(AttackVfxLayerRole role) {
     IAttackVfxLayerExecutor* found = nullptr;
     cap::forEach<IAttackVfxLayerExecutor>([&](IAttackVfxLayerExecutor* executor) {
@@ -149,7 +145,7 @@ struct AttackVfxRuntime::Impl {
         auto& state = *slot.state;
         const auto recipeIt = recipes.find(state.recipeId.format());
         if (recipeIt == recipes.end())
-            return fail(DiagnosticCode::NotFound, "recipe missing while starting layers", "recipeId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::string("recipe missing while starting layers"), std::string("recipeId")));
         const auto& recipe = recipeIt->second;
         const auto& authored = recipe.phases.at(phaseIndex);
         auto& livePhase = slot.phaseLayers.at(phaseIndex);
@@ -432,11 +428,10 @@ AttackVfxRuntime::~AttackVfxRuntime() {
 std::size_t AttackVfxRuntime::capacity() const noexcept { return impl_->slots.size(); }
 
 Result<void> AttackVfxRuntime::configurePool(std::uint32_t capacity) {
-    if (capacity == 0) return fail(DiagnosticCode::InvalidArgument, "pool capacity must be > 0", "capacity");
+    if (capacity == 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("pool capacity must be > 0"), std::string("capacity")));
     for (const auto& slot : impl_->slots) {
         if (slot.state)
-            return fail(DiagnosticCode::InvariantViolation, "cannot resize pool while instances are live",
-                        "capacity");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::string("cannot resize pool while instances are live"), std::string("capacity")));
     }
     AttackVfxFrame discard;
     for (std::size_t i = 0; i < impl_->slots.size(); ++i) {
@@ -463,7 +458,7 @@ Result<void> AttackVfxRuntime::registerRecipe(const AttackVfxRecipe& recipe) {
     const std::string key = recipe.id.format();
     for (const auto& slot : impl_->slots) {
         if (slot.state && slot.state->recipeId.format() == key)
-            return fail(DiagnosticCode::Conflict, "cannot replace recipe while instances are live", "recipeId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::string("cannot replace recipe while instances are live"), std::string("recipeId")));
     }
     impl_->recipes[key] = recipe;
     if (recipe.skin) {

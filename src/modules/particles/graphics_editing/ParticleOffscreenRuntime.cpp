@@ -21,7 +21,7 @@ private: particles::ParticleEmitter* emitter_=nullptr;
 };
 }
 
-EditorResult<void> ParticleEmitterOffscreenPresenter::draw(
+Result<void> ParticleEmitterOffscreenPresenter::draw(
     const ParticleOffscreenPreviewRequest& request, const ParticleGraphCompileResult& compiled,
     const ParticleGraphPreviewResult& estimate, graphics::Graphics* graphics,
     graphics::Canvas* canvas) {

@@ -137,10 +137,7 @@ private:
 }
 
 /** @brief Failure helper mirroring the shape used by `HexMap`. */
-[[nodiscard]] Result<void> invalidArgument(std::string message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
-}
-
+[[nodiscard]] 
 /** @brief Rounds a float to the nearest integer, matching `Mathf.RoundToInt`. */
 [[nodiscard]] std::int32_t roundToInt(float value) noexcept {
     return static_cast<std::int32_t>(std::floor(value + 0.5f));
@@ -1222,14 +1219,14 @@ void finalizeGrid(HexMap& map) { map.markAllChunksDirty(); }
 }  // namespace
 
 Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings) {
-    if (map.empty()) return invalidArgument("cannot generate a hex map into an empty grid");
+    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cannot generate a hex map into an empty grid"), "hexmap"));
 
     const NormalizedSettings normalized = normalize(settings);
 
     std::vector<MapRegion> regions;
     createRegions(normalized.regionCount, map.cellCountX(), map.cellCountZ(), normalized, regions);
     if (!regionsUsable(regions, normalized.regionCount))
-        return invalidArgument("generator regions do not fit the hex map; enlarge the map or shrink the borders");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("generator regions do not fit the hex map; enlarge the map or shrink the borders"), "hexmap"));
 
     GeneratorScratch scratch;
     scratch.search.resize(map.cellCount());

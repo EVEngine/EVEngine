@@ -73,7 +73,7 @@ std::vector<EditorDiagnostic> validateSettings(const GpuAgentsSettings& s) {
     return out;
 }
 
-EditorResult<GpuAgentsSettings> parse(const EditorValue& value) {
+Result<GpuAgentsSettings> parse(const EditorValue& value) {
     GpuAgentsSettings s;
     bool              complete = true;
     const auto        number   = [&](const char* key, double& destination) {
@@ -287,7 +287,7 @@ PropertyReadResult GpuAgentsDocumentTarget::read(const SelectionSnapshot& s, con
     return v ? PropertyReadResult{editing::PropertyReadState::Value, *v, {}} : PropertyReadResult{};
 }
 
-EditorResult<DomainOperation> GpuAgentsDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> GpuAgentsDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                                const EditorValue& v, PropertySetMode m) const {
     if (m == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -296,11 +296,11 @@ EditorResult<DomainOperation> GpuAgentsDocumentTarget::makeSet(const SelectionSn
                                                      "GPU Agents property requires a matching absolute edit");
     }
     auto checked = validatePropertyValue(*d, v);
-    if (!checked.ok()) return EditorResult<DomainOperation>::failure(checked.status());
+    if (!checked.ok()) return Result<DomainOperation>::failure(checked.status());
     EditorValue candidate                                = settingsValue(settings_);
     (*candidate.getIf<EditorValue::Object>())[p.value()] = v;
     auto parsed                                          = parse(candidate);
-    if (!parsed.ok()) return EditorResult<DomainOperation>::failure(parsed.status());
+    if (!parsed.ok()) return Result<DomainOperation>::failure(parsed.status());
     DomainOperation op;
     op.type        = "gpuagents.settings.replace.v1";
     op.inverseType = op.type;
@@ -311,7 +311,7 @@ EditorResult<DomainOperation> GpuAgentsDocumentTarget::makeSet(const SelectionSn
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
 
-EditorResult<DomainOperation> GpuAgentsDocumentTarget::makeReset(const SelectionSnapshot& s,
+Result<DomainOperation> GpuAgentsDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                  const PropertyPath&      p) const {
     auto d = schema(s).find(p);
     if (!matches(s) || !d) {
@@ -321,13 +321,13 @@ EditorResult<DomainOperation> GpuAgentsDocumentTarget::makeReset(const Selection
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 
-EditorResult<void> GpuAgentsDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> GpuAgentsDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "gpuagents.settings.replace.v1") {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.gpuagents.apply"),
                                           "Unsupported GPU Agents domain operation");
     }
     auto parsed = parse(operation.payload);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = parsed.value();
     bumpRevision();
     return eve::editing::applied();
@@ -337,15 +337,15 @@ std::vector<EditorDiagnostic> GpuAgentsDocumentTarget::validate() const { return
 
 EditorValue GpuAgentsDocumentTarget::snapshotValue() const { return settingsValue(settings_); }
 
-EditorResult<void> GpuAgentsDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> GpuAgentsDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     auto parsed = parse(snapshot);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = parsed.value();
     bumpRevision();
     return eve::editing::applied();
 }
 
-EditorResult<void> GpuAgentsRuntimeApplier::apply(const GpuAgentsDocumentTarget& target,
+Result<void> GpuAgentsRuntimeApplier::apply(const GpuAgentsDocumentTarget& target,
                                                   gpuagents::EffectBackend*      backend,
                                                   gpuagents::GpuAgentWorld*      world) const {
     if (!backend) {
@@ -360,7 +360,7 @@ EditorResult<void> GpuAgentsRuntimeApplier::apply(const GpuAgentsDocumentTarget&
     }
     const auto profile = toEffectProfile(target.settings());
     auto       cfg     = backend->configure(profile, target.targetId().value());
-    if (!cfg.ok()) return EditorResult<void>::failure(cfg.status());
+    if (!cfg.ok()) return Result<void>::failure(cfg.status());
     if (world && target.settings().kind == "LifeNetwork") {
         world->surface().initFlat(
             {static_cast<float>(target.settings().originX), static_cast<float>(target.settings().originY),

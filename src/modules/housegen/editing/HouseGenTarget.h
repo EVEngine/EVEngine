@@ -24,7 +24,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -68,33 +68,33 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Add one component with stable editor and unique runtime IDs. */
-    EditorResult<DomainOperation> makeCreateComponent(const HouseKitComponentValue& component) const;
+    Result<DomainOperation> makeCreateComponent(const HouseKitComponentValue& component) const;
     /** @brief Remove one component. */
-    EditorResult<DomainOperation> makeDeleteComponent(const ObjectId& id) const;
+    Result<DomainOperation> makeDeleteComponent(const ObjectId& id) const;
     /** @brief Replace the deterministic generation request. */
-    EditorResult<DomainOperation>              makeSetRequest(const housegen::HouseRequest& request) const;
+    Result<DomainOperation>              makeSetRequest(const housegen::HouseRequest& request) const;
     const std::vector<HouseKitComponentValue>& components() const { return components_; }
     const housegen::HouseRequest&              request() const { return request_; }
     /** @brief Validate kit fields, generator-required categories and request budgets. */
     std::vector<EditorDiagnostic> validate() const;
     EditorValue                   snapshotValue() const;
-    EditorResult<void>            loadSnapshot(const EditorValue& snapshot);
+    Result<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool                                matches(const SelectionSnapshot& selection) const;
     EditorValue                         contentValue() const;
-    EditorResult<DomainOperation>       replacement(EditorValue content, std::string property = {}) const;
+    Result<DomainOperation>       replacement(EditorValue content, std::string property = {}) const;
     std::string                         id_;
     std::vector<HouseKitComponentValue> components_;
     housegen::HouseRequest              request_;
@@ -106,9 +106,9 @@ public:
     HouseGenPreviewRuntime();
     ~HouseGenPreviewRuntime();
     /** @brief Generate entirely in temporary state before replacing the active preview. */
-    EditorResult<void> publish(const HouseGenDocumentTarget& document);
+    Result<void> publish(const HouseGenDocumentTarget& document);
     /** @brief Build grid cells, component bounds and room overlays for the active generation. */
-    EditorResult<EditorGizmoSnapshot> gizmo(Revision expectedRevision) const;
+    Result<EditorGizmoSnapshot> gizmo(Revision expectedRevision) const;
     /** @brief Access the published layout. @return Borrowed pointer owned by this runtime. @lifetime Valid until the
      * next successful publish or destruction. */
     const housegen::HouseLayout* layout() const { return layout_.get(); }

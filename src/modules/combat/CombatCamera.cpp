@@ -5,11 +5,6 @@
 namespace eve::combat {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 bool finite3(CombatVector3 value) { return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z); }
 
 double lengthXZ(CombatVector3 value) { return std::hypot(value.x, value.z); }
@@ -23,10 +18,14 @@ CombatVector3 normalizedXZ(CombatVector3 value) {
 }  // namespace
 
 Result<void> CombatCameraFramingRequest::validate() const {
-    if (!finite3(player) || !finite3(playerFacing)) return invalid("camera player pose is invalid", "player");
-    if (lockTarget && !finite3(*lockTarget)) return invalid("camera lock target is invalid", "lockTarget");
-    if (!std::isfinite(distance) || distance <= 0.0) return invalid("camera distance is invalid", "distance");
-    if (!std::isfinite(height) || !std::isfinite(lookHeight)) return invalid("camera height is invalid", "height");
+    if (!finite3(player) || !finite3(playerFacing)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera player pose is invalid"), std::move("player")));
+    if (lockTarget && !finite3(*lockTarget)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera lock target is invalid"), std::move("lockTarget")));
+    if (!std::isfinite(distance) || distance <= 0.0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera distance is invalid"), std::move("distance")));
+    if (!std::isfinite(height) || !std::isfinite(lookHeight)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("camera height is invalid"), std::move("height")));
     return Result<void>::success();
 }
 

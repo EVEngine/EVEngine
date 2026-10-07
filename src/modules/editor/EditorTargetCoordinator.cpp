@@ -48,7 +48,7 @@ struct EditorTargetCoordinator::Impl {
         return found == targets.end() ? nullptr : found->second.get();
     }
 
-    EditorResult<TransactionReceipt> execute(const CommandPlan& plan) {
+    Result<TransactionReceipt> execute(const CommandPlan& plan) {
         TargetEntry* selected = entry(plan.target);
         if (!selected || !selected->target)
             return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
@@ -135,12 +135,12 @@ eve::editing::Result<void> EditorTargetCoordinator::registerPlannedCommand(
             if (!selected || !selected->target)
                 return eve::editing::failed<CommandPlan>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
                                                                           "Editing target is not registered");
-            EditorResult<CommandPlan> result = planner(*selected->target, request);
+            Result<CommandPlan> result = planner(*selected->target, request);
             if (result.ok()) result.value().targetGeneration = selected->generation;
             return result;
         },
         [state = impl_.get()](const CommandRequest&, const CommandPlan& plan) { return state->execute(plan); });
-    if (!registered.ok()) return EditorResult<void>::failure(registered.status());
+    if (!registered.ok()) return Result<void>::failure(registered.status());
     impl_->registeredCommands.emplace_back(commandId, ownerModule);
     return eve::editing::applied<void>(registered.diagnostics());
 }
@@ -153,7 +153,7 @@ eve::editing::Result<std::size_t> EditorTargetCoordinator::unregisterOwner(
     return eve::editing::applied<std::size_t>(removed);
 }
 
-EditorResult<void> EditorTargetCoordinator::registerTarget(IEditableTarget& target) {
+Result<void> EditorTargetCoordinator::registerTarget(IEditableTarget& target) {
     auto* operations = dynamic_cast<IDomainOperationTarget*>(&target);
     if (!operations)
         return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.target.operations-unsupported"),
@@ -174,7 +174,7 @@ EditorResult<void> EditorTargetCoordinator::registerTarget(IEditableTarget& targ
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> EditorTargetCoordinator::unregisterTarget(const TargetId& target) {
+Result<void> EditorTargetCoordinator::unregisterTarget(const TargetId& target) {
     Impl::TargetEntry* selected = impl_->entry(target);
     if (selected) {
         std::vector<EditorSession*> sessions;
@@ -188,7 +188,7 @@ EditorResult<void> EditorTargetCoordinator::unregisterTarget(const TargetId& tar
     return eve::editing::noOp();
 }
 
-EditorResult<void> EditorTargetCoordinator::bind(EditorSession& session, const TargetId& target) {
+Result<void> EditorTargetCoordinator::bind(EditorSession& session, const TargetId& target) {
     Impl::TargetEntry* selected = impl_->entry(target);
     if (!selected || !selected->target)
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
@@ -200,7 +200,7 @@ EditorResult<void> EditorTargetCoordinator::bind(EditorSession& session, const T
 
 void EditorTargetCoordinator::detach(EditorSession& session) noexcept { impl_->sessions.erase(&session); }
 
-EditorResult<EditorValue> EditorTargetCoordinator::inspect(const TargetId& target) const {
+Result<EditorValue> EditorTargetCoordinator::inspect(const TargetId& target) const {
     const Impl::TargetEntry* selected = impl_->entry(target);
     if (!selected || !selected->target)
         return eve::editing::failed<EditorValue>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
@@ -212,7 +212,7 @@ EditorResult<EditorValue> EditorTargetCoordinator::inspect(const TargetId& targe
     return eve::editing::applied<EditorValue>(EditorValue(std::move(result)));
 }
 
-EditorResult<TransactionReceipt> EditorTargetCoordinator::undo(const TargetId& target) {
+Result<TransactionReceipt> EditorTargetCoordinator::undo(const TargetId& target) {
     Impl::TargetEntry* selected = impl_->entry(target);
     if (!selected)
         return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
@@ -220,7 +220,7 @@ EditorResult<TransactionReceipt> EditorTargetCoordinator::undo(const TargetId& t
     return selected->transactions.undo();
 }
 
-EditorResult<TransactionReceipt> EditorTargetCoordinator::redo(const TargetId& target) {
+Result<TransactionReceipt> EditorTargetCoordinator::redo(const TargetId& target) {
     Impl::TargetEntry* selected = impl_->entry(target);
     if (!selected)
         return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),

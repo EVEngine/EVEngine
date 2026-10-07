@@ -20,7 +20,7 @@ using CapabilityId       = editing::CapabilityId;
 using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditorDiagnostic   = editing::Diagnostic;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -94,13 +94,13 @@ public:
      * @nullable Yes when the capability is unsupported.
      */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
     /** @brief Immutable authored settings. */
@@ -110,7 +110,7 @@ public:
     /** @brief Capture schema-version-one settings. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate a persisted snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool              matches(const SelectionSnapshot& selection) const;
@@ -132,7 +132,7 @@ public:
      * @ownership Borrowed pointers.
      * @lifetime Valid for the duration of the call.
      */
-    [[nodiscard("check runtime apply")]] EditorResult<void> apply(const GpuAgentsDocumentTarget& target,
+    [[nodiscard("check runtime apply")]] Result<void> apply(const GpuAgentsDocumentTarget& target,
                                                                   gpuagents::EffectBackend*      backend,
                                                                   gpuagents::GpuAgentWorld*      world) const;
 };

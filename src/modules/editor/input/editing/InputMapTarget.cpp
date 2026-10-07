@@ -123,7 +123,7 @@ EditorValue InputMapTarget::contentValue() const {
     for (const auto& v : bindings_) b.push_back(binding(v));
     return EditorValue::Object{{"actions", std::move(a)}, {"bindings", std::move(b)}};
 }
-EditorResult<DomainOperation> InputMapTarget::replacement(EditorValue v, std::string p) const {
+Result<DomainOperation> InputMapTarget::replacement(EditorValue v, std::string p) const {
     DomainOperation op;
     op.type        = "input-map.replace.v1";
     op.inverseType = op.type;
@@ -135,7 +135,7 @@ EditorResult<DomainOperation> InputMapTarget::replacement(EditorValue v, std::st
     op.mergeKey = "input-map:" + id_ + ":" + (p.empty() ? "structure" : p);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> InputMapTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> InputMapTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                       const EditorValue& v, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -172,14 +172,14 @@ EditorResult<DomainOperation> InputMapTarget::makeSet(const SelectionSnapshot& s
                                                      "Input edit produces invalid bindings");
     return replacement(c.contentValue(), p.value());
 }
-EditorResult<DomainOperation> InputMapTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> InputMapTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.input.property"),
                                                      "Unknown input property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> InputMapTarget::makeCreateAction(InputActionValue v) const {
+Result<DomainOperation> InputMapTarget::makeCreateAction(InputActionValue v) const {
     auto c = *this;
     c.actions_.push_back(std::move(v));
     if (errors(c.validate()))
@@ -187,7 +187,7 @@ EditorResult<DomainOperation> InputMapTarget::makeCreateAction(InputActionValue 
                                                      "Input action is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> InputMapTarget::makeDeleteAction(const ObjectId& id) const {
+Result<DomainOperation> InputMapTarget::makeDeleteAction(const ObjectId& id) const {
     if (std::any_of(bindings_.begin(), bindings_.end(), [&](const auto& b) { return b.action == id; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.action-referenced"),
                                                      "Delete bindings before deleting their action");
@@ -199,7 +199,7 @@ EditorResult<DomainOperation> InputMapTarget::makeDeleteAction(const ObjectId& i
                                                      "Input action does not exist");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> InputMapTarget::makeCreateBinding(InputBindingValue v) const {
+Result<DomainOperation> InputMapTarget::makeCreateBinding(InputBindingValue v) const {
     auto c = *this;
     c.bindings_.push_back(std::move(v));
     if (errors(c.validate()))
@@ -207,7 +207,7 @@ EditorResult<DomainOperation> InputMapTarget::makeCreateBinding(InputBindingValu
                                                      "Input binding is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> InputMapTarget::makeDeleteBinding(const ObjectId& id) const {
+Result<DomainOperation> InputMapTarget::makeDeleteBinding(const ObjectId& id) const {
     auto       c      = *this;
     const auto before = c.bindings_.size();
     std::erase_if(c.bindings_, [&](const auto& b) { return b.id == id; });
@@ -247,7 +247,7 @@ std::vector<EditorDiagnostic> InputMapTarget::validate() const {
             DiagnosticSeverity::Error, "Input map exceeds action or binding budget"));
     return d;
 }
-EditorResult<void> InputMapTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> InputMapTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "input-map.replace.v1" ||
         !op.payload.isWithinLimits(5, 50000, 4 * 1024 * 1024))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.operation"),
@@ -296,7 +296,7 @@ EditorResult<void> InputMapTarget::applyDomainOperation(const DomainOperation& o
 std::unique_ptr<IDomainOperationTarget> InputMapTarget::cloneDomainState() const {
     return std::make_unique<InputMapTarget>(*this);
 }
-EditorResult<void> InputMapTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> InputMapTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<InputMapTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.input.candidate"),
@@ -307,7 +307,7 @@ EditorResult<void> InputMapTarget::commitDomainState(std::unique_ptr<IDomainOper
 EditorValue InputMapTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> InputMapTarget::loadSnapshot(const EditorValue& s) {
+Result<void> InputMapTarget::loadSnapshot(const EditorValue& s) {
     auto *v = field(s, "schemaVersion"), *c = field(s, "content");
     auto* n = v ? v->getIf<int64_t>() : nullptr;
     if (!n || *n != 1 || !c)
@@ -321,7 +321,7 @@ EditorResult<void> InputMapTarget::loadSnapshot(const EditorValue& s) {
     if (result.ok()) dirty_.clear();
     return result;
 }
-EditorResult<std::map<std::string, double>> InputMapEvaluator::evaluate(
+Result<std::map<std::string, double>> InputMapEvaluator::evaluate(
     const InputMapTarget& t, const std::vector<InputControlSample>& samples) const {
     if (errors(t.validate()))
         return eve::editing::failed<std::map<std::string, double>>(

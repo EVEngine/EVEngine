@@ -31,25 +31,25 @@ public:
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate effect records in processing order. */
     std::vector<AudioEffectRecord> effects() const;
     /** @brief Plan effect creation or replacement. */
-    EditorResult<DomainOperation> makeSet(const AudioEffectRecord& effect) const;
+    Result<DomainOperation> makeSet(const AudioEffectRecord& effect) const;
     /** @brief Plan effect removal. */
-    EditorResult<DomainOperation> makeDelete(const StableId& id) const;
+    Result<DomainOperation> makeDelete(const StableId& id) const;
     /** @brief Plan complete processing-order replacement. */
-    EditorResult<DomainOperation> makeReorder(const std::vector<StableId>& order) const;
+    Result<DomainOperation> makeReorder(const std::vector<StableId>& order) const;
     /** @brief Report invalid parameter ranges and unsafe chain budgets. */
     std::vector<EditorDiagnostic> validate() const;
     /** @brief Capture deterministic schema-version-one effect chain. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated effect chain. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Plan assigning this chain snapshot to an existing mixer bus. */
-    EditorResult<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
+    Result<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
                                                    const ObjectId& bus) const;
 private:
     std::string                           id_;
@@ -61,14 +61,14 @@ private:
 class IAudioEffectChainSink {
 public:
     virtual ~IAudioEffectChainSink() = default;
-    virtual EditorResult<void> publish(const std::string& chain, Revision revision,
+    virtual Result<void> publish(const std::string& chain, Revision revision,
                                        const std::vector<AudioEffectRecord>& effects) = 0;
 };
 
 /** @brief Rejects invalid/stale chains before runtime publication. */
 class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
 public:
-    EditorResult<void> publish(const AudioEffectChainTarget& chain,
+    Result<void> publish(const AudioEffectChainTarget& chain,
                                Revision expectedRevision,
                                IAudioEffectChainSink& sink) const;
 };

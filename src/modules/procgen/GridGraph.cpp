@@ -67,10 +67,6 @@ const OperationSpec* specFor(std::string_view id) {
     return found == specs().end() ? nullptr : &*found;
 }
 
-Result<void> failVoid(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.gridGraph"));
-}
-
 bool sameSize(const Grid2D& a, const Grid2D& b) {
     return a.getWidth() == b.getWidth() && a.getHeight() == b.getHeight();
 }
@@ -165,9 +161,9 @@ Result<PointSet> gridToPoints(const Grid2D& grid, int semantic, float cellSize, 
 }  // namespace
 
 Result<void> GridGraph::addNode(std::string id, std::string operation) {
-    if (id.empty()) return failVoid(DiagnosticCode::InvalidArgument, "node id is empty");
-    if (!specFor(operation)) return failVoid(DiagnosticCode::NotFound, "unknown operation: " + operation, id);
-    if (nodes_.contains(id)) return failVoid(DiagnosticCode::Conflict, "duplicate node id: " + id, id);
+    if (id.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("node id is empty"), std::move({}), {}, "procgen.gridGraph"));
+    if (!specFor(operation)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown operation: " + operation), std::move(id), {}, "procgen.gridGraph"));
+    if (nodes_.contains(id)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("duplicate node id: " + id), std::move(id), {}, "procgen.gridGraph"));
     Node node;
     node.id        = id;
     node.operation = std::move(operation);
@@ -181,17 +177,16 @@ Result<void> GridGraph::connect(std::string_view fromId, std::string_view toId, 
     const auto from = nodes_.find(std::string(fromId));
     const auto to   = nodes_.find(std::string(toId));
     if (from == nodes_.end() || to == nodes_.end())
-        return failVoid(DiagnosticCode::NotFound, "connection references an unknown node", std::string(toId));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("connection references an unknown node"), std::move(std::string(toId)), {}, "procgen.gridGraph"));
     const OperationSpec* target = specFor(to->second.operation);
     if (!target || inputIndex < 0 || inputIndex >= target->inputs)
-        return failVoid(DiagnosticCode::InvalidArgument, "input slot is outside the operation contract",
-                        std::string(toId));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("input slot is outside the operation contract"), std::move(std::string(toId)), {}, "procgen.gridGraph"));
     const auto sourceType = operationOutputType(from->second.operation);
     if (!sourceType.ok()) return Result<void>::failure(sourceType.status());
     const GridGraphValueType expected =
         to->second.operation == "point.subgraph" ? GridGraphValueType::PointSet : GridGraphValueType::Grid;
     if (sourceType.value() != expected)
-        return failVoid(DiagnosticCode::TypeMismatch, "typed graph ports are incompatible", std::string(toId));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("typed graph ports are incompatible"), std::move(std::string(toId)), {}, "procgen.gridGraph"));
     to->second.inputs[inputIndex] = std::string(fromId);
     invalidateFrom(toId);
     ++revision_;
@@ -200,9 +195,9 @@ Result<void> GridGraph::connect(std::string_view fromId, std::string_view toId, 
 
 Result<void> GridGraph::setNodeGrid(std::string_view id, const Grid2D& grid) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     if (found->second.operation != "grid.input")
-        return failVoid(DiagnosticCode::TypeMismatch, "node is not a grid.input", std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("node is not a grid.input"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     found->second.inputGrid    = grid;
     found->second.hasInputGrid = true;
     invalidateFrom(id);
@@ -212,7 +207,7 @@ Result<void> GridGraph::setNodeGrid(std::string_view id, const Grid2D& grid) {
 
 Result<void> GridGraph::setNodeInt(std::string_view id, std::string key, int value) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     const bool declared =
         found->second.operation.starts_with("generate.") || found->second.operation.starts_with("select.") ||
         found->second.operation == "grid.path" ||
@@ -221,7 +216,7 @@ Result<void> GridGraph::setNodeInt(std::string_view id, std::string key, int val
         ((found->second.operation == "grid.invert" || found->second.operation == "convert.grid_to_points") &&
          key == "semantic");
     if (!declared)
-        return failVoid(DiagnosticCode::InvalidArgument, "unknown integer parameter: " + key, std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown integer parameter: " + key), std::move(std::string(id)), {}, "procgen.gridGraph"));
     found->second.ints[std::move(key)] = value;
     invalidateFrom(id);
     ++revision_;
@@ -230,11 +225,11 @@ Result<void> GridGraph::setNodeInt(std::string_view id, std::string key, int val
 
 Result<void> GridGraph::setNodeFloat(std::string_view id, std::string key, float value) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     if (!found->second.operation.starts_with("generate.") && !found->second.operation.starts_with("select.") &&
         (found->second.operation != "convert.grid_to_points" ||
          (key != "cellSize" && key != "originX" && key != "originZ")))
-        return failVoid(DiagnosticCode::InvalidArgument, "unknown float parameter: " + key, std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown float parameter: " + key), std::move(std::string(id)), {}, "procgen.gridGraph"));
     found->second.floats[std::move(key)] = value;
     invalidateFrom(id);
     ++revision_;
@@ -243,11 +238,11 @@ Result<void> GridGraph::setNodeFloat(std::string_view id, std::string key, float
 
 Result<void> GridGraph::setNodeString(std::string_view id, std::string key, std::string value) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     const bool declared = (found->second.operation == "select.rule" && key == "rule") ||
                           found->second.operation == "generate.registry";
     if (!declared)
-        return failVoid(DiagnosticCode::InvalidArgument, "unknown string parameter: " + key, std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unknown string parameter: " + key), std::move(std::string(id)), {}, "procgen.gridGraph"));
     found->second.strings[std::move(key)] = std::move(value);
     invalidateFrom(id);
     ++revision_;
@@ -257,11 +252,11 @@ Result<void> GridGraph::setNodeString(std::string_view id, std::string key, std:
 Result<void> GridGraph::setNodePointSubgraph(std::string_view id, const PointGraph& graph, std::string inputNode,
                                              std::string outputNode) {
     const auto found = nodes_.find(std::string(id));
-    if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+    if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     if (found->second.operation != "point.subgraph")
-        return failVoid(DiagnosticCode::TypeMismatch, "node is not a point.subgraph", std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, std::move("node is not a point.subgraph"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     if (inputNode.empty() || outputNode.empty())
-        return failVoid(DiagnosticCode::InvalidArgument, "subgraph ports must be non-empty", std::string(id));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subgraph ports must be non-empty"), std::move(std::string(id)), {}, "procgen.gridGraph"));
     found->second.pointSubgraph   = std::make_shared<PointGraph>(graph);
     found->second.pointInputNode  = std::move(inputNode);
     found->second.pointOutputNode = std::move(outputNode);
@@ -491,24 +486,24 @@ Result<void> GridGraph::validate(std::string_view outputId) const {
     std::unordered_map<std::string, int> states;
     const auto                           visit = [&](const auto& self, std::string_view id) -> Result<void> {
         const auto found = nodes_.find(std::string(id));
-        if (found == nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", std::string(id));
+        if (found == nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(std::string(id)), {}, "procgen.gridGraph"));
         if (states[found->first] == 1)
-            return failVoid(DiagnosticCode::Conflict, "graph contains a cycle", found->first);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("graph contains a cycle"), std::move(found->first), {}, "procgen.gridGraph"));
         if (states[found->first] == 2) return Result<void>::success();
         states[found->first]      = 1;
         const OperationSpec* spec = specFor(found->second.operation);
         for (int index = 0; index < spec->inputs; ++index) {
             if (found->second.inputs[index].empty())
-                return failVoid(DiagnosticCode::NotFound, "required input is disconnected", found->first);
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("required input is disconnected"), std::move(found->first), {}, "procgen.gridGraph"));
             auto input = self(self, found->second.inputs[index]);
             if (!input.ok()) return input;
         }
         if (found->second.operation == "grid.input" && !found->second.hasInputGrid)
-            return failVoid(DiagnosticCode::NotFound, "grid.input has no bound value", found->first);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("grid.input has no bound value"), std::move(found->first), {}, "procgen.gridGraph"));
         if (found->second.operation == "point.subgraph" &&
             (!found->second.pointSubgraph || found->second.pointInputNode.empty() ||
              found->second.pointOutputNode.empty()))
-            return failVoid(DiagnosticCode::NotFound, "point.subgraph has no complete binding", found->first);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("point.subgraph has no complete binding"), std::move(found->first), {}, "procgen.gridGraph"));
         states[found->first] = 2;
         return Result<void>::success();
     };
@@ -588,7 +583,7 @@ Result<void> GridGraph::deserializeDefinition(std::string_view definition) {
     std::string        magic;
     int                version = 0;
     if (!(input >> magic >> version) || magic != "EVPCG_GRID_GRAPH" || version != 1)
-        return failVoid(DiagnosticCode::ParseError, "invalid grid graph header");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid grid graph header"), std::move({}), {}, "procgen.gridGraph"));
     std::string line;
     std::getline(input, line);
     bool ended = false;
@@ -605,51 +600,51 @@ Result<void> GridGraph::deserializeDefinition(std::string_view definition) {
         if (kind == "NODE") {
             std::string operation;
             if (!(record >> std::quoted(id) >> std::quoted(operation)))
-                return failVoid(DiagnosticCode::ParseError, "invalid NODE record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid NODE record"), std::move({}), {}, "procgen.gridGraph"));
             auto result = replacement.addNode(std::move(id), std::move(operation));
             if (!result.ok()) return result;
         } else if (kind == "EDGE") {
             std::string target;
             int         slot = -1;
             if (!(record >> std::quoted(id) >> std::quoted(target) >> slot))
-                return failVoid(DiagnosticCode::ParseError, "invalid EDGE record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid EDGE record"), std::move({}), {}, "procgen.gridGraph"));
             auto result = replacement.connect(id, target, slot);
             if (!result.ok()) return result;
         } else if (kind == "INT") {
             std::string key;
             int         value = 0;
             if (!(record >> std::quoted(id) >> std::quoted(key) >> value))
-                return failVoid(DiagnosticCode::ParseError, "invalid INT record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid INT record"), std::move({}), {}, "procgen.gridGraph"));
             auto result = replacement.setNodeInt(id, std::move(key), value);
             if (!result.ok()) return result;
         } else if (kind == "FLOAT") {
             std::string key;
             float       value = 0.f;
             if (!(record >> std::quoted(id) >> std::quoted(key) >> value))
-                return failVoid(DiagnosticCode::ParseError, "invalid FLOAT record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid FLOAT record"), std::move({}), {}, "procgen.gridGraph"));
             auto result = replacement.setNodeFloat(id, std::move(key), value);
             if (!result.ok()) return result;
         } else if (kind == "STRING") {
             std::string key;
             std::string value;
             if (!(record >> std::quoted(id) >> std::quoted(key) >> std::quoted(value)))
-                return failVoid(DiagnosticCode::ParseError, "invalid STRING record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("invalid STRING record"), std::move({}), {}, "procgen.gridGraph"));
             auto result = replacement.setNodeString(id, std::move(key), std::move(value));
             if (!result.ok()) return result;
         } else {
-            return failVoid(DiagnosticCode::ParseError, "unknown grid graph record: " + kind);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("unknown grid graph record: " + kind), std::move({}), {}, "procgen.gridGraph"));
         }
         record >> std::ws;
-        if (!record.eof()) return failVoid(DiagnosticCode::ParseError, "trailing grid graph record data");
+        if (!record.eof()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("trailing grid graph record data"), std::move({}), {}, "procgen.gridGraph"));
     }
-    if (!ended) return failVoid(DiagnosticCode::ParseError, "grid graph END record is missing");
+    if (!ended) return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move("grid graph END record is missing"), std::move({}), {}, "procgen.gridGraph"));
     std::unordered_map<std::string, int> states;
     const auto                           visit = [&](const auto& self, const std::string& id) -> Result<void> {
         if (states[id] == 2) return Result<void>::success();
-        if (states[id] == 1) return failVoid(DiagnosticCode::Conflict, "cycle in serialized graph", id);
+        if (states[id] == 1) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("cycle in serialized graph"), std::move(id), {}, "procgen.gridGraph"));
         states[id]       = 1;
         const auto found = replacement.nodes_.find(id);
-        if (found == replacement.nodes_.end()) return failVoid(DiagnosticCode::NotFound, "unknown node", id);
+        if (found == replacement.nodes_.end()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("unknown node"), std::move(id), {}, "procgen.gridGraph"));
         for (const auto& dependency : found->second.inputs) {
             if (dependency.empty()) continue;
             auto result = self(self, dependency);

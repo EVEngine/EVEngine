@@ -12,9 +12,6 @@
 
 namespace eve::camera {
 namespace {
-Result<void> invalid(const char* message, const char* path) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
-}
 bool finite(float value) { return std::isfinite(value); }
 float shortestAngle(float from, float to) {
     float delta = std::fmod(to - from + 180.f, 360.f);
@@ -33,7 +30,7 @@ Result<void> PcgCarCameraSetup::configure(const PcgCarCameraProfile& p) {
         p.horizontalSpeed < 0.f || p.verticalSpeed < 0.f || p.maximumPitch < p.minimumPitch ||
         p.minimumPitch < -89.f || p.maximumPitch > 89.f || p.zoomRate < 0.f ||
         p.rotationDamping < 0.f || p.zoomDamping < 0.f)
-        return invalid("invalid Pcg vehicle camera profile", "camera.pcgCar.configure");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid Pcg vehicle camera profile", "camera.pcgCar.configure"));
     profile_ = p;
     configured_ = true;
     return Result<void>::success();
@@ -41,8 +38,8 @@ Result<void> PcgCarCameraSetup::configure(const PcgCarCameraProfile& p) {
 
 Result<void> PcgCarCameraSetup::apply(CameraController* c, graphics::Camera3D* camera,
                                        scene::SceneNodeRef* focus, float initialYaw, float initialPitch) {
-    if (!c || !camera || !focus) return invalid("controller, camera and focus are required", "camera.pcgCar.apply");
-    if (!finite(initialYaw) || !finite(initialPitch)) return invalid("initial angles must be finite", "camera.pcgCar.apply");
+    if (!c || !camera || !focus) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "controller, camera and focus are required", "camera.pcgCar.apply"));
+    if (!finite(initialYaw) || !finite(initialPitch)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "initial angles must be finite", "camera.pcgCar.apply"));
     if (!configured_) {
         auto result = configure(profile_);
         if (!result) return result;
@@ -69,10 +66,10 @@ Result<void> PcgCarCameraSetup::apply(CameraController* c, graphics::Camera3D* c
 
 Result<void> PcgCarCameraSetup::update(CameraController* c, float mouseX, float mouseY,
                                         float scroll, float dt, bool targetIsMoving, float targetYaw) {
-    if (!c) return invalid("controller is required", "camera.pcgCar.update");
+    if (!c) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "controller is required", "camera.pcgCar.update"));
     if (!finite(mouseX) || !finite(mouseY) || !finite(scroll) || !finite(dt) || !finite(targetYaw) || dt < 0.f)
-        return invalid("camera input and dt must be finite", "camera.pcgCar.update");
-    if (!configured_) return invalid("camera setup has not been configured", "camera.pcgCar.update");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "camera input and dt must be finite", "camera.pcgCar.update"));
+    if (!configured_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "camera setup has not been configured", "camera.pcgCar.update"));
     if (profile_.allowMouseHorizontal) yaw_ += mouseX * profile_.horizontalSpeed * 0.02f;
     if (profile_.allowMouseVertical)
         pitch_ = std::clamp(pitch_ - mouseY * profile_.verticalSpeed * 0.02f,
@@ -99,7 +96,7 @@ void exposePcgCarCameraSetupBindings(ssq::Table& t) {
     p.addVar("collisionLayers", &PcgCarCameraProfile::collisionLayers); p.addVar("lockToRearOfTarget", &PcgCarCameraProfile::lockToRearOfTarget);
     p.addVar("allowMouseHorizontal", &PcgCarCameraProfile::allowMouseHorizontal); p.addVar("allowMouseVertical", &PcgCarCameraProfile::allowMouseVertical);
     auto s = t.addClass("PcgCarCameraSetup", ssq::Class::Ctor<PcgCarCameraSetup()>()); auto vm = t.getHandle();
-    s.addFunc("configure", [vm](PcgCarCameraSetup* self, const PcgCarCameraProfile* profile) { return eve::script::projectResult(vm, profile ? self->configure(*profile) : invalid("profile is required", "camera.pcgCar.configure")); });
+    s.addFunc("configure", [vm](PcgCarCameraSetup* self, const PcgCarCameraProfile* profile) { return eve::script::projectResult(vm, profile ? self->configure(*profile) : Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "profile is required", "camera.pcgCar.configure"))); });
     s.addFunc("apply", [vm](PcgCarCameraSetup* self, CameraController* c, graphics::Camera3D* camera, scene::SceneNodeRef* focus, float yaw, float pitch) { return eve::script::projectResult(vm, self->apply(c, camera, focus, yaw, pitch)); });
     s.addFunc("update", [vm](PcgCarCameraSetup* self, CameraController* c, float mx, float my, float scroll, float dt, bool moving, float targetYaw) { return eve::script::projectResult(vm, self->update(c, mx, my, scroll, dt, moving, targetYaw)); });
     s.addFunc("getYaw", [](const PcgCarCameraSetup* self) { return self->getYaw(); });

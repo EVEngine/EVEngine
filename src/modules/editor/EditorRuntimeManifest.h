@@ -39,7 +39,7 @@ public:
      * @param assets Asset index used to close hard/build/soft runtime dependencies.
      * @return A package or a diagnostic when any selected identity is unavailable.
      */
-    EditorResult<RuntimeEditorPackage> publish(const RuntimeEditorManifest&   manifest,
+    Result<RuntimeEditorPackage> publish(const RuntimeEditorManifest&   manifest,
                                                const EditorCommandService&    commands,
                                                const EditorExtensionRegistry& extensions,
                                                const MemoryAssetDatabase&     assets) const;

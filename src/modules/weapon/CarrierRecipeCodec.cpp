@@ -14,11 +14,6 @@
 namespace eve::weapon {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path), {},
-                                                   "weapon.carrier.recipe"));
-}
-
 const Value* field(const Value::Object& object, const char* name) {
     const auto it = object.find(name);
     return it == object.end() ? nullptr : &it->second;

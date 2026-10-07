@@ -17,7 +17,7 @@ struct ProfilerFrameSnapshot;
 
 namespace eve::profiler_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-using editing::EditorResult; using EditorStatus=editing::Status;
+using editing::Result; using EditorStatus=editing::Status;
 using RuleId=editing::RuleId;
 
 /** @brief One owning profiler hotspot row projected for editor presentation. */
@@ -86,14 +86,14 @@ public:
      * @param budgets Candidate budgets and history capacity.
      * @return Applied, or Rejected without changing the current budgets.
      */
-    [[nodiscard]] EditorResult<void> configure(EditorProfilerBudgets budgets);
+    [[nodiscard]] Result<void> configure(EditorProfilerBudgets budgets);
 
     /**
      * @brief Append an owning completed-frame snapshot.
      * @param frame Candidate frame with a strictly increasing sequence.
      * @return Applied, or Conflict/Rejected without changing history.
      */
-    [[nodiscard]] EditorResult<void> ingest(EditorProfilerFrame frame);
+    [[nodiscard]] Result<void> ingest(EditorProfilerFrame frame);
 
     /** @brief Clear retained frames without changing configured budgets. */
     void clear();
@@ -131,7 +131,7 @@ public:
      * @param model Editor-owned destination history.
      * @return Runtime capture or model validation status.
      */
-    [[nodiscard]] EditorResult<void> collect(const profiler::Profiler& profiler,
+    [[nodiscard]] Result<void> collect(const profiler::Profiler& profiler,
                                              EditorProfilerModel& model) const;
 };
 

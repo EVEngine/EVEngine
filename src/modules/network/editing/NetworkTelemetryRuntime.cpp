@@ -3,7 +3,7 @@
 #include <utility>
 namespace eve::network_editing {
 
-EditorResult<void> NetworkTelemetryCollector::collect(network::Network* source, double time,
+Result<void> NetworkTelemetryCollector::collect(network::Network* source, double time,
                                                       NetworkTelemetryModel& model) const {
     if (!source)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.network.source"),

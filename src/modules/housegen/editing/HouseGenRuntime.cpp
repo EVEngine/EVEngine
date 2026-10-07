@@ -12,11 +12,11 @@ namespace eve::housegen_editing {
 HouseGenPreviewRuntime::HouseGenPreviewRuntime() = default;
 HouseGenPreviewRuntime::~HouseGenPreviewRuntime() = default;
 
-EditorResult<void> HouseGenPreviewRuntime::publish(const HouseGenDocumentTarget& document) {
+Result<void> HouseGenPreviewRuntime::publish(const HouseGenDocumentTarget& document) {
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     auto library = std::make_unique<housegen::HouseComponentLibrary>();
     std::set<std::string> categories;
     for (const auto& component : document.components()) {
@@ -35,7 +35,7 @@ EditorResult<void> HouseGenPreviewRuntime::publish(const HouseGenDocumentTarget&
     return eve::editing::applied<void>(diagnostics);
 }
 
-EditorResult<EditorGizmoSnapshot> HouseGenPreviewRuntime::gizmo(Revision expectedRevision) const {
+Result<EditorGizmoSnapshot> HouseGenPreviewRuntime::gizmo(Revision expectedRevision) const {
     if (expectedRevision!=revision_) return eve::editing::failed<EditorGizmoSnapshot>(EditorStatus::Conflict, RuleId("editor.housegen.stale"), "House preview generation is stale");
     if (!layout_||!library_) return eve::editing::failed<EditorGizmoSnapshot>(EditorStatus::NotFound, RuleId("editor.housegen.preview"), "House preview has no generated layout");
     EditorGizmoSnapshot snapshot;snapshot.status=EditorStatus::Applied;snapshot.target="housegen-preview";snapshot.targetRevision=revision_;

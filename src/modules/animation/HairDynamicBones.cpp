@@ -12,11 +12,6 @@ Result<int> invalidInt(std::string message, std::string path) {
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
-Result<void> invalidVoid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 Result<int> addChain(DynamicBoneSolver &solver, const ChainDesc &desc) {
@@ -45,8 +40,8 @@ Result<void> setupChains(DynamicBoneSolver &solver, const std::vector<ChainDesc>
         auto added = addChain(solver, chains[i]);
         if (!added) {
             const Diagnostic *diag = added.status().primaryDiagnostic();
-            return invalidVoid(diag ? std::string(diag->message()) : added.status().describe(),
-                               "hair.chains[" + std::to_string(i) + "]");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(diag ? std::string(diag->message()) : added.status().describe()), std::move("hair.chains[" + std::to_string(i) + "]")));
         }
     }
     return Result<void>::success();

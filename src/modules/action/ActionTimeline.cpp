@@ -9,11 +9,6 @@
 namespace eve::action {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 const Value* field(const Value& value, std::string_view name) { return value.find(std::string(name)); }
 
 Result<std::string> stringField(const Value& value, std::string_view name, std::string path) {
@@ -223,69 +218,92 @@ Result<ActionTrackKind> parseActionTrackKind(std::string_view text) {
 
 Result<void> ActionTimeline::validate() const {
     if (schemaVersion.value() != kActionTimelineSchemaVersion)
-        return invalid("unsupported action timeline schema version", "schemaVersion");
-    if (!actionId.isValid()) return invalid("action timeline requires a valid action id", "actionId");
-    if (duration.nanoseconds() < 0) return invalid("timeline duration must be non-negative", "durationNs");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("unsupported action timeline schema version"), std::move("schemaVersion")));
+    if (!actionId.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action timeline requires a valid action id"), std::move("actionId")));
+    if (duration.nanoseconds() < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("timeline duration must be non-negative"), std::move("durationNs")));
     if (!std::isfinite(montage.basePlayRate) || montage.basePlayRate <= 0.0)
-        return invalid("montage base play rate must be positive and finite", "montage.basePlayRate");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("montage base play rate must be positive and finite"), std::move("montage.basePlayRate")));
     if (montage.defaultBlendIn < Duration::zero() || montage.defaultBlendOut < Duration::zero() ||
         montage.blendOutOffset < Duration::zero())
-        return invalid("montage blend durations must be non-negative", "montage");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("montage blend durations must be non-negative"), std::move("montage")));
     for (std::size_t index = 0; index < splitTimestamps.size(); ++index) {
         if (splitTimestamps[index] <= Duration::zero() || splitTimestamps[index] >= duration ||
             (index > 0 && splitTimestamps[index - 1] >= splitTimestamps[index]))
-            return invalid("physical section splits must be strictly ordered inside the timeline",
-                           "splitTimestampsNs[" + std::to_string(index) + "]");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("physical section splits must be strictly ordered inside the timeline"), std::move("splitTimestampsNs[" + std::to_string(index) + "]")));
     }
 
     std::set<std::string> ids;
     for (std::size_t index = 0; index < animationSections.size(); ++index) {
         const auto&       section = animationSections[index];
         const std::string path    = "animationSections[" + std::to_string(index) + "]";
-        if (!section.id.isValid()) return invalid("animation section id is invalid", path + ".id");
-        if (!ids.insert(section.id.format()).second) return invalid("timeline item ids must be unique", path + ".id");
-        if (section.animationUri.empty()) return invalid("animation section requires a URI", path + ".animationUri");
+        if (!section.id.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation section id is invalid"), std::move(path + ".id")));
+        if (!ids.insert(section.id.format()).second) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("timeline item ids must be unique"), std::move(path + ".id")));
+        if (section.animationUri.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation section requires a URI"), std::move(path + ".animationUri")));
         if (section.start < Duration::zero() || section.end <= section.start || section.end > duration)
-            return invalid("animation section range is invalid", path);
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation section range is invalid"), std::move(path)));
         if (section.blendIn < Duration::zero() ||
             section.blendIn.nanoseconds() > section.end.nanoseconds() - section.start.nanoseconds())
-            return invalid("animation section blend-in is outside its range", path + ".blendInNs");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation section blend-in is outside its range"), std::move(path + ".blendInNs")));
         if (section.sourceStart < Duration::zero() || section.sourceEnd < Duration::zero() ||
             (!section.sourceEnd.isZero() && section.sourceEnd <= section.sourceStart))
-            return invalid("animation section source trim is invalid", path + ".sourceStartNs");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation section source trim is invalid"), std::move(path + ".sourceStartNs")));
         if (index > 0) {
             const auto& previous = animationSections[index - 1];
             if (previous.start > section.start)
-                return invalid("animation sections must be sorted by start time", path + ".startNs");
-            if (previous.end > section.start) return invalid("animation sections must not overlap", path + ".startNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation sections must be sorted by start time"), std::move(path + ".startNs")));
+            if (previous.end > section.start) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("animation sections must not overlap"), std::move(path + ".startNs")));
         }
     }
     for (std::size_t trackIndex = 0; trackIndex < tracks.size(); ++trackIndex) {
         const auto&       track = tracks[trackIndex];
         const std::string path  = "tracks[" + std::to_string(trackIndex) + "]";
-        if (!track.id.isValid()) return invalid("track id is invalid", path + ".id");
-        if (!ids.insert(track.id.format()).second) return invalid("timeline item ids must be unique", path + ".id");
+        if (!track.id.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("track id is invalid"), std::move(path + ".id")));
+        if (!ids.insert(track.id.format()).second) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("timeline item ids must be unique"), std::move(path + ".id")));
         for (std::size_t index = 0; index < track.notifies.size(); ++index) {
             const auto&       notify   = track.notifies[index];
             const std::string itemPath = path + ".notifies[" + std::to_string(index) + "]";
-            if (!notify.id.isValid() || !notify.type.isValid()) return invalid("notify ids are invalid", itemPath);
+            if (!notify.id.isValid() || !notify.type.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notify ids are invalid"), std::move(itemPath)));
             if (!ids.insert(notify.id.format()).second)
-                return invalid("timeline item ids must be unique", itemPath + ".id");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("timeline item ids must be unique"), std::move(itemPath + ".id")));
             if (notify.time < Duration::zero() || notify.time > duration)
-                return invalid("notify time is outside the timeline", itemPath + ".timeNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notify time is outside the timeline"), std::move(itemPath + ".timeNs")));
             if (index > 0 && track.notifies[index - 1].time > notify.time)
-                return invalid("notifies must be sorted by time", itemPath + ".timeNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notifies must be sorted by time"), std::move(itemPath + ".timeNs")));
         }
         for (std::size_t index = 0; index < track.states.size(); ++index) {
             const auto&       state    = track.states[index];
             const std::string itemPath = path + ".states[" + std::to_string(index) + "]";
-            if (!state.id.isValid() || !state.type.isValid()) return invalid("notify-state ids are invalid", itemPath);
+            if (!state.id.isValid() || !state.type.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notify-state ids are invalid"), std::move(itemPath)));
             if (!ids.insert(state.id.format()).second)
-                return invalid("timeline item ids must be unique", itemPath + ".id");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("timeline item ids must be unique"), std::move(itemPath + ".id")));
             if (state.start < Duration::zero() || state.end <= state.start || state.end > duration)
-                return invalid("notify-state range is invalid", itemPath);
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notify-state range is invalid"), std::move(itemPath)));
             if (index > 0 && track.states[index - 1].start > state.start)
-                return invalid("notify states must be sorted by start time", itemPath + ".startNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("notify states must be sorted by start time"), std::move(itemPath + ".startNs")));
         }
     }
     return Result<void>::success();

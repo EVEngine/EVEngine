@@ -349,7 +349,7 @@ std::string editorValueToJson(const EditorValue& value) {
     return json;
 }
 
-EditorResult<EditorValue> editorValueFromJson(const std::string& json) {
+Result<EditorValue> editorValueFromJson(const std::string& json) {
     JsonParser  parser(json);
     EditorValue value;
     if (!parser.parse(value))

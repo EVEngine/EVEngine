@@ -6,7 +6,7 @@
 
 namespace eve::lighting_editing {
 
-EditorResult<void> EnvironmentRuntimeApplier::applyDayNight(const EnvironmentDocumentTarget& document,
+Result<void> EnvironmentRuntimeApplier::applyDayNight(const EnvironmentDocumentTarget& document,
                                                             daynight::DayNight*              environment) const {
     if (!environment)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.environment.daynight-required"),
@@ -18,7 +18,7 @@ EditorResult<void> EnvironmentRuntimeApplier::applyDayNight(const EnvironmentDoc
     const auto diagnostics = document.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     environment->setTimeOfDay(static_cast<float>(*document.value("daynight.time")->getIf<double>()));
     environment->setSpeed(static_cast<float>(*document.value("daynight.speed")->getIf<double>()));
     environment->setPaused(*document.value("daynight.paused")->getIf<bool>());

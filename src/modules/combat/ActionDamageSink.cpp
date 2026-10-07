@@ -7,13 +7,7 @@
 #include <utility>
 
 namespace eve::combat {
-namespace {
-
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-}  // namespace
+  // namespace
 
 CombatActionDamageSink::CombatActionDamageSink(ActionCombatStateResolver resolver)
     : resolver_(std::move(resolver)) {}
@@ -46,11 +40,11 @@ bool CombatActionDamageSink::supports(ecs::EntityHandle target) const {
 
 Result<void> CombatActionDamageSink::apply(const action::ActionDamageBinding& binding,
                                            const action::ActionNotifyContext& context) {
-    if (!resolver_) return failure(DiagnosticCode::NotFound, "combat-state resolver is unavailable", "resolver");
+    if (!resolver_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("combat-state resolver is unavailable"), std::move("resolver")));
     if (binding.targetIndex >= context.targets.size())
-        return failure(DiagnosticCode::NotFound, "damage target index is unavailable", "targetIndex");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("damage target index is unavailable"), std::move("targetIndex")));
     auto target = resolver_(context.targets[binding.targetIndex]);
-    if (!target) return failure(DiagnosticCode::NotFound, "damage target has no combat state", "target");
+    if (!target) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("damage target has no combat state"), std::move("target")));
     if (windowState_ && windowState_->isInvulnerable(target->get().subject)) {
         lastOutcome_.reset();
         return Result<void>::success(Status::success(StatusCode::NoOp));

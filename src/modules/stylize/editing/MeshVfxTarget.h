@@ -31,7 +31,7 @@ using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
 using EditorValue = editing::Value;
-using editing::EditorResult;
+using editing::Result;
 
 /**
  * @brief Transactional editor target for one canonical MeshVfxAsset document.
@@ -54,15 +54,15 @@ public:
     TargetId                                targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
     /** @brief Return the authoritative parsed asset. */
@@ -70,7 +70,7 @@ public:
     /** @brief Capture schema-version-one editor persistence data. */
     [[nodiscard]] EditorValue snapshotValue() const;
     /** @brief Atomically load a persisted target snapshot. */
-    [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    [[nodiscard]] Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     bool matches(const SelectionSnapshot& selection) const;
@@ -89,7 +89,7 @@ public:
     MeshVfxPreviewRuntime();
     ~MeshVfxPreviewRuntime();
     /** @brief Build every runtime layer before atomically replacing the active preview. */
-    [[nodiscard]] EditorResult<void> publish(const MeshVfxAssetTarget& document);
+    [[nodiscard]] Result<void> publish(const MeshVfxAssetTarget& document);
     /** @brief Return the active preview instance, or null before publication. */
     [[nodiscard]] stylize::MeshVfxAssetInstance* instance() noexcept { return instance_.get(); }
     /** @brief Return the active document revision, or zero before publication. */

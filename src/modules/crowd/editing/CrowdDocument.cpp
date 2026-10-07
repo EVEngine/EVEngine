@@ -20,7 +20,7 @@ EditorValue pointValue(const CrowdWaypointRecord& point) {
                                {"arriveRadius", point.arriveRadius}, {"waitSeconds", point.waitSeconds}};
 }
 
-EditorResult<CrowdWaypointRecord> parsePoint(const EditorValue& value) {
+Result<CrowdWaypointRecord> parsePoint(const EditorValue& value) {
     const auto string = [&](const char* key) -> const std::string* {
         const auto* entry = field(value, key); return entry ? entry->getIf<std::string>() : nullptr;
     };
@@ -44,7 +44,7 @@ EditorValue pathValue(const CrowdPathRecord& path) {
                                {"points", std::move(points)}};
 }
 
-EditorResult<CrowdPathRecord> parsePath(const EditorValue& value) {
+Result<CrowdPathRecord> parsePath(const EditorValue& value) {
     const auto* idEntry = field(value, "id"); const auto* nameEntry = field(value, "name");
     const auto* loopEntry = field(value, "loop"); const auto* pointsEntry = field(value, "points");
     const auto* id = idEntry ? idEntry->getIf<std::string>() : nullptr;
@@ -76,7 +76,7 @@ EditorValue agentValue(const CrowdAgentRecord& agent) {
         {"maximumSpeed", agent.maximumSpeed}, {"behavior", agent.behavior}, {"path", agent.path.value()}};
 }
 
-EditorResult<CrowdAgentRecord> parseAgent(const EditorValue& value) {
+Result<CrowdAgentRecord> parseAgent(const EditorValue& value) {
     const auto string = [&](const char* key) -> const std::string* { const auto* v = field(value, key); return v ? v->getIf<std::string>() : nullptr; };
     const auto number = [&](const char* key) -> const double* { const auto* v = field(value, key); return v ? v->getIf<double>() : nullptr; };
     const auto* id = string("id"); const auto* archetype = string("archetype"); const auto* behavior = string("behavior");
@@ -107,7 +107,7 @@ EditorValue zoneValue(const CrowdZoneRecord& zone) {
                                {"points", std::move(points)}, {"weight", zone.weight}, {"enabled", zone.enabled}};
 }
 
-EditorResult<CrowdZoneRecord> parseZone(const EditorValue& value) {
+Result<CrowdZoneRecord> parseZone(const EditorValue& value) {
     const auto* idEntry = field(value, "id"); const auto* nameEntry = field(value, "name");
     const auto* kindEntry = field(value, "kind"); const auto* pointsEntry = field(value, "points");
     const auto* weightEntry = field(value, "weight"); const auto* enabledEntry = field(value, "enabled");
@@ -167,14 +167,14 @@ void* CrowdDocumentTarget::queryCapability(const CapabilityId& capability) {
     return capability == editorCapabilityId() ? static_cast<CrowdDocumentTarget*>(this) : nullptr;
 }
 
-EditorResult<void> CrowdDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> CrowdDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.wrong-target"),
                                           "Operation targets another crowd document");
-    auto apply = [&](const std::string& type, const EditorValue& payload) -> EditorResult<void> {
-        if (type == "crowd.agent.set.v1") { auto value = parseAgent(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); agents_.insert_or_assign(value.value().id, value.value()); }
-        else if (type == "crowd.zone.set.v1") { auto value = parseZone(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); zones_.insert_or_assign(value.value().id, value.value()); }
-        else if (type == "crowd.path.set.v1") { auto value = parsePath(payload); if (!value.ok()) return EditorResult<void>::failure(value.status()); paths_.insert_or_assign(value.value().id, value.value()); }
+    auto apply = [&](const std::string& type, const EditorValue& payload) -> Result<void> {
+        if (type == "crowd.agent.set.v1") { auto value = parseAgent(payload); if (!value.ok()) return Result<void>::failure(value.status()); agents_.insert_or_assign(value.value().id, value.value()); }
+        else if (type == "crowd.zone.set.v1") { auto value = parseZone(payload); if (!value.ok()) return Result<void>::failure(value.status()); zones_.insert_or_assign(value.value().id, value.value()); }
+        else if (type == "crowd.path.set.v1") { auto value = parsePath(payload); if (!value.ok()) return Result<void>::failure(value.status()); paths_.insert_or_assign(value.value().id, value.value()); }
         else if (type == "crowd.agent.delete.v1" || type == "crowd.zone.delete.v1" || type == "crowd.path.delete.v1") {
             const auto* id = payload.getIf<std::string>();
             if (!id || id->empty())
@@ -195,7 +195,7 @@ EditorResult<void> CrowdDocumentTarget::applyDomainOperation(const DomainOperati
 }
 
 std::unique_ptr<IDomainOperationTarget> CrowdDocumentTarget::cloneDomainState() const { return std::make_unique<CrowdDocumentTarget>(*this); }
-EditorResult<void> CrowdDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> CrowdDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<CrowdDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.crowd.invalid-staging-state"),
@@ -207,14 +207,14 @@ std::vector<CrowdAgentRecord> CrowdDocumentTarget::agents() const { return value
 std::vector<CrowdZoneRecord> CrowdDocumentTarget::zones() const { return values(zones_); }
 std::vector<CrowdPathRecord> CrowdDocumentTarget::paths() const { return values(paths_); }
 
-EditorResult<DomainOperation> CrowdDocumentTarget::makeSetAgent(const CrowdAgentRecord& record) const {
+Result<DomainOperation> CrowdDocumentTarget::makeSetAgent(const CrowdAgentRecord& record) const {
     auto parsed = parseAgent(agentValue(record));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.crowd.invalid-agent"),
                                                      "Cannot plan invalid agent");
     const auto found = agents_.find(record.id); return eve::editing::applied<DomainOperation>(operation("crowd.agent.set.v1", found == agents_.end() ? "crowd.agent.delete.v1" : "crowd.agent.set.v1", id_, agentValue(record), found == agents_.end() ? EditorValue(record.id.value()) : agentValue(found->second), record.id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteAgent(const StableId& id) const {
+Result<DomainOperation> CrowdDocumentTarget::makeDeleteAgent(const StableId& id) const {
     const auto found = agents_.find(id);
     if (found == agents_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.crowd.agent-not-found"),
@@ -222,7 +222,7 @@ EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteAgent(const StableI
     return eve::editing::applied<DomainOperation>(
         operation("crowd.agent.delete.v1", "crowd.agent.set.v1", id_, id.value(), agentValue(found->second), id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeSetZone(const CrowdZoneRecord& record) const {
+Result<DomainOperation> CrowdDocumentTarget::makeSetZone(const CrowdZoneRecord& record) const {
     auto parsed = parseZone(zoneValue(record));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.crowd.invalid-zone"),
@@ -233,7 +233,7 @@ EditorResult<DomainOperation> CrowdDocumentTarget::makeSetZone(const CrowdZoneRe
                   zoneValue(record), found == zones_.end() ? EditorValue(record.id.value()) : zoneValue(found->second),
                   record.id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteZone(const StableId& id) const {
+Result<DomainOperation> CrowdDocumentTarget::makeDeleteZone(const StableId& id) const {
     const auto found = zones_.find(id);
     if (found == zones_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.crowd.zone-not-found"),
@@ -241,7 +241,7 @@ EditorResult<DomainOperation> CrowdDocumentTarget::makeDeleteZone(const StableId
     return eve::editing::applied<DomainOperation>(
         operation("crowd.zone.delete.v1", "crowd.zone.set.v1", id_, id.value(), zoneValue(found->second), id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeSetPath(const CrowdPathRecord& record) const {
+Result<DomainOperation> CrowdDocumentTarget::makeSetPath(const CrowdPathRecord& record) const {
     auto parsed = parsePath(pathValue(record));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.crowd.invalid-path"),
@@ -252,7 +252,7 @@ EditorResult<DomainOperation> CrowdDocumentTarget::makeSetPath(const CrowdPathRe
                   pathValue(record), found == paths_.end() ? EditorValue(record.id.value()) : pathValue(found->second),
                   record.id));
 }
-EditorResult<DomainOperation> CrowdDocumentTarget::makeDeletePath(const StableId& id) const {
+Result<DomainOperation> CrowdDocumentTarget::makeDeletePath(const StableId& id) const {
     const auto found = paths_.find(id);
     if (found == paths_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.crowd.path-not-found"),
@@ -293,7 +293,7 @@ EditorValue CrowdDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion",int64_t{1}},{"agents",std::move(agents)},{"zones",std::move(zones)},{"paths",std::move(paths)}};
 }
 
-EditorResult<void> CrowdDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> CrowdDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* versionEntry=field(snapshot,"schemaVersion"); const auto* agentsEntry=field(snapshot,"agents"); const auto* zonesEntry=field(snapshot,"zones"); const auto* pathsEntry=field(snapshot,"paths");
     const auto* version=versionEntry?versionEntry->getIf<int64_t>():nullptr; const auto* agents=agentsEntry?agentsEntry->getIf<EditorValue::Array>():nullptr; const auto* zones=zonesEntry?zonesEntry->getIf<EditorValue::Array>():nullptr; const auto* paths=pathsEntry?pathsEntry->getIf<EditorValue::Array>():nullptr;
     if (!version || *version != 1 || !agents || !zones || !paths)

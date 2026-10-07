@@ -54,7 +54,7 @@ void* MaterialBatchTarget::queryCapability(const CapabilityId& capability) {
     return nullptr;
 }
 
-EditorResult<std::vector<std::size_t>> MaterialBatchTarget::selectedIndices(const SelectionSnapshot& selection) const {
+Result<std::vector<std::size_t>> MaterialBatchTarget::selectedIndices(const SelectionSnapshot& selection) const {
     if (selection.items.empty())
         return editing::failed<std::vector<std::size_t>>(EditorStatus::Rejected,
                                                          RuleId("editor.material-batch.empty-selection"),
@@ -108,7 +108,7 @@ PropertyReadResult MaterialBatchTarget::read(const SelectionSnapshot& selection,
     return {PropertyReadState::Value, *common, {}};
 }
 
-EditorResult<DomainOperation> MaterialBatchTarget::replacement(std::vector<MaterialDocumentTarget> candidates,
+Result<DomainOperation> MaterialBatchTarget::replacement(std::vector<MaterialDocumentTarget> candidates,
                                                                const PropertyPath&                 path) const {
     DomainOperation operation;
     operation.type        = "material.batch.replace.v1";
@@ -122,22 +122,22 @@ EditorResult<DomainOperation> MaterialBatchTarget::replacement(std::vector<Mater
     return editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> MaterialBatchTarget::makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+Result<DomainOperation> MaterialBatchTarget::makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                            const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     const auto indices = selectedIndices(selection);
-    if (!indices.ok()) return EditorResult<DomainOperation>::failure(indices.status());
+    if (!indices.ok()) return Result<DomainOperation>::failure(indices.status());
     auto candidates = materials_;
     for (const auto index : indices.value()) {
         auto operation = candidates[index].makeSet(one(candidates[index]), path, value, mode);
-        if (!operation.ok()) return EditorResult<DomainOperation>::failure(operation.status());
+        if (!operation.ok()) return Result<DomainOperation>::failure(operation.status());
         auto applied = candidates[index].applyDomainOperation(operation.value());
-        if (!applied.ok()) return EditorResult<DomainOperation>::failure(applied.status());
+        if (!applied.ok()) return Result<DomainOperation>::failure(applied.status());
     }
     return replacement(std::move(candidates), path);
 }
 
-EditorResult<DomainOperation> MaterialBatchTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> MaterialBatchTarget::makeReset(const SelectionSnapshot& selection,
                                                              const PropertyPath&      path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
@@ -146,7 +146,7 @@ EditorResult<DomainOperation> MaterialBatchTarget::makeReset(const SelectionSnap
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
-EditorResult<void> MaterialBatchTarget::publishAndAdopt(std::vector<MaterialDocumentTarget> candidates,
+Result<void> MaterialBatchTarget::publishAndAdopt(std::vector<MaterialDocumentTarget> candidates,
                                                         editing::Revision candidateRevision,
                                                         const EditRegion& candidateDirty) {
     if (sink_) {
@@ -159,7 +159,7 @@ EditorResult<void> MaterialBatchTarget::publishAndAdopt(std::vector<MaterialDocu
     return editing::applied<void>();
 }
 
-EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> MaterialBatchTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != targetId() || operation.type != "material.batch.replace.v1")
         return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material-batch.operation"),
                                      "Material batch operation mismatch");
@@ -185,7 +185,7 @@ EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperati
                                          "Material batch identities changed");
         MaterialDocumentTarget candidate(*id);
         auto                   loaded = candidate.loadSnapshot(*snapshot);
-        if (!loaded.ok()) return EditorResult<void>::failure(loaded.status());
+        if (!loaded.ok()) return Result<void>::failure(loaded.status());
         candidates.push_back(std::move(candidate));
     }
     EditRegion dirty;
@@ -199,7 +199,7 @@ std::unique_ptr<IDomainOperationTarget> MaterialBatchTarget::cloneDomainState() 
     return candidate;
 }
 
-EditorResult<void> MaterialBatchTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> MaterialBatchTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialBatchTarget*>(candidate.get());
     if (!typed || typed->id_ != id_ || typed->materials_.size() != materials_.size())
         return editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material-batch.candidate"),

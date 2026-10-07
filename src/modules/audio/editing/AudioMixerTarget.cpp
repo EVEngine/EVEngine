@@ -26,7 +26,7 @@ void* AudioMixerTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.audio-mixer") ? this : nullptr;
 }
 
-EditorResult<void> AudioMixerTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> AudioMixerTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.mixer-target"),
                                           "Mixer operation targets another document");
@@ -66,7 +66,7 @@ std::unique_ptr<IDomainOperationTarget> AudioMixerTarget::cloneDomainState() con
     return std::make_unique<AudioMixerTarget>(*this);
 }
 
-EditorResult<void> AudioMixerTarget::commitDomainState(
+Result<void> AudioMixerTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<AudioMixerTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -76,7 +76,7 @@ EditorResult<void> AudioMixerTarget::commitDomainState(
     return eve::editing::applied<void>();
 }
 
-EditorResult<AudioBusSnapshot> AudioMixerTarget::bus(const ObjectId& id) const {
+Result<AudioBusSnapshot> AudioMixerTarget::bus(const ObjectId& id) const {
     const auto found = buses_.find(id);
     if (found == buses_.end())
         return eve::editing::failed<AudioBusSnapshot>(EditorStatus::NotFound, RuleId("editor.audio.bus-not-found"),
@@ -91,7 +91,7 @@ std::vector<ObjectId> AudioMixerTarget::children(const ObjectId& parent) const {
     return result;
 }
 
-EditorResult<DomainOperation> AudioMixerTarget::makeCreate(AudioBusSnapshot bus) const {
+Result<DomainOperation> AudioMixerTarget::makeCreate(AudioBusSnapshot bus) const {
     if (bus.id.empty() || bus.id == ObjectId("master") || bus.name.empty() ||
         bus.volume < 0.0 || buses_.contains(bus.id) || !buses_.contains(bus.parent))
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.audio.bus-create"),
@@ -107,7 +107,7 @@ EditorResult<DomainOperation> AudioMixerTarget::makeCreate(AudioBusSnapshot bus)
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> AudioMixerTarget::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> AudioMixerTarget::makeDelete(const ObjectId& id) const {
     const auto found = buses_.find(id);
     if (found == buses_.end() || id == ObjectId("master") || !children(id).empty())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.audio.bus-delete"),
@@ -123,7 +123,7 @@ EditorResult<DomainOperation> AudioMixerTarget::makeDelete(const ObjectId& id) c
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> AudioMixerTarget::makeReplace(AudioBusSnapshot changed) const {
+Result<DomainOperation> AudioMixerTarget::makeReplace(AudioBusSnapshot changed) const {
     const auto found = buses_.find(changed.id);
     if (found == buses_.end() || changed.id == ObjectId("master") || changed.name.empty() ||
         changed.volume < 0.0 || !buses_.contains(changed.parent) ||
@@ -166,7 +166,7 @@ EditorValue AudioMixerTarget::busValue(const AudioBusSnapshot& bus) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<AudioBusSnapshot> AudioMixerTarget::parseBus(const EditorValue& value) {
+Result<AudioBusSnapshot> AudioMixerTarget::parseBus(const EditorValue& value) {
     const auto* id = field(value, "id") ? field(value, "id")->getIf<std::string>() : nullptr;
     const auto* parent = field(value, "parent") ? field(value, "parent")->getIf<std::string>() : nullptr;
     const auto* name = field(value, "name") ? field(value, "name")->getIf<std::string>() : nullptr;
@@ -194,7 +194,7 @@ EditorValue AudioMixerTarget::snapshotValue() const {
     return EditorValue(std::move(root));
 }
 
-EditorResult<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue = field(snapshot, "schemaVersion");
     const EditorValue* busesValue = field(snapshot, "buses");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;

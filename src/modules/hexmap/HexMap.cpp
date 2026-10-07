@@ -9,10 +9,7 @@
 namespace eve::hexmap {
 namespace {
 
-[[nodiscard]] Result<void> invalidArgument(std::string message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] std::int32_t clampInt(std::int32_t value, std::int32_t low, std::int32_t high) noexcept {
     return value < low ? low : (value > high ? high : value);
 }
@@ -38,9 +35,9 @@ namespace {
 // --- construction -----------------------------------------------------------
 
 Result<void> HexMap::reset(std::int32_t cellCountX, std::int32_t cellCountZ, std::uint32_t seed) {
-    if (cellCountX <= 0 || cellCountZ <= 0) return invalidArgument("hex map size must be positive");
+    if (cellCountX <= 0 || cellCountZ <= 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hex map size must be positive"), "hexmap"));
     if (cellCountX % HexMetrics::kChunkSizeX != 0 || cellCountZ % HexMetrics::kChunkSizeZ != 0)
-        return invalidArgument("hex map size must be a multiple of the 5x5 chunk size");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hex map size must be a multiple of the 5x5 chunk size"), "hexmap"));
 
     cellCountX_  = cellCountX;
     cellCountZ_  = cellCountZ;
@@ -394,7 +391,7 @@ void HexMap::validateRivers(HexCoordinates coordinates) noexcept {
 
 Result<void> HexMap::setElevation(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     const std::int32_t clamped = clampInt(value, HexMetrics::kMinElevation, HexMetrics::kMaxElevation);
     if (data->values.elevation() == clamped) return Result<void>::success();
     data->values = data->values.withElevation(clamped);
@@ -421,7 +418,7 @@ Result<void> HexMap::setElevation(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setWaterLevel(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     const std::int32_t clamped = clampInt(value, 0, HexMetrics::kMaxElevation);
     if (data->values.waterLevel() == clamped) return Result<void>::success();
     data->values = data->values.withWaterLevel(clamped);
@@ -432,7 +429,7 @@ Result<void> HexMap::setWaterLevel(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setTerrainType(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->values = data->values.withTerrainType(clampTerrainType(value));
     // Terrain type is baked into the terrain mesh's vertex encoding, so the chunk
     // must be rebuilt just like any other authoring write.
@@ -442,7 +439,7 @@ Result<void> HexMap::setTerrainType(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setUrbanLevel(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->values = data->values.withUrbanLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -450,7 +447,7 @@ Result<void> HexMap::setUrbanLevel(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setFarmLevel(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->values = data->values.withFarmLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -458,7 +455,7 @@ Result<void> HexMap::setFarmLevel(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setPlantLevel(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->values = data->values.withPlantLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -466,7 +463,7 @@ Result<void> HexMap::setPlantLevel(HexCoordinates c, std::int32_t value) {
 
 Result<void> HexMap::setSpecialIndex(HexCoordinates c, std::int32_t index) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     if (data->flags.hasRiver()) return Result<void>::success();
     data->values = data->values.withSpecialIndex(clampInt(index, 0, 3));
     removeRoads(c).ignore("special features replace roads");
@@ -476,7 +473,7 @@ Result<void> HexMap::setSpecialIndex(HexCoordinates c, std::int32_t index) {
 
 Result<void> HexMap::setWalled(HexCoordinates c, bool walled) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->flags = data->flags.withWalled(walled);
     refreshCellDependents(c);
     return Result<void>::success();
@@ -484,7 +481,7 @@ Result<void> HexMap::setWalled(HexCoordinates c, bool walled) {
 
 Result<void> HexMap::setExplored(HexCoordinates c, bool explored) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->flags = data->flags.withExplored(explored);
     // The fog overlay *is* geometry derived from this latch: `buildFogMesh` emits a
     // column shaded 1 while the cell is unexplored, 0 once it is explored but unseen,
@@ -496,7 +493,7 @@ Result<void> HexMap::setExplored(HexCoordinates c, bool explored) {
 
 Result<void> HexMap::setExplorable(HexCoordinates c, bool explorable) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->flags = data->flags.withExplorable(explorable);
     // Not rendered on its own, but it gates every later visibility sweep, so keep the
     // documented "every mutation dirties its chunk" invariant unconditional rather
@@ -507,7 +504,7 @@ Result<void> HexMap::setExplorable(HexCoordinates c, bool explorable) {
 
 Result<void> HexMap::setCellState(HexCoordinates c, HexValues values, HexFlags flags) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     data->values = values;
     data->flags  = flags;
     refreshCellDependents(c);
@@ -516,12 +513,12 @@ Result<void> HexMap::setCellState(HexCoordinates c, HexValues values, HexFlags f
 
 Result<void> HexMap::setOutgoingRiver(HexCoordinates c, HexDirection direction) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     HexCoordinates neighbour{};
-    if (!getNeighbor(c, direction, neighbour)) return invalidArgument("river direction leaves the hex map");
+    if (!getNeighbor(c, direction, neighbour)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("river direction leaves the hex map"), "hexmap"));
     if (data->flags.hasAnyRiverOut() && data->flags.hasRiverOut(direction)) return Result<void>::success();
     if (elevation(c) < elevation(neighbour) && waterLevel(c) != elevation(c))
-        return invalidArgument("a river cannot flow uphill");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("a river cannot flow uphill"), "hexmap"));
 
     // Drop only the links this call replaces, mirroring the reference cell's
     // `RemoveOutgoingRiver` + same-edge `RemoveIncomingRiver`. Calling the full
@@ -560,7 +557,7 @@ Result<void> HexMap::setOutgoingRiver(HexCoordinates c, HexDirection direction) 
 
 Result<void> HexMap::removeRiver(HexCoordinates c) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     if (!data->flags.hasRiver()) return Result<void>::success();
     for (std::int32_t i = 0; i < kHexDirectionCount; ++i) {
         const HexDirection direction = static_cast<HexDirection>(i);
@@ -580,9 +577,9 @@ Result<void> HexMap::removeRiver(HexCoordinates c) {
 
 Result<void> HexMap::addRoad(HexCoordinates c, HexDirection direction) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     HexCoordinates neighbour{};
-    if (!getNeighbor(c, direction, neighbour)) return invalidArgument("road direction leaves the hex map");
+    if (!getNeighbor(c, direction, neighbour)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("road direction leaves the hex map"), "hexmap"));
     if (data->flags.hasRoad(direction)) return Result<void>::success();
     if (data->flags.hasRiverThrough(direction)) return Result<void>::success();
     if (data->flags.hasRiver() && !data->flags.hasRiverBeginOrEnd()) {
@@ -604,7 +601,7 @@ Result<void> HexMap::addRoad(HexCoordinates c, HexDirection direction) {
 
 Result<void> HexMap::removeRoads(HexCoordinates c) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex map");
+    if (!data) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex map"), "hexmap"));
     if (!data->flags.hasRoad()) return Result<void>::success();
     data->flags = data->flags.without(HexFlags::roadMask());
     for (std::int32_t i = 0; i < kHexDirectionCount; ++i) {
@@ -649,8 +646,8 @@ void HexMap::collectBrush(HexCoordinates center, std::int32_t radius, std::vecto
 }
 
 Result<void> HexMap::editElevation(HexCoordinates center, std::int32_t radius, std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex map"), "hexmap"));
+    if (radius < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap"));
     std::vector<std::int32_t> cells;
     collectBrush(center, radius, cells);
     for (std::int32_t index : cells) {
@@ -662,8 +659,8 @@ Result<void> HexMap::editElevation(HexCoordinates center, std::int32_t radius, s
 }
 
 Result<void> HexMap::editWaterLevel(HexCoordinates center, std::int32_t radius, std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex map"), "hexmap"));
+    if (radius < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap"));
     std::vector<std::int32_t> cells;
     collectBrush(center, radius, cells);
     for (std::int32_t index : cells) {
@@ -675,8 +672,8 @@ Result<void> HexMap::editWaterLevel(HexCoordinates center, std::int32_t radius, 
 }
 
 Result<void> HexMap::editTerrainType(HexCoordinates center, std::int32_t radius, std::int32_t terrainType) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex map"), "hexmap"));
+    if (radius < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap"));
     std::vector<std::int32_t> cells;
     collectBrush(center, radius, cells);
     for (std::int32_t index : cells) {
@@ -688,8 +685,8 @@ Result<void> HexMap::editTerrainType(HexCoordinates center, std::int32_t radius,
 
 Result<void> HexMap::editFeatureLevel(HexCoordinates center, std::int32_t radius, std::int32_t feature,
                                       std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex map"), "hexmap"));
+    if (radius < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap"));
     std::vector<std::int32_t> cells;
     collectBrush(center, radius, cells);
     const std::int32_t layer = layerIndex(feature);

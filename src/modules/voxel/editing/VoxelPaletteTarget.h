@@ -21,7 +21,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -66,28 +66,28 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     void*                                   queryCapability(const CapabilityId&) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     PropertySchema                          schema(const SelectionSnapshot&) const override;
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
-    /** @brief Add one unique named cube type. */ EditorResult<DomainOperation> makeCreate(
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Add one unique named cube type. */ Result<DomainOperation> makeCreate(
         const VoxelPaletteEntryValue&) const;
-    /** @brief Delete one cube type by stable editor ID. */ EditorResult<DomainOperation> makeDelete(
+    /** @brief Delete one cube type by stable editor ID. */ Result<DomainOperation> makeDelete(
         const ObjectId&) const;
     const std::vector<VoxelPaletteEntryValue>& entries() const { return entries_; }
     std::vector<EditorDiagnostic>              validate() const;
     EditorValue                                snapshotValue() const;
-    EditorResult<void>                         loadSnapshot(const EditorValue&);
+    Result<void>                         loadSnapshot(const EditorValue&);
 
 private:
     bool                                matches(const SelectionSnapshot&) const;
     EditorValue                         contentValue() const;
-    EditorResult<DomainOperation>       replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation>       replacement(EditorValue, std::string = {}) const;
     std::string                         id_;
     std::vector<VoxelPaletteEntryValue> entries_;
 };
@@ -106,7 +106,7 @@ public:
     VoxelPaletteRuntime();
     ~VoxelPaletteRuntime();
     /** @brief Build a complete registry before replacing the active generation. */
-    EditorResult<std::vector<VoxelPalettePublishedEntry>> publish(const VoxelPaletteTarget&);
+    Result<std::vector<VoxelPalettePublishedEntry>> publish(const VoxelPaletteTarget&);
     /** @brief Access the published registry. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid
      * until the next publish or runtime destruction. */
     const voxel::CubeTypeRegistry* registry() const { return registry_.get(); }

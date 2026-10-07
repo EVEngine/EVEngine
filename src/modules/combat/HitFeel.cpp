@@ -6,21 +6,19 @@
 namespace eve::combat {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Duration maxDuration(Duration a, Duration b) { return a < b ? b : a; }
 
 }  // namespace
 
 Result<void> HitFeelRequest::validate() const {
-    if (!attacker.isValid()) return invalid("attacker is nil", "attacker");
-    if (!victim.isValid()) return invalid("victim is nil", "victim");
+    if (!attacker.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("attacker is nil"), std::move("attacker")));
+    if (!victim.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("victim is nil"), std::move("victim")));
     if (attackerHitstop < Duration::zero() || victimHitstop < Duration::zero() ||
         victimHitstun < Duration::zero())
-        return invalid("hit-feel durations must be non-negative", "duration");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("hit-feel durations must be non-negative"), std::move("duration")));
     return Result<void>::success();
 }
 

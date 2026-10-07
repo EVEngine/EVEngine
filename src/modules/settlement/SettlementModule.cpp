@@ -42,12 +42,6 @@ bool isDebitKind(std::string_view kind) noexcept { return kind == "damage" || ki
 
 bool isLedgerKind(std::string_view kind) noexcept { return isCreditKind(kind) || isDebitKind(kind); }
 
-Result<void> unsupportedLedgerKind(std::string_view kind) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                   "settlement ledger kind must be damage, spend, heal, or gain",
-                                                   std::string(kind), {}, "settlement.squirrel"));
-}
-
 class LedgerPolicy final : public ISettlementPolicy {
 public:
     explicit LedgerPolicy(ResourceState& state) : state_(state) {}
@@ -67,7 +61,9 @@ public:
         const auto& kind = context.request().kind;
         if (isCreditKind(kind)) return context.setClampMax(state_.maximum - state_.current);
         if (isDebitKind(kind)) return context.setClampMax(state_.current);
-        return unsupportedLedgerKind(kind);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                   "settlement ledger kind must be damage, spend, heal, or gain",
+                                                   std::string(kind), {}, "settlement.squirrel"));
     }
     Result<PreparedApply> prepareApply(const SettlementContext& context) override {
         const double before = state_.current;
@@ -78,7 +74,9 @@ public:
         else if (isDebitKind(kind))
             after = before - context.magnitude();
         else
-            return Result<PreparedApply>::failure(unsupportedLedgerKind(kind).status());
+            return Result<PreparedApply>::failure(Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                   "settlement ledger kind must be damage, spend, heal, or gain",
+                                                   std::string(kind), {}, "settlement.squirrel")).status());
         return Result<PreparedApply>::success(PreparedApply(
             [this, after]() {
                 state_.current = after;
@@ -203,7 +201,9 @@ public:
             return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                             "settlement request fields are invalid", "request", {},
                                                             "settlement.squirrel"));
-        if (!isLedgerKind(kind)) return Result<Value>::failure(unsupportedLedgerKind(kind).status());
+        if (!isLedgerKind(kind)) return Result<Value>::failure(Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                   "settlement ledger kind must be damage, spend, heal, or gain",
+                                                   std::string(kind), {}, "settlement.squirrel")).status());
         const std::string targetKey = targetId->format();
         auto              found     = resources_.find({targetKey, resource});
         if (found == resources_.end())

@@ -18,7 +18,7 @@ const T* propertyValue(const EditorValue::Object& values, const char* path) {
 
 }  // namespace
 
-EditorResult<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(const PhysicsColliderTarget& target,
+Result<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(const PhysicsColliderTarget& target,
                                                                        physics::Body*               body) const {
     if (!body || target.describe().type != "physics-collider-2d")
         return eve::editing::failed<physics::Fixture*>(EditorStatus::Rejected,
@@ -58,7 +58,7 @@ EditorResult<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(const Phy
     return eve::editing::applied<physics::Fixture*>(fixture);
 }
 
-EditorResult<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(
+Result<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(
     const PhysicsColliderTarget& target, physics::Body* body, const IPhysicsColliderAssetResolver& assets) const {
     if (!body || target.describe().type != "physics-collider-2d")
         return eve::editing::failed<physics::Fixture*>(EditorStatus::Rejected,
@@ -74,7 +74,7 @@ EditorResult<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(
     if (kind == "box" || kind == "circle") return build2D(target, body);
     const std::string asset    = *propertyValue<std::string>(*values, "shape.asset");
     auto              geometry = assets.resolve(asset, kind);
-    if (!geometry.ok()) return EditorResult<physics::Fixture*>::failure(geometry.status());
+    if (!geometry.ok()) return Result<physics::Fixture*>::failure(geometry.status());
     std::vector<float> vertices = geometry.value().vertices;
     const auto*        offset   = propertyValue<EditorValue::Array>(*values, "shape.offset");
     const float        offsetX  = static_cast<float>(*(*offset)[0].getIf<double>());
@@ -105,7 +105,7 @@ EditorResult<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(
     return eve::editing::applied<physics::Fixture*>(fixture);
 }
 
-EditorResult<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(const PhysicsColliderTarget& target,
+Result<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(const PhysicsColliderTarget& target,
                                                                        physics::Body3D*             body) const {
     if (!body || target.describe().type != "physics-collider-3d")
         return eve::editing::failed<physics::Shape3D*>(EditorStatus::Rejected,
@@ -150,7 +150,7 @@ EditorResult<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(const Phy
     return eve::editing::applied<physics::Shape3D*>(shape);
 }
 
-EditorResult<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(
+Result<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(
     const PhysicsColliderTarget& target, physics::Body3D* body, const IPhysicsColliderAssetResolver& assets) const {
     if (!body || target.describe().type != "physics-collider-3d")
         return eve::editing::failed<physics::Shape3D*>(EditorStatus::Rejected,
@@ -166,7 +166,7 @@ EditorResult<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(
     if (kind == "box" || kind == "sphere" || kind == "capsule") return build3D(target, body);
     const std::string asset    = *propertyValue<std::string>(*values, "shape.asset");
     auto              geometry = assets.resolve(asset, kind);
-    if (!geometry.ok()) return EditorResult<physics::Shape3D*>::failure(geometry.status());
+    if (!geometry.ok()) return Result<physics::Shape3D*>::failure(geometry.status());
     physics::Shape3D* shape = nullptr;
     try {
         const float density     = static_cast<float>(*propertyValue<double>(*values, "material.density"));
@@ -201,7 +201,7 @@ EditorResult<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(
     return eve::editing::applied<physics::Shape3D*>(shape);
 }
 
-EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
+Result<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
     if (!body_ || !body_->isValid() || candidate.describe().type != "physics-collider-3d")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-3d-input"),
                                           "A live Body3D and 3D collider candidate are required");
@@ -211,7 +211,7 @@ EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTa
     const auto diagnostics = candidate.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics) {
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     }
     const EditorValue snapshot = candidate.snapshotValue();
     const auto*       root     = snapshot.getIf<EditorValue::Object>();
@@ -235,7 +235,7 @@ EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTa
                                           exception.what());
     }
 
-    EditorResult<physics::Shape3D*> built = assets_
+    Result<physics::Shape3D*> built = assets_
                                                 ? PhysicsColliderRuntimeBuilder().build3D(candidate, body_, *assets_)
                                                 : PhysicsColliderRuntimeBuilder().build3D(candidate, body_);
     if (!built.ok()) {
@@ -248,10 +248,10 @@ EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTa
                     eve::DiagnosticCode::Failed, RuleId("editor.physics.live-rollback-body-type"),
                     DiagnosticSeverity::Error,
                     "Collider build failed and the previous body type could not be restored"));
-                return EditorResult<void>::failure(eve::Status(EditorStatus::Failed, std::move(diagnostics)));
+                return Result<void>::failure(eve::Status(EditorStatus::Failed, std::move(diagnostics)));
             }
         }
-        return EditorResult<void>::failure(built.status());
+        return Result<void>::failure(built.status());
     }
 
     physics::Shape3D* replacement = built.value();
@@ -260,7 +260,7 @@ EditorResult<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTa
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
+Result<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
     if (!body_ || !body_->raw() || candidate.describe().type != "physics-collider-2d")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-2d-input"),
                                           "A live Body and 2D collider candidate are required");
@@ -270,7 +270,7 @@ EditorResult<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTa
     const auto diagnostics = candidate.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics) {
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     }
     const EditorValue snapshot = candidate.snapshotValue();
     const auto*       root     = snapshot.getIf<EditorValue::Object>();
@@ -286,12 +286,12 @@ EditorResult<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTa
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-body-type"),
                                           exception.what());
     }
-    EditorResult<physics::Fixture*> built = assets_
+    Result<physics::Fixture*> built = assets_
                                                 ? PhysicsColliderRuntimeBuilder().build2D(candidate, body_, *assets_)
                                                 : PhysicsColliderRuntimeBuilder().build2D(candidate, body_);
     if (!built.ok()) {
         if (desiredType != previousType) body_->setType(previousType);
-        return EditorResult<void>::failure(built.status());
+        return Result<void>::failure(built.status());
     }
     if (current_ && current_->raw()) current_->destroy();
     current_ = built.value();

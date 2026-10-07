@@ -19,7 +19,7 @@ using editing::Status;
 using editing::TargetDescriptor;
 using editing::TargetId;
 using editing::Value;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;

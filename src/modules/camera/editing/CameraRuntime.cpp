@@ -9,12 +9,12 @@ namespace eve::camera_editing {
 CameraDocumentRuntime::CameraDocumentRuntime() = default;
 CameraDocumentRuntime::~CameraDocumentRuntime() = default;
 
-EditorResult<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& document,
+Result<void> CameraDocumentRuntime::publish(const CameraDocumentTarget& document,
                                                   graphics::Camera3D* camera) {
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     auto candidate = std::make_unique<camera::CameraController>();
     candidate->setCamera(camera);
     for (const auto& rig : document.rigs()) {

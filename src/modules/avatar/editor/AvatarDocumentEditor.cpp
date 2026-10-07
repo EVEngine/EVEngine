@@ -11,7 +11,7 @@ namespace eve::avatar_editor {
 namespace {
 
 template <class T = void>
-avatar_editing::EditorResult<T> editorError(avatar_editing::EditorStatus status, std::string rule,
+avatar_editing::Result<T> editorError(avatar_editing::EditorStatus status, std::string rule,
                                             std::string message) {
     return eve::editing::failed<T>(status, avatar_editing::RuleId(std::move(rule)), std::move(message));
 }
@@ -74,7 +74,7 @@ void AvatarDocumentEditor::seedPreviewDocument() {
     if (!loaded.ok()) loaded.ignore("avatar editor keeps defaults when the preview snapshot is rejected");
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::configureWorkspace(
+avatar_editing::Result<void> AvatarDocumentEditor::configureWorkspace(
     editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
@@ -118,10 +118,10 @@ editor::SelectionSnapshot AvatarDocumentEditor::selection() const {
     return snapshot;
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::commit(
-    avatar_editing::EditorResult<avatar_editing::DomainOperation> operation, std::string label) {
+avatar_editing::Result<void> AvatarDocumentEditor::commit(
+    avatar_editing::Result<avatar_editing::DomainOperation> operation, std::string label) {
     if (!operation.ok())
-        return avatar_editing::EditorResult<void>::failure(operation.status());
+        return avatar_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("avatar.document.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -134,15 +134,15 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending avatar transaction already inactive");
-        return avatar_editing::EditorResult<void>::failure(appended.status());
+        return avatar_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return avatar_editing::EditorResult<void>::failure(committed.status());
+        return avatar_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::refreshPreview() {
+avatar_editing::Result<void> AvatarDocumentEditor::refreshPreview() {
     std::vector<PreviewRect> next;
     auto                     layers = target_.layers();
     std::sort(layers.begin(), layers.end(), [](const auto& a, const auto& b) {
@@ -176,7 +176,7 @@ float AvatarDocumentEditor::smileAmount() const {
     return 0.0f;
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::selectLayer(std::string id) {
+avatar_editing::Result<void> AvatarDocumentEditor::selectLayer(std::string id) {
     if (id.empty())
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.select-layer",
                            "Layer id must not be empty");
@@ -190,7 +190,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::selectLayer(std::string
     return refreshPreview();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::selectParameter(std::string id) {
+avatar_editing::Result<void> AvatarDocumentEditor::selectParameter(std::string id) {
     if (id.empty())
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.select-parameter",
                            "Parameter id must not be empty");
@@ -205,7 +205,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::selectParameter(std::st
     return refreshPreview();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::selectExpression(std::string id) {
+avatar_editing::Result<void> AvatarDocumentEditor::selectExpression(std::string id) {
     if (id.empty())
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.select-expression",
                            "Expression id must not be empty");
@@ -220,7 +220,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::selectExpression(std::s
     return refreshPreview();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::pointerDown(float x, float y) {
+avatar_editing::Result<void> AvatarDocumentEditor::pointerDown(float x, float y) {
     if (!std::isfinite(x) || !std::isfinite(y))
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.pointer",
                            "Pointer coordinates must be finite");
@@ -232,7 +232,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::pointerDown(float x, fl
     return eve::editing::applied<void>();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::setLayerVisible(bool visible) {
+avatar_editing::Result<void> AvatarDocumentEditor::setLayerVisible(bool visible) {
     if (selectedType_ != "avatar.layer")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A layer must be selected to change visibility");
@@ -241,7 +241,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::setLayerVisible(bool vi
                   "Set layer visibility");
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::setLayerZ(int zIndex) {
+avatar_editing::Result<void> AvatarDocumentEditor::setLayerZ(int zIndex) {
     if (selectedType_ != "avatar.layer")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A layer must be selected to change z-order");
@@ -251,7 +251,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::setLayerZ(int zIndex) {
                   "Set layer z");
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::setParameterValue(double value) {
+avatar_editing::Result<void> AvatarDocumentEditor::setParameterValue(double value) {
     if (selectedType_ != "avatar.parameter")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A parameter must be selected to change its value");
@@ -260,7 +260,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::setParameterValue(doubl
                   "Set parameter value");
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::createLayer(std::string id, std::string name) {
+avatar_editing::Result<void> AvatarDocumentEditor::createLayer(std::string id, std::string name) {
     avatar_editing::AvatarLayerValue layer;
     layer.id           = avatar_editing::ObjectId(std::move(id));
     layer.name         = std::move(name);
@@ -273,7 +273,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::createLayer(std::string
     return selectLayer(layer.id.value());
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedLayer() {
+avatar_editing::Result<void> AvatarDocumentEditor::deleteSelectedLayer() {
     if (selectedType_ != "avatar.layer")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A layer must be selected to delete it");
@@ -290,7 +290,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedLayer() {
     return eve::editing::applied<void>();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::createParameter(std::string id, std::string name) {
+avatar_editing::Result<void> AvatarDocumentEditor::createParameter(std::string id, std::string name) {
     avatar_editing::AvatarParameterValue parameter;
     parameter.id   = avatar_editing::ObjectId(std::move(id));
     parameter.name = std::move(name);
@@ -299,7 +299,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::createParameter(std::st
     return selectParameter(parameter.id.value());
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedParameter() {
+avatar_editing::Result<void> AvatarDocumentEditor::deleteSelectedParameter() {
     if (selectedType_ != "avatar.parameter")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A parameter must be selected to delete it");
@@ -317,7 +317,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedParameter
     return eve::editing::applied<void>();
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::createExpression(std::string id, std::string name) {
+avatar_editing::Result<void> AvatarDocumentEditor::createExpression(std::string id, std::string name) {
     avatar_editing::AvatarExpressionValue expression;
     expression.id   = avatar_editing::ObjectId(std::move(id));
     expression.name = std::move(name);
@@ -326,7 +326,7 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::createExpression(std::s
     return selectExpression(expression.id.value());
 }
 
-avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedExpression() {
+avatar_editing::Result<void> AvatarDocumentEditor::deleteSelectedExpression() {
     if (selectedType_ != "avatar.expression")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "An expression must be selected to delete it");
@@ -337,21 +337,21 @@ avatar_editing::EditorResult<void> AvatarDocumentEditor::deleteSelectedExpressio
     return eve::editing::applied<void>();
 }
 
-avatar_editing::EditorResult<editor::TransactionReceipt> AvatarDocumentEditor::undo() {
+avatar_editing::Result<editor::TransactionReceipt> AvatarDocumentEditor::undo() {
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return avatar_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
-avatar_editing::EditorResult<editor::TransactionReceipt> AvatarDocumentEditor::redo() {
+avatar_editing::Result<editor::TransactionReceipt> AvatarDocumentEditor::redo() {
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return avatar_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 

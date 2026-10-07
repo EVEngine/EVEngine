@@ -18,15 +18,6 @@ using Diagnostic = eve::Diagnostic;
 template <class T>
 using Result = eve::Result<T>;
 
-/**
- * @brief Compatibility name for editing::Result used across domain editing headers.
- * @remarks Prefer `editing::Result` in new code. Domains historically imported a local
- *          `EditorResult` alias template; import this once with `using editing::EditorResult`
- *          instead of redefining the alias in every target header.
- */
-template <class T>
-using EditorResult = Result<T>;
-
 /** @brief Reserved DiagnosticDetails key containing an editing RuleId projection. */
 inline constexpr const char* kRuleDiagnosticDetail = "rule";
 

@@ -18,7 +18,7 @@ using editing::Revision;
 using editing::RuleId;
 using editing::Status;
 using editing::Value;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus = editing::Status;
 using EditorValue = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;

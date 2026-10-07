@@ -5,13 +5,7 @@
 #include <utility>
 
 namespace eve::action::game_event_adapter {
-namespace {
-
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-}  // namespace
+  // namespace
 
 ActionGameEventSink::ActionGameEventSink(eve::game_event::GameEventLog& log, ActionSubjectResolver resolver)
     : log_(&log), resolver_(std::move(resolver)) {}
@@ -34,8 +28,8 @@ void ActionGameEventSink::setEnabled(bool value) {
 
 Result<void> ActionGameEventSink::emit(const ActionGameplayEventBinding& binding,
                                        const ActionNotifyContext& context) {
-    if (!log_) return failure(DiagnosticCode::NotFound, "game event log is unavailable", "log");
-    if (!resolver_) return failure(DiagnosticCode::NotFound, "action subject resolver is unavailable", "resolver");
+    if (!log_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("game event log is unavailable"), std::move("log")));
+    if (!resolver_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("action subject resolver is unavailable"), std::move("resolver")));
 
     std::optional<SubjectRef> source;
     if (context.source) {
@@ -46,20 +40,20 @@ Result<void> ActionGameEventSink::emit(const ActionGameplayEventBinding& binding
     SubjectRef subject = SubjectRef::nil();
     if (binding.targetIndex) {
         if (*binding.targetIndex >= context.targets.size())
-            return failure(DiagnosticCode::NotFound, "gameplay event target index is unavailable", "targetIndex");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("gameplay event target index is unavailable"), std::move("targetIndex")));
         auto resolved = resolver_(context.targets[*binding.targetIndex]);
         if (!resolved) return Result<void>::failure(resolved.status());
         subject = resolved.value();
     } else if (source) {
         subject = *source;
     } else {
-        return failure(DiagnosticCode::NotFound, "gameplay event has no source or target subject", "subject");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("gameplay event has no source or target subject"), std::move("subject")));
     }
 
     auto payload = binding.data.toJson();
     if (!payload) return Result<void>::failure(payload.status());
     auto schema = LogicalId::parse("action:gameplay-event-v1");
-    if (!schema) return failure(DiagnosticCode::Failed, "built-in gameplay event schema is invalid", "schemaId");
+    if (!schema) return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::move("built-in gameplay event schema is invalid"), std::move("schemaId")));
 
     eve::game_event::GameEvent envelope;
     envelope.type = binding.tag;

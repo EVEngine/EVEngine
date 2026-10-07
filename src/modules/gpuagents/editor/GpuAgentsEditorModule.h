@@ -21,7 +21,7 @@ public:
     /** @brief Accepted GPU Agents target type names. */
     std::vector<std::string_view> types() const override;
     /** @brief Create a GPU Agents document and optionally load its `snapshot` request field. */
-    editor::EditorResult<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
+    editor::Result<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
                                                                const editor::EditorValue::Object& request) override;
 };
 

@@ -47,10 +47,10 @@ public:
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a state node referencing one animation clip asset. */
-    EditorResult<GraphNodeRecord> makeStateNode(const GraphNodeId& id,
+    Result<GraphNodeRecord> makeStateNode(const GraphNodeId& id,
                                                 const std::string& clipAsset) const;
     /** @brief Construct a transition node with default blend metadata. */
-    EditorResult<GraphNodeRecord> makeTransitionNode(const GraphNodeId& id) const;
+    Result<GraphNodeRecord> makeTransitionNode(const GraphNodeId& id) const;
     /** @brief Validate and compile a graph into a deterministic runtime-neutral definition. */
     AnimationGraphCompileResult compile(const GraphDocumentData& graph) const;
 };
@@ -65,7 +65,7 @@ public:
      * @param skeleton Non-owning runtime skeleton.
      * @param clips Host-owned stable asset-reference resolver.
      */
-    EditorResult<animation::AnimStateMachine*> build(const GraphDocumentData& graph,
+    Result<animation::AnimStateMachine*> build(const GraphDocumentData& graph,
                                                      animation::AnimSkeleton* skeleton,
                                                      const ClipResolver& clips) const;
 };

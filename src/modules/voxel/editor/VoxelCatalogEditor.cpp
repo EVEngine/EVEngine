@@ -10,7 +10,7 @@ namespace eve::voxel_editor {
 namespace {
 
 template <class T = void>
-voxel_editing::EditorResult<T> editorError(voxel_editing::EditorStatus status, std::string rule, std::string message) {
+voxel_editing::Result<T> editorError(voxel_editing::EditorStatus status, std::string rule, std::string message) {
     return eve::editing::failed<T>(status, voxel_editing::RuleId(std::move(rule)), std::move(message));
 }
 
@@ -25,7 +25,7 @@ VoxelCatalogEditor::VoxelCatalogEditor(std::string targetId)
 }
 
 void VoxelCatalogEditor::seedProject() {
-    auto applySeed = [this](voxel_editing::EditorResult<voxel_editing::DomainOperation> operation, const char* why) {
+    auto applySeed = [this](voxel_editing::Result<voxel_editing::DomainOperation> operation, const char* why) {
         if (!operation.ok()) {
             operation.ignore(why);
             return;
@@ -66,7 +66,7 @@ void VoxelCatalogEditor::seedProject() {
     applySeed(target_.makeCreateModel(bed), "voxel editor seed bed");
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
+voxel_editing::Result<void> VoxelCatalogEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -126,9 +126,9 @@ const char* VoxelCatalogEditor::fillName(voxel_editing::VoxelCellFill fill) {
 
 std::string VoxelCatalogEditor::toolName() const { return tool_ == VoxelSculptTool::Erase ? "erase" : "attach"; }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::commit(
-    voxel_editing::EditorResult<voxel_editing::DomainOperation> operation, std::string label) {
-    if (!operation.ok()) return voxel_editing::EditorResult<void>::failure(operation.status());
+voxel_editing::Result<void> VoxelCatalogEditor::commit(
+    voxel_editing::Result<voxel_editing::DomainOperation> operation, std::string label) {
+    if (!operation.ok()) return voxel_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("voxel.sculpt.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -141,10 +141,10 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending voxel transaction already inactive");
-        return voxel_editing::EditorResult<void>::failure(appended.status());
+        return voxel_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
-    if (!committed.ok()) return voxel_editing::EditorResult<void>::failure(committed.status());
+    if (!committed.ok()) return voxel_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
@@ -192,7 +192,7 @@ void VoxelCatalogEditor::rebuildScreen() {
     std::sort(screen_.begin(), screen_.end(), [](const ScreenVoxel& a, const ScreenVoxel& b) { return a.depth > b.depth; });
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::refreshPreview() {
+voxel_editing::Result<void> VoxelCatalogEditor::refreshPreview() {
     if (!selectedModel())
         return editorError(voxel_editing::EditorStatus::NotFound, "editor.voxel.selection",
                            "Voxel model was not found");
@@ -202,14 +202,14 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::refreshPreview() {
     return eve::editing::applied<void>();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::selectModel(std::string id) {
+voxel_editing::Result<void> VoxelCatalogEditor::selectModel(std::string id) {
     if (!target_.findModel(voxel_editing::ObjectId(id)))
         return editorError(voxel_editing::EditorStatus::NotFound, "editor.voxel.model", "Voxel model was not found");
     selectedId_ = std::move(id);
     return refreshPreview();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::setTool(std::string tool) {
+voxel_editing::Result<void> VoxelCatalogEditor::setTool(std::string tool) {
     if (tool == "attach")
         tool_ = VoxelSculptTool::Attach;
     else if (tool == "erase")
@@ -220,7 +220,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::setTool(std::string tool) 
     return eve::editing::applied<void>();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::setViewport(float width, float height) {
+voxel_editing::Result<void> VoxelCatalogEditor::setViewport(float width, float height) {
     if (!(width > 1.0f) || !(height > 1.0f) || !std::isfinite(width) || !std::isfinite(height))
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.viewport",
                            "Viewport size must be finite and greater than 1");
@@ -230,7 +230,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::setViewport(float width, f
     return eve::editing::applied<void>();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::orbit(float yawDelta, float pitchDelta) {
+voxel_editing::Result<void> VoxelCatalogEditor::orbit(float yawDelta, float pitchDelta) {
     if (!std::isfinite(yawDelta) || !std::isfinite(pitchDelta))
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.orbit",
                            "Orbit deltas must be finite");
@@ -240,7 +240,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::orbit(float yawDelta, floa
     return eve::editing::applied<void>();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::applyPick(const voxel_editing::VoxelPick& pick) {
+voxel_editing::Result<void> VoxelCatalogEditor::applyPick(const voxel_editing::VoxelPick& pick) {
     const auto* model = selectedModel();
     if (!model)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.selection",
@@ -257,7 +257,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::applyPick(const voxel_edit
     return commit(target_.makeSetVoxel(model->id, pick.prevX, pick.prevY, pick.prevZ, true), "Attach voxel");
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
+voxel_editing::Result<void> VoxelCatalogEditor::pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
                                                                       float dz) {
     const auto* model = selectedModel();
     if (!model)
@@ -269,7 +269,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::pointerWorldRay(float ox, 
     return applyPick(voxel_editing::pickVoxelModel(*model, ox, oy, oz, dx, dy, dz, 256.0f));
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::pointerDown(float x, float y) {
+voxel_editing::Result<void> VoxelCatalogEditor::pointerDown(float x, float y) {
     const auto* model = selectedModel();
     if (!model)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.selection",
@@ -294,7 +294,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::pointerDown(float x, float
     return applyPick(pick);
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::setVoxel(int x, int y, int z, bool occupied) {
+voxel_editing::Result<void> VoxelCatalogEditor::setVoxel(int x, int y, int z, bool occupied) {
     const auto* model = selectedModel();
     if (!model)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.selection",
@@ -302,7 +302,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::setVoxel(int x, int y, int
     return commit(target_.makeSetVoxel(model->id, x, y, z, occupied), occupied ? "Attach voxel" : "Erase voxel");
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::setSelectedSocket(std::string tag, std::string kind) {
+voxel_editing::Result<void> VoxelCatalogEditor::setSelectedSocket(std::string tag, std::string kind) {
     auto tagSet =
         commit(target_.makeSet(selection(),
                                voxel_editing::PropertyPath("model.socket." + std::to_string(selectedFace_) + ".tag"),
@@ -316,14 +316,14 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::setSelectedSocket(std::str
                   "Set socket kind");
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::selectFace(int face) {
+voxel_editing::Result<void> VoxelCatalogEditor::selectFace(int face) {
     if (face < 0 || face > 5)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.face", "Face index must be 0..5");
     selectedFace_ = face;
     return refreshPreview();
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::createModel(std::string id, std::string name, int sizeX,
+voxel_editing::Result<void> VoxelCatalogEditor::createModel(std::string id, std::string name, int sizeX,
                                                                   int sizeY, int sizeZ) {
     voxel_editing::VoxelModelValue model;
     model.id    = voxel_editing::ObjectId(id);
@@ -336,7 +336,7 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::createModel(std::string id
     return selectModel(std::move(id));
 }
 
-voxel_editing::EditorResult<void> VoxelCatalogEditor::deleteSelectedModel() {
+voxel_editing::Result<void> VoxelCatalogEditor::deleteSelectedModel() {
     const auto* model = selectedModel();
     if (!model)
         return editorError(voxel_editing::EditorStatus::Rejected, "editor.voxel.selection",
@@ -349,19 +349,19 @@ voxel_editing::EditorResult<void> VoxelCatalogEditor::deleteSelectedModel() {
     return eve::editing::applied<void>();
 }
 
-voxel_editing::EditorResult<editor::TransactionReceipt> VoxelCatalogEditor::undo() {
+voxel_editing::Result<editor::TransactionReceipt> VoxelCatalogEditor::undo() {
     auto undone = transactions_.undo();
     if (!undone.ok()) return undone;
     auto previewed = refreshPreview();
-    if (!previewed.ok()) return voxel_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return voxel_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return undone;
 }
 
-voxel_editing::EditorResult<editor::TransactionReceipt> VoxelCatalogEditor::redo() {
+voxel_editing::Result<editor::TransactionReceipt> VoxelCatalogEditor::redo() {
     auto redone = transactions_.redo();
     if (!redone.ok()) return redone;
     auto previewed = refreshPreview();
-    if (!previewed.ok()) return voxel_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return voxel_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return redone;
 }
 

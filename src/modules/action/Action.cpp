@@ -10,10 +10,6 @@
 namespace eve::action {
 namespace {
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failureFrom(const Status& status) { return Result<void>::failure(status); }
 
 bool isEmptyCondition(const decision::Condition& condition) {
@@ -58,23 +54,21 @@ const char* actionPhaseName(ActionPhase phase) noexcept {
 }
 
 Result<void> ActionDefinition::validate() const {
-    if (!id.isValid()) return failure(DiagnosticCode::InvalidArgument, "action definition id is invalid", "id");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action definition id is invalid"), std::move("id")));
     if (!condition.isValid())
-        return failure(DiagnosticCode::InvalidArgument, "action condition is invalid", "condition");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action condition is invalid"), std::move("condition")));
     if (timing.windup.nanoseconds() < 0 || timing.active.nanoseconds() < 0 || timing.recover.nanoseconds() < 0)
-        return failure(DiagnosticCode::InvalidArgument, "action phase durations must be non-negative", "timing");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action phase durations must be non-negative"), std::move("timing")));
 
     switch (targetingMode) {
         case TargetingMode::None:
         case TargetingMode::Explicit:
             if (targetingSpec)
-                return failure(DiagnosticCode::InvalidArgument, "targetingSpec is only valid for Query actions",
-                               "targetingSpec");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("targetingSpec is only valid for Query actions"), std::move("targetingSpec")));
             break;
         case TargetingMode::Query:
             if (!targetingSpec)
-                return failure(DiagnosticCode::InvalidArgument, "Query actions require a targetingSpec",
-                               "targetingSpec");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Query actions require a targetingSpec"), std::move("targetingSpec")));
             {
                 auto valid = targetingSpec->validate();
                 if (!valid) return failureFrom(valid.status());
@@ -83,24 +77,22 @@ Result<void> ActionDefinition::validate() const {
     }
 
     if (cost && !cost->isValid())
-        return failure(DiagnosticCode::InvalidArgument, "action cost must be a validated non-empty CostSpec", "cost");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action cost must be a validated non-empty CostSpec"), std::move("cost")));
     for (const auto& effectId : effectIds) {
         if (effectId.empty())
-            return failure(DiagnosticCode::InvalidArgument, "action effect ids must not be empty", "effectIds");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action effect ids must not be empty"), std::move("effectIds")));
     }
     if (timeline) {
         auto timelineValid = timeline->validate();
         if (!timelineValid) return failureFrom(timelineValid.status());
         if (timeline->actionId != id)
-            return failure(DiagnosticCode::InvalidArgument, "action timeline id does not match its definition",
-                           "timeline.actionId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action timeline id does not match its definition"), std::move("timeline.actionId")));
         auto windupAndActive = timing.windup.tryAdd(timing.active);
         if (!windupAndActive) return failureFrom(windupAndActive.status());
         auto total = windupAndActive.value().tryAdd(timing.recover);
         if (!total) return failureFrom(total.status());
         if (timeline->duration != total.value())
-            return failure(DiagnosticCode::InvalidArgument,
-                           "action timeline duration must equal windup + active + recover", "timeline.durationNs");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action timeline duration must equal windup + active + recover"), std::move("timeline.durationNs")));
     }
     return Result<void>::success();
 }
@@ -109,29 +101,24 @@ Result<void> ActionRequest::validate(const ActionDefinition& definition) const {
     auto definitionValid = definition.validate();
     if (!definitionValid) return failureFrom(definitionValid.status());
     if (actionId != definition.id)
-        return failure(DiagnosticCode::InvalidArgument, "action request id does not match its definition", "actionId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("action request id does not match its definition"), std::move("actionId")));
 
     switch (definition.targetingMode) {
         case TargetingMode::None:
             if (!targetEntities.empty() || targetingQuery)
-                return failure(DiagnosticCode::InvalidArgument, "a non-targeted action cannot carry target selection",
-                               "targets");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("a non-targeted action cannot carry target selection"), std::move("targets")));
             break;
         case TargetingMode::Explicit:
             if (targetEntities.empty())
-                return failure(DiagnosticCode::PreconditionViolation, "an Explicit action requires at least one target",
-                               "targetEntities");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("an Explicit action requires at least one target"), std::move("targetEntities")));
             if (targetingQuery)
-                return failure(DiagnosticCode::InvalidArgument, "Explicit actions cannot carry a targeting query",
-                               "targetingQuery");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Explicit actions cannot carry a targeting query"), std::move("targetingQuery")));
             break;
         case TargetingMode::Query:
             if (!targetingQuery)
-                return failure(DiagnosticCode::PreconditionViolation, "a Query action requires a targeting query",
-                               "targetingQuery");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, std::move("a Query action requires a targeting query"), std::move("targetingQuery")));
             if (!targetEntities.empty())
-                return failure(DiagnosticCode::InvalidArgument, "Query actions cannot carry explicit targets",
-                               "targetEntities");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("Query actions cannot carry explicit targets"), std::move("targetEntities")));
             {
                 auto valid = targetingQuery->validate();
                 if (!valid) return failureFrom(valid.status());
@@ -194,8 +181,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
 
     if (!isEmptyCondition(definition.condition)) {
         if (services_.conditions == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action condition requires an evaluator",
-                           "services.conditions");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("action condition requires an evaluator"), std::move("services.conditions")));
         auto condition = services_.conditions->evaluate(definition, request);
         if (!condition) return failureFrom(condition.status());
         auto checked = std::move(condition).takeValue();
@@ -210,8 +196,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
 
     if (definition.targetingMode == TargetingMode::Query) {
         if (services_.targeting == nullptr)
-            return failure(DiagnosticCode::Unsupported, "Query action requires a target resolver",
-                           "services.targeting");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("Query action requires a target resolver"), std::move("services.targeting")));
         sensing::TargetingQuery query = *request.targetingQuery;
         query.spec                    = *definition.targetingSpec;
         auto targets                  = services_.targeting->resolve(query);
@@ -221,16 +206,14 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
 
     if (definition.activeExecutionRequired || !definition.effectIds.empty()) {
         if (services_.effects == nullptr && services_.transactionEffect == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action Active phase requires an effect executor",
-                           "services.effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("action Active phase requires an effect executor"), std::move("services.effects")));
     }
 
     if (definition.cost) {
         const bool transactionBacked =
             services_.transactionEffect != nullptr && services_.transactionAccount != nullptr;
         if (services_.resources == nullptr && !transactionBacked)
-            return failure(DiagnosticCode::Unsupported, "cost-bearing action requires a resource provider",
-                           "services.resources");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("cost-bearing action requires a resource provider"), std::move("services.resources")));
         auto affordability = services_.resources != nullptr
                                  ? services_.resources->canAfford(definition, request, *definition.cost)
                                  : services_.transactionAccount->canAfford(*definition.cost);
@@ -257,8 +240,7 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
 
     if (services_.transactionEffect != nullptr) {
         if (definition.cost && services_.transactionAccount == nullptr)
-            return failure(DiagnosticCode::Unsupported, "transaction-backed action cost requires an account",
-                           "services.transactionAccount");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("transaction-backed action cost requires an account"), std::move("services.transactionAccount")));
 
         const std::string transactionId = request.transactionId.empty() ? "action." + definition.id.format() + "." +
                                                                               std::to_string(execution.id_.value())
@@ -278,23 +260,20 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
     std::unique_ptr<IActionEffectOperation> stagedEffect;
     if (definition.activeExecutionRequired || !definition.effectIds.empty()) {
         if (services_.effects == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action Active phase requires an effect executor",
-                           "services.effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("action Active phase requires an effect executor"), std::move("services.effects")));
         auto prepared = services_.effects->prepare(
             definition, request, execution.resolvedTargets_ ? &*execution.resolvedTargets_ : nullptr, tick);
         if (!prepared) return failureFrom(prepared.status());
         stagedEffect = std::move(prepared).takeValue();
         if (!stagedEffect)
-            return failure(DiagnosticCode::InvariantViolation, "effect executor returned an empty staged operation",
-                           "effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("effect executor returned an empty staged operation"), std::move("effects")));
     }
 
     std::optional<resource::Reservation> reservation;
     if (definition.cost) {
         if (services_.resources == nullptr) {
             if (stagedEffect) stagedEffect->rollback();
-            return failure(DiagnosticCode::Unsupported, "activating a cost-bearing action requires a resource provider",
-                           "services.resources");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("activating a cost-bearing action requires a resource provider"), std::move("services.resources")));
         }
         auto reserved = services_.resources->reserve(definition, request, *definition.cost);
         if (!reserved) {
@@ -304,8 +283,7 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
         auto credential = std::move(reserved).takeValue();
         if (!credential.isValid()) {
             if (stagedEffect) stagedEffect->rollback();
-            return failure(DiagnosticCode::InvariantViolation, "resource provider returned an invalid reservation",
-                           "cost.reservation");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, std::move("resource provider returned an invalid reservation"), std::move("cost.reservation")));
         }
         reservation = std::move(credential);
 

@@ -6,13 +6,7 @@
 #include <utility>
 
 namespace eve::combat {
-namespace {
-
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-}  // namespace
+  // namespace
 
 CombatActionWindowState::CombatActionWindowState(ActionWindowSubjectResolver resolver)
     : resolver_(std::move(resolver)) {}
@@ -45,21 +39,21 @@ Result<void> CombatActionWindowState::enter(const action::ActionStateWindowBindi
                                             const action::ActionTimelineEvent& event,
                                             const action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure(DiagnosticCode::Unsupported, "combat does not own this state-window kind", "kind");
-    if (!resolver_) return failure(DiagnosticCode::NotFound, "window subject resolver is unavailable", "resolver");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("combat does not own this state-window kind"), std::move("kind")));
+    if (!resolver_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("window subject resolver is unavailable"), std::move("resolver")));
     std::optional<ecs::EntityHandle> handle;
     if (binding.targetIndex) {
         if (*binding.targetIndex >= context.targets.size())
-            return failure(DiagnosticCode::NotFound, "state-window target index is unavailable", "targetIndex");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("state-window target index is unavailable"), std::move("targetIndex")));
         handle = context.targets[*binding.targetIndex];
     } else {
         handle = context.source;
     }
-    if (!handle) return failure(DiagnosticCode::NotFound, "state window has no source or target", "subject");
+    if (!handle) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("state window has no source or target"), std::move("subject")));
     auto subject = resolver_(*handle);
     if (!subject) return Result<void>::failure(subject.status());
     if (!subject.value().isValid())
-        return failure(DiagnosticCode::InvalidArgument, "state-window subject is nil", "subject");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("state-window subject is nil"), std::move("subject")));
 
     ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
@@ -68,7 +62,7 @@ Result<void> CombatActionWindowState::enter(const action::ActionStateWindowBindi
                           found->second.binding.kind == binding.kind &&
                           found->second.binding.resource == binding.resource;
         if (same) return Result<void>::success(Status::success(StatusCode::NoOp));
-        return failure(DiagnosticCode::Conflict, "state-window key is already active with different data", "itemId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("state-window key is already active with different data"), std::move("itemId")));
     }
     if (binding.kind == action::ActionStateWindowKind::Hitbox && melee_) {
         auto armed = melee_->armHitbox(subject.value(), binding.resource, context.executionId);
@@ -82,12 +76,12 @@ Result<void> CombatActionWindowState::exit(const action::ActionStateWindowBindin
                                            const action::ActionTimelineEvent& event,
                                            const action::ActionNotifyContext& context) {
     if (!supports(binding.kind))
-        return failure(DiagnosticCode::Unsupported, "combat does not own this state-window kind", "kind");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, std::move("combat does not own this state-window kind"), std::move("kind")));
     const ActiveKey key{context.executionId, event.itemId.format()};
     const auto found = active_.find(key);
     if (found == active_.end()) return Result<void>::success(Status::success(StatusCode::NoOp));
     if (found->second.binding.kind != binding.kind)
-        return failure(DiagnosticCode::Conflict, "state-window exit kind does not match active key", "kind");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, std::move("state-window exit kind does not match active key"), std::move("kind")));
     const auto subject  = found->second.subject;
     const auto resource = found->second.binding.resource;
     const auto kind     = found->second.binding.kind;

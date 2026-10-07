@@ -8,10 +8,7 @@
 namespace eve::card {
 namespace {
 
-[[nodiscard]] eve::Result<void> error(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
-}
-
+[[nodiscard]] 
 [[nodiscard]] bool hasId(const std::vector<CardData*>& cards, const eve::container::MembershipId& id) {
     return std::any_of(cards.begin(), cards.end(), [&](const CardData* card) {
         return card != nullptr && const_cast<CardData*>(card)->identity()->id == id.value();
@@ -169,27 +166,27 @@ eve::Result<void> CardContainerAdapter::validateInsert(
     std::optional<eve::container::MembershipId> ignoredObject) const {
     const auto* values = cards();
     if (values == nullptr || !descriptor_.id.isValid())
-        return error(eve::DiagnosticCode::InvalidArgument, "card container adapter is not bound");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("card container adapter is not bound")));
     if (!object.id.isValid() || !object.payload)
-        return error(eve::DiagnosticCode::InvalidArgument, "card transfer object is incomplete");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("card transfer object is incomplete")));
     if (object.quantity != 1u)
-        return error(eve::DiagnosticCode::InvalidArgument, "a card container membership must have quantity one");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("a card container membership must have quantity one")));
     const auto* payload = dynamic_cast<const CardContainerObject*>(object.payload.get());
     auto*       card    = payload == nullptr ? nullptr : static_cast<CardData*>(ecs::try_get(payload->card));
     if (payload == nullptr || card == nullptr || card->identity()->id != object.id.value() ||
         card->identity()->kind != object.type)
-        return error(eve::DiagnosticCode::StaleHandle, "card transfer payload is stale");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::move("card transfer payload is stale")));
     if (hasId(*values, object.id) && (!ignoredObject || *ignoredObject != object.id))
-        return error(eve::DiagnosticCode::Conflict, "destination already contains card");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("destination already contains card")));
     const std::size_t effectiveSize = values->size() - ((ignoredObject && hasId(*values, *ignoredObject)) ? 1u : 0u);
     if (destination) {
         if (!destination->isValid() || static_cast<std::size_t>(destination->value()) > effectiveSize)
-            return error(eve::DiagnosticCode::InvalidArgument, "destination card slot is out of range");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("destination card slot is out of range")));
     }
     auto accepted = descriptor_.filter.evaluate(object);
     if (!accepted) return accepted;
     if (!descriptor_.capacity.isUnlimited() && effectiveSize >= descriptor_.capacity.value())
-        return error(eve::DiagnosticCode::Conflict, "card container capacity is full");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move("card container capacity is full")));
     return eve::Result<void>::success();
 }
 

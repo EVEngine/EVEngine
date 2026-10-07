@@ -743,11 +743,6 @@ eve::Result<CompiledExpression> compileExpression(std::string_view source, const
     return eve::Result<CompiledExpression>::success(std::move(compiled));
 }
 
-eve::Result<void> invalid(std::string message, std::string path) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 bool contains(const std::vector<std::string>& values, const std::string& value) {
     return std::find(values.begin(), values.end(), value) != values.end();
 }
@@ -842,32 +837,43 @@ eve::Result<void> SettlementRuleSet::configure(std::vector<SettlementRule> rules
     for (std::size_t index = 0; index < rules.size(); ++index) {
         const auto& rule = rules[index];
         const auto  path = "rules[" + std::to_string(index) + "]";
-        if (rule.id.empty()) return invalid("settlement rule id must not be empty", path + ".id");
-        if (!ids.insert(rule.id).second) return invalid("settlement rule ids must be unique", path + ".id");
-        if (rule.stacks == 0) return invalid("settlement rule stack count must be positive", path + ".stacks");
+        if (rule.id.empty()) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule id must not be empty"), std::move(path + ".id")));
+        if (!ids.insert(rule.id).second) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule ids must be unique"), std::move(path + ".id")));
+        if (rule.stacks == 0) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule stack count must be positive"), std::move(path + ".stacks")));
         if (!std::isfinite(rule.value) || !std::isfinite(rule.valuePerExtraStack))
-            return invalid("settlement rule operands must be finite", path + ".value");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule operands must be finite"), std::move(path + ".value")));
         if (rule.stage == StageKind::Validate || rule.stage == StageKind::Apply || rule.stage == StageKind::Event)
-            return invalid("settlement rule cannot mutate a terminal or validation phase", path + ".stage");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule cannot mutate a terminal or validation phase"), std::move(path + ".stage")));
         if (rule.stage == StageKind::Decision && rule.operation != RuleOperation::Immune)
-            return invalid("decision-stage rules currently support only immune outcomes", path + ".operation");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("decision-stage rules currently support only immune outcomes"), std::move(path + ".operation")));
         if (rule.operation == RuleOperation::Immune && rule.stage != StageKind::Decision)
-            return invalid("immune rules must run in the decision stage", path + ".stage");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("immune rules must run in the decision stage"), std::move(path + ".stage")));
         const bool triggerOperation =
             rule.operation == RuleOperation::Lifesteal || rule.operation == RuleOperation::Reflect;
         if (rule.stage == StageKind::Trigger && !triggerOperation)
-            return invalid("trigger-stage rules require a derived-request operation", path + ".operation");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("trigger-stage rules require a derived-request operation"), std::move(path + ".operation")));
         if (triggerOperation && rule.stage != StageKind::Trigger)
-            return invalid("derived-request rules must run in the trigger stage", path + ".stage");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("derived-request rules must run in the trigger stage"), std::move(path + ".stage")));
         if ((rule.operation == RuleOperation::Multiply || rule.operation == RuleOperation::ResistFlat ||
              rule.operation == RuleOperation::AbsorbFlat || rule.operation == RuleOperation::ClampMaximum ||
              triggerOperation) &&
             (rule.value < 0.0 || rule.valuePerExtraStack < 0.0))
-            return invalid("settlement rule operation requires non-negative operands", path + ".value");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement rule operation requires non-negative operands"), std::move(path + ".value")));
         if (rule.operation == RuleOperation::ResistPercent &&
             (rule.value < 0.0 || rule.value > 1.0 || rule.valuePerExtraStack < 0.0 ||
              rule.value + rule.valuePerExtraStack * static_cast<double>(rule.stacks - 1) > 1.0))
-            return invalid("settlement resistance percentage must remain in [0,1]", path + ".value");
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move("settlement resistance percentage must remain in [0,1]"), std::move(path + ".value")));
         if (rule.when.empty()) {
             conditions.emplace_back();
             conditionDigests.emplace_back();

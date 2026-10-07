@@ -14,10 +14,7 @@
 namespace eve::hexmap {
 namespace {
 
-[[nodiscard]] Result<void> invalidArgument(std::string message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] Result<HexTerrainBake> invalidBake(std::string message) {
     return Result<HexTerrainBake>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
@@ -176,10 +173,10 @@ Result<HexTerrainBake> hexTerrainBakeFromValue(const Value& value) {
 }
 
 Result<void> applyHexTerrain(HexMap& map, const HexTerrainBake& bake) {
-    if (bake.kind != HexTerrainBake::Kind::Planar) return invalidArgument("applyHexTerrain requires a planar bake");
-    if (bake.cellCountX <= 0 || bake.cellCountZ <= 0) return invalidArgument("planar bake size must be positive");
+    if (bake.kind != HexTerrainBake::Kind::Planar) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("applyHexTerrain requires a planar bake"), "hexmap"));
+    if (bake.cellCountX <= 0 || bake.cellCountZ <= 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("planar bake size must be positive"), "hexmap"));
     if (static_cast<std::int32_t>(bake.cells.size()) != bake.cellCountX * bake.cellCountZ)
-        return invalidArgument("planar bake cell count does not match width and height");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("planar bake cell count does not match width and height"), "hexmap"));
 
     auto reset = map.reset(bake.cellCountX, bake.cellCountZ, bake.seed);
     if (!reset) return reset;
@@ -194,13 +191,12 @@ Result<void> applyHexTerrain(HexMap& map, const HexTerrainBake& bake) {
 
 Result<void> applyHexSphereTerrain(HexSphereMap& map, const HexTerrainBake& bake) {
     if (bake.kind != HexTerrainBake::Kind::Sphere)
-        return invalidArgument("applyHexSphereTerrain requires a sphere bake");
-    if (map.empty()) return invalidArgument("applyHexSphereTerrain requires an existing sphere topology");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("applyHexSphereTerrain requires a sphere bake"), "hexmap"));
+    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("applyHexSphereTerrain requires an existing sphere topology"), "hexmap"));
     if (bake.cellCount <= 0 || static_cast<std::int32_t>(bake.cells.size()) != bake.cellCount)
-        return invalidArgument("sphere bake cell count is inconsistent");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("sphere bake cell count is inconsistent"), "hexmap"));
     if (map.cellCount() != bake.cellCount || map.subdivision() != bake.subdivision)
-        return invalidArgument(
-            "sphere bake does not match the live topology; call newSphere with the same subdivision");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("sphere bake does not match the live topology; call newSphere with the same subdivision"), "hexmap"));
 
     for (std::int32_t cell = 0; cell < bake.cellCount; ++cell) {
         const HexCellData& record  = bake.cells[static_cast<std::size_t>(cell)];

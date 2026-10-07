@@ -12,11 +12,7 @@ namespace eve::hexmap {
 namespace {
 
 /** @brief Builds the module's standard "bad argument" void failure. */
-[[nodiscard]] Result<void> invalidArgument(std::string message) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap.sphere"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] constexpr std::int32_t clampInt(std::int32_t value, std::int32_t low, std::int32_t high) noexcept {
     return value < low ? low : (value > high ? high : value);
 }
@@ -55,8 +51,10 @@ namespace {
 
 Result<void> HexSphereMap::reset(std::int32_t subdivision, float radius, std::uint32_t seed) {
     if (subdivision < 0 || subdivision > kMaxHexSphereSubdivision)
-        return invalidArgument("subdivision level is out of range");
-    if (!std::isfinite(radius) || radius <= 0.f) return invalidArgument("sphere radius must be finite and positive");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("subdivision level is out of range"), "hexmap.sphere"));
+    if (!std::isfinite(radius) || radius <= 0.f) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("sphere radius must be finite and positive"), "hexmap.sphere"));
 
     auto built = HexSphereTopology::build(subdivision);
     if (!built.ok()) return Result<void>::failure(built.status());
@@ -383,7 +381,8 @@ void HexSphereMap::validateRivers(HexSphereCell cell) noexcept {
 
 Result<void> HexSphereMap::setElevation(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     const std::int32_t clamped = clampInt(value, HexMetrics::kMinElevation, HexMetrics::kMaxElevation);
     if (data->values.elevation() == clamped) return Result<void>::success();
     data->values = data->values.withElevation(clamped);
@@ -410,7 +409,8 @@ Result<void> HexSphereMap::setElevation(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setWaterLevel(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     const std::int32_t clamped = clampInt(value, 0, HexMetrics::kMaxElevation);
     if (data->values.waterLevel() == clamped) return Result<void>::success();
     data->values = data->values.withWaterLevel(clamped);
@@ -421,7 +421,8 @@ Result<void> HexSphereMap::setWaterLevel(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setTerrainType(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->values = data->values.withTerrainType(clampTerrainType(value));
     ++revision_;
     return Result<void>::success();
@@ -429,7 +430,8 @@ Result<void> HexSphereMap::setTerrainType(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setUrbanLevel(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->values = data->values.withUrbanLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -437,7 +439,8 @@ Result<void> HexSphereMap::setUrbanLevel(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setFarmLevel(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->values = data->values.withFarmLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -445,7 +448,8 @@ Result<void> HexSphereMap::setFarmLevel(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setPlantLevel(HexSphereCell c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->values = data->values.withPlantLevel(clampInt(value, 0, 3));
     refreshCellDependents(c);
     return Result<void>::success();
@@ -453,7 +457,8 @@ Result<void> HexSphereMap::setPlantLevel(HexSphereCell c, std::int32_t value) {
 
 Result<void> HexSphereMap::setSpecialIndex(HexSphereCell c, std::int32_t index) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     if (data->flags.hasRiver()) return Result<void>::success();
     data->values = data->values.withSpecialIndex(clampInt(index, 0, 3));
     removeRoads(c).ignore("special features replace roads");
@@ -463,7 +468,8 @@ Result<void> HexSphereMap::setSpecialIndex(HexSphereCell c, std::int32_t index) 
 
 Result<void> HexSphereMap::setWalled(HexSphereCell c, bool walled) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->flags = data->flags.withWalled(walled);
     refreshCellDependents(c);
     return Result<void>::success();
@@ -471,7 +477,8 @@ Result<void> HexSphereMap::setWalled(HexSphereCell c, bool walled) {
 
 Result<void> HexSphereMap::setExplored(HexSphereCell c, bool explored) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->flags = data->flags.withExplored(explored);
     // Fog state changes do not alter geometry, so the cells stay clean: only the
     // revision is bumped so a renderer can tell that the visible set changed.
@@ -481,7 +488,8 @@ Result<void> HexSphereMap::setExplored(HexSphereCell c, bool explored) {
 
 Result<void> HexSphereMap::setExplorable(HexSphereCell c, bool explorable) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->flags = data->flags.withExplorable(explorable);
     ++revision_;
     return Result<void>::success();
@@ -489,7 +497,8 @@ Result<void> HexSphereMap::setExplorable(HexSphereCell c, bool explorable) {
 
 Result<void> HexSphereMap::setCellState(HexSphereCell c, HexValues values, HexFlags flags) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     data->values = values;
     data->flags  = flags;
     refreshCellDependents(c);
@@ -498,19 +507,24 @@ Result<void> HexSphereMap::setCellState(HexSphereCell c, HexValues values, HexFl
 
 Result<void> HexSphereMap::setOutgoingRiver(HexSphereCell c, std::int32_t direction) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     if (direction < 0 || direction >= neighborCount(c))
-        return invalidArgument("river direction is not an edge of the cell");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("river direction is not an edge of the cell"), "hexmap.sphere"));
     const HexSphereCell neighbour = topology_.neighbor(c, direction);
-    if (neighbour == kNoHexSphereCell) return invalidArgument("river direction has no neighbour");
+    if (neighbour == kNoHexSphereCell) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("river direction has no neighbour"), "hexmap.sphere"));
     const std::int32_t  back = topology_.oppositeDirection(c, direction);
-    if (back < 0) return invalidArgument("river direction has no opposite edge");
+    if (back < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("river direction has no opposite edge"), "hexmap.sphere"));
 
     const auto out = static_cast<HexDirection>(direction);
     const auto in  = static_cast<HexDirection>(back);
     if (data->flags.hasAnyRiverOut() && data->flags.hasRiverOut(out)) return Result<void>::success();
     if (elevation(c) < elevation(neighbour) && waterLevel(c) != elevation(c))
-        return invalidArgument("a river cannot flow uphill");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("a river cannot flow uphill"), "hexmap.sphere"));
 
     // Drop only the links this call replaces, mirroring the reference cell's
     // `RemoveOutgoingRiver` + same-edge `RemoveIncomingRiver`. Calling the full
@@ -552,7 +566,8 @@ Result<void> HexSphereMap::setOutgoingRiver(HexSphereCell c, std::int32_t direct
 
 Result<void> HexSphereMap::removeRiver(HexSphereCell c) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     if (!data->flags.hasRiver()) return Result<void>::success();
     for (std::int32_t d = 0; d < kHexDirectionCount; ++d) {
         const auto direction = static_cast<HexDirection>(d);
@@ -574,13 +589,17 @@ Result<void> HexSphereMap::removeRiver(HexSphereCell c) {
 
 Result<void> HexSphereMap::addRoad(HexSphereCell c, std::int32_t direction) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     if (direction < 0 || direction >= neighborCount(c))
-        return invalidArgument("road direction is not an edge of the cell");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("road direction is not an edge of the cell"), "hexmap.sphere"));
     const HexSphereCell neighbour = topology_.neighbor(c, direction);
-    if (neighbour == kNoHexSphereCell) return invalidArgument("road direction has no neighbour");
+    if (neighbour == kNoHexSphereCell) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("road direction has no neighbour"), "hexmap.sphere"));
     const std::int32_t back = topology_.oppositeDirection(c, direction);
-    if (back < 0) return invalidArgument("road direction has no opposite edge");
+    if (back < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("road direction has no opposite edge"), "hexmap.sphere"));
 
     const auto out = static_cast<HexDirection>(direction);
     const auto in  = static_cast<HexDirection>(back);
@@ -605,7 +624,8 @@ Result<void> HexSphereMap::addRoad(HexSphereCell c, std::int32_t direction) {
 
 Result<void> HexSphereMap::removeRoads(HexSphereCell c) {
     HexCellData* data = mutableCell(c);
-    if (!data) return invalidArgument("cell is outside the hex sphere map");
+    if (!data) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("cell is outside the hex sphere map"), "hexmap.sphere"));
     if (!data->flags.hasRoad()) return Result<void>::success();
     data->flags              = data->flags.without(HexFlags::roadMask());
     const std::int32_t count = neighborCount(c);
@@ -624,8 +644,10 @@ Result<void> HexSphereMap::removeRoads(HexSphereCell c) {
 // --- brush authoring --------------------------------------------------------
 
 Result<void> HexSphereMap::editElevation(HexSphereCell center, std::int32_t radius, std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex sphere map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex sphere map"), "hexmap.sphere"));
+    if (radius < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap.sphere"));
     std::vector<HexSphereCell> cells;
     collectBrush(center, radius, cells);
     for (const HexSphereCell cell : cells) {
@@ -636,8 +658,10 @@ Result<void> HexSphereMap::editElevation(HexSphereCell center, std::int32_t radi
 }
 
 Result<void> HexSphereMap::editWaterLevel(HexSphereCell center, std::int32_t radius, std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex sphere map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex sphere map"), "hexmap.sphere"));
+    if (radius < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap.sphere"));
     std::vector<HexSphereCell> cells;
     collectBrush(center, radius, cells);
     for (const HexSphereCell cell : cells)
@@ -646,8 +670,10 @@ Result<void> HexSphereMap::editWaterLevel(HexSphereCell center, std::int32_t rad
 }
 
 Result<void> HexSphereMap::editTerrainType(HexSphereCell center, std::int32_t radius, std::int32_t terrainType) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex sphere map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex sphere map"), "hexmap.sphere"));
+    if (radius < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap.sphere"));
     std::vector<HexSphereCell> cells;
     collectBrush(center, radius, cells);
     for (const HexSphereCell cell : cells)
@@ -657,8 +683,10 @@ Result<void> HexSphereMap::editTerrainType(HexSphereCell center, std::int32_t ra
 
 Result<void> HexSphereMap::editFeatureLevel(HexSphereCell center, std::int32_t radius, std::int32_t feature,
                                             std::int32_t delta) {
-    if (!contains(center)) return invalidArgument("brush centre is outside the hex sphere map");
-    if (radius < 0) return invalidArgument("brush radius must be non-negative");
+    if (!contains(center)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush centre is outside the hex sphere map"), "hexmap.sphere"));
+    if (radius < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("brush radius must be non-negative"), "hexmap.sphere"));
     std::vector<HexSphereCell> cells;
     collectBrush(center, radius, cells);
     const std::int32_t layer = layerIndex(feature);

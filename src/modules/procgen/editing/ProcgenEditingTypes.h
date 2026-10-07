@@ -6,6 +6,6 @@ using editing::GraphConnectionDecision; using editing::GraphDocumentData; using 
 using editing::GraphNodeId; using editing::GraphNodeRecord; using editing::GraphPinDirection;
 using editing::GraphPinId; using editing::GraphPinRecord; using editing::IGraphDomainProvider;
 using editing::Revision; using editing::RuleId; using editing::StableId; using editing::Status; using editing::Value;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 }  // namespace eve::procgen_editing

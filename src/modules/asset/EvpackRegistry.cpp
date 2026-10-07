@@ -7,11 +7,6 @@
 namespace eve::asset {
 namespace {
 
-Result<void> registryFailureVoid(DiagnosticCode code, std::string message) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), {}, {},
-                                                   "asset.evpack.registry"));
-}
-
 template <class Entry>
 bool sameGeneration(const EvpackHandle& handle, const Entry& entry) {
     return handle.generation == entry.generation && handle.buildId == entry.pack->buildId();
@@ -67,12 +62,12 @@ Result<EvpackRegistrySubscription> EvpackRegistry::subscribe(Callback callback) 
 
 Result<void> EvpackRegistry::unsubscribe(EvpackRegistrySubscription subscription) {
     if (subscription.value == 0)
-        return registryFailureVoid(DiagnosticCode::InvalidArgument,
-                                   "registry subscription identity is invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("registry subscription identity is invalid"), {}, {},
+                                                   "asset.evpack.registry"));
     std::lock_guard lock(mutex_);
     if (callbacks_.erase(subscription.value) == 0)
-        return registryFailureVoid(DiagnosticCode::NotFound,
-                                   "registry subscription is not active");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, std::move("registry subscription is not active"), {}, {},
+                                                   "asset.evpack.registry"));
     return Result<void>::success();
 }
 

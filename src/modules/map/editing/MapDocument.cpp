@@ -21,7 +21,7 @@ EditorValue layerValue(const MapLayerRecord& layer) {
                                {"order", int64_t{layer.order}}};
 }
 
-EditorResult<MapLayerRecord> parseLayer(const EditorValue& value) {
+Result<MapLayerRecord> parseLayer(const EditorValue& value) {
     const auto* idValue      = field(value, "id");
     const auto* nameValue    = field(value, "name");
     const auto* kindValue    = field(value, "kind");
@@ -53,7 +53,7 @@ EditorValue pointValue(const MapSplinePointRecord& point) {
         {"id", point.id.value()}, {"x", point.x}, {"y", point.y}, {"z", point.z}, {"width", point.width}};
 }
 
-EditorResult<MapSplinePointRecord> parsePoint(const EditorValue& value) {
+Result<MapSplinePointRecord> parsePoint(const EditorValue& value) {
     const auto* idValue    = field(value, "id");
     const auto* xValue     = field(value, "x");
     const auto* yValue     = field(value, "y");
@@ -80,7 +80,7 @@ EditorValue roadValue(const MapRoadRecord& road) {
                                {"closed", road.closed}, {"points", std::move(points)}};
 }
 
-EditorResult<MapRoadRecord> parseRoad(const EditorValue& value) {
+Result<MapRoadRecord> parseRoad(const EditorValue& value) {
     const auto* idValue         = field(value, "id");
     const auto* layerValueEntry = field(value, "layer");
     const auto* nameValue       = field(value, "name");
@@ -130,7 +130,7 @@ EditorValue placementValue(const MapPlacementRecord& placement) {
                                {"scaleZ", placement.scaleZ}};
 }
 
-EditorResult<MapPlacementRecord> parsePlacement(const EditorValue& value) {
+Result<MapPlacementRecord> parsePlacement(const EditorValue& value) {
     const auto string = [&](const char* key) -> const std::string* {
         const EditorValue* entry = field(value, key);
         return entry ? entry->getIf<std::string>() : nullptr;
@@ -195,7 +195,7 @@ void* MapDocumentTarget::queryCapability(const CapabilityId& capability) {
                                                                        : nullptr;
 }
 
-EditorResult<void> MapDocumentTarget::applyDomainOperation(const DomainOperation& domainOperation) {
+Result<void> MapDocumentTarget::applyDomainOperation(const DomainOperation& domainOperation) {
     if (domainOperation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.map.target-mismatch"),
                                           "Map operation targets another document");
@@ -328,7 +328,7 @@ std::unique_ptr<IDomainOperationTarget> MapDocumentTarget::cloneDomainState() co
     return std::make_unique<MapDocumentTarget>(*this);
 }
 
-EditorResult<void> MapDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> MapDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<MapDocumentTarget*>(candidate.get());
     if (!staged || staged->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.map.candidate-mismatch"),
@@ -371,7 +371,7 @@ std::vector<MapPlacementRecord> MapDocumentTarget::mapPlacements() const {
     return result;
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeCreateLayer(const MapLayerRecord& layer) const {
+Result<DomainOperation> MapDocumentTarget::makeCreateLayer(const MapLayerRecord& layer) const {
     auto parsed = parseLayer(layerValue(layer));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.map.invalid-layer"),
@@ -390,7 +390,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeCreateLayer(const MapLayerR
         operation("map.layer.create.v1", "map.layer.delete.v1", id_, layerValue(layer), layerValue(layer), layer.id));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeDeleteLayer(const StableId& layer) const {
+Result<DomainOperation> MapDocumentTarget::makeDeleteLayer(const StableId& layer) const {
     const auto found = layers_.find(layer);
     if (found == layers_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.map.layer-not-found"),
@@ -415,7 +415,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeDeleteLayer(const StableId&
                                                             layer));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeSetLayer(const MapLayerRecord& layer) const {
+Result<DomainOperation> MapDocumentTarget::makeSetLayer(const MapLayerRecord& layer) const {
     const auto found = layers_.find(layer.id);
     if (found == layers_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.map.layer-not-found"),
@@ -449,7 +449,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeSetLayer(const MapLayerReco
         operation("map.layer.set.v1", "map.layer.set.v1", id_, layerValue(layer), layerValue(found->second), layer.id));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeSetRoad(const MapRoadRecord& road) const {
+Result<DomainOperation> MapDocumentTarget::makeSetRoad(const MapRoadRecord& road) const {
     auto parsed = parseRoad(roadValue(road));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.map.invalid-road"),
@@ -471,7 +471,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeSetRoad(const MapRoadRecord
         operation("map.road.set.v1", inverseType, id_, roadValue(road), inverse, road.id));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeDeleteRoad(const StableId& road) const {
+Result<DomainOperation> MapDocumentTarget::makeDeleteRoad(const StableId& road) const {
     const auto found = roads_.find(road);
     if (found == roads_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.map.road-not-found"),
@@ -483,7 +483,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeDeleteRoad(const StableId& 
                                                             roadValue(found->second), roadValue(found->second), road));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeSetPlacement(const MapPlacementRecord& placement) const {
+Result<DomainOperation> MapDocumentTarget::makeSetPlacement(const MapPlacementRecord& placement) const {
     auto parsed = parsePlacement(placementValue(placement));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.map.invalid-placement"),
@@ -505,7 +505,7 @@ EditorResult<DomainOperation> MapDocumentTarget::makeSetPlacement(const MapPlace
         operation("map.placement.set.v1", inverseType, id_, placementValue(placement), inverse, placement.id));
 }
 
-EditorResult<DomainOperation> MapDocumentTarget::makeDeletePlacement(const StableId& placement) const {
+Result<DomainOperation> MapDocumentTarget::makeDeletePlacement(const StableId& placement) const {
     const auto found = placements_.find(placement);
     if (found == placements_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.map.placement-not-found"),
@@ -657,7 +657,7 @@ EditorValue MapDocumentTarget::snapshotValue() const {
                                {"placements", std::move(placements)}};
 }
 
-EditorResult<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* versionValue    = field(snapshot, "schemaVersion");
     const auto* layersValue     = field(snapshot, "layers");
     const auto* roadsValue      = field(snapshot, "roads");

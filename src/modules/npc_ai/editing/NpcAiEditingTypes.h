@@ -6,6 +6,6 @@ using editing::GraphEdgeRecord; using editing::GraphNodeId; using editing::Graph
 using editing::GraphPinDirection; using editing::GraphPinId; using editing::GraphPinRecord;
 using editing::IGraphDomainProvider; using editing::Revision; using editing::RuleId; using editing::Status;
 using editing::Value;
-using editing::EditorResult;
+using editing::Result;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 }  // namespace eve::npc_ai_editing

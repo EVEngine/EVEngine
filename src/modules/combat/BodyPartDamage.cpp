@@ -4,18 +4,13 @@
 #include <utility>
 
 namespace eve::combat {
-namespace {
-
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
-}  // namespace
+  // namespace
 
 Result<void> BodyPartDamageRule::setMultiplier(std::string bodyPart, double multiplier) {
-    if (bodyPart.empty()) return invalid("body part is empty", "bodyPart");
-    if (!std::isfinite(multiplier) || multiplier < 0.0) return invalid("body-part multiplier is invalid", "multiplier");
+    if (bodyPart.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("body part is empty"), std::move("bodyPart")));
+    if (!std::isfinite(multiplier) || multiplier < 0.0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move("body-part multiplier is invalid"), std::move("multiplier")));
     multipliers_[std::move(bodyPart)] = multiplier;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
