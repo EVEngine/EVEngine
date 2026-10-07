@@ -16,6 +16,8 @@ if (!("litEmittersOn" in getroottable())) litEmittersOn <- true;
 if (!("litRayTracingOn" in getroottable())) litRayTracingOn <- false;
 if (!("litHwRtAvailable" in getroottable())) litHwRtAvailable <- false;
 if (!("litRtModeLabel" in getroottable())) litRtModeLabel <- "off";
+if (!("litFrame" in getroottable())) litFrame <- 0;
+if (!("litScreenshotSaved" in getroottable())) litScreenshotSaved <- false;
 
 function makeBox(x, y, z, sx, sy, sz, r, g, b, metallic, roughness, castShadow, receiveShadow) {
     local o = eve.Renderable3D();
@@ -250,4 +252,9 @@ eve_render = function() {
     gfx.clear();
     gfx.render3D();
     ui.beginFrameAndRender();
+    litFrame += 1;
+    if (!litScreenshotSaved && litFrame > 36 && gfx.saveFramePng("lighting-showcase.png")) {
+        litScreenshotSaved = true;
+        print("lighting-showcase: saved lighting-showcase.png\n");
+    }
 };
