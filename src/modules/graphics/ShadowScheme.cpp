@@ -32,16 +32,17 @@ glm::vec3 safeNormalize(const glm::vec3& v, const glm::vec3& fallback) {
 ShadowSchemeSettings& ShadowSchemeSettings::current() { return g_shadowSchemeSettings; }
 
 Result<ShadowMethod> parseShadowMethod(std::string_view name) {
-    if (equalsIgnoreCase(name, "auto")) return ShadowMethod::Auto;
-    if (equalsIgnoreCase(name, "none") || equalsIgnoreCase(name, "off")) return ShadowMethod::None;
+    if (equalsIgnoreCase(name, "auto")) return Result<ShadowMethod>::success(ShadowMethod::Auto);
+    if (equalsIgnoreCase(name, "none") || equalsIgnoreCase(name, "off"))
+        return Result<ShadowMethod>::success(ShadowMethod::None);
     if (equalsIgnoreCase(name, "csm") || equalsIgnoreCase(name, "cascaded") ||
         equalsIgnoreCase(name, "directional"))
-        return ShadowMethod::CascadedDirectional;
+        return Result<ShadowMethod>::success(ShadowMethod::CascadedDirectional);
     if (equalsIgnoreCase(name, "perspective") || equalsIgnoreCase(name, "spot"))
-        return ShadowMethod::PerspectiveSpot;
+        return Result<ShadowMethod>::success(ShadowMethod::PerspectiveSpot);
     if (equalsIgnoreCase(name, "cube") || equalsIgnoreCase(name, "cubemap") ||
         equalsIgnoreCase(name, "point"))
-        return ShadowMethod::CubePoint;
+        return Result<ShadowMethod>::success(ShadowMethod::CubePoint);
     return Result<ShadowMethod>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, "Unknown shadow method", "graphics.shadow"));
 }
@@ -73,7 +74,7 @@ Result<ShadowMethod> resolveShadowMethod(std::string_view lightType, ShadowMetho
         else
             method = ShadowMethod::None;
     }
-    if (method == ShadowMethod::None) return method;
+    if (method == ShadowMethod::None) return Result<ShadowMethod>::success(method);
     if (lightType == "dir" && method != ShadowMethod::CascadedDirectional) {
         return Result<ShadowMethod>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "Directional lights only support csm shadows", "graphics.shadow"));
@@ -86,7 +87,7 @@ Result<ShadowMethod> resolveShadowMethod(std::string_view lightType, ShadowMetho
         return Result<ShadowMethod>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "Point lights only support cube shadows", "graphics.shadow"));
     }
-    return method;
+    return Result<ShadowMethod>::success(method);
 }
 
 glm::mat4 buildSpotShadowVP(const glm::vec3& position, const glm::vec3& direction, float range,
@@ -120,7 +121,7 @@ Result<glm::mat4> buildPointShadowFaceVP(const glm::vec3& position, int faceInde
     const float nearZ = std::max(farZ * 0.01f, 0.05f);
     const glm::mat4 view = glm::lookAtRH(position, position + kForward[faceIndex], kUp[faceIndex]);
     const glm::mat4 proj = perspectiveVulkanRH_ZO(1.5707963267948966f, 1.f, nearZ, farZ);
-    return proj * view;
+    return Result<glm::mat4>::success(proj * view);
 }
 
 void selectShadowCasters(const std::vector<Light3D::Data*>& lights, const std::vector<bool>& isPointFlags,

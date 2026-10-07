@@ -51,7 +51,10 @@ TEST_CASE("graphics.shadow_scheme.selects_spot_slots_and_builds_vp") {
     point->setCastShadow(true);
     point->setShadowMethod("cube");
 
-    std::vector<Light3D::Data*> lights{sun->data(), spot->data(), point->data()};
+    Light3D::Data* sunData   = &*sun->data();
+    Light3D::Data* spotData  = &*spot->data();
+    Light3D::Data* pointData = &*point->data();
+    std::vector<Light3D::Data*> lights{sunData, spotData, pointData};
     std::vector<bool>           isPoint{false, true, true};
     ShadowSchemeSettings        settings = ShadowSchemeSettings::current();
     settings.enableDirectionalCsm        = true;
@@ -62,12 +65,12 @@ TEST_CASE("graphics.shadow_scheme.selects_spot_slots_and_builds_vp") {
     Light3D::Data*               directional = nullptr;
     std::vector<LocalShadowSlot> locals;
     selectShadowCasters(lights, isPoint, settings, directional, locals);
-    CHECK(directional == sun->data());
+    CHECK(directional == sunData);
     REQUIRE_EQ(locals.size(), size_t{1});
-    CHECK(locals[0].light == spot->data());
+    CHECK(locals[0].light == spotData);
     CHECK_EQ(locals[0].layer, ShadowConfig::kCascades);
-    CHECK_EQ(spot->data()->shadowLocalSlot, 0);
-    CHECK_EQ(point->data()->shadowLocalSlot, -1);
+    CHECK_EQ(spotData->shadowLocalSlot, 0);
+    CHECK_EQ(pointData->shadowLocalSlot, -1);
 
     const glm::mat4 vp = buildSpotShadowVP(glm::vec3(0.f, 4.f, 0.f), glm::vec3(0.f, -1.f, 0.f), 12.f, 35.f);
     const glm::vec4 origin = vp * glm::vec4(0.f, 0.f, 0.f, 1.f);

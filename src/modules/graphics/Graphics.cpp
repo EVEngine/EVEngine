@@ -537,22 +537,6 @@ void Graphics::expose(ssq::Table& table) {
                          float radius) {
                           return Light3D::createEmissiveProxy(x, y, z, r, g, b, intensity, radius);
                       }));
-    // Configurable shadow scheme (process-wide defaults for dir/spot/point casters).
-    table.addFunc("setShadowSchemeDirectionalEnabled", [](bool enabled) {
-        ShadowSchemeSettings::current().enableDirectionalCsm = enabled;
-    });
-    table.addFunc("setShadowSchemeSpotEnabled", [](bool enabled) {
-        ShadowSchemeSettings::current().enableSpotPerspective = enabled;
-    });
-    table.addFunc("setShadowSchemePointEnabled", [](bool enabled) {
-        ShadowSchemeSettings::current().enablePointCube = enabled;
-    });
-    table.addFunc("setShadowSchemeMaxSpotCasters", [](int count) {
-        ShadowSchemeSettings::current().maxSpotShadowCasters = count;
-    });
-    table.addFunc("getShadowSchemeMaxSpotCasters",
-                  []() { return ShadowSchemeSettings::current().maxSpotShadowCasters; });
-
     detail::exposeRenderable3DBindings(table);
 
     auto sprite2d = table.addClass<Renderable2D>(
@@ -1415,6 +1399,21 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    // Process-wide shadow scheme toggles (dir CSM / spot perspective / point cube).
+    cls.addFunc("setShadowSchemeDirectionalEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableDirectionalCsm = enabled;
+    });
+    cls.addFunc("setShadowSchemeSpotEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableSpotPerspective = enabled;
+    });
+    cls.addFunc("setShadowSchemePointEnabled", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enablePointCube = enabled;
+    });
+    cls.addFunc("setShadowSchemeMaxSpotCasters", [](Graphics*, int count) {
+        ShadowSchemeSettings::current().maxSpotShadowCasters = count;
+    });
+    cls.addFunc("getShadowSchemeMaxSpotCasters",
+                [](Graphics*) { return ShadowSchemeSettings::current().maxSpotShadowCasters; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);

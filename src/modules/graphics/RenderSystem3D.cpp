@@ -975,7 +975,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
 
     // CSM shadow passes — replay the collected casters, culled per cascade.
-    if (shadowActive && shadowCaster && (haveManager || haveExtraShadowCasters)) {
+    // Extra drawers may run without a Light3D caster (fallback gLightDir CSM).
+    if (shadowActive && (shadowCaster || haveExtraShadowCasters) &&
+        (haveManager || haveExtraShadowCasters)) {
         auto cd = defaultCam->data();
         for (int c = 0; c < ShadowConfig::kCascades; ++c) {
             eve::debug::rtPassBegin("ShadowPass");
