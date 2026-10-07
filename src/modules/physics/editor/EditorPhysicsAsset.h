@@ -13,8 +13,10 @@ using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAsse
 /** @brief High-level AssetDB adapter for the storage-neutral physics resolver. */
 class EVENGINE_API_EDITORS AssetDatabasePhysicsColliderResolver final : public IPhysicsColliderAssetResolver {
 public:
+    /** @brief Asset database physics collider resolver. */
     explicit AssetDatabasePhysicsColliderResolver(const MemoryAssetDatabase* database) : database_(database) {}
 
+    /** @brief Resolve. */
     [[nodiscard]] EditorResult<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
                                                                      const std::string& expectedKind) const override;
 

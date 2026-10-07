@@ -39,6 +39,7 @@ struct MaterialStudioState {
  */
 class EVENGINE_API_EDITORS MaterialStudioController {
 public:
+    /** @brief Material studio controller. */
     MaterialStudioController(DocumentId document, MaterialPublishingTarget& target,
                              IEditorTransactionBackend& transactions, MaterialPreviewService& previews,
                              IMaterialPreviewRenderer& renderer);

@@ -25,7 +25,9 @@ class EVENGINE_API_FOUNDATION Thread : public Module {
 public:
     Module_REG(Thread);
 
+    /** @brief Thread. */
     Thread();
+    /** @brief Thread. */
     ~Thread() override;
 
     /** @brief Hardware concurrency hint (at least 1). */

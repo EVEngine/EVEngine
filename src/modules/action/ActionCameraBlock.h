@@ -25,6 +25,7 @@ struct EVENGINE_API_PLATFORM ActionCameraCueBinding {
     /** @brief Stable deterministic noise seed. */
     std::uint32_t seed = 0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionCameraCueBinding&) const = default;
 
     /**
@@ -44,6 +45,7 @@ struct EVENGINE_API_PLATFORM ActionCameraCueBinding {
 class IActionCameraCueSink {
 public:
     static constexpr const char* capabilityName = "eve.action.camera-cue-sink";
+    /** @brief Releases IActionCameraCueSink resources. */
     virtual ~IActionCameraCueSink() = default;
 
     /** @brief Whether this sink owns the supplied stable cue identity. */

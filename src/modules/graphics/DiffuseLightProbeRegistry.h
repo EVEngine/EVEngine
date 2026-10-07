@@ -10,10 +10,12 @@
 
 namespace eve::graphics {
 
+/** @brief DiffuseLightProbeSample public API. */
 struct DiffuseLightProbeSample {
     std::array<glm::vec4, 9> coefficients{};
 };
 
+/** @brief DiffuseLightProbeVolumeSample public API. */
 struct DiffuseLightProbeVolumeSample {
     static constexpr int kMaxProbes = 8;
     std::array<glm::vec4, kMaxProbes> positions{};

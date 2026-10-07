@@ -43,7 +43,9 @@ struct AnimationGraphCompileResult {
  */
 class EVENGINE_API_DOMAINS AnimationStateGraphDomain final : public IGraphDomainProvider {
 public:
+    /** @brief Domain. */
     std::string domain() const override { return "animation.state"; }
+    /** @brief Can connect. */
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a state node referencing one animation clip asset. */

@@ -27,11 +27,13 @@ class StaticMeshSurface;
 /** @brief Outcome of restoring an exact placement snapshot. */
 enum class PlacementRestoreStatus { Restored, Rejected };
 
+/** @brief EVENGINE_API_WORLD public API. */
 class EVENGINE_API_WORLD PlacementSystem {
 public:
     using ValidateFn = std::function<bool(const PlacementWorld &world, const PlacementQuery &q,
                                           std::string *reason)>;
     using SnapFn =
+        /** @brief Snap result. */
         std::function<SnapResult(const PlacementWorld &world, float worldX, float worldY)>;
     using ChangeHook = std::function<void(const BuildingChangeEvent &ev)>;
 

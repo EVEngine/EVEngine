@@ -22,10 +22,13 @@ struct RibbonMesh {
     std::vector<float> uvST;
     std::vector<uint32_t> indices;
 
+    /** @brief Vertex count. */
     [[nodiscard]] int vertexCount() const { return int(posXYZ.size() / 3u); }
+    /** @brief Index count. */
     [[nodiscard]] int indexCount() const { return int(indices.size()); }
 };
 
+/** @brief RibbonParams public API. */
 struct RibbonParams {
     /** @brief World-space side hint used to extrude the ribbon (normalized internally). */
     glm::vec3 sideHint{1.f, 0.f, 0.f};

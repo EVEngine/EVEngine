@@ -18,16 +18,25 @@ class EVENGINE_API_WORLD TileLayerTarget final : public editing::IEditableTarget
 public:
     /** @brief Bind a live layer which must outlive this adapter. */
     TileLayerTarget(std::string id, map::TileLayer* layer);
+    /** @brief Target id. */
     editing::TargetId   targetId() const override { return editing::TargetId(id_); }
+    /** @brief Revision. */
     std::uint64_t       revision() const override;
+    /** @brief Dirty region. */
     editing::EditRegion dirtyRegion() const override { return dirty_; }
+    /** @brief Clears dirty region. */
     void                clearDirtyRegion() override { dirty_.clear(); }
 
+    /** @brief Width. */
     int  width() const override;
+    /** @brief Height. */
     int  height() const override;
+    /** @brief True if cell. */
     bool containsCell(int x, int y) const override;
 
+    /** @brief Reads int. */
     int                       readInt(int x, int y) const override;
+    /** @brief Writes int. */
     editing::FieldWriteStatus writeInt(int x, int y, int value) override;
 
     /** @brief Return the borrowed live layer.

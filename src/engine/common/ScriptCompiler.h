@@ -212,7 +212,9 @@ private:
 /** @brief Unified Runtime compiler facade for metadata, diagnostics, and module preparation. */
 class EVENGINE_API_FOUNDATION ScriptCompiler {
 public:
+    /** @brief Script compiler. */
     ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules);
+    /** @brief Script compiler. */
     ~ScriptCompiler();
 
     /** @brief Compiles UTF-8 source and records metadata under sourceName. */

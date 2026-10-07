@@ -23,6 +23,7 @@ class EVENGINE_API_PLATFORM NetWorker {
 public:
     /** @brief Creates a worker owned by `owner` (not started yet). */
     explicit NetWorker(Network* owner);
+    /** @brief Net worker. */
     ~NetWorker();
 
     /** @brief Starts the worker thread. */

@@ -65,6 +65,7 @@ enum class DecalProjectionStatus : std::uint8_t {
  */
 class EVENGINE_API_WORLD DecalManager {
 public:
+    /** @brief Inst. */
     static DecalManager &inst();
 
     /** @brief Spawn a decal at a world-space point facing along (nx,ny,nz). */
@@ -74,15 +75,21 @@ public:
                 float normalStrength, float roughnessStrength, float metalStrength,
                 float emissiveStrength);
 
+    /** @brief Removes . */
     bool remove(int id);
     /** @brief Whether a projected decal id is still registered. */
     [[nodiscard]] bool contains(int id) const;
     void clearAll();
+    /** @brief Returns the number of . */
     int count() const;
+    /** @brief Sets the strength. */
     bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
                      float emissiveStrength);
+    /** @brief Sets the uv rect. */
     bool setUvRect(int id, float x, float y, float w, float h);
+    /** @brief Sets the textures. */
     bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
+    /** @brief Sets the blend. */
     bool setBlend(int id, const std::string &mode);
     /**
      * @brief Projection mode: "planar" (default) or "triplanar".
@@ -118,7 +125,9 @@ public:
     void drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, float eyeZ,
                  const glm::mat4 &viewProj, float aspect);
 
+    /** @brief Instances. */
     std::vector<DecalInstance> &instances() { return decals_; }
+    /** @brief Instances. */
     const std::vector<DecalInstance> &instances() const { return decals_; }
 
 private:

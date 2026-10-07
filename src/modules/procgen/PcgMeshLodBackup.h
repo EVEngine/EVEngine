@@ -18,11 +18,15 @@ namespace eve::procgen {
  */
 class EVENGINE_API_DOMAINS PcgMeshLodBackup {
 public:
+    /** @brief Pcg mesh lod backup. */
     PcgMeshLodBackup();
+    /** @brief Pcg mesh lod backup. */
     ~PcgMeshLodBackup();
     PcgMeshLodBackup(const PcgMeshLodBackup&) = delete;
     PcgMeshLodBackup& operator=(const PcgMeshLodBackup&) = delete;
+    /** @brief Pcg mesh lod backup. */
     PcgMeshLodBackup(PcgMeshLodBackup&&) noexcept;
+    /** @brief Operator =. */
     PcgMeshLodBackup& operator=(PcgMeshLodBackup&&) noexcept;
 
     /** @brief Replace the backup with the complete current renderer state of one live entity. */

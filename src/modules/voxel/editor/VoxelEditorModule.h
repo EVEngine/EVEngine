@@ -19,7 +19,9 @@ namespace eve::voxel_editor {
 class EVENGINE_API_EDITORS VoxelEditorModule final : public Module {
 public:
     Module_REG(VoxelEditorModule);
+    /** @brief Voxel editor module. */
     VoxelEditorModule();
+    /** @brief Voxel editor module. */
     ~VoxelEditorModule() override;
 
 private:

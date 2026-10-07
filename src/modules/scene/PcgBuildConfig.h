@@ -7,8 +7,11 @@
 #include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::scene {
+/** @brief PcgPublicationType public API. */
 enum class PcgPublicationType { Addressables=0, RegularBuild=1 };
+/** @brief PcgBuildLogCategory public API. */
 enum class PcgBuildLogCategory { Impostors=0, ServerScene=1, CreatedAddressableConfig=2, AddressableBundles=3, ProjectBuild=4, ColliderBaking=5, UpdatedAddressableConfig=6 };
+/** @brief PcgBuildLogEntry public API. */
 struct PcgBuildLogEntry { PcgBuildLogCategory category=PcgBuildLogCategory::Impostors; std::string sceneName; int64_t timestamp=0; };
 /** @brief Caller-owned Pcg publication configuration and ordered build history. */
 class EVENGINE_API_PLATFORM PcgBuildConfig {

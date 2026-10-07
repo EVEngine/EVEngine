@@ -51,6 +51,7 @@ public:
     GraphicsOffscreenPreviewService(graphics::Graphics* graphics,
                                     graphics::ICanvasFactory* canvases,
                                     graphics::ICanvasTarget* targets);
+    /** @brief Graphics offscreen preview service. */
     ~GraphicsOffscreenPreviewService();
     GraphicsOffscreenPreviewService(const GraphicsOffscreenPreviewService&) = delete;
     GraphicsOffscreenPreviewService& operator=(const GraphicsOffscreenPreviewService&) = delete;

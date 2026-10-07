@@ -33,18 +33,27 @@ class EVENGINE_API_ORCHESTRATION ProjectSettingsTarget final : public ::eve::edi
                                                                public IDomainOperationTarget,
                                                                public IPropertyProvider {
 public:
+    /** @brief Project settings target. */
     ProjectSettingsTarget(std::string id, ProjectSettingsSchema schema);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return settings whose changed values require subsystem restart. */
@@ -58,6 +67,7 @@ private:
     /** @brief Find a setting descriptor. @return Borrowed pointer into the immutable descriptor table, or null.
      * @lifetime Valid for the lifetime of this target. */
     const ProjectSettingDescriptor*    descriptor(const PropertyPath& path) const;
+    /** @brief Selection matches. */
     bool                               selectionMatches(const SelectionSnapshot& selection) const;
     std::string                        id_;
     ProjectSettingsSchema              schema_;

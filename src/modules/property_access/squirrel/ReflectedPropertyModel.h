@@ -36,14 +36,20 @@ public:
      *             callbacks while constructing.
      */
     ReflectedPropertyModel(Runtime &runtime, ssq::Object instance);
+    /** @brief Reflected property model. */
     ~ReflectedPropertyModel() override;
     ReflectedPropertyModel(const ReflectedPropertyModel &) = delete;
     ReflectedPropertyModel &operator=(const ReflectedPropertyModel &) = delete;
 
+    /** @brief Schema. */
     const PropertySchema &schema() const override { return schema_; }
+    /** @brief Reads . */
     std::optional<eve::Value> read(const std::string &path) const override;
+    /** @brief Writes . */
     WriteResult               write(const std::string &path, const eve::Value &value) override;
+    /** @brief Revision. */
     std::uint64_t             revision() const override { return revision_; }
+    /** @brief Subscribe. */
     Subscription              subscribe(ChangeCallback callback) override;
 
     /** @brief Rebuild reflection metadata after a script reload. */

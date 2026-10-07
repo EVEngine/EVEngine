@@ -61,7 +61,9 @@ struct PcgGraphPreviewResult {
  */
 class EVENGINE_API_ORCHESTRATION PcgPointGraphDomain final : public IGraphDomainProvider {
 public:
+    /** @brief Domain. */
     std::string domain() const override { return "procgen.point"; }
+    /** @brief Can connect. */
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a generic editor node from one reflected PointGraph operation. */

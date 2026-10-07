@@ -30,8 +30,11 @@ class EVENGINE_API_WORLD PixelWorldAtlasRenderer {
 public:
     /** @brief Create a transparent atlas for `[origin, origin + size)`. Throws on invalid size. */
     PixelWorldAtlasRenderer(int originX, int originY, int width, int height);
+    /** @brief Pixel world atlas renderer. */
     ~PixelWorldAtlasRenderer();
+    /** @brief Pixel world atlas renderer. */
     PixelWorldAtlasRenderer(PixelWorldAtlasRenderer&&) noexcept;
+    /** @brief Operator =. */
     PixelWorldAtlasRenderer& operator=(PixelWorldAtlasRenderer&&) noexcept;
     PixelWorldAtlasRenderer(const PixelWorldAtlasRenderer&) = delete;
     PixelWorldAtlasRenderer& operator=(const PixelWorldAtlasRenderer&) = delete;
@@ -61,12 +64,19 @@ public:
      * @lifetime Valid until the originating Graphics releases textures or is destroyed.
      */
     graphics::Texture* texture() const noexcept;
+    /** @brief Origin x. */
     int originX() const noexcept;
+    /** @brief Origin y. */
     int originY() const noexcept;
+    /** @brief Width. */
     int width() const noexcept;
+    /** @brief Height. */
     int height() const noexcept;
+    /** @brief Rendered revision. */
     std::uint64_t renderedRevision() const noexcept;
+    /** @brief Total uploaded chunks. */
     std::uint64_t totalUploadedChunks() const noexcept;
+    /** @brief Uploads count. */
     std::uint64_t uploadCount() const noexcept;
 
 private:

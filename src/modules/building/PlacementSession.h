@@ -34,36 +34,54 @@ enum class PatternUpdateStatus { Updated, Rejected };
 /** @brief Outcome of atomically committing a unified placement pattern. */
 enum class PatternExecuteStatus { Placed, Rejected };
 
+/** @brief EVENGINE_API_WORLD public API. */
 class EVENGINE_API_WORLD PlacementSession {
 public:
+    /** @brief Placement session. */
     PlacementSession();
+    /** @brief Placement session. */
     ~PlacementSession() = default;
 
     PlacementSession(const PlacementSession &) = delete;
     PlacementSession &operator=(const PlacementSession &) = delete;
 
+    /** @brief Destroys . */
     void destroy();
 
+    /** @brief Starts placement. */
     bool startPlacement(PlacementWorld *world, const std::string &buildingId);
+    /** @brief Stops placement. */
     void stopPlacement();
+    /** @brief True when active. */
     bool isActive() const { return active_; }
+    /** @brief Returns the world. */
     PlacementWorld *getWorld() const { return world_; }
+    /** @brief Returns the building id. */
     std::string getBuildingId() const;
+    /** @brief Returns the ghost. */
     Ghost *getGhost() const { return ghost_; }
 
     /** 交互模式："place" 放置 / "remove" 拆除（默认 place）。 */
+    /** @brief Sets the mode. */
     void setMode(const std::string &mode);
+    /** @brief Returns the mode. */
     std::string getMode() const { return mode_; }
 
+    /** @brief Sets the rotation deg. */
     void setRotationDeg(float deg);
+    /** @brief Rotate by. */
     void rotateBy(float deltaDeg);
+    /** @brief Returns the rotation deg. */
     float getRotationDeg() const;
 
     /** 2D：世界坐标刷新鬼影并校验。 */
+    /** @brief Updates from world. */
     bool updateFromWorld(PlacementWorld *world, float worldX, float worldY);
     /** 3D：真实世界坐标刷新鬼影并校验。 */
+    /** @brief Updates from world 3 d. */
     bool updateFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ);
     /** 通过注册表面（如 "plane"）刷新鬼影并校验。 */
+    /** @brief Updates from surface. */
     bool updateFromSurface(PlacementWorld *world, const std::string &surface, float x, float y);
     /** @brief Refresh an edge-object ghost from a cell-relative cardinal edge. */
     EdgeUpdateStatus updateEdge(PlacementWorld *world, int cellX, int cellY,
@@ -74,7 +92,9 @@ public:
     FreeUpdateStatus updateFree(PlacementWorld *world, float worldX, float worldY,
                                 float elevation = 0.f);
 
+    /** @brief True when valid. */
     bool isValid() const;
+    /** @brief Returns the reason. */
     std::string getReason() const;
 
     /**
@@ -82,6 +102,7 @@ public:
      *  place  -> world.placeGhost(ghost)，成功返回 instanceId（0 = 失败）。
      *  remove -> 拆除鬼影所在格（默认通道）的建筑，返回被拆 instanceId（0 = 无）。
      */
+    /** @brief Execute. */
     int execute();
     /** @brief Atomically place an axis-aligned edge line between logical vertices. */
     EdgeLineExecuteStatus executeEdgeLine(int startVertexX, int startVertexY, int endVertexX,
@@ -137,9 +158,13 @@ public:
     AreaExecuteStatus executeBrush(int centerCellX, int centerCellY, int radius);
     /** @brief Number of cells in the last successful preview. */
     int getAreaPreviewCount() const { return static_cast<int>(areaPreview_.cells.size()); }
+    /** @brief Returns the area preview cell x. */
     int getAreaPreviewCellX(int index) const;
+    /** @brief Returns the area preview cell y. */
     int getAreaPreviewCellY(int index) const;
+    /** @brief Returns the area preview accepted. */
     bool getAreaPreviewAccepted(int index) const;
+    /** @brief Returns the area preview reason. */
     std::string getAreaPreviewReason(int index) const;
 
     /**

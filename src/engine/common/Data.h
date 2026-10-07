@@ -4,6 +4,7 @@
 
 namespace eve {
 
+/** @brief Data public API. */
 class Data {
 public:
     /**

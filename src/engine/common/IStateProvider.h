@@ -28,6 +28,7 @@ enum class StateReloadPolicy {
 class EVENGINE_API_FOUNDATION_INLINE IStateProvider {
 public:
     static constexpr const char* capabilityName = "IStateProvider";
+    /** @brief I state provider. */
     virtual ~IStateProvider()                   = default;
 
     /** @brief Stable kind label, e.g. "dialogue" / "anim" / "rpg.casting". */

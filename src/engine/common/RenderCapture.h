@@ -36,8 +36,10 @@ class EVENGINE_API_FOUNDATION_INLINE IRenderCapture {
 public:
     static constexpr const char* capabilityName = "IRenderCapture";
 
+    /** @brief I render capture. */
     virtual ~IRenderCapture() = default;
 
+    /** @brief Status. */
     virtual RenderStatusInfo status() const = 0;
     /** @brief Enable/disable full-frame readback for subsequent presents. */
     virtual void setReadbackEnabled(bool enabled) = 0;

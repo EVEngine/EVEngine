@@ -19,6 +19,7 @@ struct TerrainVegetationGpuPrototype {
     std::uint32_t materialId = graphics::kInvalidGpuDrivenSlot;
     std::uint32_t flags      = 0x7u;
     std::uint32_t lodGroupId = graphics::kInvalidGpuDrivenSlot;
+    /** @brief Part public API. */
     struct Part {
         std::array<float, 16> localTransform{};
         std::uint32_t meshId     = graphics::kInvalidGpuDrivenSlot;
@@ -39,6 +40,7 @@ struct TerrainVegetationGpuPrototypeRequest {
 /** @brief Provider boundary from stable prototype names to backend table slots. */
 class ITerrainVegetationGpuResolver {
 public:
+    /** @brief Releases ITerrainVegetationGpuResolver resources. */
     virtual ~ITerrainVegetationGpuResolver() = default;
 
     /**
@@ -106,8 +108,10 @@ struct TerrainVegetationGpuFrame {
  */
 class EVENGINE_API_ORCHESTRATION TerrainVegetationRenderer {
 public:
+    /** @brief Terrain vegetation renderer. */
     TerrainVegetationRenderer(TerrainVegetationRealization realization,
                               ITerrainVegetationGpuResolver& resolver);
+    /** @brief Terrain vegetation renderer. */
     ~TerrainVegetationRenderer();
     TerrainVegetationRenderer(const TerrainVegetationRenderer&) = delete;
     TerrainVegetationRenderer& operator=(const TerrainVegetationRenderer&) = delete;

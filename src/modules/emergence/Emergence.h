@@ -23,7 +23,9 @@ namespace eve::emergence {
 class EVENGINE_API_FOUNDATION Emergence : public Module {
 public:
     Module_REG(Emergence);
+    /** @brief Emergence. */
     Emergence()           = default;
+    /** @brief Emergence. */
     ~Emergence() override = default;
 
     /**

@@ -63,20 +63,31 @@ class EVENGINE_API_DOMAINS HouseGenDocumentTarget final : public ::eve::editing:
                                                           public IDomainOperationTargetStaging,
                                                           public IPropertyProvider {
 public:
+    /** @brief House gen document target. */
     explicit HouseGenDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Add one component with stable editor and unique runtime IDs. */
@@ -85,16 +96,23 @@ public:
     EditorResult<DomainOperation> makeDeleteComponent(const ObjectId& id) const;
     /** @brief Replace the deterministic generation request. */
     EditorResult<DomainOperation>              makeSetRequest(const housegen::HouseRequest& request) const;
+    /** @brief Components. */
     const std::vector<HouseKitComponentValue>& components() const { return components_; }
+    /** @brief Request. */
     const housegen::HouseRequest&              request() const { return request_; }
     /** @brief Validate kit fields, generator-required categories and request budgets. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
+    /** @brief Loads snapshot. */
     EditorResult<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                                matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue                         contentValue() const;
+    /** @brief Replacement. */
     EditorResult<DomainOperation>       replacement(EditorValue content, std::string property = {}) const;
     std::string                         id_;
     std::vector<HouseKitComponentValue> components_;
@@ -104,7 +122,9 @@ private:
 /** @brief Candidate generation containing a validated library and deterministic layout. */
 class EVENGINE_API_DOMAINS HouseGenPreviewRuntime {
 public:
+    /** @brief House gen preview runtime. */
     HouseGenPreviewRuntime();
+    /** @brief House gen preview runtime. */
     ~HouseGenPreviewRuntime();
     /** @brief Generate entirely in temporary state before replacing the active preview. */
     EditorResult<void> publish(const HouseGenDocumentTarget& document);
@@ -116,6 +136,7 @@ public:
     /** @brief Access the published component library. @return Borrowed pointer owned by this runtime. @lifetime Valid
      * until the next successful publish or destruction. */
     const housegen::HouseComponentLibrary* library() const { return library_.get(); }
+    /** @brief Revision. */
     Revision                               revision() const { return revision_; }
 
 private:

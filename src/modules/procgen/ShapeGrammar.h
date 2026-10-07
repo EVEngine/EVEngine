@@ -31,12 +31,19 @@ public:
     /** @brief Register a weighted asset variant for a symbol. */
     bool addModule(const std::string& symbol, const std::string& asset, float length,
                    float weight = 1.f);
+    /** @brief Removes module. */
     bool removeModule(const std::string& symbol);
+    /** @brief True when module. */
     bool hasModule(const std::string& symbol) const;
+    /** @brief Returns the module count. */
     int  getModuleCount() const;
+    /** @brief Returns the module symbol. */
     std::string getModuleSymbol(int index) const;
+    /** @brief Returns the variant count. */
     int         getVariantCount(const std::string& symbol) const;
+    /** @brief Returns the variant asset. */
     std::string getVariantAsset(const std::string& symbol, int index) const;
+    /** @brief Returns the variant length. */
     float       getVariantLength(const std::string& symbol, int index) const;
 
     /** @brief Parse and validate grammar without generating output. */
@@ -48,7 +55,9 @@ public:
      */
     PointSet* generate(const std::string& grammar, PointSet* controlPoints, uint32_t seed,
                        bool acceptIncomplete);
+    /** @brief Returns the error. */
     std::string getError() const;
+    /** @brief Debug report. */
     std::string debugReport() const;
 
 private:
@@ -62,7 +71,9 @@ private:
         const std::string& text;
         size_t             position = 0;
         std::string        error;
+        /** @brief Sequence. */
         std::vector<Element> sequence(char terminator = '\0');
+        /** @brief Skip whitespace. */
         void skipWhitespace();
     };
 

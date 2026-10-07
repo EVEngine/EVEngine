@@ -26,13 +26,19 @@ class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public ::eve::editing
                                                            public IDomainOperationTarget,
                                                            public IDomainOperationTargetStaging {
 public:
+    /** @brief Audio effect chain target. */
     explicit AudioEffectChainTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate effect records in processing order. */
     std::vector<AudioEffectRecord> effects() const;
@@ -60,7 +66,9 @@ private:
 /** @brief Runtime backend boundary for atomic effect-chain publication. */
 class IAudioEffectChainSink {
 public:
+    /** @brief Releases IAudioEffectChainSink resources. */
     virtual ~IAudioEffectChainSink() = default;
+    /** @brief Publish. */
     virtual EditorResult<void> publish(const std::string& chain, Revision revision,
                                        const std::vector<AudioEffectRecord>& effects) = 0;
 };
@@ -68,6 +76,7 @@ public:
 /** @brief Rejects invalid/stale chains before runtime publication. */
 class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
 public:
+    /** @brief Publish. */
     EditorResult<void> publish(const AudioEffectChainTarget& chain,
                                Revision expectedRevision,
                                IAudioEffectChainSink& sink) const;

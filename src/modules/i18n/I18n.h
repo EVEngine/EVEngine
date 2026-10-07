@@ -38,7 +38,9 @@ namespace eve::i18n {
 class EVENGINE_API_PLATFORM I18n : public Module {
 public:
     Module_REG(I18n);
+    /** @brief I 18 n. */
     I18n()           = default;
+    /** @brief I 18 n. */
     ~I18n() override = default;
 
     /**
@@ -83,6 +85,7 @@ public:
     [[nodiscard]] eve::Result<int> replaceBundleFromJson(const std::string& json);
     /** @brief 卸载 / 清空语言表。 */
     void unload(const std::string& lang);
+    /** @brief Clears . */
     void clear();
 
     /**
@@ -95,11 +98,17 @@ public:
     [[nodiscard]] eve::Result<void> selectLanguage(const std::string& lang);
     /** @brief Compatibility-only bool projection of selectLanguage. */
     bool        setLanguage(const std::string& lang);
+    /** @brief Returns the language. */
     std::string getLanguage() const { return language_; }
+    /** @brief Sets the default language. */
     void        setDefaultLanguage(const std::string& lang) { defaultLanguage_ = lang; }
+    /** @brief Returns the default language. */
     std::string getDefaultLanguage() const { return defaultLanguage_; }
+    /** @brief Returns the language count. */
     int         getLanguageCount() const { return int(locales_.size()); }
+    /** @brief Returns the language at. */
     std::string getLanguageAt(int index) const;
+    /** @brief True when language. */
     bool        hasLanguage(const std::string& lang) const;
     /** @brief Return whether one exact locale owns `key`, without default-language substitution. */
     bool hasInLanguage(const std::string& lang, const std::string& key) const;
@@ -117,14 +126,20 @@ public:
 
     /** @brief 翻译查找：按键（点号命名空间）取字符串。 */
     bool        has(const std::string& key) const;
+    /** @brief Returns the value. */
     std::string get(const std::string& key) const;
+    /** @brief Returns the with params. */
     std::string getWithParams(const std::string& key, const std::unordered_map<std::string, std::string>& params) const;
+    /** @brief Returns the plural. */
     std::string getPlural(const std::string& key, int n) const;
+    /** @brief Returns the plural with params. */
     std::string getPluralWithParams(const std::string& key, int n,
                                     const std::unordered_map<std::string, std::string>& params) const;
 
     // ---- hot reload (poll from the game loop) ----
+    /** @brief Sets the auto reload. */
     void setAutoReload(bool enable) { autoReload_ = enable; }
+    /** @brief True when auto reload. */
     bool isAutoReload() const { return autoReload_; }
     /** @brief Re-read changed locale files; returns the number of reloads performed. */
     int update(float dt);

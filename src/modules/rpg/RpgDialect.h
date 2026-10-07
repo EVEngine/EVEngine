@@ -274,9 +274,13 @@ public:
  */
 class EVENGINE_API_PLATFORM RpgStorySession {
 public:
+    /** @brief Rpg story session. */
     RpgStorySession();
+    /** @brief Rpg story session. */
     ~RpgStorySession();
+    /** @brief Rpg story session. */
     RpgStorySession(RpgStorySession&&) noexcept;
+    /** @brief Operator =. */
     RpgStorySession& operator=(RpgStorySession&&) noexcept;
     RpgStorySession(const RpgStorySession&) = delete;
     RpgStorySession& operator=(const RpgStorySession&) = delete;

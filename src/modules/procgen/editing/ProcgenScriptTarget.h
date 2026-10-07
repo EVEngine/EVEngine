@@ -52,13 +52,19 @@ public:
 
     /** @brief Capability identity published by describe() for Inspector editing. */
     static editing::CapabilityId propertyCapabilityId() {
+        /** @brief Capability id. */
         return editing::CapabilityId("eve.editor.target.procgen-script-properties");
     }
 
+    /** @brief Target id. */
     editing::TargetId targetId() const override { return editing::TargetId(id_); }
+    /** @brief Revision. */
     std::uint64_t     revision() const override { return revision_; }
+    /** @brief Dirty region. */
     editing::EditRegion dirtyRegion() const override { return dirty_; }
+    /** @brief Clears dirty region. */
     void              clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     editing::TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector property capability.
@@ -66,16 +72,24 @@ public:
      * @lifetime Valid until this target is destroyed or replaced by commitDomainState.
      */
     void* queryCapability(const editing::CapabilityId&) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const editing::DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<editing::IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const editing::SelectionSnapshot&) const override;
+    /** @brief Schema. */
     editing::PropertySchema schema(const editing::SelectionSnapshot&) const override;
+    /** @brief Reads . */
     editing::PropertyReadResult read(const editing::SelectionSnapshot&,
                                      const editing::PropertyPath&) const override;
+    /** @brief Make set. */
     EditorResult<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
                                                    const editing::PropertyPath&, const EditorValue&,
                                                    editing::PropertySetMode) const override;
+    /** @brief Make reset. */
     EditorResult<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
                                                      const editing::PropertyPath&) const override;
 
@@ -89,11 +103,17 @@ public:
     /** @brief Replace module identity and schema, remapping values (drop unknown, fill defaults). */
     EditorResult<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
 
+    /** @brief Uri. */
     const std::string&              uri() const { return uri_; }
+    /** @brief Module id. */
     const std::string&              moduleId() const { return moduleId_; }
+    /** @brief Display name. */
     const std::string&              displayName() const { return displayName_; }
+    /** @brief Kind. */
     const std::string&              kind() const { return kind_; }
+    /** @brief Params. */
     const std::vector<procgen::ParamDescriptor>& params() const { return params_; }
+    /** @brief Values. */
     const EditorValue::Object&      values() const { return values_; }
     /**
      * @brief Find one reflected parameter by stable key.
@@ -105,16 +125,25 @@ public:
      */
     const procgen::ParamDescriptor* findParam(const std::string& key) const;
 
+    /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
+    /** @brief Loads snapshot. */
     EditorResult<void>            loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool matches(const editing::SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue contentValue() const;
+    /** @brief Schema value. */
     EditorValue schemaValue() const;
+    /** @brief Default value. */
     static EditorValue defaultValue(const procgen::ParamDescriptor& param);
+    /** @brief Property type. */
     static editing::PropertyType propertyType(procgen::ParamKind kind);
+    /** @brief Applies spec. */
     void applySpec(ProcgenScriptModuleSpec spec);
 
     std::string                         id_;

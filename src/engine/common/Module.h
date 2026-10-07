@@ -13,11 +13,14 @@ class Class;
 }  // namespace ssq
 
 #define SSQ_REG                            \
+    /** @brief Expose. */
     static void expose(ssq::Table& table); \
+    /** @brief Expose. */
     static void expose(ssq::Class& vm);
 
 #define Module_REG(ModuleName)                                                                                     \
     SSQ_REG                                                                                                        \
+    /** @brief Returns the name. */
     virtual std::string getName() const override { return name; }                                                  \
     /** @brief Return the manager-owned module instance for this registration.                                     \
      * @ownership Borrowed; ModuleManager retains ownership.                                                       \
@@ -25,16 +28,19 @@ class Class;
      * @lifetime Valid until module shutdown or registry teardown.                                                 \
      * @thread Main/composition thread only.                                                                       \
      * @reentrancy Must not re-enter module registration. */                                                       \
+    /** @brief Creates . */
     [[nodiscard("module instance ownership must be retained or explicitly handled")]] static ModuleName* create(); \
     static const char*                                                                                   name
 
 #define Module_IMPL(ModuleName, newExpr) \
     ModuleRegister ModuleName##_register(ModuleName::name, \
         (ModuleManager::creator_t)(ModuleName::create), ModuleName::expose); \
+    /** @brief Creates . */
     ModuleName* ModuleName::create() { \
         auto* p = ModuleManager::find(name); \
         if (p) return static_cast<ModuleName*>(p); \
         ModuleName* n = newExpr; \
+        /** @brief Inserts . */
         ModuleManager::insert(name, n); \
         return n; \
     } \
@@ -47,15 +53,20 @@ namespace eve {
 
 class Runtime;
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION Module {
 public:
+    /** @brief Module. */
     virtual ~Module() {}
+    /** @brief Returns the name. */
     virtual std::string getName() const = 0;
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION ModuleManager {
 public:
     typedef Module* (*creator_t)();
+    /** @brief Void. */
     typedef void    (*exposer_t)(ssq::Table&);
 
     /** @brief Singleton registry holding every registered engine module. */
@@ -96,8 +107,10 @@ public:
      */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
+    /** @brief Expose. */
     static void expose(ssq::VM& vm);
     // Expose modules registered after the initial expose() (e.g. plugins).
+    /** @brief Expose pending. */
     static int  expose_pending();
     /**
      * @brief Active runtime associated with the last expose() call, or nullptr.
@@ -129,6 +142,7 @@ public:
      * @reentrancy The returned instance must not be used to re-enter registry mutation.
      */
     template <typename T>
+    /** @brief Returns the instance. */
     [[nodiscard("module lookup result must be checked before use")]] static T* getInstance(const char* name) {
         return static_cast<T*>(getInstanceRaw(name));
     }
@@ -142,6 +156,7 @@ public:
      * @reentrancy Factory code must not recursively request the same module.
      */
     template <typename T>
+    /** @brief Requires instance. */
     [[nodiscard("module instance ownership must be retained or explicitly handled")]] static T* requireInstance(
         const char* name) {
         return static_cast<T*>(requireInstanceRaw(name));
@@ -156,6 +171,7 @@ public:
     static void requireAll();
 
 protected:
+    /** @brief Expose vm. */
     static void exposeVM(ssq::VM& vm);
 
 private:
@@ -179,6 +195,7 @@ private:
     static Module* requireInstanceRaw(const char* name);
 
 protected:
+    /** @brief ModuleInfo public API. */
     struct ModuleInfo {
         creator_t creator = nullptr;
         exposer_t exposer = nullptr;
@@ -195,7 +212,9 @@ protected:
     friend struct ModuleBindAccess;
 };
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 struct EVENGINE_API_FOUNDATION ModuleRegister {
+    /** @brief Module register. */
     ModuleRegister(const char* name, ModuleManager::creator_t c, ModuleManager::exposer_t e);
 };
 

@@ -12,8 +12,11 @@ class EVENGINE_API_EDITORS OffscreenMaterialPreviewRenderer final : public IMate
 public:
     using DrawCallback = std::function<EditorResult<void>(const MaterialPreviewRenderRequest&,
                                                            graphics::Graphics*, graphics::Canvas*)>;
+    /** @brief Offscreen material preview renderer. */
     OffscreenMaterialPreviewRenderer(GraphicsOffscreenPreviewService* previews, DrawCallback draw)
+        /** @brief Previews. */
         : previews_(previews), draw_(std::move(draw)) {}
+    /** @brief Renders . */
     MaterialPreviewRenderResult render(const MaterialPreviewRenderRequest& request) override;
 private:
     GraphicsOffscreenPreviewService* previews_ = nullptr;

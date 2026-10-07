@@ -15,6 +15,7 @@ namespace eve::graphics::fog {
 
 /** @brief Analytic volume used to bound a camera ray before sampling. */
 struct FogVolumeBound {
+    /** @brief Kind public API. */
     enum class Kind : uint8_t { SkyShell, HeightLayer, Obb };
 
     Kind kind = Kind::HeightLayer;

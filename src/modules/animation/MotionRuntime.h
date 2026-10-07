@@ -33,6 +33,7 @@ public:
     using QuatCallback  = std::function<void(MotionQuat)>;
     using VoidCallback  = std::function<void()>;
 
+    /** @brief FloatDesc public API. */
     struct FloatDesc {
         float             from          = 0.f;
         float             to            = 0.f;
@@ -198,6 +199,7 @@ private:
         std::uint32_t              seed          = 0;
         std::string                ease          = "linear";
         Sink                      *sink          = nullptr;
+        /** @brief Void. */
         std::function<void(Value)> onUpdate;
         VoidCallback               onComplete;
         VoidCallback               onCancel;

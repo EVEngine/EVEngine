@@ -20,6 +20,7 @@ namespace eve::rx {
  */
 class EVENGINE_API_PLATFORM Value {
 public:
+    /** @brief Type public API. */
     enum class Type { Nil, Int, Float, Bool, String, Ptr };
 
     Type        type = Type::Nil;
@@ -91,17 +92,21 @@ public:
  */
 class Subscription {
 public:
+    /** @brief Constructs a Subscription. */
     Subscription() = default;
     /** @brief Wraps a dispose callback (usually unsubscribing from a Subject). */
     explicit Subscription(std::function<void()> dispose) : dispose_(std::move(dispose)) {}
     Subscription(const Subscription&) = delete;
     Subscription& operator=(const Subscription&) = delete;
+    /** @brief Constructs a Subscription. */
     Subscription(Subscription&& other) noexcept : dispose_(std::move(other.dispose_)), disposed_(other.disposed_) {
         other.dispose_  = nullptr;
         other.disposed_ = true;
     }
+    /** @brief Operator =. */
     Subscription& operator=(Subscription&& other) noexcept {
         if (this != &other) {
+            /** @brief Dispose. */
             dispose();
             dispose_  = std::move(other.dispose_);
             disposed_ = other.disposed_;
@@ -110,6 +115,7 @@ public:
         }
         return *this;
     }
+    /** @brief Releases Subscription resources. */
     ~Subscription() { dispose(); }
 
     /** @brief Runs the dispose callback once; idempotent. */
@@ -118,6 +124,7 @@ public:
             disposed_ = true;
             auto fn = std::move(dispose_);
             dispose_ = nullptr;
+            /** @brief Fn. */
             fn();
         }
     }
@@ -135,6 +142,7 @@ private:
  * notifications are ignored.
  */
 template <typename T>
+/** @brief Observer public API. */
 class Observer {
 public:
     using NextFn      = std::function<void(const T&)>;
@@ -179,8 +187,10 @@ private:
  * Observable; subscribe() returns a Subscription used to cancel.
  */
 template <typename T>
+/** @brief Observable public API. */
 class Observable {
 public:
+    /** @brief Releases Observable resources. */
     virtual ~Observable() = default;
 
     /** @brief Subscribes with a full observer; returns a cancel handle. */
@@ -190,6 +200,7 @@ public:
     Subscription subscribe(typename Observer<T>::NextFn next) {
         Observer<T> obs;
         obs.onNext = std::move(next);
+        /** @brief Subscribe. */
         return subscribe(std::move(obs));
     }
     /** @brief Subscribes with value/error/completed callbacks. */
@@ -200,6 +211,7 @@ public:
         obs.onNext      = std::move(next);
         obs.onError     = std::move(error);
         obs.onCompleted = std::move(completed);
+        /** @brief Subscribe. */
         return subscribe(std::move(obs));
     }
 
@@ -207,6 +219,7 @@ public:
     Observable<T>* filter(std::function<bool(const T&)> pred);
     /** @brief Transforms each value with fn. */
     template <typename R>
+    /** @brief Map. */
     Observable<R>* map(std::function<R(const T&)> fn);
     /** @brief Emits at most the first n values, then completes. */
     Observable<T>* take(int n);
@@ -222,10 +235,14 @@ public:
 
 /** @brief Internal: observable built directly from a subscribe function. */
 template <typename T>
+/** @brief AnonymousObservable public API. */
 class AnonymousObservable : public Observable<T> {
 public:
+    /** @brief Constructs a AnonymousObservable. */
     explicit AnonymousObservable(std::function<Subscription(Observer<T>)> fn)
+        /** @brief Fn. */
         : fn_(std::move(fn)) {}
+    /** @brief Subscribe. */
     Subscription subscribe(Observer<T> obs) override { return fn_(std::move(obs)); }
 
 private:
@@ -234,6 +251,7 @@ private:
 
 // ---- Operators ----
 template <typename T>
+/** @brief Filter. */
 Observable<T>* Observable<T>::filter(std::function<bool(const T&)> pred) {
     auto* self = this;
     return new AnonymousObservable<T>([self, pred](Observer<T> out) {
@@ -249,6 +267,7 @@ Observable<T>* Observable<T>::filter(std::function<bool(const T&)> pred) {
 
 template <typename T>
 template <typename R>
+/** @brief Map. */
 Observable<R>* Observable<T>::map(std::function<R(const T&)> fn) {
     auto* self = this;
     return new AnonymousObservable<R>([self, fn](Observer<R> out) {
@@ -261,6 +280,7 @@ Observable<R>* Observable<T>::map(std::function<R(const T&)> fn) {
 }
 
 template <typename T>
+/** @brief Take. */
 Observable<T>* Observable<T>::take(int n) {
     auto* self = this;
     return new AnonymousObservable<T>([self, n](Observer<T> out) {
@@ -282,6 +302,7 @@ Observable<T>* Observable<T>::take(int n) {
 }
 
 template <typename T>
+/** @brief Skip. */
 Observable<T>* Observable<T>::skip(int n) {
     auto* self = this;
     return new AnonymousObservable<T>([self, n](Observer<T> out) {
@@ -301,6 +322,7 @@ Observable<T>* Observable<T>::skip(int n) {
 }
 
 template <typename T>
+/** @brief First. */
 Observable<T>* Observable<T>::first() {
     auto* self = this;
     return new AnonymousObservable<T>([self](Observer<T> out) {
@@ -319,6 +341,7 @@ Observable<T>* Observable<T>::first() {
 }
 
 template <typename T>
+/** @brief Take until. */
 Observable<T>* Observable<T>::takeUntil(Observable<T>* other) {
     auto* self = this;
     return new AnonymousObservable<T>([self, other](Observer<T> out) {
@@ -339,6 +362,7 @@ Observable<T>* Observable<T>::takeUntil(Observable<T>* other) {
         };
         auto stop = std::make_shared<Subscription>(other->subscribe(std::move(stopper)));
 
+        /** @brief Subscription. */
         return Subscription([src, stop]() mutable {
             src->dispose();
             stop->dispose();
@@ -347,6 +371,7 @@ Observable<T>* Observable<T>::takeUntil(Observable<T>* other) {
 }
 
 template <typename T>
+/** @brief Distinct until changed. */
 Observable<T>* Observable<T>::distinctUntilChanged() {
     auto* self = this;
     return new AnonymousObservable<T>([self](Observer<T> out) {
@@ -370,9 +395,11 @@ Observable<T>* Observable<T>::distinctUntilChanged() {
  * Thread-safe: onNext/onError/onCompleted/subscribe are mutex-protected.
  */
 template <typename T>
+/** @brief Subject public API. */
 class Subject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
+    /** @brief Releases Subject resources. */
     ~Subject() override = default;
 
     /** @brief Registers an observer; returns a Subscription that unregisters it. */
@@ -380,6 +407,7 @@ public:
         auto slot = std::make_shared<Slot>();
         slot->observer = std::move(obs);
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             if (stopped_) {
                 // Terminal state: deliver the terminal notification immediately
@@ -390,6 +418,7 @@ public:
             }
             slots_.push_back(slot);
         }
+        /** @brief Subscription. */
         return Subscription([this, slot]() { removeSlot(slot); });
     }
 
@@ -397,17 +426,22 @@ public:
     void onNext(const T& v) { emit([&](Observer<T>& o) { o.next(v); }); }
     /** @brief Pushes a terminal error and stops the subject. */
     void onError(const std::string& e) {
+        /** @brief Emit. */
         emit([&](Observer<T>& o) { o.error(e); });
+        /** @brief Mark stopped. */
         markStopped();
     }
     /** @brief Pushes a terminal completion and stops the subject. */
     void onCompleted() {
+        /** @brief Emit. */
         emit([&](Observer<T>& o) { o.completed(); });
+        /** @brief Mark stopped. */
         markStopped();
     }
 
     /** @brief True while at least one live observer is registered. */
     bool hasObservers() const {
+        /** @brief Locks . */
         std::lock_guard<std::mutex> lock(mu_);
         for (const auto& s : slots_)
             if (!s->removed) return true;
@@ -415,6 +449,7 @@ public:
     }
     /** @brief Number of live (non-disposed) observers. */
     int observerCount() const {
+        /** @brief Locks . */
         std::lock_guard<std::mutex> lock(mu_);
         int n = 0;
         for (const auto& s : slots_)
@@ -462,6 +497,7 @@ private:
  * setValue()/onNext() update the stored value and push it to observers.
  */
 template <typename T>
+/** @brief BehaviorSubject public API. */
 class BehaviorSubject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
@@ -473,6 +509,7 @@ public:
         T latest;
         bool replay = false;
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             if (!completed_) {
                 latest = latest_;
@@ -485,6 +522,7 @@ public:
 
     /** @brief Current stored value. */
     T getValue() const {
+        /** @brief Locks . */
         std::lock_guard<std::mutex> lock(mu_);
         return latest_;
     }
@@ -492,6 +530,7 @@ public:
     void setValue(T v) {
         T emitted;
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             latest_ = std::move(v);
             emitted = latest_;
@@ -503,6 +542,7 @@ public:
     /** @brief Stops replay and delivers a terminal error. */
     void onError(const std::string& e) {
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             completed_ = true;
         }
@@ -511,6 +551,7 @@ public:
     /** @brief Stops replay and delivers a terminal completion. */
     void onCompleted() {
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             completed_ = true;
         }
@@ -531,6 +572,7 @@ private:
  * replays the buffer to every new subscriber.
  */
 template <typename T>
+/** @brief ReplaySubject public API. */
 class ReplaySubject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
@@ -541,6 +583,7 @@ public:
     Subscription subscribe(Observer<T> obs) override {
         std::vector<T> replay;
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             replay = buffer_;
         }
@@ -553,6 +596,7 @@ public:
     void onNext(T v) {
         T emitted = v;
         {
+            /** @brief Locks . */
             std::lock_guard<std::mutex> lock(mu_);
             buffer_.push_back(std::move(v));
             if (capacity_ > 0 && static_cast<int>(buffer_.size()) > capacity_)
@@ -583,6 +627,7 @@ private:
  * get() returns the current value; set() stores and pushes it to subscribers.
  */
 template <typename T>
+/** @brief ReactiveProperty public API. */
 class ReactiveProperty {
 public:
     /** @brief Creates a property with an initial value. */
@@ -595,10 +640,12 @@ public:
 
     /** @brief Subscribes with a full observer or a value callback. */
     Subscription subscribe(Observer<T> obs) { return subject_.subscribe(std::move(obs)); }
+    /** @brief Subscribe. */
     Subscription subscribe(typename Observer<T>::NextFn next) { return subject_.subscribe(std::move(next)); }
 
     /** @brief Underlying behavior subject / observable view. */
     BehaviorSubject<T>* asSubject() { return &subject_; }
+    /** @brief As observable. */
     Observable<T>*      asObservable() { return &subject_; }
 
 private:

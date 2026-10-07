@@ -57,7 +57,9 @@ public:
                                            std::optional<std::uint64_t> generation = std::nullopt) const;
     /** @brief Clear retained events while preserving the next sequence number. */
     void clear();
+    /** @brief Generation. */
     std::uint64_t generation() const { return generation_; }
+    /** @brief Dropped events. */
     std::uint64_t droppedEvents() const { return dropped_; }
 private:
     std::deque<EditorTimelineEvent> events_;

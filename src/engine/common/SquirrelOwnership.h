@@ -70,7 +70,9 @@ using ScriptValue = eve::Value;
  */
 class EVENGINE_API_FOUNDATION_INLINE BorrowedSquirrelObject {
 public:
+    /** @brief Borrowed squirrel object. */
     constexpr BorrowedSquirrelObject() noexcept = default;
+    /** @brief Borrowed squirrel object. */
     explicit constexpr BorrowedSquirrelObject(const ssq::Object* object) noexcept : object_(object) {}
 
     /**
@@ -106,6 +108,7 @@ private:
 class EVENGINE_API ISquirrelRootReleaser {
 public:
     static constexpr const char* capabilityName = "eve.script.ISquirrelRootReleaser";
+    /** @brief I squirrel root releaser. */
     virtual ~ISquirrelRootReleaser()            = default;
     /**
      * @brief Drops every C++-owned Squirrel root this listener still holds.
@@ -124,13 +127,18 @@ public:
  */
 class EVENGINE_API_FOUNDATION_INLINE OwnedSquirrelObject {
 public:
+    /** @brief Owned squirrel object. */
     OwnedSquirrelObject() = default;
+    /** @brief Owned squirrel object. */
     explicit OwnedSquirrelObject(ssq::Object object) noexcept : object_(std::move(object)) {}
 
     OwnedSquirrelObject(const OwnedSquirrelObject&)                = delete;
     OwnedSquirrelObject& operator=(const OwnedSquirrelObject&)     = delete;
+    /** @brief Owned squirrel object. */
     OwnedSquirrelObject(OwnedSquirrelObject&&) noexcept            = default;
+    /** @brief Operator =. */
     OwnedSquirrelObject& operator=(OwnedSquirrelObject&&) noexcept = default;
+    /** @brief Owned squirrel object. */
     ~OwnedSquirrelObject()                                         = default;
 
     /** @brief Returns the rooted object without transferring ownership. */
@@ -151,10 +159,13 @@ private:
  */
 [[nodiscard]] inline eve::Result<OwnedSquirrelObject> ownSquirrelObject(BorrowedSquirrelObject borrowed) {
     if (!borrowed.isBound()) {
+        /** @brief Failure. */
         return eve::Result<OwnedSquirrelObject>::failure(
+            /** @brief Error. */
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "cannot own an empty or unbound Squirrel object", {}, {}, "squirrel.ownership"));
     }
+    /** @brief Success. */
     return eve::Result<OwnedSquirrelObject>::success(OwnedSquirrelObject(*borrowed.get()));
 }
 
@@ -162,12 +173,14 @@ namespace detail {
 
 
 template <class T>
+/** @brief Squirrel type hash. */
 [[nodiscard]] inline std::size_t squirrelTypeHash() {
     static const std::size_t value = std::hash<std::string>{}(typeid(T).name());
     return value;
 }
 
 template <class T>
+/** @brief Owned instance release hook. */
 SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
     delete static_cast<T*>(pointer);
     return 0;
@@ -224,10 +237,13 @@ using SquirrelReleaseHook = SQInteger (*)(SQUserPointer, SQInteger);
  *          one-line adapters above and the type hash.
  */
 template <class T>
+/** @brief Make owned squirrel instance. */
 [[nodiscard]] eve::Result<ssq::Object> makeOwnedSquirrelInstance(HSQUIRRELVM vm, Owned<T> object) {
     if (!vm || !object) {
+        /** @brief Failure. */
         return eve::Result<ssq::Object>::failure(detail::ownedInstanceArgumentDiagnostic());
     }
+    /** @brief Make owned squirrel instance raw. */
     return detail::makeOwnedSquirrelInstanceRaw(vm, static_cast<void*>(object.release()),
                                                 &detail::ownedInstanceReleaseHook<T>, &detail::ownedInstanceDestroy<T>,
                                                 detail::squirrelTypeHash<T*>());

@@ -33,6 +33,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ScriptModuleSource {
 /** @brief Pluggable script source backend for directories, archives, plugins, or memory. */
 class EVENGINE_API_FOUNDATION_INLINE IScriptModuleProvider {
 public:
+    /** @brief I script module provider. */
     virtual ~IScriptModuleProvider() = default;
 
     /** @brief Resolves a specifier to a canonical URI. */
@@ -52,7 +53,9 @@ class EVENGINE_API_FOUNDATION ScriptModuleResolver {
 public:
     using ProviderId = uint64_t;
 
+    /** @brief Script module resolver. */
     explicit ScriptModuleResolver(SQVM* vm);
+    /** @brief Script module resolver. */
     ~ScriptModuleResolver();
     ScriptModuleResolver(const ScriptModuleResolver&)            = delete;
     ScriptModuleResolver& operator=(const ScriptModuleResolver&) = delete;

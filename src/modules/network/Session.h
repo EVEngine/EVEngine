@@ -15,7 +15,9 @@ class Channel;
  */
 class EVENGINE_API_PLATFORM Session {
 public:
+    /** @brief Session. */
     Session() = default;
+    /** @brief Session. */
     ~Session();
 
     /** @brief Registers a channel under a name (replaces an existing entry). */

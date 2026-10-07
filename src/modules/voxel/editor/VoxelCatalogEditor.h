@@ -40,6 +40,7 @@ public:
     VoxelCatalogEditor(const VoxelCatalogEditor&)            = delete;
     VoxelCatalogEditor& operator=(const VoxelCatalogEditor&) = delete;
 
+    /** @brief Target. */
     const voxel_editing::VoxelCatalogTarget& target() const noexcept { return target_; }
 
     /**
@@ -64,49 +65,86 @@ public:
      */
     [[nodiscard]] voxel_editing::EditorResult<void> pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
                                                                     float dz);
+    /** @brief Sets the voxel. */
     [[nodiscard]] voxel_editing::EditorResult<void> setVoxel(int x, int y, int z, bool occupied);
+    /** @brief Sets the selected socket. */
     [[nodiscard]] voxel_editing::EditorResult<void> setSelectedSocket(std::string tag, std::string kind);
+    /** @brief Select face. */
     [[nodiscard]] voxel_editing::EditorResult<void> selectFace(int face);
+    /** @brief Creates model. */
     [[nodiscard]] voxel_editing::EditorResult<void> createModel(std::string id, std::string name, int sizeX, int sizeY,
                                                                 int sizeZ);
+    /** @brief Delete selected model. */
     [[nodiscard]] voxel_editing::EditorResult<void> deleteSelectedModel();
 
+    /** @brief Undo. */
     [[nodiscard]] voxel_editing::EditorResult<editor::TransactionReceipt> undo();
+    /** @brief Redo. */
     [[nodiscard]] voxel_editing::EditorResult<editor::TransactionReceipt> redo();
 
+    /** @brief Can undo. */
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Preview revision. */
     std::uint64_t previewRevision() const noexcept { return previewRevision_; }
+    /** @brief Selected id. */
     std::string   selectedId() const { return selectedId_; }
+    /** @brief Tool name. */
     std::string   toolName() const;
+    /** @brief Selected face. */
     int           selectedFace() const noexcept { return selectedFace_; }
+    /** @brief Orbit yaw. */
     float         orbitYaw() const noexcept { return yaw_; }
+    /** @brief Orbit pitch. */
     float         orbitPitch() const noexcept { return pitch_; }
 
+    /** @brief Model count. */
     int         modelCount() const { return static_cast<int>(target_.models().size()); }
+    /** @brief Model id. */
     std::string modelId(int index) const;
+    /** @brief Model name. */
     std::string modelName(int index) const;
+    /** @brief Model fill. */
     std::string modelFill(int index) const;
+    /** @brief True when model selected. */
     bool        isModelSelected(int index) const;
 
+    /** @brief Voxel count. */
     int voxelCount() const;
+    /** @brief Voxel x. */
     int voxelX(int index) const;
+    /** @brief Voxel y. */
     int voxelY(int index) const;
+    /** @brief Voxel z. */
     int voxelZ(int index) const;
+    /** @brief Model size x. */
     int modelSizeX() const;
+    /** @brief Model size y. */
     int modelSizeY() const;
+    /** @brief Model size z. */
     int modelSizeZ() const;
 
+    /** @brief Screen voxel count. */
     int   screenVoxelCount() const { return static_cast<int>(screen_.size()); }
+    /** @brief Screen voxel x. */
     float screenVoxelX(int index) const;
+    /** @brief Screen voxel y. */
     float screenVoxelY(int index) const;
+    /** @brief Screen voxel w. */
     float screenVoxelW(int index) const;
+    /** @brief Screen voxel h. */
     float screenVoxelH(int index) const;
 
+    /** @brief Selected socket tag. */
     std::string selectedSocketTag() const;
+    /** @brief Selected socket kind. */
     std::string selectedSocketKind() const;
+    /** @brief Join partner count. */
     int         joinPartnerCount() const { return static_cast<int>(joinPartners_.size()); }
+    /** @brief Join partner id. */
     std::string joinPartnerId(int index) const;
 
 private:

@@ -27,22 +27,33 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS GBuffer {
 public:
+    /** @brief G buffer. */
     GBuffer() = default;
+    /** @brief G buffer. */
     ~GBuffer() = default;
 
     GBuffer(const GBuffer &) = delete;
     GBuffer &operator=(const GBuffer &) = delete;
 
+    /** @brief Attaches . */
     void attach(Graphics *gfx) { gfx_ = gfx; }
+    /** @brief Returns the graphics. */
     Graphics *getGraphics() const { return gfx_; }
 
+    /** @brief True when valid. */
     bool isValid() const;
+    /** @brief Returns the width. */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
 
+    /** @brief Returns the depth texture. */
     Texture *getDepthTexture() const { return depth_; }
+    /** @brief Returns the hw depth texture. */
     Texture *getHwDepthTexture() const { return hwDepth_; }
+    /** @brief Returns the normal texture. */
     Texture *getNormalTexture() const { return normal_; }
+    /** @brief Returns the albedo texture. */
     Texture *getAlbedoTexture() const { return albedo_; }
     /**
      * @brief Metallic/roughness/occlusion/specularFactor (may be null before Phase B backends wire).
@@ -62,6 +73,7 @@ public:
 
     /** @brief "depth" | "hwDepth" | "normal" | "albedo" | "pbrParams" | "emissive" | "velocity" */
     bool hasBuffer(const std::string &name) const;
+    /** @brief Returns the buffer. */
     Texture *getBuffer(const std::string &name) const;
 
     /**
@@ -72,6 +84,7 @@ public:
     void setTargets(int width, int height, Texture* depth, Texture* normal, Texture* albedo, Texture* hwDepth = nullptr,
                     Texture* pbrParams = nullptr, Texture* emissive = nullptr);
 
+    /** @brief Clears . */
     void clear();
 
 private:

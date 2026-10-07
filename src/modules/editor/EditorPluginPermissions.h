@@ -27,13 +27,19 @@ class EVENGINE_API_ORCHESTRATION PluginPermissionTarget final : public ::eve::ed
                                                                 public IDomainOperationTarget,
                                                                 public IDomainOperationTargetStaging {
 public:
+    /** @brief Plugin permission target. */
     explicit PluginPermissionTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate grants in stable-id order. */
     std::vector<PluginPermissionGrant> grants() const;

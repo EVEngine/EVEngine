@@ -102,19 +102,28 @@ struct EVENGINE_API_FOUNDATION AttributeModifier {
     ModifierSequence   sequence  = 0;
     std::string        policyId;
 
+    /** @brief Attribute modifier. */
     AttributeModifier() = default;
 
     /** @brief Construct a canonical modifier with an explicit operation. */
     AttributeModifier(ModifierId modifierId, AttributeId attributeId, SourceId sourceId,
                       AttributeOperation operationValue, double modifierValue, ModifierPriority priorityValue = 0,
                       ModifierSequence sequenceValue = 0, std::string policy = {})
+        /** @brief Id. */
         : id(std::move(modifierId)),
+          /** @brief Attribute. */
           attribute(std::move(attributeId)),
+          /** @brief Source. */
           source(std::move(sourceId)),
+          /** @brief Operation. */
           operation(operationValue),
+          /** @brief Value. */
           value(modifierValue),
+          /** @brief Priority. */
           priority(priorityValue),
+          /** @brief Sequence. */
           sequence(sequenceValue),
+          /** @brief Policy id. */
           policyId(std::move(policy)) {}
 
     /**

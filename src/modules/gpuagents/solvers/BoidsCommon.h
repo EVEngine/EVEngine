@@ -25,9 +25,11 @@ inline bool isInFieldOfView(const glm::vec3& forward, const glm::vec3& toNeighbo
     const float len = glm::length(toNeighbor);
     if (len < 1e-6f) return true;
     const float cosHalf = std::cos(0.5f * glm::radians(fovDegrees));
+    /** @brief Dot. */
     return glm::dot(glm::normalize(forward), toNeighbor / len) >= cosHalf;
 }
 
+/** @brief NeighborAccum public API. */
 struct NeighborAccum {
     glm::vec3 separation{0.f};
     glm::vec3 cohesionPos{0.f};
@@ -70,7 +72,9 @@ inline NeighborAccum gatherNeighbors(std::span<const AgentState> agents, int sel
     return acc;
 }
 
+/** @brief Marker force. */
 inline glm::vec3 markerForce(const glm::vec3& pos, const std::vector<EnvironmentMarker>& markers, bool attract) {
+    /** @brief F. */
     glm::vec3 f(0.f);
     for (const auto& m : markers) {
         const glm::vec3 d    = m.position - pos;

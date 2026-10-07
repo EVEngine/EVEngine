@@ -56,15 +56,22 @@ class EVENGINE_API_BACKENDS SocialDocumentTarget final : public ::eve::editing::
                                                          public IDomainOperationTarget,
                                                          public IDomainOperationTargetStaging {
 public:
+    /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.social-graph"); }
+    /** @brief Social document target. */
     explicit SocialDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate entities in stable order. */
     std::vector<SocialEntityRecord> entities() const;
@@ -94,6 +101,7 @@ private:
 /** @brief Publishes a complete validated social document to a runtime SocialGraph. */
 class EVENGINE_API_BACKENDS SocialRuntimeApplier {
 public:
+    /** @brief Applies . */
     EditorResult<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
 };
 

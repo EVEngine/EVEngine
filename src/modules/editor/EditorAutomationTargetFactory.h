@@ -23,6 +23,7 @@ class IEditorAutomationTargetFactory {
 public:
     static constexpr const char* capabilityName = "IEditorAutomationTargetFactory";
 
+    /** @brief Releases IEditorAutomationTargetFactory resources. */
     virtual ~IEditorAutomationTargetFactory() = default;
 
     /**
@@ -40,6 +41,7 @@ public:
     /** @brief Whether this factory owns the requested stable target type. */
     [[nodiscard]] bool supports(std::string_view type) const {
         const std::vector<std::string_view> accepted = types();
+        /** @brief Finds . */
         return std::find(accepted.begin(), accepted.end(), type) != accepted.end();
     }
 

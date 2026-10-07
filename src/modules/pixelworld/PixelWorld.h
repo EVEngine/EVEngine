@@ -28,6 +28,7 @@ struct PixelCell {
     /** @brief Canonical sub-degree thermal energy in [0, material heatCapacity). */
     std::uint16_t thermalRemainder = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelCell&, const PixelCell&) = default;
 };
 
@@ -56,9 +57,11 @@ struct StepStats {
  */
 class PixelWorkScheduler {
 public:
+    /** @brief Releases PixelWorkScheduler resources. */
     virtual ~PixelWorkScheduler() = default;
     /** @brief Execute every index in [0, workItems) exactly once and synchronously join. */
     virtual void parallelFor(std::size_t workItems,
+                             /** @brief Void. */
                              const std::function<void(std::size_t)>& body) = 0;
     /** @brief Observable worker capacity used for diagnostics only. */
     [[nodiscard]] virtual std::size_t workerCount() const noexcept = 0;
@@ -78,6 +81,7 @@ struct PixelChunkSnapshot {
     bool removed = false;
     std::vector<PixelCell> cells;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkSnapshot&, const PixelChunkSnapshot&) = default;
 };
 
@@ -92,6 +96,7 @@ struct PixelChunkBatch {
     bool fullResync = false;
     std::vector<PixelChunkSnapshot> chunks;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkBatch&, const PixelChunkBatch&) = default;
 };
 
@@ -102,6 +107,7 @@ struct PixelChunkRegion {
     int maxX = -1;
     int maxY = -1;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkRegion&, const PixelChunkRegion&) = default;
 };
 
@@ -179,6 +185,7 @@ struct PixelRegion {
 struct PixelWorldLink {
     std::uint64_t world = 0;
     std::uint64_t epoch = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const PixelWorldLink&, const PixelWorldLink&) = default;
 };
 
@@ -220,8 +227,11 @@ public:
     explicit PixelWorld(std::uint64_t seed = 1);
     /** @brief Construct an empty world owning a validated immutable material catalog. */
     PixelWorld(std::uint64_t seed, MaterialCatalog catalog);
+    /** @brief Pixel world. */
     ~PixelWorld();
+    /** @brief Pixel world. */
     PixelWorld(PixelWorld&&) noexcept;
+    /** @brief Operator =. */
     PixelWorld& operator=(PixelWorld&&) noexcept;
     PixelWorld(const PixelWorld&) = delete;
     PixelWorld& operator=(const PixelWorld&) = delete;
@@ -304,11 +314,17 @@ public:
     /** @brief Whether ordinary simulation entry points are currently paused. */
     bool isPaused() const noexcept;
 
+    /** @brief Seed. */
     std::uint64_t seed() const noexcept;
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept;
+    /** @brief Tick value. */
     std::uint64_t tickValue() const noexcept;
+    /** @brief Last edit sequence. */
     std::uint64_t lastEditSequence() const noexcept;
+    /** @brief Chunk count. */
     int chunkCount() const noexcept;
+    /** @brief Active chunk count. */
     int activeChunkCount() const noexcept;
     /** @brief Fingerprint of the immutable catalog that gives cell ids their meaning. */
     std::uint64_t materialCatalogFingerprint() const noexcept;

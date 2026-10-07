@@ -46,6 +46,7 @@ struct EVENGINE_API_FOUNDATION_INLINE ScenarioFrame {
  */
 class EVENGINE_API_FOUNDATION ScenarioRecorder {
 public:
+    /** @brief Instance. */
     static ScenarioRecorder& instance();
 
     ScenarioRecorder(const ScenarioRecorder&)            = delete;
@@ -95,9 +96,13 @@ public:
     void detachObserver();
 
     // ---- accessors --------------------------------------------------------
+    /** @brief Baseline. */
     const std::string& baseline() const { return baseline_; }
+    /** @brief Frames. */
     const std::vector<ScenarioFrame>& frames() const { return frames_; }
+    /** @brief Error report. */
     const std::string& errorReport() const { return errorReport_; }
+    /** @brief Error site. */
     const std::string& errorSite() const { return errorSite_; }
 
     /** @brief Persist a scenario to a JSON file (used for both record and replay paths). */

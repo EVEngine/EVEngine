@@ -16,6 +16,7 @@ namespace eve {
 class EVENGINE_API_FOUNDATION_INLINE IEditorAutomation {
 public:
     static constexpr const char* capabilityName = "IEditorAutomation";
+    /** @brief I editor automation. */
     virtual ~IEditorAutomation()                = default;
     /**
      * @brief Invoke commands, plan, commit, cancel, undo, redo or diagnostics.

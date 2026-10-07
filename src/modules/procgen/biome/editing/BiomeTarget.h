@@ -64,12 +64,16 @@ class EVENGINE_API_ORCHESTRATION BiomeDocumentTarget final : public ::eve::editi
                                                              public IPropertyProvider,
                                                              public IEditingSnapshotProvider {
 public:
+    /** @brief Biome document target. */
     explicit BiomeDocumentTarget(std::string id);
     /** @brief Capability identity published by describe() for Inspector property editing. */
     static CapabilityId                     propertyCapabilityId() {
+        /** @brief Capability id. */
         return CapabilityId("eve.editor.target.biome-properties");
     }
+    /** @brief Target id. */
     TargetId                                targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query Inspector property and snapshot capabilities.
@@ -78,29 +82,50 @@ public:
      * @thread Owner-thread only.
      */
     void*                                   queryCapability(const CapabilityId&) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
+    /** @brief Schema. */
     PropertySchema                          schema(const SelectionSnapshot&) const override;
+    /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make create layer. */
     EditorResult<DomainOperation>           makeCreateLayer(const BiomeLayerValue&) const;
+    /** @brief Make delete layer. */
     EditorResult<DomainOperation>           makeDeleteLayer(const ObjectId&) const;
+    /** @brief Make create asset. */
     EditorResult<DomainOperation>           makeCreateAsset(const ObjectId& layer, const BiomeAssetValue&) const;
+    /** @brief Make delete asset. */
     EditorResult<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
+    /** @brief Make set exclusions. */
     EditorResult<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
+    /** @brief Layers. */
     const std::vector<BiomeLayerValue>&     layers() const { return layers_; }
+    /** @brief Exclusions. */
     const std::vector<std::string>&         exclusions() const { return exclusions_; }
+    /** @brief Validate. */
     std::vector<EditorDiagnostic>           validate() const;
+    /** @brief Snapshot value. */
     EditorValue                             snapshotValue() const override;
+    /** @brief Loads snapshot. */
     EditorResult<void>                      loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
     std::string                   id_;
     std::vector<BiomeLayerValue>  layers_;
@@ -109,6 +134,7 @@ private:
 /** @brief Resolves copied spatial domains for BiomeRules publication. */
 class IBiomeSpatialResolver {
 public:
+    /** @brief Releases IBiomeSpatialResolver resources. */
     virtual ~IBiomeSpatialResolver() = default;
     /**
      * @brief Resolve one authored spatial asset to a generation domain.
@@ -121,8 +147,11 @@ public:
 /** @brief Candidate-first BiomeRules generation. */
 class EVENGINE_API_ORCHESTRATION BiomeDocumentRuntime {
 public:
+    /** @brief Biome document runtime. */
     BiomeDocumentRuntime();
+    /** @brief Biome document runtime. */
     ~BiomeDocumentRuntime();
+    /** @brief Publish. */
     EditorResult<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
     /**
      * @brief Generate a PointSet from a previously published candidate.
@@ -140,6 +169,7 @@ public:
      * @thread Owner-thread only.
      */
     procgen::BiomeRules* rules() const { return rules_.get(); }
+    /** @brief Revision. */
     Revision                                         revision() const { return revision_; }
 
 private:

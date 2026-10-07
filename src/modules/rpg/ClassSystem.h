@@ -40,7 +40,9 @@ public:
 
     /** @brief 职业定义中可学技能总数。 */
     static int getLearnCount(RPGActor *actor);
+    /** @brief Returns the learn skill id at. */
     static std::string getLearnSkillIdAt(RPGActor *actor, int index);
+    /** @brief Returns the learn level at. */
     static int getLearnLevelAt(RPGActor *actor, int index);
 };
 

@@ -24,10 +24,15 @@ namespace eve::animation {
  */
 class SmrOnnxRunner {
 public:
+    /** @brief Loads . */
     [[nodiscard]] Result<void>               load(std::span<const uint8_t> bytes);
+    /** @brief Loads file. */
     [[nodiscard]] Result<void>               loadFile(const std::string& path);
+    /** @brief True when loaded. */
     [[nodiscard]] bool                       isLoaded() const { return static_cast<bool>(model_); }
+    /** @brief Info. */
     [[nodiscard]] tensor::OnnxModelInfo      info() const;
+    /** @brief Run. */
     [[nodiscard]] Result<std::vector<float>> run(const SmrFeatureBatch& features) const;
 
 private:

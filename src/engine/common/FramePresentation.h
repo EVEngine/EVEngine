@@ -7,6 +7,7 @@ class IFramePresentation {
 public:
     static constexpr const char* capabilityName = "eve.frame-presentation";
 
+    /** @brief Releases IFramePresentation resources. */
     virtual ~IFramePresentation() = default;
 
     /** @brief Apply Pcg VSync count; zero selects uncapped presentation. */

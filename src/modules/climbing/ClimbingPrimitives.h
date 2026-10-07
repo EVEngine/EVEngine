@@ -7,6 +7,7 @@
 namespace eve::climbing {
 
 namespace detail {
+/** @brief ClimbingExecutionIdTag public API. */
 struct ClimbingExecutionIdTag {};
 }
 

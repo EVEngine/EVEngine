@@ -98,6 +98,7 @@ inline const char* registryOperationName(RegistryOperation operation) noexcept {
 
 /** @brief Writes the stable registry-operation protocol name. */
 inline std::ostream& operator<<(std::ostream& stream, RegistryOperation operation) {
+    /** @brief Registry operation name. */
     return stream << registryOperationName(operation);
 }
 
@@ -129,6 +130,7 @@ inline std::ostream& operator<<(std::ostream& stream, RegistryOperation operatio
  *         nothrow-swappable so the commit boundary cannot throw.
  */
 template <class Key, class Value, class EventData = std::monostate, class Compare = std::less<Key>>
+/** @brief VersionedRegistry public API. */
 class VersionedRegistry {
     static_assert(std::is_copy_constructible_v<Key>, "VersionedRegistry keys must be copyable");
     static_assert(std::is_copy_constructible_v<Value>, "VersionedRegistry values must be copyable");

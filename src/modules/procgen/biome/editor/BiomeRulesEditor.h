@@ -64,33 +64,57 @@ public:
     [[nodiscard]] biome_editing::EditorResult<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Preview revision. */
     std::uint64_t previewRevision() const noexcept { return previewRevision_; }
+    /** @brief Seed. */
     std::uint32_t seed() const noexcept { return seed_; }
+    /** @brief Spacing. */
     float         spacing() const noexcept { return spacing_; }
+    /** @brief Selected id. */
     std::string   selectedId() const { return selectedId_; }
+    /** @brief Selected type. */
     std::string   selectedType() const { return selectedType_; }
 
+    /** @brief Layer count. */
     int         layerCount() const { return static_cast<int>(target_.layers().size()); }
+    /** @brief Layer id. */
     std::string layerId(int index) const;
+    /** @brief Layer name. */
     std::string layerName(int index) const;
+    /** @brief Layer density. */
     float       layerDensity(int index) const;
+    /** @brief Layer priority. */
     int         layerPriority(int index) const;
+    /** @brief True when layer selected. */
     bool        isLayerSelected(int index) const;
 
+    /** @brief Asset count. */
     int         assetCount() const;
+    /** @brief Asset id. */
     std::string assetId(int index) const;
+    /** @brief Asset ref. */
     std::string assetRef(int index) const;
+    /** @brief Asset weight. */
     float       assetWeight(int index) const;
+    /** @brief True when asset selected. */
     bool        isAssetSelected(int index) const;
 
+    /** @brief Exclusion count. */
     int         exclusionCount() const { return static_cast<int>(target_.exclusions().size()); }
+    /** @brief Exclusion asset. */
     std::string exclusionAsset(int index) const;
 
+    /** @brief Point count. */
     int         pointCount() const { return static_cast<int>(points_.size()); }
+    /** @brief Point x. */
     float       pointX(int index) const;
+    /** @brief Point z. */
     float       pointZ(int index) const;
+    /** @brief Point asset. */
     std::string pointAsset(int index) const;
 
 private:
@@ -102,7 +126,9 @@ private:
 
     class SpatialResolver final : public biome_editing::IBiomeSpatialResolver {
     public:
+        /** @brief Constructs a SpatialResolver. */
         SpatialResolver(procgen::SpatialData* forest, procgen::SpatialData* clearing);
+        /** @brief Resolve. */
         biome_editing::EditorResult<procgen::SpatialData*> resolve(const std::string& asset) const override;
 
     private:

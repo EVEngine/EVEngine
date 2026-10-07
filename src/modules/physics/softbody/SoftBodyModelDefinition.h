@@ -12,7 +12,9 @@
 
 namespace eve::physics {
 
+/** @brief SoftBodySurfaceSampling public API. */
 enum class SoftBodySurfaceSampling { None, Vertices, Voxels };
+/** @brief SoftBodyVolumeSampling public API. */
 enum class SoftBodyVolumeSampling { None, Voxels };
 
 /** @brief Versioned authoring recipe used to cook a mesh-backed SoftBodyModel. */

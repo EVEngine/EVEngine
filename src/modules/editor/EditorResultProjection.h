@@ -15,7 +15,9 @@ namespace eve::editor {
 
 /** @brief Preserve a common Result at the editor compatibility boundary. */
 template <class Output>
+/** @brief Project common result. */
 [[nodiscard]] inline EditorResult<Output> projectCommonResult(eve::Result<Output>&& result) {
+    /** @brief Moves . */
     return std::move(result);
 }
 
@@ -26,7 +28,9 @@ template <class Output>
 
 /** @brief Project a failed common status into an editor result without inventing a second envelope. */
 template <class Output>
+/** @brief Project common failure. */
 [[nodiscard]] inline EditorResult<Output> projectCommonFailure(const eve::Status& status) {
+    /** @brief Failure. */
     return EditorResult<Output>::failure(status);
 }
 

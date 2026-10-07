@@ -27,16 +27,27 @@ namespace eve {
 
 namespace detail {
 
+/** @brief PersistentIdTag public API. */
 struct PersistentIdTag {};
+/** @brief ContentIdTag public API. */
 struct ContentIdTag {};
+/** @brief AssetGuidTag public API. */
 struct AssetGuidTag {};
+/** @brief DocumentIdTag public API. */
 struct DocumentIdTag {};
+/** @brief SceneObjectIdTag public API. */
 struct SceneObjectIdTag {};
+/** @brief ArtifactIdTag public API. */
 struct ArtifactIdTag {};
+/** @brief EventIdTag public API. */
 struct EventIdTag {};
+/** @brief CommandIdTag public API. */
 struct CommandIdTag {};
+/** @brief TransactionIdTag public API. */
 struct TransactionIdTag {};
+/** @brief OperationIdTag public API. */
 struct OperationIdTag {};
+/** @brief EffectIdTag public API. */
 struct EffectIdTag {};
 
 /** @brief Byte representation shared by every tagged 128-bit identity. */
@@ -97,6 +108,7 @@ public:
 };
 
 template <typename Tag>
+/** @brief Id128 public API. */
 class Id128 {
 public:
     using Bytes = std::array<std::uint8_t, 16>;
@@ -120,7 +132,9 @@ public:
      *          identities such as an asset and a scene object.
      */
     template <typename OtherTag>
+    /** @brief From uuid. */
     [[nodiscard]] static constexpr Id128 fromUuid(const Id128<OtherTag>& value) noexcept {
+        /** @brief Constructs a Id128. */
         return Id128(value.bytes());
     }
 
@@ -148,6 +162,7 @@ public:
         if (bytes.size() != 16) return std::nullopt;
         Bytes result{};
         for (std::size_t i = 0; i < result.size(); ++i) result[i] = bytes[i];
+        /** @brief Constructs a Id128. */
         return Id128(result);
     }
 
@@ -176,6 +191,7 @@ public:
      */
     [[nodiscard]] Id128 child(std::string_view role) const noexcept {
         if (isNil() || role.empty()) return Id128::nil();
+        /** @brief Constructs a Id128. */
         return Id128(childUuidBytes(bytes_, role));
     }
 
@@ -200,6 +216,7 @@ public:
         return result;
     }
 
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const Id128&, const Id128&) noexcept = default;
 
     /** @brief Orders UUID bytes in network order for ordered containers. */
@@ -293,6 +310,7 @@ using EffectId = StrongUuid<detail::EffectIdTag>;
  * `uuid()`/`canonicalFormat()` and declare its schema migration policy.
  */
 template <typename Tag>
+/** @brief UuidIdAdapter public API. */
 class UuidIdAdapter {
 public:
     using Uuid  = StrongUuid<Tag>;
@@ -317,6 +335,7 @@ public:
      */
     [[nodiscard]] static std::optional<UuidIdAdapter> parse(std::string_view value) {
         if (value.empty()) return std::nullopt;
+        /** @brief Constructs a UuidIdAdapter. */
         return UuidIdAdapter(value);
     }
 
@@ -366,6 +385,7 @@ public:
     /** @brief Explicit boolean check for a non-empty identifier. */
     explicit operator bool() const noexcept { return !empty(); }
 
+    /** @brief Operator ==. */
     friend bool operator==(const UuidIdAdapter& lhs, const UuidIdAdapter& rhs) noexcept {
         return lhs.state_.uuid == rhs.state_.uuid;
     }
@@ -496,6 +516,7 @@ private:
 namespace std {
 
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::detail::Id128<Tag>> {
     /** @brief Hashes a strong 128-bit identity for standard hash containers. */
     std::size_t operator()(const eve::detail::Id128<Tag>& value) const noexcept {
@@ -504,6 +525,7 @@ struct hash<eve::detail::Id128<Tag>> {
 };
 
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::UuidIdAdapter<Tag>> {
     /** @brief Hashes a compatibility-aware UUID adapter for standard hash containers. */
     std::size_t operator()(const eve::UuidIdAdapter<Tag>& value) const noexcept {
@@ -512,6 +534,7 @@ struct hash<eve::UuidIdAdapter<Tag>> {
 };
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::LogicalId> {
     /** @brief Hashes a logical ID for standard hash containers. */
     std::size_t operator()(const eve::LogicalId& value) const noexcept {

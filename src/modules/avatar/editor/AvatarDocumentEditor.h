@@ -65,45 +65,81 @@ public:
     [[nodiscard]] avatar_editing::EditorResult<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Preview revision. */
     std::uint64_t previewRevision() const noexcept { return previewRevision_; }
+    /** @brief Kind. */
     std::string   kind() const { return target_.kind(); }
+    /** @brief Selected id. */
     std::string   selectedId() const { return selectedId_; }
+    /** @brief Selected type. */
     std::string   selectedType() const { return selectedType_; }
 
+    /** @brief Layer count. */
     int         layerCount() const { return static_cast<int>(target_.layers().size()); }
+    /** @brief Layer id. */
     std::string layerId(int index) const;
+    /** @brief Layer name. */
     std::string layerName(int index) const;
+    /** @brief Layer visible. */
     bool        layerVisible(int index) const;
+    /** @brief Layer z. */
     int         layerZ(int index) const;
+    /** @brief True when layer selected. */
     bool        isLayerSelected(int index) const;
 
+    /** @brief Preview layer count. */
     int         previewLayerCount() const { return static_cast<int>(preview_.size()); }
+    /** @brief Preview x. */
     float       previewX(int index) const;
+    /** @brief Preview y. */
     float       previewY(int index) const;
+    /** @brief Preview w. */
     float       previewW(int index) const;
+    /** @brief Preview h. */
     float       previewH(int index) const;
+    /** @brief Preview r. */
     float       previewR(int index) const;
+    /** @brief Preview g. */
     float       previewG(int index) const;
+    /** @brief Preview b. */
     float       previewB(int index) const;
+    /** @brief Preview a. */
     float       previewA(int index) const;
+    /** @brief True when preview selected. */
     bool        isPreviewSelected(int index) const;
+    /** @brief Preview name. */
     std::string previewName(int index) const;
 
+    /** @brief Parameter count. */
     int         parameterCount() const { return static_cast<int>(target_.parameters().size()); }
+    /** @brief Parameter id. */
     std::string parameterId(int index) const;
+    /** @brief Parameter name. */
     std::string parameterName(int index) const;
+    /** @brief Parameter value. */
     float       parameterValue(int index) const;
+    /** @brief Parameter minimum. */
     float       parameterMinimum(int index) const;
+    /** @brief Parameter maximum. */
     float       parameterMaximum(int index) const;
+    /** @brief True when parameter selected. */
     bool        isParameterSelected(int index) const;
 
+    /** @brief Expression count. */
     int         expressionCount() const { return static_cast<int>(target_.expressions().size()); }
+    /** @brief Expression id. */
     std::string expressionId(int index) const;
+    /** @brief Expression name. */
     std::string expressionName(int index) const;
+    /** @brief True when expression selected. */
     bool        isExpressionSelected(int index) const;
+    /** @brief Expression channel count. */
     int         expressionChannelCount(int index) const;
+    /** @brief Expression channel name. */
     std::string expressionChannelName(int expression, int channel) const;
 
 private:

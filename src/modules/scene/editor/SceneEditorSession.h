@@ -27,6 +27,7 @@ public:
     explicit SceneEditorSession(std::string targetId);
     /** @brief Transfer a non-null scene target into this session; target ownership is exclusive. */
     explicit SceneEditorSession(std::unique_ptr<scene_editing::SceneTargetBase> target);
+    /** @brief Scene editor session. */
     ~SceneEditorSession();
     SceneEditorSession(const SceneEditorSession&)            = delete;
     SceneEditorSession& operator=(const SceneEditorSession&) = delete;

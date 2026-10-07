@@ -20,12 +20,15 @@ enum class ExtensionAudience : std::uint32_t {
     Automation = 1u << 3
 };
 
+/** @brief Operator |. */
 constexpr ExtensionAudience operator|(ExtensionAudience left, ExtensionAudience right) {
     return static_cast<ExtensionAudience>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 }
+/** @brief Operator &. */
 constexpr ExtensionAudience operator&(ExtensionAudience left, ExtensionAudience right) {
     return static_cast<ExtensionAudience>(static_cast<std::uint32_t>(left) & static_cast<std::uint32_t>(right));
 }
+/** @brief True when audience. */
 constexpr bool hasAudience(ExtensionAudience value, ExtensionAudience audience) {
     return (value & audience) == audience;
 }
@@ -60,6 +63,7 @@ struct ExtensionRuleDescriptor {
 /** @brief Scoped registration surface exposed to game modules. */
 class IEditorExtensionRegistry {
 public:
+    /** @brief Releases IEditorExtensionRegistry resources. */
     virtual ~IEditorExtensionRegistry() = default;
     /** @brief Register a command; the registry overwrites ownerModule with the active extension owner. */
     virtual EditorResult<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
@@ -75,6 +79,7 @@ public:
 /** @brief Entry point implemented by a gameplay module to inject editor behavior. */
 class IGameEditorExtension {
 public:
+    /** @brief Releases IGameEditorExtension resources. */
     virtual ~IGameEditorExtension() = default;
     /** @brief Stable module owner used for unload and duplicate protection. */
     virtual std::string ownerModule() const = 0;
@@ -90,6 +95,7 @@ public:
  */
 class EVENGINE_API_ORCHESTRATION EditorExtensionRegistry final : public IEditorExtensionRegistry {
 public:
+    /** @brief Editor extension registry. */
     explicit EditorExtensionRegistry(EditorCommandService* commands) : commands_(commands) {}
 
     /** @brief Load one extension under its stable owner module. */
@@ -106,10 +112,14 @@ public:
     /** @brief Return validation descriptors visible to a host. */
     std::vector<ExtensionRuleDescriptor> rules(const HostProfile& profile) const;
 
+    /** @brief Registers command. */
     EditorResult<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
                                               ExtensionAudience audiences) override;
+    /** @brief Registers tool. */
     EditorResult<void>        registerTool(ExtensionToolDescriptor descriptor) override;
+    /** @brief Registers palette. */
     EditorResult<void>        registerPalette(ExtensionPaletteDescriptor descriptor) override;
+    /** @brief Registers rule. */
     EditorResult<void>        registerRule(ExtensionRuleDescriptor descriptor) override;
 
 private:

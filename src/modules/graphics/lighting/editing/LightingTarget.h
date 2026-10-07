@@ -56,17 +56,25 @@ class EVENGINE_API_ORCHESTRATION LightingPropertyTargetBase : public ::eve::edit
                                                               public IDomainOperationTarget,
                                                               public IPropertyProvider {
 public:
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Capture deterministic values for document persistence. */
@@ -82,6 +90,7 @@ protected:
     LightingPropertyTargetBase(std::string id, std::string targetType, PropertySchema schema);
 
 private:
+    /** @brief Selection matches. */
     bool                               selectionMatches(const SelectionSnapshot& selection) const;
     std::string                        id_;
     std::string                        targetType_;
@@ -92,6 +101,7 @@ private:
 /** @brief Serializable property target matching graphics::Light3D. */
 class EVENGINE_API_ORCHESTRATION Light3DDocumentTarget final : public LightingPropertyTargetBase {
 public:
+    /** @brief Light 3 d document target. */
     explicit Light3DDocumentTarget(std::string id);
     /** @brief Validate direction, shadow and point/directional cross-field rules. */
     std::vector<EditorDiagnostic> validate() const;
@@ -100,6 +110,7 @@ public:
 /** @brief Serializable shared environment target for static, DayNight and Weather modes. */
 class EVENGINE_API_ORCHESTRATION EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
 public:
+    /** @brief Environment document target. */
     explicit EnvironmentDocumentTarget(std::string id);
     /** @brief Validate mode-dependent atmosphere and weather settings. */
     std::vector<EditorDiagnostic> validate() const;
@@ -108,13 +119,16 @@ public:
 /** @brief Optional bridge applying a light document to graphics::Light3D. */
 class EVENGINE_API_ORCHESTRATION Light3DRuntimeApplier {
 public:
+    /** @brief Applies . */
     EditorResult<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
 };
 
 /** @brief Optional bridge applying environment properties to DayNight or Weather. */
 class EVENGINE_API_ORCHESTRATION EnvironmentRuntimeApplier {
 public:
+    /** @brief Applies day night. */
     EditorResult<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
+    /** @brief Applies weather. */
     EditorResult<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;
 };
 

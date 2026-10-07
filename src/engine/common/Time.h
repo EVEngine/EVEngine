@@ -21,7 +21,9 @@
 namespace eve {
 
 namespace detail {
+/** @brief SimulationTickTag public API. */
 struct SimulationTickTag {};
+/** @brief FrameIndexTag public API. */
 struct FrameIndexTag {};
 }  // namespace detail
 
@@ -85,6 +87,7 @@ public:
     [[nodiscard]] Result<Duration> scaled(double rate) const;
 
     friend constexpr bool operator==(Duration, Duration) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(Duration, Duration) noexcept = default;
 
 private:
@@ -119,6 +122,7 @@ public:
     [[nodiscard]] Result<Duration> since(MonotonicTimestamp earlier) const;
 
     friend constexpr bool operator==(MonotonicTimestamp, MonotonicTimestamp) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(MonotonicTimestamp, MonotonicTimestamp) noexcept = default;
 
 private:
@@ -143,6 +147,7 @@ public:
     [[nodiscard]] constexpr std::int64_t unixNanoseconds() const noexcept { return unixNanoseconds_; }
 
     friend constexpr bool operator==(WallClockTimestamp, WallClockTimestamp) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(WallClockTimestamp, WallClockTimestamp) noexcept = default;
 
 private:
@@ -168,6 +173,7 @@ struct EVENGINE_API_FOUNDATION_INLINE SimulationStep {
 class EVENGINE_API_FOUNDATION_INLINE ITimeSource {
 public:
     static constexpr const char* capabilityName = "ITimeSource";
+    /** @brief I time source. */
     virtual ~ITimeSource()                      = default;
 
     /**

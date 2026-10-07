@@ -32,7 +32,9 @@ struct ParticleGraphPreviewResult {
 /** @brief `particles.emitter` graph domain reflecting core emitter modules. */
 class EVENGINE_API_ORCHESTRATION ParticleGraphDomain final : public IGraphDomainProvider {
 public:
+    /** @brief Domain. */
     std::string domain() const override { return "particles.emitter"; }
+    /** @brief Can connect. */
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a node of type emission, motion, collision, renderer, or output. */
@@ -61,6 +63,7 @@ namespace eve::particles_editing {
 class ParticleGraphRuntimeBuilder {
 public:
     using TextureResolver = std::function<graphics::Texture*(const std::string& asset)>;
+    /** @brief Applies . */
     EditorResult<void> apply(const GraphDocumentData& graph,
                              particles::ParticleEmitter* emitter,
                              const TextureResolver& textures = {}) const;

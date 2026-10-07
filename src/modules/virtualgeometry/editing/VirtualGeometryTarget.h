@@ -64,31 +64,48 @@ class EVENGINE_API_ORCHESTRATION VirtualGeometryDocumentTarget final : public ::
                                                                        public IDomainOperationTargetStaging,
                                                                        public IPropertyProvider {
 public:
+    /** @brief Virtual geometry document target. */
     explicit VirtualGeometryDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void>                commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>        currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                    schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult                read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation>     makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                               const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation>     makeReset(const SelectionSnapshot& selection,
                                                 const PropertyPath&      path) const override;
+    /** @brief Value. */
     const VirtualGeometryImportValue& value() const { return value_; }
     /** @brief Validate builder invariants, CPU budgets and preview sweep. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
+    /** @brief Loads snapshot. */
     EditorResult<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     EditorResult<DomainOperation> replacement(EditorValue content, std::string property) const;
     std::string                   id_;
     VirtualGeometryImportValue    value_;
@@ -103,6 +120,7 @@ struct VirtualGeometryMeshData {
 /** @brief Asset resolver boundary for VirtualGeometry preprocessing. */
 class IVirtualGeometryMeshResolver {
 public:
+    /** @brief Releases IVirtualGeometryMeshResolver resources. */
     virtual ~IVirtualGeometryMeshResolver() = default;
     /** @brief Return an owned triangulated mesh for one asset generation. */
     virtual EditorResult<VirtualGeometryMeshData> resolve(const std::string& assetId) const = 0;
@@ -129,7 +147,9 @@ struct VirtualGeometryBuildArtifact {
 /** @brief Candidate-first CPU cluster-DAG builder and LOD preview service. */
 class EVENGINE_API_ORCHESTRATION VirtualGeometryBuildRuntime {
 public:
+    /** @brief Virtual geometry build runtime. */
     VirtualGeometryBuildRuntime();
+    /** @brief Virtual geometry build runtime. */
     ~VirtualGeometryBuildRuntime();
     /** @brief Resolve, validate and build fully before replacing the active asset. */
     EditorResult<VirtualGeometryBuildArtifact> build(const VirtualGeometryDocumentTarget& document,
@@ -137,6 +157,7 @@ public:
     /** @brief Access the published asset. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid
      * until the next build or runtime destruction. */
     const virtualgeometry::VirtualGeometryAsset* asset() const { return asset_.get(); }
+    /** @brief Revision. */
     Revision                                     revision() const { return revision_; }
 
 private:

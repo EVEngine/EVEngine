@@ -7,17 +7,20 @@
 
 namespace eve::procgen {
 
+/** @brief CaveBreakdownChamber public API. */
 struct CaveBreakdownChamber {
     float x = 0.f, y = 0.f, z = 0.f;
     float rx = 0.2f, ry = 0.15f, rz = 0.2f;
 };
 
+/** @brief CaveBreakdownBlock public API. */
 struct CaveBreakdownBlock {
     float x = 0.f, y = 0.f, z = 0.f;
     float hx = 0.04f, hy = 0.025f, hz = 0.04f;
     float yaw = 0.f;
 };
 
+/** @brief CaveBreakdownEvent public API. */
 struct CaveBreakdownEvent {
     float                           x = 0.f, ceilingY = 0.f, z = 0.f;
     float                           scarX = 0.1f, scarY = 0.04f, scarZ = 0.1f;
@@ -25,6 +28,7 @@ struct CaveBreakdownEvent {
     std::vector<CaveBreakdownBlock> blocks;
 };
 
+/** @brief CaveBreakdownSet public API. */
 struct CaveBreakdownSet {
     std::vector<CaveBreakdownEvent> events;
     int                             blockCount      = 0;

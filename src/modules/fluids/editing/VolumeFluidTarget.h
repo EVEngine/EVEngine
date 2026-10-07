@@ -45,18 +45,27 @@ class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public ::eve::editing
                                                            public IDomainOperationTarget,
                                                            public IPropertyProvider {
 public:
+    /** @brief Volume fluid target. */
     explicit VolumeFluidTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query the property capability. @return Borrowed pointer owned by this target.
      * @lifetime Valid until target destruction. */
     void*                         queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return an immutable copy of current authoring settings. */
@@ -72,6 +81,7 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                         matches(const SelectionSnapshot& selection) const;
     std::string                  id_;
     VolumeFluidAuthoringSettings settings_;

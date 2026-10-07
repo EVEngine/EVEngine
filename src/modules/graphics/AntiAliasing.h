@@ -32,7 +32,9 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS AntiAliasing {
 public:
+    /** @brief Anti aliasing. */
     explicit AntiAliasing(Graphics *gfx);
+    /** @brief Anti aliasing. */
     ~AntiAliasing();
 
     AntiAliasing(const AntiAliasing &) = delete;
@@ -40,14 +42,19 @@ public:
 
     /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
+    /** @brief Returns the quality. */
     std::string getQuality() const { return quality_; }
 
     /** @brief "fxaa" | "smaa" | "ssaa" | "nfaa" | "taa" (unknown → fxaa). */
     void setMode(const std::string &mode);
+    /** @brief Returns the mode. */
     std::string getMode() const { return mode_; }
 
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
     /**
@@ -58,6 +65,7 @@ public:
     float suggestScale() const;
 
     /** Source pixel count helper: floor(dest * suggestScale()), at least 1. */
+    /** @brief Resolution for. */
     int resolutionFor(int destSize) const;
 
     /**
@@ -69,6 +77,7 @@ public:
     void applyTemporalRect(Graphics *gfx, Texture *source, float x, float y, float width,
                            float height, float r = 1.f, float g = 1.f, float b = 1.f,
                            float a = 1.f);
+    /** @brief Applies temporal. */
     void applyTemporal(Graphics *gfx, Texture *source, Texture *motion = nullptr);
     /**
      * @brief Resolve TAA into history and return the linear HDR result without compositing it.
@@ -98,20 +107,29 @@ public:
     void setTemporalViewProjection(const glm::mat4 &viewProjection, float nearZ, float farZ);
     /** @brief Per-object UV correction relative to static-world camera reprojection. */
     glm::vec2 prepareTemporalObjectMotion(const void *objectKey, const glm::mat4 &model);
+    /** @brief Applies to. */
     void applyTo(Graphics *gfx, Texture *source, Canvas *dest);
 
+    /** @brief Applies canvas. */
     void applyCanvas(Graphics *gfx, Canvas *source);
+    /** @brief Applies canvas to. */
     void applyCanvasTo(Graphics *gfx, Canvas *source, Canvas *dest);
 
     /** @brief Upload texel uniforms from `source` without drawing (3D scene-color resolve). */
     void prepareSource(Texture *source);
 
     /** @lifetime Shader getters return Graphics-owned borrowed shaders. */
+    /** @brief Returns the fxaa shader. */
     Shader *getFxaaShader() const { return fxaa_; }
+    /** @brief Returns the smaa shader. */
     Shader *getSmaaShader() const { return smaa_; }
+    /** @brief Returns the ssaa shader. */
     Shader *getSsaaShader() const { return ssaa_; }
+    /** @brief Returns the nfaa shader. */
     Shader *getNfaaShader() const { return nfaa_; }
+    /** @brief Returns the taa shader. */
     Shader *getTaaShader() const { return taa_; }
+    /** @brief Returns the shader. */
     Shader *getShader() const;
 
 private:

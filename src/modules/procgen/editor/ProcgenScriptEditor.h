@@ -55,11 +55,16 @@ public:
                                                                  std::string displayName, std::string kind,
                                                                  const procgen_editing::EditorValue& schema);
 
+    /** @brief Sets the param. */
     [[nodiscard]] procgen_editing::EditorResult<void> setParam(std::string key,
                                                                procgen_editing::EditorValue value);
+    /** @brief Sets the int. */
     [[nodiscard]] procgen_editing::EditorResult<void> setInt(std::string key, int value);
+    /** @brief Sets the float. */
     [[nodiscard]] procgen_editing::EditorResult<void> setFloat(std::string key, double value);
+    /** @brief Sets the bool. */
     [[nodiscard]] procgen_editing::EditorResult<void> setBool(std::string key, bool value);
+    /** @brief Sets the string. */
     [[nodiscard]] procgen_editing::EditorResult<void> setString(std::string key, std::string value);
 
     /**
@@ -81,7 +86,9 @@ public:
     [[nodiscard]] procgen_editing::EditorResult<void> publishStage(const procgen::PointSet* points, std::string stage);
     [[nodiscard]] procgen_editing::EditorResult<void> failPreview(std::string message,
                                                                   std::uint64_t expectedRevision);
+    /** @brief Select stage. */
     [[nodiscard]] procgen_editing::EditorResult<void> selectStage(std::string stage);
+    /** @brief Sets the point budget. */
     [[nodiscard]] procgen_editing::EditorResult<void> setPointBudget(int budget);
     /**
      * @brief Choose whether the presenter should rebuild on every parameter commit.
@@ -93,40 +100,69 @@ public:
     [[nodiscard]] procgen_editing::EditorResult<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief True when dirty. */
     bool          isDirty() const noexcept { return dirty_; }
     /** @brief True when the presenter should rebuild after every committed parameter edit. */
     bool          isContinuousRebuild() const noexcept { return continuousRebuild_; }
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Preview revision. */
     std::uint64_t previewRevision() const noexcept { return previewRevision_; }
+    /** @brief Point budget. */
     int           pointBudget() const noexcept { return pointBudget_; }
+    /** @brief Module id. */
     std::string   moduleId() const { return target_.moduleId(); }
+    /** @brief Module uri. */
     std::string   moduleUri() const { return target_.uri(); }
+    /** @brief Display name. */
     std::string   displayName() const { return target_.displayName(); }
+    /** @brief Kind. */
     std::string   kind() const { return target_.kind(); }
+    /** @brief Selected stage. */
     std::string   selectedStage() const { return selectedStage_; }
     /** @brief Empty when the last publish succeeded; otherwise the failPreview summary. */
     std::string   previewFailureSummary() const { return previewFailureSummary_; }
 
+    /** @brief Param count. */
     int         paramCount() const { return static_cast<int>(target_.params().size()); }
+    /** @brief Param key. */
     std::string paramKey(int index) const;
+    /** @brief Param label. */
     std::string paramLabel(int index) const;
+    /** @brief Param kind. */
     std::string paramKind(int index) const;
+    /** @brief Param minimum. */
     float       paramMinimum(int index) const;
+    /** @brief Param maximum. */
     float       paramMaximum(int index) const;
+    /** @brief Param step. */
     float       paramStep(int index) const;
+    /** @brief Param choice count. */
     int         paramChoiceCount(int index) const;
+    /** @brief Param choice. */
     std::string paramChoice(int paramIndex, int choiceIndex) const;
+    /** @brief Returns the int. */
     int         getInt(const std::string& key) const;
+    /** @brief Returns the float. */
     float       getFloat(const std::string& key) const;
+    /** @brief Returns the bool. */
     bool        getBool(const std::string& key) const;
+    /** @brief Returns the string. */
     std::string getString(const std::string& key) const;
 
+    /** @brief Stage count. */
     int         stageCount() const { return static_cast<int>(stageOrder_.size()); }
+    /** @brief Stage name. */
     std::string stageName(int index) const;
+    /** @brief Point count. */
     int         pointCount() const;
+    /** @brief Point x. */
     float       pointX(int index) const;
+    /** @brief Point z. */
     float       pointZ(int index) const;
+    /** @brief Point seed. */
     std::uint32_t pointSeed(int index) const;
 
 private:

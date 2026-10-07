@@ -35,6 +35,7 @@ public:
      * @param resourceUri Backend-specific stable resource identity.
      */
     EditorPersistenceAdapter(EditorPersistenceKind kind, IAtomicDocumentStore* store, std::string resourceUri)
+        /** @brief Kind. */
         : kind_(kind), store_(store), resourceUri_(std::move(resourceUri)) {}
 
     /** @brief Load the last committed checkpoint and journal. */

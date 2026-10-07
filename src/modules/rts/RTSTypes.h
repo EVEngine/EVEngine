@@ -177,17 +177,21 @@ struct EntityLinkTag {};
  * reserved for restore/import code that will validate before use.
  */
 template <typename Tag>
+/** @brief EntityLink public API. */
 class EntityLink {
 public:
     /** @brief Bind a live ECS handle, rejecting a null or stale handle. */
     [[nodiscard]] static Result<EntityLink> bind(ecs::EntityHandle handle) {
         if (ecs::try_get(handle) == nullptr) {
+            /** @brief Failure. */
             return Result<EntityLink>::failure(
+                /** @brief Error. */
                 Diagnostic::error(DiagnosticCode::StaleHandle, "RTS entity link target is not live", "link.handle"));
         }
         EntityLink result;
         result.handle_ = handle;
         result.bound_  = true;
+        /** @brief Success. */
         return Result<EntityLink>::success(std::move(result));
     }
 
@@ -232,16 +236,19 @@ struct ServiceLinkTag {};
  * valid when the optional provider is absent.
  */
 template <typename Tag>
+/** @brief ServiceLink public API. */
 class ServiceLink {
 public:
     /** @brief Bind a non-empty provider key. */
     [[nodiscard]] static Result<ServiceLink> bind(std::string_view key) {
         if (key.empty()) {
+            /** @brief Failure. */
             return Result<ServiceLink>::failure(Diagnostic::error(
                 DiagnosticCode::InvalidArgument, "RTS service link key must not be empty", "link.key"));
         }
         ServiceLink result;
         result.key_ = key;
+        /** @brief Success. */
         return Result<ServiceLink>::success(std::move(result));
     }
 
@@ -265,10 +272,15 @@ private:
     std::string key_;
 };
 
+/** @brief FactionLinkTag public API. */
 struct FactionLinkTag {};
+/** @brief WeaponLinkTag public API. */
 struct WeaponLinkTag {};
+/** @brief ResourceNodeLinkTag public API. */
 struct ResourceNodeLinkTag {};
+/** @brief BuildingLinkTag public API. */
 struct BuildingLinkTag {};
+/** @brief ContainerLinkTag public API. */
 struct ContainerLinkTag {};
 using FactionLink = EntityLink<FactionLinkTag>;
 using WeaponLink  = EntityLink<WeaponLinkTag>;
@@ -276,15 +288,25 @@ using ResourceNodeLink = EntityLink<ResourceNodeLinkTag>;
 using BuildingLink     = EntityLink<BuildingLinkTag>;
 using ContainerLink    = EntityLink<ContainerLinkTag>;
 
+/** @brief SensingLinkTag public API. */
 struct SensingLinkTag {};
+/** @brief SteeringLinkTag public API. */
 struct SteeringLinkTag {};
+/** @brief CrowdLinkTag public API. */
 struct CrowdLinkTag {};
+/** @brief ActionLinkTag public API. */
 struct ActionLinkTag {};
+/** @brief SettlementLinkTag public API. */
 struct SettlementLinkTag {};
+/** @brief PlacementLinkTag public API. */
 struct PlacementLinkTag {};
+/** @brief EconomyLinkTag public API. */
 struct EconomyLinkTag {};
+/** @brief AuthorityLinkTag public API. */
 struct AuthorityLinkTag {};
+/** @brief SocialLinkTag public API. */
 struct SocialLinkTag {};
+/** @brief GameEventLinkTag public API. */
 struct GameEventLinkTag {};
 using SensingLink    = ServiceLink<SensingLinkTag>;
 using SteeringLink   = ServiceLink<SteeringLinkTag>;
@@ -300,11 +322,17 @@ using GameEventLink  = ServiceLink<GameEventLinkTag>;
 /** @brief Canonical attributes component adapter, backed by attributes::AttributeSet. */
 class EVENGINE_API_DOMAINS AttributeComponent {
 public:
+    /** @brief Attribute component. */
     AttributeComponent();
+    /** @brief Attribute component. */
     ~AttributeComponent();
+    /** @brief Attribute component. */
     AttributeComponent(const AttributeComponent& other);
+    /** @brief Operator =. */
     AttributeComponent& operator=(const AttributeComponent& other);
+    /** @brief Attribute component. */
     AttributeComponent(AttributeComponent&& other) noexcept;
+    /** @brief Operator =. */
     AttributeComponent& operator=(AttributeComponent&& other) noexcept;
 
     /** @brief Set one authoritative base value. */
@@ -406,11 +434,17 @@ private:
 /** @brief Production adapter whose queue owns all task state. */
 class EVENGINE_API_DOMAINS ProductionComponent {
 public:
+    /** @brief Production component. */
     ProductionComponent();
+    /** @brief Production component. */
     ~ProductionComponent();
+    /** @brief Production component. */
     ProductionComponent(const ProductionComponent& other);
+    /** @brief Operator =. */
     ProductionComponent& operator=(const ProductionComponent& other);
+    /** @brief Production component. */
     ProductionComponent(ProductionComponent&& other) noexcept;
+    /** @brief Operator =. */
     ProductionComponent& operator=(ProductionComponent&& other) noexcept;
 
     /** @brief Enqueue a production task with an injected simulation duration. */
@@ -457,6 +491,7 @@ private:
  */
 class EVENGINE_API_DOMAINS Unit : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Unit, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -630,7 +665,9 @@ public:
     };
     /** @brief Ability cooldowns and an optional deterministic cast/channel in progress. */
     struct Abilities {
+        /** @brief Cooldown public API. */
         struct Cooldown { std::string id; float remaining = 0.0f; };
+        /** @brief Channel public API. */
         struct Channel {
             AbilitySpec spec;
             ecs::EntityHandle target{};
@@ -796,6 +833,7 @@ public:
 /** @brief RTS building domain root with placement and production composition. */
 class EVENGINE_API_DOMAINS Building : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Building, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1026,6 +1064,7 @@ public:
 /** @brief Harvestable RTS resource node; deposited balances are owned by an external resource account. */
 class EVENGINE_API_DOMAINS ResourceNode : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(ResourceNode, ecs::Entity)
 
     /** @brief Release the node through the ECS generation boundary. */
@@ -1073,6 +1112,7 @@ public:
 /** @brief Player domain root; selection is RTS-local, authority/economy/social are links. */
 class Player : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Player, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1131,6 +1171,7 @@ public:
 /** @brief Faction domain root; membership is a set of typed runtime handles. */
 class EVENGINE_API_DOMAINS Faction : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Faction, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1185,6 +1226,7 @@ public:
     };
     /** @brief Cross-factory resource floors reserved for production at or above a priority threshold. */
     struct ProductionPolicy {
+        /** @brief Reserve public API. */
         struct Reserve {
             std::int64_t amount = 0;
             int minimumPriority = 0;
@@ -1193,6 +1235,7 @@ public:
     };
     /** @brief Persistent last-known enemy contacts derived from the faction's canonical FOV provider. */
     struct Intel {
+        /** @brief Contact public API. */
         struct Contact {
             SubjectRef    subject;
             std::string   kind;
@@ -1245,7 +1288,9 @@ enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
 /** @brief Independent match composition root; factions may participate in different matches. */
 class EVENGINE_API_DOMAINS Match : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Match, ecs::Entity)
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief Runtime and persistent identity. */
@@ -1261,6 +1306,7 @@ public:
     };
     /** @brief One faction's team and elimination projection. */
     struct Participants {
+        /** @brief Entry public API. */
         struct Entry {
             FactionLink faction;
             int team = 0;
@@ -1278,6 +1324,7 @@ public:
     };
     /** @brief Deterministic retained lifecycle events. */
     struct Events {
+        /** @brief Event public API. */
         struct Event {
             std::uint64_t sequence = 0;
             std::string kind;

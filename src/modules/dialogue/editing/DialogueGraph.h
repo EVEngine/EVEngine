@@ -24,7 +24,9 @@ struct DialogueGraphCompileResult {
 /** @brief `dialogue.conversation` domain for line, choice, branch and action flow. */
 class EVENGINE_API_ORCHESTRATION DialogueGraphDomain final : public IGraphDomainProvider {
 public:
+    /** @brief Domain. */
     std::string domain() const override { return "dialogue.conversation"; }
+    /** @brief Can connect. */
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a line, branch, choice, call, command, wait, or end node. */

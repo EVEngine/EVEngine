@@ -20,16 +20,25 @@ class EconomyControl;
 class EVENGINE_API_FOUNDATION Economy : public Module, public IEconomy {
 public:
     Module_REG(Economy);
+    /** @brief Economy. */
     Economy();
+    /** @brief Economy. */
     ~Economy() override;
 
     // ---- IEconomy ----
+    /** @brief Credit. */
     int credit(int player, const std::string& type, int amount) override;
+    /** @brief Debit. */
     bool debit(int player, const std::string& type, int amount) override;
+    /** @brief Get. */
     int get(int player, const std::string& type) const override;
+    /** @brief Get cap. */
     int getCap(int player, const std::string& type) const override;
+    /** @brief Get wasted. */
     int getWasted(int player, const std::string& type) const override;
+    /** @brief Get income. */
     int getIncome(int player, const std::string& type) const override;
+    /** @brief Get expense. */
     int getExpense(int player, const std::string& type) const override;
 
     // ---- 注册表门面 ----

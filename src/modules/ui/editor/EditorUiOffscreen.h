@@ -11,10 +11,12 @@ namespace eve::editor {
 /** @brief Concrete UI box-model preview renderer using the shared offscreen Canvas. */
 class EVENGINE_API_EDITORS UiOffscreenPreviewRenderer {
 public:
+    /** @brief Ui offscreen preview renderer. */
     UiOffscreenPreviewRenderer(GraphicsOffscreenPreviewService* previews,
                                graphics::ISolidRectRenderer* rectangles,
                                const IUiSkinAssetResolver* assets = nullptr,
                                IUiSkinPlanRenderer* skins = nullptr)
+        /** @brief Previews. */
         : previews_(previews), rectangles_(rectangles), assets_(assets), skins_(skins) {}
     /** @brief Layout and rasterize visible widget tint rectangles into a readback artifact. */
     EditorResult<OffscreenPreviewArtifact> render(const UiDocumentTarget& document,

@@ -84,13 +84,19 @@ class EVENGINE_API_BACKENDS CrowdDocumentTarget final : public ::eve::editing::E
 public:
     /** @brief Stable capability id for crowd agent, zone and path editing. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.crowd-structure"); }
+    /** @brief Crowd document target. */
     explicit CrowdDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] EditorResult<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
 

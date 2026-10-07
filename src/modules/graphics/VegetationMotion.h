@@ -55,6 +55,7 @@ struct VegetationMotion {
     VegetationMask      noise{2,
                          2,
                               {glm::vec4(0.2f, 0.7f, 0.85f, 1.f), glm::vec4(0.8f, 0.4f, 0.55f, 1.f),
+                               /** @brief Vec 4. */
                                glm::vec4(0.4f, 0.2f, 0.65f, 1.f), glm::vec4(0.7f, 0.8f, 1.f, 1.f)}};
 };
 

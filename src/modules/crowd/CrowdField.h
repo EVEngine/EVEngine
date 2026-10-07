@@ -24,6 +24,7 @@ public:
     /** @brief 不可达/阻挡的积分代价。 */
     static constexpr float kUnreachable = 3.4e38f;
 
+    /** @brief Crowd field. */
     CrowdField() = default;
 
     /**
@@ -44,9 +45,13 @@ public:
 
     /** @brief 网格尺寸访问器。 */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the cell size. */
     float getCellSize() const { return cellSize_; }
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
 
     /**

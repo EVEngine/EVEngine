@@ -28,13 +28,21 @@ namespace eve::audio_editor {
  */
 class AudioClockTransportBackend final : public audio_editing::IAudioTransportBackend {
 public:
+    /** @brief Play. */
     void play() override;
+    /** @brief Pause. */
     void pause() override;
+    /** @brief Stops . */
     void stop() override;
+    /** @brief Seeks . */
     [[nodiscard]] audio_editing::EditorResult<void> seek(double seconds) override;
+    /** @brief Tell. */
     double tell() const override { return position_; }
+    /** @brief Duration. */
     double duration() const override { return duration_; }
+    /** @brief Playing. */
     bool   playing() const override { return playing_; }
+    /** @brief Sets the native looping. */
     void   setNativeLooping(bool) override {}
 
     /** @brief Install clip length before bind. */
@@ -70,6 +78,7 @@ public:
 
     AudioSourceEditor(const AudioSourceEditor&)            = delete;
     AudioSourceEditor& operator=(const AudioSourceEditor&) = delete;
+    /** @brief Audio source editor. */
     ~AudioSourceEditor();
 
     /** @brief Borrow the authoritative source document. */
@@ -100,11 +109,16 @@ public:
     [[nodiscard]] audio_editing::EditorResult<void> setProperty(const std::string& path,
                                                                 const audio_editing::EditorValue& value);
 
+    /** @brief Undo. */
     [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> undo();
+    /** @brief Redo. */
     [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> redo();
 
+    /** @brief Play. */
     [[nodiscard]] audio_editing::EditorResult<void> play();
+    /** @brief Pause. */
     [[nodiscard]] audio_editing::EditorResult<void> pause();
+    /** @brief Stops . */
     [[nodiscard]] audio_editing::EditorResult<void> stop();
 
     /**
@@ -120,16 +134,27 @@ public:
     [[nodiscard]] audio_editing::EditorResult<void> attachLiveAudition();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief True when playing. */
     bool          isPlaying() const noexcept;
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Pcm revision. */
     std::uint64_t pcmRevision() const noexcept { return pcmRevision_; }
+    /** @brief Duration. */
     double        duration() const noexcept;
+    /** @brief Playhead. */
     double        playhead() const noexcept;
+    /** @brief Layout width. */
     float         layoutWidth() const noexcept { return viewportWidth_; }
+    /** @brief Bucket count. */
     int           bucketCount() const noexcept;
+    /** @brief Playhead x. */
     float         playheadX() const noexcept;
+    /** @brief Loop start x. */
     float         loopStartX() const noexcept;
+    /** @brief Loop end x. */
     float         loopEndX() const noexcept;
 
     /** @brief Read a property using the source selection. */

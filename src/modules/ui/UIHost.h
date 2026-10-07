@@ -242,10 +242,13 @@ struct WidgetDesc;
  */
 class EVENGINE_API_WORLD UIHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(UIHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
         bool visible = true;
         int layer = 0;
@@ -282,9 +285,13 @@ public:
         bool dirty = true;
         std::vector<UINode> nodes;
         int root = -1;
+        /** @brief Void. */
         std::vector<std::function<void()>> clickHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(bool)>> toggleHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(float)>> valueHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 

@@ -30,6 +30,7 @@ struct EVENGINE_API_PLATFORM ActionAudioBinding {
     bool                 fadeOutOnExit = true;
     double               fadeOutDuration = 0.1;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAudioBinding&) const = default;
 
     /**

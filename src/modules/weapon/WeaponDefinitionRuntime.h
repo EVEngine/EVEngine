@@ -90,10 +90,13 @@ public:
         Weapon& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
+    /** @brief Weapon definition runtime. */
     WeaponDefinitionRuntime(WeaponDefinitionRuntime&&) noexcept            = default;
+    /** @brief Operator =. */
     WeaponDefinitionRuntime& operator=(WeaponDefinitionRuntime&&) noexcept = default;
     WeaponDefinitionRuntime(const WeaponDefinitionRuntime&)                = delete;
     WeaponDefinitionRuntime& operator=(const WeaponDefinitionRuntime&)     = delete;
+    /** @brief Weapon definition runtime. */
     ~WeaponDefinitionRuntime()                                             = default;
 
     /** @brief Borrow the common instance identity and exact definition generation. */

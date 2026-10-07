@@ -43,6 +43,7 @@ struct SplinePathSettings {
 /** @brief UI-neutral reversible spline editing capability. */
 class ISplinePathDocumentEditTarget {
 public:
+    /** @brief Releases ISplinePathDocumentEditTarget resources. */
     virtual ~ISplinePathDocumentEditTarget() = default;
     /** @brief Return the stable capability id. */
     static CapabilityId editingCapabilityId() { return CapabilityId("eve.procgen.target.spline-path-document"); }
@@ -91,7 +92,9 @@ class EVENGINE_API_ORCHESTRATION SplinePathDocument final : public ::eve::editin
 public:
     /** @brief Construct an empty document with a stable target id. */
     explicit SplinePathDocument(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /**
      * @brief Query the spline editing capability.
@@ -100,24 +103,41 @@ public:
      * @lifetime Valid until this document is destroyed.
      */
     void*              queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Make set point. */
     EditorResult<DomainOperation>    makeSetPoint(const SplinePathControlPoint& point) const override;
+    /** @brief Make delete point. */
     EditorResult<DomainOperation>    makeDeletePoint(const StableId& point) const override;
+    /** @brief Make set settings. */
     EditorResult<DomainOperation>    makeSetSettings(const SplinePathSettings& settings) const override;
+    /** @brief Make insert point at. */
     EditorResult<DomainOperation>    makeInsertPointAt(int segment, double t, const StableId& point) const override;
+    /** @brief Make snap point. */
     EditorResult<DomainOperation>    makeSnapPoint(const StableId& point, double gridSize) const override;
+    /** @brief Make snap all. */
     EditorResult<DomainOperation>    makeSnapAll(double gridSize) const override;
+    /** @brief Make flip direction. */
     EditorResult<DomainOperation>    makeFlipDirection() const override;
+    /** @brief Make set chunk break. */
     EditorResult<DomainOperation>    makeSetChunkBreak(const StableId& point, bool disconnected) const override;
+    /** @brief Make append chunk. */
     EditorResult<DomainOperation>    makeAppendChunk(const SplinePathControlPoint& first,
                                                      const SplinePathControlPoint& second) const override;
+    /** @brief Make delete chunk. */
     EditorResult<DomainOperation>    makeDeleteChunk(int chunk) const override;
+    /** @brief Make set point rotation. */
     EditorResult<DomainOperation>    makeSetPointRotation(const StableId& point, double pitchDegrees, double yawDegrees,
                                                           double rollDegrees) const override;
+    /** @brief Make reset point rotation. */
     EditorResult<DomainOperation>    makeResetPointRotation(const StableId& point) const override;
+    /** @brief Make center point. */
     EditorResult<DomainOperation>    makeCenterPoint(const StableId& point) const override;
+    /** @brief Make mirror axis. */
     EditorResult<DomainOperation>    makeMirrorAxis(std::string_view axis) const override;
 
     /** @brief Return points in deterministic order and stable-id tie order. */

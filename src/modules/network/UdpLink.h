@@ -28,8 +28,10 @@ class UdpSocket;
  *   optional frag header (flags&1): u32 msgId u16 fragCount u16 fragIndex
  *   payload follows.
  */
+/** @brief EVENGINE_API_PLATFORM public API. */
 class EVENGINE_API_PLATFORM UdpLink {
 public:
+    /** @brief MsgType public API. */
     enum class MsgType : uint8_t {
         Reliable = 0,
         Unreliable = 1,

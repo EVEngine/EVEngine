@@ -291,8 +291,11 @@ public:
 
     PreparedApply(const PreparedApply&)            = delete;
     PreparedApply& operator=(const PreparedApply&) = delete;
+    /** @brief Prepared apply. */
     PreparedApply(PreparedApply&& other) noexcept;
+    /** @brief Operator =. */
     PreparedApply& operator=(PreparedApply&& other) noexcept;
+    /** @brief Prepared apply. */
     ~PreparedApply();
 
     /** @brief Return whether both transaction callbacks are available. */
@@ -367,6 +370,7 @@ public:
     /** @brief Mark the result as critical; late writes are rejected. */
     void setCritical(bool value) noexcept {
         if (applyPrepared_) {
+            /** @brief Record mutation violation. */
             recordMutationViolation("settlement critical flag cannot change after apply preparation", "critical");
             return;
         }
@@ -492,6 +496,7 @@ private:
  */
 class EVENGINE_API_FOUNDATION ISettlementPolicy {
 public:
+    /** @brief I settlement policy. */
     virtual ~ISettlementPolicy() = default;
 
     /** @brief Validate request and target-owned state without mutating it. */

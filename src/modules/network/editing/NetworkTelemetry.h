@@ -20,10 +20,15 @@ struct NetworkTelemetrySample {
 /** @brief UI-independent bounded history and network health diagnostics. */
 class EVENGINE_API_BACKENDS NetworkTelemetryModel {
 public:
+    /** @brief Network telemetry model. */
     explicit NetworkTelemetryModel(std::size_t capacity=300);
+    /** @brief Ingest. */
     EditorResult<void> ingest(NetworkTelemetrySample);
+    /** @brief Samples. */
     const std::deque<NetworkTelemetrySample>& samples() const { return samples_; }
+    /** @brief Diagnostics. */
     std::vector<EditorDiagnostic> diagnostics() const;
+    /** @brief Clears . */
     void clear();
 private:
     std::size_t capacity_;
@@ -32,6 +37,7 @@ private:
 /** @brief Optional bridge collecting a copied snapshot from the Network module. */
 class NetworkTelemetryCollector {
 public:
+    /** @brief Collect. */
     EditorResult<void> collect(network::Network*,double,NetworkTelemetryModel&) const;
 };
 } // namespace eve::network_editing

@@ -13,9 +13,11 @@ namespace eve
 namespace data
 {
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION HashFunction {
 public:
 
+	/** @brief Value public API. */
 	struct Value
 	{
 		char data[64]; // Maximum possible size (SHA512).
@@ -59,6 +61,7 @@ public:
 
 protected:
 
+	/** @brief Hash function. */
 	HashFunction() {}
 
 };  // HashFunction

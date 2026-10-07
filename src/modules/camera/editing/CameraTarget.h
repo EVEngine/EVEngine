@@ -68,19 +68,30 @@ class EVENGINE_API_DOMAINS CameraDocumentTarget final : public ::eve::editing::E
                                                         public IDomainOperationTargetStaging,
                                                         public IPropertyProvider {
 public:
+    /** @brief Camera document target. */
     explicit CameraDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
     /** @brief Add a rig with a stable identity. */
@@ -102,8 +113,11 @@ public:
     /** @brief Atomically replace the document from a snapshot. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 private:
+    /** @brief Matches. */
     bool matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
     EditorValue contentValue() const;
+    /** @brief Replacement. */
     EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
     std::string                   id_;
     std::vector<CameraRigValue> rigs_; std::vector<CameraTimelineKeyValue> keys_;
@@ -124,12 +138,15 @@ public:
 /** @brief Candidate-first bridge from camera assets to CameraController. */
 class EVENGINE_API_DOMAINS CameraDocumentRuntime {
 public:
+    /** @brief Camera document runtime. */
     CameraDocumentRuntime();
+    /** @brief Camera document runtime. */
     ~CameraDocumentRuntime();
     /** @brief Build a complete controller before replacing the active generation. */
     EditorResult<void> publish(const CameraDocumentTarget& document, graphics::Camera3D* camera);
     /** @brief Access the active controller generation. @return Borrowed pointer owned by this runtime. @lifetime Valid until the next successful publish or runtime destruction. */
     camera::CameraController* controller() const { return controller_.get(); }
+    /** @brief Revision. */
     Revision revision() const { return revision_; }
 private:
     std::unique_ptr<camera::CameraController> controller_; Revision revision_ = 0;

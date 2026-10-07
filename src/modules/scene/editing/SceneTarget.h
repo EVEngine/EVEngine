@@ -34,6 +34,7 @@ struct CreateSceneObjectRequest {
 /** @brief Stable hierarchy capability implemented by document and runtime targets. */
 class ISceneHierarchyEditTarget {
 public:
+    /** @brief Releases ISceneHierarchyEditTarget resources. */
     virtual ~ISceneHierarchyEditTarget() = default;
     /** @brief Stable capability identity used instead of cross-module RTTI. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.scene-hierarchy"); }
@@ -61,6 +62,7 @@ struct SceneComponentLinkSnapshot {
 /** @brief Read-only live component/link inspection capability for scene inspectors. */
 class ISceneComponentInspector {
 public:
+    /** @brief Releases ISceneComponentInspector resources. */
     virtual ~ISceneComponentInspector() = default;
     /** @brief Stable capability id for component/link metadata inspection. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.scene-components"); }
@@ -83,24 +85,40 @@ class EVENGINE_API_BACKENDS SceneTargetBase : public ::eve::editing::EditableTar
                                               public ISceneHierarchyEditTarget,
                                               public ITransformEditTarget {
 public:
+    /** @brief Scene target base. */
     SceneTargetBase(std::string id, std::string type);
+    /** @brief Scene target base. */
     ~SceneTargetBase() override = default;
 
+    /** @brief Target id. */
     TargetId           targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor   describe() const override;
     /** @return Borrowed non-owning capability pointer, or null. @lifetime Valid until this target is mutated or destroyed. */
+    /** @brief Queries capability. */
     void*              queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Scene object. */
     EditorResult<SceneObjectSnapshot> sceneObject(const ObjectId& id) const override;
+    /** @brief Scene children. */
     std::vector<ObjectId>             sceneChildren(const ObjectId& parent) const override;
+    /** @brief Make create. */
     EditorResult<DomainOperation>     makeCreate(const CreateSceneObjectRequest& request) const override;
+    /** @brief Make delete. */
     EditorResult<DomainOperation>     makeDelete(const ObjectId& id) const override;
+    /** @brief Make rename. */
     EditorResult<DomainOperation>     makeRename(const ObjectId& id, const std::string& name) const override;
+    /** @brief Make reparent. */
     EditorResult<DomainOperation>     makeReparent(const ObjectId& id, const ObjectId& parent) const override;
+    /** @brief Reads transform. */
     EditorResult<SceneTransformValue> readTransform(const ObjectId& id) const override;
+    /** @brief Make set transform. */
     EditorResult<DomainOperation>     makeSetTransform(const ObjectId&            id,
                                                        const SceneTransformValue& transform) const override;
     /** @brief Bind an optional non-owning registry used by component inspectors. */
@@ -121,9 +139,13 @@ public:
 
 private:
     friend class ScenePropertyProvider;
+    /** @brief Transform value. */
     static EditorValue                       transformValue(const SceneTransformValue& transform);
+    /** @brief Parse transform. */
     static EditorResult<SceneTransformValue> parseTransform(const EditorValue& value);
+    /** @brief Parse object. */
     static EditorResult<SceneObjectSnapshot> parseObject(const EditorValue& value);
+    /** @brief Object value. */
     static EditorValue                       objectValue(const SceneObjectSnapshot& object);
     static EditorResult<std::map<ObjectId, SceneObjectSnapshot>> parseSnapshot(const EditorValue& value);
 
@@ -136,12 +158,14 @@ private:
 /** @brief Authoring scene-document backend exposing the standard scene capabilities. */
 class SceneDocumentTarget final : public SceneTargetBase {
 public:
+    /** @brief Constructs a SceneDocumentTarget. */
     explicit SceneDocumentTarget(std::string id) : SceneTargetBase(std::move(id), "scene-document") {}
 };
 
 /** @brief Live game-world backend exposing the same standard scene capabilities. */
 class RuntimeWorldTarget final : public SceneTargetBase {
 public:
+    /** @brief Constructs a RuntimeWorldTarget. */
     explicit RuntimeWorldTarget(std::string id) : SceneTargetBase(std::move(id), "runtime-world") {}
 };
 
@@ -174,10 +198,13 @@ public:
      * @lifetime The ECS table outlives the target; the host
      * itself may be destroyed. */
     SceneHostEditorTarget(std::string id, scene::SceneHost* host);
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] EditorResult<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Compatibility-only pointer projection of the generation-checked host.
@@ -226,13 +253,19 @@ public:
 /** @brief Property adapter exposing scene TRS to generic inspector presenters. */
 class EVENGINE_API_BACKENDS ScenePropertyProvider final : public IPropertyProvider {
 public:
+    /** @brief Scene property provider. */
     explicit ScenePropertyProvider(const SceneTargetBase* target) : target_(target) {}
 
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 

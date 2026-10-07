@@ -154,7 +154,9 @@ bool parseImplementationKind(const std::string& name, ImplementationKind& kind);
 class PolicyRegistryModule : public Module {
 public:
     Module_REG(PolicyRegistryModule);
+    /** @brief Constructs a PolicyRegistryModule. */
     PolicyRegistryModule()           = default;
+    /** @brief Releases PolicyRegistryModule resources. */
     ~PolicyRegistryModule() override = default;
 
     /** @brief Allocates a module-owned policy registry. */

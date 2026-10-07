@@ -70,6 +70,7 @@ struct MapRoadPreviewResult {
 /** @brief Runtime-neutral sink receiving revision-tagged generated road meshes. */
 class IMapRoadMeshSink {
 public:
+    /** @brief Releases IMapRoadMeshSink resources. */
     virtual ~IMapRoadMeshSink() = default;
     /** @brief Atomically publish or replace one generated road mesh. */
     virtual EditorResult<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
@@ -98,6 +99,7 @@ struct MapObjectImportPlan {
 /** @brief Layer, spline and placement editing capability for map presenters. */
 class IMapStructureEditTarget {
 public:
+    /** @brief Releases IMapStructureEditTarget resources. */
     virtual ~IMapStructureEditTarget() = default;
     /** @brief Stable capability id for map structure operations. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.map-structure"); }
@@ -130,25 +132,41 @@ class EVENGINE_API_WORLD MapDocumentTarget final : public ::eve::editing::Editab
                                                    public IDomainOperationTargetStaging,
                                                    public IMapStructureEditTarget {
 public:
+    /** @brief Map document target. */
     explicit MapDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Map layers. */
     std::vector<MapLayerRecord>     mapLayers() const override;
+    /** @brief Map roads. */
     std::vector<MapRoadRecord>      mapRoads() const override;
+    /** @brief Map placements. */
     std::vector<MapPlacementRecord> mapPlacements() const override;
+    /** @brief Make create layer. */
     EditorResult<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
+    /** @brief Make delete layer. */
     EditorResult<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
+    /** @brief Make set layer. */
     EditorResult<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
+    /** @brief Make set road. */
     EditorResult<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
+    /** @brief Make delete road. */
     EditorResult<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
+    /** @brief Make set placement. */
     EditorResult<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
+    /** @brief Make delete placement. */
     EditorResult<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
 
     /** @brief Validate layers, spline geometry and placement references. */

@@ -29,7 +29,9 @@ using ProtocolDispatchResult = Result<ProtocolDispatch>;
 
 /** @brief DiagnosticValue mapping for protocol dispatch outcomes. */
 template <>
+/** @brief DiagnosticValueTraits public API. */
 struct DiagnosticValueTraits<ProtocolDispatch> {
+    /** @brief Name. */
     static constexpr std::string_view name(ProtocolDispatch value) noexcept {
         switch (value) {
             case ProtocolDispatch::ReplySent: return "reply_sent";
@@ -40,6 +42,7 @@ struct DiagnosticValueTraits<ProtocolDispatch> {
         return "unknown";
     }
 
+    /** @brief Code. */
     static constexpr DiagnosticCode code(ProtocolDispatch value) noexcept {
         return value == ProtocolDispatch::Rejected ? DiagnosticCode::PreconditionViolation : DiagnosticCode::None;
     }

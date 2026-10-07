@@ -25,6 +25,7 @@ class Texture;
  */
 class EVENGINE_API_BACKENDS ReflectionProbeCapture {
 public:
+    /** @brief Reflection probe capture. */
     explicit ReflectionProbeCapture(Graphics *gfx);
     /** @brief Detach this probe from every registry before script-owned destruction. */
     ~ReflectionProbeCapture();

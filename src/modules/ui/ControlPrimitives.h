@@ -14,18 +14,21 @@ enum class ControlEdit : uint8_t { Unchanged = 0, Changed };
 /** @brief Shared immediate renderer for retained and EditorHost buttons. */
 inline ControlEdit button(const char *label, float width = 0.f, float height = 0.f) {
     const bool changed = (width > 0.f || height > 0.f) ? ImGui::Button(label, ImVec2(width, height))
+                                                       /** @brief Button. */
                                                        : ImGui::Button(label);
     return changed ? ControlEdit::Changed : ControlEdit::Unchanged;
 }
 
 /** @brief Shared immediate renderer for retained and EditorHost checkboxes. */
 inline ControlEdit checkbox(const char *label, bool &value) {
+    /** @brief Checkbox. */
     return ImGui::Checkbox(label, &value) ? ControlEdit::Changed : ControlEdit::Unchanged;
 }
 
 /** @brief Shared immediate renderer for scalar sliders. */
 inline ControlEdit slider(const char *label, float &value, float minimum, float maximum,
                           const char *format = "%.3f") {
+    /** @brief Slider float. */
     return ImGui::SliderFloat(label, &value, minimum, maximum, format) ? ControlEdit::Changed
                                                                        : ControlEdit::Unchanged;
 }
@@ -34,6 +37,7 @@ inline ControlEdit slider(const char *label, float &value, float minimum, float 
 inline ControlEdit combo(const char *label, int &selected,
                          const std::vector<const char *> &items) {
     const bool changed = !items.empty() &&
+                         /** @brief Combo. */
                          ImGui::Combo(label, &selected, items.data(),
                                       static_cast<int>(items.size()));
     return changed ? ControlEdit::Changed : ControlEdit::Unchanged;
@@ -64,6 +68,7 @@ inline ControlEdit inputText(const char *label, std::string &value, bool multili
                              ? ImGui::InputTextMultiline(label, value.data(), value.capacity() + 1,
                                                          multilineSize, flags, detail::resizeInput,
                                                          &value)
+                             /** @brief Input text. */
                              : ImGui::InputText(label, value.data(), value.capacity() + 1, flags,
                                                 detail::resizeInput, &value);
     value.resize(std::char_traits<char>::length(value.c_str()));

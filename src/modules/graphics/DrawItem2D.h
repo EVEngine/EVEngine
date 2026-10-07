@@ -57,7 +57,9 @@ struct DrawItem2D {
     float camAmbientR = 0.15f, camAmbientG = 0.15f, camAmbientB = 0.18f;
 };
 
+/** @brief Sort draw items 2 d. */
 inline void sortDrawItems2D(std::vector<DrawItem2D> &items) {
+    /** @brief Stable sort. */
     std::stable_sort(items.begin(), items.end(), [](const DrawItem2D &a, const DrawItem2D &b) {
         const bool aOff = a.canvas != nullptr;
         const bool bOff = b.canvas != nullptr;

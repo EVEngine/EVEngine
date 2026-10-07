@@ -17,6 +17,7 @@ struct ActionDamageImpulse {
     double y = 0.0;
     double z = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionDamageImpulse&) const = default;
 };
 
@@ -33,6 +34,7 @@ struct EVENGINE_API_PLATFORM ActionDamageBinding {
     /** @brief Optional world-space knockback impulse. */
     ActionDamageImpulse knockback;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionDamageBinding&) const = default;
 
     /** @brief Decode and validate a damage payload without mutating combat state. */
@@ -48,6 +50,7 @@ struct EVENGINE_API_PLATFORM ActionDamageBinding {
 class IActionDamageSink {
 public:
     static constexpr const char* capabilityName = "eve.action.damage-sink";
+    /** @brief Releases IActionDamageSink resources. */
     virtual ~IActionDamageSink() = default;
 
     /** @brief Whether this sink can resolve the supplied target handle now. */

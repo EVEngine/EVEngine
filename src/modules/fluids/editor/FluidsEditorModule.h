@@ -35,7 +35,9 @@ public:
 class FluidsEditorModule final : public Module {
 public:
     Module_REG(FluidsEditorModule);
+    /** @brief Constructs a FluidsEditorModule. */
     FluidsEditorModule();
+    /** @brief Releases FluidsEditorModule resources. */
     ~FluidsEditorModule() override;
 
 private:

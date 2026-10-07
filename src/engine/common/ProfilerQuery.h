@@ -21,6 +21,7 @@ class EVENGINE_API IProfilerQuery {
 public:
     static constexpr const char* capabilityName = "IProfilerQuery";
 
+    /** @brief I profiler query. */
     virtual ~IProfilerQuery() = default;
 
     /** @brief Whether the profiler is currently collecting zones. */

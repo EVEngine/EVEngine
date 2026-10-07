@@ -17,6 +17,7 @@ struct SurfaceFluidPreviewSeed {
     std::array<double, 3> barycentric{1.0, 0.0, 0.0};
     double                volume = 1.0;
     std::array<double, 3> velocity{0.0, 0.0, 0.0};
+    /** @brief Operator <=>. */
     auto                  operator<=>(const SurfaceFluidPreviewSeed&) const = default;
 };
 
@@ -46,6 +47,7 @@ struct SurfaceFluidPreviewDroplet {
     std::array<double, 3> minorAxis{};
     double                capHeight                                            = 0.0;
     double                wetness                                              = 0.0;
+    /** @brief Operator <=>. */
     auto                  operator<=>(const SurfaceFluidPreviewDroplet&) const = default;
 };
 
@@ -70,6 +72,7 @@ public:
 /** @brief Narrow host boundary for drawing a validated fluid preview snapshot. */
 class ISurfaceFluidPreviewRenderer {
 public:
+    /** @brief Releases ISurfaceFluidPreviewRenderer resources. */
     virtual ~ISurfaceFluidPreviewRenderer() = default;
     /** @brief Draw droplets and wetness using the host's chosen 2D or 3D presentation. */
     virtual EditorResult<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) = 0;
@@ -78,8 +81,10 @@ public:
 /** @brief Builds and rasterizes surface-fluid scrub frames through shared Canvas readback. */
 class EVENGINE_API_EDITORS SurfaceFluidOffscreenPreviewService {
 public:
+    /** @brief Surface fluid offscreen preview service. */
     SurfaceFluidOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
                                         ISurfaceFluidPreviewRenderer*    renderer)
+        /** @brief Previews. */
         : previews_(previews), renderer_(renderer) {}
     /** @brief Replay, validate and render one revision-bound scrub frame. */
     EditorResult<OffscreenPreviewArtifact> render(const SurfaceFluidTarget&         target,

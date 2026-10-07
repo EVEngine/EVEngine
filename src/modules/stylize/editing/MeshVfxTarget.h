@@ -48,21 +48,35 @@ class EVENGINE_API_DOMAINS MeshVfxAssetTarget final : public ::eve::editing::Edi
 public:
     /** @brief Construct a target containing a valid one-layer default asset. */
     explicit MeshVfxAssetTarget(std::string id);
+    /** @brief Mesh vfx asset target. */
     ~MeshVfxAssetTarget();
+    /** @brief Mesh vfx asset target. */
     MeshVfxAssetTarget(const MeshVfxAssetTarget& other);
+    /** @brief Operator =. */
     MeshVfxAssetTarget& operator=(const MeshVfxAssetTarget& other);
 
+    /** @brief Target id. */
     TargetId                                targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
+    /** @brief Queries capability. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
@@ -74,7 +88,9 @@ public:
     [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool matches(const SelectionSnapshot& selection) const;
+    /** @brief Canonical json. */
     std::string canonicalJson() const;
 
     std::string                            id_;
@@ -87,7 +103,9 @@ private:
  */
 class EVENGINE_API_DOMAINS MeshVfxPreviewRuntime {
 public:
+    /** @brief Mesh vfx preview runtime. */
     MeshVfxPreviewRuntime();
+    /** @brief Mesh vfx preview runtime. */
     ~MeshVfxPreviewRuntime();
     /** @brief Build every runtime layer before atomically replacing the active preview. */
     [[nodiscard]] EditorResult<void> publish(const MeshVfxAssetTarget& document);

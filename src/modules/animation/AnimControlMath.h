@@ -57,6 +57,7 @@ struct DampedSpringStep {
     float velVel = 1.f;
 };
 
+/** @brief Make damped spring step. */
 inline DampedSpringStep makeDampedSpringStep(float dt, float angularFrequency, float dampingRatio) {
     DampedSpringStep s;
     if (dt <= 0.f || angularFrequency <= 0.f) return s;

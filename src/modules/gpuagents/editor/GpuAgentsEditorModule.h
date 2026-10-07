@@ -34,7 +34,9 @@ public:
 class EVENGINE_API_EDITORS GpuAgentsEditorModule final : public Module {
 public:
     Module_REG(GpuAgentsEditorModule);
+    /** @brief Gpu agents editor module. */
     GpuAgentsEditorModule();
+    /** @brief Gpu agents editor module. */
     ~GpuAgentsEditorModule() override;
 
 private:

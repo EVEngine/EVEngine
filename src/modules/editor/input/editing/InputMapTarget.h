@@ -38,17 +38,24 @@ using TargetId = editing::TargetId;
 using editing::validatePropertyValue;
 }
 namespace eve::input_editing{
+/** @brief InputActionValue public API. */
 struct InputActionValue{ObjectId id;std::string name;std::string kind="button";};
+/** @brief InputBindingValue public API. */
 struct InputBindingValue{ObjectId id,action;std::string device="keyboard",control;double scale=1,deadzone=0;bool invert=false;};
+/** @brief EVENGINE_API_BACKENDS public API. */
 class EVENGINE_API_BACKENDS InputMapTarget final : public virtual IEditableTarget,
                                                    public IDomainOperationTarget,
                                                    public IDomainOperationTargetStaging,
                                                    public IPropertyProvider {
+/** @brief Input map target. */
 public:explicit InputMapTarget(std::string id);TargetId targetId() const override{ return TargetId(id_);}std::uint64_t revision() const override{return revision_;}EditRegion dirtyRegion()const override{return dirty_;}void clearDirtyRegion()override{dirty_.clear();}TargetDescriptor describe()const override;void*queryCapability(const CapabilityId&)override;EditorResult<void>applyDomainOperation(const DomainOperation&)override;std::unique_ptr<IDomainOperationTarget>cloneDomainState()const override;EditorResult<void>commitDomainState(std::unique_ptr<IDomainOperationTarget>)override;eve::Result<eve::Revision>currentRevision(const SelectionSnapshot&)const override;PropertySchema schema(const SelectionSnapshot&)const override;PropertyReadResult read(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeSet(const SelectionSnapshot&,const PropertyPath&,const EditorValue&,PropertySetMode)const override;EditorResult<DomainOperation>makeReset(const SelectionSnapshot&,const PropertyPath&)const override;EditorResult<DomainOperation>makeCreateAction(InputActionValue)const;EditorResult<DomainOperation>makeDeleteAction(const ObjectId&)const;EditorResult<DomainOperation>makeCreateBinding(InputBindingValue)const;EditorResult<DomainOperation>makeDeleteBinding(const ObjectId&)const;const std::vector<InputActionValue>&actions()const{return actions_;}const std::vector<InputBindingValue>&bindings()const{return bindings_;}std::vector<EditorDiagnostic>validate()const;EditorValue snapshotValue()const;EditorResult<void>loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool                           matches(const SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue                    contentValue() const;
+    /** @brief Replacement. */
     EditorResult<DomainOperation>  replacement(EditorValue, std::string = {}) const;
     std::string                    id_;
     Revision                       revision_ = 1;
@@ -56,6 +63,7 @@ private:
     std::vector<InputActionValue>  actions_;
     std::vector<InputBindingValue> bindings_;
 };
+/** @brief InputControlSample public API. */
 struct InputControlSample{std::string device,control;double value=0;};
 /** @brief Deterministically evaluates raw device samples against an authored action map. */
 class EVENGINE_API_BACKENDS InputMapEvaluator {
@@ -66,9 +74,13 @@ public:
 /** @brief Captures the first intentional control movement for a rebind UI. */
 class EVENGINE_API_BACKENDS InputBindingCapture {
 public:
+    /** @brief Begins . */
     void                              begin(std::string device = {});
+    /** @brief Cancel. */
     void                              cancel();
+    /** @brief Active. */
     bool                              active() const { return active_; }
+    /** @brief Feed. */
     std::optional<InputControlSample> feed(InputControlSample);
 
 private:

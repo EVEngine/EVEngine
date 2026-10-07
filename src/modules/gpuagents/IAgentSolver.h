@@ -16,6 +16,7 @@ namespace eve::gpuagents {
  */
 class EVENGINE_API_DOMAINS IAgentSolver {
 public:
+    /** @brief I agent solver. */
     virtual ~IAgentSolver() = default;
 
     /** @brief Effect kind this solver implements. */

@@ -38,6 +38,7 @@ public:
 
     GeometryCollectionRenderer(const GeometryCollectionRenderer&)            = delete;
     GeometryCollectionRenderer& operator=(const GeometryCollectionRenderer&) = delete;
+    /** @brief Geometry collection renderer. */
     ~GeometryCollectionRenderer();
 
     /**
