@@ -127,19 +127,19 @@ inline void bindMethod(ssq::Class& cls, const char* name, F&& fn) {
 }
 
 /**
- * @brief Register a null-safe getter that returns @p fallback when `self` is null.
+ * @brief Register a null-safe getter that returns @p whenNull when `self` is null.
  * @tparam ScriptT Script wrapper pointer type.
  * @tparam Getter Callable `(ScriptT&) -> R`.
  * @param cls Script class being filled.
  * @param name Script-visible method name (string literal for Contracts scrape).
  * @param getter Invoked only when self is non-null.
- * @param fallback Value returned for a null self.
+ * @param whenNull Value returned for a null self.
  */
 template <class ScriptT, class Getter>
 inline void bindNullSafe(ssq::Class& cls, const char* name, Getter getter,
-                         std::invoke_result_t<Getter, ScriptT&> fallback) {
-    cls.addFunc(name, [getter = std::move(getter), fallback = std::move(fallback)](ScriptT* self) {
-        return self ? getter(*self) : fallback;
+                         std::invoke_result_t<Getter, ScriptT&> whenNull) {
+    cls.addFunc(name, [getter = std::move(getter), whenNull = std::move(whenNull)](ScriptT* self) {
+        return self ? getter(*self) : whenNull;
     });
 }
 

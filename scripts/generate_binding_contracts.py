@@ -438,7 +438,7 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                 continue
             arguments = split_top_level(source[opening + 1 : closing])
             if helper:
-                # bindMethod(cls, "name", expr) / bindNullSafe(cls, "name", getter, fallback)
+                # bindMethod(cls, "name", expr) / bindNullSafe(cls, "name", getter, whenNull)
                 if len(arguments) < 3:
                     unresolved.append(
                         f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic {helper}"
