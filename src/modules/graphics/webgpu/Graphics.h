@@ -1090,7 +1090,7 @@ private:
     // Shadow pass state.
     int shadowPassCascade = -1;
     std::vector<ShadowDraw> shadowPassDraws;
-    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
+    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kTotalLayers];
 
     // GBuffer pass state.
     bool gbufferPassActive = false;

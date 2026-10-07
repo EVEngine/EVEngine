@@ -233,6 +233,7 @@ struct VSIn {
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f,
 };
 struct Frame {
     mvp: mat4x4f,
@@ -325,6 +326,7 @@ inline const char *kMesh3DFragWgsl = R"wgsl(
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f,
 };
 struct Frame {
     mvp: mat4x4f,
@@ -363,6 +365,11 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    localVP: array<mat4x4f, 4>,
+    localSlot01: vec4f,
+    localSlot23: vec4f,
+    localBias: vec4f,
+    localMeta: vec4f,
 };
 struct FSIn {
     @location(0) vNormal: vec3f,
@@ -755,8 +762,33 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
             let toL = lgt.posRadius.xyz - in.vWorldPos;
             let dist = length(toL);
             l = toL / max(dist, 1e-4);
-            let atten = clamp(1.0 - dist / max(lgt.posRadius.w, 1e-3), 0.0, 1.0);
-            rad *= atten * atten;
+            var atten = clamp(1.0 - dist / max(lgt.posRadius.w, 1e-3), 0.0, 1.0);
+            atten = atten * atten;
+            if (lgt.spot.w > 0.0) {
+                let beamLen = length(lgt.spot.xyz);
+                if (beamLen > 1e-6) {
+                    let cosTheta = dot(normalize(-l), lgt.spot.xyz / beamLen);
+                    atten = atten * clamp(cosTheta * lgt.spot.w + lgt.color.a, 0.0, 1.0);
+                    // Local spot shadow slot encoded as |beam| = 1 + (slot+1)/100.
+                    if (beamLen > 1.005 && shadow.bias.z > 0.5) {
+                        let si = i32(round((beamLen - 1.0) * 100.0)) - 1;
+                        if (si >= 0 && si <= 3) {
+                            let lc = shadow.localVP[si] * vec4f(in.vWorldPos, 1.0);
+                            let ndc = lc.xyz / max(lc.w, 1e-4);
+                            let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
+                            let zref = ndc.z - shadow.localBias[si];
+                            var vis = 1.0;
+                            if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0) {
+                                vis = textureSampleCompareLevel(shadowMap, shadowSamp, uv, 3 + si, zref);
+                            }
+                            atten = atten * mix(1.0 - shadow.splits.w, 1.0, vis);
+                        }
+                    }
+                } else {
+                    atten = 0.0;
+                }
+            }
+            rad *= atten;
         }
         lo += shadeLight(n, v, albedo, metallic, rough, l, rad);
     }
@@ -914,6 +946,7 @@ inline const char *kMesh3DClusteredFragWgsl = R"wgsl(
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f,
 };
 struct Frame {
     mvp: mat4x4f,
@@ -938,6 +971,11 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    localVP: array<mat4x4f, 4>,
+    localSlot01: vec4f,
+    localSlot23: vec4f,
+    localBias: vec4f,
+    localMeta: vec4f,
 };
 struct FSIn {
     @location(0) vNormal: vec3f,
@@ -1205,8 +1243,32 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let toL = lgt.posRadius.xyz - in.vWorldPos;
         let dist = length(toL);
         let l = toL / max(dist, 1e-4);
-        let atten = clamp(1.0 - dist / max(lgt.posRadius.w, 1e-3), 0.0, 1.0);
-        lo += shadeLight(n, v, albedo, metallic, rough, l, lgt.color.rgb * atten * atten);
+        var atten = clamp(1.0 - dist / max(lgt.posRadius.w, 1e-3), 0.0, 1.0);
+        atten = atten * atten;
+        if (lgt.spot.w > 0.0) {
+            let beamLen = length(lgt.spot.xyz);
+            if (beamLen > 1e-6) {
+                let cosTheta = dot(normalize(-l), lgt.spot.xyz / beamLen);
+                atten = atten * clamp(cosTheta * lgt.spot.w + lgt.color.a, 0.0, 1.0);
+                if (beamLen > 1.005 && shadow.bias.z > 0.5) {
+                    let si = i32(round((beamLen - 1.0) * 100.0)) - 1;
+                    if (si >= 0 && si <= 3) {
+                        let lc = shadow.localVP[si] * vec4f(in.vWorldPos, 1.0);
+                        let ndc = lc.xyz / max(lc.w, 1e-4);
+                        let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
+                        let zref = ndc.z - shadow.localBias[si];
+                        var vis = 1.0;
+                        if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0) {
+                            vis = textureSampleCompareLevel(shadowMap, shadowSamp, uv, 3 + si, zref);
+                        }
+                        atten = atten * mix(1.0 - shadow.splits.w, 1.0, vis);
+                    }
+                }
+            } else {
+                atten = 0.0;
+            }
+        }
+        lo += shadeLight(n, v, albedo, metallic, rough, l, lgt.color.rgb * atten);
     }
     let hemi = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
     let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
@@ -1805,6 +1867,7 @@ inline const char* kDeferredLightingFragWgsl = R"wgsl(
 struct Light3D {
     posRadius: vec4f,
     color: vec4f,
+    spot: vec4f,
 };
 struct DeferredFrame {
     invViewProj: mat4x4f,
@@ -1822,6 +1885,11 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    localVP: array<mat4x4f, 4>,
+    localSlot01: vec4f,
+    localSlot23: vec4f,
+    localBias: vec4f,
+    localMeta: vec4f,
 };
 struct FSIn {
     @builtin(position) fragCoord: vec4f,
@@ -1977,6 +2045,29 @@ fn fs_main(in: FSIn) -> FSOut {
         let l = toLight / max(dist, 1e-4);
         var atten = 1.0 - smoothstep(radius * 0.8, radius, dist);
         atten = atten / max(dist * dist, 1e-4);
+        if (light.spot.w > 0.0) {
+            let beamLen = length(light.spot.xyz);
+            if (beamLen > 1e-6) {
+                let cosTheta = dot(normalize(-l), light.spot.xyz / beamLen);
+                atten = atten * clamp(cosTheta * light.spot.w + light.color.a, 0.0, 1.0);
+                if (beamLen > 1.005) {
+                    let si = i32(round((beamLen - 1.0) * 100.0)) - 1;
+                    if (si >= 0 && si <= 3) {
+                        let lc = shadow.localVP[si] * vec4f(worldPos, 1.0);
+                        let ndc = lc.xyz / max(lc.w, 1e-4);
+                        let uv = vec2f(ndc.x, -ndc.y) * 0.5 + 0.5;
+                        let zref = ndc.z - shadow.localBias[si];
+                        var vis = 1.0;
+                        if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0) {
+                            vis = textureSampleCompare(shadowMap, shadowSamp, uv, 3 + si, zref);
+                        }
+                        atten = atten * mix(1.0 - shadow.splits.w, 1.0, vis);
+                    }
+                }
+            } else {
+                atten = 0.0;
+            }
+        }
         lo = lo + shadeLight(n, v, l, light.color.rgb * atten, albedo, metallic, roughness, specularFactor);
     }
 

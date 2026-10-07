@@ -39,7 +39,16 @@ EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& doc
                     static_cast<float>(component(color, 2)),
                     static_cast<float>(*document.value("light.intensity")->getIf<double>()));
     light->setRadius(static_cast<float>(*document.value("light.radius")->getIf<double>()));
+    if (const auto* angle = document.value("light.spot-angle")) {
+        if (const auto* degrees = angle->getIf<double>()) light->setSpotAngle(static_cast<float>(*degrees));
+    }
+    if (const auto* soft = document.value("light.spot-softness")) {
+        if (const auto* value = soft->getIf<double>()) light->setSpotSoftness(static_cast<float>(*value));
+    }
     light->setCastShadow(*document.value("shadow.cast")->getIf<bool>());
+    if (const auto* method = document.value("shadow.method")) {
+        if (const auto* name = method->getIf<std::string>()) light->setShadowMethod(*name);
+    }
     light->setShadowBias(static_cast<float>(*document.value("shadow.bias")->getIf<double>()));
     light->setShadowStrength(static_cast<float>(*document.value("shadow.strength")->getIf<double>()));
     light->setVolumetric(*document.value("volumetric.enabled")->getIf<bool>());

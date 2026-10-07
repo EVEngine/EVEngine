@@ -35,6 +35,7 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/GrassWind.h"
 #include "graphics/Light.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -510,10 +511,16 @@ void Graphics::expose(ssq::Table& table) {
     light3d.addFunc("setColor", &Light3D::setColor);
     light3d.addFunc("setRadius", &Light3D::setRadius);
     light3d.addFunc("getRadius", &Light3D::getRadius);
+    light3d.addFunc("setSpotAngle", &Light3D::setSpotAngle);
+    light3d.addFunc("getSpotAngle", &Light3D::getSpotAngle);
+    light3d.addFunc("setSpotSoftness", &Light3D::setSpotSoftness);
+    light3d.addFunc("getSpotSoftness", &Light3D::getSpotSoftness);
     light3d.addFunc("setEnabled", &Light3D::setEnabled);
     light3d.addFunc("isEnabled", &Light3D::isEnabled);
     light3d.addFunc("setCastShadow", &Light3D::setCastShadow);
     light3d.addFunc("getCastShadow", &Light3D::getCastShadow);
+    light3d.addFunc("setShadowMethod", &Light3D::setShadowMethod);
+    light3d.addFunc("getShadowMethod", &Light3D::getShadowMethod);
     light3d.addFunc("setShadowBias", &Light3D::setShadowBias);
     light3d.addFunc("getShadowBias", &Light3D::getShadowBias);
     light3d.addFunc("setShadowStrength", &Light3D::setShadowStrength);
@@ -530,6 +537,21 @@ void Graphics::expose(ssq::Table& table) {
                          float radius) {
                           return Light3D::createEmissiveProxy(x, y, z, r, g, b, intensity, radius);
                       }));
+    // Configurable shadow scheme (process-wide defaults for dir/spot/point casters).
+    table.addFunc("setShadowSchemeDirectionalEnabled", [](bool enabled) {
+        ShadowSchemeSettings::current().enableDirectionalCsm = enabled;
+    });
+    table.addFunc("setShadowSchemeSpotEnabled", [](bool enabled) {
+        ShadowSchemeSettings::current().enableSpotPerspective = enabled;
+    });
+    table.addFunc("setShadowSchemePointEnabled", [](bool enabled) {
+        ShadowSchemeSettings::current().enablePointCube = enabled;
+    });
+    table.addFunc("setShadowSchemeMaxSpotCasters", [](int count) {
+        ShadowSchemeSettings::current().maxSpotShadowCasters = count;
+    });
+    table.addFunc("getShadowSchemeMaxSpotCasters",
+                  []() { return ShadowSchemeSettings::current().maxSpotShadowCasters; });
 
     detail::exposeRenderable3DBindings(table);
 
