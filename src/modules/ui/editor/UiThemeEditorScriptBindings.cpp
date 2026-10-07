@@ -1,8 +1,8 @@
 #include "ui/editor/UiThemeEditorScriptBindings.h"
 
+#include "editor/EditorWorkspace.h"
 #include "ui/editor/UiEditorModule.h"
 #include "ui/editor/UiThemeEditor.h"
-#include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -29,14 +29,13 @@ private:
 
 void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
-    auto themeEditor = editor::addScriptClass<ScriptUiThemeEditor>(table, "UiThemeEditor");
+    auto                     themeEditor = editor::addScriptClass<ScriptUiThemeEditor>(table, "UiThemeEditor");
 
-    themeEditor.addFunc("configureWorkspace",
-                        [bind](ScriptUiThemeEditor* self, editor::EditorWorkspace* workspace) {
-                            return bind.checked(self && workspace, "theme editor and workspace must not be null",
-                                                [&] { return self->editor().configureWorkspace(*workspace); },
-                                                "workspace");
-                        });
+    themeEditor.addFunc("configureWorkspace", [bind](ScriptUiThemeEditor* self, editor::EditorWorkspace* workspace) {
+        return bind.checked(
+            self && workspace, "theme editor and workspace must not be null",
+            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+    });
     themeEditor.addFunc("selectTheme", [bind](ScriptUiThemeEditor* self, const std::string& id) {
         return bind.checked(self, "theme editor must not be null", [&] { return self->editor().selectTheme(id); });
     });
@@ -54,22 +53,20 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
         return bind.checked(self, "theme editor must not be null", [&] { return self->editor().deleteSelected(); });
     });
     themeEditor.addFunc("setActiveSelected", [bind](ScriptUiThemeEditor* self) {
-        return bind.checked(self, "theme editor must not be null",
-                            [&] { return self->editor().setActiveSelected(); });
+        return bind.checked(self, "theme editor must not be null", [&] { return self->editor().setActiveSelected(); });
     });
     themeEditor.addFunc("resetSelectedToBase", [bind](ScriptUiThemeEditor* self) {
         return bind.checked(self, "theme editor must not be null",
                             [&] { return self->editor().resetSelectedToBase(); });
     });
-    themeEditor.addFunc("setColor", [bind](ScriptUiThemeEditor* self, const std::string& path, float r, float g,
-                                           float b, float a) {
-        return bind.checked(self, "theme editor must not be null", [&] {
-            return self->editor().setToken(path, ui_editing::EditorValue::Array{static_cast<double>(r),
-                                                                                static_cast<double>(g),
-                                                                                static_cast<double>(b),
-                                                                                static_cast<double>(a)});
+    themeEditor.addFunc(
+        "setColor", [bind](ScriptUiThemeEditor* self, const std::string& path, float r, float g, float b, float a) {
+            return bind.checked(self, "theme editor must not be null", [&] {
+                return self->editor().setToken(
+                    path, ui_editing::EditorValue::Array{static_cast<double>(r), static_cast<double>(g),
+                                                         static_cast<double>(b), static_cast<double>(a)});
+            });
         });
-    });
     themeEditor.addFunc("setFloat", [bind](ScriptUiThemeEditor* self, const std::string& path, float value) {
         return bind.checked(self, "theme editor must not be null",
                             [&] { return self->editor().setToken(path, static_cast<double>(value)); });

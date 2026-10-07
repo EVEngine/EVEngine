@@ -33,9 +33,9 @@ void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& modul
 
     voxelEditor.addFunc("configureWorkspace",
                         [bind](ScriptVoxelCatalogEditor* self, editor::EditorWorkspace* workspace) {
-                            return bind.checked(self && workspace, "voxel editor and workspace must not be null",
-                                                [&] { return self->editor().configureWorkspace(*workspace); },
-                                                "workspace");
+                            return bind.checked(
+                                self && workspace, "voxel editor and workspace must not be null",
+                                [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
                         });
     voxelEditor.addFunc("selectModel", [bind](ScriptVoxelCatalogEditor* self, const std::string& id) {
         return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().selectModel(id); });
@@ -53,8 +53,8 @@ void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& modul
     voxelEditor.addFunc("pointerDown", [bind](ScriptVoxelCatalogEditor* self, float x, float y) {
         return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().pointerDown(x, y); });
     });
-    voxelEditor.addFunc("pointerWorldRay", [bind](ScriptVoxelCatalogEditor* self, float ox, float oy, float oz, float dx,
-                                                  float dy, float dz) {
+    voxelEditor.addFunc("pointerWorldRay", [bind](ScriptVoxelCatalogEditor* self, float ox, float oy, float oz,
+                                                  float dx, float dy, float dz) {
         return bind.checked(self, "voxel editor must not be null",
                             [&] { return self->editor().pointerWorldRay(ox, oy, oz, dx, dy, dz); });
     });

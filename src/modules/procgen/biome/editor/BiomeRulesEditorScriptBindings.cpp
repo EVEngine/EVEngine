@@ -1,8 +1,8 @@
 #include "procgen/biome/editor/BiomeRulesEditorScriptBindings.h"
 
+#include "editor/EditorWorkspace.h"
 #include "procgen/biome/editor/BiomeEditorModule.h"
 #include "procgen/biome/editor/BiomeRulesEditor.h"
-#include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -30,18 +30,17 @@ private:
 
 void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
-    auto biomeEditor = editor::addScriptClass<ScriptBiomeRulesEditor>(table, "BiomeRulesEditor");
+    auto                     biomeEditor = editor::addScriptClass<ScriptBiomeRulesEditor>(table, "BiomeRulesEditor");
     biomeEditor.addFunc("configureWorkspace", [bind](ScriptBiomeRulesEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(self && workspace, "biome editor and workspace must not be null",
-                            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+        return bind.checked(
+            self && workspace, "biome editor and workspace must not be null",
+            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
     });
     biomeEditor.addFunc("selectLayer", [bind](ScriptBiomeRulesEditor* self, const std::string& id) {
-        return bind.checked(self, "biome editor must not be null",
-                            [&] { return self->editor().selectLayer(id); });
+        return bind.checked(self, "biome editor must not be null", [&] { return self->editor().selectLayer(id); });
     });
     biomeEditor.addFunc("selectAsset", [bind](ScriptBiomeRulesEditor* self, const std::string& id) {
-        return bind.checked(self, "biome editor must not be null",
-                            [&] { return self->editor().selectAsset(id); });
+        return bind.checked(self, "biome editor must not be null", [&] { return self->editor().selectAsset(id); });
     });
     biomeEditor.addFunc("setLayerDensity", [bind](ScriptBiomeRulesEditor* self, float density) {
         return bind.checked(self, "biome editor must not be null",
@@ -55,18 +54,20 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
         return bind.checked(self, "biome editor must not be null",
                             [&] { return self->editor().setAssetWeight(static_cast<double>(weight)); });
     });
-    biomeEditor.addFunc("createLayer", [bind](ScriptBiomeRulesEditor* self, const std::string& id, const std::string& name) {
-        return bind.checked(self, "biome editor must not be null",
-                            [&] { return self->editor().createLayer(id, name); });
-    });
+    biomeEditor.addFunc("createLayer",
+                        [bind](ScriptBiomeRulesEditor* self, const std::string& id, const std::string& name) {
+                            return bind.checked(self, "biome editor must not be null",
+                                                [&] { return self->editor().createLayer(id, name); });
+                        });
     biomeEditor.addFunc("deleteSelectedLayer", [bind](ScriptBiomeRulesEditor* self) {
         return bind.checked(self, "biome editor must not be null",
                             [&] { return self->editor().deleteSelectedLayer(); });
     });
-    biomeEditor.addFunc("createAsset", [bind](ScriptBiomeRulesEditor* self, const std::string& id, const std::string& asset) {
-        return bind.checked(self, "biome editor must not be null",
-                            [&] { return self->editor().createAsset(id, asset); });
-    });
+    biomeEditor.addFunc("createAsset",
+                        [bind](ScriptBiomeRulesEditor* self, const std::string& id, const std::string& asset) {
+                            return bind.checked(self, "biome editor must not be null",
+                                                [&] { return self->editor().createAsset(id, asset); });
+                        });
     biomeEditor.addFunc("deleteSelectedAsset", [bind](ScriptBiomeRulesEditor* self) {
         return bind.checked(self, "biome editor must not be null",
                             [&] { return self->editor().deleteSelectedAsset(); });
@@ -84,8 +85,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
                             [&] { return self->editor().setSeed(static_cast<std::uint32_t>(seed)); });
     });
     biomeEditor.addFunc("setSpacing", [bind](ScriptBiomeRulesEditor* self, float spacing) {
-        return bind.checked(self, "biome editor must not be null",
-                            [&] { return self->editor().setSpacing(spacing); });
+        return bind.checked(self, "biome editor must not be null", [&] { return self->editor().setSpacing(spacing); });
     });
     biomeEditor.addFunc("undo", [bind](ScriptBiomeRulesEditor* self) {
         return bind.history(self, "biome editor must not be null", [&] { return self->editor().undo(); });
@@ -165,7 +165,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
         return self ? self->editor().pointAsset(index) : std::string{};
     });
 
-        moduleClass.addFunc("create", [bind](BiomeEditorModule*, const std::string& targetId) {
+    moduleClass.addFunc("create", [bind](BiomeEditorModule*, const std::string& targetId) {
         return bind.ownedCreate<ScriptBiomeRulesEditor>("biome target id must not be empty", targetId);
     });
 }

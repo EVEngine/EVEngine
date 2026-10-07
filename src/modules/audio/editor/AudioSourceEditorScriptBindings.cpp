@@ -39,14 +39,13 @@ const char* transportLabel(audio_editing::AudioTransportState state) {
 
 void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
-    auto sourceEditor = editor::addScriptClass<ScriptAudioSourceEditor>(table, "AudioSourceEditor");
+    auto                     sourceEditor = editor::addScriptClass<ScriptAudioSourceEditor>(table, "AudioSourceEditor");
 
     sourceEditor.addFunc("configureWorkspace",
                          [bind](ScriptAudioSourceEditor* self, editor::EditorWorkspace* workspace) {
-                             return bind.checked(self && workspace,
-                                                 "audio source editor and workspace must not be null",
-                                                 [&] { return self->editor().configureWorkspace(*workspace); },
-                                                 "workspace");
+                             return bind.checked(
+                                 self && workspace, "audio source editor and workspace must not be null",
+                                 [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
                          });
     sourceEditor.addFunc("setViewportWidth", [bind](ScriptAudioSourceEditor* self, float width) {
         return bind.checked(self, "audio source editor must not be null",

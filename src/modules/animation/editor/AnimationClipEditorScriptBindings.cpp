@@ -34,31 +34,31 @@ private:
 void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto clipEditor = editor::addScriptClass<ScriptAnimationClipEditor>(table, "AnimationClipEditor");
-    clipEditor.addFunc("configureWorkspace", [bind](ScriptAnimationClipEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(self && workspace, "animation clip editor and workspace must not be null",
-                            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-    });
+    clipEditor.addFunc("configureWorkspace",
+                       [bind](ScriptAnimationClipEditor* self, editor::EditorWorkspace* workspace) {
+                           return bind.checked(
+                               self && workspace, "animation clip editor and workspace must not be null",
+                               [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+                       });
 #if defined(EVE_ANIMATION_EDITOR_RUNTIME)
     clipEditor.addFunc("loadRuntimeClip", [bind](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
-                                                  animation::AnimClip* clip) {
-        return bind.checked(self && skeleton && clip,
-                            "animation clip editor, skeleton and clip must not be null",
+                                                 animation::AnimClip* clip) {
+        return bind.checked(self && skeleton && clip, "animation clip editor, skeleton and clip must not be null",
                             [&] { return self->editor().loadRuntimeClip(*skeleton, *clip); });
     });
     clipEditor.addFunc("writeRuntimeClip", [bind](ScriptAnimationClipEditor* self, animation::AnimClip* clip,
-                                                   animation::AnimSkeleton* skeleton) {
-        return bind.checked(self && skeleton && clip,
-                            "animation clip editor, clip and skeleton must not be null",
+                                                  animation::AnimSkeleton* skeleton) {
+        return bind.checked(self && skeleton && clip, "animation clip editor, clip and skeleton must not be null",
                             [&] { return self->editor().writeRuntimeClip(*clip, *skeleton); });
     });
 #endif
-    clipEditor.addFunc("setViewport", [bind](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
-        return bind.checked(self, "animation clip editor must not be null",
-                            [&] { return self->editor().setViewport(width, rowHeight, labelWidth); });
-    });
+    clipEditor.addFunc(
+        "setViewport", [bind](ScriptAnimationClipEditor* self, float width, float rowHeight, float labelWidth) {
+            return bind.checked(self, "animation clip editor must not be null",
+                                [&] { return self->editor().setViewport(width, rowHeight, labelWidth); });
+        });
     clipEditor.addFunc("seekX", [bind](ScriptAnimationClipEditor* self, float x) {
-        return bind.checked(self, "animation clip editor must not be null",
-                            [&] { return self->editor().seekX(x); });
+        return bind.checked(self, "animation clip editor must not be null", [&] { return self->editor().seekX(x); });
     });
     clipEditor.addFunc("seekSeconds", [bind](ScriptAnimationClipEditor* self, float seconds) {
         return bind.checked(self, "animation clip editor must not be null",
@@ -247,7 +247,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? self->editor().primitiveB(index) : 0.0f;
     });
 
-        moduleClass.addFunc("create", [bind](AnimationEditorModule*, const std::string& targetId) {
+    moduleClass.addFunc("create", [bind](AnimationEditorModule*, const std::string& targetId) {
         return bind.ownedCreate<ScriptAnimationClipEditor>("animation clip target id must not be empty", targetId);
     });
 }

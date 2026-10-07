@@ -30,58 +30,59 @@ private:
 void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto avatarEditor = editor::addScriptClass<ScriptAvatarDocumentEditor>(table, "AvatarDocumentEditor");
-    avatarEditor.addFunc("configureWorkspace", [bind](ScriptAvatarDocumentEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(self && workspace, "avatar editor and workspace must not be null",
-                            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-    });
+    avatarEditor.addFunc("configureWorkspace",
+                         [bind](ScriptAvatarDocumentEditor* self, editor::EditorWorkspace* workspace) {
+                             return bind.checked(
+                                 self && workspace, "avatar editor and workspace must not be null",
+                                 [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+                         });
     avatarEditor.addFunc("selectLayer", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().selectLayer(id); });
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectLayer(id); });
     });
     avatarEditor.addFunc("selectParameter", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().selectParameter(id); });
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectParameter(id); });
     });
     avatarEditor.addFunc("selectExpression", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().selectExpression(id); });
     });
     avatarEditor.addFunc("pointerDown", [bind](ScriptAvatarDocumentEditor* self, float x, float y) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().pointerDown(x, y); });
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().pointerDown(x, y); });
     });
     avatarEditor.addFunc("setLayerVisible", [bind](ScriptAvatarDocumentEditor* self, bool visible) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().setLayerVisible(visible); });
     });
     avatarEditor.addFunc("setLayerZ", [bind](ScriptAvatarDocumentEditor* self, int zIndex) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().setLayerZ(zIndex); });
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().setLayerZ(zIndex); });
     });
     avatarEditor.addFunc("setParameterValue", [bind](ScriptAvatarDocumentEditor* self, float value) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().setParameterValue(static_cast<double>(value)); });
     });
-    avatarEditor.addFunc("createLayer", [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().createLayer(id, name); });
-    });
+    avatarEditor.addFunc("createLayer",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createLayer(id, name); });
+                         });
     avatarEditor.addFunc("deleteSelectedLayer", [bind](ScriptAvatarDocumentEditor* self) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().deleteSelectedLayer(); });
     });
-    avatarEditor.addFunc("createParameter", [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().createParameter(id, name); });
-    });
+    avatarEditor.addFunc("createParameter",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createParameter(id, name); });
+                         });
     avatarEditor.addFunc("deleteSelectedParameter", [bind](ScriptAvatarDocumentEditor* self) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().deleteSelectedParameter(); });
     });
-    avatarEditor.addFunc("createExpression", [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
-        return bind.checked(self, "avatar editor must not be null",
-                            [&] { return self->editor().createExpression(id, name); });
-    });
+    avatarEditor.addFunc("createExpression",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createExpression(id, name); });
+                         });
     avatarEditor.addFunc("deleteSelectedExpression", [bind](ScriptAvatarDocumentEditor* self) {
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().deleteSelectedExpression(); });
@@ -201,7 +202,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
                              return self ? self->editor().expressionChannelName(expression, channel) : std::string{};
                          });
 
-        moduleClass.addFunc("create", [bind](AvatarEditorModule*, const std::string& targetId) {
+    moduleClass.addFunc("create", [bind](AvatarEditorModule*, const std::string& targetId) {
         return bind.ownedCreate<ScriptAvatarDocumentEditor>("avatar target id must not be empty", targetId);
     });
 }
