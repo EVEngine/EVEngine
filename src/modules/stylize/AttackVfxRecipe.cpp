@@ -14,11 +14,6 @@ Result<void> fail(DiagnosticCode code, std::string_view message, std::string_vie
     return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
 }
 
-template <class T>
-Result<T> failT(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<T>::failure(Diagnostic::error(code, std::string(message), std::string(path)));
-}
-
 Result<void> rejectUnknown(const Value::Object& object, const std::set<std::string>& allowed,
                            const std::string& path) {
     for (const auto& [key, value] : object) {
@@ -31,27 +26,27 @@ Result<void> rejectUnknown(const Value::Object& object, const std::set<std::stri
 
 Result<float> number(const Value& value, const std::string& path) {
     if (const auto* v = value.getIf<double>()) {
-        if (!std::isfinite(*v)) return failT<float>(DiagnosticCode::InvalidArgument, "expected finite number", path);
+        if (!std::isfinite(*v)) return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected finite number"), std::string(path)));
         return Result<float>::success(static_cast<float>(*v));
     }
     if (const auto* v = value.getIf<std::int64_t>())
         return Result<float>::success(static_cast<float>(*v));
-    return failT<float>(DiagnosticCode::InvalidArgument, "expected number", path);
+    return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected number"), std::string(path)));
 }
 
 Result<double> number64(const Value& value, const std::string& path) {
     if (const auto* v = value.getIf<double>()) {
-        if (!std::isfinite(*v)) return failT<double>(DiagnosticCode::InvalidArgument, "expected finite number", path);
+        if (!std::isfinite(*v)) return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected finite number"), std::string(path)));
         return Result<double>::success(*v);
     }
     if (const auto* v = value.getIf<std::int64_t>()) return Result<double>::success(static_cast<double>(*v));
-    return failT<double>(DiagnosticCode::InvalidArgument, "expected number", path);
+    return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected number"), std::string(path)));
 }
 
 Result<LogicalId> parseLogicalId(const Value& value, const std::string& path) {
-    if (!value.isString()) return failT<LogicalId>(DiagnosticCode::InvalidArgument, "expected logical id string", path);
+    if (!value.isString()) return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected logical id string"), std::string(path)));
     auto parsed = LogicalId::parse(value.asString());
-    if (!parsed) return failT<LogicalId>(DiagnosticCode::InvalidArgument, "logical id must be namespace:name", path);
+    if (!parsed) return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("logical id must be namespace:name"), std::string(path)));
     return Result<LogicalId>::success(std::move(*parsed));
 }
 
@@ -60,7 +55,7 @@ bool finiteUnit(float value) { return std::isfinite(value) && value >= 0.f && va
 Result<AttackVfxVec3> parseVec3(const Value& value, const std::string& path) {
     const auto* array = value.getIf<Value::Array>();
     if (!array || array->size() != 3)
-        return failT<AttackVfxVec3>(DiagnosticCode::InvalidArgument, "expected three-number array", path);
+        return Result<AttackVfxVec3>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected three-number array"), std::string(path)));
     AttackVfxVec3 out;
     float* components[] = {&out.x, &out.y, &out.z};
     for (std::size_t i = 0; i < 3; ++i) {
@@ -72,7 +67,7 @@ Result<AttackVfxVec3> parseVec3(const Value& value, const std::string& path) {
 }
 
 Result<AttackVfxPhaseKind> parsePhaseKind(const Value& value, const std::string& path) {
-    if (!value.isString()) return failT<AttackVfxPhaseKind>(DiagnosticCode::InvalidArgument, "expected string", path);
+    if (!value.isString()) return Result<AttackVfxPhaseKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path)));
     const auto& text = value.asString();
     if (text == "anticipate") return Result<AttackVfxPhaseKind>::success(AttackVfxPhaseKind::Anticipate);
     if (text == "release") return Result<AttackVfxPhaseKind>::success(AttackVfxPhaseKind::Release);
@@ -80,11 +75,11 @@ Result<AttackVfxPhaseKind> parsePhaseKind(const Value& value, const std::string&
     if (text == "impact") return Result<AttackVfxPhaseKind>::success(AttackVfxPhaseKind::Impact);
     if (text == "aftermath") return Result<AttackVfxPhaseKind>::success(AttackVfxPhaseKind::Aftermath);
     if (text == "status") return Result<AttackVfxPhaseKind>::success(AttackVfxPhaseKind::Status);
-    return failT<AttackVfxPhaseKind>(DiagnosticCode::InvalidArgument, "unknown phase kind", path);
+    return Result<AttackVfxPhaseKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown phase kind"), std::string(path)));
 }
 
 Result<AttackVfxLayerRole> parseLayerRole(const Value& value, const std::string& path) {
-    if (!value.isString()) return failT<AttackVfxLayerRole>(DiagnosticCode::InvalidArgument, "expected string", path);
+    if (!value.isString()) return Result<AttackVfxLayerRole>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path)));
     const auto& text = value.asString();
     if (text == "blockingMesh") return Result<AttackVfxLayerRole>::success(AttackVfxLayerRole::BlockingMesh);
     if (text == "meshVfx") return Result<AttackVfxLayerRole>::success(AttackVfxLayerRole::MeshVfx);
@@ -95,22 +90,22 @@ Result<AttackVfxLayerRole> parseLayerRole(const Value& value, const std::string&
     if (text == "camera") return Result<AttackVfxLayerRole>::success(AttackVfxLayerRole::Camera);
     if (text == "prefab") return Result<AttackVfxLayerRole>::success(AttackVfxLayerRole::Prefab);
     if (text == "audio") return Result<AttackVfxLayerRole>::success(AttackVfxLayerRole::Audio);
-    return failT<AttackVfxLayerRole>(DiagnosticCode::InvalidArgument, "unknown layer role", path);
+    return Result<AttackVfxLayerRole>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown layer role"), std::string(path)));
 }
 
 Result<AttackVfxStopBehavior> parseStopBehavior(const Value& value, const std::string& path) {
     if (!value.isString())
-        return failT<AttackVfxStopBehavior>(DiagnosticCode::InvalidArgument, "expected string", path);
+        return Result<AttackVfxStopBehavior>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path)));
     const auto& text = value.asString();
     if (text == "stopEmitting") return Result<AttackVfxStopBehavior>::success(AttackVfxStopBehavior::StopEmitting);
     if (text == "clearImmediately")
         return Result<AttackVfxStopBehavior>::success(AttackVfxStopBehavior::ClearImmediately);
-    return failT<AttackVfxStopBehavior>(DiagnosticCode::InvalidArgument, "unknown stopBehavior", path);
+    return Result<AttackVfxStopBehavior>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown stopBehavior"), std::string(path)));
 }
 
 Result<AttackVfxSpatialAttachment> parseAttachment(const Value& value, const std::string& path) {
     if (!value.isString())
-        return failT<AttackVfxSpatialAttachment>(DiagnosticCode::InvalidArgument, "expected string", path);
+        return Result<AttackVfxSpatialAttachment>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path)));
     const auto& text = value.asString();
     if (text == "followTarget")
         return Result<AttackVfxSpatialAttachment>::success(AttackVfxSpatialAttachment::FollowTarget);
@@ -118,23 +113,23 @@ Result<AttackVfxSpatialAttachment> parseAttachment(const Value& value, const std
         return Result<AttackVfxSpatialAttachment>::success(AttackVfxSpatialAttachment::FollowPositionOnly);
     if (text == "worldTransformAtStart")
         return Result<AttackVfxSpatialAttachment>::success(AttackVfxSpatialAttachment::WorldTransformAtStart);
-    return failT<AttackVfxSpatialAttachment>(DiagnosticCode::InvalidArgument, "unknown attachment", path);
+    return Result<AttackVfxSpatialAttachment>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown attachment"), std::string(path)));
 }
 
 Result<AttackVfxSpatialAnchor> parseAnchor(const Value& value, const std::string& path) {
     if (!value.isString())
-        return failT<AttackVfxSpatialAnchor>(DiagnosticCode::InvalidArgument, "expected string", path);
+        return Result<AttackVfxSpatialAnchor>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path)));
     const auto& text = value.asString();
     if (text == "source") return Result<AttackVfxSpatialAnchor>::success(AttackVfxSpatialAnchor::Source);
     if (text == "target") return Result<AttackVfxSpatialAnchor>::success(AttackVfxSpatialAnchor::Target);
-    return failT<AttackVfxSpatialAnchor>(DiagnosticCode::InvalidArgument, "unknown anchor", path);
+    return Result<AttackVfxSpatialAnchor>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unknown anchor"), std::string(path)));
 }
 
 Result<AttackVfxSpatial> parseSpatial(const Value* value, const std::string& path) {
     AttackVfxSpatial spatial;
     if (!value) return Result<AttackVfxSpatial>::success(spatial);
     const auto* object = value->getIf<Value::Object>();
-    if (!object) return failT<AttackVfxSpatial>(DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object) return Result<AttackVfxSpatial>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     auto known = rejectUnknown(*object,
                                {"attachment", "anchor", "targetIndex", "bone", "positionOffset",
                                 "rotationOffsetDegrees", "scale"},
@@ -154,13 +149,12 @@ Result<AttackVfxSpatial> parseSpatial(const Value* value, const std::string& pat
     if (const auto it = object->find("targetIndex"); it != object->end()) {
         const auto* index = it->second.getIf<std::int64_t>();
         if (!index || *index < 0)
-            return failT<AttackVfxSpatial>(DiagnosticCode::InvalidArgument, "targetIndex must be >= 0",
-                                           path + ".targetIndex");
+            return Result<AttackVfxSpatial>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("targetIndex must be >= 0"), std::string(path + ".targetIndex")));
         spatial.targetIndex = static_cast<std::size_t>(*index);
     }
     if (const auto it = object->find("bone"); it != object->end()) {
         if (!it->second.isString())
-            return failT<AttackVfxSpatial>(DiagnosticCode::InvalidArgument, "bone must be a string", path + ".bone");
+            return Result<AttackVfxSpatial>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("bone must be a string"), std::string(path + ".bone")));
         spatial.bone = it->second.asString();
     }
     if (const auto it = object->find("positionOffset"); it != object->end()) {
@@ -188,7 +182,7 @@ Result<std::map<std::string, float>> parseFloatMap(const Value* value, const std
     if (!value) return Result<std::map<std::string, float>>::success(out);
     const auto* object = value->getIf<Value::Object>();
     if (!object)
-        return failT<std::map<std::string, float>>(DiagnosticCode::InvalidArgument, "expected object", path);
+        return Result<std::map<std::string, float>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     for (const auto& [name, raw] : *object) {
         auto parsed = number(raw, path + "." + name);
         if (!parsed) return Result<std::map<std::string, float>>::failure(parsed.status());
@@ -202,11 +196,10 @@ Result<std::map<std::string, std::string>> parseStringMap(const Value* value, co
     if (!value) return Result<std::map<std::string, std::string>>::success(out);
     const auto* object = value->getIf<Value::Object>();
     if (!object)
-        return failT<std::map<std::string, std::string>>(DiagnosticCode::InvalidArgument, "expected object", path);
+        return Result<std::map<std::string, std::string>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     for (const auto& [name, raw] : *object) {
         if (!raw.isString())
-            return failT<std::map<std::string, std::string>>(DiagnosticCode::InvalidArgument, "expected string",
-                                                             path + "." + name);
+            return Result<std::map<std::string, std::string>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected string"), std::string(path + "." + name)));
         out.emplace(name, raw.asString());
     }
     return Result<std::map<std::string, std::string>>::success(std::move(out));
@@ -214,7 +207,7 @@ Result<std::map<std::string, std::string>> parseStringMap(const Value* value, co
 
 Result<AttackVfxLayer> parseLayer(const Value& value, const std::string& path) {
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<AttackVfxLayer>(DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object) return Result<AttackVfxLayer>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     auto known =
         rejectUnknown(*object, {"role", "uri", "spatial", "floatParams", "stopBehavior"}, path);
     if (!known) return Result<AttackVfxLayer>::failure(known.status());
@@ -222,7 +215,7 @@ Result<AttackVfxLayer> parseLayer(const Value& value, const std::string& path) {
     AttackVfxLayer layer;
     const auto role = object->find("role");
     if (role == object->end())
-        return failT<AttackVfxLayer>(DiagnosticCode::InvalidArgument, "role is required", path + ".role");
+        return Result<AttackVfxLayer>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("role is required"), std::string(path + ".role")));
     auto parsedRole = parseLayerRole(role->second, path + ".role");
     if (!parsedRole)
         return Result<AttackVfxLayer>::failure(parsedRole.status());
@@ -230,7 +223,7 @@ Result<AttackVfxLayer> parseLayer(const Value& value, const std::string& path) {
 
     if (const auto it = object->find("uri"); it != object->end()) {
         if (!it->second.isString())
-            return failT<AttackVfxLayer>(DiagnosticCode::InvalidArgument, "uri must be a string", path + ".uri");
+            return Result<AttackVfxLayer>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("uri must be a string"), std::string(path + ".uri")));
         layer.uri = it->second.asString();
     }
     if (const auto it = object->find("spatial"); it != object->end()) {
@@ -258,7 +251,7 @@ Result<AttackVfxLayer> parseLayer(const Value& value, const std::string& path) {
 
 Result<AttackVfxPhase> parsePhase(const Value& value, const std::string& path) {
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<AttackVfxPhase>(DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object) return Result<AttackVfxPhase>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     auto known = rejectUnknown(
         *object, {"kind", "startCue", "endCue", "startOffsetSeconds", "durationSeconds", "layers"}, path);
     if (!known) return Result<AttackVfxPhase>::failure(known.status());
@@ -266,7 +259,7 @@ Result<AttackVfxPhase> parsePhase(const Value& value, const std::string& path) {
     AttackVfxPhase phase;
     const auto kind = object->find("kind");
     if (kind == object->end())
-        return failT<AttackVfxPhase>(DiagnosticCode::InvalidArgument, "kind is required", path + ".kind");
+        return Result<AttackVfxPhase>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("kind is required"), std::string(path + ".kind")));
     auto parsedKind = parsePhaseKind(kind->second, path + ".kind");
     if (!parsedKind)
         return Result<AttackVfxPhase>::failure(parsedKind.status());
@@ -274,13 +267,12 @@ Result<AttackVfxPhase> parsePhase(const Value& value, const std::string& path) {
 
     if (const auto it = object->find("startCue"); it != object->end()) {
         if (!it->second.isString())
-            return failT<AttackVfxPhase>(DiagnosticCode::InvalidArgument, "startCue must be a string",
-                                         path + ".startCue");
+            return Result<AttackVfxPhase>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("startCue must be a string"), std::string(path + ".startCue")));
         phase.startCue = it->second.asString();
     }
     if (const auto it = object->find("endCue"); it != object->end()) {
         if (!it->second.isString())
-            return failT<AttackVfxPhase>(DiagnosticCode::InvalidArgument, "endCue must be a string", path + ".endCue");
+            return Result<AttackVfxPhase>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("endCue must be a string"), std::string(path + ".endCue")));
         phase.endCue = it->second.asString();
     }
     if (const auto it = object->find("startOffsetSeconds"); it != object->end()) {
@@ -298,7 +290,7 @@ Result<AttackVfxPhase> parsePhase(const Value& value, const std::string& path) {
     if (const auto it = object->find("layers"); it != object->end()) {
         const auto* layers = it->second.getIf<Value::Array>();
         if (!layers)
-            return failT<AttackVfxPhase>(DiagnosticCode::InvalidArgument, "layers must be an array", path + ".layers");
+            return Result<AttackVfxPhase>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("layers must be an array"), std::string(path + ".layers")));
         phase.layers.reserve(layers->size());
         for (std::size_t i = 0; i < layers->size(); ++i) {
             auto parsed = parseLayer((*layers)[i], path + ".layers[" + std::to_string(i) + "]");
@@ -316,7 +308,7 @@ Result<AttackVfxPalette> parsePalette(const Value* value, const std::string& pat
     AttackVfxPalette palette;
     if (!value) return Result<AttackVfxPalette>::success(palette);
     const auto* object = value->getIf<Value::Object>();
-    if (!object) return failT<AttackVfxPalette>(DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object) return Result<AttackVfxPalette>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     auto known = rejectUnknown(*object, {"primary", "secondary", "emissive"}, path);
     if (!known) return Result<AttackVfxPalette>::failure(known.status());
     if (const auto it = object->find("primary"); it != object->end()) {
@@ -351,22 +343,19 @@ Result<AttackVfxSkin> parseSkinObject(const Value::Object& object, const std::st
         const auto schema = object.find("schema");
         if (schema == object.end() || !schema->second.isString() ||
             schema->second.asString() != "eve.stylize.attack-vfx-skin")
-            return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "schema must be eve.stylize.attack-vfx-skin",
-                                        path + ".schema");
+            return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("schema must be eve.stylize.attack-vfx-skin"), std::string(path + ".schema")));
         const auto version = object.find("schemaVersion");
         if (version == object.end())
-            return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "schemaVersion is required",
-                                        path + ".schemaVersion");
+            return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("schemaVersion is required"), std::string(path + ".schemaVersion")));
         const auto* ver = version->second.getIf<std::int64_t>();
         if (!ver || *ver != 1)
-            return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "unsupported skin schemaVersion",
-                                        path + ".schemaVersion");
+            return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unsupported skin schemaVersion"), std::string(path + ".schemaVersion")));
     }
 
     AttackVfxSkin skin;
     const auto id = object.find("id");
     if (id == object.end())
-        return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "id is required", path + ".id");
+        return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("id is required"), std::string(path + ".id")));
     auto parsedId = parseLogicalId(id->second, path + ".id");
     if (!parsedId)
         return Result<AttackVfxSkin>::failure(parsedId.status());
@@ -398,8 +387,7 @@ Result<AttackVfxSkin> parseSkinObject(const Value::Object& object, const std::st
     }
     if (const auto it = object.find("statusOverlayUri"); it != object.end()) {
         if (!it->second.isString())
-            return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "statusOverlayUri must be a string",
-                                        path + ".statusOverlayUri");
+            return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("statusOverlayUri must be a string"), std::string(path + ".statusOverlayUri")));
         skin.statusOverlayUri = it->second.asString();
     }
     auto valid = skin.validate();
@@ -411,33 +399,29 @@ Result<AttackVfxBudget> parseBudget(const Value* value, const std::string& path)
     AttackVfxBudget budget;
     if (!value) return Result<AttackVfxBudget>::success(budget);
     const auto* object = value->getIf<Value::Object>();
-    if (!object) return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object) return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("expected object"), std::string(path)));
     auto known = rejectUnknown(*object, {"lod", "maxParticles", "allowDistortion"}, path);
     if (!known) return Result<AttackVfxBudget>::failure(known.status());
     if (const auto it = object->find("lod"); it != object->end()) {
         const auto* lod = it->second.getIf<std::int64_t>();
         if (!lod || *lod < 0)
-            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "lod must be >= 0", path + ".lod");
+            return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("lod must be >= 0"), std::string(path + ".lod")));
         if (*lod > static_cast<std::int64_t>(std::numeric_limits<int>::max()))
-            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "lod exceeds int range",
-                                          path + ".lod");
+            return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("lod exceeds int range"), std::string(path + ".lod")));
         budget.lod = static_cast<int>(*lod);
     }
     if (const auto it = object->find("maxParticles"); it != object->end()) {
         const auto* count = it->second.getIf<std::int64_t>();
         if (!count || *count < 0)
-            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "maxParticles must be >= 0",
-                                          path + ".maxParticles");
+            return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("maxParticles must be >= 0"), std::string(path + ".maxParticles")));
         if (*count > static_cast<std::int64_t>(std::numeric_limits<int>::max()))
-            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument,
-                                          "maxParticles exceeds int range", path + ".maxParticles");
+            return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("maxParticles exceeds int range"), std::string(path + ".maxParticles")));
         budget.maxParticles = static_cast<int>(*count);
     }
     if (const auto it = object->find("allowDistortion"); it != object->end()) {
         const auto* enabled = it->second.getIf<bool>();
         if (!enabled)
-            return failT<AttackVfxBudget>(DiagnosticCode::InvalidArgument, "allowDistortion must be boolean",
-                                          path + ".allowDistortion");
+            return Result<AttackVfxBudget>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("allowDistortion must be boolean"), std::string(path + ".allowDistortion")));
         budget.allowDistortion = *enabled;
     }
     return Result<AttackVfxBudget>::success(budget);
@@ -588,7 +572,7 @@ Result<AttackVfxSkin> AttackVfxSkin::fromJson(std::string_view json) {
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<AttackVfxSkin>::failure(parsed.status());
     const auto* object = parsed.value().getIf<Value::Object>();
-    if (!object) return failT<AttackVfxSkin>(DiagnosticCode::InvalidArgument, "skin must be an object", "");
+    if (!object) return Result<AttackVfxSkin>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("skin must be an object"), std::string("")));
     return parseSkinObject(*object, "", true);
 }
 
@@ -597,7 +581,7 @@ Result<AttackVfxRecipe> AttackVfxRecipe::fromJson(std::string_view json) {
     if (!parsed)
         return Result<AttackVfxRecipe>::failure(parsed.status());
     const auto* object = parsed.value().getIf<Value::Object>();
-    if (!object) return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "recipe must be an object", "");
+    if (!object) return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("recipe must be an object"), std::string("")));
 
     auto known = rejectUnknown(*object, {"schema", "schemaVersion", "id", "phases", "skinId", "skin", "budget"}, "");
     if (!known)
@@ -605,19 +589,18 @@ Result<AttackVfxRecipe> AttackVfxRecipe::fromJson(std::string_view json) {
 
     const auto schema = object->find("schema");
     if (schema == object->end() || !schema->second.isString() || schema->second.asString() != schemaId)
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "schema must be eve.stylize.attack-vfx",
-                                      "schema");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("schema must be eve.stylize.attack-vfx"), std::string("schema")));
     const auto version = object->find("schemaVersion");
     if (version == object->end())
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "schemaVersion is required", "schemaVersion");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("schemaVersion is required"), std::string("schemaVersion")));
     const auto* ver = version->second.getIf<std::int64_t>();
     if (!ver || *ver != static_cast<std::int64_t>(schemaVersion))
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "unsupported schemaVersion", "schemaVersion");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("unsupported schemaVersion"), std::string("schemaVersion")));
 
     AttackVfxRecipe recipe;
     const auto id = object->find("id");
     if (id == object->end())
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "id is required", "id");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("id is required"), std::string("id")));
     auto parsedId = parseLogicalId(id->second, "id");
     if (!parsedId)
         return Result<AttackVfxRecipe>::failure(parsedId.status());
@@ -625,10 +608,10 @@ Result<AttackVfxRecipe> AttackVfxRecipe::fromJson(std::string_view json) {
 
     const auto phases = object->find("phases");
     if (phases == object->end())
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "phases is required", "phases");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("phases is required"), std::string("phases")));
     const auto* phaseArray = phases->second.getIf<Value::Array>();
     if (!phaseArray)
-        return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "phases must be an array", "phases");
+        return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("phases must be an array"), std::string("phases")));
     recipe.phases.reserve(phaseArray->size());
     for (std::size_t i = 0; i < phaseArray->size(); ++i) {
         auto parsedPhase = parsePhase((*phaseArray)[i], "phases[" + std::to_string(i) + "]");
@@ -646,7 +629,7 @@ Result<AttackVfxRecipe> AttackVfxRecipe::fromJson(std::string_view json) {
     if (const auto it = object->find("skin"); it != object->end()) {
         const auto* skinObject = it->second.getIf<Value::Object>();
         if (!skinObject)
-            return failT<AttackVfxRecipe>(DiagnosticCode::InvalidArgument, "skin must be an object", "skin");
+            return Result<AttackVfxRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("skin must be an object"), std::string("skin")));
         // Inline skin omits schema fields; id is still required.
         auto parsedSkin = parseSkinObject(*skinObject, "skin", false);
         if (!parsedSkin)

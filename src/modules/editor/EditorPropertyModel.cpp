@@ -69,8 +69,7 @@ EditorStatus editorStatusFor(eve::StatusCode code) {
     return EditorStatus::Failed;
 }
 
-template <class T>
-EditorResult<T> providerRevisionFailure(const eve::Result<eve::Revision>& result) {
+EditorResult<eve::Revision> providerRevisionFailure(const eve::Result<eve::Revision>& result) {
     const eve::Status& status = result.status();
     const char*        rule   = "editor.property.current-revision";
     switch (status.code()) {
@@ -79,7 +78,8 @@ EditorResult<T> providerRevisionFailure(const eve::Result<eve::Revision>& result
         case eve::StatusCode::NotFound: rule = "editor.property.target"; break;
         default: break;
     }
-    return eve::editing::failed<T>(editorStatusFor(status.code()), RuleId(rule), status.describe());
+    return eve::editing::failed<eve::Revision>(editorStatusFor(status.code()), RuleId(rule),
+                                               status.describe());
 }
 
 EditorResult<void> externalRevisionConflict(eve::Revision expected, eve::Revision actual) {
@@ -385,7 +385,7 @@ EditorResult<eve::Revision> EditorPropertyModel::readProviderRevision() const {
         return eve::editing::failed<eve::Revision>(EditorStatus::Unsupported, RuleId("editor.property.provider"),
                                                    "No property provider is connected");
     eve::Result<eve::Revision> result = provider_->currentRevision(selection_);
-    if (!result.ok()) return providerRevisionFailure<eve::Revision>(result);
+    if (!result.ok()) return providerRevisionFailure(result);
     return eve::editing::applied<eve::Revision>(eve::Revision(result.value().value()));
 }
 
