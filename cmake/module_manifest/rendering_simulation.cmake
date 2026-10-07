@@ -58,7 +58,6 @@ eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    GROUP 2d 3d web)
 eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    DEPS data filesystem graphics grid
-                   THIRDPARTY poco
                    GROUP 2d 3d)
 # Interactive 3D hex map: an editable pointy-top cell grid plus per-chunk mesh
 # generation (ground fans, blend strips, terraces, cliffs, water, rivers, roads,
@@ -165,7 +164,7 @@ eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
 # L5 -- voxel aggregate
 # WebGPU face instances live in graphics/webgpu/GraphicsVoxel.cpp, but the
 # public VoxelWorld API embeds procgen::TerrainStreamingCache / TerrainSampler.
-# Soft-dep + web membership wait on that API split (procgen still pulls map/Poco).
+# Soft-dep + web membership wait on that API split (procgen still pulls map).
 eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
                    DEPS graphics procgen thread
                    GROUP 3d)

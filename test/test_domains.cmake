@@ -226,6 +226,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "i18n_script;core"
     "image_script;core"
     "json;core"
+    "xml;core"
     "medialoader_model_link;core"
     "=model;core"
     "module_lazy_bind;core"
