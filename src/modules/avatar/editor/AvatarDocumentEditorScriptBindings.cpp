@@ -30,12 +30,8 @@ private:
 void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto avatarEditor = editor::addScriptClass<ScriptAvatarDocumentEditor>(table, "AvatarDocumentEditor");
-    avatarEditor.addFunc("configureWorkspace",
-                         [bind](ScriptAvatarDocumentEditor* self, editor::EditorWorkspace* workspace) {
-                             return bind.checked(
-                                 self && workspace, "avatar editor and workspace must not be null",
-                                 [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                         });
+    editor::registerEditorWorkspace<ScriptAvatarDocumentEditor>(avatarEditor, bind,
+                                   "avatar editor and workspace must not be null");
     avatarEditor.addFunc("selectLayer", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
         return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectLayer(id); });
     });
@@ -87,17 +83,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
         return bind.checked(self, "avatar editor must not be null",
                             [&] { return self->editor().deleteSelectedExpression(); });
     });
-    avatarEditor.addFunc("undo", [bind](ScriptAvatarDocumentEditor* self) {
-        return bind.history(self, "avatar editor must not be null", [&] { return self->editor().undo(); });
-    });
-    avatarEditor.addFunc("redo", [bind](ScriptAvatarDocumentEditor* self) {
-        return bind.history(self, "avatar editor must not be null", [&] { return self->editor().redo(); });
-    });
-    avatarEditor.addFunc("canUndo", [](ScriptAvatarDocumentEditor* self) { return self && self->editor().canUndo(); });
-    avatarEditor.addFunc("canRedo", [](ScriptAvatarDocumentEditor* self) { return self && self->editor().canRedo(); });
-    avatarEditor.addFunc("getRevision", [](ScriptAvatarDocumentEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
+    editor::registerEditorHistory<ScriptAvatarDocumentEditor>(avatarEditor, bind, "avatar editor must not be null");
     avatarEditor.addFunc("getPreviewRevision", [](ScriptAvatarDocumentEditor* self) {
         return self ? static_cast<int>(self->editor().previewRevision()) : 0;
     });
@@ -202,9 +188,7 @@ void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& mod
                              return self ? self->editor().expressionChannelName(expression, channel) : std::string{};
                          });
 
-    moduleClass.addFunc("create", [bind](AvatarEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptAvatarDocumentEditor>("avatar target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptAvatarDocumentEditor, AvatarEditorModule>(moduleClass, bind, "avatar target id must not be empty");
 }
 
 }  // namespace eve::avatar_editor

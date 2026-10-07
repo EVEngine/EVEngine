@@ -31,11 +31,8 @@ private:
 void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto                     biomeEditor = editor::addScriptClass<ScriptBiomeRulesEditor>(table, "BiomeRulesEditor");
-    biomeEditor.addFunc("configureWorkspace", [bind](ScriptBiomeRulesEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(
-            self && workspace, "biome editor and workspace must not be null",
-            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-    });
+    editor::registerEditorWorkspace<ScriptBiomeRulesEditor>(biomeEditor, bind,
+                                   "biome editor and workspace must not be null");
     biomeEditor.addFunc("selectLayer", [bind](ScriptBiomeRulesEditor* self, const std::string& id) {
         return bind.checked(self, "biome editor must not be null", [&] { return self->editor().selectLayer(id); });
     });
@@ -87,17 +84,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
     biomeEditor.addFunc("setSpacing", [bind](ScriptBiomeRulesEditor* self, float spacing) {
         return bind.checked(self, "biome editor must not be null", [&] { return self->editor().setSpacing(spacing); });
     });
-    biomeEditor.addFunc("undo", [bind](ScriptBiomeRulesEditor* self) {
-        return bind.history(self, "biome editor must not be null", [&] { return self->editor().undo(); });
-    });
-    biomeEditor.addFunc("redo", [bind](ScriptBiomeRulesEditor* self) {
-        return bind.history(self, "biome editor must not be null", [&] { return self->editor().redo(); });
-    });
-    biomeEditor.addFunc("canUndo", [](ScriptBiomeRulesEditor* self) { return self && self->editor().canUndo(); });
-    biomeEditor.addFunc("canRedo", [](ScriptBiomeRulesEditor* self) { return self && self->editor().canRedo(); });
-    biomeEditor.addFunc("getRevision", [](ScriptBiomeRulesEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
+    editor::registerEditorHistory<ScriptBiomeRulesEditor>(biomeEditor, bind, "biome editor must not be null");
     biomeEditor.addFunc("getPreviewRevision", [](ScriptBiomeRulesEditor* self) {
         return self ? static_cast<int>(self->editor().previewRevision()) : 0;
     });
@@ -165,9 +152,7 @@ void exposeBiomeRulesEditorScriptBindings(ssq::Table& table, ssq::Class& moduleC
         return self ? self->editor().pointAsset(index) : std::string{};
     });
 
-    moduleClass.addFunc("create", [bind](BiomeEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptBiomeRulesEditor>("biome target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptBiomeRulesEditor, BiomeEditorModule>(moduleClass, bind, "biome target id must not be empty");
 }
 
 }  // namespace eve::biome_editor

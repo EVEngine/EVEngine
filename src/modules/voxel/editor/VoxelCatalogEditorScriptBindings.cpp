@@ -31,12 +31,8 @@ void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& modul
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto voxelEditor = editor::addScriptClass<ScriptVoxelCatalogEditor>(table, "VoxelCatalogEditor");
 
-    voxelEditor.addFunc("configureWorkspace",
-                        [bind](ScriptVoxelCatalogEditor* self, editor::EditorWorkspace* workspace) {
-                            return bind.checked(
-                                self && workspace, "voxel editor and workspace must not be null",
-                                [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                        });
+    editor::registerEditorWorkspace<ScriptVoxelCatalogEditor>(voxelEditor, bind,
+                                   "voxel editor and workspace must not be null");
     voxelEditor.addFunc("selectModel", [bind](ScriptVoxelCatalogEditor* self, const std::string& id) {
         return bind.checked(self, "voxel editor must not be null", [&] { return self->editor().selectModel(id); });
     });
@@ -79,17 +75,7 @@ void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& modul
         return bind.checked(self, "voxel editor must not be null",
                             [&] { return self->editor().deleteSelectedModel(); });
     });
-    voxelEditor.addFunc("undo", [bind](ScriptVoxelCatalogEditor* self) {
-        return bind.history(self, "voxel editor must not be null", [&] { return self->editor().undo(); });
-    });
-    voxelEditor.addFunc("redo", [bind](ScriptVoxelCatalogEditor* self) {
-        return bind.history(self, "voxel editor must not be null", [&] { return self->editor().redo(); });
-    });
-    voxelEditor.addFunc("canUndo", [](ScriptVoxelCatalogEditor* self) { return self && self->editor().canUndo(); });
-    voxelEditor.addFunc("canRedo", [](ScriptVoxelCatalogEditor* self) { return self && self->editor().canRedo(); });
-    voxelEditor.addFunc("getRevision", [](ScriptVoxelCatalogEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
+    editor::registerEditorHistory<ScriptVoxelCatalogEditor>(voxelEditor, bind, "voxel editor must not be null");
     voxelEditor.addFunc("getSelectedId", [](ScriptVoxelCatalogEditor* self) {
         return self ? self->editor().selectedId() : std::string{};
     });
@@ -163,9 +149,7 @@ void exposeVoxelCatalogEditorScriptBindings(ssq::Table& table, ssq::Class& modul
         return self ? self->editor().joinPartnerId(index) : std::string{};
     });
 
-    moduleClass.addFunc("create", [bind](VoxelEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptVoxelCatalogEditor>("voxel target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptVoxelCatalogEditor, VoxelEditorModule>(moduleClass, bind, "voxel target id must not be empty");
 }
 
 }  // namespace eve::voxel_editor

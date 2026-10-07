@@ -31,11 +31,8 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto                     themeEditor = editor::addScriptClass<ScriptUiThemeEditor>(table, "UiThemeEditor");
 
-    themeEditor.addFunc("configureWorkspace", [bind](ScriptUiThemeEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(
-            self && workspace, "theme editor and workspace must not be null",
-            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-    });
+    editor::registerEditorWorkspace<ScriptUiThemeEditor>(themeEditor, bind,
+                                   "theme editor and workspace must not be null");
     themeEditor.addFunc("selectTheme", [bind](ScriptUiThemeEditor* self, const std::string& id) {
         return bind.checked(self, "theme editor must not be null", [&] { return self->editor().selectTheme(id); });
     });
@@ -75,16 +72,7 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
         return bind.checked(self, "theme editor must not be null",
                             [&] { return self->editor().applyPreviewHost(hostName); });
     });
-    themeEditor.addFunc("undo", [bind](ScriptUiThemeEditor* self) {
-        return bind.history(self, "theme editor must not be null", [&] { return self->editor().undo(); });
-    });
-    themeEditor.addFunc("redo", [bind](ScriptUiThemeEditor* self) {
-        return bind.history(self, "theme editor must not be null", [&] { return self->editor().redo(); });
-    });
-    themeEditor.addFunc("canUndo", [](ScriptUiThemeEditor* self) { return self && self->editor().canUndo(); });
-    themeEditor.addFunc("canRedo", [](ScriptUiThemeEditor* self) { return self && self->editor().canRedo(); });
-    themeEditor.addFunc("getRevision",
-                        [](ScriptUiThemeEditor* self) { return self ? static_cast<int>(self->editor().revision()) : 0; });
+    editor::registerEditorHistory<ScriptUiThemeEditor>(themeEditor, bind, "theme editor must not be null");
     themeEditor.addFunc("getPreviewRevision", [](ScriptUiThemeEditor* self) {
         return self ? static_cast<int>(self->editor().previewRevision()) : 0;
     });
@@ -123,9 +111,7 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
         return self ? self->editor().getFloat(path) : 0.0f;
     });
 
-    moduleClass.addFunc("create", [bind](UiEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptUiThemeEditor>("theme catalog id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptUiThemeEditor, UiEditorModule>(moduleClass, bind, "theme catalog id must not be empty");
 }
 
 }  // namespace eve::ui_editor

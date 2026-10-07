@@ -41,12 +41,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto                     sourceEditor = editor::addScriptClass<ScriptAudioSourceEditor>(table, "AudioSourceEditor");
 
-    sourceEditor.addFunc("configureWorkspace",
-                         [bind](ScriptAudioSourceEditor* self, editor::EditorWorkspace* workspace) {
-                             return bind.checked(
-                                 self && workspace, "audio source editor and workspace must not be null",
-                                 [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                         });
+    editor::registerEditorWorkspace<ScriptAudioSourceEditor>(sourceEditor, bind,
+                                                             "audio source editor and workspace must not be null");
     sourceEditor.addFunc("setViewportWidth", [bind](ScriptAudioSourceEditor* self, float width) {
         return bind.checked(self, "audio source editor must not be null",
                             [&] { return self->editor().setViewportWidth(width); });
@@ -67,12 +63,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
         return bind.checked(self, "audio source editor must not be null",
                             [&] { return self->editor().setProperty(path, audio_editing::EditorValue(value)); });
     });
-    sourceEditor.addFunc("undo", [bind](ScriptAudioSourceEditor* self) {
-        return bind.history(self, "audio source editor must not be null", [&] { return self->editor().undo(); });
-    });
-    sourceEditor.addFunc("redo", [bind](ScriptAudioSourceEditor* self) {
-        return bind.history(self, "audio source editor must not be null", [&] { return self->editor().redo(); });
-    });
+    editor::registerEditorHistory<ScriptAudioSourceEditor>(sourceEditor, bind,
+                                                           "audio source editor must not be null");
     sourceEditor.addFunc("play", [bind](ScriptAudioSourceEditor* self) {
         return bind.checked(self, "audio source editor must not be null", [&] { return self->editor().play(); });
     });
@@ -91,12 +83,7 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
         return bind.checked(self, "audio source editor must not be null",
                             [&] { return self->editor().attachLiveAudition(); });
     });
-    sourceEditor.addFunc("canUndo", [](ScriptAudioSourceEditor* self) { return self && self->editor().canUndo(); });
-    sourceEditor.addFunc("canRedo", [](ScriptAudioSourceEditor* self) { return self && self->editor().canRedo(); });
     sourceEditor.addFunc("isPlaying", [](ScriptAudioSourceEditor* self) { return self && self->editor().isPlaying(); });
-    sourceEditor.addFunc("getRevision", [](ScriptAudioSourceEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
     sourceEditor.addFunc("getDuration", [](ScriptAudioSourceEditor* self) {
         return self ? static_cast<float>(self->editor().duration()) : 0.0f;
     });
@@ -151,9 +138,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
         return text ? *text : std::string{};
     });
 
-    moduleClass.addFunc("create", [bind](AudioEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptAudioSourceEditor>("audio source target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptAudioSourceEditor, AudioEditorModule>(
+        moduleClass, bind, "audio source target id must not be empty");
 }
 
 }  // namespace eve::audio_editor

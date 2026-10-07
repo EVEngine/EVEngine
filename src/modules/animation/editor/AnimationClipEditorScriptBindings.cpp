@@ -34,12 +34,8 @@ private:
 void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto clipEditor = editor::addScriptClass<ScriptAnimationClipEditor>(table, "AnimationClipEditor");
-    clipEditor.addFunc("configureWorkspace",
-                       [bind](ScriptAnimationClipEditor* self, editor::EditorWorkspace* workspace) {
-                           return bind.checked(
-                               self && workspace, "animation clip editor and workspace must not be null",
-                               [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                       });
+    editor::registerEditorWorkspace<ScriptAnimationClipEditor>(
+        clipEditor, bind, "animation clip editor and workspace must not be null");
 #if defined(EVE_ANIMATION_EDITOR_RUNTIME)
     clipEditor.addFunc("loadRuntimeClip", [bind](ScriptAnimationClipEditor* self, animation::AnimSkeleton* skeleton,
                                                  animation::AnimClip* clip) {
@@ -112,12 +108,8 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return bind.checked(self, "animation clip editor must not be null",
                             [&] { return self->editor().setSelectedScale(x, y, z); });
     });
-    clipEditor.addFunc("undo", [bind](ScriptAnimationClipEditor* self) {
-        return bind.history(self, "animation clip editor must not be null", [&] { return self->editor().undo(); });
-    });
-    clipEditor.addFunc("redo", [bind](ScriptAnimationClipEditor* self) {
-        return bind.history(self, "animation clip editor must not be null", [&] { return self->editor().redo(); });
-    });
+    editor::registerEditorHistory<ScriptAnimationClipEditor>(clipEditor, bind,
+                                                             "animation clip editor must not be null");
     clipEditor.addFunc("play", [](ScriptAnimationClipEditor* self) {
         if (self) self->editor().play();
     });
@@ -135,12 +127,7 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         auto result = self->editor().update(static_cast<double>(deltaSeconds));
         return editor::project(bind.vm(), result, Value(self->editor().playhead()));
     });
-    clipEditor.addFunc("canUndo", [](ScriptAnimationClipEditor* self) { return self && self->editor().canUndo(); });
-    clipEditor.addFunc("canRedo", [](ScriptAnimationClipEditor* self) { return self && self->editor().canRedo(); });
     clipEditor.addFunc("isPlaying", [](ScriptAnimationClipEditor* self) { return self && self->editor().isPlaying(); });
-    clipEditor.addFunc("getRevision", [](ScriptAnimationClipEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
-    });
     clipEditor.addFunc("getDuration", [](ScriptAnimationClipEditor* self) {
         return self ? static_cast<float>(self->editor().duration()) : 0.0f;
     });
@@ -247,9 +234,8 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? self->editor().primitiveB(index) : 0.0f;
     });
 
-    moduleClass.addFunc("create", [bind](AnimationEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptAnimationClipEditor>("animation clip target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptAnimationClipEditor, AnimationEditorModule>(
+        moduleClass, bind, "animation clip target id must not be empty");
 }
 
 }  // namespace eve::animation_editor

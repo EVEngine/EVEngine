@@ -4,6 +4,7 @@
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "common/Value.h"
+#include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -233,5 +234,73 @@ private:
     HSQUIRRELVM vm_     = nullptr;
     const char* source_ = nullptr;
 };
+
+/**
+ * @brief Register `configureWorkspace` for a Script* wrapper that exposes `editor()`.
+ * @tparam ScriptT Wrapper type with `editor().configureWorkspace(EditorWorkspace&)`.
+ * @param cls Script class being filled.
+ * @param bind Per-file binder (VM + diagnostic source).
+ * @param nullMessage Failure text when self or workspace is null.
+ * @remarks Keeps the public `addFunc("configureWorkspace", ...)` name/arity unchanged.
+ */
+template <class ScriptT>
+inline void registerEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
+    cls.addFunc("configureWorkspace",
+                [bind, nullMessage](ScriptT* self, EditorWorkspace* workspace) {
+                    return bind.checked(self && workspace, nullMessage,
+                                        [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+                });
+}
+
+/**
+ * @brief Register `configureWorkspace` when the script class *is* the editor (no `.editor()`).
+ * @tparam EditorT Type with `configureWorkspace(EditorWorkspace&)`.
+ * @param cls Script class being filled.
+ * @param bind Per-file binder.
+ * @param nullMessage Failure text when self or workspace is null.
+ */
+template <class EditorT>
+inline void registerDirectEditorWorkspace(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
+    cls.addFunc("configureWorkspace", [bind, nullMessage](EditorT* self, EditorWorkspace* workspace) {
+        return bind.checked(self && workspace, nullMessage, [&] { return self->configureWorkspace(*workspace); });
+    });
+}
+
+/**
+ * @brief Register shared undo/redo/can*/getRevision methods for a Script* wrapper.
+ * @tparam ScriptT Wrapper type with `editor().undo/redo/canUndo/canRedo/revision()`.
+ * @param cls Script class being filled.
+ * @param bind Per-file binder.
+ * @param nullMessage Failure text when self is null (undo/redo).
+ * @remarks Domain-only extras such as `getPreviewRevision` stay in the domain TU.
+ */
+template <class ScriptT>
+inline void registerEditorHistory(ssq::Class& cls, const ScriptBind& bind, const char* nullMessage) {
+    cls.addFunc("undo", [bind, nullMessage](ScriptT* self) {
+        return bind.history(self, nullMessage, [&] { return self->editor().undo(); });
+    });
+    cls.addFunc("redo", [bind, nullMessage](ScriptT* self) {
+        return bind.history(self, nullMessage, [&] { return self->editor().redo(); });
+    });
+    cls.addFunc("canUndo", [](ScriptT* self) { return self && self->editor().canUndo(); });
+    cls.addFunc("canRedo", [](ScriptT* self) { return self && self->editor().canRedo(); });
+    cls.addFunc("getRevision",
+                [](ScriptT* self) { return self ? static_cast<int>(self->editor().revision()) : 0; });
+}
+
+/**
+ * @brief Register module `create(targetId)` that builds an owned Script* wrapper.
+ * @tparam ScriptT Wrapper constructed from `targetId`.
+ * @tparam ModuleT Module facade pointer type (unused; matches SimpleSquirrel arity).
+ * @param moduleClass Module class receiving `create`.
+ * @param bind Per-file binder.
+ * @param emptyIdMessage Failure text for an empty target id.
+ */
+template <class ScriptT, class ModuleT>
+inline void registerEditorOwnedCreate(ssq::Class& moduleClass, const ScriptBind& bind, const char* emptyIdMessage) {
+    moduleClass.addFunc("create", [bind, emptyIdMessage](ModuleT*, const std::string& targetId) {
+        return bind.ownedCreate<ScriptT>(emptyIdMessage, targetId);
+    });
+}
 
 }  // namespace eve::editor

@@ -45,10 +45,8 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto procgenEditor = editor::addScriptClass<ScriptProcgenScriptEditor>(table, "ProcgenScriptEditor");
     auto meshEditor    = editor::addScriptClass<MeshModifierEditor>(table, "MeshModifierEditor");
-    meshEditor.addFunc("configureWorkspace", [bind](MeshModifierEditor* self, editor::EditorWorkspace* workspace) {
-        return bind.checked(self && workspace, "mesh modifier editor and workspace required",
-                            [&] { return self->configureWorkspace(*workspace); });
-    });
+    editor::registerDirectEditorWorkspace<MeshModifierEditor>(meshEditor, bind,
+                                                              "mesh modifier editor and workspace required");
     meshEditor.addFunc("activateTool",
                        [bind](MeshModifierEditor* self, editor::EditorWorkspace* workspace, const std::string& tool) {
                            return bind.checked(self && workspace, "mesh modifier editor and workspace required",
@@ -60,12 +58,8 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     });
     meshEditor.addFunc("getTargetId", [](MeshModifierEditor* self) { return self ? self->targetId() : std::string{}; });
     meshEditor.addFunc("getActiveTool", [](MeshModifierEditor* self) { return self ? self->activeTool() : std::string{}; });
-    procgenEditor.addFunc("configureWorkspace",
-                          [bind](ScriptProcgenScriptEditor* self, editor::EditorWorkspace* workspace) {
-                              return bind.checked(
-                                  self && workspace, "procgen editor and workspace must not be null",
-                                  [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
-                          });
+    editor::registerEditorWorkspace<ScriptProcgenScriptEditor>(procgenEditor, bind,
+                                                               "procgen editor and workspace must not be null");
     procgenEditor.addFunc("loadModule",
                           [bind](ScriptProcgenScriptEditor* self, const std::string& uri, const std::string& id,
                                  const std::string& displayName, const std::string& kind, const ssq::Object& schema) {
@@ -114,20 +108,10 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     procgenEditor.addFunc("setLive", [bind](ScriptProcgenScriptEditor* self, bool enabled) {
         return bind.checked(self, "procgen editor must not be null", [&] { return self->editor().setLive(enabled); });
     });
-    procgenEditor.addFunc("undo", [bind](ScriptProcgenScriptEditor* self) {
-        return bind.history(self, "procgen editor must not be null", [&] { return self->editor().undo(); });
-    });
-    procgenEditor.addFunc("redo", [bind](ScriptProcgenScriptEditor* self) {
-        return bind.history(self, "procgen editor must not be null", [&] { return self->editor().redo(); });
-    });
-    procgenEditor.addFunc("canUndo", [](ScriptProcgenScriptEditor* self) { return self && self->editor().canUndo(); });
-    procgenEditor.addFunc("canRedo", [](ScriptProcgenScriptEditor* self) { return self && self->editor().canRedo(); });
+    editor::registerEditorHistory<ScriptProcgenScriptEditor>(procgenEditor, bind, "procgen editor must not be null");
     procgenEditor.addFunc("isDirty", [](ScriptProcgenScriptEditor* self) { return self && self->editor().isDirty(); });
     procgenEditor.addFunc("isLive", [](ScriptProcgenScriptEditor* self) {
         return self && self->editor().isContinuousRebuild();
-    });
-    procgenEditor.addFunc("getRevision", [](ScriptProcgenScriptEditor* self) {
-        return self ? static_cast<int>(self->editor().revision()) : 0;
     });
     procgenEditor.addFunc("getPreviewRevision", [](ScriptProcgenScriptEditor* self) {
         return self ? static_cast<int>(self->editor().previewRevision()) : 0;
@@ -208,9 +192,8 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? static_cast<int>(self->editor().pointSeed(index)) : 0;
     });
 
-    moduleClass.addFunc("create", [bind](ProcgenEditorModule*, const std::string& targetId) {
-        return bind.ownedCreate<ScriptProcgenScriptEditor>("procgen target id must not be empty", targetId);
-    });
+    editor::registerEditorOwnedCreate<ScriptProcgenScriptEditor, ProcgenEditorModule>(
+        moduleClass, bind, "procgen target id must not be empty");
     moduleClass.addFunc("createMeshModifier", [bind](ProcgenEditorModule*, const std::string& targetId) {
         return bind.ownedCreate<MeshModifierEditor>("mesh target id must not be empty", targetId);
     });
