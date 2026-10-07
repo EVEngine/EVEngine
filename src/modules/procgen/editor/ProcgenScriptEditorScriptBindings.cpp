@@ -1,7 +1,5 @@
 #include "procgen/editor/ProcgenScriptEditorScriptBindings.h"
 
-#include "common/SquirrelBinding.h"
-#include "common/SquirrelOwnership.h"
 #include "editor/EditorProperty.h"
 #include "editor/EditorWorkspace.h"
 #include "procgen/PointSet.h"
@@ -12,22 +10,13 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cstdint>
-#include <memory>
 #include <string>
-#include <utility>
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::procgen_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.procgen.script.squirrel";
-
-using eve::editor::project;
-
-ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
-}
 
 class ScriptProcgenScriptEditor {
 public:
@@ -40,119 +29,91 @@ private:
     ProcgenScriptEditor editor_;
 };
 
-ssq::Table loadModuleFromScript(HSQUIRRELVM vm, ScriptProcgenScriptEditor* self, const std::string& uri,
+ssq::Table loadModuleFromScript(const editor::ScriptBind& bind, ScriptProcgenScriptEditor* self, const std::string& uri,
                                 const std::string& id, const std::string& displayName, const std::string& kind,
                                 const ssq::Object& schema) {
-    if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
+    if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "procgen editor must not be null");
     auto converted = script::valueFromSquirrel(schema);
-    if (!converted.ok()) return script::projectStatusResult(vm, converted.status());
-    return project(vm, self->editor().loadModule(uri, id, displayName, kind,
-                                                 editor::toEditorValue(converted.value())));
+    if (!converted.ok()) return script::projectStatusResult(bind.vm(), converted.status());
+    return editor::project(bind.vm(), self->editor().loadModule(uri, id, displayName, kind,
+                                                                editor::toEditorValue(converted.value())));
 }
 
 }  // namespace
 
 void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
-    const HSQUIRRELVM vm = table.getHandle();
-    auto procgenEditor   = table.addClass<ScriptProcgenScriptEditor>(
-        "ProcgenScriptEditor",
-        std::function<ScriptProcgenScriptEditor*()>([]() -> ScriptProcgenScriptEditor* { return nullptr; }), true);
-    auto meshEditor = table.addClass<MeshModifierEditor>(
-        "MeshModifierEditor", std::function<MeshModifierEditor*()>([]() -> MeshModifierEditor* { return nullptr; }),
-        true);
-    meshEditor.addFunc("configureWorkspace", [vm](MeshModifierEditor* self, editor::EditorWorkspace* workspace) {
-        if (!self || !workspace)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh modifier editor and workspace required");
-        return project(vm, self->configureWorkspace(*workspace));
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto procgenEditor = editor::addScriptClass<ScriptProcgenScriptEditor>(table, "ProcgenScriptEditor");
+    auto meshEditor = editor::addScriptClass<MeshModifierEditor>(table, "MeshModifierEditor");
+    meshEditor.addFunc("configureWorkspace", [bind](MeshModifierEditor* self, editor::EditorWorkspace* workspace) {
+        return bind.checked(self && workspace, "mesh modifier editor and workspace required",
+                            [&] { return self->configureWorkspace(*workspace); });
     });
-    meshEditor.addFunc("activateTool", [vm](MeshModifierEditor* self, editor::EditorWorkspace* workspace,
-                                             const std::string& tool) {
-        if (!self || !workspace)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh modifier editor and workspace required");
-        return project(vm, self->activateTool(*workspace, tool));
+    meshEditor.addFunc("activateTool", [bind](MeshModifierEditor* self, editor::EditorWorkspace* workspace,
+                                               const std::string& tool) {
+        return bind.checked(self && workspace, "mesh modifier editor and workspace required",
+                            [&] { return self->activateTool(*workspace, tool); });
     });
-    meshEditor.addFunc("observeRevision", [vm](MeshModifierEditor* self, const std::string& document, int revision) {
-        if (!self || revision < 0)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "valid editor and revision required");
-        return project(vm, self->observeRevision(document, static_cast<std::uint64_t>(revision)));
+    meshEditor.addFunc("observeRevision", [bind](MeshModifierEditor* self, const std::string& document, int revision) {
+        return bind.checked(self && revision >= 0, "valid editor and revision required",
+                            [&] { return self->observeRevision(document, static_cast<std::uint64_t>(revision)); });
     });
     meshEditor.addFunc("getTargetId", [](MeshModifierEditor* self) { return self ? self->targetId() : std::string{}; });
     meshEditor.addFunc("getActiveTool", [](MeshModifierEditor* self) { return self ? self->activeTool() : std::string{}; });
-
-    procgenEditor.addFunc("configureWorkspace",
-                          [vm](ScriptProcgenScriptEditor* self, editor::EditorWorkspace* workspace) {
-                              if (!self || !workspace)
-                                  return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                        "procgen editor and workspace must not be null", "workspace");
-                              return project(vm, self->editor().configureWorkspace(*workspace));
-                          });
+    procgenEditor.addFunc("configureWorkspace", [bind](ScriptProcgenScriptEditor* self, editor::EditorWorkspace* workspace) {
+        return bind.checked(self && workspace, "procgen editor and workspace must not be null",
+                            [&] { return self->editor().configureWorkspace(*workspace); }, "workspace");
+    });
     procgenEditor.addFunc("loadModule",
-                          [vm](ScriptProcgenScriptEditor* self, const std::string& uri, const std::string& id,
-                               const std::string& displayName, const std::string& kind, const ssq::Object& schema) {
-                              return loadModuleFromScript(vm, self, uri, id, displayName, kind, schema);
+                          [bind](ScriptProcgenScriptEditor* self, const std::string& uri, const std::string& id,
+                                 const std::string& displayName, const std::string& kind, const ssq::Object& schema) {
+                              return loadModuleFromScript(bind, self, uri, id, displayName, kind, schema);
                           });
-    procgenEditor.addFunc("setInt", [vm](ScriptProcgenScriptEditor* self, const std::string& key, int value) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().setInt(key, value));
+    procgenEditor.addFunc("setInt", [bind](ScriptProcgenScriptEditor* self, const std::string& key, int value) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setInt(key, value); });
     });
-    procgenEditor.addFunc("setFloat", [vm](ScriptProcgenScriptEditor* self, const std::string& key, float value) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().setFloat(key, static_cast<double>(value)));
+    procgenEditor.addFunc("setFloat", [bind](ScriptProcgenScriptEditor* self, const std::string& key, float value) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setFloat(key, static_cast<double>(value)); });
     });
-    procgenEditor.addFunc("setBool", [vm](ScriptProcgenScriptEditor* self, const std::string& key, bool value) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().setBool(key, value));
+    procgenEditor.addFunc("setBool", [bind](ScriptProcgenScriptEditor* self, const std::string& key, bool value) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setBool(key, value); });
     });
-    procgenEditor.addFunc("setString",
-                          [vm](ScriptProcgenScriptEditor* self, const std::string& key, const std::string& value) {
-                              if (!self)
-                                  return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                        "procgen editor must not be null");
-                              return project(vm, self->editor().setString(key, value));
-                          });
-    procgenEditor.addFunc("publishPreview",
-                          [vm](ScriptProcgenScriptEditor* self, procgen::PointSet* points, const std::string& stage,
-                               int expectedRevision) {
-                              if (!self)
-                                  return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                        "procgen editor must not be null");
-                              return project(vm, self->editor().publishPreview(
-                                                     points, stage, static_cast<std::uint64_t>(expectedRevision)));
-                          });
-    procgenEditor.addFunc("publishStage", [vm](ScriptProcgenScriptEditor* self, procgen::PointSet* points,
-                                               const std::string& stage) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().publishStage(points, stage));
+    procgenEditor.addFunc("setString", [bind](ScriptProcgenScriptEditor* self, const std::string& key, const std::string& value) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setString(key, value); });
     });
-    procgenEditor.addFunc("failPreview",
-                          [vm](ScriptProcgenScriptEditor* self, const std::string& message, int expectedRevision) {
-                              if (!self)
-                                  return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                        "procgen editor must not be null");
-                              return project(vm, self->editor().failPreview(
-                                                     message, static_cast<std::uint64_t>(expectedRevision)));
-                          });
-    procgenEditor.addFunc("selectStage", [vm](ScriptProcgenScriptEditor* self, const std::string& stage) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().selectStage(stage));
+    procgenEditor.addFunc("publishPreview", [bind](ScriptProcgenScriptEditor* self, procgen::PointSet* points, const std::string& stage, int expectedRevision) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().publishPreview(points, stage, static_cast<std::uint64_t>(expectedRevision)); });
     });
-    procgenEditor.addFunc("setPointBudget", [vm](ScriptProcgenScriptEditor* self, int budget) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().setPointBudget(budget));
+    procgenEditor.addFunc("publishStage", [bind](ScriptProcgenScriptEditor* self, procgen::PointSet* points, const std::string& stage) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().publishStage(points, stage); });
     });
-    procgenEditor.addFunc("setLive", [vm](ScriptProcgenScriptEditor* self, bool enabled) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        return project(vm, self->editor().setLive(enabled));
+    procgenEditor.addFunc("failPreview", [bind](ScriptProcgenScriptEditor* self, const std::string& message, int expectedRevision) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().failPreview(message, static_cast<std::uint64_t>(expectedRevision)); });
     });
-    procgenEditor.addFunc("undo", [vm](ScriptProcgenScriptEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        auto result = self->editor().undo();
-        return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    procgenEditor.addFunc("selectStage", [bind](ScriptProcgenScriptEditor* self, const std::string& stage) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().selectStage(stage); });
     });
-    procgenEditor.addFunc("redo", [vm](ScriptProcgenScriptEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
-        auto result = self->editor().redo();
-        return project(vm, result, Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    procgenEditor.addFunc("setPointBudget", [bind](ScriptProcgenScriptEditor* self, int budget) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setPointBudget(budget); });
+    });
+    procgenEditor.addFunc("setLive", [bind](ScriptProcgenScriptEditor* self, bool enabled) {
+        return bind.checked(self, "procgen editor must not be null",
+                            [&] { return self->editor().setLive(enabled); });
+    });
+    procgenEditor.addFunc("undo", [bind](ScriptProcgenScriptEditor* self) {
+        return bind.history(self, "procgen editor must not be null", [&] { return self->editor().undo(); });
+    });
+    procgenEditor.addFunc("redo", [bind](ScriptProcgenScriptEditor* self) {
+        return bind.history(self, "procgen editor must not be null", [&] { return self->editor().redo(); });
     });
     procgenEditor.addFunc("canUndo", [](ScriptProcgenScriptEditor* self) { return self && self->editor().canUndo(); });
     procgenEditor.addFunc("canRedo", [](ScriptProcgenScriptEditor* self) { return self && self->editor().canRedo(); });
@@ -242,29 +203,11 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
         return self ? static_cast<int>(self->editor().pointSeed(index)) : 0;
     });
 
-    moduleClass.addFunc("create", [vm](ProcgenEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen target id must not be empty",
-                                  "targetId");
-        auto object = script::makeOwnedSquirrelInstance<ScriptProcgenScriptEditor>(
-            vm, std::make_unique<ScriptProcgenScriptEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
+        moduleClass.addFunc("create", [bind](ProcgenEditorModule*, const std::string& targetId) {
+        return bind.ownedCreate<ScriptProcgenScriptEditor>("procgen target id must not be empty", targetId);
     });
-    moduleClass.addFunc("createMeshModifier", [vm](ProcgenEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh target id must not be empty", "targetId");
-        auto object = script::makeOwnedSquirrelInstance<MeshModifierEditor>(
-            vm, std::make_unique<MeshModifierEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned); result.set("ownership", std::string("owned"));
-        return result;
+    moduleClass.addFunc("createMeshModifier", [bind](ProcgenEditorModule*, const std::string& targetId) {
+        return bind.ownedCreate<MeshModifierEditor>("mesh target id must not be empty", targetId);
     });
 }
 

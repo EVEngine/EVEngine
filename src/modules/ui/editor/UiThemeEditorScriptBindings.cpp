@@ -2,29 +2,17 @@
 
 #include "ui/editor/UiEditorModule.h"
 #include "ui/editor/UiThemeEditor.h"
-#include "common/SquirrelBinding.h"
-#include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include <cstdint>
-#include <memory>
 #include <string>
-#include <utility>
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::ui_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.ui.theme.squirrel";
-
-using eve::editor::project;
-
-ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
-}
 
 class ScriptUiThemeEditor {
 public:
@@ -40,72 +28,61 @@ private:
 }  // namespace
 
 void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
-    const HSQUIRRELVM vm = table.getHandle();
-    auto themeEditor     = table.addClass<ScriptUiThemeEditor>(
-        "UiThemeEditor", std::function<ScriptUiThemeEditor*()>([]() -> ScriptUiThemeEditor* { return nullptr; }),
-        true);
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto themeEditor = editor::addScriptClass<ScriptUiThemeEditor>(table, "UiThemeEditor");
 
     themeEditor.addFunc("configureWorkspace",
-                        [vm](ScriptUiThemeEditor* self, editor::EditorWorkspace* workspace) {
-                            if (!self || !workspace)
-                                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                      "theme editor and workspace must not be null", "workspace");
-                            return project(vm, self->editor().configureWorkspace(*workspace));
+                        [bind](ScriptUiThemeEditor* self, editor::EditorWorkspace* workspace) {
+                            return bind.checked(self && workspace, "theme editor and workspace must not be null",
+                                                [&] { return self->editor().configureWorkspace(*workspace); },
+                                                "workspace");
                         });
-    themeEditor.addFunc("selectTheme", [vm](ScriptUiThemeEditor* self, const std::string& id) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().selectTheme(id));
+    themeEditor.addFunc("selectTheme", [bind](ScriptUiThemeEditor* self, const std::string& id) {
+        return bind.checked(self, "theme editor must not be null", [&] { return self->editor().selectTheme(id); });
     });
-    themeEditor.addFunc("createFromPreset", [vm](ScriptUiThemeEditor* self, const std::string& id,
-                                                 const std::string& name, const std::string& preset) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().createFromPreset(id, name, preset));
+    themeEditor.addFunc("createFromPreset", [bind](ScriptUiThemeEditor* self, const std::string& id,
+                                                   const std::string& name, const std::string& preset) {
+        return bind.checked(self, "theme editor must not be null",
+                            [&] { return self->editor().createFromPreset(id, name, preset); });
     });
     themeEditor.addFunc("duplicateSelected",
-                        [vm](ScriptUiThemeEditor* self, const std::string& id, const std::string& name) {
-                            if (!self)
-                                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                                      "theme editor must not be null");
-                            return project(vm, self->editor().duplicateSelected(id, name));
+                        [bind](ScriptUiThemeEditor* self, const std::string& id, const std::string& name) {
+                            return bind.checked(self, "theme editor must not be null",
+                                                [&] { return self->editor().duplicateSelected(id, name); });
                         });
-    themeEditor.addFunc("deleteSelected", [vm](ScriptUiThemeEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().deleteSelected());
+    themeEditor.addFunc("deleteSelected", [bind](ScriptUiThemeEditor* self) {
+        return bind.checked(self, "theme editor must not be null", [&] { return self->editor().deleteSelected(); });
     });
-    themeEditor.addFunc("setActiveSelected", [vm](ScriptUiThemeEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().setActiveSelected());
+    themeEditor.addFunc("setActiveSelected", [bind](ScriptUiThemeEditor* self) {
+        return bind.checked(self, "theme editor must not be null",
+                            [&] { return self->editor().setActiveSelected(); });
     });
-    themeEditor.addFunc("resetSelectedToBase", [vm](ScriptUiThemeEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().resetSelectedToBase());
+    themeEditor.addFunc("resetSelectedToBase", [bind](ScriptUiThemeEditor* self) {
+        return bind.checked(self, "theme editor must not be null",
+                            [&] { return self->editor().resetSelectedToBase(); });
     });
-    themeEditor.addFunc("setColor", [vm](ScriptUiThemeEditor* self, const std::string& path, float r, float g,
-                                         float b, float a) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().setToken(path, ui_editing::EditorValue::Array{
-                                                             static_cast<double>(r), static_cast<double>(g),
-                                                             static_cast<double>(b), static_cast<double>(a)}));
+    themeEditor.addFunc("setColor", [bind](ScriptUiThemeEditor* self, const std::string& path, float r, float g,
+                                           float b, float a) {
+        return bind.checked(self, "theme editor must not be null", [&] {
+            return self->editor().setToken(path, ui_editing::EditorValue::Array{static_cast<double>(r),
+                                                                                static_cast<double>(g),
+                                                                                static_cast<double>(b),
+                                                                                static_cast<double>(a)});
+        });
     });
-    themeEditor.addFunc("setFloat", [vm](ScriptUiThemeEditor* self, const std::string& path, float value) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().setToken(path, static_cast<double>(value)));
+    themeEditor.addFunc("setFloat", [bind](ScriptUiThemeEditor* self, const std::string& path, float value) {
+        return bind.checked(self, "theme editor must not be null",
+                            [&] { return self->editor().setToken(path, static_cast<double>(value)); });
     });
-    themeEditor.addFunc("applyPreviewHost", [vm](ScriptUiThemeEditor* self, const std::string& hostName) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        return project(vm, self->editor().applyPreviewHost(hostName));
+    themeEditor.addFunc("applyPreviewHost", [bind](ScriptUiThemeEditor* self, const std::string& hostName) {
+        return bind.checked(self, "theme editor must not be null",
+                            [&] { return self->editor().applyPreviewHost(hostName); });
     });
-    themeEditor.addFunc("undo", [vm](ScriptUiThemeEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        auto result = self->editor().undo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    themeEditor.addFunc("undo", [bind](ScriptUiThemeEditor* self) {
+        return bind.history(self, "theme editor must not be null", [&] { return self->editor().undo(); });
     });
-    themeEditor.addFunc("redo", [vm](ScriptUiThemeEditor* self) {
-        if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme editor must not be null");
-        auto result = self->editor().redo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    themeEditor.addFunc("redo", [bind](ScriptUiThemeEditor* self) {
+        return bind.history(self, "theme editor must not be null", [&] { return self->editor().redo(); });
     });
     themeEditor.addFunc("canUndo", [](ScriptUiThemeEditor* self) { return self && self->editor().canUndo(); });
     themeEditor.addFunc("canRedo", [](ScriptUiThemeEditor* self) { return self && self->editor().canRedo(); });
@@ -149,18 +126,8 @@ void exposeUiThemeEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClas
         return self ? self->editor().getFloat(path) : 0.0f;
     });
 
-    moduleClass.addFunc("create", [vm](UiEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "theme catalog id must not be empty",
-                                  "targetId");
-        auto object = script::makeOwnedSquirrelInstance<ScriptUiThemeEditor>(
-            vm, std::make_unique<ScriptUiThemeEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
+    moduleClass.addFunc("create", [bind](UiEditorModule*, const std::string& targetId) {
+        return bind.ownedCreate<ScriptUiThemeEditor>("theme catalog id must not be empty", targetId);
     });
 }
 

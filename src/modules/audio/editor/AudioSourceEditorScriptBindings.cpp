@@ -2,29 +2,18 @@
 
 #include "audio/editor/AudioEditorModule.h"
 #include "audio/editor/AudioSourceEditor.h"
-#include "common/SquirrelBinding.h"
-#include "common/SquirrelOwnership.h"
 #include "editor/EditorWorkspace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cstdint>
-#include <memory>
 #include <string>
-#include <utility>
 #include "editor/EditorScriptProjection.h"
 
 namespace eve::audio_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.audio.source.squirrel";
-
-using eve::editor::project;
-
-ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
-    return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
-}
 
 class ScriptAudioSourceEditor {
 public:
@@ -49,81 +38,59 @@ const char* transportLabel(audio_editing::AudioTransportState state) {
 }  // namespace
 
 void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
-    const HSQUIRRELVM vm = table.getHandle();
-    auto sourceEditor    = table.addClass<ScriptAudioSourceEditor>(
-        "AudioSourceEditor",
-        std::function<ScriptAudioSourceEditor*()>([]() -> ScriptAudioSourceEditor* { return nullptr; }), true);
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto sourceEditor = editor::addScriptClass<ScriptAudioSourceEditor>(table, "AudioSourceEditor");
 
-    sourceEditor.addFunc("configureWorkspace", [vm](ScriptAudioSourceEditor* self, editor::EditorWorkspace* workspace) {
-        if (!self || !workspace)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
-                                  "audio source editor and workspace must not be null", "workspace");
-        return project(vm, self->editor().configureWorkspace(*workspace));
+    sourceEditor.addFunc("configureWorkspace",
+                         [bind](ScriptAudioSourceEditor* self, editor::EditorWorkspace* workspace) {
+                             return bind.checked(self && workspace,
+                                                 "audio source editor and workspace must not be null",
+                                                 [&] { return self->editor().configureWorkspace(*workspace); },
+                                                 "workspace");
+                         });
+    sourceEditor.addFunc("setViewportWidth", [bind](ScriptAudioSourceEditor* self, float width) {
+        return bind.checked(self, "audio source editor must not be null",
+                            [&] { return self->editor().setViewportWidth(width); });
     });
-    sourceEditor.addFunc("setViewportWidth", [vm](ScriptAudioSourceEditor* self, float width) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().setViewportWidth(width));
+    sourceEditor.addFunc("seekX", [bind](ScriptAudioSourceEditor* self, float x) {
+        return bind.checked(self, "audio source editor must not be null", [&] { return self->editor().seekX(x); });
     });
-    sourceEditor.addFunc("seekX", [vm](ScriptAudioSourceEditor* self, float x) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().seekX(x));
+    sourceEditor.addFunc("seekSeconds", [bind](ScriptAudioSourceEditor* self, float seconds) {
+        return bind.checked(self, "audio source editor must not be null",
+                            [&] { return self->editor().seekSeconds(static_cast<double>(seconds)); });
     });
-    sourceEditor.addFunc("seekSeconds", [vm](ScriptAudioSourceEditor* self, float seconds) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().seekSeconds(static_cast<double>(seconds)));
+    sourceEditor.addFunc("setFloat", [bind](ScriptAudioSourceEditor* self, const std::string& path, float value) {
+        return bind.checked(self, "audio source editor must not be null", [&] {
+            return self->editor().setProperty(path, audio_editing::EditorValue(static_cast<double>(value)));
+        });
     });
-    sourceEditor.addFunc("setFloat", [vm](ScriptAudioSourceEditor* self, const std::string& path, float value) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().setProperty(path, audio_editing::EditorValue(static_cast<double>(value))));
+    sourceEditor.addFunc("setBool", [bind](ScriptAudioSourceEditor* self, const std::string& path, bool value) {
+        return bind.checked(self, "audio source editor must not be null",
+                            [&] { return self->editor().setProperty(path, audio_editing::EditorValue(value)); });
     });
-    sourceEditor.addFunc("setBool", [vm](ScriptAudioSourceEditor* self, const std::string& path, bool value) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().setProperty(path, audio_editing::EditorValue(value)));
+    sourceEditor.addFunc("undo", [bind](ScriptAudioSourceEditor* self) {
+        return bind.history(self, "audio source editor must not be null", [&] { return self->editor().undo(); });
     });
-    sourceEditor.addFunc("undo", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        auto result = self->editor().undo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    sourceEditor.addFunc("redo", [bind](ScriptAudioSourceEditor* self) {
+        return bind.history(self, "audio source editor must not be null", [&] { return self->editor().redo(); });
     });
-    sourceEditor.addFunc("redo", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        auto result = self->editor().redo();
-        return project(vm, result,
-                       Value(result.ok() ? static_cast<std::int64_t>(result.value().afterRevision) : 0));
+    sourceEditor.addFunc("play", [bind](ScriptAudioSourceEditor* self) {
+        return bind.checked(self, "audio source editor must not be null", [&] { return self->editor().play(); });
     });
-    sourceEditor.addFunc("play", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().play());
+    sourceEditor.addFunc("pause", [bind](ScriptAudioSourceEditor* self) {
+        return bind.checked(self, "audio source editor must not be null", [&] { return self->editor().pause(); });
     });
-    sourceEditor.addFunc("pause", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().pause());
+    sourceEditor.addFunc("stop", [bind](ScriptAudioSourceEditor* self) {
+        return bind.checked(self, "audio source editor must not be null", [&] { return self->editor().stop(); });
     });
-    sourceEditor.addFunc("stop", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().stop());
-    });
-    sourceEditor.addFunc("update", [vm](ScriptAudioSourceEditor* self, float deltaSeconds) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
+    sourceEditor.addFunc("update", [bind](ScriptAudioSourceEditor* self, float deltaSeconds) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "audio source editor must not be null");
         auto result = self->editor().update(static_cast<double>(deltaSeconds));
-        return project(vm, result, Value(result.ok() ? result.value().position : 0.0));
+        return editor::project(bind.vm(), result, Value(result.ok() ? result.value().position : 0.0));
     });
-    sourceEditor.addFunc("attachLiveAudition", [vm](ScriptAudioSourceEditor* self) {
-        if (!self)
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source editor must not be null");
-        return project(vm, self->editor().attachLiveAudition());
+    sourceEditor.addFunc("attachLiveAudition", [bind](ScriptAudioSourceEditor* self) {
+        return bind.checked(self, "audio source editor must not be null",
+                            [&] { return self->editor().attachLiveAudition(); });
     });
     sourceEditor.addFunc("canUndo", [](ScriptAudioSourceEditor* self) { return self && self->editor().canUndo(); });
     sourceEditor.addFunc("canRedo", [](ScriptAudioSourceEditor* self) { return self && self->editor().canRedo(); });
@@ -185,18 +152,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
         return text ? *text : std::string{};
     });
 
-    moduleClass.addFunc("create", [vm](AudioEditorModule*, const std::string& targetId) {
-        if (targetId.empty())
-            return bindingFailure(vm, DiagnosticCode::InvalidArgument, "audio source target id must not be empty",
-                                  "targetId");
-        auto object = script::makeOwnedSquirrelInstance<ScriptAudioSourceEditor>(
-            vm, std::make_unique<ScriptAudioSourceEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status());
-        ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
-        result.set("value", owned);
-        result.set("ownership", std::string("owned"));
-        return result;
+    moduleClass.addFunc("create", [bind](AudioEditorModule*, const std::string& targetId) {
+        return bind.ownedCreate<ScriptAudioSourceEditor>("audio source target id must not be empty", targetId);
     });
 }
 
