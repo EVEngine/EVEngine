@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "network/UdpLink.h"
 
@@ -19,7 +21,7 @@ class UdpSocket;
  * emit peerconn. Link death (timeout) emits peerdisconn and removes the peer.
  * All state is main-thread; Network::pump calls onDatagram/pump.
  */
-class NetHost {
+class EVENGINE_API_PLATFORM NetHost {
 public:
     explicit NetHost(Network* net);
     ~NetHost();

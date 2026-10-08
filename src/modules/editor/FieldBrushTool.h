@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/BrushKernel.h"
 #include "editor/EditorTool.h"
@@ -19,7 +21,7 @@ public:
 };
 
 /** @brief Paints a fixed integer into targets exposing IIntFieldTarget. */
-class PaintIntFieldOperation final : public IFieldBrushOperation {
+class EVENGINE_API_ORCHESTRATION PaintIntFieldOperation final : public IFieldBrushOperation {
 public:
     explicit PaintIntFieldOperation(int value = 1) : value_(value) {}
     /** @brief Change the integer written by subsequent stamps. */
@@ -34,7 +36,7 @@ private:
 };
 
 /** @brief Adds weighted strength to targets exposing IScalarFieldTarget. */
-class AddScalarFieldOperation final : public IFieldBrushOperation {
+class EVENGINE_API_ORCHESTRATION AddScalarFieldOperation final : public IFieldBrushOperation {
 public:
     std::unique_ptr<IEditCommand> createCommand(IEditableTarget *target,
                                                 const BrushSampleBuffer &samples,
@@ -46,7 +48,7 @@ public:
  *
  * Both collaborators are non-owning and may be replaced between strokes.
  */
-class FieldBrushTool final : public IEditorTool {
+class EVENGINE_API_ORCHESTRATION FieldBrushTool final : public IEditorTool {
 public:
     FieldBrushTool(std::string id, std::string label, const IBrushKernel *kernel,
                    const IFieldBrushOperation *operation);

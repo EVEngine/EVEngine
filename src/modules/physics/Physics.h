@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Module.h"
 
@@ -18,7 +19,7 @@ class DistanceField3D;
  * Script: `physics <- eve.Physics(); world <- physics.newWorld(0, 900);`
  *         `world3 <- physics.newWorld3D(0, -9.8, 0);`
  */
-class Physics : public Module {
+class EVENGINE_API_WORLD Physics : public Module {
 public:
     Module_REG(Physics);
     Physics();

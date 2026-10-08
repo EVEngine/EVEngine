@@ -14,7 +14,7 @@ class VegetationField;
 namespace eve::graphics_editing {
 
 /** @brief Bounded renderer-neutral viewport projection for one vegetation influence field. */
-class VegetationFieldGizmoBuilder {
+class EVENGINE_API_WORLD VegetationFieldGizmoBuilder {
 public:
     /**
      * @brief Build one immutable gizmo from the field's owning element snapshot.

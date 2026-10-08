@@ -62,3 +62,8 @@ external/pylibs/
 __pycache__/
 *.pyc
 *.log
+
+# Test byproducts written into the working directory by the suites root-cwd runs.
+/eve_snapshot.json
+/scenario_repro_test.json
+/scenario_roundtrip_test.json

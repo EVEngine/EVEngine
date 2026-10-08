@@ -35,7 +35,7 @@ EditorValue settingsValue(const FluidSimulationSettings& s) {
                                {"pbfIterations", int64_t{s.pbfIterations}}};
 }
 
-EditorResult<FluidSimulationSettings> parseSettings(const EditorValue& value) {
+Result<FluidSimulationSettings> parseSettings(const EditorValue& value) {
     const auto integer = [&](const char* key) {
         const auto* entry = field(value, key);
         return entry ? entry->getIf<int64_t>() : nullptr;
@@ -122,12 +122,12 @@ void* FluidSimulationTarget::queryCapability(const CapabilityId& capability) {
                                                                             : nullptr;
 }
 
-EditorResult<void> FluidSimulationTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> FluidSimulationTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "fluid.settings.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.fluid.operation-mismatch"),
                                           "Fluid operation targets another document or type");
     auto parsed = parseSettings(operation.payload);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
     bumpRevision();
     widenDirty(0, 0);
@@ -172,7 +172,7 @@ PropertyReadResult FluidSimulationTarget::read(const SelectionSnapshot& selectio
     return {PropertyReadState::Value, setting(settings_, path.value()), {}};
 }
 
-EditorResult<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnapshot& selection,
                                                              const PropertyPath& path, const EditorValue& value,
                                                              PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
@@ -182,12 +182,12 @@ EditorResult<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnap
             EditorStatus::Rejected, RuleId("editor.fluid.invalid-property-set"),
             "Fluid property requires matching selection and absolute assignment");
     auto valid = validatePropertyValue(*property, value);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     EditorValue candidateValue = settingsValue(settings_);
     auto*       object         = candidateValue.getIf<EditorValue::Object>();
     (*object)[path.value()]    = value;
     auto candidate             = parseSettings(candidateValue);
-    if (!candidate.ok()) return EditorResult<DomainOperation>::failure(candidate.status());
+    if (!candidate.ok()) return Result<DomainOperation>::failure(candidate.status());
     DomainOperation operation;
     operation.type        = "fluid.settings.replace.v1";
     operation.inverseType = operation.type;
@@ -200,7 +200,7 @@ EditorResult<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnap
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> FluidSimulationTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> FluidSimulationTarget::makeReset(const SelectionSnapshot& selection,
                                                                const PropertyPath&      path) const {
     auto property = schema(selection).find(path);
     if (!property)
@@ -245,7 +245,7 @@ FluidSimulationPreview FluidSimulationTarget::previewBudget(std::uint64_t byteBu
 EditorValue FluidSimulationTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"settings", settingsValue(settings_)}};
 }
-EditorResult<void> FluidSimulationTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> FluidSimulationTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* versionValue = field(snapshot, "schemaVersion");
     const auto* settings     = field(snapshot, "settings");
     const auto* version      = versionValue ? versionValue->getIf<int64_t>() : nullptr;
@@ -253,7 +253,7 @@ EditorResult<void> FluidSimulationTarget::loadSnapshot(const EditorValue& snapsh
         return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.fluid.invalid-snapshot"),
                                           "Fluid snapshot schema is unsupported");
     auto parsed = parseSettings(*settings);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
     bumpRevision();
     clearDirtyRegion();

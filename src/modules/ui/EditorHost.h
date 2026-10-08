@@ -31,7 +31,7 @@ namespace eve::ui {
  * linkable without Poco / DevTools. The header deliberately contains no
  * imgui.h (engine TUs include this header).
  */
-class EVENGINE_API EditorHost {
+class EVENGINE_API_WORLD EditorHost {
 public:
     static EditorHost& instance();
 

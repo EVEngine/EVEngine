@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/TransformGizmo.h"
 
@@ -10,7 +12,7 @@ namespace eve::editor {
  * @brief Babylon.js-style manager: toggles which transform modes are enabled and
  * routes pick/drag to the owned TransformGizmo (switching mode on best hit).
  */
-class GizmoManager {
+class EVENGINE_API_ORCHESTRATION GizmoManager {
 public:
     GizmoManager();
 

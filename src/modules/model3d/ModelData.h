@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Resource.h"
 #include "common/Result.h"
@@ -34,7 +36,7 @@ struct SurfaceUv {
  * @brief CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene).
  * Does not upload to GPU — use graphics::Graphics::newMeshFromAssimp on getMesh().
  */
-class ModelData : public Resource {
+class EVENGINE_API_WORLD ModelData : public Resource {
 public:
     /** @brief Own a decoded scene and the UV postprocessing state used to produce it.
      * @param scene Transferred owning Assimp scene.

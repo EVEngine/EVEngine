@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_OPTIMIZER_H
 #define EVE_TENSOR_OPTIMIZER_H
 
@@ -93,7 +95,7 @@ struct OptimizedGraph {
  *  4. matmul/conv bias + activation epilogue fusion;
  *  5. static memory planning with buffer reuse.
  */
-OptimizedGraph optimizeGraph(const Graph &graph, int outputNode);
+EVENGINE_API_DOMAINS OptimizedGraph optimizeGraph(const Graph &graph, int outputNode);
 
 /** Number of groups that need GPU kernels (i.e. not Alias). */
 int groupKernelCount(const OptimizedGraph &opt);

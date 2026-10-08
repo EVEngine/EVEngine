@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "crowd/CrowdField.h"
@@ -45,7 +47,7 @@ struct FlowVec {
  *   seek  —— 向世界目标点移动，进入 arriveRadius 后线性减速；
  *   boids —— 鸟群：分离 + 对齐 + 聚合，可叠加目标偏置与 wander。
  */
-class Crowd : public Module {
+class EVENGINE_API_FOUNDATION Crowd : public Module {
 public:
     Module_REG(Crowd);
     Crowd();

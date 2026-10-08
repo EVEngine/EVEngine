@@ -47,6 +47,36 @@
       "stale": "World and body generation-qualified handles are both resolved before any access or destruction."
     },
     {
+      "id": "physics-destruction-bone-link-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/destruction/**",
+      "owner": "physics::GeometryCollectionInstance",
+      "issue": "EVENGINE-DESTRUCTION-P0",
+      "reason": "Geometry-collection bones bind to World3D bodies only through PhysicsLink; either destruction order must stale-resolve without retained Body3D pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/destruction/GeometryCollectionInstance.h",
+        "src/modules/physics/destruction/graphics/GeometryCollectionRenderer.h",
+        "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
+      ],
+      "tests": [
+        "test/physics_destruction.cpp",
+        "test/physics_destruction_graphics.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "GeometryCollectionInstance",
+        "PhysicsLink",
+        "BonePresentation",
+        "GeometryCollectionRenderer"
+      ],
+      "create": "GeometryCollectionInstance::create builds Body3D per bone and stores PhysicsLink::fromBody; rollback destroys partial bodies on failure.",
+      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority; GeometryCollectionRenderer borrows Instance/Graphics only for the call.",
+      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField/draw reject without mutating topology.",
+      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity; presentation rebuilds from bonePresentation + sleepBatchRevision.",
+      "stale": "boneLink/step/applyField/bonePresentation/draw resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
+    },
+    {
       "id": "physics-link-contract",
       "rule": "link",
       "scope": "src/modules/physics/PhysicsLink.h",
@@ -181,6 +211,27 @@
       "stale": "Every ECS use calls ecs::try_get and every script call resolves RuntimeHandleRef generation plus module owner epoch."
     },
     {
+      "id": "graphics-fog-state-owner",
+      "rule": "state-owner",
+      "scope": "src/modules/graphics/fog/**",
+      "owner": "graphics::fog::FogSystem",
+      "issue": "EVENGINE-GRAPHICS-FOG",
+      "reason": "Realtime fog splits density/velocity, optical profile, derived caches and art so each mutable fact has one writer.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/fog/FogSystem.h",
+        "src/modules/graphics/fog/ContinuousArt.h",
+        "docs/dev/realtime-fog-system.md"
+      ],
+      "tests": [
+        "test/graphics_fog.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
+      "authoritative_owner": "FogSystem orchestrates writes; ContinuousArt never writes density, velocity, extinction or transmittance.",
+      "projections": "Froxel AtmosphereVolume, BeerLightCache, FogRayResult and ContinuousArtOutput are invalidatable projections of the density/optics owners."
+    },
+    {
       "id": "state-owner-policy",
       "rule": "state-owner",
       "scope": "src/**",
@@ -232,6 +283,35 @@
       "events": "Started/anchor-transition/contact/terminal facts enter the runtime-owned bounded queue only after authoritative mutation; drain detaches the batch before any callback or script runs",
       "services": "injected SimulationTick, last grounded tick and borrowed owner-thread Physics World3D",
       "phase": "input buffering in Input; candidate preparation and atomic selection in PrePhysics"
+    },
+    {
+      "id": "graphics-fog-system-contracts",
+      "rule": "ecs-system",
+      "scope": "src/modules/graphics/fog/**",
+      "owner": "graphics::fog::FogSystem",
+      "issue": "EVENGINE-GRAPHICS-FOG",
+      "reason": "FogSystem is a domain orchestrator, not an ECS view walker; this contract records its lattice access, injected time and deferred cache invalidation.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/fog/FogSystem.h",
+        "src/modules/graphics/fog/MacFluidGrid.h",
+        "docs/dev/realtime-fog-system.md"
+      ],
+      "tests": [
+        "test/graphics_fog.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "FogSystem"
+      ],
+      "entity_scope": "MAC lattice cells and analytic FogSolidProxy records owned by FogSystem; no ECS entity traversal",
+      "view": "cell-centered density plus face-centered MAC velocity; interactor rasterization completes before advection",
+      "read_set": "FogDensityField, FogProfile, SceneWind targets, FogSolidProxy geometry and AtmosphereVolume froxel dimensions",
+      "write_set": "MAC velocity/pressure/density, FogDensityField bands, BeerLightCache and AtmosphereVolume media during inject/integrate",
+      "structural_changes": "none while marching or integrating; domain resize and proxy replacement are explicit caller-owned Result operations",
+      "events": "CFL reports and cache version bumps after a successful step; art stylize emits no simulation events",
+      "services": "injected wall-clock dt accumulated into a fixed substep, named dust seed, and borrowed AtmosphereVolume for display mapping",
+      "phase": "simulation step before rendering; froxel inject/integrate and ContinuousArt run after physics transport"
     },
     {
       "id": "inventory-system-contracts",

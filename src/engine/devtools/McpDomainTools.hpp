@@ -17,13 +17,15 @@
 
 #include <Poco/JSON/Object.h>
 
+#include "common/Export.h"
+
 #include <string>
 #include <string_view>
 
 namespace eve::dev {
 
 /** @brief Whether `name` belongs to a capability-backed domain tool family. */
-[[nodiscard]] bool isMcpDomainTool(std::string_view name);
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isMcpDomainTool(std::string_view name);
 
 /**
  * @brief Execute one domain tool.
@@ -31,9 +33,10 @@ namespace eve::dev {
  * @param args Decoded `arguments` object (may be null).
  * @return Complete MCP `tools/call` result object JSON (content envelope included).
  */
-[[nodiscard]] std::string callMcpDomainTool(std::string_view name, Poco::JSON::Object::Ptr args);
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string callMcpDomainTool(std::string_view        name,
+                                                                    Poco::JSON::Object::Ptr args);
 
 /** @brief Comma-free MCP tool schema fragments for the domain families. */
-[[nodiscard]] std::string_view mcpDomainToolSchemas();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string_view mcpDomainToolSchemas();
 
 }  // namespace eve::dev

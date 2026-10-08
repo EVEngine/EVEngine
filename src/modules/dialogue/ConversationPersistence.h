@@ -1,7 +1,8 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/StateValue.h"
-#include "dialogue/Conversation.h"
+#include "dnut_interpreter/SequenceAsset.h"
 
 #include <functional>
 #include <string>
@@ -11,15 +12,15 @@
 namespace eve::dialogue {
 
 /** @brief Serialize a dialogue state tree as JSON. */
-[[nodiscard]] eve::Result<std::string> conversationStateToJson(const StateValue& state);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::Result<std::string> conversationStateToJson(const StateValue& state);
 
 /** @brief Parse a JSON dialogue state tree. */
-[[nodiscard]] eve::Result<StateValue> conversationStateFromJson(const std::string& json);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::Result<StateValue> conversationStateFromJson(const std::string& json);
 
 /** @brief Explicit save migrations from an old asset version to its current version. */
-class ConversationSaveMigrations {
+class EVENGINE_API_ORCHESTRATION ConversationSaveMigrations {
 public:
-    using Resolver = std::function<const ConversationAsset*(const std::string&)>;
+    using Resolver = std::function<const eve::dnut::SequenceAsset*(const std::string&)>;
 
     /**
      * @brief Register a direct migration from one saved asset version to the currently loaded asset.

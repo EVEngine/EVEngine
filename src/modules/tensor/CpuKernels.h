@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_CPUKERNELS_H
 #define EVE_TENSOR_CPUKERNELS_H
 
@@ -34,7 +36,7 @@ void binaryOp(OpType type, const float *a, const int *aDims, int aRank, const fl
 /** Elementwise unary / scalar op. */
 void unaryOp(OpType type, const float *in, int count, float *out, float s0, float s1);
 
-void softmax(const float *in, const int *dims, int rank, int axis, bool logMode, float *out);
+EVENGINE_API_DOMAINS void softmax(const float *in, const int *dims, int rank, int axis, bool logMode, float *out);
 void layernorm(const float *in, int rows, int cols, const float *scale, const float *bias,
                float eps, float *out);
 void rmsnorm(const float *in, int rows, int cols, const float *scale, float eps, float *out);

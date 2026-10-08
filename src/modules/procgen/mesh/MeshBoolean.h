@@ -16,7 +16,7 @@ namespace eve::procgen {
  * @thread Pure CPU operation; safe for distinct inputs on worker threads.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<MeshBuild> meshBooleanResult(const MeshBuild& left, const MeshBuild& right,
-                                                  std::string_view operation);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<MeshBuild> meshBooleanResult(const MeshBuild& left, const MeshBuild& right,
+                                                                       std::string_view operation);
 
 }  // namespace eve::procgen

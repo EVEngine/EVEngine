@@ -32,7 +32,7 @@ namespace eve::prof {
 /**
  * @brief One completed profiling zone (pre-order, parent-linked within a thread).
  */
-struct EVENGINE_API ZoneRecord {
+struct EVENGINE_API_FOUNDATION_INLINE ZoneRecord {
     const char* name      = nullptr;   // pointer is static storage, never freed
     uint32_t    module    = 0;         // interned module id (0 = default)
     uint32_t    threadId  = 0;
@@ -46,7 +46,7 @@ struct EVENGINE_API ZoneRecord {
 /**
  * @brief Per-module/per-zone aggregate of the last completed frame.
  */
-struct EVENGINE_API ZoneSample {
+struct EVENGINE_API_FOUNDATION_INLINE ZoneSample {
     std::string module;
     std::string name;
     std::string thread;
@@ -62,7 +62,7 @@ struct EVENGINE_API ZoneSample {
  * All methods are cheap when disabled. Most methods are called from the main
  * thread; the collector also snapshots off-main-thread buffers at frameMark().
  */
-class EVENGINE_API Profiler {
+class EVENGINE_API_FOUNDATION Profiler {
 public:
     /** @brief Turns collection on/off globally (off = single-branch no-op). */
     static void setEnabled(bool on);
@@ -110,7 +110,7 @@ private:
 /**
  * @brief RAII scoped zone (used via the EV_PROFILE_* macros).
  */
-class EVENGINE_API ZoneScope {
+class EVENGINE_API_FOUNDATION_INLINE ZoneScope {
 public:
     ZoneScope(const char* name, const char* module = nullptr) {
         Profiler::zoneBegin(name, module);

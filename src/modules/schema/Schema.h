@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -12,7 +13,7 @@
 namespace eve::schema {
 
 /** @brief Script-facing facade for runtime schema registration and validation. */
-class EVENGINE_API Schema : public Module {
+class EVENGINE_API_FOUNDATION Schema : public Module {
 public:
     Module_REG(Schema);
 

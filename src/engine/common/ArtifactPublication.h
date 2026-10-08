@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ArtifactPublication.h
@@ -107,7 +109,7 @@ public:
 };
 
 /** @brief Base contract for a consumer-owned artifact provider. */
-class ProviderContract {
+class EVENGINE_API_FOUNDATION ProviderContract {
 public:
     virtual ~ProviderContract() = default;
 

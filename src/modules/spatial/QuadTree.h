@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "spatial/Bounds.h"
 #include "spatial/QueryIds.h"
@@ -14,7 +16,7 @@ namespace eve::spatial {
  * Items are stored in the smallest node that fully contains them; spanning
  * items stay at the parent. Scripts use insert/remove/query* + getResult*.
  */
-class QuadTree {
+class EVENGINE_API_FOUNDATION QuadTree {
 public:
     QuadTree(float minX, float minY, float maxX, float maxY, int maxDepth = 8,
              int maxPerNode = 8);

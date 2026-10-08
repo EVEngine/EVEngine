@@ -13,7 +13,7 @@
 namespace eve::dev {
 
 /** @brief Source location in a Squirrel (or synthetic) script. */
-struct EVENGINE_API SourceLoc {
+struct EVENGINE_API_FOUNDATION SourceLoc {
     std::string source;
     int         line = 0;
     std::string function;
@@ -32,7 +32,7 @@ enum class TraceKind : uint8_t {
 };
 
 /** @brief One recorded runtime event used by the dynamic slicer. */
-struct EVENGINE_API TraceEvent {
+struct EVENGINE_API_FOUNDATION_INLINE TraceEvent {
     uint32_t  id      = 0;
     TraceKind kind    = TraceKind::Line;
     SourceLoc loc;
@@ -41,26 +41,26 @@ struct EVENGINE_API TraceEvent {
     uint32_t  parentEventId = 0;  // control predecessor (previous event in flow)
 };
 
-struct EVENGINE_API CallFrame {
+struct EVENGINE_API_FOUNDATION_INLINE CallFrame {
     uint32_t  frameId = 0;
     SourceLoc loc;
     uint32_t  callEventId = 0;
 };
 
-struct EVENGINE_API DataFlowEdge {
+struct EVENGINE_API_FOUNDATION_INLINE DataFlowEdge {
     uint32_t fromEventId = 0;  // Def (or Call arg)
     uint32_t toEventId   = 0;  // Use (or callee)
     std::string var;
 };
 
 /** @brief Criterion for a Weiser-style dynamic backward slice. */
-struct EVENGINE_API SliceCriterion {
+struct EVENGINE_API_FOUNDATION_INLINE SliceCriterion {
     SourceLoc                loc;         // error site (source+line preferred)
     std::vector<std::string> variables;   // empty ⇒ all vars live at site
     uint32_t                 eventId = 0; // optional exact seed event
 };
 
-struct EVENGINE_API SliceResult {
+struct EVENGINE_API_FOUNDATION_INLINE SliceResult {
     std::vector<uint32_t>     eventIds;   // chronological subset of the slice
     std::vector<SourceLoc>    locations;  // unique source locations in slice
     std::vector<CallFrame>    callStack;  // stack at criterion
@@ -78,7 +78,7 @@ struct EVENGINE_API SliceResult {
  * Event storage is a fixed ring buffer: when full, the write cursor advances and
  * overwrites the oldest slot in place (O(1); monotonic ids).
  */
-class EVENGINE_API CallGraph {
+class EVENGINE_API_FOUNDATION CallGraph {
 public:
     CallGraph();
     ~CallGraph();
@@ -103,9 +103,9 @@ public:
 
     // --- queries -----------------------------------------------------------
     /** @brief Chronological view over the live ring window (oldest → newest). */
-    class EVENGINE_API EventsView {
+    class EVENGINE_API_FOUNDATION_INLINE EventsView {
     public:
-        class EVENGINE_API const_iterator {
+        class EVENGINE_API_FOUNDATION_INLINE const_iterator {
         public:
             using iterator_category = std::forward_iterator_tag;
             using value_type        = TraceEvent;

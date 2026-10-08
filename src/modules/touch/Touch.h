@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Module.h"
 
 #include <vector>
@@ -8,8 +9,7 @@
 namespace eve::touch
 {
 
-class Touch : public Module
-{
+class EVENGINE_API_BACKENDS Touch : public Module {
 public:
 	Module_REG(Touch);
 	struct TouchInfo
@@ -38,7 +38,7 @@ public:
 	double getTouchX(int index) const;
 	double getTouchY(int index) const;
 
-}; // Touch
+};  // Touch
 
 } // eve::touch
 

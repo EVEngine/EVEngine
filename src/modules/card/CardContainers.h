@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardContainers.h
@@ -44,7 +46,7 @@ struct CardContainerObject final : eve::container::ContainerObjectPayload {
  * slots as stale. Restore must recreate Card entities first, then construct a
  * fresh adapter over the restored collection.
  */
-class CardContainerAdapter final : public eve::container::IContainer {
+class EVENGINE_API_WORLD CardContainerAdapter final : public eve::container::IContainer {
 public:
     /**
      * @brief Bind a borrowed Deck, Hand or discard collection.

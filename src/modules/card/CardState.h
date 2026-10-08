@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/StateValue.h"
 
@@ -12,8 +14,8 @@ namespace eve::card {
  * Captures each card's structural phase (deck/hand/played/discarded/disabled/
  * returning). Transient hover/drag interaction is dropped on restore.
  */
-bool captureCardState(StateValue& out);
-bool restoreCardState(const StateValue& in, std::string* err = nullptr);
-bool resetCardState();
+EVENGINE_API_WORLD bool captureCardState(StateValue& out);
+EVENGINE_API_WORLD bool restoreCardState(const StateValue& in, std::string* err = nullptr);
+EVENGINE_API_WORLD bool resetCardState();
 
 }  // namespace eve::card

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RpgDialect.h
@@ -235,7 +237,7 @@ struct RpgStoryBinding {
  *
  * @thread Owner thread only; no synchronization is performed.
  */
-class RpgStoryCatalogue {
+class EVENGINE_API_PLATFORM RpgStoryCatalogue {
 public:
     /**
      * @brief Compile and atomically publish every `story` block of one document.
@@ -261,13 +263,16 @@ public:
  *
  * The session snapshots the whole catalogue when it begins, so a later hot
  * replacement cannot invalidate an active run. Persistent facts live in
- * `RpgStoryBinding::gameState`: a non-repeatable story records completion under
- * the self-variable scope `story.<id>` and refuses to restart once complete.
- * Full cursor persistence is available through `captureState` / `restoreState`.
+ * `RpgStoryBinding::gameState` under the self-variable scope `story.<id>`:
+ * - `completed` (numeric 0/1) records a finished non-repeatable story;
+ * - `cursor` (scoped string) holds the opaque `captureState` JSON while a run
+ *   is suspended, so F5 mid-story resumes at the same blocked step after load.
+ * Explicit `captureState` / `restoreState` remain available for hosts that want
+ * to own the blob themselves.
  *
  * @thread Owner thread only. @reentrancy No callbacks into the session.
  */
-class RpgStorySession {
+class EVENGINE_API_PLATFORM RpgStorySession {
 public:
     RpgStorySession();
     ~RpgStorySession();

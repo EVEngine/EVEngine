@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -28,7 +30,7 @@ class Texture;
  * bound as the current canvas. See AmbientOcclusion::applyFromGBuffer for
  * the same binding convention.
  */
-class Outline {
+class EVENGINE_API_BACKENDS Outline {
 public:
     explicit Outline(Graphics *gfx);
     ~Outline();

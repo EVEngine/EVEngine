@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimPose.h"
 #include "animation/AnimPoseSource.h"
@@ -15,7 +17,7 @@ class AnimSkeleton;
 class AnimStateMachine;
 
 /** @brief Per-bone weights used by override and additive animation layers. */
-class AnimBoneMask {
+class EVENGINE_API_WORLD AnimBoneMask {
 public:
     /** @brief Create a zero-weight mask for a skeleton; the skeleton is not owned. */
     explicit AnimBoneMask(AnimSkeleton* skeleton);
@@ -48,7 +50,7 @@ private:
  * evaluation boundary: call advance once per tick and do not advance attached
  * sources separately.
  */
-class AnimLayerMixer : public IAnimPoseSource {
+class EVENGINE_API_WORLD AnimLayerMixer : public IAnimPoseSource {
 public:
     /** @brief Create an empty mixer for a skeleton; the skeleton is not owned. */
     explicit AnimLayerMixer(AnimSkeleton* skeleton);

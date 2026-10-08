@@ -15,7 +15,7 @@ namespace eve::procgen::road {
  * Mutations are synchronous and owner-thread only. Revision bumps on every
  * successful structural change. Handles/ids are stable until erase.
  */
-class RoadNetwork {
+class EVENGINE_API_DOMAINS RoadNetwork {
 public:
     /** @brief Insert a junction node after validating finite coordinates. */
     [[nodiscard]] Result<std::uint32_t> addNode(float x, float y, float z, float junctionRadius = 6.f);
@@ -55,10 +55,30 @@ public:
     [[nodiscard]] static Result<RoadNetwork> makeBridge(float length = 36.f, float height = 6.f, int lanes = 2);
     /** @brief Scene 4: simple ground-level 4-way cross (one junction disc). */
     [[nodiscard]] static Result<RoadNetwork> makeCross(float span = 32.f, int lanes = 2);
+    /** @brief Scene 5: ground-level T-junction (3 arms, wide-back curb chord). */
+    [[nodiscard]] static Result<RoadNetwork> makeTee(float span = 32.f, int lanes = 2);
+    /** @brief Scene 6: ground-level Y-junction (3 arms at 120°). */
+    [[nodiscard]] static Result<RoadNetwork> makeY(float span = 32.f, int lanes = 2);
+    /**
+     * @brief Ground-level N-way fan from absolute arm angles (degrees).
+     *
+     * Angle 0° = +X (east), 90° = +Z (south), increasing CCW in XZ. Used for
+     * common-angle demos (60°/90°/120°/135°) and acute forks that may bend-to-dock.
+     * @param armAnglesDeg At least two finite angles; duplicates within 1° are merged.
+     * @param intoHub Optional per-input-angle edge direction (true = leaf→hub).
+     *        Empty defaults to alternating tip-at-to / tip-at-from after sort.
+     *        When provided, size must match `armAnglesDeg` (pre-merge).
+     */
+    [[nodiscard]] static Result<RoadNetwork> makeFan(float span, int lanes, std::vector<float> armAnglesDeg,
+                                                     std::vector<bool> intoHub = {});
+    /** @brief Scene: 3-way with a 60° acute fork (may bend tips to dock). */
+    [[nodiscard]] static Result<RoadNetwork> makeFork(float span = 32.f, int lanes = 2);
+    /** @brief Scene: 3-way with 135° corners (skewed Y). */
+    [[nodiscard]] static Result<RoadNetwork> makeSkew(float span = 32.f, int lanes = 2);
 
     /**
      * @brief Dispatch a named debug/demo scene.
-     * @param scene One of: straight, curve, bridge, cross, interchange.
+     * @param scene One of: straight, curve, bridge, cross, tee, y, fork, skew, interchange.
      */
     [[nodiscard]] static Result<RoadNetwork> makeScene(const std::string& scene, float span = 36.f,
                                                        float bridgeHeight = 6.f, int lanes = 2,

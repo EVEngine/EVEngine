@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CombatCarrier.h
@@ -275,8 +277,8 @@ public:
  * OnHit→EmitHit+Release. Homing requires a positive turn rate already validated
  * by ProjectileDefinition.
  */
-[[nodiscard]] Result<CarrierRecipe> carrierRecipeFromProjectile(const ProjectileDefinition& definition,
-                                                                double damage = 0.0);
+[[nodiscard]] EVENGINE_API_WORLD Result<CarrierRecipe> carrierRecipeFromProjectile(
+    const ProjectileDefinition& definition, double damage = 0.0);
 
 /**
  * @brief Owner-thread deterministic carrier simulator with composable behaviors.
@@ -285,7 +287,7 @@ public:
  * all target/hit lookups succeed. Child spawns are attempted at frame end; pool
  * exhaustion fails the whole frame without partial publish.
  */
-class CombatCarrierRuntime {
+class EVENGINE_API_WORLD CombatCarrierRuntime {
 public:
     CombatCarrierRuntime();
 

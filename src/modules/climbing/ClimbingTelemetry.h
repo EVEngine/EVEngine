@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingTelemetry.h
@@ -77,7 +79,7 @@ struct ClimbingTelemetrySummary {
  * Recording overwrites the oldest sample at capacity and performs no allocation. Percentile summaries use
  * fixed stack arrays and therefore remain safe to request while diagnostic string capture is disabled.
  */
-class ClimbingTelemetryBuffer {
+class EVENGINE_API_DOMAINS ClimbingTelemetryBuffer {
 public:
     static constexpr std::size_t Capacity = 256;
 

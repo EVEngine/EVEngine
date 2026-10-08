@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file SkillDefinitionRuntime.h
@@ -37,7 +39,7 @@ struct SkillRuntimeState {
  * cooldown/learned state. `RejectWhileActive` uses the adapter active flag;
  * callers set it while a cast session owns the skill.
  */
-class SkillDefinitionRuntime final {
+class EVENGINE_API_PLATFORM SkillDefinitionRuntime final {
 public:
     /**
      * @brief Create a runtime from a generation-qualified common definition.

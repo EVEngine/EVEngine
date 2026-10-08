@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponEffects.h
@@ -67,7 +69,7 @@ public:
 };
 
 /** @brief Weapon adapter with a single common lifecycle owner. */
-class WeaponEffectAdapter {
+class EVENGINE_API_WORLD WeaponEffectAdapter {
 public:
     /** @brief Apply one typed weapon effect to a stable subject. */
     [[nodiscard]] eve::Result<effects::EffectHandle> apply(const WeaponEffectDefinition& definition,

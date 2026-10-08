@@ -8,7 +8,7 @@
 namespace eve::ui_editing {
 namespace {
 
-EditorResult<ui::NodeType> nodeType(const std::string& type) {
+Result<ui::NodeType> nodeType(const std::string& type) {
     static const std::map<std::string, ui::NodeType> types{
         {"window", ui::NodeType::Window},        {"text", ui::NodeType::Text},
         {"button", ui::NodeType::Button},        {"group", ui::NodeType::Group},
@@ -26,13 +26,13 @@ EditorResult<ui::NodeType> nodeType(const std::string& type) {
     return eve::editing::applied<ui::NodeType>(found->second);
 }
 
-EditorResult<ui::WidgetDesc> buildWidget(const UiDocumentTarget& document, const ObjectId& id) {
+Result<ui::WidgetDesc> buildWidget(const UiDocumentTarget& document, const ObjectId& id) {
     auto value = document.widget(id);
     if (!value.ok())
         return eve::editing::failed<ui::WidgetDesc>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
                                                     "UI widget does not exist: " + id.value());
     auto type = nodeType(value.value().type);
-    if (!type.ok()) return EditorResult<ui::WidgetDesc>::failure(type.status());
+    if (!type.ok()) return Result<ui::WidgetDesc>::failure(type.status());
     const UiWidgetSnapshot& widget = value.value();
     ui::WidgetDesc          result;
     result.type = type.value();
@@ -68,7 +68,7 @@ EditorResult<ui::WidgetDesc> buildWidget(const UiDocumentTarget& document, const
     result.justifyContent = justifies.at(widget.style.justify);
     for (const ObjectId& child : document.children(id)) {
         auto built = buildWidget(document, child);
-        if (!built.ok()) return EditorResult<ui::WidgetDesc>::failure(built.status());
+        if (!built.ok()) return Result<ui::WidgetDesc>::failure(built.status());
         result.children.push_back(std::move(built).value());
     }
     return eve::editing::applied<ui::WidgetDesc>(std::move(result));
@@ -76,13 +76,13 @@ EditorResult<ui::WidgetDesc> buildWidget(const UiDocumentTarget& document, const
 
 }  // namespace
 
-EditorResult<void> UiDocumentRuntimeBridge::publish(const UiDocumentTarget& document, const ObjectId& root,
+Result<void> UiDocumentRuntimeBridge::publish(const UiDocumentTarget& document, const ObjectId& root,
                                                     ui::UIHost* host) const {
     if (!host)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.runtime-host-required"),
                                           "Runtime UI publishing requires a live UIHost");
     auto built = buildWidget(document, root);
-    if (!built.ok()) return EditorResult<void>::failure(built.status());
+    if (!built.ok()) return Result<void>::failure(built.status());
     host->setTreeReconcile(std::move(built).value());
     return eve::editing::applied<void>();
 }

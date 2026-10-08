@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "procgen/editing/HeightmapBrush.h"
@@ -11,7 +13,8 @@ namespace eve::procgen { class Heightmap; }
 namespace eve::procgen_editing {
 
 /** @brief Non-owning scalar-field adapter for a live procedural heightmap. */
-class HeightmapTarget final : public editing::IEditableTarget, public editing::IScalarFieldTarget {
+class EVENGINE_API_ORCHESTRATION HeightmapTarget final : public editing::IEditableTarget,
+                                                         public editing::IScalarFieldTarget {
 public:
     /** @brief Bind a live heightmap which must outlive this adapter. */
     HeightmapTarget(std::string id, procgen::Heightmap* heightmap);
@@ -44,6 +47,6 @@ private:
  * @param heightmap Borrowed heightmap that must outlive the adapter.
  * @return Independently owned adapter.
  */
-[[nodiscard]] std::unique_ptr<HeightmapTarget> createHeightmapTarget(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION std::unique_ptr<HeightmapTarget> createHeightmapTarget(
     std::string id, procgen::Heightmap* heightmap);
 }  // namespace eve::procgen_editing

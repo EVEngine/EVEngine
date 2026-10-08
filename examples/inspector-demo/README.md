@@ -21,7 +21,12 @@ What happens:
   ```squirrel
   </ editor = "slider", min = 0, max = 100 />   hp = 100.0
   </ editor = "combo", options = "warrior,mage,rogue" />  job = "warrior"
+  </ editor = "color" />  tint = [1.0, 0.8, 0.2, 1.0]
+  </ editor = "vec2" />   scale = [1.0, 1.0]
   ```
+
+  `ui.propertySchema(hero)` returns the same reflection-derived schema as a
+  Squirrel table for tooling/automation.
 
 - `ui.inspectObject(hero)` binds the panel to the live `hero` instance.
   Dragging a slider / typing / toggling writes straight back into that object;
@@ -34,8 +39,9 @@ initially docked panels. The panel windows can then be moved/resized, and ImGui
 restores their workspace layout on the next run —
 
 - **Inspector** (`ui.inspectObject(hero)`): the reflection property panel
-  described above. Arrays / tables expand inline (append / remove / edit
-  elements), and nested instances open as a sub-panel with a Back button.
+  described above. Arrays / tables / color / vec fields expand through the
+  shared `PropertyView` (append / remove / edit), and nested instances open as
+  a sub-panel with a Back button.
 - **Database** (`ui.dbRegister(hero, "Hero")` / `ui.dbCreateInstance()`): one
   editable row per registered instance, with the class menu generated from the
   reflected classes.

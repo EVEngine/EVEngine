@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -11,6 +13,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+namespace eve {
+class IParticleSdfField;
+}
 
 namespace eve::graphics {
 class Graphics;
@@ -62,7 +68,7 @@ struct Particle {
  * @brief ECS emitter entity. Script configures components; ParticleSimSystem /
  * ParticleRenderSystem drive per-frame update & draw.
  */
-class ParticleEmitter : public ecs::Entity {
+class EVENGINE_API_DOMAINS ParticleEmitter : public ecs::Entity {
 public:
     ENTITY(ParticleEmitter, ecs::Entity)
 
@@ -155,6 +161,17 @@ public:
         float boundsMaxY = 0.f;
         /** @brief Query the engine-level world collision resolver each step. */
         bool worldCollision = false;
+        /**
+         * @brief Borrowed 2D SDF used as an additional collision solid.
+         * @ownership Borrowed. Cleared by the caller before the field is destroyed.
+         */
+        eve::IParticleSdfField* sdfField = nullptr;
+        /**
+         * @brief Motion-vector policy for future velocity-buffer writes.
+         * Values: "none" | "velocity" | "spawn_delta". Recorded now; rendering
+         * activation is reported separately by isMotionVectorActive().
+         */
+        std::string motionVectorPolicy = "none";
         /** @brief "billboard" | "axis" | "stretched" | "ribbon". */
         std::string renderMode = "billboard";
         float stretchFactor = 1.f;
@@ -369,6 +386,8 @@ public:
         /** @brief World-origin translation queued for the next resident GPU update. */
         float pendingWorldOffsetX = 0.f;
         float pendingWorldOffsetY = 0.f;
+        /** @brief Monotonic birth counter stamped into GPU spawn birthSerial. */
+        std::uint32_t nextBirthSerial = 1;
     };
 
     COMPONENT(Config, config)
@@ -512,6 +531,28 @@ public:
                       float lifetimeLoss = 0.f);
     void setCollisionBounds(bool enabled, float minX, float minY, float maxX, float maxY);
     void setWorldCollision(bool enabled);
+    /**
+     * @brief Bind a borrowed SDF field for particle collision sampling.
+     * @param field Borrowed field, or null to clear. Does not take ownership.
+     */
+    void setSdfField(eve::IParticleSdfField* field);
+    /**
+     * @brief Return the borrowed SDF field, or null.
+     * @ownership Borrowed. The emitter does not own the field; do not delete it.
+     * @lifetime Valid until `setSdfField` replaces or clears it, or the emitter
+     *           is destroyed. Clear the binding before destroying the field.
+     */
+    eve::IParticleSdfField* getSdfField();
+    /**
+     * @brief Set motion-vector policy: none, velocity, or spawn_delta.
+     * @remarks Policy is stored for assets/tools; GPU velocity-buffer emission
+     *          is not active until isMotionVectorActive() reports true.
+     */
+    void setMotionVectorPolicy(const std::string& policy);
+    /** @brief Return the normalized motion-vector policy. */
+    std::string getMotionVectorPolicy();
+    /** @brief True when a graphics path is actually writing motion vectors. */
+    bool isMotionVectorActive();
 
     void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
     /** @brief Configure connected ribbon rendering and switch to ribbon mode. */
@@ -669,10 +710,11 @@ bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
-float advanceEmitterSim(ParticleEmitter::Config& cfg, ParticleEmitter::Sim& sim, float dt);
+EVENGINE_API_DOMAINS float advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 /** @brief Advance with scheduler-provided Duration/Tick; no local playback scaling. */
-[[nodiscard]] eve::Result<void> advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
-                                                  const eve::SimulationStep &step);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> advanceEmitterSim(ParticleEmitter::Config   &cfg,
+                                                                       ParticleEmitter::Sim      &sim,
+                                                                       const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);

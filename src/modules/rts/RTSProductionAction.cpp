@@ -10,10 +10,6 @@
 namespace eve::rts {
 namespace {
 
-eve::Result<void> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 class OrderParticipant final : public transaction::ITransactionParticipant {
 public:
     OrderParticipant(orders::CommandQueue& queue, std::string kind, int priority, double timeout, std::string product,
@@ -29,19 +25,18 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (prepared_ || committed_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS order participant is already in flight", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS order participant is already in flight", "orders"));
         try {
             before_ = queue_;
             staged_ = queue_;
         } catch (const std::exception& exception) {
-            return failure(eve::DiagnosticCode::Failed, std::string("failed to stage RTS order: ") + exception.what(),
-                           "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to stage RTS order: ") + exception.what(), "orders"));
         }
         auto id = staged_->append(kind_, priority_, timeout_);
         if (!id) return eve::Result<void>::failure(id.status());
         orderId_   = std::move(id).takeValue();
         auto order = staged_->find(orderId_);
-        if (!order) return failure(eve::DiagnosticCode::InvariantViolation, "staged RTS order disappeared", "orders");
+        if (!order) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "staged RTS order disappeared", "orders"));
         order->get().payload.setString("owner", owner_);
         order->get().payload.setString("product", product_);
         prepared_ = true;
@@ -50,12 +45,11 @@ public:
 
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS order participant has no prepared stage", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS order participant has no prepared stage", "orders"));
         try {
             queue_ = *staged_;
         } catch (const std::exception& exception) {
-            return failure(eve::DiagnosticCode::Failed, std::string("failed to publish RTS order: ") + exception.what(),
-                           "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to publish RTS order: ") + exception.what(), "orders"));
         }
         committed_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -63,7 +57,7 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
         if (committed_)
-            return failure(eve::DiagnosticCode::Conflict, "committed RTS order requires compensation", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "committed RTS order requires compensation", "orders"));
         staged_.reset();
         prepared_ = false;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -71,12 +65,11 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (!committed_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS order has no committed state to compensate", "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS order has no committed state to compensate", "orders"));
         try {
             queue_ = *before_;
         } catch (const std::exception& exception) {
-            return failure(eve::DiagnosticCode::Failed,
-                           std::string("failed to compensate RTS order: ") + exception.what(), "orders");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::string("failed to compensate RTS order: ") + exception.what(), "orders"));
         }
         staged_.reset();
         before_.reset();
@@ -104,28 +97,41 @@ private:
 class ProductionParticipant final : public transaction::ITransactionParticipant {
 public:
     ProductionParticipant(production::WorkQueue& queue, std::string owner, std::string kind, std::string product,
-                          eve::Value context, Duration duration, int priority)
+                          eve::Value context, eve::definition::DefinitionHandle definition,
+                          eve::Value reservation, Duration duration, int priority, bool settlementRequired)
         : queue_(queue),
           owner_(std::move(owner)),
           kind_(std::move(kind)),
           product_(std::move(product)),
           context_(std::move(context)),
+          definition_(std::move(definition)),
+          reservation_(std::move(reservation)),
           duration_(duration),
-          priority_(priority) {}
+          priority_(priority),
+          settlementRequired_(settlementRequired) {}
 
     [[nodiscard]] std::string_view name() const noexcept override { return "rts-production-queue"; }
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (prepared_ || committed_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS production participant is already in flight",
-                           "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS production participant is already in flight", "production"));
         auto before = queue_.snapshot();
         if (!before) return eve::Result<void>::failure(before.status());
         beforeJson_   = std::move(before).takeValue();
         staged_       = std::make_unique<production::WorkQueue>();
         auto restored = staged_->restore(beforeJson_);
         if (!restored) return restored;
-        auto task = staged_->enqueue(owner_, kind_, product_, context_, duration_.seconds(), priority_);
+        production::ProductionRequest request;
+        request.owner = owner_;
+        request.kind = kind_;
+        request.product = product_;
+        request.context = context_;
+        request.definition = definition_;
+        request.reservation = reservation_;
+        request.duration = duration_;
+        request.priority = priority_;
+        request.settlementRequired = settlementRequired_;
+        auto task = staged_->enqueue(std::move(request));
         if (!task) return eve::Result<void>::failure(task.status());
         taskId_    = std::move(task).takeValue();
         auto after = staged_->snapshot();
@@ -137,13 +143,11 @@ public:
 
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS production participant has no prepared stage",
-                           "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS production participant has no prepared stage", "production"));
         auto current = queue_.snapshot();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != beforeJson_)
-            return failure(eve::DiagnosticCode::StaleHandle,
-                           "RTS production queue changed while transaction was staged", "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "RTS production queue changed while transaction was staged", "production"));
         auto restored = queue_.restore(afterJson_);
         if (!restored) return restored;
         committed_ = true;
@@ -152,8 +156,7 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
         if (committed_)
-            return failure(eve::DiagnosticCode::Conflict, "committed production task requires compensation",
-                           "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "committed production task requires compensation", "production"));
         staged_.reset();
         prepared_ = false;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -161,13 +164,11 @@ public:
 
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (!committed_)
-            return failure(eve::DiagnosticCode::Conflict, "production queue has no committed task to compensate",
-                           "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "production queue has no committed task to compensate", "production"));
         auto current = queue_.snapshot();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != afterJson_)
-            return failure(eve::DiagnosticCode::StaleHandle, "RTS production queue changed before compensation",
-                           "production");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "RTS production queue changed before compensation", "production"));
         auto restored = queue_.restore(beforeJson_);
         if (!restored) return restored;
         staged_.reset();
@@ -186,8 +187,11 @@ private:
     std::string                            kind_;
     std::string                            product_;
     eve::Value                             context_;
+    eve::definition::DefinitionHandle      definition_;
+    eve::Value                             reservation_;
     Duration                               duration_;
     int                                    priority_ = 0;
+    bool                                   settlementRequired_ = false;
     std::unique_ptr<production::WorkQueue> staged_;
     std::string                            beforeJson_;
     std::string                            afterJson_;
@@ -210,7 +214,7 @@ public:
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (execution_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS Action participant is already in flight", "action");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS Action participant is already in flight", "action"));
         auto submitted = runtime_.submit(std::move(definition_), std::move(request_));
         if (!submitted) return eve::Result<void>::failure(submitted.status());
         execution_ = std::move(submitted).takeValue();
@@ -220,7 +224,7 @@ public:
 
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_ || !execution_)
-            return failure(eve::DiagnosticCode::Conflict, "RTS Action participant has no prepared execution", "action");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS Action participant has no prepared execution", "action"));
         auto advanced = runtime_.advance(*execution_, tick_, delta_);
         if (!advanced) return eve::Result<void>::failure(advanced.status());
         std::move(advanced).takeValue();
@@ -230,7 +234,7 @@ public:
 
     [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
         if (committed_)
-            return failure(eve::DiagnosticCode::Conflict, "committed RTS Action requires compensation", "action");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "committed RTS Action requires compensation", "action"));
         if (!execution_) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
         const auto* current = runtime_.find(*execution_);
         if (current != nullptr && current->phase() != action::ActionPhase::Failed &&
@@ -272,7 +276,8 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
                                                                resource::CostSpec cost, std::string product,
                                                                Duration duration, std::string productionKind,
                                                                int priority, std::string transactionId,
-                                                               std::vector<RTSProductionResourceReserve> resourceReserves) {
+                                                               std::vector<RTSProductionResourceReserve> resourceReserves,
+                                                               eve::definition::DefinitionHandle definition) {
     const auto subject = building.identity()->subject;
     if (!subject.isValid())
         return eve::Result<RTSBuildReceipt>::failure(
@@ -295,7 +300,9 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
     request.product              = std::move(product);
     request.duration             = std::move(duration);
     request.priority             = priority;
+    request.settlementRequired   = request.productionKind == "unit" || request.productionKind == "research";
     request.resourceReserves     = std::move(resourceReserves);
+    request.definition           = std::move(definition);
     request.transactionId        = std::move(transactionId);
     request.actionRequest.source = ecs::handle_of(&building);
     return build(std::move(request));
@@ -316,6 +323,8 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     if (request.duration.nanoseconds() <= 0 || request.actionDelta.nanoseconds() < 0)
         return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build durations are invalid", "duration"));
+    request.settlementRequired = request.settlementRequired || request.productionKind == "unit" ||
+                                 request.productionKind == "research";
 
     std::vector<resource::ResourceCost> protectedItems = request.cost.items();
     for (const auto& reserve : request.resourceReserves) {
@@ -360,7 +369,9 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     OrderParticipant      order(*request.orders, request.orderKind, request.orderPriority, request.orderTimeoutSeconds,
                                 request.product, request.owner);
     ProductionParticipant production(*request.production, request.owner, request.productionKind, request.product,
-                                     std::move(request.context), request.duration, request.priority);
+                                     std::move(request.context), std::move(request.definition),
+                                     std::move(request.reservation), request.duration, request.priority,
+                                     request.settlementRequired);
     ActionParticipant     action(*request.action, std::move(request.actionDefinition), std::move(request.actionRequest),
                                  request.tick, request.actionDelta);
     std::vector<transaction::ITransactionParticipant*> participants;

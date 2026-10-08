@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 #include "animation/AnimSmr.h"
@@ -22,7 +24,7 @@ class AnimSkeleton;
  * punctuation and case removed (for example `mixamorig:Hips` matches `hips`).
  * Script type: `AnimRetargetProfile`.
  */
-class AnimRetargetProfile {
+class EVENGINE_API_WORLD AnimRetargetProfile {
 public:
     /** @brief Map one source bone to one target bone; replaces an existing mapping for that target. */
     void addBoneMapping(const std::string& sourceBone, const std::string& targetBone);
@@ -140,7 +142,7 @@ private:
  * @brief Keyframed skeletal animation clip (local TRS tracks per bone).
  * Script type: `AnimClip`.
  */
-class AnimClip {
+class EVENGINE_API_WORLD AnimClip {
 public:
     explicit AnimClip(std::string name = "");
     ~AnimClip();

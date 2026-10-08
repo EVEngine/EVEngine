@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -42,7 +44,7 @@ struct CardRoot {
  * @param width Card width.
  * @param height Card length along the strand axis.
  */
-CardMeshData buildCard(float width = 0.12f, float height = 0.45f);
+EVENGINE_API_BACKENDS CardMeshData buildCard(float width = 0.12f, float height = 0.45f);
 
 /**
  * @brief Build one card per polyline segment, facing a camera-facing side approximated by world up.
@@ -50,12 +52,12 @@ CardMeshData buildCard(float width = 0.12f, float height = 0.45f);
  * @param pointCount Number of points.
  * @param width Card width.
  */
-CardMeshData buildCardsAlongPolyline(const float *pointsXYZ, int pointCount, float width = 0.08f);
+EVENGINE_API_BACKENDS CardMeshData buildCardsAlongPolyline(const float *pointsXYZ, int pointCount, float width = 0.08f);
 
 /**
  * @brief Expand root samples into independent cards.
  */
-CardMeshData buildCardsFromRoots(const CardRoot *roots, int rootCount);
+EVENGINE_API_BACKENDS CardMeshData buildCardsFromRoots(const CardRoot *roots, int rootCount);
 
 /** @brief Append `src` into `dst` (vertex/index rebase). */
 void appendCardMesh(CardMeshData &dst, const CardMeshData &src);
@@ -97,8 +99,8 @@ Material *makeCardMaterial(Graphics *gfx, Texture *albedo = nullptr, Shader *hai
  * @brief Wire near/far geometric LOD on a renderable (index 0 = cards, index 1 = proxy).
  * @param switchDistance Camera distance that selects the far mesh.
  */
-void configureCardLod(Renderable3D *renderable, Mesh *nearCards, Mesh *farProxy,
-                      float switchDistance);
+EVENGINE_API_BACKENDS void configureCardLod(Renderable3D *renderable, Mesh *nearCards, Mesh *farProxy,
+                                            float switchDistance);
 
 }  // namespace hair
 

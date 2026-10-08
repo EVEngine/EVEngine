@@ -7,7 +7,7 @@
 namespace eve {
 
 /** @brief Particle system query surface (provided by the particles module). */
-class EVENGINE_API IParticlesQuery {
+class EVENGINE_API_FOUNDATION_INLINE IParticlesQuery {
 public:
     static constexpr const char* capabilityName = "IParticlesQuery";
 

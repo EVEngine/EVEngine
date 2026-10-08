@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/editor/EditorSurfaceFluidTarget.h"
 #include "graphics/editor/EditorOffscreenPreview.h"
@@ -58,7 +60,7 @@ struct SurfaceFluidPreviewSnapshot {
 };
 
 /** @brief Rebuilds an isolated surface simulation for deterministic forward/backward scrub. */
-class SurfaceFluidPreviewService {
+class EVENGINE_API_EDITORS SurfaceFluidPreviewService {
 public:
     /** @brief Validate, replay and capture a renderer-neutral surface-fluid frame. */
     SurfaceFluidPreviewSnapshot build(const SurfaceFluidTarget&         target,
@@ -70,17 +72,17 @@ class ISurfaceFluidPreviewRenderer {
 public:
     virtual ~ISurfaceFluidPreviewRenderer() = default;
     /** @brief Draw droplets and wetness using the host's chosen 2D or 3D presentation. */
-    virtual EditorResult<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) = 0;
+    virtual Result<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) = 0;
 };
 
 /** @brief Builds and rasterizes surface-fluid scrub frames through shared Canvas readback. */
-class SurfaceFluidOffscreenPreviewService {
+class EVENGINE_API_EDITORS SurfaceFluidOffscreenPreviewService {
 public:
     SurfaceFluidOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
                                         ISurfaceFluidPreviewRenderer*    renderer)
         : previews_(previews), renderer_(renderer) {}
     /** @brief Replay, validate and render one revision-bound scrub frame. */
-    EditorResult<OffscreenPreviewArtifact> render(const SurfaceFluidTarget&         target,
+    Result<OffscreenPreviewArtifact> render(const SurfaceFluidTarget&         target,
                                                   const SurfaceFluidPreviewRequest& request) const;
 
 private:

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -14,7 +16,7 @@ namespace eve::network {
  * NetReader failures are sticky: after any out-of-bounds or malformed read,
  * ok() returns false and subsequent reads safely return defaults.
  */
-class NetWriter {
+class EVENGINE_API_PLATFORM NetWriter {
 public:
     NetWriter() = default;
 
@@ -45,7 +47,7 @@ private:
     std::vector<char> buf_;
 };
 
-class NetReader {
+class EVENGINE_API_PLATFORM NetReader {
 public:
     NetReader() = default;
     NetReader(const void* d, size_t n);

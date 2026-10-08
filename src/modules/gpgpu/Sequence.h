@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -35,7 +37,7 @@ enum class SequenceStatus : uint8_t { Idle, Recording, Submitted, Complete, Fail
  * records; pending work retains no C++ owners, so callers must keep referenced
  * shaders and buffers alive until completion.
  */
-class Sequence {
+class EVENGINE_API_WORLD Sequence {
 public:
     Sequence();
     ~Sequence();

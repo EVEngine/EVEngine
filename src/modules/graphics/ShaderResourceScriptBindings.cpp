@@ -150,6 +150,77 @@ void exposeShaderResourceBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("getSceneToneMapping", [](Graphics* graphics) {
         return std::string(graphics->getSceneToneMapping() == Graphics::SceneToneMapping::None ? "none" : "aces");
     });
+    cls.addFunc("setDisplayOutputMode", [vm](Graphics* graphics, const std::string& mode) {
+        if (!graphics)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::InvalidArgument, "Graphics must be present",
+                                                 "graphics.presentation")));
+        Graphics::DisplayOutputMode value = Graphics::DisplayOutputMode::Sdr;
+        if (mode == "sdr")
+            value = Graphics::DisplayOutputMode::Sdr;
+        else if (mode == "auto")
+            value = Graphics::DisplayOutputMode::Auto;
+        else if (mode == "hdr10")
+            value = Graphics::DisplayOutputMode::Hdr10;
+        else if (mode == "scrgb")
+            value = Graphics::DisplayOutputMode::ScRgb;
+        else
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::InvalidArgument,
+                                                 "Expected display output mode sdr|auto|hdr10|scrgb",
+                                                 "graphics.presentation")));
+        return script::projectResult(vm, graphics->setDisplayOutputMode(value));
+    });
+    cls.addFunc("getDisplayOutputMode", [](Graphics* graphics) {
+        switch (graphics->getDisplayOutputMode()) {
+            case Graphics::DisplayOutputMode::Auto:
+                return std::string("auto");
+            case Graphics::DisplayOutputMode::Hdr10:
+                return std::string("hdr10");
+            case Graphics::DisplayOutputMode::ScRgb:
+                return std::string("scrgb");
+            case Graphics::DisplayOutputMode::Sdr:
+            default:
+                return std::string("sdr");
+        }
+    });
+    cls.addFunc("setDisplayHdrCalibration",
+                [vm](Graphics* graphics, float paperWhiteNits, float peakNits) {
+                    if (!graphics)
+                        return script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "Graphics must be present",
+                                                                        "graphics.presentation")));
+                    return script::projectResult(
+                        vm, graphics->setDisplayHdrCalibration(paperWhiteNits, peakNits));
+                });
+    cls.addFunc("getDisplayPaperWhiteNits", &Graphics::getDisplayPaperWhiteNits);
+    cls.addFunc("getDisplayPeakNits", &Graphics::getDisplayPeakNits);
+    cls.addFunc("getActiveDisplayColorSpace", [](Graphics* graphics) {
+        switch (graphics->getActiveDisplayColorSpace()) {
+            case Graphics::DisplayColorSpace::Hdr10:
+                return std::string("hdr10");
+            case Graphics::DisplayColorSpace::ScRgb:
+                return std::string("scrgb");
+            case Graphics::DisplayColorSpace::Sdr:
+            default:
+                return std::string("sdr");
+        }
+    });
+    cls.addFunc("isDisplayHdrActive", &Graphics::isDisplayHdrActive);
+    cls.addFunc("queryDisplayOutputSupport", [vm](Graphics* graphics) {
+        if (!graphics)
+            return script::projectResult(
+                vm, Result<Graphics::DisplayOutputSupport>::failure(Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "Graphics must be present", "graphics.presentation")),
+                [](Graphics::DisplayOutputSupport) { return Value::Object{}; });
+        return script::projectResult(vm, graphics->queryDisplayOutputSupport(),
+                                     [](const Graphics::DisplayOutputSupport& support) {
+                                         return Value::Object{{"sdr", support.sdr},
+                                                              {"hdr10", support.hdr10},
+                                                              {"scRgb", support.scRgb}};
+                                     });
+    });
     cls.addFunc("drawMeshShaderInstances", [vm](Graphics* graphics, Mesh* mesh, Shader* shader, ssq::Array model,
                                                 int64_t first, int64_t count) {
         try {

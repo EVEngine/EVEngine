@@ -154,6 +154,10 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 
 ## 生命周期
 
+- Vulkan 与原生 WebGPU（Dawn）均有实例化面绘制路径。浏览器
+  `EVENGINE_PROFILE=web` 仍不编本模块：`VoxelWorld` 公共头嵌入
+  `procgen::TerrainStreamingCache`，且 `procgen` 会拖 `map`→Poco。要进 `web`
+  需先把地形流式 API 拆成可选卫星，不是 WebGPU 画不出体素。
 - 世界与注册表由脚本 VM 持有，不要直接构造 `VoxelWorld` / `VoxelCubeTypes`。
 - 边界编辑会同时把相邻 chunk 标记 dirty；`remeshDirty()` 后接缝两侧一起重建，
   不会残留被遮挡的旧面。

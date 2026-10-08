@@ -11,14 +11,14 @@ public:
     std::unique_ptr<IEditorSimulationBackend> cloneForPreview() const override {
         return std::make_unique<FakeSimulation>(*this);
     }
-    EditorResult<void> step(std::uint64_t tick, double fixedDelta) override {
+    Result<void> step(std::uint64_t tick, double fixedDelta) override {
         if (tick <= tick_)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("fake.tick"), "Ticks must increase");
         tick_ = tick;
         position_ += fixedDelta * 3.0;
         return eve::editing::applied<void>();
     }
-    EditorResult<std::vector<SimulationObjectSample>> capture() const override {
+    Result<std::vector<SimulationObjectSample>> capture() const override {
         SimulationObjectSample sample;
         sample.object    = "body-1";
         sample.positionX = position_;

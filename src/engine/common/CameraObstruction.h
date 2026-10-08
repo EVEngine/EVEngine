@@ -7,7 +7,7 @@
 namespace eve {
 
 /** @brief Closest hit returned by the optional camera-obstruction provider. */
-struct EVENGINE_API CameraObstructionHit {
+struct EVENGINE_API_FOUNDATION_INLINE CameraObstructionHit {
     bool  hit      = false;
     int   bodyId   = -1;
     float fraction = 1.f;
@@ -16,7 +16,7 @@ struct EVENGINE_API CameraObstructionHit {
 };
 
 /** @brief Cross-module query used by camera without linking against physics. */
-class EVENGINE_API ICameraObstructionQuery {
+class EVENGINE_API_FOUNDATION_INLINE ICameraObstructionQuery {
 public:
     static constexpr const char* capabilityName = "eve.camera.ICameraObstructionQuery";
     virtual ~ICameraObstructionQuery() = default;

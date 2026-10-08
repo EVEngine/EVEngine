@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Result.h"
@@ -16,7 +18,7 @@ namespace housegen {
 class HouseComponentLibrary;
 
 /** @brief 一次生成的房屋布局：实例 + 房间 + 元信息，可 JSON 序列化 / 实例化。 */
-class HouseLayout {
+class EVENGINE_API_WORLD HouseLayout {
 public:
     uint32_t seed = 1;
     /** @brief 生成参数回显。 */

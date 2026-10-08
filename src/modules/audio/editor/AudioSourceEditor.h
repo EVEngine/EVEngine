@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AudioSourceEditor.h
@@ -29,7 +31,7 @@ public:
     void play() override;
     void pause() override;
     void stop() override;
-    [[nodiscard]] audio_editing::EditorResult<void> seek(double seconds) override;
+    [[nodiscard]] audio_editing::Result<void> seek(double seconds) override;
     double tell() const override { return position_; }
     double duration() const override { return duration_; }
     bool   playing() const override { return playing_; }
@@ -58,7 +60,7 @@ private:
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AudioSourceEditor {
+class EVENGINE_API_EDITORS AudioSourceEditor {
 public:
     /**
      * @brief Construct a seeded preview source with a generated tone clip.
@@ -77,45 +79,45 @@ public:
      * @brief Install Sources / Waveform / Inspector / Transport panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] audio_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
     /**
      * @brief Rebuild waveform envelopes for the given pixel width.
      * @param width Viewport width in pixels; must be positive and finite.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> setViewportWidth(float width);
+    [[nodiscard]] audio_editing::Result<void> setViewportWidth(float width);
 
     /**
      * @brief Seek from a waveform x coordinate in the current viewport.
      * @param x Pixel x in the waveform view.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> seekX(float x);
+    [[nodiscard]] audio_editing::Result<void> seekX(float x);
 
     /** @brief Seek preview to an exact time in seconds. */
-    [[nodiscard]] audio_editing::EditorResult<void> seekSeconds(double seconds);
+    [[nodiscard]] audio_editing::Result<void> seekSeconds(double seconds);
 
     /** @brief Commit an absolute property assignment through the document transaction path. */
-    [[nodiscard]] audio_editing::EditorResult<void> setProperty(const std::string& path,
+    [[nodiscard]] audio_editing::Result<void> setProperty(const std::string& path,
                                                                 const audio_editing::EditorValue& value);
 
-    [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> redo();
 
-    [[nodiscard]] audio_editing::EditorResult<void> play();
-    [[nodiscard]] audio_editing::EditorResult<void> pause();
-    [[nodiscard]] audio_editing::EditorResult<void> stop();
+    [[nodiscard]] audio_editing::Result<void> play();
+    [[nodiscard]] audio_editing::Result<void> pause();
+    [[nodiscard]] audio_editing::Result<void> stop();
 
     /**
      * @brief Poll audition and advance the clock backend.
      * @param deltaSeconds Injected frame time.
      */
-    [[nodiscard]] audio_editing::EditorResult<audio_editing::AudioTransportSnapshot> update(double deltaSeconds);
+    [[nodiscard]] audio_editing::Result<audio_editing::AudioTransportSnapshot> update(double deltaSeconds);
 
     /**
      * @brief Bind a live OpenAL Source generated from the preview PCM when Audio/Sound exist.
      * @return Applied when live audition is bound; Unsupported when modules are absent.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> attachLiveAudition();
+    [[nodiscard]] audio_editing::Result<void> attachLiveAudition();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
@@ -148,10 +150,10 @@ public:
 
 private:
     [[nodiscard]] editor::SelectionSnapshot selection() const;
-    [[nodiscard]] audio_editing::EditorResult<void> rebuildWaveform();
-    [[nodiscard]] audio_editing::EditorResult<void> bindClockAudition();
-    [[nodiscard]] audio_editing::EditorResult<void> syncLoop();
-    [[nodiscard]] audio_editing::EditorResult<void> publishLive();
+    [[nodiscard]] audio_editing::Result<void> rebuildWaveform();
+    [[nodiscard]] audio_editing::Result<void> bindClockAudition();
+    [[nodiscard]] audio_editing::Result<void> syncLoop();
+    [[nodiscard]] audio_editing::Result<void> publishLive();
     [[nodiscard]] audio_editing::Revision           auditionRevision() const;
     void                                            seedPreviewDocument();
     void                                            generateTonePcm();

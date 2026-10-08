@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingAnchorGraph.h
@@ -87,9 +89,11 @@ struct ClimbingAnchorGraphDefinition {
 /** @brief Validates all graph identities, frames, slots, tags, and edge endpoints. */
 [[nodiscard]] eve::Result<void> validateClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph);
 /** @brief Encodes a validated graph to its canonical owning Value representation. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorGraphDefinition(
+    const ClimbingAnchorGraphDefinition& graph);
 /** @brief Decodes and validates a complete owning graph candidate transactionally. */
-[[nodiscard]] eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(
+    const eve::Value& value);
 
 namespace detail {
 struct ClimbingAnchorReservationIdTag {};
@@ -187,7 +191,7 @@ struct ClimbingAnchorGraphReload {
  * The instance owns topology and reservations, but stores only generation-checked Physics handles.
  * It never retains World3D or Body3D pointers across calls.
  */
-class ClimbingAnchorGraphInstance {
+class EVENGINE_API_DOMAINS ClimbingAnchorGraphInstance {
 public:
     /**
      * @brief Validates and binds a graph snapshot to an existing Physics body.

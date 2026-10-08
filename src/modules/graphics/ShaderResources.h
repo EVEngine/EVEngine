@@ -71,7 +71,7 @@ struct ShaderResourceInputs {
  * @param bytes Borrowed unaligned bytes, retained only for this call. Worker-safe.
  * @return Count or diagnostic; empty input is valid and returns zero.
  */
-[[nodiscard]] Result<std::uint32_t> shaderInstanceMatrixCount(std::span<const std::byte> bytes);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::uint32_t> shaderInstanceMatrixCount(std::span<const std::byte> bytes);
 
 /** @brief One validated byte region for an image's layer/mip upload. */
 struct ShaderImageRegion {
@@ -84,6 +84,7 @@ struct ShaderImageRegion {
  * @param image Borrowed input, read only during this call; may be validated on workers.
  * @return Owning region metadata, or a diagnostic. No GPU state is touched.
  */
-[[nodiscard]] Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput& image);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<ShaderImageRegion>> shaderImageRegions(
+    const ShaderImageInput& image);
 
 }  // namespace eve::graphics

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProperty.h"
 #include "editing/EditingTargetOperations.h"
@@ -36,8 +38,6 @@ using editing::TargetDescriptor;
 using editing::TargetId;
 using editing::Value;
 
-template <class T>
-using EditorResult     = editing::Result<T>;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -45,11 +45,11 @@ using EditorDiagnostic = editing::Diagnostic;
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
-class PhysicsColliderTarget final : public ::eve::editing::EditableTargetState,
-                                    public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IDomainOperationTargetStaging,
-                                    public IPropertyProvider {
+class EVENGINE_API_DOMAINS PhysicsColliderTarget final : public ::eve::editing::EditableTargetState,
+                                                         public virtual IEditableTarget,
+                                                         public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging,
+                                                         public IPropertyProvider {
 public:
     explicit PhysicsColliderTarget(std::string id, int dimensions = 3);
 
@@ -58,29 +58,29 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
     /** @brief Capture deterministic collider content for asset/scene persistence. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a versioned collider snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Report cross-property shape/body problems for inspector overlays. */
     std::vector<EditorDiagnostic> validate() const;
 
 private:
     PropertySchema                     colliderSchema() const;
     std::map<std::string, EditorValue> defaults() const;
-    EditorResult<void> validateAssignment(const PropertyDescriptor& descriptor, const EditorValue& value) const;
+    Result<void> validateAssignment(const PropertyDescriptor& descriptor, const EditorValue& value) const;
     bool               selectionMatches(const SelectionSnapshot& selection) const;
 
     std::string                        id_;
@@ -93,11 +93,12 @@ class IPhysicsColliderRuntimeSink {
 public:
     virtual ~IPhysicsColliderRuntimeSink() = default;
     /** @brief Publish a candidate; failure must preserve the previous live collider. */
-    virtual EditorResult<void> publish(const PhysicsColliderTarget& candidate) = 0;
+    virtual Result<void> publish(const PhysicsColliderTarget& candidate) = 0;
 };
 
 /** @brief Candidate-first collider target whose commit/undo publishes to a live sink. */
-class PhysicsColliderPublishingTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS PhysicsColliderPublishingTarget final : public IDomainOperationTarget,
+                                                                   public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned collider document bound to a non-owning runtime sink. */
     PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink* sink);
@@ -105,9 +106,9 @@ public:
     std::uint64_t revision() const override { return document_.revision(); }
     EditRegion         dirtyRegion() const override { return document_.dirtyRegion(); }
     void               clearDirtyRegion() override { document_.clearDirtyRegion(); }
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Mutable authoring target used by the component property binding. */
     PhysicsColliderTarget& authoringTarget() { return document_; }
     /** @brief Immutable authoring target used by diagnostics and previews. */
@@ -120,11 +121,11 @@ private:
 };
 
 /** @brief Serializable joint authoring target using stable body references. */
-class PhysicsJointTarget final : public ::eve::editing::EditableTargetState,
-                                 public virtual IEditableTarget,
-                                 public IDomainOperationTarget,
-                                 public IDomainOperationTargetStaging,
-                                 public IPropertyProvider {
+class EVENGINE_API_DOMAINS PhysicsJointTarget final : public ::eve::editing::EditableTargetState,
+                                                      public virtual IEditableTarget,
+                                                      public IDomainOperationTarget,
+                                                      public IDomainOperationTargetStaging,
+                                                      public IPropertyProvider {
 public:
     explicit PhysicsJointTarget(std::string id);
 
@@ -133,15 +134,15 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     eve::Result<eve::Revision>       currentRevision(const SelectionSnapshot& selection) const override;
     PropertySchema                   schema(const SelectionSnapshot& selection) const override;
     PropertyReadResult               read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation>    makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation>    makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                              const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation>    makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation>    makeReset(const SelectionSnapshot& selection,
                                                const PropertyPath&      path) const override;
     /** @brief Capture deterministic joint content. */
     EditorValue snapshotValue() const;
@@ -172,19 +173,19 @@ namespace eve::physics_editing {
 class PhysicsColliderRuntimeBuilder {
 public:
     /** @brief Create a box/circle Fixture owned by the supplied 2D body. */
-    EditorResult<physics::Fixture*> build2D(const PhysicsColliderTarget& target, physics::Body* body) const;
+    Result<physics::Fixture*> build2D(const PhysicsColliderTarget& target, physics::Body* body) const;
     /** @brief Create a primitive or resolved polygon/chain Fixture. */
-    EditorResult<physics::Fixture*> build2D(const PhysicsColliderTarget& target, physics::Body* body,
+    Result<physics::Fixture*> build2D(const PhysicsColliderTarget& target, physics::Body* body,
                                             const IPhysicsColliderAssetResolver& assets) const;
     /** @brief Create a box/sphere/capsule Shape3D owned by the supplied 3D body. */
-    EditorResult<physics::Shape3D*> build3D(const PhysicsColliderTarget& target, physics::Body3D* body) const;
+    Result<physics::Shape3D*> build3D(const PhysicsColliderTarget& target, physics::Body3D* body) const;
     /** @brief Create a primitive or resolved complex 3D collider. */
-    EditorResult<physics::Shape3D*> build3D(const PhysicsColliderTarget& target, physics::Body3D* body,
+    Result<physics::Shape3D*> build3D(const PhysicsColliderTarget& target, physics::Body3D* body,
                                             const IPhysicsColliderAssetResolver& assets) const;
 };
 
 /** @brief Candidate-first Shape3D replacement sink for one borrowed live body. */
-class PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /**
      * @brief Bind a body, optional current shape, and optional complex-asset resolver.
@@ -194,7 +195,7 @@ public:
     PhysicsCollider3DRuntimeSink(physics::Body3D* body, physics::Shape3D* current = nullptr,
                                  const IPhysicsColliderAssetResolver* assets = nullptr)
         : body_(body), current_(current), assets_(assets) {}
-    EditorResult<void> publish(const PhysicsColliderTarget& candidate) override;
+    Result<void> publish(const PhysicsColliderTarget& candidate) override;
     /** @brief Return the current borrowed shape after the latest successful swap. @return Borrowed pointer owned by the
      * physics world. @lifetime Valid until the next publish, world mutation, or runtime destruction. */
     physics::Shape3D* shape() const { return current_; }
@@ -206,13 +207,13 @@ private:
 };
 
 /** @brief Candidate-first Fixture replacement sink for one borrowed live 2D body. */
-class PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /** @brief Bind a body, optional current fixture, and optional polygon/chain resolver. */
     PhysicsCollider2DRuntimeSink(physics::Body* body, physics::Fixture* current = nullptr,
                                  const IPhysicsColliderAssetResolver* assets = nullptr)
         : body_(body), current_(current), assets_(assets) {}
-    EditorResult<void> publish(const PhysicsColliderTarget& candidate) override;
+    Result<void> publish(const PhysicsColliderTarget& candidate) override;
     /** @brief Return the current borrowed fixture after the latest successful swap. @return Borrowed pointer owned by
      * the physics world. @lifetime Valid until the next publish, world mutation, or runtime destruction. */
     physics::Fixture* fixture() const { return current_; }

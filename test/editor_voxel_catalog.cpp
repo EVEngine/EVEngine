@@ -4,7 +4,7 @@
 #include "voxel/editing/VoxelCatalog.h"
 
 using eve::voxel_editing::DomainOperation;
-using eve::voxel_editing::EditorResult;
+using eve::voxel_editing::Result;
 using eve::voxel_editing::ObjectId;
 using eve::voxel_editing::VoxelCatalogTarget;
 using eve::voxel_editing::VoxelCellFill;
@@ -12,7 +12,7 @@ using eve::voxel_editing::VoxelModelValue;
 using eve::voxel_editing::VoxelSocketKind;
 
 namespace {
-void apply(VoxelCatalogTarget& target, EditorResult<DomainOperation> operation) {
+void apply(VoxelCatalogTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

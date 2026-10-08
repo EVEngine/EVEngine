@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file MotionRuntime.h
@@ -23,7 +24,7 @@ namespace eve::animation {
  * @reentrancy Callbacks must not spawn/cancel motions on this same runtime
  *             during advance (Phase 1 has no deferred command queue).
  */
-class MotionRuntime {
+class EVENGINE_API_WORLD MotionRuntime {
 public:
     using FloatCallback = std::function<void(float)>;
     using Vec2Callback  = std::function<void(MotionVec2)>;

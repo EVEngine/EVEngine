@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ik.hpp"
 
@@ -8,7 +10,7 @@ namespace eve::ik {
  * @brief Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d).
  * Local angles are yaw/pitch in the parent bone frame.
  */
-class Skeleton3D {
+class EVENGINE_API_FOUNDATION Skeleton3D {
 public:
     Skeleton3D();
     ~Skeleton3D() = default;

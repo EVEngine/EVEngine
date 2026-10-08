@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorHostProfile.h"
 #include "editor/EditorPropertyPresenter.h"
@@ -33,9 +35,9 @@ enum class PropertyModelSurface { Developer, Runtime };
  * a complete snapshot is published; reentrant notifications are queued until
  * the current notification batch completes.
  */
-class EditorPropertyModel final : public property_access::IPropertyAccess {
+class EVENGINE_API_ORCHESTRATION EditorPropertyModel final : public property_access::IPropertyAccess {
 public:
-    using EditSink = std::function<EditorResult<void>(const PropertyEditIntent &)>;
+    using EditSink = std::function<Result<void>(const PropertyEditIntent &)>;
 
     EditorPropertyModel(PropertySchema schema, SelectionSnapshot selection, const IPropertyProvider *provider,
                         PropertyModelSurface       surface            = PropertyModelSurface::Developer,
@@ -56,33 +58,33 @@ public:
      * @brief Bind to the provider's current revision and values.
      * @return Applied after an atomic refresh, or a structured failure.
      */
-    [[nodiscard]] EditorResult<void> bind();
+    [[nodiscard]] Result<void> bind();
 
     /**
      * @brief Set the borrowed canonical transaction boundary.
      * @param backend Backend that outlives this model, or null to detach it.
      * @return Applied when changed; rejected while that backend has pending work.
      */
-    [[nodiscard]] EditorResult<void> setTransactionBackend(IEditorTransactionBackend *backend);
+    [[nodiscard]] Result<void> setTransactionBackend(IEditorTransactionBackend *backend);
 
     /**
      * @brief Begin an explicit property transaction.
      * @param label Human-readable history label.
      * @return The stable transaction identity, or a structured failure.
      */
-    [[nodiscard]] EditorResult<TransactionId> beginTransaction(std::string label = "Edit property");
+    [[nodiscard]] Result<TransactionId> beginTransaction(std::string label = "Edit property");
     /** @brief Validate pending property writes without changing the target. */
-    [[nodiscard]] EditorResult<EditorDryRunReport> previewTransaction();
+    [[nodiscard]] Result<EditorDryRunReport> previewTransaction();
     /** @brief Commit pending property writes and refresh observers after success. */
-    [[nodiscard]] EditorResult<TransactionReceipt> commitTransaction();
+    [[nodiscard]] Result<TransactionReceipt> commitTransaction();
     /** @brief Discard pending property writes without publishing them. */
-    [[nodiscard]] EditorResult<void> rollbackTransaction();
+    [[nodiscard]] Result<void> rollbackTransaction();
     /** @brief Retry a retained failed commit. */
-    [[nodiscard]] EditorResult<TransactionReceipt> retryTransaction();
+    [[nodiscard]] Result<TransactionReceipt> retryTransaction();
     /** @brief Undo the latest committed property transaction. */
-    [[nodiscard]] EditorResult<TransactionReceipt> undo();
+    [[nodiscard]] Result<TransactionReceipt> undo();
     /** @brief Redo the latest undone property transaction. */
-    [[nodiscard]] EditorResult<TransactionReceipt> redo();
+    [[nodiscard]] Result<TransactionReceipt> redo();
 
     /** @brief Install the legacy command sink; canonical code should inject a backend. */
     void setEditSink(EditSink sink) { sink_ = std::move(sink); }
@@ -91,10 +93,10 @@ public:
      * @return Applied after an atomic refresh; Conflict leaves the model
      *         unchanged when the provider changes during the read.
      */
-    [[nodiscard]] EditorResult<void> refresh();
+    [[nodiscard]] Result<void> refresh();
 
     /** @brief Explicit spelling for refreshing and rebasing this model. */
-    [[nodiscard]] EditorResult<void> rebase();
+    [[nodiscard]] Result<void> rebase();
 
 private:
     struct CachedProperty {
@@ -107,8 +109,8 @@ private:
     struct ObserverState;
     void rebuildSchema();
     void                                      dispatch(std::vector<property_access::PropertyChange> changes);
-    [[nodiscard]] EditorResult<eve::Revision> readProviderRevision() const;
-    [[nodiscard]] EditorResult<void>          ensureCurrentRevision() const;
+    [[nodiscard]] Result<eve::Revision> readProviderRevision() const;
+    [[nodiscard]] Result<void>          ensureCurrentRevision() const;
 
     PropertySchema editorSchema_;
     SelectionSnapshot selection_;

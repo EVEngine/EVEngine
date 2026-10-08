@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionDamageSink.h @brief CombatState adapter for timeline damage blocks. */
 
@@ -29,7 +31,7 @@ using ActionCombatStateResolver = std::function<OptionalRef<CombatState>(ecs::En
  * owns only its resolver, deterministic DamageRuntime, and the latest owning outcome.
  * All methods are owner-thread-only; destruction automatically unregisters the sink.
  */
-class CombatActionDamageSink final : public action::IActionDamageSink {
+class EVENGINE_API_BACKENDS CombatActionDamageSink final : public action::IActionDamageSink {
 public:
     /** @brief Construct with a synchronous resolver copied into the adapter. */
     explicit CombatActionDamageSink(ActionCombatStateResolver resolver);

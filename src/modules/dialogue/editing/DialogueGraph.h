@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "dialogue/editing/DialogueEditingTypes.h"
 
@@ -20,25 +22,25 @@ struct DialogueGraphCompileResult {
 };
 
 /** @brief `dialogue.conversation` domain for line, choice, branch and action flow. */
-class DialogueGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION DialogueGraphDomain final : public IGraphDomainProvider {
 public:
     std::string domain() const override { return "dialogue.conversation"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a line, branch, choice, call, command, wait, or end node. */
-    EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& kind) const;
+    Result<GraphNodeRecord> makeNode(const GraphNodeId& id, const std::string& kind) const;
     /** @brief Construct one stable labelled route for a branch or choice node. */
-    EditorResult<GraphNodeRecord> makeRouteNode(const GraphNodeId& id,
+    Result<GraphNodeRecord> makeRouteNode(const GraphNodeId& id,
                                                 const std::string& label = {}) const;
     /** @brief Validate and compile the graph into a deterministic value definition. */
     DialogueGraphCompileResult compile(const GraphDocumentData& graph) const;
 };
 
 /** @brief Optional bridge constructing the dialogue module's editable document. */
-class DialogueGraphRuntimeBuilder {
+class EVENGINE_API_ORCHESTRATION DialogueGraphRuntimeBuilder {
 public:
     /** @brief Build a validated ConversationDocument; caller owns the returned document. */
-    EditorResult<dialogue::ConversationDocument*> build(const GraphDocumentData& graph) const;
+    Result<dialogue::ConversationDocument*> build(const GraphDocumentData& graph) const;
 };
 
 }  // namespace eve::dialogue_editing

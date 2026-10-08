@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ShopTransaction.h
@@ -18,7 +20,7 @@ namespace eve::rpg {
 class GameState;
 
 /** @brief Product transaction boundary for an RPG shop trade. */
-class ShopTransaction {
+class EVENGINE_API_PLATFORM ShopTransaction {
 public:
     /** @brief Buy a quantity using the authoritative price and item in ShopCatalogue. */
     [[nodiscard]] static eve::Result<int> buyOffer(GameState &gameState, inventory::Bag &bag,

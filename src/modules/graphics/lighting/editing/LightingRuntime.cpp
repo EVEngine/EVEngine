@@ -7,7 +7,7 @@
 namespace eve::lighting_editing {
 namespace {
 
-EditorResult<void> lightError(EditorStatus status, const char* rule, std::string message) {
+Result<void> lightError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<void>(status, RuleId(rule), std::move(message));
 }
 
@@ -19,13 +19,13 @@ double component(const EditorValue::Array& values, size_t index) { return *value
 
 }  // namespace
 
-EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const {
+Result<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const {
     if (!light)
         return lightError(EditorStatus::Rejected, "editor.light.runtime-required", "Runtime Light3D is required");
     const auto diagnostics = document.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto& position  = array(document, "transform.position");
     const auto& direction = array(document, "transform.direction");
     const auto& color     = array(document, "light.color");
@@ -44,6 +44,9 @@ EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& doc
     light->setShadowStrength(static_cast<float>(*document.value("shadow.strength")->getIf<double>()));
     light->setVolumetric(*document.value("volumetric.enabled")->getIf<bool>());
     light->setVolumetricIntensity(static_cast<float>(*document.value("volumetric.intensity")->getIf<double>()));
+    if (const auto* only = document.value("volumetric.only")) {
+        if (const auto* flag = only->getIf<bool>()) light->setVolumetricOnly(*flag);
+    }
     return eve::editing::applied<void>(diagnostics);
 }
 

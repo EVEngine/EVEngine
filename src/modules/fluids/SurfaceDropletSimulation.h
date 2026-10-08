@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/SurfaceWetnessField.h"
@@ -67,7 +69,7 @@ struct AirborneDroplet {
  * across triangle adjacency, and emits world-space states at open edges or when the
  * outward acceleration exceeds adhesion.
  */
-class SurfaceDropletSimulation {
+class EVENGINE_API_DOMAINS SurfaceDropletSimulation {
 public:
     /** @param binding dynamic surface; it must outlive this solver. */
     explicit SurfaceDropletSimulation(FluidSurfaceBinding* binding,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
@@ -26,7 +28,7 @@ namespace eve::graphics::vulkan {
  * @param jobs Engine JobSystem; must have an active beginFrame()/endFrame()
  *             bracket. May be null, in which case recording is serial.
  */
-vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs);
+EVENGINE_API_BACKENDS vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs);
 
 /**
  * @brief Record a vkb::FrameGraph with the engine JobSystem as the parallel

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionVfxBlock.h @brief Typed VFX action-block payload contract. */
 
@@ -16,7 +18,7 @@ enum class ActionVfxShape : std::uint8_t { Instant, State };
 enum class ActionVfxStopBehavior : std::uint8_t { StopEmitting, ClearImmediately };
 
 /** @brief Owning validated VFX settings shared by runtime and editor preview. */
-struct ActionVfxBinding {
+struct EVENGINE_API_PLATFORM ActionVfxBinding {
     std::string           uri;
     ActionSpatialBinding  spatial;
     ActionVfxStopBehavior stopBehavior       = ActionVfxStopBehavior::StopEmitting;

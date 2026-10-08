@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "graphics/Drawable.h"
@@ -20,7 +22,7 @@ namespace eve::graphics {
  * Morph pipeline: initMorphBase / addMorphTarget* → setMorphWeight →
  * Graphics::bakeMeshMorph (uploads blended positions to the host-visible VBO).
  */
-class Mesh : public Drawable {
+class EVENGINE_API_BACKENDS Mesh : public Drawable {
 public:
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 
@@ -7,7 +9,7 @@ class Shader;
 class Texture;
 
 /** @brief Reusable two-texture alpha mask for immediate 2D composition. */
-class AlphaMask {
+class EVENGINE_API_BACKENDS AlphaMask {
 public:
     /** @brief Create a mask renderer backed by the supplied graphics device. */
     explicit AlphaMask(Graphics *graphics);

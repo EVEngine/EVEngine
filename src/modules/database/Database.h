@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -59,7 +61,7 @@ struct Mapping {
  * @brief SQLite connection with a small ORM layer on top of Poco::Data.
  * Tables/columns are quoted identifiers; values are bound as literals.
  */
-class Connection {
+class EVENGINE_API_FOUNDATION Connection {
 public:
     /** @brief Opens a Poco::Data session; connector is e.g. "SQLite". */
     Connection(std::string connector, std::string connectionString);
@@ -130,7 +132,7 @@ private:
 };
 
 /** @brief Composable filtered/sorted/paged query shared by C++ and scripts. */
-class Query {
+class EVENGINE_API_FOUNDATION Query {
 public:
     Query(Connection* connection, std::string table);
     Query*           where(const std::string& column, const std::string& op, Value value);
@@ -219,7 +221,7 @@ private:
 };
 
 /** @brief Runtime ORM model exposed to Squirrel. */
-class Model {
+class EVENGINE_API_FOUNDATION Model {
 public:
     Model(Connection* connection, std::string table, std::string primaryKey);
     int         insertJson(const std::string& json);

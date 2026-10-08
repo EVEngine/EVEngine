@@ -43,13 +43,13 @@ struct RibbonParams {
  *
  * @param strands Must already be structurally valid (or validate() is called).
  */
-[[nodiscard]] Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
-                                              const RibbonParams &params = {});
+[[nodiscard]] EVENGINE_API_BACKENDS Result<RibbonMesh> buildRibbons(const StrandsDatas &strands,
+                                                                    const RibbonParams &params = {});
 
 /**
  * @brief Append `src` into `dst`, rebasing triangle indices by `dst` vertex count.
  * @ownership Both meshes remain caller-owned; `src` is copied into `dst`.
  */
-void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src);
+EVENGINE_API_BACKENDS void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src);
 
 }  // namespace eve::graphics::hair

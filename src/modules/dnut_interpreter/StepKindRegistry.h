@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file StepKindRegistry.h @brief Extensible step vocabulary, payload schema and dispatch. */
 
@@ -103,7 +105,7 @@ using StepHandler = std::function<StepOutcome(const SequenceNode&, const StepCon
  * All methods are owner-thread-only. Handlers are invoked synchronously without
  * locks and must not retain their arguments.
  */
-class StepKindRegistry {
+class EVENGINE_API_PLATFORM StepKindRegistry {
 public:
     /**
      * @brief Declare one step type.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file InventoryResourceAccount.h
@@ -25,7 +27,7 @@ namespace eve::inventory {
  * the Bag owner thread. Failed multi-item mutations restore slots, generated
  * instance ids and queued inventory events before returning.
  */
-class InventoryResourceAccount final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION InventoryResourceAccount final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind the adapter to one caller-owned inventory bag. */
     explicit InventoryResourceAccount(Bag& bag);
@@ -76,7 +78,7 @@ private:
  * resolves them against the authoritative ItemDefinition/Bag path; no
  * parallel price or ammunition table is introduced here.
  */
-class ItemCostAdapter final {
+class EVENGINE_API_FOUNDATION ItemCostAdapter final {
 public:
     /**
      * @brief Build a positive cost for an inventory item.

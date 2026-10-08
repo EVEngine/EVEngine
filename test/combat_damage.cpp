@@ -81,6 +81,87 @@ TEST_CASE("combatDamage.providerPathIsObservableAndPreparedBeforeCommit") {
     CHECK_EQ(target.poise, before.poise);
 }
 
+TEST_CASE("combatDamage.settlementRulesDriveTheRuntimeUsedByRts") {
+    eve::settlement::SettlementRule vulnerability;
+    vulnerability.id                  = "rts.burning-oil";
+    vulnerability.source              = "effect:burning-oil";
+    vulnerability.stage               = eve::settlement::StageKind::SourceModifiers;
+    vulnerability.operation           = eve::settlement::RuleOperation::Multiply;
+    vulnerability.value               = 1.5;
+    vulnerability.filter.kinds        = {"damage"};
+    vulnerability.filter.requiredTags = {"Damage.Physical.Slash"};
+
+    eve::settlement::SettlementRuleSet rules;
+    REQUIRE(rules.configure({vulnerability}).ok());
+    eve::combat::DamageRuntime damage;
+    REQUIRE(damage.configureSettlementRules(rules).ok());
+
+    auto target  = state();
+    auto request = requestFor(target);
+    auto preview = damage.previewSettlement(target, request);
+    REQUIRE(preview.ok());
+    CHECK_EQ(preview.value().appliedHealthDamage, 15.0);
+    CHECK_EQ(target.health, 100.0);
+    auto outcome = damage.apply(target, request);
+    REQUIRE(outcome.ok());
+    CHECK_EQ(outcome.value().appliedHealthDamage, 15.0);
+    CHECK_EQ(target.health, 85.0);
+    CHECK_EQ(target.poise, 45.0);
+}
+
+TEST_CASE("combatDamage.shieldIsResolvedInsideSharedSettlement") {
+    eve::combat::CombatState target;
+    target.subject = subject("00000000-0000-0000-0000-000000000002");
+    target.maxHealth = 100.0;
+    target.health = 100.0;
+    target.maxPoise = 10.0;
+    target.poise = 10.0;
+    eve::combat::DamageRequest request;
+    request.source = subject("00000000-0000-0000-0000-000000000001");
+    request.target = target.subject;
+    request.damageType = "damage.energy";
+    request.healthDamage = 30.0;
+    request.availableShield = 12.0;
+    eve::combat::DamageRuntime damage;
+    auto outcome = damage.apply(target, request);
+    REQUIRE(outcome.ok());
+    CHECK_EQ(outcome.value().absorbedShieldDamage, 12.0);
+    CHECK_EQ(outcome.value().appliedHealthDamage, 18.0);
+    CHECK_EQ(target.health, 82.0);
+    REQUIRE_EQ(outcome.value().settlementResult.derived.size(), 1u);
+    CHECK_EQ(outcome.value().settlementResult.derived[0].trigger, std::string("shield_break"));
+    CHECK_EQ(outcome.value().settlementResult.derived[0].magnitude, 0.0);
+}
+
+TEST_CASE("combatDamage.standardTransitionsAreStableAndEmittedOnce") {
+    eve::combat::DamageRuntime damage;
+    auto                       target  = state();
+    auto                       request = requestFor(target);
+    request.healthDamage                = 200.0;
+    request.availableShield             = 25.0;
+
+    auto preview = damage.previewSettlement(target, request);
+    REQUIRE(preview.ok());
+    CHECK_EQ(target.health, 100.0);
+    REQUIRE_EQ(preview.value().settlementResult.derived.size(), 3u);
+    CHECK_EQ(preview.value().settlementResult.derived[0].trigger, std::string("shield_break"));
+    CHECK_EQ(preview.value().settlementResult.derived[1].trigger, std::string("death"));
+    CHECK_EQ(preview.value().settlementResult.derived[2].trigger, std::string("kill"));
+
+    auto committed = damage.apply(target, request);
+    REQUIRE(committed.ok());
+    CHECK_EQ(target.health, 0.0);
+    REQUIRE_EQ(committed.value().settlementResult.derived.size(), 3u);
+    for (std::size_t index = 0; index < 3; ++index)
+        CHECK_EQ(committed.value().settlementResult.derived[index].trigger,
+                 preview.value().settlementResult.derived[index].trigger);
+
+    request.availableShield = 0.0;
+    auto alreadyDead = damage.apply(target, request);
+    REQUIRE(alreadyDead.ok());
+    CHECK(alreadyDead.value().settlementResult.derived.empty());
+}
+
 TEST_CASE("combatDamage.previewUsesCanonicalRuleWithoutMutatingTarget") {
     auto                       target  = state();
     auto                       request = requestFor(target);

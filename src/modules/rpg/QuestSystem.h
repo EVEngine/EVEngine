@@ -13,12 +13,14 @@
 #include <string>
 #include <vector>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class Tracker;
 struct QuestDefinition;
 
-class QuestSystem {
+class EVENGINE_API_PLATFORM QuestSystem {
 public:
     /** @brief 补建 Registry 里尚不在 Tracker 上的条目，并解开前置已齐的 locked 条目。 */
     static void syncAuto(Tracker *t);

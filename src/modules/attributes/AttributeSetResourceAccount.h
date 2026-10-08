@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AttributeSetResourceAccount.h
@@ -25,7 +27,7 @@ namespace eve::attributes {
  * The referenced AttributeSet is borrowed and must outlive this adapter. All
  * operations are synchronous and must be called on the owner thread.
  */
-class AttributeSetResourceAccount final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION AttributeSetResourceAccount final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind an account adapter to an existing caller-owned AttributeSet. */
     explicit AttributeSetResourceAccount(AttributeSet& attributes);

@@ -36,6 +36,8 @@
 
 #include <Poco/JSON/Object.h>
 
+#include "common/Export.h"
+
 #include <squirrel.h>
 
 #include <string>
@@ -48,19 +50,19 @@ class VM;
 namespace eve::dev {
 
 /** @brief Whether `name` is exported by the project script registry. */
-[[nodiscard]] bool isScriptTool(const std::string& name);
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isScriptTool(const std::string& name);
 
 /** @brief Exported tool names in registration order. */
-[[nodiscard]] std::vector<std::string> scriptToolNames();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::vector<std::string> scriptToolNames();
 
 /** @brief Number of exported tools (for `eve_status`). */
-[[nodiscard]] int scriptToolCount();
+[[nodiscard]] EVENGINE_API_FOUNDATION int scriptToolCount();
 
 /**
  * @brief Comma-free MCP tool schema fragments for every exported tool.
  * @return Object fragments without surrounding brackets, or an empty string.
  */
-[[nodiscard]] std::string scriptToolSchemas();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string scriptToolSchemas();
 
 /**
  * @brief Invoke one exported tool.
@@ -68,7 +70,7 @@ namespace eve::dev {
  * @param args Decoded `arguments` object (may be null, passed as an empty table).
  * @return Complete MCP `tools/call` result object JSON (content envelope included).
  */
-[[nodiscard]] std::string callScriptTool(const std::string& name, Poco::JSON::Object::Ptr args);
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string callScriptTool(const std::string& name, Poco::JSON::Object::Ptr args);
 
 /**
  * @brief Drop registry entries owned by `owner`.
@@ -76,10 +78,10 @@ namespace eve::dev {
  *        different VM are discarded without touching it: that VM may already be
  *        destroyed, and releasing into freed VM memory would corrupt the heap.
  */
-void clearScriptTools(HSQUIRRELVM owner);
+EVENGINE_API_FOUNDATION void clearScriptTools(HSQUIRRELVM owner);
 
 /** @brief Expose `eve.mcp.tool/remove/tools/clear` on a VM. */
-void exposeMcpScriptApi(ssq::VM& vm);
+EVENGINE_API_FOUNDATION void exposeMcpScriptApi(ssq::VM& vm);
 
 /**
  * @brief Validate an exported tool name.
@@ -89,6 +91,6 @@ void exposeMcpScriptApi(ssq::VM& vm);
  * built-in always wins at dispatch time and a shadowed tool would be silently
  * unreachable.
  */
-[[nodiscard]] bool isValidScriptToolName(const std::string& name);
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isValidScriptToolName(const std::string& name);
 
 }  // namespace eve::dev

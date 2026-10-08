@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +20,7 @@ namespace eve::animation {
  * Mesh / IK / path / clipping / deform are ignored (use official spine-cpp
  * plugin for full runtime). Script type: `SpineSkeletonData`.
  */
-class SpineSkeletonData {
+class EVENGINE_API_WORLD SpineSkeletonData {
 public:
     SpineSkeletonData() = default;
     ~SpineSkeletonData() = default;

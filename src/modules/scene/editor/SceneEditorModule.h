@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -7,7 +9,7 @@
 namespace eve::scene_editor {
 
 /** @brief Composition adapter that contributes scene editing commands and automation targets. */
-class SceneEditorModule final : public Module {
+class EVENGINE_API_EDITORS SceneEditorModule final : public Module {
 public:
     Module_REG(SceneEditorModule);
     SceneEditorModule();

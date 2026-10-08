@@ -28,7 +28,7 @@ namespace eve::physics {
  * atomics or ping-pong buffers are needed. Requires the Gpgpu module and a
  * compute-capable Graphics backend; construction throws when unavailable.
  */
-class ClothGPU : public ISimulationBackend {
+class EVENGINE_API_DOMAINS ClothGPU : public ISimulationBackend {
 public:
     static constexpr int kMaxLinksPerParticle = 16;
 

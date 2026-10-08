@@ -213,19 +213,6 @@ std::vector<image::ImageData *> SpriteStack::slicePrimitive(const std::string &k
     return slicePrimitiveToLayers(kind, options);
 }
 
-std::vector<image::ImageData *> SpriteStack::sliceModel(model3d::ModelData *model, int layerCount,
-                                                         int imageW, int imageH,
-                                                         const std::string &axis,
-                                                         float thickness) {
-    SliceOptions options;
-    options.layerCount = layerCount;
-    options.imageW = imageW;
-    options.imageH = imageH;
-    options.axis = axis;
-    options.thickness = thickness;
-    return sliceModelToLayers(model, options);
-}
-
 void SpriteStack::expose(ssq::Table &table) {
     auto cls = table.addClass(name, SpriteStack::create, false);
     expose(cls);
@@ -273,7 +260,9 @@ void SpriteStack::expose(ssq::Class &cls) {
     cls.addFunc("newStack", &SpriteStack::newStack);
     cls.addFunc("newBatch", &SpriteStack::newBatch);
     cls.addFunc("slicePrimitive", &SpriteStack::slicePrimitive);
-    cls.addFunc("sliceModel", &SpriteStack::sliceModel);
+#if defined(EVE_SPRITESTACK_MODEL3D)
+    exposeSpriteStackModelBindings(cls);
+#endif
 }
 
 }  // namespace eve::spritestack

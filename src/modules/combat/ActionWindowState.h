@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionWindowState.h @brief Combat-owned active hitbox and invulnerability projections. */
 
@@ -11,6 +13,8 @@
 #include <vector>
 
 namespace eve::combat {
+
+class MeleeHitRuntime;
 
 /**
  * @brief Resolves an owning stable subject from a generation-qualified ECS handle.
@@ -26,7 +30,7 @@ using ActionWindowSubjectResolver = std::function<Result<SubjectRef>(ecs::Entity
  * compose without a lossy boolean. Exit uses the retained owning SubjectRef and is
  * safe when the ECS entity was destroyed after enter. This object is owner-thread-only.
  */
-class CombatActionWindowState final : public action::IActionStateWindowSink {
+class EVENGINE_API_BACKENDS CombatActionWindowState final : public action::IActionStateWindowSink {
 public:
     /** @brief Construct with a synchronous resolver copied into the state owner. */
     explicit CombatActionWindowState(ActionWindowSubjectResolver resolver);
@@ -34,6 +38,13 @@ public:
 
     /** @brief Opt this owner into or out of Action state-window dispatch. */
     void setEnabled(bool enabled);
+    /**
+     * @brief Borrow melee geometry so hitbox windows arm and disarm automatically.
+     * @lifetime The melee runtime must outlive this state or be cleared first.
+     */
+    void setMeleeHitRuntime(MeleeHitRuntime& melee) noexcept;
+    /** @brief Clear the borrowed melee geometry owner. */
+    void clearMeleeHitRuntime() noexcept;
     /** @brief Return whether this exact owner is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionStateWindowSink::supports */
@@ -63,6 +74,7 @@ private:
 
     ActionWindowSubjectResolver       resolver_;
     std::map<ActiveKey, ActiveWindow> active_;
+    MeleeHitRuntime*                  melee_ = nullptr;
 };
 
 }  // namespace eve::combat

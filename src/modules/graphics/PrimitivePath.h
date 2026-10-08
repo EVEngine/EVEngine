@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/vec2.hpp>
 
@@ -22,7 +24,7 @@ struct FlattenedContour2D {
  * Path mutation and flattening are CPU-only and thread-compatible when each
  * instance has one owner. The object retains no Canvas or backend pointers.
  */
-class Path2D {
+class EVENGINE_API_BACKENDS Path2D {
 public:
     /** @brief Starts a new contour at point. */
     Path2D& moveTo(glm::vec2 point);

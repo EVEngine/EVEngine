@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Tactics.h @brief Tactics domain composition profile facade. */
 
@@ -46,7 +48,7 @@ struct TacticsBattleSession {
  *
  * All methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class Tactics : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
+class EVENGINE_API_DOMAINS Tactics : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(Tactics);
 

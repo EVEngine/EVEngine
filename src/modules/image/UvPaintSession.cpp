@@ -3,20 +3,14 @@
 #include "image/ImageData.h"
 
 namespace eve::image {
-namespace {
-
-Result<void> failure(DiagnosticCode code, const char* message, const char* path) {
-    return Result<void>::failure(Diagnostic::error(code, message, path, {}, "image.uvPaintSession"));
-}
-
-}  // namespace
+  // namespace
 
 UvPaintSession::UvPaintSession()  = default;
 UvPaintSession::~UvPaintSession() = default;
 
 Result<void> UvPaintSession::initializeResult(const ImageData& image) {
     if (image.getFormat() != "RGBA8")
-        return failure(DiagnosticCode::Unsupported, "UV painting requires RGBA8 pixels", "image");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "UV painting requires RGBA8 pixels", "image", {}, "image.uvPaintSession"));
     original_ = std::make_unique<ImageData>(image);
     current_  = std::make_unique<ImageData>(image);
     undo_.clear();
@@ -42,8 +36,8 @@ Result<UvPaintReceipt> UvPaintSession::paintCircleResult(float u, float v, float
 
 Result<void> UvPaintSession::undoResult() {
     if (!current_)
-        return failure(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session");
-    if (undo_.empty()) return failure(DiagnosticCode::PreconditionViolation, "UV paint undo history is empty", "undo");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session", {}, "image.uvPaintSession"));
+    if (undo_.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "UV paint undo history is empty", "undo", {}, "image.uvPaintSession"));
     current_ = std::move(undo_.back());
     undo_.pop_back();
     ++revision_;
@@ -52,7 +46,7 @@ Result<void> UvPaintSession::undoResult() {
 
 Result<void> UvPaintSession::restoreResult() {
     if (!original_)
-        return failure(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session", {}, "image.uvPaintSession"));
     current_ = std::make_unique<ImageData>(*original_);
     undo_.clear();
     ++revision_;
@@ -61,7 +55,7 @@ Result<void> UvPaintSession::restoreResult() {
 
 Result<void> UvPaintSession::bakeResult() {
     if (!current_)
-        return failure(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session", {}, "image.uvPaintSession"));
     original_ = std::make_unique<ImageData>(*current_);
     undo_.clear();
     ++revision_;
@@ -78,7 +72,7 @@ Result<std::unique_ptr<ImageData>> UvPaintSession::currentImageResult() const {
 
 Result<void> UvPaintSession::copyCurrentToResult(ImageData& destination) const {
     if (!current_)
-        return failure(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "UV paint session is not initialized", "session", {}, "image.uvPaintSession"));
     ImageData replacement(*current_);
     destination.adopt(replacement);
     return Result<void>::success();

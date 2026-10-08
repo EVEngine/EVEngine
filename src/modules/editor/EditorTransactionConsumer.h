@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditCommand.h"
 #include "editor/EditorAuthority.h"
@@ -64,7 +66,7 @@ enum class EditorCommitState {
  * targets, and extra participants are borrowed and must outlive the call that
  * uses them. No callback is invoked while an internal lock is held.
  */
-class EditorTransactionConsumer {
+class EVENGINE_API_ORCHESTRATION EditorTransactionConsumer {
 public:
     /** @brief Creates a consumer with an optional non-owning edit authority. */
     explicit EditorTransactionConsumer(IEditAuthority* authority = nullptr);

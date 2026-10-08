@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "Compressor.h"
 #include "common/Data.h"
@@ -9,7 +11,7 @@ namespace data {
 /**
  * @brief Stores byte data compressed via DataModule::compress.
  **/
-class CompressedData : public eve::Data {
+class EVENGINE_API_FOUNDATION CompressedData : public eve::Data {
 public:
     /**
      * @brief Constructor just stores already-compressed data in the object.

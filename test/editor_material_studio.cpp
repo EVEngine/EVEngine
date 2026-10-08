@@ -10,7 +10,7 @@ namespace {
 
 class RecordingMaterialSink final : public IMaterialRuntimeSink {
 public:
-    EditorResult<void> publish(const MaterialDocumentTarget& candidate) override {
+    Result<void> publish(const MaterialDocumentTarget& candidate) override {
         if (reject)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.material.reload-rejected"),
                                               "Runtime rejected reloaded material");

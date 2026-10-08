@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 武器模块入口（eve.Weapon）：定义注册 / 实体工厂 / 挂点操作 / 帧调度。
@@ -19,7 +21,7 @@
 namespace eve::weapon {
 
 /** @brief 武器模块（eve.Weapon）。 */
-class Weapon : public Module {
+class EVENGINE_API_WORLD Weapon : public Module {
 public:
     Module_REG(Weapon);
     Weapon();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardPlay.h
@@ -76,7 +78,7 @@ private:
 };
 
 /** @brief Evaluates one card play condition without moving or mutating a card. */
-class CardPlayConditionAdapter {
+class EVENGINE_API_WORLD CardPlayConditionAdapter {
 public:
     /**
      * @brief Evaluate a card definition's play condition against one instance.
@@ -162,7 +164,7 @@ struct CardPlayRequest {
  * account is supplied by the composition root, and the payment is routed
  * through AtomicResourcePayment, so card state and mana are one transaction.
  */
-class CardPlayPaymentAdapter final {
+class EVENGINE_API_WORLD CardPlayPaymentAdapter final {
 public:
     /**
      * @brief Execute condition, movement, card effect and Mana as one transaction.

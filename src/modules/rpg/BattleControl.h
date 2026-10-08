@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file BattleControl.h
@@ -23,7 +25,7 @@ class RPGActor;
  * explicit because legacy RPGActor instances do not themselves own persistent IDs.
  * Registration and calls are confined to the battle's simulation thread.
  */
-class BattleControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
+class EVENGINE_API_PLATFORM BattleControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /** @brief Construct an adapter over a borrowed battle and stable instance identity. */
     BattleControl(Battle& battle, SubjectRef instance);

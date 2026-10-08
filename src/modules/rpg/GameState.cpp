@@ -26,6 +26,22 @@ eve::Result<std::unordered_map<std::string, double>> parseNumbers(const eve::Val
     return eve::Result<std::unordered_map<std::string, double>>::success(std::move(result));
 }
 
+eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const eve::Value  *value,
+                                                                       const std::string &path) {
+    if (!value || !value->isObject())
+        return eve::Result<std::unordered_map<std::string, std::string>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
+    std::unordered_map<std::string, std::string> result;
+    for (const auto &key : value->keys()) {
+        const eve::Value *item = value->find(key);
+        if (!item || !item->isString())
+            return eve::Result<std::unordered_map<std::string, std::string>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "game state string fact must be a string", path + "." + key));
+        result.emplace(key, item->asString());
+    }
+    return eve::Result<std::unordered_map<std::string, std::string>>::success(std::move(result));
+}
+
 }  // namespace
 
 namespace eve::rpg {
@@ -69,10 +85,35 @@ bool GameState::hasSelfVariable(const std::string &scope, const std::string &nam
     return it->second.find(name) != it->second.end();
 }
 
+void GameState::setSelfString(const std::string &scope, const std::string &name, std::string value) {
+    selfStrings_[scope][name] = std::move(value);
+}
+
+std::string GameState::getSelfString(const std::string &scope, const std::string &name) const {
+    auto it = selfStrings_.find(scope);
+    if (it == selfStrings_.end()) return {};
+    auto sit = it->second.find(name);
+    return sit == it->second.end() ? std::string{} : sit->second;
+}
+
+bool GameState::hasSelfString(const std::string &scope, const std::string &name) const {
+    auto it = selfStrings_.find(scope);
+    if (it == selfStrings_.end()) return false;
+    return it->second.find(name) != it->second.end();
+}
+
+void GameState::clearSelfString(const std::string &scope, const std::string &name) {
+    auto it = selfStrings_.find(scope);
+    if (it == selfStrings_.end()) return;
+    it->second.erase(name);
+    if (it->second.empty()) selfStrings_.erase(it);
+}
+
 void GameState::clear() {
     switches_.clear();
     variables_.clear();
     selfVariables_.clear();
+    selfStrings_.clear();
 }
 
 eve::Result<std::string> GameState::snapshotJson() const {
@@ -86,8 +127,15 @@ eve::Result<std::string> GameState::snapshotJson() const {
         for (const auto &[name, value] : values) encoded.emplace(name, eve::Value(value));
         scoped.emplace(scope, eve::Value(std::move(encoded)));
     }
+    eve::Value::Object scopedStrings;
+    for (const auto &[scope, values] : selfStrings_) {
+        eve::Value::Object encoded;
+        for (const auto &[name, value] : values) encoded.emplace(name, eve::Value(value));
+        scopedStrings.emplace(scope, eve::Value(std::move(encoded)));
+    }
     eve::Value::Object root;
     root.emplace("schema", eve::Value("eve.rpg.game-state"));
+    root.emplace("selfStrings", eve::Value(std::move(scopedStrings)));
     root.emplace("selfVariables", eve::Value(std::move(scoped)));
     root.emplace("switches", eve::Value(std::move(switches)));
     root.emplace("variables", eve::Value(std::move(variables)));
@@ -137,9 +185,22 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
         candidateScoped.emplace(scope, std::move(values).takeValue());
     }
 
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> candidateStrings;
+    if (const eve::Value *scopedStrings = root.find("selfStrings"); scopedStrings != nullptr) {
+        if (!scopedStrings->isObject())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "game state selfStrings must be an object", "$.selfStrings"));
+        for (const auto &scope : scopedStrings->keys()) {
+            auto values = parseStrings(scopedStrings->find(scope), "$.selfStrings." + scope);
+            if (!values.ok()) return eve::Result<void>::failure(values.status());
+            candidateStrings.emplace(scope, std::move(values).takeValue());
+        }
+    }
+
     switches_      = std::move(candidateSwitches);
     variables_     = std::move(candidateVariables).takeValue();
     selfVariables_ = std::move(candidateScoped);
+    selfStrings_   = std::move(candidateStrings);
     return eve::Result<void>::success();
 }
 

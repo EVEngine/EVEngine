@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ClimbingServices.h
@@ -97,7 +98,7 @@ struct ClimbingServiceStart {
 };
 
 /** @brief Selection transaction that atomically joins external stamina reservation to runtime publication. */
-class ClimbingServiceSelectionSystem {
+class EVENGINE_API_DOMAINS ClimbingServiceSelectionSystem {
 public:
     /**
      * @brief Start one action and publish any configured stamina debit exactly once.
@@ -110,11 +111,11 @@ public:
 };
 
 /** @brief Dispatch to the optional event sink, returning ProviderAbsent instead of silently dropping. */
-[[nodiscard]] eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
     ClimbingServiceSubject subject, std::span<const ClimbingEvent> events);
 
 /** @brief Dispatch to the optional pose/IK adapter, returning ProviderAbsent when trimmed out. */
-[[nodiscard]] eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
     ClimbingServiceSubject subject, const ClimbingAdvance& advance);
 
 }  // namespace eve::climbing

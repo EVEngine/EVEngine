@@ -23,7 +23,7 @@ bool isDigit(char c) { return c >= '0' && c <= '9'; }
 eve::Result<std::vector<DnutToken>> lexFailure(const std::string& path, int line, int column,
                                                std::string message) {
     return eve::Result<std::vector<DnutToken>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message), path,
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, path,
                                {{"line", std::to_string(line)}, {"column", std::to_string(column)}},
                                "dnut.lexer"));
 }
@@ -72,7 +72,12 @@ bool appendEscape(char escape, std::string& out) {
         case '\\': out += '\\'; return true;
         case '{': out += '{'; return true;
         case '}': out += '}'; return true;
-        default: return false;
+        default:
+            // The original dialogue lexer treated an unknown escape as the
+            // escaped character itself. Keep that accepted source set while
+            // still normalizing the known control escapes above.
+            out += escape;
+            return true;
     }
 }
 
@@ -165,7 +170,7 @@ eve::Result<std::vector<DnutToken>> lexDnut(std::string_view source, const std::
             tokens.push_back({DnutTokenKind::String, std::move(text), startLine, startColumn});
             continue;
         }
-        if (isDigit(c)) {
+        if (isDigit(c) || (c == '.' && i + 1 < size && isDigit(source[i + 1]))) {
             const int    startLine   = line;
             const int    startColumn = column;
             const std::size_t start  = i;

@@ -21,7 +21,7 @@ EditorValue keyValue(const EditorCurveKey& key) {
         {"interpolation", key.interpolation}};
 }
 
-EditorResult<EditorCurveKey> parseKey(const EditorValue& value) {
+Result<EditorCurveKey> parseKey(const EditorValue& value) {
     const auto string = [&](const char* name) { const auto* entry = field(value, name); return entry ? entry->getIf<std::string>() : nullptr; };
     const auto number = [&](const char* name) { const auto* entry = field(value, name); return entry ? entry->getIf<double>() : nullptr; };
     const auto* id = string("id"); const auto* time = number("time"); const auto* assigned = number("value");
@@ -40,7 +40,7 @@ EditorValue stopValue(const EditorGradientStop& stop) {
     return EditorValue::Object{{"id", stop.id.value()}, {"time", stop.time}, {"color", std::move(color)}};
 }
 
-EditorResult<EditorGradientStop> parseStop(const EditorValue& value) {
+Result<EditorGradientStop> parseStop(const EditorValue& value) {
     const auto* idValue = field(value, "id"); const auto* timeValue = field(value, "time"); const auto* colorValue = field(value, "color");
     const auto* id = idValue ? idValue->getIf<std::string>() : nullptr; const auto* time = timeValue ? timeValue->getIf<double>() : nullptr;
     const auto* color = colorValue ? colorValue->getIf<EditorValue::Array>() : nullptr;
@@ -87,7 +87,7 @@ void* EditorCurveDocument::queryCapability(const CapabilityId& capability) {
                ? static_cast<ICurveDocumentEditTarget*>(this) : nullptr;
 }
 
-EditorResult<void> EditorCurveDocument::applyDomainOperation(const DomainOperation& operationValue) {
+Result<void> EditorCurveDocument::applyDomainOperation(const DomainOperation& operationValue) {
     if (operationValue.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.curve.target-mismatch"),
                                           "Curve operation targets another document");
@@ -125,7 +125,7 @@ std::unique_ptr<IDomainOperationTarget> EditorCurveDocument::cloneDomainState() 
     return std::make_unique<EditorCurveDocument>(*this);
 }
 
-EditorResult<void> EditorCurveDocument::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> EditorCurveDocument::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* curve = dynamic_cast<EditorCurveDocument*>(candidate.get());
     if (!curve || curve->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.curve.invalid-candidate"),
@@ -133,7 +133,7 @@ EditorResult<void> EditorCurveDocument::commitDomainState(std::unique_ptr<IDomai
     *this = std::move(*curve); return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> EditorCurveDocument::makeSetKey(const EditorCurveKey& key) const {
+Result<DomainOperation> EditorCurveDocument::makeSetKey(const EditorCurveKey& key) const {
     auto parsed = parseKey(keyValue(key));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.curve.invalid-key"),
@@ -142,7 +142,7 @@ EditorResult<DomainOperation> EditorCurveDocument::makeSetKey(const EditorCurveK
     return eve::editing::applied<DomainOperation>(operation("curve.key.set.v1", exists ? "curve.key.set.v1" : "curve.key.delete.v1", id_, keyValue(parsed.value()), exists ? keyValue(found->second) : keyValue(parsed.value()), key.id));
 }
 
-EditorResult<DomainOperation> EditorCurveDocument::makeDeleteKey(const StableId& key) const {
+Result<DomainOperation> EditorCurveDocument::makeDeleteKey(const StableId& key) const {
     const auto found = keys_.find(key);
     if (found == keys_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.curve.key-not-found"),
@@ -150,7 +150,7 @@ EditorResult<DomainOperation> EditorCurveDocument::makeDeleteKey(const StableId&
     return eve::editing::applied<DomainOperation>(operation("curve.key.delete.v1", "curve.key.set.v1", id_, keyValue(found->second), keyValue(found->second), key));
 }
 
-EditorResult<DomainOperation> EditorCurveDocument::makeSetStop(const EditorGradientStop& stop) const {
+Result<DomainOperation> EditorCurveDocument::makeSetStop(const EditorGradientStop& stop) const {
     auto parsed = parseStop(stopValue(stop));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.curve.invalid-stop"),
@@ -159,7 +159,7 @@ EditorResult<DomainOperation> EditorCurveDocument::makeSetStop(const EditorGradi
     return eve::editing::applied<DomainOperation>(operation("curve.stop.set.v1", exists ? "curve.stop.set.v1" : "curve.stop.delete.v1", id_, stopValue(parsed.value()), exists ? stopValue(found->second) : stopValue(parsed.value()), stop.id));
 }
 
-EditorResult<DomainOperation> EditorCurveDocument::makeDeleteStop(const StableId& stop) const {
+Result<DomainOperation> EditorCurveDocument::makeDeleteStop(const StableId& stop) const {
     const auto found = stops_.find(stop);
     if (found == stops_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.curve.stop-not-found"),
@@ -216,7 +216,7 @@ EditorValue EditorCurveDocument::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"keys", std::move(keys)}, {"stops", std::move(stops)}};
 }
 
-EditorResult<void> EditorCurveDocument::loadSnapshot(const EditorValue& snapshot) {
+Result<void> EditorCurveDocument::loadSnapshot(const EditorValue& snapshot) {
     const auto* versionValue = field(snapshot, "schemaVersion"); const auto* keysValue = field(snapshot, "keys"); const auto* stopsValue = field(snapshot, "stops");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr; const auto* keys = keysValue ? keysValue->getIf<EditorValue::Array>() : nullptr; const auto* stops = stopsValue ? stopsValue->getIf<EditorValue::Array>() : nullptr;
     if (!version || *version != 1 || !keys || !stops)

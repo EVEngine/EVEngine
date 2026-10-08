@@ -49,7 +49,7 @@ struct GroomGroup {
  * @thread Affine to the caller; not synchronized.
  * @ownership Instance may copy groups on `setAsset`; asset remains caller-owned.
  */
-class GroomAsset {
+class EVENGINE_API_BACKENDS GroomAsset {
 public:
     /**
      * @brief Append a group; fails when name is empty or groupId collides.
@@ -74,6 +74,6 @@ private:
  * @brief Pick the LOD index for a given screen size (largest screenSize ≤ query).
  * @return 0 when `lods` is empty.
  */
-[[nodiscard]] size_t selectLodIndex(const std::vector<GroomLod> &lods, float screenSize);
+[[nodiscard]] EVENGINE_API_BACKENDS size_t selectLodIndex(const std::vector<GroomLod> &lods, float screenSize);
 
 }  // namespace eve::graphics::hair

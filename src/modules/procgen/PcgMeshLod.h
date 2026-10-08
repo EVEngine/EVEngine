@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/GtsMeshSimplifier.h"
@@ -10,6 +12,21 @@
 namespace eve::procgen {
 
 class PcgMeshCombinePlan;
+
+/**
+ * @brief Combine static meshes with Pcg material deduplication and root-relative transforms.
+ * @param output Replaced only after all streams, material groups and budgets validate.
+ * @param plan Immutable owning source plan; output cannot alias its copied meshes.
+ * @return Combined triangle count or a structured diagnostic without changing output.
+ * @thread Synchronous CPU operation; no callbacks or references are retained.
+ *
+ * Declared ahead of the classes that friend it: the first declaration in a
+ * translation unit must carry the link-group macro, otherwise the friend
+ * declarations inside PcgMeshTransform/PcgMeshCombinePlan fix a different
+ * linkage and this dllexport declaration would be C2375.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&                output,
+                                                                          const PcgMeshCombinePlan& plan);
 
 /** @brief Pcg/Unity renderer policies retained per generated mesh LOD. */
 struct PcgMeshLodRendererState {
@@ -23,7 +40,7 @@ struct PcgMeshLodRendererState {
 };
 
 /** @brief Row-major affine matrix used by Pcg's root-relative static mesh combination. */
-class PcgMeshTransform {
+class EVENGINE_API_DOMAINS PcgMeshTransform {
 public:
     /** @brief Construct an identity transform. */
     PcgMeshTransform() noexcept;
@@ -33,7 +50,7 @@ public:
     [[nodiscard]] float getElement(int row, int column) const noexcept;
 private:
     friend class PcgMeshCombinePlan;
-    friend Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
+    friend EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
     std::array<float, 16> matrix_{};
 };
 
@@ -44,7 +61,7 @@ private:
  * `defaultMaterialId`; grouped meshes use group names as stable material identities.
  * No renderer, material object or callback is retained. Callers serialize mutation.
  */
-class PcgMeshCombinePlan {
+class EVENGINE_API_DOMAINS PcgMeshCombinePlan {
 public:
     /** @brief Copy one readable mesh and root-relative affine transform into the plan. */
     [[nodiscard]] Result<void> appendSource(const MeshBuild& mesh, const PcgMeshTransform& transform,
@@ -55,18 +72,9 @@ public:
     [[nodiscard]] int getSourceCount() const noexcept;
 private:
     struct Source { MeshBuild mesh; PcgMeshTransform transform; std::string defaultMaterialId; };
-    friend Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
+    friend EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
     std::vector<Source> sources_;
 };
-
-/**
- * @brief Combine static meshes with Pcg material deduplication and root-relative transforms.
- * @param output Replaced only after all streams, material groups and budgets validate.
- * @param plan Immutable owning source plan; output cannot alias its copied meshes.
- * @return Combined triangle count or a structured diagnostic without changing output.
- * @thread Synchronous CPU operation; no callbacks or references are retained.
- */
-[[nodiscard]] Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePlan& plan);
 
 /** @brief One UnityMeshSimplifierPcg LOD level translated to native mesh settings. */
 struct PcgMeshLodLevel {
@@ -86,7 +94,7 @@ struct PcgMeshLodLevel {
  * affinity and callers must serialize mutation. Level transitions must be strictly
  * descending when compiled.
  */
-class PcgMeshLodProfile {
+class EVENGINE_API_DOMAINS PcgMeshLodProfile {
 public:
     /** @brief Append one level after validating its scalar ranges. */
     [[nodiscard]] Result<void> appendLevel(float transitionHeight, float fadeWidth, float quality,
@@ -133,7 +141,7 @@ private:
  * `LODGenerator.CreateLevelRenderer`; levels are not simplified sequentially. The set
  * owns all CPU meshes and values and is safe to move. Callers serialize access.
  */
-class PcgMeshLodSet {
+class EVENGINE_API_DOMAINS PcgMeshLodSet {
 public:
     /** @brief Return the number of complete generated levels. */
     [[nodiscard]] int getLevelCount() const noexcept { return static_cast<int>(meshes_.size()); }
@@ -160,7 +168,8 @@ public:
     /** @brief Return injected-time transition duration. */
     [[nodiscard]] float getCrossFadeAnimationDuration() const noexcept { return crossFadeAnimationDuration_; }
 private:
-    friend Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&, const PcgMeshLodProfile&);
+    friend EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&,
+                                                                  const PcgMeshLodProfile&);
     std::vector<PcgMeshLodLevel> levels_;
     std::vector<MeshBuild> meshes_;
     int fadeMode_ = 0;
@@ -176,8 +185,8 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
-[[nodiscard]] Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source,
-                                                 const PcgMeshLodProfile& profile);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source,
+                                                                     const PcgMeshLodProfile& profile);
 
 /**
  * @brief Combine an ordered static-renderer plan and generate every combined LOD atomically.
@@ -187,8 +196,8 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
-[[nodiscard]] Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet& output,
-                                                         const PcgMeshCombinePlan& plan,
-                                                         const PcgMeshLodProfile& profile);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet&            output,
+                                                                             const PcgMeshCombinePlan& plan,
+                                                                             const PcgMeshLodProfile&  profile);
 
 }  // namespace eve::procgen

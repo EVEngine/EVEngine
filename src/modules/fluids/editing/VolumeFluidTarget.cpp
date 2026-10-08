@@ -75,7 +75,7 @@ std::vector<EditorDiagnostic> validateSettings(const VolumeFluidAuthoringSetting
     }
     return out;
 }
-EditorResult<VolumeFluidAuthoringSettings> parseSettings(const EditorValue& value) {
+Result<VolumeFluidAuthoringSettings> parseSettings(const EditorValue& value) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object || object->size() != 7)
         return eve::editing::failed<VolumeFluidAuthoringSettings>(EditorStatus::Rejected,
@@ -176,7 +176,7 @@ PropertyReadResult VolumeFluidTarget::read(const SelectionSnapshot& s, const Pro
     }
     return {PropertyReadState::Value, setting(settings_, p.value()), {}};
 }
-EditorResult<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                          const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) {
         return makeReset(s, p);
@@ -188,13 +188,13 @@ EditorResult<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot
     }
     auto valid = validatePropertyValue(*property, value);
     if (!valid.ok()) {
-        return EditorResult<DomainOperation>::failure(valid.status());
+        return Result<DomainOperation>::failure(valid.status());
     }
     EditorValue candidate                                = settingsValue(settings_);
     (*candidate.getIf<EditorValue::Object>())[p.value()] = value;
     auto parsed                                          = parseSettings(candidate);
     if (!parsed.ok()) {
-        return EditorResult<DomainOperation>::failure(parsed.status());
+        return Result<DomainOperation>::failure(parsed.status());
     }
     DomainOperation op;
     op.type        = "volume-fluid.settings.replace.v1";
@@ -207,7 +207,7 @@ EditorResult<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot
     op.mergeKey = "volume-fluid:" + id_ + ":" + p.value();
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> VolumeFluidTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> VolumeFluidTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto property = schema(s).find(p);
     if (!property) {
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.volume-fluid.property"),
@@ -215,14 +215,14 @@ EditorResult<DomainOperation> VolumeFluidTarget::makeReset(const SelectionSnapsh
     }
     return makeSet(s, p, property->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<void> VolumeFluidTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> VolumeFluidTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "volume-fluid.settings.replace.v1") {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.volume-fluid.operation"),
                                           "Volume fluid operation mismatch");
     }
     auto parsed = parseSettings(op.payload);
     if (!parsed.ok()) {
-        return EditorResult<void>::failure(parsed.status());
+        return Result<void>::failure(parsed.status());
     }
     settings_ = parsed.value();
     bumpRevision();
@@ -255,7 +255,7 @@ EditorValue VolumeFluidTarget::snapshotValue() const {
     return EditorValue::Object{
         {"schemaId", kSchemaId}, {"schemaVersion", kSchemaVersion}, {"settings", settingsValue(settings_)}};
 }
-EditorResult<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* object       = snapshot.getIf<EditorValue::Object>();
     const auto* sid          = field(snapshot, "schemaId");
     const auto* versionValue = field(snapshot, "schemaVersion");
@@ -268,14 +268,14 @@ EditorResult<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) 
                                           "Unsupported or non-canonical volume fluid authoring snapshot");
     auto parsed = parseSettings(*settings);
     if (!parsed.ok()) {
-        return EditorResult<void>::failure(parsed.status());
+        return Result<void>::failure(parsed.status());
     }
     settings_ = parsed.value();
     bumpRevision();
     clearDirtyRegion();
     return eve::editing::applied<void>();
 }
-EditorResult<void> VolumeFluidRuntimeApplier::apply(const VolumeFluidTarget& target,
+Result<void> VolumeFluidRuntimeApplier::apply(const VolumeFluidTarget& target,
                                                     fluids::VolumeFluid*     simulation) const {
     if (!simulation) {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.volume-fluid.runtime-required"),

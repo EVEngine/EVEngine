@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ShopCatalogue.h @brief Strict, atomically replaceable RPG shop content. */
 
@@ -19,7 +21,7 @@ struct ShopOffer {
 };
 
 /** @brief Process-local validated offer catalogue used by RPG shop transactions and UI. */
-class ShopCatalogue {
+class EVENGINE_API_PLATFORM ShopCatalogue {
 public:
     /**
      * @brief Strictly validate and atomically replace the entire offer catalogue.

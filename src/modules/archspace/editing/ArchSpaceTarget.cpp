@@ -72,7 +72,7 @@ EditorValue nodeValue(const archspace::Node& node) {
     };
 }
 
-EditorResult<archspace::Node> parseNode(const EditorValue& value) {
+Result<archspace::Node> parseNode(const EditorValue& value) {
     archspace::Node node;
     const auto*     id       = field(value, "id");
     const auto*     kind     = field(value, "kind");
@@ -278,7 +278,7 @@ EditorValue ArchSpaceDocumentTarget::contentValue() const {
     return EditorValue::Object{{"rootId", document_.rootId()}, {"nodes", std::move(nodes)}};
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue content, std::string property) const {
+Result<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue content, std::string property) const {
     DomainOperation op;
     op.type        = "archspace.document.replace.v1";
     op.inverseType = op.type;
@@ -291,7 +291,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue c
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::installContent(const EditorValue& content) {
+Result<void> ArchSpaceDocumentTarget::installContent(const EditorValue& content) {
     const auto* rootIdValue = field(content, "rootId");
     const auto* nodesValue  = field(content, "nodes");
     const auto* rootId      = rootIdValue ? rootIdValue->getIf<std::string>() : nullptr;
@@ -353,7 +353,7 @@ std::vector<EditorDiagnostic> ArchSpaceDocumentTarget::validate() const {
     return out;
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSnapshot& selection,
                                                                const PropertyPath& path, const EditorValue& value,
                                                                PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
@@ -420,7 +420,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSn
     return replacement(staged.contentValue(), path.value());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeReset(const SelectionSnapshot& selection,
                                                                  const PropertyPath&      path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
@@ -429,7 +429,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeReset(const Selection
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::string& siteId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::string& siteId,
                                                                      const std::string& buildingId,
                                                                      const std::string& levelId,
                                                                      double             levelHeight) const {
@@ -443,7 +443,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
     const std::string& levelId, const std::string& roomId, std::string roomName, double originX, double originZ,
     double sizeX, double sizeZ, double wallHeight, double wallThickness, double slabThickness) const {
     if (!(std::isfinite(originX) && std::isfinite(originZ) && std::isfinite(sizeX) && std::isfinite(sizeZ)) ||
@@ -467,7 +467,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std::string& levelId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std::string& levelId,
                                                                       const std::string& wallId, std::string wallName,
                                                                       archspace::Vec2 start, archspace::Vec2 end,
                                                                       double height, double thickness) const {
@@ -481,7 +481,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std:
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const std::string&     wallId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const std::string&     wallId,
                                                                          const std::string&     openingId,
                                                                          archspace::OpeningKind kind, double t,
                                                                          double width, double height,
@@ -496,7 +496,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const s
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::string& levelId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::string& levelId,
                                                                      const std::string& itemId, std::string catalogId,
                                                                      archspace::Vec3 position,
                                                                      double          yawDegrees) const {
@@ -511,7 +511,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const ObjectId& id) const {
+Result<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const ObjectId& id) const {
     archspace::Document candidate = document_;
     auto                erased    = candidate.eraseCascade(id.value());
     if (!erased.ok())
@@ -522,7 +522,7 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const Obje
     return replacement(staged.contentValue());
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "archspace.document.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.operation"),
                                           "ArchSpace operation mismatch");
@@ -542,7 +542,7 @@ std::unique_ptr<IDomainOperationTarget> ArchSpaceDocumentTarget::cloneDomainStat
     return std::make_unique<ArchSpaceDocumentTarget>(*this);
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ArchSpaceDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.archspace.candidate"),
@@ -551,7 +551,7 @@ EditorResult<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<ID
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaIdValue = field(snapshot, "schemaId");
     const auto* versionValue  = field(snapshot, "schemaVersion");
     const auto* content       = field(snapshot, "content");
@@ -569,7 +569,7 @@ EditorResult<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snap
     return result;
 }
 
-EditorResult<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
+Result<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
     EditorGizmoSnapshot snapshot;
     snapshot.status         = EditorStatus::Applied;
     snapshot.target         = id_;

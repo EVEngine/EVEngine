@@ -1,10 +1,16 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+namespace ssq {
+class Class;
+}
 
 namespace eve::graphics {
 class Camera2D;
@@ -39,8 +45,9 @@ struct SliceOptions {
 };
 
 std::vector<image::ImageData *> sliceMeshToLayers(const SliceInput &, const SliceOptions &);
-std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *, const SliceOptions &);
-std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, const SliceOptions &);
+/** @brief Assimp-backed bake; compiled only when the model3d module is linked. */
+EVENGINE_API_WORLD std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *, const SliceOptions &);
+EVENGINE_API_WORLD std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, const SliceOptions &);
 
 /**
  * @brief Pure-2D sprite stack made from horizontal RGBA cross-sections.
@@ -49,7 +56,7 @@ std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, cons
  * higher layer is offset upward by `thickness` 2D units. Rotation is applied in
  * the 2D plane; no Camera3D, depth buffer, G-buffer, mesh, or 3D pass is used.
  */
-class SpriteStack2D {
+class EVENGINE_API_WORLD SpriteStack2D {
 public:
     SpriteStack2D() = default;
     SpriteStack2D(const SpriteStack2D &) = delete;
@@ -109,7 +116,7 @@ private:
 };
 
 /** @brief Collection of 2D stacks; Graphics performs texture batching. */
-class SpriteStackBatch {
+class EVENGINE_API_WORLD SpriteStackBatch {
 public:
     void add(SpriteStack2D *stack);
     void remove(SpriteStack2D *stack);
@@ -122,7 +129,7 @@ private:
 };
 
 /** @brief SpriteStack module: horizontal slice baking plus pure-2D rendering. */
-class SpriteStack : public Module {
+class EVENGINE_API_WORLD SpriteStack : public Module {
 public:
     Module_REG(SpriteStack);
     SpriteStack() = default;
@@ -136,5 +143,8 @@ public:
                                                int imageW, int imageH, const std::string &axis,
                                                float thickness);
 };
+
+/** @brief Register sliceModel when SpriteStackModel.cpp is linked (model3d on). */
+void exposeSpriteStackModelBindings(ssq::Class &cls);
 
 }  // namespace eve::spritestack

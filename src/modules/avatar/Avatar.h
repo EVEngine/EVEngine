@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "avatar/AvatarInstance.h"
 #include "common/Module.h"
@@ -20,7 +22,7 @@ namespace eve::avatar {
  * Image layers are the baseline; Live2D uses a pluggable backend; VRoid
  * wraps Model3D + Renderable3D.
  */
-class Avatar : public Module {
+class EVENGINE_API_DOMAINS Avatar : public Module {
 public:
     Module_REG(Avatar);
     Avatar() = default;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "MeshVfxScalability.h"
 
@@ -74,7 +76,7 @@ struct MeshVfxRenderQueue {
  * independent. Alpha items are sorted back-to-front and only adjacent compatible
  * items are combined. The planner retains no pointers or cross-frame state.
  */
-class MeshVfxRenderBatchPlanner {
+class EVENGINE_API_WORLD MeshVfxRenderBatchPlanner {
 public:
     /**
      * @brief Builds one frame's render queue.

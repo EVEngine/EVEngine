@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/AsyncWork.h"
@@ -19,7 +21,7 @@ namespace thread {
  * @brief Thread module: default pool, named channels, pool factory.
  * Script: eve.Thread() → getPool / newThreadPool / getChannel / newChannel.
  */
-class Thread : public Module {
+class EVENGINE_API_FOUNDATION Thread : public Module {
 public:
     Module_REG(Thread);
 

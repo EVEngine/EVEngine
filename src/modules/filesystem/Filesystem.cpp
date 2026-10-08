@@ -48,12 +48,6 @@ namespace filesystem {
 
 namespace {
 
-eve::Result<void> atomicWriteFailure(eve::DiagnosticCode code, std::string message,
-                                     std::string path) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "filesystem.atomic-write"));
-}
-
 std::filesystem::path pathFromUtf8(std::string_view text) {
     const auto *data = reinterpret_cast<const char8_t *>(text.data());
     return std::filesystem::path(std::u8string_view(data, text.size()));
@@ -89,23 +83,23 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
 #if defined(EVENGINE_WEBGPU)
     (void)filename;
     (void)text;
-    return atomicWriteFailure(eve::DiagnosticCode::Unsupported,
-                              "atomic save replacement is unavailable on the WebGPU filesystem", {});
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "atomic save replacement is unavailable on the WebGPU filesystem", {}, {}, "filesystem.atomic-write"));
 #else
     const std::string relativeText(filename);
     const std::filesystem::path relative = pathFromUtf8(relativeText).lexically_normal();
     if (!validRelativeSavePath(relative))
-        return atomicWriteFailure(eve::DiagnosticCode::InvalidArgument,
-                                  "atomic save path must be relative and cannot traverse parents", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "atomic save path must be relative and cannot traverse parents", relativeText, {}, "filesystem.atomic-write"));
     const std::string saveDirectory = getSaveDirectory();
     if (saveDirectory.empty())
-        return atomicWriteFailure(eve::DiagnosticCode::PreconditionViolation,
-                                  "filesystem write directory is not configured", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "filesystem write directory is not configured", relativeText, {}, "filesystem.atomic-write"));
     const std::filesystem::path base = pathFromUtf8(saveDirectory).lexically_normal();
     const std::filesystem::path target = (base / relative).lexically_normal();
     if (target.parent_path().empty() || !std::filesystem::exists(target.parent_path()))
-        return atomicWriteFailure(eve::DiagnosticCode::NotFound,
-                                  "atomic save parent directory does not exist", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "atomic save parent directory does not exist", relativeText, {}, "filesystem.atomic-write"));
 
     const auto sequence = atomicWriteSequence().fetch_add(1, std::memory_order_relaxed);
 #if defined(EVENGINE_WINDOWS)
@@ -115,8 +109,8 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     HANDLE file = CreateFileW(temporaryPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW,
                               FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, nullptr);
     if (file == INVALID_HANDLE_VALUE)
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not create atomic save temporary file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not create atomic save temporary file", relativeText, {}, "filesystem.atomic-write"));
     bool written = true;
     std::size_t offset = 0;
     while (offset < text.size()) {
@@ -132,14 +126,14 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     if (!CloseHandle(file)) written = false;
     if (!written) {
         DeleteFileW(temporaryPath.c_str());
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not write or flush atomic save temporary file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not write or flush atomic save temporary file", relativeText, {}, "filesystem.atomic-write"));
     }
     if (!MoveFileExW(temporaryPath.c_str(), targetPath.c_str(),
                      MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
         DeleteFileW(temporaryPath.c_str());
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not atomically replace save file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not atomically replace save file", relativeText, {}, "filesystem.atomic-write"));
     }
 #else
     const std::string targetPath = target.string();
@@ -147,8 +141,8 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
                                       std::to_string(sequence);
     const int file = ::open(temporaryPath.c_str(), O_WRONLY | O_CREAT | O_EXCL, 0600);
     if (file < 0)
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not create atomic save temporary file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not create atomic save temporary file", relativeText, {}, "filesystem.atomic-write"));
     bool written = true;
     std::size_t offset = 0;
     while (offset < text.size()) {
@@ -164,13 +158,13 @@ eve::Result<void> Filesystem::writeTextAtomic(std::string_view filename, std::st
     if (::close(file) != 0) written = false;
     if (!written) {
         ::unlink(temporaryPath.c_str());
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not write or flush atomic save temporary file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not write or flush atomic save temporary file", relativeText, {}, "filesystem.atomic-write"));
     }
     if (::rename(temporaryPath.c_str(), targetPath.c_str()) != 0) {
         ::unlink(temporaryPath.c_str());
-        return atomicWriteFailure(eve::DiagnosticCode::Failed,
-                                  "could not atomically replace save file", relativeText);
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "could not atomically replace save file", relativeText, {}, "filesystem.atomic-write"));
     }
 #ifdef O_DIRECTORY
     const int directory = ::open(target.parent_path().string().c_str(), O_RDONLY | O_DIRECTORY);

@@ -11,7 +11,7 @@ namespace eve::procgen {
 enum class ParamKind { Integer, Float, Boolean, String, Choice };
 
 /** @brief UI-independent metadata for one procedural recipe parameter. */
-struct ParamDescriptor {
+struct EVENGINE_API_DOMAINS ParamDescriptor {
     std::string              key;
     std::string              displayName;
     std::string              description;
@@ -49,7 +49,7 @@ struct ParamDescriptor {
 };
 
 /** @brief Complete metadata and parameter schema shared by every procgen recipe family. */
-struct RecipeDescriptor {
+struct EVENGINE_API_DOMAINS RecipeDescriptor {
     std::string                  id;
     std::string                  displayName;
     std::string                  category;

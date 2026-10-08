@@ -100,8 +100,15 @@ public:
                 (data->getChannelCount() != 1 && data->getChannelCount() != 2))
                 return failure(eve::DiagnosticCode::Unsupported,
                                "Audio waveform requires bounded PCM8 or PCM16 data", "uri");
-            eve::ref<eve::sound::SoundData> retained(data);
-            (void)retained;
+            // The provider returns a cache-owned SoundData; pin it so a concurrent
+            // unload cannot destroy the payload while this request samples it.
+            auto retained = eve::ResourceManager::getInstance().pin(data);
+            if (!retained.ok())
+                return failure(eve::DiagnosticCode::NotFound, "audio waveform resource is no longer cached", "uri");
+            eve::ResourcePin                 keepAlive = std::move(retained).takeValue();
+            // The pin is the authority from here on; the borrowed pointer may have gone
+            // stale before the pin was taken.
+            data = static_cast<eve::sound::SoundData*>(keepAlive.get());
             eve::action::ActionAudioWaveform result;
             result.clipDurationSeconds = data->getDuration();
             result.buckets.resize(request.bucketCount);
@@ -182,7 +189,7 @@ private:
     static eve::Result<eve::action::ActionAudioWaveform> failure(
         eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<eve::action::ActionAudioWaveform>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+            eve::Diagnostic::error(code, message, path));
     }
 };
 
@@ -195,20 +202,18 @@ public:
     eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio)
-            return parameterFailure(eve::DiagnosticCode::NotFound, "Audio parameter target is unavailable", "audio");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio parameter target is unavailable", "audio"));
         const ActiveKey key{sample.executionId, sample.itemId.format()};
         auto candidate = active_;
         if (sample.phase == eve::action::ActionParameterPhase::Begin) {
             if (candidate.contains(key))
-                return parameterFailure(eve::DiagnosticCode::Conflict,
-                                        "Audio parameter curve is already active", "itemId");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "Audio parameter curve is already active", "itemId"));
             if (candidate.empty()) baseline_ = audio->getVolume();
             candidate.emplace(key, ActiveValue{sample.operation, sample.value});
         } else if (sample.phase == eve::action::ActionParameterPhase::Update) {
             const auto found = candidate.find(key);
             if (found == candidate.end())
-                return parameterFailure(eve::DiagnosticCode::NotFound,
-                                        "Audio parameter curve has no active state", "itemId");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio parameter curve has no active state", "itemId"));
             found->second = ActiveValue{sample.operation, sample.value};
         } else {
             if (!candidate.erase(key))
@@ -216,8 +221,7 @@ public:
         }
         const double value = compose(candidate);
         if (!std::isfinite(value) || value < 0.0 || value > static_cast<double>(std::numeric_limits<float>::max()))
-            return parameterFailure(eve::DiagnosticCode::InvalidArgument,
-                                    "Audio parameter curves produced an invalid master volume", "value");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Audio parameter curves produced an invalid master volume", "value"));
         active_ = std::move(candidate);
         audio->setVolume(static_cast<float>(value));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -243,11 +247,7 @@ private:
         return result;
     }
 
-    static eve::Result<void> parameterFailure(eve::DiagnosticCode code, std::string message,
-                                               std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-    }
-
+    
     std::map<ActiveKey, ActiveValue> active_;
     double                           baseline_ = 1.0;
 };
@@ -278,26 +278,30 @@ public:
         }
         const bool instant = event.kind == eve::action::ActionTimelineEventKind::Notify;
         if (!instant && event.kind != eve::action::ActionTimelineEventKind::StateEnter)
-            return fail(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "audio state requires enter or exit", "event.kind"));
         if (!instant && active_.contains(key))
-            return fail(eve::DiagnosticCode::Conflict, "audio state is already active", "itemId");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "audio state is already active", "itemId"));
         const auto shape = instant ? eve::action::ActionAudioShape::Instant : eve::action::ActionAudioShape::State;
         auto binding = eve::action::ActionAudioBinding::fromPayload(event.payload, shape);
         if (!binding) return eve::Result<void>::failure(binding.status());
         auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return eve::Result<void>::failure(pose.status());
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
-        if (!audio) return fail(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio");
+        if (!audio) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
         try {
             const auto seed = stableAudioSeed(context.executionId, event.itemId);
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding.value(), seed));
-            std::unique_ptr<Source> source(audio->newSource(data));
+            auto       dataPin = eve::ResourceManager::getInstance().pin(data);
+            if (!dataPin.ok()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "audio resource is no longer cached", "uri"));
+            eve::ResourcePin        keepAlive = std::move(dataPin).takeValue();
+            auto*                   live      = static_cast<eve::sound::SoundData*>(keepAlive.get());
+            std::unique_ptr<Source> source(audio->newSource(live));
             configureAudioSource(*source, binding.value(), selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
             applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
-            ActiveSource owned{data, std::move(source), binding.value().spatial,
-                               std::move(pose).takeValue(), binding.value().volume,
-                               binding.value().fadeOutOnExit, binding.value().fadeOutDuration};
+            ActiveSource owned{std::move(keepAlive),           std::move(source),      binding.value().spatial,
+                               std::move(pose).takeValue(),    binding.value().volume, binding.value().fadeOutOnExit,
+                               binding.value().fadeOutDuration};
             if (instant) {
                 auto duration = eve::Duration::fromSeconds(owned.source->getDuration() / owned.source->getPitch());
                 if (!duration) return eve::Result<void>::failure(duration.status());
@@ -308,7 +312,7 @@ public:
                 active_.emplace(key, std::move(owned));
             }
         } catch (const std::exception& error) {
-            return fail(eve::DiagnosticCode::Failed, error.what(), "uri");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "uri"));
         }
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -316,7 +320,7 @@ public:
     eve::Result<void> update(const eve::action::ActionActiveBlock& block,
                              const eve::action::ActionNotifyContext& context) override {
         const auto found = active_.find({context.executionId, block.itemId.format()});
-        if (found == active_.end()) return fail(eve::DiagnosticCode::NotFound, "active audio has no source", "itemId");
+        if (found == active_.end()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "active audio has no source", "itemId"));
         if (found->second.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
             auto pose = resolvePose(found->second.spatial, context);
             if (!pose) return eve::Result<void>::failure(pose.status());
@@ -368,8 +372,8 @@ public:
 
 private:
     struct ActiveSource {
-        // Source borrows this data; the ref keeps it alive across cache unload.
-        eve::ref<eve::sound::SoundData> data;
+        // Source borrows this data; the pin keeps it alive across cache unload.
+        eve::ResourcePin                  data;
         std::unique_ptr<Source> source;
         eve::action::ActionSpatialBinding spatial;
         eve::EntitySpatialPose pose;
@@ -438,10 +442,7 @@ private:
                            static_cast<float>(pose.positionZ + offsetZ));
     }
 
-    static eve::Result<void> fail(eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-    }
-
+    
     std::map<ActiveKey, ActiveSource> active_;
     std::vector<TransientSource> transients_;
     std::vector<FadingSource> fading_;
@@ -519,12 +520,12 @@ public:
 
 private:
     struct OwnedAudio {
-        OwnedAudio(eve::sound::SoundData* data, std::unique_ptr<Source> source)
-            : data(data), source(std::move(source)) {}
+        OwnedAudio(eve::ResourcePin data, std::unique_ptr<Source> source)
+            : data(std::move(data)), source(std::move(source)) {}
 
-        // Source borrows this data; the ref keeps it alive across cache unload.
-        eve::ref<eve::sound::SoundData> data;
-        std::unique_ptr<Source>         source;
+        // Source borrows this data; the pin keeps it alive across cache unload.
+        eve::ResourcePin        data;
+        std::unique_ptr<Source> source;
     };
     struct PreviewAudio {
         eve::Value::Object payload;
@@ -544,8 +545,12 @@ private:
                 eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
         try {
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding, seed));
-            std::unique_ptr<Source> source(audio->newSource(data));
-            OwnedAudio owned(data, std::move(source));
+            auto  dataPin = eve::ResourceManager::getInstance().pin(data);
+            if (!dataPin.ok()) return eve::Result<std::optional<OwnedAudio>>::failure(dataPin.status());
+            eve::ResourcePin        keepAlive = std::move(dataPin).takeValue();
+            auto*                   live      = static_cast<eve::sound::SoundData*>(keepAlive.get());
+            std::unique_ptr<Source> source(audio->newSource(live));
+            OwnedAudio              owned(std::move(keepAlive), std::move(source));
             configureAudioSource(*owned.source, binding,
                                  selectAudioPitch(binding, seed ^ 0x9e3779b97f4a7c15ULL));
             owned.source->setPosition(static_cast<float>(binding.spatial.positionOffset.x),

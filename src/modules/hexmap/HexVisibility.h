@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexVisibility.h @brief Reference-counted cell visibility and explored state. */
 
@@ -27,7 +29,7 @@ namespace eve::hexmap {
  *
  * Thread affinity: main thread only; no locking.
  */
-class HexVisibility {
+class EVENGINE_API_WORLD HexVisibility {
 public:
     HexVisibility() = default;
 

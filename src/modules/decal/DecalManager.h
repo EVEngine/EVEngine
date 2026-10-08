@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/mat4x4.hpp>
 
@@ -61,7 +63,7 @@ enum class DecalProjectionStatus : std::uint8_t {
  * instance it builds the box transform (Z axis = surface normal, optional
  * random yaw) and calls gfx.drawDecal.
  */
-class DecalManager {
+class EVENGINE_API_WORLD DecalManager {
 public:
     static DecalManager &inst();
 
@@ -73,6 +75,8 @@ public:
                 float emissiveStrength);
 
     bool remove(int id);
+    /** @brief Whether a projected decal id is still registered. */
+    [[nodiscard]] bool contains(int id) const;
     void clearAll();
     int count() const;
     bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,

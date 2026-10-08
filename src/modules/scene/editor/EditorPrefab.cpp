@@ -26,7 +26,7 @@ EditorValue transformValue(const SceneTransformValue& value) {
                                {"scaleY", value.scaleY}, {"scaleZ", value.scaleZ}};
 }
 
-EditorResult<SceneTransformValue> parseTransform(const EditorValue& value) {
+Result<SceneTransformValue> parseTransform(const EditorValue& value) {
     const auto number = [&](const char* key) -> const double* {
         const EditorValue* entry = field(value, key);
         return entry ? entry->getIf<double>() : nullptr;
@@ -47,7 +47,7 @@ EditorResult<SceneTransformValue> parseTransform(const EditorValue& value) {
     return eve::editing::applied<SceneTransformValue>({*x, *y, *z, *rx, *ry, *rz, *sx, *sy, *sz});
 }
 
-EditorResult<void> validatePrefab(const PrefabAssetSnapshot& prefab) {
+Result<void> validatePrefab(const PrefabAssetSnapshot& prefab) {
     if (prefab.asset.empty() || prefab.rootSourceId.empty() || prefab.objects.empty() || prefab.revision == 0)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.invalid-identity"),
                                           "Prefab requires asset, revision, root and objects");
@@ -92,7 +92,7 @@ EditorResult<void> validatePrefab(const PrefabAssetSnapshot& prefab) {
 
 }  // namespace
 
-EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& asset,
+Result<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& asset,
                                                                const SceneTargetBase& scene,
                                                                const ObjectId& root) const {
     if (asset.empty())
@@ -121,7 +121,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& a
     return eve::editing::applied<PrefabAssetSnapshot>(std::move(prefab));
 }
 
-EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAssetSnapshot& prefab,
+Result<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAssetSnapshot& prefab,
                                                                  const std::string& instanceId,
                                                                  const ObjectId& parent,
                                                                  const SceneTargetBase& scene) const {
@@ -172,7 +172,7 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
     return eve::editing::applied<PrefabInstancePlan>(std::move(plan));
 }
 
-EditorResult<std::vector<DomainOperation>> ScenePrefabService::revertOverrides(
+Result<std::vector<DomainOperation>> ScenePrefabService::revertOverrides(
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
@@ -217,7 +217,7 @@ EditorResult<std::vector<DomainOperation>> ScenePrefabService::revertOverrides(
     return eve::editing::applied<std::vector<DomainOperation>>(std::move(operations));
 }
 
-EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const PrefabAssetSnapshot& prefab,
+Result<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const PrefabAssetSnapshot& prefab,
                                                                      const std::string& instanceId,
                                                                      const ObjectId& parent,
                                                                      const SceneTargetBase& scene) const {
@@ -256,7 +256,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
     return eve::editing::applied<PrefabAssetSnapshot>(std::move(result));
 }
 
-EditorResult<std::vector<PrefabOverrideRecord>> ScenePrefabService::inspectOverrides(
+Result<std::vector<PrefabOverrideRecord>> ScenePrefabService::inspectOverrides(
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
@@ -343,7 +343,7 @@ PrefabDependencyReport ScenePrefabService::inspectDependencies(
     return report;
 }
 
-EditorResult<PrefabAssetSnapshot> ScenePrefabService::refreshNestedRevisions(
+Result<PrefabAssetSnapshot> ScenePrefabService::refreshNestedRevisions(
     const PrefabAssetSnapshot& prefab, const PrefabResolver& resolver) const {
     auto dependencies = inspectDependencies(prefab, resolver);
     if (dependencies.status != EditorStatus::Applied)
@@ -381,7 +381,7 @@ EditorValue ScenePrefabService::snapshotValue(const PrefabAssetSnapshot& prefab)
                                {"rootSourceId", prefab.rootSourceId.value()}, {"objects", std::move(objects)}};
 }
 
-EditorResult<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorValue& snapshot) const {
+Result<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorValue& snapshot) const {
     const EditorValue* schemaValue = field(snapshot, "schemaVersion");
     const EditorValue* assetValue = field(snapshot, "asset");
     const EditorValue* revisionValue = field(snapshot, "revision");
@@ -432,7 +432,7 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorV
     }
     auto valid = validatePrefab(prefab);
     if (!valid.ok()) {
-        return EditorResult<PrefabAssetSnapshot>::failure(valid.status());
+        return Result<PrefabAssetSnapshot>::failure(valid.status());
     }
     return eve::editing::applied<PrefabAssetSnapshot>(std::move(prefab));
 }

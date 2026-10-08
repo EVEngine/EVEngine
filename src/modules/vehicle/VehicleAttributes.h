@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VehicleAttributes.h
@@ -21,7 +23,7 @@ class VehicleEntity;
  * health/max_health. Armor-zone geometry and multipliers remain vehicle
  * policy data; position, speed and physics bodies are deliberately excluded.
  */
-class VehicleAttributeAdapter final {
+class EVENGINE_API_DOMAINS VehicleAttributeAdapter final {
 public:
     static constexpr std::string_view healthAttribute    = "health";
     static constexpr std::string_view maxHealthAttribute = "max_health";

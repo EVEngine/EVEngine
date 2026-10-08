@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 鬼影预览：候选建筑姿态 + 最近一次校验结果，供 UI 着色与确认放置。
 
@@ -10,7 +12,7 @@ namespace eve::building {
 
 class PlacementWorld;
 
-class Ghost {
+class EVENGINE_API_WORLD Ghost {
 public:
     Ghost() = default;
     ~Ghost() = default;

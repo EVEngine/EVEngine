@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackTerrainLoader.h @brief Runtime decoding of canonical terrain assets. */
 
@@ -26,7 +28,7 @@ struct LoadedTerrain {
 };
 
 /** @brief Capability-aware decoder from `eve.terrain/1` to procgen terrain data. */
-class EvpackTerrainLoader {
+class EVENGINE_API_ORCHESTRATION EvpackTerrainLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackTerrainLoader(const asset::EvpackResourceReader& reader) noexcept

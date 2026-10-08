@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTarget.h"
 
@@ -35,12 +37,12 @@ public:
     virtual float evaluate(float normalizedDistance) const = 0;
 };
 
-class ConstantBrushFalloff final : public IBrushFalloff {
+class EVENGINE_API_ORCHESTRATION ConstantBrushFalloff final : public IBrushFalloff {
 public:
     float evaluate(float normalizedDistance) const override;
 };
 
-class LinearBrushFalloff final : public IBrushFalloff {
+class EVENGINE_API_ORCHESTRATION LinearBrushFalloff final : public IBrushFalloff {
 public:
     float evaluate(float normalizedDistance) const override;
 };
@@ -59,7 +61,7 @@ public:
 };
 
 /** @brief Circular weighted kernel using a non-owning falloff strategy. */
-class CircleBrushKernel final : public IBrushKernel {
+class EVENGINE_API_ORCHESTRATION CircleBrushKernel final : public IBrushKernel {
 public:
     explicit CircleBrushKernel(const IBrushFalloff *falloff = nullptr);
     void setFalloff(const IBrushFalloff *falloff) { falloff_ = falloff; }
@@ -70,7 +72,7 @@ private:
 };
 
 /** @brief Rotatable square kernel using a non-owning falloff strategy. */
-class BoxBrushKernel final : public IBrushKernel {
+class EVENGINE_API_ORCHESTRATION BoxBrushKernel final : public IBrushKernel {
 public:
     explicit BoxBrushKernel(const IBrushFalloff *falloff = nullptr);
     void setFalloff(const IBrushFalloff *falloff) { falloff_ = falloff; }
@@ -81,7 +83,7 @@ private:
 };
 
 /** @brief Convenience sink for previews, tests and command construction. */
-class BrushSampleBuffer final : public IBrushSampleSink {
+class EVENGINE_API_ORCHESTRATION BrushSampleBuffer final : public IBrushSampleSink {
 public:
     void emit(int x, int y, float weight) override;
     void clear() { points_.clear(); }

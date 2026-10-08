@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -55,7 +57,7 @@ struct DrawBatch {
  * Meshing is neighbor-aware (cross-chunk seam culling), parallel-capable and
  * script-friendly via getVisible getters and raycast helpers.
  */
-class VoxelWorld {
+class EVENGINE_API_DOMAINS VoxelWorld {
 public:
     VoxelWorld();
     ~VoxelWorld();

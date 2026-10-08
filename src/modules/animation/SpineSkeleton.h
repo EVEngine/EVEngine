@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/SpineSkeletonData.h"
 
@@ -11,7 +13,7 @@ namespace eve::animation {
  * @brief Runtime Spine skeleton pose (local + world bone transforms, slot attachments).
  * Script type: `SpineSkeleton`.
  */
-class SpineSkeleton {
+class EVENGINE_API_WORLD SpineSkeleton {
 public:
     explicit SpineSkeleton(SpineSkeletonData *data);
     ~SpineSkeleton() = default;

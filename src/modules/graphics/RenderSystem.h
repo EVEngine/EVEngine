@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
@@ -15,7 +17,7 @@ namespace eve::graphics {
 class Canvas;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
-class Camera2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
 public:
     ENTITY(Camera2D, ecs::Entity)
 
@@ -63,7 +65,7 @@ public:
 };
 
 /** @brief Default renderable entity for declarative 2D sprites / solid quads. */
-class Renderable2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Renderable2D : public ecs::Entity {
 public:
     ENTITY(Renderable2D, ecs::Entity)
 
@@ -126,6 +128,22 @@ public:
     void setTexture(Texture *texture);
     /** @brief Return the assigned texture. */
     Texture *getTexture();
+    /**
+     * @brief Assign an optional tangent-space normal map for the GPU lit2d path.
+     * @param texture Borrowed normal map, or nullptr to clear. Non-null with
+     *        receiveLight and an albedo texture (and no custom shader) selects
+     *        lit2d; otherwise lighting falls back to CPU modulation.
+     * @ownership `texture` remains owned by the caller (typically Graphics); this
+     *            sprite only borrows it and never deletes it.
+     * @lifetime Must remain valid while assigned, or until cleared / the sprite is destroyed.
+     */
+    void setNormalTexture(Texture *texture);
+    /**
+     * @brief Return the assigned normal map, or nullptr when unlit/flat.
+     * @ownership Returns a borrowed Texture*; the caller must not delete it.
+     * @lifetime Valid until `setNormalTexture` replaces or clears it, or the sprite is destroyed.
+     */
+    Texture *getNormalTexture();
     /** @brief Assign the borrowed UV quad. */
     void setQuad(Quad *quad);
     /** @brief Return the assigned UV quad. */
@@ -171,7 +189,7 @@ public:
 class Graphics;
 
 /** @brief Walks ECS Renderable2D views and draws via Graphics batch path. */
-class RenderSystem {
+class EVENGINE_API_BACKENDS RenderSystem {
 public:
     /** @brief Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);

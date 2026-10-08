@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingGraph.h"
 #include "editing/EditingTaskService.h"
@@ -31,8 +33,7 @@ using editing::TaskOutcome;
 using editing::TaskService;
 using editing::TaskState;
 using editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 using EditorStatus = editing::Status;
 using EditorValue = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -56,7 +57,7 @@ struct MaterialCompileResult {
 };
 
 /** @brief Minimal material domain with typed pin validation and deterministic compile artifacts. */
-class MaterialGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_BACKENDS MaterialGraphDomain final : public IGraphDomainProvider {
 public:
     std::string             domain() const override { return "material"; }
     GraphConnectionDecision canConnect(const GraphPinRecord& from, const GraphPinRecord& to) const override;
@@ -70,20 +71,20 @@ public:
  * Both synchronous compatibility and real background compilation share the
  * same result/publication contract.
  */
-class MaterialEditorService {
+class EVENGINE_API_BACKENDS MaterialEditorService {
 public:
     /** @brief Compile and cache a task result. */
-    EditorResult<TaskId> compile(const DocumentId& document, const GraphDocumentData& graph,
+    Result<TaskId> compile(const DocumentId& document, const GraphDocumentData& graph,
                                  const MaterialGraphDomain& domain);
     /** @brief Queue a cancellable compile using an immutable graph snapshot. */
-    EditorResult<TaskId> compileAsync(const DocumentId& document, GraphDocumentData graph,
+    Result<TaskId> compileAsync(const DocumentId& document, GraphDocumentData graph,
                                       const MaterialGraphDomain& domain, TaskService& tasks);
     /** @brief Request cancellation of an asynchronous compile task. */
-    EditorResult<void> cancel(const TaskId& task);
+    Result<void> cancel(const TaskId& task);
     /** @brief Return one cached compile task result. */
-    EditorResult<MaterialCompileResult> result(const TaskId& task) const;
+    Result<MaterialCompileResult> result(const TaskId& task) const;
     /** @brief Publish only a successful artifact compiled from the current revision. */
-    EditorResult<void> publishPreview(const DocumentId& document, Revision currentRevision, const TaskId& task);
+    Result<void> publishPreview(const DocumentId& document, Revision currentRevision, const TaskId& task);
     /** @brief Return the last successfully published artifact, if any. */
     std::string previewArtifact(const DocumentId& document) const;
 

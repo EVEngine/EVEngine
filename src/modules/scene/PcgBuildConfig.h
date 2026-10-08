@@ -1,15 +1,17 @@
 #pragma once
-#include "common/Result.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "common/Export.h"
+#include "common/Result.h"
 namespace ssq { class Table; }
 namespace eve::scene {
 enum class PcgPublicationType { Addressables=0, RegularBuild=1 };
 enum class PcgBuildLogCategory { Impostors=0, ServerScene=1, CreatedAddressableConfig=2, AddressableBundles=3, ProjectBuild=4, ColliderBaking=5, UpdatedAddressableConfig=6 };
 struct PcgBuildLogEntry { PcgBuildLogCategory category=PcgBuildLogCategory::Impostors; std::string sceneName; int64_t timestamp=0; };
 /** @brief Caller-owned Pcg publication configuration and ordered build history. */
-class PcgBuildConfig {
+class EVENGINE_API_PLATFORM PcgBuildConfig {
 public:
  /** @brief Set publication type, where 0 is Addressables and 1 is RegularBuild. */ [[nodiscard]] Result<void> setPublicationType(int type);
  /** @brief Return publication type. */ int getPublicationType()const noexcept{return static_cast<int>(publicationType_);}

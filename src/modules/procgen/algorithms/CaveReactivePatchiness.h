@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -36,7 +38,7 @@ struct CaveReactivePatchinessResult {
  * @note This synchronous CPU operation has no thread affinity, but density must not be accessed concurrently.
  * Invalid extents are treated as an inactive operation and leave density unchanged.
  */
-[[nodiscard]] CaveReactivePatchinessResult evolveCaveSurfaceByCorrelatedReactivity(
+[[nodiscard]] EVENGINE_API_DOMAINS CaveReactivePatchinessResult evolveCaveSurfaceByCorrelatedReactivity(
     std::vector<float>& density, const std::vector<float>& rateField, const std::vector<CaveHydrologyVec3>& flowField,
     int nx, int ny, int nz, float strength, uint64_t seed, int iterations = 2);
 

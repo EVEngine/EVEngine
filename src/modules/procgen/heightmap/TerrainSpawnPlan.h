@@ -84,7 +84,7 @@ using TerrainSpawnRule =
  * Rule IDs are stable and unique. Every raster and setting is copied at insertion, so later caller mutation cannot
  * alter replay. The plan is a value object with no scene references, callbacks, clock or mutable external state.
  */
-class TerrainSpawnPlan {
+class EVENGINE_API_DOMAINS TerrainSpawnPlan {
 public:
     /** @brief Append an owned terrain texture rule after validating a nonempty unique rule ID. */
     [[nodiscard]] Result<int> addSplat(const std::string& ruleId, const Heightmap& paint, int targetLayer,

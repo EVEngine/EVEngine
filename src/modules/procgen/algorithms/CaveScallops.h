@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveHydrology.h"
 
@@ -41,7 +43,7 @@ struct CavePassageFrame {
     CaveHydrologyVec3 tangent{1.f, 0.f, 0.f};
 };
 
-CaveScallopSample sampleCaveScallops(const CaveScallopInput& input);
+EVENGINE_API_DOMAINS CaveScallopSample sampleCaveScallops(const CaveScallopInput& input);
 CavePassageFrame  nearestCavePassageFrame(const CaveHydrologyVec3& point, const std::vector<CaveHydrologyPoint>& path,
                                           const std::vector<float>& hydraulicIntensity);
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "map/FlowField.h"
 #include "map/Path.h"
@@ -15,7 +17,7 @@ namespace eve::map {
  * Single-agent: A*. Group (same goal): Flow Field + follow.
  * Grid/topology internals stay out of the public ABI (Windows export limit).
  */
-class Pathfinder {
+class EVENGINE_API_WORLD Pathfinder {
 public:
     Pathfinder();
     explicit Pathfinder(TileLayer *layer);

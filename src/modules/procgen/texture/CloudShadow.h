@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/texture/CloudField.h"
 
@@ -18,7 +20,7 @@ namespace eve::procgen {
  * coverageAt() returns [0,1] cloud coverage (1 = fully shadowed);
  * shadowFactorAt() returns a light multiplier (1 - coverage * strength).
  */
-class CloudShadow {
+class EVENGINE_API_DOMAINS CloudShadow {
 public:
     struct Params {
         CloudField field;               // the cloud field being shadowed

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "npc_ai/NpcAi.h"
@@ -18,7 +20,7 @@ namespace eve::npc_ai {
  * is destroyed first, release observes stale state and clears the link as NoOp.
  * Runtime handles are transient and must be rebuilt from logical behavior ids after restore.
  */
-struct NpcAgentState {
+struct EVENGINE_API_PLATFORM NpcAgentState {
     AgentHandle agent;
 
     /** @brief Creates the canonical module-owned agent referenced by this component. */

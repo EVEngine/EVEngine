@@ -14,7 +14,7 @@ enum class TerrainPolygonMaskType { Open, Closed };
  * @brief Own ordered Pcg-style PolyMask nodes and rasterize them into a caller-owned scalar grid.
  * Nodes are value-copied and no terrain, texture, scene object, callback, clock, or RNG is retained.
  */
-class TerrainPolygonMask {
+class EVENGINE_API_DOMAINS TerrainPolygonMask {
 public:
     TerrainPolygonMask();
     ~TerrainPolygonMask();

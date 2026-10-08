@@ -10,9 +10,9 @@ using namespace eve::editor;
 namespace {
 class Preparer final : public IVegetationConversionPreparer {
 public:
-    Result<PreparedAssetImport> prepare(const UnityVegetationBatchImportRequest&) const override {
+    eve::Result<PreparedAssetImport> prepare(const UnityVegetationBatchImportRequest&) const override {
         if (reject)
-            return Result<PreparedAssetImport>::failure(
+            return eve::Result<PreparedAssetImport>::failure(
                 Diagnostic::error(DiagnosticCode::ParseError, "injected prepare failure"));
         PreparedAssetImport result;
         for (const char* uri :
@@ -24,14 +24,14 @@ public:
                 {std::move(reference).takeValue(), "eve.test", SchemaVersion(1), "asset.json", "sha256:test", {}});
         }
         result.findings.resize(2);
-        return Result<PreparedAssetImport>::success(std::move(result));
+        return eve::Result<PreparedAssetImport>::success(std::move(result));
     }
     bool reject = false;
 };
 
 class Publisher final : public IVegetationConversionPublisher {
 public:
-    EditorResult<std::uint64_t> publish(const PreparedAssetImport& candidate,
+    eve::Result<std::uint64_t> publish(const PreparedAssetImport& candidate,
                                         std::uint64_t              expectedGeneration) override {
         ++calls;
         observedAssets = candidate.manifest.assets.size();

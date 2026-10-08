@@ -25,7 +25,7 @@ const T* value(const EditorValue::Object& properties, const char* path) {
 }
 
 template <class T, class Resolver>
-EditorResult<T*> resolveAsset(const std::string& asset, Resolver&& resolver) {
+Result<T*> resolveAsset(const std::string& asset, Resolver&& resolver) {
     if (asset.empty()) return eve::editing::applied<T*>(nullptr);
     return resolver(asset);
 }
@@ -52,7 +52,7 @@ double number(const EditorValue& value) {
 
 Renderable3DMaterialRuntimeSink::~Renderable3DMaterialRuntimeSink() = default;
 
-EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
+Result<void> Renderable3DMaterialRuntimeSink::publish(
     const MaterialDocumentTarget& candidate) {
     if (!impl_->assets)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.runtime-input"),
@@ -64,7 +64,7 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
     const auto diagnostics = candidate.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics) {
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     }
     EditorValue snapshot;
     const auto* values = properties(candidate, snapshot);
@@ -121,13 +121,13 @@ EditorResult<void> Renderable3DMaterialRuntimeSink::publish(
         auto resolved = resolveAsset<graphics::Texture>(
             *value<std::string>(*values, texturePaths[i]),
             [&](const std::string& asset) { return impl_->assets->resolveTexture(asset); });
-        if (!resolved.ok()) return EditorResult<void>::failure(resolved.status());
+        if (!resolved.ok()) return Result<void>::failure(resolved.status());
         textures[i] = resolved.value();
     }
     auto shader = resolveAsset<graphics::Shader>(
         *value<std::string>(*values, "textures.shader"),
         [&](const std::string& asset) { return impl_->assets->resolveShader(asset); });
-    if (!shader.ok()) return EditorResult<void>::failure(shader.status());
+    if (!shader.ok()) return Result<void>::failure(shader.status());
 
     graphics::Material* runtimeMaterial = renderable->getMaterial();
     if (vegetationExtended && !runtimeMaterial)
