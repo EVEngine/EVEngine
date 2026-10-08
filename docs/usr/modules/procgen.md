@@ -419,6 +419,10 @@ roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材�
 pitch/yaw/roll、平移和非均匀缩放。`remapDensity` 重映射密度，
 `mathFloatAttribute` 对浮点元数据执行受检的标量运算。
 
+`excludeGridMask(points, mask, originX, originZ, cellSize, semantic, clearance,
+maximumChecks)` 从 owned `PointSet` 中排除被 owned `Grid2D` 指定语义覆盖的点；
+`clearance` 以世界单位扩张排除区，`maximumChecks` 为硬工作量上限，结果仍保留其余点的稳定 ID 和属性。
+
 运行时 cell 热重载使用 `applyCellUpdate(level, x, z, revision, points)`；`revision`
 以非零十进制字符串传入，返回的 Result `value` 也是字符串。提交成功后可通过
 `getCellDelta()` 获取 `ProcgenPointDelta`，并用 `getAdded()`、`getUpdated()`、
