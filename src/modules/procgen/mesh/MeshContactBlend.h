@@ -40,8 +40,11 @@ struct EVENGINE_API_DOMAINS MeshContactBlendParams {
  * @return Owning blended mesh, or a `procgen.mesh.blend.*` diagnostic without mutating `mesh`.
  *
  * Material fusion writes vertex-color alpha as `contactBlend` in \[0,1\] (RGB preserved or filled
- * with 1). Topology and UVs are unchanged. Deterministic for equal inputs; main-thread or worker
- * safe when inputs are immutable for the call duration. No callbacks.
+ * with 1). Topology and UVs are unchanged unless a later merge weld runs. When
+ * `softSnapPositions` is true, triangle normals are recalculated from the deformed
+ * positions (hit-normal lerp is skipped) so lighting stays continuous on the new shape.
+ * Deterministic for equal inputs; main-thread or worker safe when inputs are immutable for the
+ * call duration. No callbacks.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<MeshBuild> meshContactBlendResult(
     const MeshBuild& mesh, const std::vector<std::int32_t>& vertexSourceIds,

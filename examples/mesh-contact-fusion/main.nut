@@ -89,21 +89,38 @@ function fusionAdd(mesh, x, y, tintR, tintG, tintB, roughness) {
     return object;
 }
 
+function fusionRelax(mesh, strength, iterations) {
+    // Light Laplacian smooth after soft-snap/weld so the neck shades continuously.
+    local graph = fusionRequire(procgen.newMeshModifierGraph(), "relax graph").value;
+    fusionRequire(graph.addNode("source", "mesh.input"), "add relax source");
+    fusionRequire(graph.addNode("smooth", "deform.smooth"), "add relax smooth");
+    fusionRequire(graph.addNode("out", "mesh.output"), "add relax out");
+    fusionRequire(graph.setNodeMesh("source", mesh), "bind relax source");
+    fusionRequire(graph.setNodeFloat("smooth", "strength", strength), "set relax strength");
+    fusionRequire(graph.setNodeInt("smooth", "iterations", iterations), "set relax iters");
+    fusionRequire(graph.connect("source", "smooth", 0), "connect relax");
+    fusionRequire(graph.connect("smooth", "out", 0), "connect relax out");
+    return fusionRequire(graph.executeResult("out"), "execute relax").value;
+}
+
 function fusionMergePair(mode) {
     // Two spheres, same layout for hard vs fuse — only soft-snap differs.
     // Diameter 1.65 → radius 0.825. Centers at ±0.96 → air gap ≈0.27 (obvious on left).
     // Wide edgeRadius pulls a broad belt of verts → peanut neck (not a flat clap).
+    // Post-blend weld + light smooth share topology/normals across the neck.
     local dx = 0.96;
     local size = 1.65;
     local enableBlend = false;
     local soft = false;
     local radius = 0.7;
     local normals = 0.0;
+    local weldTol = 0.0;
     if (mode == "fuse") {
         enableBlend = true;
         soft = true;
         radius = 1.7;   // wide belt so the neck is a silhouette change, not a hairline
         normals = 1.0;
+        weldTol = 0.09; // after soft-snap, fuse near-coincident contact verts
     }
 
     local left = fusionSubdivide(fusionRecipe("prototype.sphere", size, size, size, 28), 1);
@@ -117,13 +134,19 @@ function fusionMergePair(mode) {
         fusionRequire(plan.setContactBlend(radius, radius, 1.0, normals, 1.0, 0.0, soft, "smooth"),
                       "set contact blend");
     }
+    if (weldTol > 0.0) fusionRequire(plan.setWeldTolerance(weldTol), "set post-blend weld");
     local merged = fusionRequire(eve.mergeStaticMeshes(plan), "merge " + mode);
     local mesh = merged.value;
-    if (enableBlend) mesh = fusionPaintContactBand(mesh);
+    if (enableBlend) {
+        mesh = fusionRelax(mesh, 0.35, 2);
+        mesh = fusionPaintContactBand(mesh);
+    }
     print("mesh-contact-fusion: mode=" + mode + " dx=" + dx + " soft=" + soft +
+          " weld=" + weldTol +
           " verts=" + mesh.getVertexCount() +
           " colors=" + mesh.hasVertexColors() +
-          " meta=" + mesh.getMeta("contactBlend.enabled", "?") + "\n");
+          " meta=" + mesh.getMeta("contactBlend.enabled", "?") +
+          " normals=" + mesh.getMeta("contactBlend.normals", "?") + "\n");
     return mesh;
 }
 
@@ -132,6 +155,8 @@ function fusionUploadLive() {
     if (fusionLive.isDirty())
         fusionRequire(fusionLive.evaluate(false), "evaluate live adhere");
     local snapshot = fusionRequire(fusionLive.derivedMeshResult(), "live derived snapshot").value;
+    // Soft-snap already recalculates triangle normals; a light relax softens the melt rim.
+    snapshot = fusionRelax(snapshot, 0.25, 1);
     snapshot = fusionPaintContactBand(snapshot);
     local uploaded = fusionRequire(procgen.uploadMesh(snapshot, gfx), "upload live derived").value;
     fusionLiveVisual.setMesh(uploaded);

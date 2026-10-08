@@ -5,7 +5,7 @@
 | 位置（相机朝 −Z） | API | 行为 |
 |---|---|---|
 | 左 | `mergeStaticMeshes` blend OFF | **同一间隙**的双球，中间留空（对照：未融合） |
-| 中 | blend ON + **softSnap** | 同一间隙，对面顶点跨缝拉近，轮廓焊成 **花生/颈**；接触权重烘成顶点色 |
+| 中 | blend ON + **softSnap** + post weld | 同一间隙，对面顶点跨缝拉近，轮廓焊成 **花生/颈**；soft-snap 后按几何重算法线，再 weld/轻 smooth 让接触带连续 |
 | 右 | `MeshAdhereLive` | 细分球体 soft-snap 到地面（底部摊成熔贴饼）；灰色 ghost = 熔贴前 |
 
 要点：

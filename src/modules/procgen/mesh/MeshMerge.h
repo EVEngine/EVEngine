@@ -36,7 +36,10 @@ public:
     [[nodiscard]] bool         getEnableContactBlend() const noexcept { return enableContactBlend_; }
     [[nodiscard]] Result<void> setContactBlendParams(const MeshContactBlendParams& params);
     [[nodiscard]] const MeshContactBlendParams& contactBlendParams() const noexcept { return blendParams_; }
-    /** @brief Positive weld tolerance enables hard weld; non-positive disables (default). */
+    /**
+     * @brief Positive weld tolerance enables hard weld after contact blend; non-positive disables
+     *        (default). Post-blend weld lets soft-snapped contact verts share topology/normals.
+     */
     [[nodiscard]] Result<void> setWeldTolerance(float tolerance) noexcept;
     [[nodiscard]] float        getWeldTolerance() const noexcept { return weldTolerance_; }
     /**

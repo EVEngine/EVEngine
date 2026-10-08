@@ -256,8 +256,9 @@ void applyHitToVertex(MeshBuild& output, std::vector<float>& colors, int vertex,
         positions[base]     = blended.x;
         positions[base + 1] = blended.y;
         positions[base + 2] = blended.z;
-    }
-    if (params.normalsBlend > 0.f && edgeWeight > 0.f) {
+        // Soft-snap changes geometry; hit-normal lerp fights continuous shading.
+        // Callers rebuild triangle normals after the full vertex pass.
+    } else if (params.normalsBlend > 0.f && edgeWeight > 0.f) {
         const Vec3  n0{normals[base], normals[base + 1u], normals[base + 2u]};
         const float w  = saturate(edgeWeight * params.normalsBlend);
         const Vec3  n1 = normalized(n0 * (1.f - w) + best.normal * w);
@@ -266,6 +267,34 @@ void applyHitToVertex(MeshBuild& output, std::vector<float>& colors, int vertex,
         normals[base + 2] = n1.z;
     }
     colors[static_cast<std::size_t>(vertex) * 4u + 3u] = materialWeight;
+}
+
+void recalculateNormalsFromGeometry(MeshBuild& mesh) {
+    auto& normals = mesh.normals();
+    std::fill(normals.begin(), normals.end(), 0.f);
+    const auto& positions = mesh.positions();
+    const auto& indices   = mesh.indices();
+    for (std::size_t i = 0; i + 2 < indices.size(); i += 3) {
+        const std::size_t a = static_cast<std::size_t>(indices[i]) * 3u;
+        const std::size_t b = static_cast<std::size_t>(indices[i + 1u]) * 3u;
+        const std::size_t c = static_cast<std::size_t>(indices[i + 2u]) * 3u;
+        const Vec3        ab{positions[b] - positions[a], positions[b + 1u] - positions[a + 1u],
+                             positions[b + 2u] - positions[a + 2u]};
+        const Vec3        ac{positions[c] - positions[a], positions[c + 1u] - positions[a + 1u],
+                             positions[c + 2u] - positions[a + 2u]};
+        const Vec3        face = cross(ab, ac);
+        for (const auto vertex : {a, b, c}) {
+            normals[vertex] += face.x;
+            normals[vertex + 1u] += face.y;
+            normals[vertex + 2u] += face.z;
+        }
+    }
+    for (std::size_t i = 0; i + 2 < normals.size(); i += 3) {
+        const Vec3 n = normalized({normals[i], normals[i + 1u], normals[i + 2u]});
+        normals[i]        = n.x;
+        normals[i + 1u]   = n.y;
+        normals[i + 2u]   = n.z;
+    }
 }
 
 Result<MeshBuild> blendMultiImpl(const MeshBuild& mesh, const std::vector<std::int32_t>& vertexSourceIds,
@@ -318,8 +347,10 @@ Result<MeshBuild> blendMultiImpl(const MeshBuild& mesh, const std::vector<std::i
 
     auto setColors = output.setVertexColors(std::move(colors));
     if (!setColors.ok()) return Result<MeshBuild>::failure(setColors.status());
+    if (params.softSnapPositions) recalculateNormalsFromGeometry(output);
     output.setMeta("contactBlend", "applied");
     output.setMeta("contactBlend.falloff", std::string(params.falloff));
+    if (params.softSnapPositions) output.setMeta("contactBlend.normals", "recalculated");
     return Result<MeshBuild>::success(std::move(output));
 }
 
@@ -366,8 +397,10 @@ Result<MeshBuild> blendAgainstImpl(const MeshBuild& movable, const MeshBuild& su
     }
     auto setColors = output.setVertexColors(std::move(colors));
     if (!setColors.ok()) return Result<MeshBuild>::failure(setColors.status());
+    if (params.softSnapPositions) recalculateNormalsFromGeometry(output);
     output.setMeta("contactBlend", "againstSurface");
     output.setMeta("contactBlend.falloff", std::string(params.falloff));
+    if (params.softSnapPositions) output.setMeta("contactBlend.normals", "recalculated");
     return Result<MeshBuild>::success(std::move(output));
 }
 

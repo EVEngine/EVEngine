@@ -1388,6 +1388,16 @@ Result<MeshBuild> weldMesh(const MeshBuild& input, float tolerance) {
     for (int i = 0; i < input.getGroupCount(); ++i) names.push_back(input.getGroupName(i));
     auto restored = output.restoreGroupData(std::move(names), std::move(assignments), -1);
     if (!restored.ok()) return Result<MeshBuild>::failure(restored.status());
+    if (input.hasVertexColors()) {
+        std::vector<float> colors(static_cast<std::size_t>(output.getVertexCount()) * 4u, 1.f);
+        for (int i = 0; i < input.getVertexCount(); ++i) {
+            const auto dst = remap[static_cast<std::size_t>(i)];
+            for (int c = 0; c < 4; ++c)
+                colors[static_cast<std::size_t>(dst) * 4u + static_cast<std::size_t>(c)] = input.getColor(i, c);
+        }
+        auto set = output.setVertexColors(std::move(colors));
+        if (!set.ok()) return Result<MeshBuild>::failure(set.status());
+    }
     for (const auto& [key, value] : input.metadata()) output.setMeta(key, value);
     recalculateNormals(output);
     return Result<MeshBuild>::success(std::move(output));

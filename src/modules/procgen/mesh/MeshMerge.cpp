@@ -1,5 +1,6 @@
 #include "procgen/mesh/MeshMerge.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <unordered_map>
@@ -70,6 +71,41 @@ Result<MeshBuild> weldMeshLocal(const MeshBuild& input, float tolerance,
         }
         auto set = output.setVertexColors(std::move(colors));
         if (!set.ok()) return Result<MeshBuild>::failure(set.status());
+    }
+    // Shared verts need geometry normals; keep the first copy's normal would crease the weld.
+    {
+        auto&             normals   = output.normals();
+        const auto&       positions = output.positions();
+        const auto&       indices   = output.indices();
+        std::fill(normals.begin(), normals.end(), 0.f);
+        for (std::size_t i = 0; i + 2 < indices.size(); i += 3) {
+            const std::size_t a = static_cast<std::size_t>(indices[i]) * 3u;
+            const std::size_t b = static_cast<std::size_t>(indices[i + 1u]) * 3u;
+            const std::size_t c = static_cast<std::size_t>(indices[i + 2u]) * 3u;
+            const float       abx = positions[b] - positions[a];
+            const float       aby = positions[b + 1u] - positions[a + 1u];
+            const float       abz = positions[b + 2u] - positions[a + 2u];
+            const float       acx = positions[c] - positions[a];
+            const float       acy = positions[c + 1u] - positions[a + 1u];
+            const float       acz = positions[c + 2u] - positions[a + 2u];
+            const float       fx  = aby * acz - abz * acy;
+            const float       fy  = abz * acx - abx * acz;
+            const float       fz  = abx * acy - aby * acx;
+            for (const auto vertex : {a, b, c}) {
+                normals[vertex] += fx;
+                normals[vertex + 1u] += fy;
+                normals[vertex + 2u] += fz;
+            }
+        }
+        for (std::size_t i = 0; i + 2 < normals.size(); i += 3) {
+            const float length =
+                std::sqrt(normals[i] * normals[i] + normals[i + 1u] * normals[i + 1u] + normals[i + 2u] * normals[i + 2u]);
+            if (length > 1e-7f) {
+                normals[i] /= length;
+                normals[i + 1u] /= length;
+                normals[i + 2u] /= length;
+            }
+        }
     }
     for (const auto& [key, value] : input.metadata()) output.setMeta(key, value);
     vertexSourceIds = std::move(outSources);
@@ -210,16 +246,18 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan& plan) {
         if (!cleared.ok()) return Result<MeshBuild>::failure(cleared.status());
     }
 
-    if (plan.weldTolerance_ > 0.f) {
-        auto welded = weldMeshLocal(combined, plan.weldTolerance_, vertexSourceIds);
-        if (!welded.ok()) return welded;
-        combined = std::move(welded).takeValue();
-    }
-
+    // Contact blend first so soft-snap can close gaps; weld afterward so snapped
+    // contact verts can become a continuous shell with shared normals.
     if (plan.enableContactBlend_) {
         auto blended = meshContactBlendResult(combined, vertexSourceIds, plan.blendParams_);
         if (!blended.ok()) return blended;
         combined = std::move(blended).takeValue();
+    }
+
+    if (plan.weldTolerance_ > 0.f) {
+        auto welded = weldMeshLocal(combined, plan.weldTolerance_, vertexSourceIds);
+        if (!welded.ok()) return welded;
+        combined = std::move(welded).takeValue();
     }
 
     if (plan.simplifyQuality_ > 0.f && plan.simplifyQuality_ < 1.f) {
