@@ -56,6 +56,8 @@ NON_RUNNABLE_EXAMPLES: Mapping[str, str] = {
     "shader_effect_package": "打包好的 shader effect 资产包（effect.vert/frag + parameters.json），供其它示例引用。",
     "particle-effects": "粒子特效 JSON 资产包（fire/smoke/impact/trail/weather.effect.json），由 Particles::newEffectFromFile 加载，不是 eve 可运行项目。",
     "surface-fluid-dynamic": "C++ 侧流体示例（main.cpp），随构建系统编译，不是 eve 可运行项目。",
+    "workspace-recipes": "编辑器 Workspace 配方目录（嵌套 combat-action/audio-source/scene-inspect 薄壳），"
+    "本身不是 eve run 项目；完整可运行编辑器见 combat-action-editor 等。",
 }
 
 # ``config = { ... }`` / ``config <- { ... }`` or a direct field assignment.
