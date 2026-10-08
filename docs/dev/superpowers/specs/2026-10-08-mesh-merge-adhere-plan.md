@@ -8,20 +8,20 @@
 
 创作侧常见两类「合并」需求，语义不同，不能混成一个工具：
 
-1. **结构合并（UE Merge Actors 类）**  
-   多个已变换的 Static Mesh 拼成一份 `MeshBuild` / 资产：按材质分 triangle group、可选 weld、可选简化 LOD，目标是减 draw call、统一碰撞/光照资源。本引擎已有 `MeshBuild::appendTransformed`、`mesh.merge`、`combinePcgStaticMeshes`、`buildPcgCombinedMeshLods`、`mesh.weld`。
+1. **静态合并（UE Merge Actors 类 + 缝线融合）**  
+   多个已变换的 Static Mesh 拼成一份 `MeshBuild` / 资产：拼接与可选 weld/simplify 之外，**还必须在源网格接触带做边缘融合（几何/法线）与材质融合**，避免「只拼拓扑、接缝硬切」的可见裂缝。本引擎已有 `appendTransformed` / `combinePcgStaticMeshes` / `mesh.weld`，但**没有**接触带融合内核。
 
-2. **视觉粘合（Merge Master 类）**  
-   活动网格 A 在接触带内贴合基体 B，带 Strength / Radius / Falloff 与法线过渡；预览非破坏，满意后再 Bake。本引擎已有射线贴合 `deform.meshFit`、`mesh.boolean`、`MeshDeformationSession`，但缺少「按距离衰减的接触带粘合 + 缝线法线混合 + 可选材质过渡」的一等节点。
+2. **曲面粘合（Merge Master 类）**  
+   活动网格 A 在接触带内贴合基体 B（Strength / Radius / Falloff + 法线/材质过渡）；预览非破坏，再 Bake。与静态合并共享同一套「接触带融合」原语，差别是粘合还要做位置贴合，且默认非破坏会话。
 
-本计划按两阶段组织实现顺序（先结构合并，再粘合算法与会话），但**全部在同一实现 PR 内交付**，不再拆成多个功能 PR。
+本计划按两阶段组织实现顺序（先静态合并含融合，再粘合会话），但**全部在同一实现 PR 内交付**，不再拆成多个功能 PR。
 
 ## 目标
 
-1. 提供作者/脚本可调用的 **结构合并** 入口，覆盖 UE Merge Actors 的常用路径（Merge + 可选 weld/simplify），并带稳定 `Result` 诊断。
-2. 新增 **曲面粘合** 修改器节点（建议名 `deform.meshAdhere`），参数语义对齐 Merge Master 公开文档（Strength / Radius / Falloff / Normals），实现完全自研。
-3. 粘合支持非破坏会话（预览 / 撤销 / Bake），Bake 产出 owning `MeshBuild`，可选再接现有 `mesh.boolean` 去掉内面。
-4. 编辑器入口挂在 `procgen_editing` / `procgen_editor`（`MeshModifierEditor`），不新建顶层模块。
+1. 提供作者/脚本可调用的 **静态合并** 入口：拼接 + 可选 weld/simplify，且 **v1 即含边缘融合与材质融合**（可关，但默认开启合理半径），稳定 `Result` 诊断。
+2. 抽取共享 CPU 原语（建议 `MeshContactBlend`）：按源归属做最近点/接触带权重 → 边缘（位置软焊或法线混合）+ 材质混合权重；供 `mergeStaticMeshes` 与 `deform.meshAdhere` 共用。
+3. 新增 **曲面粘合** 节点 `deform.meshAdhere`（Strength / Radius / Falloff / Normals / 材质混合），实现自研；非破坏会话 + Bake；可选再接 `mesh.boolean`。
+4. 编辑器入口挂在 `procgen_editing` / `procgen_editor`，不新建顶层模块。
 5. 全部公共路径遵守 Result / `[[nodiscard]]`、确定性契约、裁剪构建与架构门禁。
 
 ## 非目标
@@ -49,65 +49,103 @@ L7  procgen_editor          MeshModifierEditor 工具条与面板
 
 | 能力 | 现状 | 本计划 |
 |------|------|--------|
-| 多网格变换拼接 | `appendTransformed` / `mesh.merge` / `combinePcgStaticMeshes` | Phase A 统一门面 + 诊断码 |
-| 按材质 section | triangle group / material id | 保持；门面文档化 |
-| Weld | `mesh.weld` | Phase A 可选步骤 |
-| 简化 LOD | `buildPcgCombinedMeshLods` / GTS simplify | Phase A 可选 profile |
-| 射线贴合 | `deform.meshFit` | 保留；粘合不替换它 |
-| 接触带粘合 | 无 | Phase B `deform.meshAdhere` |
-| 法线过渡 | 贴合后整网 `recalculateNormals` | Phase B 带状混合 |
-| 材质过渡 | 无 | Phase B 可选（强度/半径）；可延期 B2 |
-| 布尔去内面 | `mesh.boolean` | Bake 后可选图节点，不内嵌死绑 |
-| 非破坏会话 | `MeshDeformationSession` | Phase B 复用或薄封装 |
-| 替换场景实例 | 无一等「Replace Source Actors」 | Phase A 可选 editing 事务；默认可只产出网格 |
+| 多网格变换拼接 | `appendTransformed` / `mesh.merge` / `combinePcgStaticMeshes` | Phase A 门面第一步 |
+| 按材质 section | triangle group / material id | 保留；融合带可写 blend，不强制打成单一材质 |
+| Weld | `mesh.weld` | Phase A 可选硬焊 |
+| **边缘融合**（接触带法线/软几何） | 无 | **Phase A 必做**（共享 `MeshContactBlend`） |
+| **材质融合**（接触带权重/混合） | 无 | **Phase A 必做**（同内核；Adhere 复用） |
+| 简化 LOD | `buildPcgCombinedMeshLods` / GTS simplify | Phase A 可选；建议在融合之后 |
+| 射线贴合 | `deform.meshFit` | 保留 |
+| 接触带位置粘合 | 无 | Phase B `deform.meshAdhere` |
+| 布尔去内面 | `mesh.boolean` | Bake/合并后可选图节点 |
+| 非破坏会话 | `MeshDeformationSession` | Phase B |
+| 替换场景实例 | 无 | Phase A editing 事务（可选） |
 
 ---
 
-## Phase A — 结构合并（Merge Actors 类）
+## 共享原语 — `MeshContactBlend`（A/B 共用，同 PR 先落地）
+
+静态合并与曲面粘合都依赖同一接触带逻辑，**先实现共享内核，再挂两套入口**。
+
+**输入约定**：
+
+- 若干「源片」：每片有 world 空间 `MeshBuild`（或已变换副本）与稳定 `sourceId`（静态合并 = 各 Actor；粘合 = A vs B）。
+- 融合参数：`edgeRadius`、`materialRadius`（可与 edge 共用或独立）、`strength`、`falloff`、`normalsBlend`、`materialBlend`。
+
+**对每个顶点（归属 source S）**：
+
+1. 在**其他源片**表面上求最近点 \(q\)、法线 \(n\)、对方 `sourceId` / material group（BVH；构建顺序确定性）。
+2. \(d=\|p-q\|\)；超出查询上限则跳过。
+3. \(w_{\mathrm{edge}}=\mathrm{falloff}(1-\mathrm{saturate}(d/\texttt{edgeRadius}))\cdot\texttt{strength}\)。
+4. **边缘融合**：法线与 \(n\) 按 \(w_{\mathrm{edge}}\cdot\texttt{normalsBlend}\) 混合；可选位置软拉向 \(q\)（静态合并默认偏保守：以法线为主、位置软拉可关；粘合默认位置贴合开）。
+5. \(w_{\mathrm{mat}}=\mathrm{falloff}(1-\mathrm{saturate}(d/\texttt{materialRadius}))\cdot\texttt{materialBlend}\)。
+6. **材质融合**：写入 per-vertex blend 权重（顶点色 alpha 或命名 float 属性，如 `contactBlend`）及对方 material group id（或双权重）；**不改写 UV**。渲染侧用现有/后续材质图做 lerp；CPU 侧保证权重确定性。若引擎暂无运行时双材质采样，v1 至少产出可烘焙的权重属性 + 文档约定，并提供「Bake 到单一 atlas/顶点色近似」的可选路径之一（实现时选一种写死并测通）。
+
+**输出**：owning 网格（或就地写入合并缓冲）+ 不部分发布；诊断 `procgen.mesh.blend.*`。
+
+---
+
+## Phase A — 静态合并（拼接 + 边缘/材质融合）
 
 ### A1. 领域 API
-
-在 `procgen` 增加 owning 门面（名称可微调，语义固定）：
 
 ```text
 MeshMergePlan
   - appendSource(const MeshBuild&, transform, defaultMaterialId)
-  - options: weldTolerance (optional), simplifyProfile (optional),
-             mergeVertexColors, pivotMode (firstSource | worldOrigin)
+  - options:
+      weldTolerance (optional)          // 硬距离焊，与软边缘融合可并存
+      simplifyProfile (optional)        // 建议 fuse 之后
+      mergeVertexColors
+      pivotMode (firstSource | worldOrigin)
+      // 接触带融合（v1 一等公民；radius=0 可关闭）
+      edgeRadius, materialRadius
+      strength, falloff
+      normalsBlend, materialBlend
+      softSnapPositions (bool, default false for static merge)
 
 Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 ```
 
+流水线（成功才替换输出）：
+
+1. 变换并拼接各源（保留 per-vertex `sourceId` / material group）。
+2. 可选 `weld`（硬拓扑合并）。
+3. **`MeshContactBlend`**：跨 source 边缘融合 + 材质融合。
+4. 可选 simplify LOD。
+5. 按 pivotMode 重定位。
+
 约束：
 
-- 输入仅借用；成功才返回新 `MeshBuild`；失败不发布部分网格。
-- 诊断前缀稳定：`procgen.mesh.merge.*`（空计划、非法变换、零缩放、不兼容属性等）。
-- 与现有 `combinePcgStaticMeshes` 的关系：门面可内部委托；旧 API 保留为兼容或薄包装，文档标明 canonical 入口。
-- Pivot：`firstSource` 对齐 UE「首选项枢轴」；`worldOrigin` 对齐「Pivot Point at Zero」。
-- 不做物理碰撞合并的第一期承诺；若后续接 collider cook，另开子任务并用 Result 标明未实现。
+- 输入仅借用；失败不发布部分网格。
+- 诊断：`procgen.mesh.merge.*` / `procgen.mesh.blend.*`。
+- `combinePcgStaticMeshes` 可继续作「纯拼接、无融合」底层；canonical 作者入口是 `mergeStaticMeshes`（含融合）。文档标明二者差异，避免双真相。
+- Pivot：`firstSource` / `worldOrigin` 对齐 UE 常见选项。
+- 物理碰撞合并仍非本 PR 承诺。
 
 ### A2. 图 / 脚本
 
-- `MeshGraph` / 脚本：`eve.mergeStaticMeshes(plan)` 或等价；参数与 C++ 同构。
-- 现有 `mesh.merge`（二输入 append）保留；文档说明多源 + 选项走新门面。
+- `eve.mergeStaticMeshes(plan)`；融合参数与 C++ 同构。
+- 现有 `mesh.merge`（二输入 append）保留为无融合快路径；文档引导需要缝线融合时走新门面。
 
 ### A3. 编辑器
 
-- `procgen_editor`：选中多个网格目标 → Merge → 弹出选项 → 写出新网格资源/实例。
-- 「替换源」为可选事务：成功写入后再移除/隐藏源；失败回滚，不留半替换场景。
+- 选中多网格 → Merge → 选项含 **Edge Radius / Material Blend / Normals Blend**（及 weld/simplify）。
+- 「替换源」可选事务；失败回滚。
 - 主线程亲和；不在持锁时调脚本。
 
 ### A4. 验收
 
-- 单测：两/三网格变换合并、材质 group 合并、weld 开/关、空计划失败、自引用失败、确定性（同输入同字节布局）。
-- 组合测：合并 → 上传 graphics mesh（若现有测试夹具允许）或 `CanonicalMesh` 编码往返。
-- 文档：`docs/usr/modules/procgen.md` 增加 Merge 小节，对照 UE Merge / Simplify 的覆盖范围与非目标。
+- 拼接：两/三网格变换、材质 group、weld 开/关、空计划失败、确定性。
+- **融合**：两相交或贴合的盒子/平面——`edgeRadius>0` 时接缝法线连续（夹具度量）；`materialBlend>0` 时边界顶点权重落入 (0,1)；`edgeRadius=0` 且 `materialBlend=0` 时与纯拼接（容差内）一致。
+- 组合：合并 → `CanonicalMesh` 往返（含 blend 属性）。
+- usr 文档：写清融合属性名、与「仅 combine」的差异。
 
 ### A5. 实现顺序（同 PR 内）
 
-1. `MeshMergePlan` + `mergeStaticMeshes` + 单测。
-2. 脚本绑定 + usr 文档。
-3. Editor 工具 + 替换源事务（与算法同 PR；若排期紧张可先做只产出网格、不替换场景的最小编辑器入口，但仍落在同一 PR）。
+1. `MeshContactBlend` + 单测（法线/材质权重夹具）。
+2. `MeshMergePlan` + `mergeStaticMeshes`（拼接 → blend → 可选 weld/simplify）+ 单测。
+3. 脚本绑定 + usr 文档。
+4. Editor 合并工具（含融合滑条）。
 
 ---
 
@@ -116,41 +154,33 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 ### B1. 算法节点 `deform.meshAdhere`
 
 **输入**：源网格 A、表面网格 B（与 `deform.meshFit` 相同的双输入约定）。  
-**输出**：owning 变形后的 A（拓扑与索引不变；仅位置/法线，可选顶点色作材质混合权重）。
+**输出**：owning 变形后的 A（拓扑与索引不变；位置/法线 + 材质融合权重，与静态合并同一属性约定）。
 
-**参数（v1）**：
+**参数（v1）**：与 `MeshContactBlend` 对齐，并增加粘合专用项：
 
 | 参数 | 含义 |
 |------|------|
-| `strength` | 朝 B 表面拉动的强度 \[0,1\]（或与 Global 联动的标量） |
-| `radius` | 接触带世界空间半径 |
-| `falloff` | `smooth` / `linear` / `sharp` / `sphere`（曲线预设；自定义曲线可 B2） |
-| `normalsBlend` | 过渡带法线混合强度 |
-| `surfaceOffset` | 沿命中法线的间隙（复用 meshFit 语义） |
-| `maxQueryDistance` | 最近点搜索上限（性能与稳定性） |
+| `strength` / `edgeRadius` / `materialRadius` | 同共享原语；Global 可联动 |
+| `falloff` | `smooth` / `linear` / `sharp` / `sphere`（自定义曲线可延期） |
+| `normalsBlend` / `materialBlend` | 边缘法线与材质融合（**v1 必做**，非延期项） |
+| `softSnapPositions` | 默认 `true`：位置贴向 B |
+| `surfaceOffset` | 沿命中法线间隙 |
+| `maxQueryDistance` | 最近点搜索上限 |
 
-**数学（v1，可测）**：
-
-1. 对 A 每个顶点 \(p\)，求 B 上最近点 \(q\) 与法线 \(n\)（三角网格：BVH + 点到三角；无 BVH 时允许暴力实现，但必须用相同 Result 路径，并在文档标明复杂度）。
-2. 距离 \(d = \|p-q\|\)；若 \(d > \texttt{maxQueryDistance}\) 则跳过。
-3. 权重 \(w = \mathrm{falloff}(1 - \mathrm{saturate}(d / \texttt{radius})) \cdot \texttt{strength}\)。
-4. \(p' = \mathrm{lerp}(p, q + n\cdot\texttt{surfaceOffset}, w)\)。
-5. 法线：在带内将顶点法线与 \(n\) 按 \(w \cdot \texttt{normalsBlend}\) 混合后归一化；带外保持或整网重算策略在实现前写死一种并测黄金夹具。
-
-**确定性**：同输入网格与参数 → 同顶点浮点结果（CPU 容差内）；禁止依赖哈希表遍历顺序；BVH 构建顺序固定。
+**实现**：双源调用 `MeshContactBlend`（A←B；粘合阶段通常只变形 A）；位置项 \(p'=\mathrm{lerp}(p,q+n\cdot\texttt{surfaceOffset},w_{\mathrm{edge}})\)。
 
 **与 `deform.meshFit` 的分工**：
 
 - `meshFit`：沿指定方向的有界射线贴合（已有）。
-- `meshAdhere`：各向最近点 + 半径衰减粘合（新建）。二者并存，不互相废弃。
+- `meshAdhere`：各向最近点 + 半径衰减粘合 + 与静态合并相同的边缘/材质融合。二者并存。
 
-### B2. 可选增强（不阻塞 v1）
+### B2. 可选增强（不进本实现 PR）
 
-- 材质混合：在半径内写 blend 权重属性或顶点色；不改写 UV。
-- 自定义 falloff 曲线。
-- Bake 后自动 `mesh.boolean(difference/union)` 去内面（打印/封闭实体工作流）。
-- 多 A 共享同一 B 的独立参数（参数存在图节点或 editing 文档上，权威在图/会话，不在 GPU mesh）。
-- 链式粘合：B 可为上一节点输出（图组合自然支持）。
+- 自定义 falloff 曲线编辑器。
+- Bake 后自动 `mesh.boolean` 去内面。
+- 多 A 共享同一 B 的独立参数存储 UX。
+- 运行时双材质采样着色器（若 v1 仅 CPU 权重 + 顶点色近似，完整 shading 可后续）。
+- 链式粘合 UX 包装（图组合本身已支持）。
 
 ### B3. 非破坏会话与 Bake
 
@@ -166,17 +196,16 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 
 ### B5. 验收
 
-- 单测：奇异平面上立方体贴合、radius=0 为恒等、strength=0 为恒等、远离表面不变、法线混合夹具、失败注入（空 B、非法 radius）。
-- 与 boolean 组合测：Adhere → Bake → `mesh.boolean` 一条成功路径。
-- 架构：`ARCHITECTURE_BASE=... make check/architecture-contracts`；无新向上依赖；`procgen` 不依赖 editor。
-- 法律：实现与测试夹具均为自研；文档「参考」一节只列公开行为对照表，不附第三方源码。
+- 单测：平面上立方体贴合；radius/strength=0 恒等；远离不变；**法线与材质权重**与静态合并夹具共用断言助手；失败注入（空 B、非法 radius）。
+- 组合：Adhere → Bake → 可选 `mesh.boolean`；与 `mergeStaticMeshes` 共用 blend 属性名回归。
+- 架构 / 法律：同总清单。
 
-### B6. 实现顺序（同 PR 内，接在 Phase A 之后）
+### B6. 实现顺序（同 PR 内，接在共享内核与 Phase A 之后）
 
-1. CPU 节点 `deform.meshAdhere` + BVH/最近点 + 单测。
+1. `deform.meshAdhere` 接 `MeshContactBlend`（`softSnapPositions=true`）+ 单测。
 2. 会话 Activate / Bake / Remove + 图集成。
 3. Editor 面板与 usr 文档。
-4. B2 增强（材质混合、自定义 falloff、Bake 后自动 boolean 等）**不进本 PR**；需要时另开后续工作，不在此计划拆 PR。
+4. B2 项不进本 PR。
 
 ---
 
@@ -202,17 +231,18 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 | 风险 | 缓解 |
 |------|------|
 | 最近点查询在大网格上过慢 | v1 加 BVH；测大网格上限；允许后续 worker 线程（纯函数、无回调） |
-| 粘合产生自交/破洞 | 单测夹具 + 参数钳制；文档警告过大 strength/radius；可选后接 boolean |
-| 与 meshFit 用户混淆 | usr 文档对照表；编辑器工具提示 |
-| 把 GPL/UE 代码带入仓库 | 仅读公开文档；代码审查禁止第三方摘录 |
-| combine 旧 API 双真相 | Phase A 标明 canonical；旧路径委托新实现 |
+| 融合/粘合产生自交或材质闪烁 | 夹具 + 参数钳制；静态合并默认 `softSnapPositions=false`；文档警告过大半径 |
+| 材质融合无运行时双采样 | v1 固定一种可测路径（权重属性 ± 顶点色近似）；完整双材质 shading 放 B2 |
+| 与 meshFit / 纯 combine 混淆 | usr 对照表；编辑器默认打开融合滑条 |
+| 把 GPL/UE 代码带入仓库 | 仅读公开文档；审查禁止第三方摘录 |
+| combine 旧 API 双真相 | canonical = 含融合的 `mergeStaticMeshes`；纯拼接保留并文档化 |
 
 ## 交付方式（单 PR）
 
 - **计划文档**可先合入（本文件所在变更）。
-- **实现**将 Phase A（结构合并 API + 脚本 + 编辑器）与 Phase B v1（`deform.meshAdhere` + 会话 + 编辑器 + 测试 + usr 文档）放在**同一个实现 PR** 中一次提交完整能力面；本地可按 A→B 顺序开发与提交多个 commit，但不拆多个 PR。
-- Phase B2（材质混合等可选增强）明确排除在该实现 PR 之外，避免范围膨胀；不为此预拆 PR 号。
-- 合并前一次跑通：相关 `procgen_mesh*` 单测、组合路径、`check/architecture-contracts`、格式检查。
+- **实现**同一 PR 交付：共享 `MeshContactBlend` + Phase A（含边缘/材质融合的静态合并 + 脚本 + 编辑器）+ Phase B v1（`deform.meshAdhere` + 会话 + 编辑器 + 测试 + usr 文档）。本地顺序建议：共享内核 → A → B；不拆功能 PR。
+- B2（自定义曲线、自动 boolean、完整双材质 shading 等）不进该实现 PR。
+- 合并前跑通：`procgen_mesh*`、融合夹具、`check/architecture-contracts`、格式检查。
 
 ## 参考（公开行为，非实现来源）
 
@@ -222,11 +252,12 @@ Result<MeshBuild> mergeStaticMeshes(const MeshMergePlan&)
 
 ## 交接检查清单（唯一实现 PR）
 
-- [ ] Phase A 与 Phase B v1 同 PR 完整交付（含编辑器入口）
-- [ ] Canonical API 与诊断码已文档化
-- [ ] 新旧 combine/merge 无双真相或已标明兼容层
-- [ ] Adhere 与 meshFit 分工写清
+- [ ] `MeshContactBlend` 落地；静态合并与 Adhere 共用
+- [ ] Phase A：拼接 + **边缘融合 + 材质融合** + 脚本 + 编辑器
+- [ ] Phase B v1：`deform.meshAdhere` + 会话 + 编辑器（含材质/法线融合）
+- [ ] Canonical API 与诊断码已文档化；纯 combine vs 融合 merge 无双真相
+- [ ] Adhere 与 meshFit 分工写清；blend 属性名两端一致
 - [ ] 确定性与线程/重入注释齐全
-- [ ] 单测 + 至少一条组合路径（含 Adhere → Bake → 可选 boolean）
+- [ ] 单测含边缘/材质融合夹具 + 至少一条组合路径
 - [ ] `check/architecture-contracts` 与相关 `make test FILTER=procgen_mesh*` 通过
 - [ ] 无第三方源码摘录；B2 未偷加进本 PR
