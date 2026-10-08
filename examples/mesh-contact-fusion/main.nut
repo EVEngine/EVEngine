@@ -139,7 +139,7 @@ function fusionMergePair(mode) {
     local merged = fusionRequire(eve.mergeStaticMeshes(plan), "merge " + mode);
     local mesh = merged.value;
     if (enableBlend) {
-        mesh = fusionRelax(mesh, 0.7, 8);
+        mesh = fusionRelax(mesh, 0.8, 12);
         mesh = fusionPaintContactBand(mesh);
     }
     print("mesh-contact-fusion: mode=" + mode + " dx=" + dx + " soft=" + soft +
@@ -157,7 +157,7 @@ function fusionUploadLive() {
         fusionRequire(fusionLive.evaluate(false), "evaluate live adhere");
     local snapshot = fusionRequire(fusionLive.derivedMeshResult(), "live derived snapshot").value;
     // Soft-snap already recalculates triangle normals; relax softens the melt rim crease.
-    snapshot = fusionRelax(snapshot, 0.4, 3);
+    snapshot = fusionRelax(snapshot, 0.55, 6);
     snapshot = fusionPaintContactBand(snapshot);
     local uploaded = fusionRequire(procgen.uploadMesh(snapshot, gfx), "upload live derived").value;
     fusionLiveVisual.setMesh(uploaded);
@@ -183,7 +183,7 @@ function fusionRebuildLiveSource() {
             fusionLiveVisual.setPosition(4.8, 0.0, 0.0);
             // Near-white so painted contact RGB (hot weld patch) reads clearly.
             fusionLiveVisual.setTint(1.0, 1.0, 1.0, 1.0);
-            fusionLiveVisual.setRoughness(0.45);
+            fusionLiveVisual.setRoughness(0.7);
             fusionLiveVisual.setMetallic(0.05);
             fusionLiveVisual.setCastShadow(true);
             fusionLiveVisual.setReceiveShadow(true);
@@ -206,7 +206,7 @@ function fusionBuildStaticShowcase() {
     fusionAdd(plain, -4.6, 0.0, 0.72, 0.76, 0.82, 0.55);
     local fused = fusionMergePair("fuse");
     // Near-white tint so painted weld neck + deformed silhouette read clearly.
-    fusionAdd(fused, 0.0, 0.0, 1.0, 1.0, 1.0, 0.42);
+    fusionAdd(fused, 0.0, 0.0, 1.0, 1.0, 1.0, 0.72);
 }
 
 function fusionBuildUi() {

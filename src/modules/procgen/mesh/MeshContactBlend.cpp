@@ -341,7 +341,7 @@ void smoothNormalsNeighborhood(MeshBuild& mesh, int iterations) {
 
 void finalizeSoftSnapNormals(MeshBuild& mesh) {
     recalculateNormalsFromGeometry(mesh);
-    smoothNormalsNeighborhood(mesh, 5);
+    smoothNormalsNeighborhood(mesh, 12);
     mesh.setMeta("contactBlend.normals", "recalculated+smoothed");
 }
 
