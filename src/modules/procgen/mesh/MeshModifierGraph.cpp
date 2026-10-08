@@ -1,5 +1,6 @@
 #include "procgen/mesh/MeshModifierGraph.h"
 #include "procgen/mesh/MeshBoolean.h"
+#include "procgen/mesh/MeshContactBlend.h"
 #include "procgen/mesh/MeshUvProjection.h"
 
 #include <algorithm>
@@ -135,6 +136,18 @@ const std::vector<OperationSpec>& operationSpecs() {
               {"maxDistance", "float", "10"},
               {"surfaceOffset", "float", "0"},
               {"bidirectional", "int", "0"}}},
+            {"deform.meshAdhere",
+             2,
+             false,
+             {{"strength", "float", "1"},
+              {"edgeRadius", "float", "0.5"},
+              {"materialRadius", "float", "0.5"},
+              {"normalsBlend", "float", "1"},
+              {"materialBlend", "float", "1"},
+              {"surfaceOffset", "float", "0"},
+              {"maxQueryDistance", "float", "0"},
+              {"softSnapPositions", "int", "1"},
+              {"falloff", "string", "smooth"}}},
             {"deform.spline",
              1,
              false,
@@ -1841,6 +1854,29 @@ Result<MeshBuild> MeshModifierGraph::executeNode(const Node&                    
                                                                 "deform.meshFit surface input was not evaluated",
                                                                 node.id, {}, "procgen.meshModifierGraph"));
         return meshFitMesh(first->second, second->second, node);
+    }
+    if (node.operation == "deform.meshAdhere") {
+        const auto second = outputs.find(node.inputs[1]);
+        if (second == outputs.end())
+            return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "deform.meshAdhere surface input was not evaluated",
+                                                                node.id, {}, "procgen.meshModifierGraph"));
+        MeshContactBlendParams params;
+        const std::string      falloff = stringParameter(node, "falloff", "smooth");
+        params.strength                = parameter(node, "strength", 1.f);
+        params.edgeRadius              = parameter(node, "edgeRadius", 0.5f);
+        params.materialRadius          = parameter(node, "materialRadius", 0.5f);
+        params.normalsBlend            = parameter(node, "normalsBlend", 1.f);
+        params.materialBlend           = parameter(node, "materialBlend", 1.f);
+        params.surfaceOffset           = parameter(node, "surfaceOffset", 0.f);
+        params.maxQueryDistance        = parameter(node, "maxQueryDistance", 0.f);
+        params.softSnapPositions       = intParameter(node, "softSnapPositions", 1) != 0;
+        params.falloff                 = falloff;
+        auto adhered = meshContactBlendAgainstSurfaceResult(first->second, second->second, params);
+        if (!adhered.ok()) return adhered;
+        MeshBuild output = std::move(adhered).takeValue();
+        output.setMeta("deformer", "deform.meshAdhere");
+        return Result<MeshBuild>::success(std::move(output));
     }
     if (node.operation == "deform.smooth")
         return smoothMesh(first->second, parameter(node, "strength", 0.5f), intParameter(node, "iterations", 1));

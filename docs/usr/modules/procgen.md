@@ -1580,6 +1580,20 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 沿命中面法线保留间隙。节点只消费 owning 网格快照，因此既可由 Physics collider 适配器提供目标，
 也可完全离线运行，不引入 procgen 到 physics 的反向依赖。
 
+### 静态合并与动态融合（接触带）
+
+`MeshMergePlan` / `eve.mergeStaticMeshes(plan)` 是提交式静态合并入口：按源变换拼接，可选
+`weldTolerance` 与 `simplifyQuality`。**接触带边缘/材质融合默认关闭**
+（`setEnableContactBlend(false)`）；需要缝线过渡时再 `setEnableContactBlend(true)` 并
+`setContactBlend(...)`。融合权重写入顶点色 alpha（`contactBlend`），不改 UV。纯拼接仍可用
+`combinePcgStaticMeshes`；canonical 作者路径是 `mergeStaticMeshes`。
+
+共享 CPU 原语为 `meshContactBlendResult`（多 sourceId）与
+`meshContactBlendAgainstSurfaceResult`（A 贴 B）。`deform.meshAdhere` 图节点与
+`MeshAdhereLive` 会话走后者：引擎实时求值，参数/表面可随时修改后 `evaluate`，源网格保持权威，
+`bakeToMesh` 可选冻结，`removeSetup` 结束会话。设计说明见
+`docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`。
+
 连续、单消费者的逐顶点 deform 会编译成一个 CPU segment，一次遍历完成；smooth、append、
 weld 等需要邻接或拓扑处理的节点是明确的融合边界。参数或连线变更递增 revision 并使缓存失效，
 失败执行不会发布部分修改的网格。
