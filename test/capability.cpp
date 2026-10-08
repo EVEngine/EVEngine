@@ -292,7 +292,8 @@ TEST_CASE("capability.providerRefBindsOnceAndIsNonCopyable") {
     Hello hello;
     eve::cap::provide<IGreeter>(&hello);
     eve::cap::ProviderRef<IGreeter> greeter = eve::cap::ProviderRef<IGreeter>::bind();
-    REQUIRE(greeter);
+    // Avoid REQUIRE(greeter): zeroerr pretty-printing would copy the non-copyable ref.
+    REQUIRE(greeter.get() != nullptr);
     CHECK_EQ(greeter->greet(), "hello");
 
     // Revoke does not auto-clear a cached ProviderRef; lifetime is the caller's.
@@ -303,19 +304,20 @@ TEST_CASE("capability.providerRefBindsOnceAndIsNonCopyable") {
 TEST_CASE("capability.ownedProvideAcquireAndStaleUnload") {
     Reset reset;
     auto hello = std::make_shared<Hello>();
-    auto handle =
+    auto handleResult =
         eve::cap::OwnedProviderRegistry<IGreeter>::provide("greeter.main", hello);
-    REQUIRE(handle);
-    auto lease = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle.value());
-    REQUIRE(lease);
-    CHECK_EQ(lease.value()->greet(), "hello");
+    REQUIRE(handleResult.ok());
+    const auto handle = std::move(handleResult).takeValue();
+    auto       leaseResult = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle);
+    REQUIRE(leaseResult.ok());
+    CHECK_EQ(leaseResult.value()->greet(), "hello");
     // Borrowed query slot mirrors the owned publication.
     REQUIRE(eve::cap::query<IGreeter>() != nullptr);
     CHECK_EQ(eve::cap::query<IGreeter>()->greet(), "hello");
 
-    auto unloaded = eve::cap::OwnedProviderRegistry<IGreeter>::unload(handle.value());
-    REQUIRE(unloaded);
-    auto stale = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle.value());
-    CHECK(!stale);
+    auto unloaded = eve::cap::OwnedProviderRegistry<IGreeter>::unload(handle);
+    REQUIRE(unloaded.ok());
+    auto stale = eve::cap::OwnedProviderRegistry<IGreeter>::acquire(handle);
+    CHECK(!stale.ok());
     CHECK(eve::cap::query<IGreeter>() == nullptr);
 }
