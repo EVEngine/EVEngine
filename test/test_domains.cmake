@@ -276,6 +276,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "agent_development_session;devtools"
     "callgraph;devtools"
     "console;devtools"
+    "frame_stats;devtools"
     "dap;devtools"
     "debugger;devtools"
     "language_;devtools"

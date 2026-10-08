@@ -29,6 +29,7 @@ namespace eve::dev {
 class McpServer;
 class AiPanel;
 class ConsolePanel;
+class FrameStatsPanel;
 
 /**
  * @brief Platform-level script + render debugger / dynamic slicer front-end.
@@ -83,6 +84,8 @@ public:
     void drawAiPanel();
     /** @brief Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
     void drawConsolePanel();
+    /** @brief Draw FPS / frame-time overlay when visible (call from UI/frame loop). */
+    void drawFrameStatsPanel();
 
     bool isAttached() const { return vm_ != nullptr; }
     /** @brief True when errors also flow through Runtime::setErrorHandler. */
@@ -102,6 +105,7 @@ public:
     McpServer&        mcp();
     AiPanel&          ai();
     ConsolePanel&     console();
+    FrameStatsPanel&  frameStats();
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;
