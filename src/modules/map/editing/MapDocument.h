@@ -73,10 +73,10 @@ public:
     /** @brief Releases IMapRoadMeshSink resources. */
     virtual ~IMapRoadMeshSink() = default;
     /** @brief Atomically publish or replace one generated road mesh. */
-    virtual EditorResult<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
+    virtual Result<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
                                            const EditorValue& mesh) = 0;
     /** @brief Remove a previously published road mesh. */
-    virtual EditorResult<void> removeRoad(const std::string& document, const StableId& road) = 0;
+    virtual Result<void> removeRoad(const std::string& document, const StableId& road) = 0;
 };
 
 /** @brief Imported object record before stable placement ids are assigned. */
@@ -110,19 +110,19 @@ public:
     /** @brief Enumerate placements in stable id order. */
     virtual std::vector<MapPlacementRecord> mapPlacements() const = 0;
     /** @brief Plan reversible layer creation. */
-    virtual EditorResult<DomainOperation> makeCreateLayer(const MapLayerRecord& layer) const = 0;
+    virtual Result<DomainOperation> makeCreateLayer(const MapLayerRecord& layer) const = 0;
     /** @brief Plan deletion of an empty layer. */
-    virtual EditorResult<DomainOperation> makeDeleteLayer(const StableId& layer) const = 0;
+    virtual Result<DomainOperation> makeDeleteLayer(const StableId& layer) const = 0;
     /** @brief Plan reversible layer metadata replacement. */
-    virtual EditorResult<DomainOperation> makeSetLayer(const MapLayerRecord& layer) const = 0;
+    virtual Result<DomainOperation> makeSetLayer(const MapLayerRecord& layer) const = 0;
     /** @brief Plan reversible road creation or replacement. */
-    virtual EditorResult<DomainOperation> makeSetRoad(const MapRoadRecord& road) const = 0;
+    virtual Result<DomainOperation> makeSetRoad(const MapRoadRecord& road) const = 0;
     /** @brief Plan reversible road deletion. */
-    virtual EditorResult<DomainOperation> makeDeleteRoad(const StableId& road) const = 0;
+    virtual Result<DomainOperation> makeDeleteRoad(const StableId& road) const = 0;
     /** @brief Plan reversible placement creation or replacement. */
-    virtual EditorResult<DomainOperation> makeSetPlacement(const MapPlacementRecord& placement) const = 0;
+    virtual Result<DomainOperation> makeSetPlacement(const MapPlacementRecord& placement) const = 0;
     /** @brief Plan reversible placement deletion. */
-    virtual EditorResult<DomainOperation> makeDeletePlacement(const StableId& placement) const = 0;
+    virtual Result<DomainOperation> makeDeletePlacement(const StableId& placement) const = 0;
 };
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
@@ -142,11 +142,11 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Map layers. */
     std::vector<MapLayerRecord>     mapLayers() const override;
@@ -155,19 +155,19 @@ public:
     /** @brief Map placements. */
     std::vector<MapPlacementRecord> mapPlacements() const override;
     /** @brief Make create layer. */
-    EditorResult<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
+    Result<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
     /** @brief Make delete layer. */
-    EditorResult<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
+    Result<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
     /** @brief Make set layer. */
-    EditorResult<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
+    Result<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
     /** @brief Make set road. */
-    EditorResult<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
+    Result<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
     /** @brief Make delete road. */
-    EditorResult<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
+    Result<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
     /** @brief Make set placement. */
-    EditorResult<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
+    Result<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
     /** @brief Make delete placement. */
-    EditorResult<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
+    Result<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
 
     /** @brief Validate layers, spline geometry and placement references. */
     std::vector<EditorDiagnostic> validate() const;
@@ -176,7 +176,7 @@ public:
     /** @brief Capture deterministic map structure data. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load schema-version-one map structure data. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                            id_;
@@ -189,7 +189,7 @@ private:
 class EVENGINE_API_WORLD MapRoadMeshPublisher {
 public:
     /** @brief Generate and publish one road mesh to the supplied host sink. */
-    EditorResult<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
+    Result<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
                                IMapRoadMeshSink& sink, int triangleBudget = 10000) const;
 };
 

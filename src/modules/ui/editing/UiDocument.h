@@ -39,8 +39,7 @@ using editing::SelectionItem;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-template <class T>
-using EditorResult     = editing::Result<T>;
+using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -122,23 +121,23 @@ public:
     /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.ui-document"); }
     /** @brief Widget. */
-    virtual EditorResult<UiWidgetSnapshot> widget(const ObjectId& id) const                                     = 0;
+    virtual Result<UiWidgetSnapshot> widget(const ObjectId& id) const                                     = 0;
     /** @brief Children. */
     virtual std::vector<ObjectId>          children(const ObjectId& parent) const                               = 0;
     /** @brief Make create. */
-    virtual EditorResult<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const               = 0;
+    virtual Result<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const               = 0;
     /** @brief Make delete. */
-    virtual EditorResult<DomainOperation>  makeDelete(const ObjectId& id) const                                 = 0;
+    virtual Result<DomainOperation>  makeDelete(const ObjectId& id) const                                 = 0;
     /** @brief Make rename. */
-    virtual EditorResult<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const        = 0;
+    virtual Result<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const        = 0;
     /** @brief Make reparent. */
-    virtual EditorResult<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const       = 0;
+    virtual Result<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const       = 0;
     /** @brief Make set layout. */
-    virtual EditorResult<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const = 0;
+    virtual Result<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const = 0;
     /** @brief Plan replacement of renderer-neutral widget style. */
-    virtual EditorResult<DomainOperation> makeSetStyle(const ObjectId& id, const UiStyleValue& style) const = 0;
+    virtual Result<DomainOperation> makeSetStyle(const ObjectId& id, const UiStyleValue& style) const = 0;
     /** @brief Plan replacement of text/font/texture content skin. */
-    virtual EditorResult<DomainOperation> makeSetContent(const ObjectId& id, const UiContentValue& content) const = 0;
+    virtual Result<DomainOperation> makeSetContent(const ObjectId& id, const UiContentValue& content) const = 0;
 };
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
@@ -160,30 +159,30 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clone an isolated owning candidate for atomic compensation. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Publish a validated candidate belonging to this document. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Widget. */
-    EditorResult<UiWidgetSnapshot> widget(const ObjectId& id) const override;
+    Result<UiWidgetSnapshot> widget(const ObjectId& id) const override;
     /** @brief Children. */
     std::vector<ObjectId>          children(const ObjectId& parent) const override;
     /** @brief Make create. */
-    EditorResult<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const override;
+    Result<DomainOperation>  makeCreate(const CreateUiWidgetRequest& request) const override;
     /** @brief Make delete. */
-    EditorResult<DomainOperation>  makeDelete(const ObjectId& id) const override;
+    Result<DomainOperation>  makeDelete(const ObjectId& id) const override;
     /** @brief Make rename. */
-    EditorResult<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const override;
+    Result<DomainOperation>  makeRename(const ObjectId& id, const std::string& name) const override;
     /** @brief Make reparent. */
-    EditorResult<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const override;
+    Result<DomainOperation>  makeReparent(const ObjectId& id, const ObjectId& parent) const override;
     /** @brief Make set layout. */
-    EditorResult<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const override;
+    Result<DomainOperation>  makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const override;
     /** @brief Make set style. */
-    EditorResult<DomainOperation>  makeSetStyle(const ObjectId& id, const UiStyleValue& style) const override;
+    Result<DomainOperation>  makeSetStyle(const ObjectId& id, const UiStyleValue& style) const override;
     /** @brief Make set content. */
-    EditorResult<DomainOperation>  makeSetContent(const ObjectId& id, const UiContentValue& content) const override;
+    Result<DomainOperation>  makeSetContent(const ObjectId& id, const UiContentValue& content) const override;
 
     /** @brief Validate style, hierarchy and viewport layout constraints. */
     std::vector<EditorDiagnostic> validate() const;
@@ -195,36 +194,36 @@ public:
     /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
     /** @brief Capture deterministic UI document content. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate a persisted UI document. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Layout value. */
     static EditorValue                    layoutValue(const UiLayoutValue& layout);
     /** @brief Parse layout. */
-    static EditorResult<UiLayoutValue>    parseLayout(const EditorValue& value);
+    static Result<UiLayoutValue>    parseLayout(const EditorValue& value);
     /** @brief Style value. */
     static EditorValue                    styleValue(const UiStyleValue& style);
     /** @brief Parse style. */
-    static EditorResult<UiStyleValue>     parseStyle(const EditorValue& value);
+    static Result<UiStyleValue>     parseStyle(const EditorValue& value);
     /** @brief Content value. */
     static EditorValue                    contentValue(const UiContentValue& content);
     /** @brief Parse content. */
-    static EditorResult<UiContentValue>   parseContent(const EditorValue& value);
+    static Result<UiContentValue>   parseContent(const EditorValue& value);
     /** @brief Widget value. */
     static EditorValue                    widgetValue(const UiWidgetSnapshot& widget);
     /** @brief Parse widget. */
-    static EditorResult<UiWidgetSnapshot> parseWidget(const EditorValue& value);
+    static Result<UiWidgetSnapshot> parseWidget(const EditorValue& value);
     /** @brief Make replace. */
-    EditorResult<DomainOperation>         makeReplace(const UiWidgetSnapshot& before, UiWidgetSnapshot after,
+    Result<DomainOperation>         makeReplace(const UiWidgetSnapshot& before, UiWidgetSnapshot after,
                                                       std::string property = {}) const;
     /** @brief Would cycle. */
     bool                                  wouldCycle(const ObjectId& id, const ObjectId& parent,
@@ -258,9 +257,9 @@ public:
     /** @brief Compute absolute rectangles for a viewport without mutating runtime UI. */
     UiPreviewSnapshot build(const UiDocumentTarget& document, double width, double height) const;
     /** @brief Pick the deepest visible widget under a preview-space point. */
-    EditorResult<ObjectId> pick(const UiPreviewSnapshot& preview, double x, double y) const;
+    Result<ObjectId> pick(const UiPreviewSnapshot& preview, double x, double y) const;
     /** @brief Return anchor point, pivot point and connecting line as numeric pairs. */
-    EditorResult<EditorValue> anchorGizmo(const UiDocumentTarget& document, const UiPreviewSnapshot& preview,
+    Result<EditorValue> anchorGizmo(const UiDocumentTarget& document, const UiPreviewSnapshot& preview,
                                           const ObjectId& widget) const;
 };
 
@@ -268,7 +267,7 @@ public:
 class UiDocumentRuntimeBridge {
 public:
     /** @brief Reconcile a document subtree into a runtime host. */
-    EditorResult<void> publish(const UiDocumentTarget& document, const ObjectId& root, ui::UIHost* host) const;
+    Result<void> publish(const UiDocumentTarget& document, const ObjectId& root, ui::UIHost* host) const;
 };
 
 }  // namespace eve::ui_editing

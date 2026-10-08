@@ -16,7 +16,7 @@ public:
      * @return Applied only when all runtime materials were replaced; failure preserves every prior material.
      * @remarks Main/render thread only. Implementations must not invoke unknown callbacks while holding locks.
      */
-    [[nodiscard]] virtual EditorResult<void> publish(std::span<const MaterialDocumentTarget> candidates) = 0;
+    [[nodiscard]] virtual Result<void> publish(std::span<const MaterialDocumentTarget> candidates) = 0;
 };
 
 /** @brief One editor transaction target for mixed-value, multi-material property editing.
@@ -45,11 +45,11 @@ public:
      */
     void*                            queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    [[nodiscard]] EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    [[nodiscard]] Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Current revision. */
     [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -57,10 +57,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    [[nodiscard]] EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    [[nodiscard]] Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                         const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    [[nodiscard]] EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    [[nodiscard]] Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                                           const PropertyPath&      path) const override;
     /** @brief Snapshot value. */
     EditorValue                                 snapshotValue() const override;
@@ -70,12 +70,12 @@ public:
 
 private:
     /** @brief Selected indices. */
-    [[nodiscard]] EditorResult<std::vector<std::size_t>> selectedIndices(const SelectionSnapshot& selection) const;
+    [[nodiscard]] Result<std::vector<std::size_t>> selectedIndices(const SelectionSnapshot& selection) const;
     /** @brief Replacement. */
-    [[nodiscard]] EditorResult<DomainOperation>          replacement(std::vector<MaterialDocumentTarget> candidates,
+    [[nodiscard]] Result<DomainOperation>          replacement(std::vector<MaterialDocumentTarget> candidates,
                                                                      const PropertyPath&                 path) const;
     /** @brief Publish and adopt. */
-    [[nodiscard]] EditorResult<void> publishAndAdopt(std::vector<MaterialDocumentTarget> candidates,
+    [[nodiscard]] Result<void> publishAndAdopt(std::vector<MaterialDocumentTarget> candidates,
                                                      editing::Revision candidateRevision,
                                                      const EditRegion& candidateDirty);
 

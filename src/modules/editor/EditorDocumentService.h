@@ -87,9 +87,9 @@ public:
     /** @brief Releases IAtomicDocumentStore resources. */
     virtual ~IAtomicDocumentStore() = default;
     /** @brief Read the latest value for a resource URI. */
-    virtual EditorResult<StoredDocument> read(const std::string& resourceUri) const = 0;
+    virtual Result<StoredDocument> read(const std::string& resourceUri) const = 0;
     /** @brief Replace a value only when the expected disk revision still matches. */
-    virtual EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
+    virtual Result<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
                                                         const std::string& expectedContentHash,
                                                         const EditorValue& content) = 0;
 };
@@ -98,9 +98,9 @@ public:
 class EVENGINE_API_ORCHESTRATION MemoryAtomicDocumentStore final : public IAtomicDocumentStore {
 public:
     /** @brief Reads . */
-    EditorResult<StoredDocument> read(const std::string& resourceUri) const override;
+    Result<StoredDocument> read(const std::string& resourceUri) const override;
     /** @brief Compare and swap. */
-    EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
+    Result<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
                                                 const std::string& expectedContentHash,
                                                 const EditorValue& content) override;
 
@@ -118,25 +118,25 @@ private:
 class EVENGINE_API_ORCHESTRATION DocumentService {
 public:
     /** @brief Synchronous content validator borrowed only for one external reconciliation call. */
-    using ContentValidator = std::function<EditorResult<void>(const EditorValue&)>;
+    using ContentValidator = std::function<Result<void>(const EditorValue&)>;
 
     /** @brief Document service. */
     explicit DocumentService(IAtomicDocumentStore* store) : store_(store) {}
 
     /** @brief Open an asset-backed document, loading existing persisted content when present. */
-    EditorResult<DocumentSnapshot> open(DocumentKey key, std::string title, std::string resourceUri,
+    Result<DocumentSnapshot> open(DocumentKey key, std::string title, std::string resourceUri,
                                         EditorValue initialContent = {});
     /** @brief Replace the working content using an optional expected edit revision. */
-    EditorResult<DocumentSnapshot> edit(const DocumentId& document, EditorValue content,
+    Result<DocumentSnapshot> edit(const DocumentId& document, EditorValue content,
                                         std::optional<Revision> expectedRevision = std::nullopt);
     /** @brief Capture an exact content/revision pair for a later CAS save. */
-    EditorResult<SaveTicket> requestSave(const DocumentId& document);
+    Result<SaveTicket> requestSave(const DocumentId& document);
     /** @brief Execute a captured save ticket without reading newer working content. */
-    EditorResult<DocumentSnapshot> executeSave(const SaveTicket& ticket);
+    Result<DocumentSnapshot> executeSave(const SaveTicket& ticket);
     /** @brief Return the current working content snapshot. */
-    EditorResult<EditorValue> content(const DocumentId& document) const;
+    Result<EditorValue> content(const DocumentId& document) const;
     /** @brief Return one metadata snapshot. */
-    EditorResult<DocumentSnapshot> snapshot(const DocumentId& document) const;
+    Result<DocumentSnapshot> snapshot(const DocumentId& document) const;
     /** @brief Return all open documents in stable id order. */
     std::vector<DocumentSnapshot> documents() const;
     /**
@@ -146,16 +146,16 @@ public:
      * @param document Stable identity of the open document to inspect.
      * @return Updated snapshot or a structured conflict/failure.
      */
-    EditorResult<DocumentSnapshot> reconcileExternal(const DocumentId& document);
+    Result<DocumentSnapshot> reconcileExternal(const DocumentId& document);
     /**
      * @brief Reconcile external content only after a domain validator accepts the complete candidate.
      * @param document Stable identity of the open document to inspect.
      * @param validator Synchronous callback invoked without a service lock and never retained.
      * @return Updated snapshot, or a structured failure preserving the previous working content.
      */
-    EditorResult<DocumentSnapshot> reconcileExternal(const DocumentId& document, ContentValidator validator);
+    Result<DocumentSnapshot> reconcileExternal(const DocumentId& document, ContentValidator validator);
     /** @brief Close and discard in-memory state; persisted content is unchanged. */
-    EditorResult<void> close(const DocumentId& document);
+    Result<void> close(const DocumentId& document);
 
 private:
     struct OpenDocument {
@@ -167,7 +167,7 @@ private:
         EditorValue content;
     };
 
-    static EditorResult<DocumentSnapshot> error(EditorStatus status, const char* rule, std::string message);
+    static Result<DocumentSnapshot> error(EditorStatus status, const char* rule, std::string message);
 
     IAtomicDocumentStore*                                                        store_ = nullptr;
     std::unordered_map<DocumentId, OpenDocument, StrongEditorIdHash<DocumentId>> open_;

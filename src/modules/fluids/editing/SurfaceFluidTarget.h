@@ -23,8 +23,7 @@ using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
 
-template <class T>
-using EditorResult           = editing::Result<T>;
+using editing::Result;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -79,7 +78,7 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -87,10 +86,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return immutable authored values. */
     SurfaceFluidSettings settings() const { return settings_; }
@@ -99,7 +98,7 @@ public:
     /** @brief Capture schema-version-one settings. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate persisted settings. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Matches. */
@@ -112,7 +111,7 @@ private:
 class EVENGINE_API_ORCHESTRATION SurfaceFluidRuntimeApplier {
 public:
     /** @brief Apply droplet parameters and emit matching render/wetness parameters atomically. */
-    EditorResult<void> apply(const SurfaceFluidTarget& target, fluids::SurfaceDropletSimulation* simulation,
+    Result<void> apply(const SurfaceFluidTarget& target, fluids::SurfaceDropletSimulation* simulation,
                              fluids::SurfaceFluidRenderParams* render, fluids::SurfaceWetnessParams* wetness) const;
 };
 

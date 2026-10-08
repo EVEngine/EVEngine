@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-EditorResult<StoredDocument> MemoryAtomicDocumentStore::read(const std::string& resourceUri) const {
+Result<StoredDocument> MemoryAtomicDocumentStore::read(const std::string& resourceUri) const {
     auto found = documents_.find(resourceUri);
     if (found == documents_.end())
         return eve::editing::failed<StoredDocument>(EditorStatus::NotFound, RuleId("editor.document.store-not-found"),
@@ -13,7 +13,7 @@ EditorResult<StoredDocument> MemoryAtomicDocumentStore::read(const std::string& 
     return eve::editing::applied<StoredDocument>(found->second);
 }
 
-EditorResult<StoredDocument> MemoryAtomicDocumentStore::compareAndSwap(const std::string& resourceUri,
+Result<StoredDocument> MemoryAtomicDocumentStore::compareAndSwap(const std::string& resourceUri,
                                                                        Revision           expectedRevision,
                                                                        const std::string& expectedContentHash,
                                                                        const EditorValue& content) {
@@ -31,7 +31,7 @@ EditorResult<StoredDocument> MemoryAtomicDocumentStore::compareAndSwap(const std
     return eve::editing::applied<StoredDocument>(std::move(stored));
 }
 
-EditorResult<DocumentSnapshot> DocumentService::open(DocumentKey key, std::string title, std::string resourceUri,
+Result<DocumentSnapshot> DocumentService::open(DocumentKey key, std::string title, std::string resourceUri,
                                                      EditorValue initialContent) {
     if (!store_ || key.asset.empty() || resourceUri.empty())
         return error(EditorStatus::Rejected, "editor.document.invalid-open",
@@ -45,7 +45,7 @@ EditorResult<DocumentSnapshot> DocumentService::open(DocumentKey key, std::strin
     document.snapshot.title             = std::move(title);
     document.snapshot.resourceUri       = std::move(resourceUri);
     document.snapshot.state             = DocumentState::Ready;
-    EditorResult<StoredDocument> stored = store_->read(document.snapshot.resourceUri);
+    Result<StoredDocument> stored = store_->read(document.snapshot.resourceUri);
     if (stored.ok()) {
         document.content                  = stored.value().content;
         document.snapshot.revision.disk   = stored.value().revision;
@@ -62,7 +62,7 @@ EditorResult<DocumentSnapshot> DocumentService::open(DocumentKey key, std::strin
     return eve::editing::applied<DocumentSnapshot>(std::move(snapshot));
 }
 
-EditorResult<DocumentSnapshot> DocumentService::edit(const DocumentId& document, EditorValue content,
+Result<DocumentSnapshot> DocumentService::edit(const DocumentId& document, EditorValue content,
                                                      std::optional<Revision> expectedRevision) {
     auto found = open_.find(document);
     if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
@@ -75,7 +75,7 @@ EditorResult<DocumentSnapshot> DocumentService::edit(const DocumentId& document,
     return eve::editing::applied<DocumentSnapshot>(found->second.snapshot);
 }
 
-EditorResult<SaveTicket> DocumentService::requestSave(const DocumentId& document) {
+Result<SaveTicket> DocumentService::requestSave(const DocumentId& document) {
     auto found = open_.find(document);
     if (found == open_.end())
         return eve::editing::failed<SaveTicket>(EditorStatus::NotFound, RuleId("editor.document.not-open"),
@@ -90,14 +90,14 @@ EditorResult<SaveTicket> DocumentService::requestSave(const DocumentId& document
     return eve::editing::applied<SaveTicket>(std::move(ticket));
 }
 
-EditorResult<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ticket) {
+Result<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ticket) {
     auto pending  = pendingSaves_.find(ticket.id);
     auto document = open_.find(ticket.document);
     if (pending == pendingSaves_.end() || document == open_.end())
         return error(EditorStatus::NotFound, "editor.document.save-ticket-not-found",
                      "Save ticket or document is no longer available");
     document->second.snapshot.state = DocumentState::Saving;
-    EditorResult<StoredDocument> stored =
+    Result<StoredDocument> stored =
         store_->compareAndSwap(document->second.snapshot.resourceUri, ticket.expectedDiskRevision,
                                ticket.expectedContentHash, pending->second.content);
     pendingSaves_.erase(pending);
@@ -105,7 +105,7 @@ EditorResult<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ti
         document->second.snapshot.state =
             stored.code() == EditorStatus::Conflict ? DocumentState::Conflict : DocumentState::Failed;
         document->second.snapshot.diagnostics = stored.diagnostics();
-        return EditorResult<DocumentSnapshot>::failure(stored.status());
+        return Result<DocumentSnapshot>::failure(stored.status());
     }
     document->second.snapshot.revision.disk   = stored.value().revision;
     document->second.snapshot.revision.saved  = ticket.capturedEditRevision;
@@ -115,7 +115,7 @@ EditorResult<DocumentSnapshot> DocumentService::executeSave(const SaveTicket& ti
     return eve::editing::applied<DocumentSnapshot>(document->second.snapshot);
 }
 
-EditorResult<EditorValue> DocumentService::content(const DocumentId& document) const {
+Result<EditorValue> DocumentService::content(const DocumentId& document) const {
     auto found = open_.find(document);
     if (found == open_.end())
         return eve::editing::failed<EditorValue>(EditorStatus::NotFound, RuleId("editor.document.not-open"),
@@ -123,7 +123,7 @@ EditorResult<EditorValue> DocumentService::content(const DocumentId& document) c
     return eve::editing::applied<EditorValue>(found->second.content);
 }
 
-EditorResult<DocumentSnapshot> DocumentService::snapshot(const DocumentId& document) const {
+Result<DocumentSnapshot> DocumentService::snapshot(const DocumentId& document) const {
     auto found = open_.find(document);
     if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
     return eve::editing::applied<DocumentSnapshot>(found->second.snapshot);
@@ -141,16 +141,16 @@ std::vector<DocumentSnapshot> DocumentService::documents() const {
     return result;
 }
 
-EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document) {
+Result<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document) {
     return reconcileExternal(document, {});
 }
 
-EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document,
+Result<DocumentSnapshot> DocumentService::reconcileExternal(const DocumentId& document,
                                                                    ContentValidator validator) {
     auto found = open_.find(document);
     if (found == open_.end()) return error(EditorStatus::NotFound, "editor.document.not-open", "Document is not open");
 
-    EditorResult<StoredDocument> stored = store_->read(found->second.snapshot.resourceUri);
+    Result<StoredDocument> stored = store_->read(found->second.snapshot.resourceUri);
     if (!stored.ok()) {
         const bool expectedMissing = stored.code() == EditorStatus::NotFound &&
                                      found->second.snapshot.revision.disk == 0 &&
@@ -168,7 +168,7 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
         const EditorStatus status = found->second.snapshot.state == DocumentState::Conflict
                                         ? EditorStatus::Conflict
                                         : stored.code();
-        return EditorResult<DocumentSnapshot>::failure(eve::Status(status, found->second.snapshot.diagnostics));
+        return Result<DocumentSnapshot>::failure(eve::Status(status, found->second.snapshot.diagnostics));
     }
 
     const bool changed = stored.value().revision != found->second.snapshot.revision.disk ||
@@ -185,7 +185,7 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
         found->second.snapshot.diagnostics = {eve::editing::ruleDiagnostic(
             eve::DiagnosticCode::Conflict, RuleId("editor.document.external-conflict"), DiagnosticSeverity::Error,
             "Document changed on disk while the session has unsaved edits")};
-        return EditorResult<DocumentSnapshot>::failure(
+        return Result<DocumentSnapshot>::failure(
             eve::Status(EditorStatus::Conflict, found->second.snapshot.diagnostics));
     }
 
@@ -198,7 +198,7 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
                 found->second.snapshot.diagnostics.push_back(eve::editing::ruleDiagnostic(
                     eve::DiagnosticCode::InvalidArgument, RuleId("editor.document.external-invalid"),
                     DiagnosticSeverity::Error, "External document content failed domain validation"));
-            return EditorResult<DocumentSnapshot>::failure(
+            return Result<DocumentSnapshot>::failure(
                 eve::Status(EditorStatus::Conflict, found->second.snapshot.diagnostics));
         }
     }
@@ -215,7 +215,7 @@ EditorResult<DocumentSnapshot> DocumentService::reconcileExternal(const Document
     return eve::editing::applied<DocumentSnapshot>(found->second.snapshot);
 }
 
-EditorResult<void> DocumentService::close(const DocumentId& document) {
+Result<void> DocumentService::close(const DocumentId& document) {
     if (!open_.erase(document))
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.document.not-open"),
                                          "Document is not open");
@@ -223,7 +223,7 @@ EditorResult<void> DocumentService::close(const DocumentId& document) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<DocumentSnapshot> DocumentService::error(EditorStatus status, const char* rule, std::string message) {
+Result<DocumentSnapshot> DocumentService::error(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<DocumentSnapshot>(status, RuleId(rule), std::move(message));
 }
 

@@ -9,7 +9,7 @@
 namespace eve::network { class Network; }
 namespace eve::network_editing {
 using DiagnosticSeverity=editing::DiagnosticSeverity; using EditorDiagnostic=editing::Diagnostic;
-template<class T>using EditorResult=editing::Result<T>; using EditorStatus=editing::Status;
+using editing::Result; using EditorStatus=editing::Status;
 using RuleId=editing::RuleId;
 /** @brief One copied network telemetry sample; safe after the runtime module changes. */
 struct NetworkTelemetrySample {
@@ -23,7 +23,7 @@ public:
     /** @brief Network telemetry model. */
     explicit NetworkTelemetryModel(std::size_t capacity=300);
     /** @brief Ingest. */
-    EditorResult<void> ingest(NetworkTelemetrySample);
+    Result<void> ingest(NetworkTelemetrySample);
     /** @brief Samples. */
     const std::deque<NetworkTelemetrySample>& samples() const { return samples_; }
     /** @brief Diagnostics. */
@@ -38,6 +38,6 @@ private:
 class NetworkTelemetryCollector {
 public:
     /** @brief Collect. */
-    EditorResult<void> collect(network::Network*,double,NetworkTelemetryModel&) const;
+    Result<void> collect(network::Network*,double,NetworkTelemetryModel&) const;
 };
 } // namespace eve::network_editing

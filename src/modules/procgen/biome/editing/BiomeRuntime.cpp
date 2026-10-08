@@ -11,17 +11,17 @@ namespace {}  // namespace
 BiomeDocumentRuntime::BiomeDocumentRuntime()  = default;
 BiomeDocumentRuntime::~BiomeDocumentRuntime() = default;
 
-EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget&   document,
+Result<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget&   document,
                                                  const IBiomeSpatialResolver& resolver) {
     const auto diagnostics = document.validate();
     for (const auto& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
 
     auto candidate = std::make_unique<procgen::BiomeRules>();
     for (const auto& layer : document.layers()) {
         auto spatial = resolver.resolve(layer.spatialAsset);
-        if (!spatial.ok()) return EditorResult<void>::failure(spatial.status());
+        if (!spatial.ok()) return Result<void>::failure(spatial.status());
         if (!spatial.value())
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.biome.runtime-spatial"),
                                               "Biome spatial resolver returned no spatial data");
@@ -36,7 +36,7 @@ EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget&   do
     }
     for (const auto& reference : document.exclusions()) {
         auto spatial = resolver.resolve(reference);
-        if (!spatial.ok()) return EditorResult<void>::failure(spatial.status());
+        if (!spatial.ok()) return Result<void>::failure(spatial.status());
         if (!spatial.value())
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.biome.runtime-exclusion-spatial"),
                                               "Biome exclusion resolver returned no spatial data");
@@ -49,7 +49,7 @@ EditorResult<void> BiomeDocumentRuntime::publish(const BiomeDocumentTarget&   do
     return eve::editing::applied<void>(diagnostics);
 }
 
-EditorResult<std::unique_ptr<procgen::PointSet>> BiomeDocumentRuntime::preview(procgen::SpatialData* domain,
+Result<std::unique_ptr<procgen::PointSet>> BiomeDocumentRuntime::preview(procgen::SpatialData* domain,
                                                                                float spacing, std::uint32_t seed,
                                                                                float    jitter,
                                                                                Revision expectedRevision) {

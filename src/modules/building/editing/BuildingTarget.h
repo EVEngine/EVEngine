@@ -18,7 +18,7 @@ class PlacementWorld;
 namespace eve::building_editing {
 using CapabilityId=editing::CapabilityId; using DiagnosticSeverity=editing::DiagnosticSeverity;
 using DomainOperation=editing::DomainOperation; using EditRegion=editing::EditRegion;
-using EditorDiagnostic=editing::Diagnostic; template<class T>using EditorResult=editing::Result<T>;
+using EditorDiagnostic=editing::Diagnostic; using editing::Result;
 using EditorStatus=editing::Status; using EditorValue=editing::Value;
 using IDomainOperationTarget=editing::IDomainOperationTarget; using IEditableTarget=editing::IEditableTarget;
 using Revision=editing::Revision; using RuleId=editing::RuleId;
@@ -189,14 +189,14 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Return a complete immutable instance snapshot. */
-    EditorResult<BuildingInstanceSnapshot> instance(int instanceId) const;
+    Result<BuildingInstanceSnapshot> instance(int instanceId) const;
     /** @brief Return the smallest currently unused positive instance id. */
     int nextAvailableInstanceId() const;
     /** @brief Preview snap, normalized rotation, footprint cells and validation reasons. */
@@ -204,38 +204,36 @@ public:
                                      double elevation, double rotationDegrees,
                                      int excludeInstanceId = 0) const;
     /** @brief Plan reversible exact-id placement after full footprint validation. */
-    EditorResult<DomainOperation> makePlace(const BuildingInstanceSnapshot& placed) const;
+    Result<DomainOperation> makePlace(const BuildingInstanceSnapshot& placed) const;
     /** @brief Plan reversible movement of an existing building. */
-    EditorResult<DomainOperation> makeMove(int instanceId, int cellX, int cellY,
+    Result<DomainOperation> makeMove(int instanceId, int cellX, int cellY,
                                             double rotationDegrees) const;
     /** @brief Build an exact free-domain move operation without grid snapping. */
-    EditorResult<DomainOperation> makeMoveFree(int instanceId, double worldX, double worldY,
+    Result<DomainOperation> makeMoveFree(int instanceId, double worldX, double worldY,
                                                double elevation,
                                                double rotationDegrees) const;
     /** @brief Plan a reversible cell-definition replacement preserving instance state. */
-    EditorResult<DomainOperation> makeReplace(int instanceId,
+    Result<DomainOperation> makeReplace(int instanceId,
                                               const std::string& replacementBuildingId) const;
     /** @brief Plan one atomic reversible rectangular placement gesture. */
-    EditorResult<DomainOperation> makeRectangle(const std::string& buildingId, int minCellX,
+    Result<DomainOperation> makeRectangle(const std::string& buildingId, int minCellX,
                                                 int minCellY, int maxCellX, int maxCellY,
                                                 double rotationDegrees) const;
     /** @brief Plan one atomic reversible circular-brush placement gesture. */
-    EditorResult<DomainOperation> makeBrush(const std::string& buildingId, int centerCellX,
+    Result<DomainOperation> makeBrush(const std::string& buildingId, int centerCellX,
                                             int centerCellY, int radius,
                                             double rotationDegrees) const;
     /** @brief Plan one atomic reversible multi-segment edge path gesture. */
-    EditorResult<DomainOperation>
-    /** @brief Make edge path. */
+    Result<DomainOperation>
     makeEdgePath(const std::string& buildingId,
                  const std::vector<BuildingEdgePathVertex>& vertices) const;
     /** @brief Plan one atomic reversible cubic Bezier edge-curve gesture. */
-    EditorResult<DomainOperation>
-    /** @brief Make edge cubic bezier. */
+    Result<DomainOperation>
     makeEdgeCubicBezier(const std::string& buildingId,
                         const std::vector<BuildingEdgeCurvePoint>& controlPoints,
                         int subdivisions) const;
     /** @brief Plan one atomic reversible cubic curve sampled on a named surface. */
-    EditorResult<DomainOperation> makeEdgeCubicBezierOnSurface(
+    Result<DomainOperation> makeEdgeCubicBezierOnSurface(
         const std::string& buildingId,
         const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions,
         const std::string& surfaceName) const;
@@ -251,14 +249,14 @@ public:
         int level = 0, int replacingMemberInstanceId = 0,
         const std::string& surfaceName = {}) const;
     /** @brief Plan atomic replacement of an existing curve group after a handle drag. */
-    EditorResult<DomainOperation> makeUpdateEdgeCubicBezier(
+    Result<DomainOperation> makeUpdateEdgeCubicBezier(
         int memberInstanceId, const std::vector<BuildingEdgeCurvePoint>& controlPoints,
         int subdivisions) const;
     /** @brief Convert a world-space point to continuous logical grid coordinates. */
-    EditorResult<BuildingEdgeCurvePoint> curveLogicalPointFromWorld(
+    Result<BuildingEdgeCurvePoint> curveLogicalPointFromWorld(
         double worldX, double worldY, double worldZ) const;
     /** @brief Plan reversible removal preserving properties, tags and garrison state. */
-    EditorResult<DomainOperation> makeRemove(int instanceId) const;
+    Result<DomainOperation> makeRemove(int instanceId) const;
     /** @brief Capture all instances in deterministic insertion order. */
     EditorValue snapshotValue() const;
 
@@ -293,15 +291,15 @@ public:
                                  std::vector<BuildingEdgeCurvePoint> controlPoints,
                                  int subdivisions, std::string surfaceName = {});
     /** @brief Pick and begin dragging the closest control sphere intersected by a world ray. */
-    EditorResult<BuildingEdgeCurveDragPreview> beginDrag(
+    Result<BuildingEdgeCurveDragPreview> beginDrag(
         double rayOriginX, double rayOriginY, double rayOriginZ,
         double rayDirectionX, double rayDirectionY, double rayDirectionZ);
     /** @brief Reproject a pointer ray onto the camera-facing drag plane and refresh the draft. */
-    EditorResult<BuildingEdgeCurveDragPreview> updateDrag(
+    Result<BuildingEdgeCurveDragPreview> updateDrag(
         double rayOriginX, double rayOriginY, double rayOriginZ,
         double rayDirectionX, double rayDirectionY, double rayDirectionZ);
     /** @brief Build the atomic replacement operation for the last valid draft and become idle. */
-    EditorResult<DomainOperation> finishDrag();
+    Result<DomainOperation> finishDrag();
     /** @brief Discard transient drag state without producing an operation. */
     void cancelDrag();
     /** @brief True when dragging. */
@@ -310,7 +308,7 @@ public:
     int activeControlPointIndex() const { return activeControlPointIndex_; }
 
 private:
-    EditorResult<BuildingEdgeCurveDragPreview> previewCurrent() const;
+    Result<BuildingEdgeCurveDragPreview> previewCurrent() const;
     BuildingPlacementTarget* target_ = nullptr;
     std::string buildingId_;
     int memberInstanceId_ = 0;

@@ -31,8 +31,7 @@ using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
 using EditorValue = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 
 /**
  * @brief Transactional editor target for one canonical MeshVfxAsset document.
@@ -62,11 +61,11 @@ public:
     /** @brief Queries capability. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -74,10 +73,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
     /** @brief Return the authoritative parsed asset. */
@@ -85,7 +84,7 @@ public:
     /** @brief Capture schema-version-one editor persistence data. */
     [[nodiscard]] EditorValue snapshotValue() const;
     /** @brief Atomically load a persisted target snapshot. */
-    [[nodiscard]] EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    [[nodiscard]] Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Matches. */
@@ -108,7 +107,7 @@ public:
     /** @brief Mesh vfx preview runtime. */
     ~MeshVfxPreviewRuntime();
     /** @brief Build every runtime layer before atomically replacing the active preview. */
-    [[nodiscard]] EditorResult<void> publish(const MeshVfxAssetTarget& document);
+    [[nodiscard]] Result<void> publish(const MeshVfxAssetTarget& document);
     /** @brief Return the active preview instance, or null before publication. */
     [[nodiscard]] stylize::MeshVfxAssetInstance* instance() noexcept { return instance_.get(); }
     /** @brief Return the active document revision, or zero before publication. */

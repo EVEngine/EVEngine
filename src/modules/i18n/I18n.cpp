@@ -333,7 +333,7 @@ eve::Result<int> I18n::replaceBundleFromJson(const std::string& json) {
         std::string errorPath;
         if (!flattenStrict(locales.get(lang.c_str()), "", 0, candidate.strings, candidate.plurals, error, errorPath))
             return eve::Result<int>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, std::move(error),
+                eve::DiagnosticCode::InvalidArgument, error,
                 "$.locales." + lang + (errorPath.empty() ? "" : "." + errorPath), {}, "i18n.bundle"));
         proposed.emplace(lang, std::move(candidate));
     }

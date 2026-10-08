@@ -42,23 +42,23 @@ public:
      * @brief Install Themes / Preview / Inspector panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] ui_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] ui_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
-    [[nodiscard]] ui_editing::EditorResult<void> selectTheme(std::string id);
-    [[nodiscard]] ui_editing::EditorResult<void> createFromPreset(std::string id, std::string name, std::string preset);
-    [[nodiscard]] ui_editing::EditorResult<void> duplicateSelected(std::string id, std::string name);
-    [[nodiscard]] ui_editing::EditorResult<void> deleteSelected();
-    [[nodiscard]] ui_editing::EditorResult<void> setActiveSelected();
-    [[nodiscard]] ui_editing::EditorResult<void> resetSelectedToBase();
-    [[nodiscard]] ui_editing::EditorResult<void> setToken(const std::string& path, const ui_editing::EditorValue& value);
-    [[nodiscard]] ui_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] ui_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] ui_editing::Result<void> selectTheme(std::string id);
+    [[nodiscard]] ui_editing::Result<void> createFromPreset(std::string id, std::string name, std::string preset);
+    [[nodiscard]] ui_editing::Result<void> duplicateSelected(std::string id, std::string name);
+    [[nodiscard]] ui_editing::Result<void> deleteSelected();
+    [[nodiscard]] ui_editing::Result<void> setActiveSelected();
+    [[nodiscard]] ui_editing::Result<void> resetSelectedToBase();
+    [[nodiscard]] ui_editing::Result<void> setToken(const std::string& path, const ui_editing::EditorValue& value);
+    [[nodiscard]] ui_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] ui_editing::Result<editor::TransactionReceipt> redo();
 
     /**
      * @brief Copy the selected theme onto a live UIHost without changing globalTheme.
      * @param hostName Retained UI host name (typically the preview panel id).
      */
-    [[nodiscard]] ui_editing::EditorResult<void> applyPreviewHost(const std::string& hostName);
+    [[nodiscard]] ui_editing::Result<void> applyPreviewHost(const std::string& hostName);
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     /** @brief Can redo. */
@@ -91,9 +91,9 @@ public:
     float getFloat(const std::string& path) const;
 
 private:
-    [[nodiscard]] ui_editing::EditorResult<void> commit(
-        ui_editing::EditorResult<ui_editing::DomainOperation> operation, std::string label);
-    [[nodiscard]] ui_editing::EditorResult<void> refreshPreview();
+    [[nodiscard]] ui_editing::Result<void> commit(
+        ui_editing::Result<ui_editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] ui_editing::Result<void> refreshPreview();
     editor::SelectionSnapshot selection() const;
     /**
      * @brief Indexed catalog lookup for script getters.

@@ -4,10 +4,6 @@
 
 namespace eve::weather {
 namespace {
-Result<void> invalidVolume(const char* message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message,
-                                                    "weather.interiorVolume"));
-}
 bool validMode(int mode) {
     return mode == static_cast<int>(PcgInteriorWeatherMode::Collision) ||
            mode == static_cast<int>(PcgInteriorWeatherMode::DisableVfx);
@@ -23,9 +19,11 @@ Result<void> PcgInteriorWeatherVolume::configureBox(float centerX, float centerY
                                                       int exteriorReverbPreset) {
     if (!finite3(centerX, centerY, centerZ) || !finite3(sizeX, sizeY, sizeZ) ||
         sizeX <= 0.f || sizeY <= 0.f || sizeZ <= 0.f)
-        return invalidVolume("box center and positive dimensions must be finite");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "box center and positive dimensions must be finite",
+                                                    "weather.interiorVolume"));
     if (!validMode(mode) || interiorReverbPreset < 0 || exteriorReverbPreset < 0)
-        return invalidVolume("mode and reverb preset identifiers are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mode and reverb preset identifiers are invalid",
+                                                    "weather.interiorVolume"));
     shape_ = PcgInteriorWeatherShape::Box;
     mode_ = static_cast<PcgInteriorWeatherMode>(mode);
     centerX_ = centerX; centerY_ = centerY; centerZ_ = centerZ;
@@ -40,9 +38,11 @@ Result<void> PcgInteriorWeatherVolume::configureSphere(float centerX, float cent
                                                          int interiorReverbPreset,
                                                          int exteriorReverbPreset) {
     if (!finite3(centerX, centerY, centerZ) || !std::isfinite(radius) || radius <= 0.f)
-        return invalidVolume("sphere center and positive radius must be finite");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "sphere center and positive radius must be finite",
+                                                    "weather.interiorVolume"));
     if (!validMode(mode) || interiorReverbPreset < 0 || exteriorReverbPreset < 0)
-        return invalidVolume("mode and reverb preset identifiers are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mode and reverb preset identifiers are invalid",
+                                                    "weather.interiorVolume"));
     shape_ = PcgInteriorWeatherShape::Sphere;
     mode_ = static_cast<PcgInteriorWeatherMode>(mode);
     centerX_ = centerX; centerY_ = centerY; centerZ_ = centerZ;

@@ -55,7 +55,7 @@ public:
      * @lifetime Valid until target destruction. */
     void*                         queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -63,10 +63,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return an immutable copy of current authoring settings. */
     VolumeFluidAuthoringSettings settings() const { return settings_; }
@@ -78,7 +78,7 @@ public:
     /** @brief Capture schema eve.volume-fluid-authoring version one. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a strict version-one authoring document. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Matches. */
@@ -97,7 +97,7 @@ public:
      * @details Explicit editor publication only. Copies live snapshot state and may reallocate
      * solver storage, so callers must not invoke it from a per-frame preview or simulation loop.
      */
-    EditorResult<void> apply(const VolumeFluidTarget& target, fluids::VolumeFluid* simulation) const;
+    Result<void> apply(const VolumeFluidTarget& target, fluids::VolumeFluid* simulation) const;
 };
 
 }  // namespace eve::fluids_editing

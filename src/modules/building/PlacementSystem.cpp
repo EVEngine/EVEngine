@@ -1977,7 +1977,7 @@ PlacementSystem::previewPattern(PlacementWorld *world, const std::string &buildi
                                 const PatternRequest &request) {
     const auto failure = [&](std::string message) {
         return eve::Result<PatternPreview>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, std::move(message), buildingId, {},
+            eve::DiagnosticCode::InvalidArgument, message, buildingId, {},
             "building.pattern"));
     };
     const auto corners = [&]() -> eve::Result<std::vector<CornerAddress>> {

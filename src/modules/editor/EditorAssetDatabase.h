@@ -71,18 +71,18 @@ struct AssetPage {
 class EVENGINE_API_ORCHESTRATION MemoryAssetDatabase {
 public:
     /** @brief Atomically publish one validated record and its dependencies. */
-    EditorResult<AssetRecord> publish(AssetRecord record, std::vector<AssetDependency> dependencies = {});
+    Result<AssetRecord> publish(AssetRecord record, std::vector<AssetDependency> dependencies = {});
     /**
      * @brief Validate and atomically publish an entire package projection as one index generation.
      * @return Owning published records; rejection leaves records, URIs, dependencies and generation unchanged.
      */
-    [[nodiscard]] EditorResult<std::vector<AssetRecord>> publishBatch(std::vector<AssetPublication> publications);
+    [[nodiscard]] Result<std::vector<AssetRecord>> publishBatch(std::vector<AssetPublication> publications);
     /** @brief Find one asset by stable GUID. */
-    EditorResult<AssetRecord> find(const AssetGuid& guid) const;
+    Result<AssetRecord> find(const AssetGuid& guid) const;
     /** @brief Find one asset by logical content URI. */
-    EditorResult<AssetRecord> findByUri(const std::string& logicalUri) const;
+    Result<AssetRecord> findByUri(const std::string& logicalUri) const;
     /** @brief Query a deterministic page; stale generations return Conflict. */
-    EditorResult<AssetPage<AssetRecord>> query(const AssetQuery& query, std::size_t offset, std::size_t limit,
+    Result<AssetPage<AssetRecord>> query(const AssetQuery& query, std::size_t offset, std::size_t limit,
                                                std::optional<std::uint64_t> generation = std::nullopt) const;
     /** @brief Query outgoing or incoming dependencies for one asset. */
     std::vector<AssetDependency> dependencies(const AssetGuid& guid, bool incoming = false) const;
@@ -117,12 +117,12 @@ public:
     /** @brief Import coordinator. */
     explicit ImportCoordinator(MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Validate and publish a completed import product. */
-    EditorResult<AssetRecord> publish(ImportProduct product);
+    Result<AssetRecord> publish(ImportProduct product);
     /** @brief Start or supersede one asset import and return its immutable generation ticket. */
-    EditorResult<ImportTicket> begin(const AssetGuid& asset, std::string sourceHash,
+    Result<ImportTicket> begin(const AssetGuid& asset, std::string sourceHash,
                                      std::string importerId, std::uint32_t importerVersion);
     /** @brief Atomically publish only when the worker ticket is still current and product-complete. */
-    EditorResult<AssetRecord> publish(const ImportTicket& ticket, ImportProduct product);
+    Result<AssetRecord> publish(const ImportTicket& ticket, ImportProduct product);
 
 private:
     MemoryAssetDatabase* database_ = nullptr;

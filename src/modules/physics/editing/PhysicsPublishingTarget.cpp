@@ -9,7 +9,7 @@ PhysicsColliderPublishingTarget::PhysicsColliderPublishingTarget(std::string id,
                                                                  IPhysicsColliderRuntimeSink* sink)
     : document_(std::move(id), dimensions), sink_(sink) {}
 
-EditorResult<void> PhysicsColliderPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> PhysicsColliderPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto applied   = candidate->applyDomainOperation(operation);
@@ -23,7 +23,7 @@ std::unique_ptr<IDomainOperationTarget> PhysicsColliderPublishingTarget::cloneDo
     return candidate;
 }
 
-EditorResult<void> PhysicsColliderPublishingTarget::commitDomainState(
+Result<void> PhysicsColliderPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PhysicsColliderPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_ ||
@@ -34,7 +34,7 @@ EditorResult<void> PhysicsColliderPublishingTarget::commitDomainState(
     if (!sink_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.publishing-sink-missing"),
                                           "Collider publishing target requires a live runtime sink");
-    EditorResult<void> published = sink_->publish(typed->document_);
+    Result<void> published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;
     return eve::editing::applied<void>();

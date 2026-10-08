@@ -36,24 +36,24 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate grants in stable-id order. */
     std::vector<PluginPermissionGrant> grants() const;
     /** @brief Plan creation or replacement after least-privilege validation. */
-    EditorResult<DomainOperation> makeSet(const PluginPermissionGrant& grant) const;
+    Result<DomainOperation> makeSet(const PluginPermissionGrant& grant) const;
     /** @brief Plan grant removal. */
-    EditorResult<DomainOperation> makeRemove(const StableId& id) const;
+    Result<DomainOperation> makeRemove(const StableId& id) const;
     /** @brief Resolve exact plugin/capability/scope policy, defaulting to ask. */
     std::string decision(const std::string& plugin, const std::string& capability,
                          const std::string& scope) const;
     /** @brief Capture deterministic permission policy. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated permission policy. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 private:
     std::string                               id_;
     std::map<StableId, PluginPermissionGrant> grants_;

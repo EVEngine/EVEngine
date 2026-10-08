@@ -75,7 +75,7 @@ public:
     /** @brief Releases ISurfaceFluidPreviewRenderer resources. */
     virtual ~ISurfaceFluidPreviewRenderer() = default;
     /** @brief Draw droplets and wetness using the host's chosen 2D or 3D presentation. */
-    virtual EditorResult<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) = 0;
+    virtual Result<void> draw(const SurfaceFluidPreviewSnapshot& snapshot) = 0;
 };
 
 /** @brief Builds and rasterizes surface-fluid scrub frames through shared Canvas readback. */
@@ -87,7 +87,7 @@ public:
         /** @brief Previews. */
         : previews_(previews), renderer_(renderer) {}
     /** @brief Replay, validate and render one revision-bound scrub frame. */
-    EditorResult<OffscreenPreviewArtifact> render(const SurfaceFluidTarget&         target,
+    Result<OffscreenPreviewArtifact> render(const SurfaceFluidTarget&         target,
                                                   const SurfaceFluidPreviewRequest& request) const;
 
 private:

@@ -30,7 +30,7 @@ class BiomeEditorModule::TargetFactory final : public editor::IEditorAutomationT
 public:
     std::vector<std::string_view> types() const override { return {"biome", "biome-rules"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
         const editor::EditorValue::Object& request) override {
         (void)type;
@@ -44,10 +44,10 @@ public:
             created.spatialAsset = stringField(request, "spatial");
             auto operation = biome->makeCreateLayer(created);
             if (!operation.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(operation.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(operation.status());
             auto applied = biome->applyDomainOperation(operation.value());
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(biome);

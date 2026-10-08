@@ -87,7 +87,7 @@ GraphConnectionDecision ParticleGraphDomain::canConnect(const GraphPinRecord& fr
     return result;
 }
 
-EditorResult<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& id,
+Result<GraphNodeRecord> ParticleGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& type) const {
     if (id.empty())
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.particles.node-id"),

@@ -7,21 +7,12 @@
 namespace eve::ui {
 namespace {
 
-eve::Result<void> staleHost(const char *sink) {
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string(sink) + ".write: host handle is stale"));
-}
-
-eve::Result<void> missingNode(const char *sink, const std::string &id) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::NotFound, std::string(sink) + ".write: node '" + id + "' not found"));
-}
-
 }  // namespace
 
 eve::Result<void> UiHostPosSink::write(eve::animation::MotionVec2 value) {
     auto host = UIHost::resolve(host_);
-    if (!host) return staleHost("UiHostPosSink");
+    if (!host) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string("UiHostPosSink") + ".write: host handle is stale"));
     auto m          = host->get().meta();
     m->hasPos       = true;
     m->animDrivePos = true;
@@ -32,7 +23,8 @@ eve::Result<void> UiHostPosSink::write(eve::animation::MotionVec2 value) {
 
 eve::Result<void> UiHostSizeSink::write(eve::animation::MotionVec2 value) {
     auto host = UIHost::resolve(host_);
-    if (!host) return staleHost("UiHostSizeSink");
+    if (!host) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string("UiHostSizeSink") + ".write: host handle is stale"));
     auto m           = host->get().meta();
     m->hasSize       = true;
     m->animDriveSize = true;
@@ -43,25 +35,30 @@ eve::Result<void> UiHostSizeSink::write(eve::animation::MotionVec2 value) {
 
 eve::Result<void> UiHostOverlayAlphaSink::write(float value) {
     auto host = UIHost::resolve(host_);
-    if (!host) return staleHost("UiHostOverlayAlphaSink");
+    if (!host) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string("UiHostOverlayAlphaSink") + ".write: host handle is stale"));
     host->get().meta()->overlayBgAlpha = std::clamp(value, 0.f, 1.f);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> UiNodeOpacitySink::write(float value) {
     auto host = UIHost::resolve(host_);
-    if (!host) return staleHost("UiNodeOpacitySink");
+    if (!host) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string("UiNodeOpacitySink") + ".write: host handle is stale"));
     auto node = host->get().findById(nodeId_);
-    if (!node) return missingNode("UiNodeOpacitySink", nodeId_);
+    if (!node) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::NotFound, std::string("UiNodeOpacitySink") + ".write: node '" + nodeId_ + "' not found"));
     node->get().opacity = std::clamp(value, 0.f, 1.f);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> UiNodePosSink::write(eve::animation::MotionVec2 value) {
     auto host = UIHost::resolve(host_);
-    if (!host) return staleHost("UiNodePosSink");
+    if (!host) return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, std::string("UiNodePosSink") + ".write: host handle is stale"));
     auto node = host->get().findById(nodeId_);
-    if (!node) return missingNode("UiNodePosSink", nodeId_);
+    if (!node) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::NotFound, std::string("UiNodePosSink") + ".write: node '" + nodeId_ + "' not found"));
     auto &n    = node->get();
     n.absolute = true;
     n.posX     = value.x;

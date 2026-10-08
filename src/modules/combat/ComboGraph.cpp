@@ -4,18 +4,13 @@
 #include <utility>
 
 namespace eve::combat {
-namespace {
-
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
-}  // namespace
+  // namespace
 
 Result<void> ComboGraphEdge::validate() const {
-    if (from.format().empty() || to.format().empty()) return invalid("combo edge ids are empty", "id");
-    if (requiredInput.empty()) return invalid("combo edge input is empty", "requiredInput");
+    if (from.format().empty() || to.format().empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "combo edge ids are empty", "id"));
+    if (requiredInput.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "combo edge input is empty", "requiredInput"));
     return Result<void>::success();
 }
 

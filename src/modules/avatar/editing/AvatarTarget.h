@@ -26,8 +26,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -92,11 +91,11 @@ public:
      */
     void*                                   queryCapability(const CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -104,24 +103,24 @@ public:
     /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Change backend kind and model source. */
-    EditorResult<DomainOperation>             makeSetSource(std::string kind, std::string asset) const;
+    Result<DomainOperation>             makeSetSource(std::string kind, std::string asset) const;
     /** @brief Make create layer. */
-    EditorResult<DomainOperation>             makeCreateLayer(const AvatarLayerValue&) const;
+    Result<DomainOperation>             makeCreateLayer(const AvatarLayerValue&) const;
     /** @brief Make delete layer. */
-    EditorResult<DomainOperation>             makeDeleteLayer(const ObjectId&) const;
+    Result<DomainOperation>             makeDeleteLayer(const ObjectId&) const;
     /** @brief Make create parameter. */
-    EditorResult<DomainOperation>             makeCreateParameter(const AvatarParameterValue&) const;
+    Result<DomainOperation>             makeCreateParameter(const AvatarParameterValue&) const;
     /** @brief Make delete parameter. */
-    EditorResult<DomainOperation>             makeDeleteParameter(const ObjectId&) const;
+    Result<DomainOperation>             makeDeleteParameter(const ObjectId&) const;
     /** @brief Make create expression. */
-    EditorResult<DomainOperation>             makeCreateExpression(const AvatarExpressionValue&) const;
+    Result<DomainOperation>             makeCreateExpression(const AvatarExpressionValue&) const;
     /** @brief Make delete expression. */
-    EditorResult<DomainOperation>             makeDeleteExpression(const ObjectId&) const;
+    Result<DomainOperation>             makeDeleteExpression(const ObjectId&) const;
     /** @brief Kind. */
     const std::string&                        kind() const { return kind_; }
     /** @brief Source asset. */
@@ -137,7 +136,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                               snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void>                        loadSnapshot(const EditorValue&);
+    Result<void>                        loadSnapshot(const EditorValue&);
 
 private:
     /** @brief Matches. */
@@ -145,7 +144,7 @@ private:
     /** @brief Content value. */
     EditorValue                        contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation>      replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation>      replacement(EditorValue, std::string = {}) const;
     std::string                        id_, kind_ = "image", sourceAsset_;
     std::vector<AvatarLayerValue>      layers_;
     std::vector<AvatarParameterValue>  parameters_;
@@ -158,7 +157,7 @@ public:
     /** @brief Releases IAvatarTextureResolver resources. */
     virtual ~IAvatarTextureResolver()                                          = default;
     /** @brief Texture. */
-    virtual EditorResult<graphics::Texture*> texture(const std::string&) const = 0;
+    virtual Result<graphics::Texture*> texture(const std::string&) const = 0;
 };
 
 /** @brief Candidate-first live AvatarInstance generation. */
@@ -172,7 +171,7 @@ public:
      * @param textures Optional borrowed resolver; it is used only during this call and is never retained.
      * @lifetime The caller must keep textures alive for the duration of publish.
      */
-    EditorResult<void>      publish(const AvatarDocumentTarget&, const IAvatarTextureResolver* textures = nullptr);
+    Result<void>      publish(const AvatarDocumentTarget&, const IAvatarTextureResolver* textures = nullptr);
     /** @brief Instance. */
     avatar::AvatarInstance* instance() const { return instance_.get(); }
     /** @brief Revision. */

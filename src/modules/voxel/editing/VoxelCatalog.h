@@ -24,8 +24,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -157,11 +156,11 @@ public:
     void* queryCapability(const CapabilityId&) override;
 
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -169,17 +168,17 @@ public:
     /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
 
     /** @brief Make create model. */
-    [[nodiscard]] EditorResult<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
+    [[nodiscard]] Result<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
     /** @brief Make delete model. */
-    [[nodiscard]] EditorResult<DomainOperation> makeDeleteModel(const ObjectId&) const;
+    [[nodiscard]] Result<DomainOperation> makeDeleteModel(const ObjectId&) const;
     /** @brief Make set voxel. */
-    [[nodiscard]] EditorResult<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
+    [[nodiscard]] Result<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
                                                              bool occupied) const;
 
     /** @brief Models. */
@@ -198,7 +197,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const override;
     /** @brief Loads snapshot. */
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    Result<void>            loadSnapshot(const EditorValue&);
 
     /** @brief Hull join partners. */
     [[nodiscard]] std::vector<ObjectId> hullJoinPartners(const ObjectId& model, int face) const;
@@ -209,7 +208,7 @@ private:
     /** @brief Content value. */
     EditorValue                   contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     /**
      * @brief Mutable model lookup used by occupancy edits.
      * @ownership Borrowed from this target; callers must not delete it.

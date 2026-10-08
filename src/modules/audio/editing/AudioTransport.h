@@ -37,7 +37,7 @@ public:
     /** @brief Stops . */
     virtual void stop() = 0;
     /** @brief Seek the backend playhead. @return Structured failure when the backend rejects the position. */
-    virtual EditorResult<void> seek(double seconds) = 0;
+    virtual Result<void> seek(double seconds) = 0;
     /** @brief Tell. */
     virtual double tell() const = 0;
     /** @brief Duration. */
@@ -52,28 +52,28 @@ public:
 class EVENGINE_API_BACKENDS AudioAuditionTransport {
 public:
     /** @brief Bind a borrowed backend and stop any previously bound audition. */
-    EditorResult<void> bind(StableId asset, Revision sourceRevision,
+    Result<void> bind(StableId asset, Revision sourceRevision,
                             IAudioTransportBackend* backend);
     /** @brief Configure a bounded loop range; zero end uses the clip duration. */
-    EditorResult<void> setLoop(Revision expectedRevision, bool enabled,
+    Result<void> setLoop(Revision expectedRevision, bool enabled,
                                double startSeconds = 0.0, double endSeconds = 0.0);
     /** @brief Play. */
-    EditorResult<void> play(Revision expectedRevision);
+    Result<void> play(Revision expectedRevision);
     /** @brief Pause. */
-    EditorResult<void> pause(Revision expectedRevision);
+    Result<void> pause(Revision expectedRevision);
     /** @brief Stops . */
-    EditorResult<void> stop(Revision expectedRevision);
+    Result<void> stop(Revision expectedRevision);
     /** @brief Seeks . */
-    EditorResult<void> seek(Revision expectedRevision, double seconds);
+    Result<void> seek(Revision expectedRevision, double seconds);
     /** @brief Poll backend state and wrap the custom loop without changing documents. */
-    EditorResult<AudioTransportSnapshot> update(Revision expectedRevision);
+    Result<AudioTransportSnapshot> update(Revision expectedRevision);
     /** @brief Read the current playhead only for the bound source revision. */
-    EditorResult<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
+    Result<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
     /** @brief Stop and forget the borrowed backend. */
     void unbind();
 
 private:
-    EditorResult<void> validateRevision(Revision expectedRevision) const;
+    Result<void> validateRevision(Revision expectedRevision) const;
     AudioTransportSnapshot observe() const;
     StableId asset_;
     Revision revision_ = 0;
@@ -96,7 +96,7 @@ public:
     /** @brief Stops . */
     void stop() override;
     /** @brief Seeks . */
-    EditorResult<void> seek(double seconds) override;
+    Result<void> seek(double seconds) override;
     /** @brief Tell. */
     double tell() const override;
     /** @brief Duration. */

@@ -5,11 +5,11 @@
 namespace eve::procgen_editing {
 namespace {
 
-EditorResult<editing::DomainOperation> failOp(const char* rule, std::string message) {
+Result<editing::DomainOperation> failOp(const char* rule, std::string message) {
     return eve::editing::rejected<editing::DomainOperation>(editing::RuleId(rule), std::move(message));
 }
 
-EditorResult<void> failVoid(const char* rule, std::string message) {
+Result<void> failVoid(const char* rule, std::string message) {
     return eve::editing::rejected<void>(editing::RuleId(rule), std::move(message));
 }
 
@@ -35,7 +35,7 @@ std::string statusText(const eve::Status& status) {
 
 }  // namespace
 
-EditorResult<editing::DomainOperation> PcgInstancePublisher::planPublish(const std::string& batchId,
+Result<editing::DomainOperation> PcgInstancePublisher::planPublish(const std::string& batchId,
                                                                          const std::string& assetAttribute,
                                                                          const std::string& defaultAsset) const {
     if (batchId.empty()) return failOp("editor.pcg.publish.batch-id", "publish requires a non-empty batch id");
@@ -58,7 +58,7 @@ EditorResult<editing::DomainOperation> PcgInstancePublisher::planPublish(const s
     return eve::editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> PcgInstancePublisher::planRemove(const std::string& batchId) const {
+Result<editing::DomainOperation> PcgInstancePublisher::planRemove(const std::string& batchId) const {
     if (batchId.empty()) return failOp("editor.pcg.remove.batch-id", "remove requires a non-empty batch id");
 
     editing::DomainOperation operation;
@@ -71,7 +71,7 @@ EditorResult<editing::DomainOperation> PcgInstancePublisher::planRemove(const st
     return eve::editing::applied(std::move(operation));
 }
 
-EditorResult<void> PcgInstancePublisher::applyPublish(procgen::Procgen& procgen,
+Result<void> PcgInstancePublisher::applyPublish(procgen::Procgen& procgen,
                                                       const editing::DomainOperation& operation,
                                                       procgen::ProcgenPointSetHandleRef points) const {
     if (operation.type != kPublishType)
@@ -86,7 +86,7 @@ EditorResult<void> PcgInstancePublisher::applyPublish(procgen::Procgen& procgen,
     return eve::editing::applied();
 }
 
-EditorResult<void> PcgInstancePublisher::apply(procgen::Procgen& procgen,
+Result<void> PcgInstancePublisher::apply(procgen::Procgen& procgen,
                                                const editing::DomainOperation& operation) const {
     editing::DomainOperation removeOp = operation;
     if (operation.type == kPublishType && operation.hasInverse) {

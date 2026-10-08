@@ -17,7 +17,7 @@ public:
     explicit AssetDatabasePhysicsColliderResolver(const MemoryAssetDatabase* database) : database_(database) {}
 
     /** @brief Resolve. */
-    [[nodiscard]] EditorResult<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
+    [[nodiscard]] Result<PhysicsColliderAssetGeometry> resolve(const std::string& reference,
                                                                      const std::string& expectedKind) const override;
 
 private:

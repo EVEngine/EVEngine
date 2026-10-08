@@ -19,8 +19,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -83,11 +82,11 @@ public:
      */
     void*                                   queryCapability(const CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -95,20 +94,20 @@ public:
     /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make create layer. */
-    EditorResult<DomainOperation>           makeCreateLayer(const BiomeLayerValue&) const;
+    Result<DomainOperation>           makeCreateLayer(const BiomeLayerValue&) const;
     /** @brief Make delete layer. */
-    EditorResult<DomainOperation>           makeDeleteLayer(const ObjectId&) const;
+    Result<DomainOperation>           makeDeleteLayer(const ObjectId&) const;
     /** @brief Make create asset. */
-    EditorResult<DomainOperation>           makeCreateAsset(const ObjectId& layer, const BiomeAssetValue&) const;
+    Result<DomainOperation>           makeCreateAsset(const ObjectId& layer, const BiomeAssetValue&) const;
     /** @brief Make delete asset. */
-    EditorResult<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
+    Result<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
     /** @brief Make set exclusions. */
-    EditorResult<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
+    Result<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
     /** @brief Layers. */
     const std::vector<BiomeLayerValue>&     layers() const { return layers_; }
     /** @brief Exclusions. */
@@ -118,7 +117,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                             snapshotValue() const override;
     /** @brief Loads snapshot. */
-    EditorResult<void>                      loadSnapshot(const EditorValue&);
+    Result<void>                      loadSnapshot(const EditorValue&);
 
 private:
     /** @brief Matches. */
@@ -126,7 +125,7 @@ private:
     /** @brief Content value. */
     EditorValue                   contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     std::string                   id_;
     std::vector<BiomeLayerValue>  layers_;
     std::vector<std::string>      exclusions_;
@@ -142,7 +141,7 @@ public:
      * @lifetime Valid for the duration of publish(); must not be retained afterward.
      * @thread Owner-thread only.
      */
-    virtual EditorResult<procgen::SpatialData*> resolve(const std::string&) const = 0;
+    virtual Result<procgen::SpatialData*> resolve(const std::string&) const = 0;
 };
 /** @brief Candidate-first BiomeRules generation. */
 class EVENGINE_API_ORCHESTRATION BiomeDocumentRuntime {
@@ -152,14 +151,14 @@ public:
     /** @brief Biome document runtime. */
     ~BiomeDocumentRuntime();
     /** @brief Publish. */
-    EditorResult<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
+    Result<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
     /**
      * @brief Generate a PointSet from a previously published candidate.
      * @param domain Borrowed spatial query domain; must outlive this call.
      * @ownership Success transfers the PointSet to the caller.
      * @thread Owner-thread only.
      */
-    EditorResult<std::unique_ptr<procgen::PointSet>> preview(procgen::SpatialData* domain, float spacing,
+    Result<std::unique_ptr<procgen::PointSet>> preview(procgen::SpatialData* domain, float spacing,
                                                              std::uint32_t seed, float jitter,
                                                              Revision expectedRevision);
     /**

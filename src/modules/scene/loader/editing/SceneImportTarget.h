@@ -14,8 +14,7 @@ using namespace eve::editing;
 using EditorValue      = eve::editing::Value;
 using EditorStatus     = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template <class T>
-using EditorResult = eve::editing::Result<T>;
+using editing::Result;
 /** @brief Renderer-neutral persisted scene importer settings. */
 struct SceneImportValue {
     std::string sourceAsset;
@@ -43,11 +42,11 @@ public:
      */
     void*                                   queryCapability(const CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -55,10 +54,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Value. */
     const SceneImportValue&                 value() const { return value_; }
     /** @brief Validate. */
@@ -66,7 +65,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                             snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void>                      loadSnapshot(const EditorValue&);
+    Result<void>                      loadSnapshot(const EditorValue&);
 
 private:
     /** @brief Matches. */
@@ -86,6 +85,6 @@ struct SceneImportPreflight {
 class EVENGINE_API_ORCHESTRATION SceneImportPreflightRuntime {
 public:
     /** @brief Inspect. */
-    EditorResult<SceneImportPreflight> inspect(const SceneImportTarget&, sceneloader::SceneLoader*) const;
+    Result<SceneImportPreflight> inspect(const SceneImportTarget&, sceneloader::SceneLoader*) const;
 };
 }  // namespace eve::sceneloader_editing

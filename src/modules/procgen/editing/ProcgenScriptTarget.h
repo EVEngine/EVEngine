@@ -16,8 +16,7 @@ namespace eve::procgen_editing {
 using EditorDiagnostic = editing::Diagnostic;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 
 /**
  * @brief Authored identity and reflected parameter schema for one script generator.
@@ -73,11 +72,11 @@ public:
      */
     void* queryCapability(const editing::CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const editing::DomainOperation&) override;
+    Result<void> applyDomainOperation(const editing::DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<editing::IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
+    Result<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const editing::SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -86,22 +85,22 @@ public:
     editing::PropertyReadResult read(const editing::SelectionSnapshot&,
                                      const editing::PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
+    Result<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
                                                    const editing::PropertyPath&, const EditorValue&,
                                                    editing::PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
+    Result<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
                                                      const editing::PropertyPath&) const override;
 
     /**
      * @brief Parse a schema array into a module spec.
      * @param schema Array of parameter objects with key/kind/default metadata.
      */
-    static EditorResult<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
+    static Result<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
                                                            std::string kind, const EditorValue& schema);
 
     /** @brief Replace module identity and schema, remapping values (drop unknown, fill defaults). */
-    EditorResult<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
+    Result<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
 
     /** @brief Uri. */
     const std::string&              uri() const { return uri_; }
@@ -130,7 +129,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    Result<void>            loadSnapshot(const EditorValue&);
 
 private:
     /** @brief Matches. */

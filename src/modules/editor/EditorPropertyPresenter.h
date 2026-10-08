@@ -35,7 +35,7 @@ public:
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,
                                  const IPropertyProvider& provider) const;
     /** @brief Validate a candidate and emit a command payload without mutating the provider. */
-    EditorResult<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
+    Result<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                                 const PropertyPath& path, const EditorValue& value,
                                                 PropertySetMode mode = PropertySetMode::Absolute) const;
 };
@@ -47,7 +47,7 @@ public:
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,
                                  const IPropertyProvider& provider, const HostProfile& profile) const;
     /** @brief Validate a runtime-visible candidate and emit the same command payload as developer UI. */
-    EditorResult<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
+    Result<PropertyEditIntent> editIntent(const PropertySchema& schema, const SelectionSnapshot& selection,
                                                 const PropertyPath& path, const EditorValue& value,
                                                 const HostProfile& profile,
                                                 PropertySetMode    mode = PropertySetMode::Absolute) const;

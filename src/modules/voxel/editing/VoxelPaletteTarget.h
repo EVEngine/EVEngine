@@ -21,8 +21,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -71,11 +70,11 @@ public:
      */
     void*                                   queryCapability(const CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation&) override;
+    Result<void>                      applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -83,13 +82,13 @@ public:
     /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
+    Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
-    /** @brief Add one unique named cube type. */ EditorResult<DomainOperation> makeCreate(
+    Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Add one unique named cube type. */ Result<DomainOperation> makeCreate(
         const VoxelPaletteEntryValue&) const;
-    /** @brief Delete one cube type by stable editor ID. */ EditorResult<DomainOperation> makeDelete(
+    /** @brief Delete one cube type by stable editor ID. */ Result<DomainOperation> makeDelete(
         const ObjectId&) const;
     /** @brief Entries. */
     const std::vector<VoxelPaletteEntryValue>& entries() const { return entries_; }
@@ -98,7 +97,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                                snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void>                         loadSnapshot(const EditorValue&);
+    Result<void>                         loadSnapshot(const EditorValue&);
 
 private:
     /** @brief Matches. */
@@ -106,7 +105,7 @@ private:
     /** @brief Content value. */
     EditorValue                         contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation>       replacement(EditorValue, std::string = {}) const;
+    Result<DomainOperation>       replacement(EditorValue, std::string = {}) const;
     std::string                         id_;
     std::vector<VoxelPaletteEntryValue> entries_;
 };
@@ -127,7 +126,7 @@ public:
     /** @brief Voxel palette runtime. */
     ~VoxelPaletteRuntime();
     /** @brief Build a complete registry before replacing the active generation. */
-    EditorResult<std::vector<VoxelPalettePublishedEntry>> publish(const VoxelPaletteTarget&);
+    Result<std::vector<VoxelPalettePublishedEntry>> publish(const VoxelPaletteTarget&);
     /** @brief Access the published registry. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid
      * until the next publish or runtime destruction. */
     const voxel::CubeTypeRegistry* registry() const { return registry_.get(); }

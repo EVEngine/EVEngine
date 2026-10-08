@@ -67,7 +67,7 @@ public:
     GraphConnectionDecision canConnect(const GraphPinRecord& from,
                                        const GraphPinRecord& to) const override;
     /** @brief Construct a generic editor node from one reflected PointGraph operation. */
-    EditorResult<GraphNodeRecord> makeNode(const GraphNodeId& id,
+    Result<GraphNodeRecord> makeNode(const GraphNodeId& id,
                                            const std::string& operation) const;
     /** @brief Upgrade a legacy graph without mutating the source document. */
     PcgGraphMigrationResult migrate(const GraphDocumentData& graph) const;

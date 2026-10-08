@@ -20,8 +20,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -68,29 +67,29 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate entities in stable order. */
     std::vector<SocialEntityRecord> entities() const;
     /** @brief Enumerate edges in stable order. */
     std::vector<SocialEdgeRecord> edges() const;
     /** @brief Plan reversible entity creation or replacement. */
-    EditorResult<DomainOperation> makeSetEntity(const SocialEntityRecord& entity) const;
+    Result<DomainOperation> makeSetEntity(const SocialEntityRecord& entity) const;
     /** @brief Plan deletion of an entity and reject it while edges reference it. */
-    EditorResult<DomainOperation> makeDeleteEntity(const StableId& id) const;
+    Result<DomainOperation> makeDeleteEntity(const StableId& id) const;
     /** @brief Plan reversible edge creation or replacement. */
-    EditorResult<DomainOperation> makeSetEdge(const SocialEdgeRecord& edge) const;
+    Result<DomainOperation> makeSetEdge(const SocialEdgeRecord& edge) const;
     /** @brief Plan reversible edge deletion. */
-    EditorResult<DomainOperation> makeDeleteEdge(const StableId& id) const;
+    Result<DomainOperation> makeDeleteEdge(const StableId& id) const;
     /** @brief Validate references, uniqueness constraints and finite weights. */
     std::vector<EditorDiagnostic> validate() const;
     /** @brief Capture deterministic schema-version-one graph content. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated graph snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                            id_;
@@ -102,7 +101,7 @@ private:
 class EVENGINE_API_BACKENDS SocialRuntimeApplier {
 public:
     /** @brief Applies . */
-    EditorResult<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
+    Result<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
 };
 
 }  // namespace eve::social_editing

@@ -24,21 +24,6 @@
 namespace eve::graphics::raytracing {
 namespace {
 
-Result<void> unsupported(const char* op) {
-    return Result<void>::failure(Diagnostic::error(
-        DiagnosticCode::Unsupported, std::string(op) + ": hardware ray tracing unavailable", "graphics.raytracing"));
-}
-
-Result<void> failed(const char* op, const char* detail) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Failed, std::string(op) + ": " + detail, "graphics.raytracing"));
-}
-
-Result<void> invalidArg(const char* op, const char* detail) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(op) + ": " + detail, "graphics.raytracing"));
-}
-
 uint32_t alignedSize(uint32_t value, uint32_t alignment) {
     if (alignment == 0) return value;
     return (value + alignment - 1u) & ~(alignment - 1u);
@@ -90,7 +75,8 @@ void DeviceAddressBuffer::steal(DeviceAddressBuffer& o) noexcept {
 }
 
 Result<void> DeviceAddressBuffer::allocate(vkb::Device& dev, vk::DeviceSize bytes, vk::BufferUsageFlags usage) {
-    if (bytes == 0) return invalidArg("DeviceAddressBuffer.allocate", "size is zero");
+    if (bytes == 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("DeviceAddressBuffer.allocate") + ": " + "size is zero", "graphics.raytracing"));
     release();
     device = &dev;
 
@@ -119,15 +105,18 @@ Result<void> DeviceAddressBuffer::allocate(vkb::Device& dev, vk::DeviceSize byte
     address         = (*device)->getBufferAddress(addrInfo);
     if (address == 0) {
         release();
-        return failed("DeviceAddressBuffer.allocate", "getBufferAddress returned 0");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("DeviceAddressBuffer.allocate") + ": " + "getBufferAddress returned 0", "graphics.raytracing"));
     }
     return Result<void>::success();
 }
 
 Result<void> DeviceAddressBuffer::upload(vk::CommandPool pool, vk::Queue queue, const void* data,
                                          vk::DeviceSize bytes) {
-    if (!device || !buffer) return failed("DeviceAddressBuffer.upload", "buffer not allocated");
-    if (!data || bytes == 0 || bytes > size) return invalidArg("DeviceAddressBuffer.upload", "invalid host data");
+    if (!device || !buffer) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("DeviceAddressBuffer.upload") + ": " + "buffer not allocated", "graphics.raytracing"));
+    if (!data || bytes == 0 || bytes > size) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("DeviceAddressBuffer.upload") + ": " + "invalid host data", "graphics.raytracing"));
 
     using pfb = vk::MemoryPropertyFlagBits;
     vkb::GenericBuffer staging(*device, vk::BufferUsageFlagBits::eTransferSrc, bytes,
@@ -182,14 +171,16 @@ Result<void> VulkanRayTracing::ensureAttached() {
     auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(base);
     if (!vg || !vg->supportsRayTracing()) {
         if (vg) caps_ = vg->rayTracingCaps();
-        return unsupported("ensureAttached");
+        return Result<void>::failure(Diagnostic::error(
+        DiagnosticCode::Unsupported, std::string("ensureAttached") + ": hardware ray tracing unavailable", "graphics.raytracing"));
     }
     vkb::Device* current = &vg->getDevice();
     // Rebind whenever Graphics rebuilt the logical device (pointer identity).
     if (device_ == current && caps_.rayTracingAvailable()) return Result<void>::success();
     attachDevice(current, vg->rayTracingCaps(), vg->getUploadPool(),
                  vg->getDevice().getQueue(vkb::QueueType::graphics));
-    if (!isAvailable()) return unsupported("ensureAttached");
+    if (!isAvailable()) return Result<void>::failure(Diagnostic::error(
+        DiagnosticCode::Unsupported, std::string("ensureAttached") + ": hardware ray tracing unavailable", "graphics.raytracing"));
     return Result<void>::success();
 }
 
@@ -502,7 +493,8 @@ Result<void> VulkanRayTracing::rebuildScene() {
 
 Result<void> VulkanRayTracing::ensurePipeline() {
     if (pipeline_) return Result<void>::success();
-    if (!isAvailable()) return unsupported("ensurePipeline");
+    if (!isAvailable()) return Result<void>::failure(Diagnostic::error(
+        DiagnosticCode::Unsupported, std::string("ensurePipeline") + ": hardware ray tracing unavailable", "graphics.raytracing"));
 
     auto makeModule = [&](const uint32_t* words, size_t count) -> vk::ShaderModule {
         vk::ShaderModuleCreateInfo ci{};
@@ -593,7 +585,8 @@ Result<void> VulkanRayTracing::ensurePipeline() {
     auto created = (*device_)->createRayTracingPipelinesKHR(vk::DeferredOperationKHR{}, vk::PipelineCache{}, pipeCi,
                                                             device_->allocation_callbacks);
     if (created.result != vk::Result::eSuccess || created.value.empty())
-        return failed("ensurePipeline", "createRayTracingPipelinesKHR failed");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("ensurePipeline") + ": " + "createRayTracingPipelinesKHR failed", "graphics.raytracing"));
     pipeline_ = created.value.front();
 
     return createShaderBindingTable();
@@ -610,7 +603,8 @@ Result<void> VulkanRayTracing::createShaderBindingTable() {
     std::vector<uint8_t> handles(sbtSize);
     auto result = (*device_)->getRayTracingShaderGroupHandlesKHR(pipeline_, 0, groupCount, sbtSize, handles.data());
     if (result != vk::Result::eSuccess)
-        return failed("createShaderBindingTable", "getRayTracingShaderGroupHandlesKHR failed");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("createShaderBindingTable") + ": " + "getRayTracingShaderGroupHandlesKHR failed", "graphics.raytracing"));
 
     // Pack groups with base alignment between regions: raygen | miss | hit
     const uint32_t raygenSize = alignedSize(handleSizeAligned, baseAlignment);
@@ -727,7 +721,8 @@ Result<void> VulkanRayTracing::ensureDescriptorSets(vk::ImageView outputView, vk
 
 Result<void> VulkanRayTracing::ensureSampler() {
     if (sampler_) return Result<void>::success();
-    if (!device_) return unsupported("ensureSampler");
+    if (!device_) return Result<void>::failure(Diagnostic::error(
+        DiagnosticCode::Unsupported, std::string("ensureSampler") + ": hardware ray tracing unavailable", "graphics.raytracing"));
     vk::SamplerCreateInfo sci{};
     sci.magFilter    = vk::Filter::eNearest;
     sci.minFilter    = vk::Filter::eNearest;
@@ -740,8 +735,10 @@ Result<void> VulkanRayTracing::ensureSampler() {
 }
 
 Result<void> VulkanRayTracing::ensureOutputImage(uint32_t width, uint32_t height) {
-    if (!device_) return unsupported("ensureOutputImage");
-    if (width == 0 || height == 0) return invalidArg("ensureOutputImage", "zero extent");
+    if (!device_) return Result<void>::failure(Diagnostic::error(
+        DiagnosticCode::Unsupported, std::string("ensureOutputImage") + ": hardware ray tracing unavailable", "graphics.raytracing"));
+    if (width == 0 || height == 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("ensureOutputImage") + ": " + "zero extent", "graphics.raytracing"));
     if (outputImage_.image() && outputWidth_ == width && outputHeight_ == height) return Result<void>::success();
     outputImage_  = StorageColorImage{};
     outputWidth_  = width;
@@ -755,14 +752,16 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
                                                 const glm::mat4& viewProj, const glm::vec3& eyeWorld) {
     if (auto attached = ensureAttached(); !attached.ok()) return attached;
     if (!gfx || !sceneColor || !hwDepth || !worldNormal || !dest)
-        return invalidArg("applyReflections", "null argument");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("applyReflections") + ": " + "null argument", "graphics.raytracing"));
     if (meshes_.empty() || !tlas_.handle) {
         // Empty scene: no usable RT output — callers must fall through to SSR.
         return Result<void>::success(Status::success(StatusCode::NoOp));
     }
 
     auto* vkGfx = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
-    if (!vkGfx) return failed("applyReflections", "requires Vulkan Graphics backend");
+    if (!vkGfx) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("applyReflections") + ": " + "requires Vulkan Graphics backend", "graphics.raytracing"));
 
     if (auto r = ensurePipeline(); !r.ok()) return r;
 
@@ -773,9 +772,11 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
     };
 
     Texture* destTex = dest->getTexture();
-    if (!destTex) return failed("applyReflections", "destination canvas has no texture");
+    if (!destTex) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("applyReflections") + ": " + "destination canvas has no texture", "graphics.raytracing"));
     auto* destCanvas = dynamic_cast<eve::graphics::vulkan::OffscreenCanvas*>(dest);
-    if (!destCanvas) return failed("applyReflections", "destination must be an OffscreenCanvas");
+    if (!destCanvas) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("applyReflections") + ": " + "destination must be an OffscreenCanvas", "graphics.raytracing"));
 
     const uint32_t width  = uint32_t(dest->getWidth());
     const uint32_t height = uint32_t(dest->getHeight());
@@ -786,7 +787,8 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
     const vk::ImageView depthView  = textureView(hwDepth);
     const vk::ImageView normalView = textureView(worldNormal);
     if (!outView || !sceneView || !depthView || !normalView)
-        return failed("applyReflections", "missing texture image view");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, std::string("applyReflections") + ": " + "missing texture image view", "graphics.raytracing"));
 
     if (auto r = ensureDescriptorSets(outView, sceneView, depthView, normalView); !r.ok()) return r;
 

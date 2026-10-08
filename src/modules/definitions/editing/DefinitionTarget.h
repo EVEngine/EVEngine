@@ -19,8 +19,7 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template <class T>
-using EditorResult = eve::editing::Result<T>;
+using editing::Result;
 
 /** @brief Stable cross-definition reference exposed to picker and validation hosts. */
 struct DefinitionReferenceField {
@@ -49,15 +48,15 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override { return nullptr; }
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Atomically replace canonical payload text after basic JSON-shape validation. */
-    EditorResult<void> setJson(std::string json);
+    Result<void> setJson(std::string json);
     /** @brief Replace the schema version with a positive value. */
-    EditorResult<void> setVersion(int version);
+    Result<void> setVersion(int version);
     /** @brief Replace editor-extracted cross-reference fields. */
-    EditorResult<void> setReferences(std::vector<DefinitionReferenceField> references);
+    Result<void> setReferences(std::vector<DefinitionReferenceField> references);
     /** @brief Plan a reversible top-level field assignment from a schema form. */
-    EditorResult<DomainOperation> makeSetField(const std::string& field,
+    Result<DomainOperation> makeSetField(const std::string& field,
                                                const EditorValue& value) const;
     /** @brief Run schema and cross-reference diagnostics without mutating content. */
     std::vector<EditorDiagnostic> validate(const SchemaValidator& schema,
@@ -65,7 +64,7 @@ public:
     /** @brief Capture deterministic content for DocumentService persistence. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a version-one editor snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
     /** @brief Return definition type/schema id. */
     const std::string& type() const { return type_; }
@@ -91,7 +90,7 @@ private:
 class EVENGINE_API_BACKENDS DefinitionRuntimePublisher {
 public:
     /** @brief Insert or replace one definition after editor-side validation. */
-    EditorResult<void> publish(const DefinitionDocument& document,
+    Result<void> publish(const DefinitionDocument& document,
                                definitions::DefinitionRegistry* registry,
                                bool replaceExisting = false) const;
 };

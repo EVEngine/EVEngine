@@ -49,7 +49,7 @@ MaterialCompileResult MaterialGraphDomain::compile(const GraphDocumentData& grap
     return result;
 }
 
-EditorResult<TaskId> MaterialEditorService::compile(const DocumentId& document, const GraphDocumentData& graph,
+Result<TaskId> MaterialEditorService::compile(const DocumentId& document, const GraphDocumentData& graph,
                                                     const MaterialGraphDomain& domain) {
     if (document.empty())
         return eve::editing::failed<TaskId>(EditorStatus::Rejected, RuleId("editor.material.missing-document"),
@@ -59,7 +59,7 @@ EditorResult<TaskId> MaterialEditorService::compile(const DocumentId& document, 
     return eve::editing::applied<TaskId>(std::move(task));
 }
 
-EditorResult<TaskId> MaterialEditorService::compileAsync(const DocumentId& document, GraphDocumentData graph,
+Result<TaskId> MaterialEditorService::compileAsync(const DocumentId& document, GraphDocumentData graph,
                                                          const MaterialGraphDomain& domain, TaskService& tasks) {
     if (document.empty())
         return eve::editing::failed<TaskId>(EditorStatus::Rejected, RuleId("editor.material.missing-document"),
@@ -89,7 +89,7 @@ EditorResult<TaskId> MaterialEditorService::compileAsync(const DocumentId& docum
     return queued;
 }
 
-EditorResult<void> MaterialEditorService::cancel(const TaskId& task) {
+Result<void> MaterialEditorService::cancel(const TaskId& task) {
     auto found = tasks_.find(task);
     if (found == tasks_.end() || !found->second.service)
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.material.async-task-not-found"),
@@ -97,7 +97,7 @@ EditorResult<void> MaterialEditorService::cancel(const TaskId& task) {
     return found->second.service->cancel(task);
 }
 
-EditorResult<MaterialCompileResult> MaterialEditorService::result(const TaskId& task) const {
+Result<MaterialCompileResult> MaterialEditorService::result(const TaskId& task) const {
     auto found = tasks_.find(task);
     if (found == tasks_.end())
         return eve::editing::failed<MaterialCompileResult>(
@@ -109,7 +109,7 @@ EditorResult<MaterialCompileResult> MaterialEditorService::result(const TaskId& 
                                                                RuleId("editor.material.task-not-found"),
                                                                "Material compile task does not exist");
         if (snapshot.value().state == TaskState::Queued || snapshot.value().state == TaskState::Running)
-            return EditorResult<MaterialCompileResult>::success(
+            return Result<MaterialCompileResult>::success(
                 MaterialCompileResult{}, eve::Status::success(EditorStatus::Pending));
         MaterialCompileResult compiled;
         compiled.diagnostics = snapshot.value().diagnostics;
@@ -140,7 +140,7 @@ EditorResult<MaterialCompileResult> MaterialEditorService::result(const TaskId& 
     return eve::editing::applied<MaterialCompileResult>(found->second.result);
 }
 
-EditorResult<void> MaterialEditorService::publishPreview(const DocumentId& document, Revision currentRevision,
+Result<void> MaterialEditorService::publishPreview(const DocumentId& document, Revision currentRevision,
                                                          const TaskId& task) {
     auto found = tasks_.find(task);
     if (found == tasks_.end() || found->second.document != document)

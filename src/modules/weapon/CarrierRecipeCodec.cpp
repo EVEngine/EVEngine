@@ -14,17 +14,6 @@
 namespace eve::weapon {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<void>::failure(Diagnostic::error(code, std::string(message), std::string(path), {},
-                                                   "weapon.carrier.recipe"));
-}
-
-template <class T>
-Result<T> failT(DiagnosticCode code, std::string_view message, std::string_view path) {
-    return Result<T>::failure(Diagnostic::error(code, std::string(message), std::string(path), {},
-                                                "weapon.carrier.recipe"));
-}
-
 const Value* field(const Value::Object& object, const char* name) {
     const auto it = object.find(name);
     return it == object.end() ? nullptr : &it->second;
@@ -44,16 +33,19 @@ Result<std::optional<double>> optionalDouble(const Value::Object& object, const 
     if (!value) return Result<std::optional<double>>::success(std::nullopt);
     if (const auto* number = value->getIf<double>()) {
         if (!std::isfinite(*number))
-            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
         return Result<std::optional<double>>::success(*number);
     }
     if (const auto* integer = value->getIf<std::int64_t>()) {
         const double converted = static_cast<double>(*integer);
         if (!std::isfinite(converted))
-            return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected finite number", path);
+            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
         return Result<std::optional<double>>::success(converted);
     }
-    return failT<std::optional<double>>(DiagnosticCode::InvalidArgument, "Expected number", path);
+    return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected number"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
 }
 
 Result<std::optional<int>> optionalInt(const Value::Object& object, const char* name, std::string_view path) {
@@ -61,18 +53,22 @@ Result<std::optional<int>> optionalInt(const Value::Object& object, const char* 
     if (!value) return Result<std::optional<int>>::success(std::nullopt);
     if (const auto* integer = value->getIf<std::int64_t>()) {
         if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
         return Result<std::optional<int>>::success(static_cast<int>(*integer));
     }
     if (const auto* number = value->getIf<double>()) {
         if (!std::isfinite(*number) || *number != std::floor(*number))
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
         if (*number < static_cast<double>(std::numeric_limits<int>::min()) ||
             *number > static_cast<double>(std::numeric_limits<int>::max()))
-            return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Integer out of range", path);
+            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
         return Result<std::optional<int>>::success(static_cast<int>(*number));
     }
-    return failT<std::optional<int>>(DiagnosticCode::InvalidArgument, "Expected integer", path);
+    return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
 }
 
 Result<void> assignOptionalDouble(const Value::Object& object, const char* name, double& dest, std::string_view path) {
@@ -93,7 +89,8 @@ Result<Duration> readSeconds(const Value::Object& object, const char* name, std:
     auto seconds = optionalDouble(object, name, path);
     if (!seconds.ok()) return Result<Duration>::failure(seconds.status());
     if (!seconds.value().has_value() || !(*seconds.value() > 0.0))
-        return failT<Duration>(DiagnosticCode::InvalidArgument, "Expected positive seconds", path);
+        return Result<Duration>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected positive seconds"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     auto duration = Duration::fromSeconds(*seconds.value());
     if (!duration.ok()) return Result<Duration>::failure(duration.status());
     return Result<Duration>::success(duration.value());
@@ -102,10 +99,12 @@ Result<Duration> readSeconds(const Value::Object& object, const char* name, std:
 Result<LogicalId> readLogicalId(const Value::Object& object, const char* name, std::string_view path) {
     std::string text;
     if (!readString(object, name, text) || text.empty())
-        return failT<LogicalId>(DiagnosticCode::InvalidArgument, "Expected non-empty logical id", path);
+        return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected non-empty logical id"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     auto parsed = LogicalId::parse(text);
     if (!parsed.has_value())
-        return failT<LogicalId>(DiagnosticCode::InvalidArgument, "Logical id must be namespace:name", path);
+        return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Logical id must be namespace:name"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     return Result<LogicalId>::success(std::move(*parsed));
 }
 
@@ -117,7 +116,8 @@ Result<CarrierMotionOpKind> parseMotionKind(std::string_view text, std::string_v
     if (text == "sway" || text == "CurveSway") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::CurveSway);
     if (text == "helix" || text == "CurveHelix") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::CurveHelix);
     if (text == "avoidBody" || text == "SteerAvoidBody") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SteerAvoidBody);
-    return failT<CarrierMotionOpKind>(DiagnosticCode::InvalidArgument, "Unknown motion kind", path);
+    return Result<CarrierMotionOpKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown motion kind"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
 }
 
 Result<CarrierTriggerKind> parseTriggerKind(std::string_view text, std::string_view path) {
@@ -126,7 +126,8 @@ Result<CarrierTriggerKind> parseTriggerKind(std::string_view text, std::string_v
     if (text == "onInterval" || text == "OnInterval") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnInterval);
     if (text == "onHit" || text == "OnHit") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnHit);
     if (text == "onProximity" || text == "OnProximity") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnProximity);
-    return failT<CarrierTriggerKind>(DiagnosticCode::InvalidArgument, "Unknown trigger kind", path);
+    return Result<CarrierTriggerKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown trigger kind"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
 }
 
 Result<CarrierImpactKind> parseImpactKind(std::string_view text, std::string_view path) {
@@ -136,7 +137,8 @@ Result<CarrierImpactKind> parseImpactKind(std::string_view text, std::string_vie
     if (text == "bounce" || text == "Bounce") return Result<CarrierImpactKind>::success(CarrierImpactKind::Bounce);
     if (text == "release" || text == "Release") return Result<CarrierImpactKind>::success(CarrierImpactKind::Release);
     if (text == "spawnChild" || text == "SpawnChild") return Result<CarrierImpactKind>::success(CarrierImpactKind::SpawnChild);
-    return failT<CarrierImpactKind>(DiagnosticCode::InvalidArgument, "Unknown impact kind", path);
+    return Result<CarrierImpactKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown impact kind"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
 }
 
 const char* motionKindName(CarrierMotionOpKind kind) {
@@ -184,10 +186,12 @@ Result<CarrierMotionOp> decodeMotionOp(const Value& value, std::string path) {
         return Result<CarrierMotionOp>::success(op);
     }
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<CarrierMotionOp>(DiagnosticCode::InvalidArgument, "Motion op must be string or object", path);
+    if (!object) return Result<CarrierMotionOp>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Motion op must be string or object"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     std::string kindText;
     if (!readString(*object, "kind", kindText))
-        return failT<CarrierMotionOp>(DiagnosticCode::InvalidArgument, "Motion op requires kind", path + ".kind");
+        return Result<CarrierMotionOp>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Motion op requires kind"), std::string(path + ".kind"), {},
+                                                "weapon.carrier.recipe"));
     auto kind = parseMotionKind(kindText, path + ".kind");
     if (!kind.ok()) return Result<CarrierMotionOp>::failure(kind.status());
     op.kind = kind.value();
@@ -244,10 +248,12 @@ Result<CarrierTrigger> decodeTrigger(const Value& value, std::string path) {
         return Result<CarrierTrigger>::success(trigger);
     }
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<CarrierTrigger>(DiagnosticCode::InvalidArgument, "Trigger must be string or object", path);
+    if (!object) return Result<CarrierTrigger>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Trigger must be string or object"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     std::string kindText;
     if (!readString(*object, "kind", kindText))
-        return failT<CarrierTrigger>(DiagnosticCode::InvalidArgument, "Trigger requires kind", path + ".kind");
+        return Result<CarrierTrigger>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Trigger requires kind"), std::string(path + ".kind"), {},
+                                                "weapon.carrier.recipe"));
     auto kind = parseTriggerKind(kindText, path + ".kind");
     if (!kind.ok()) return Result<CarrierTrigger>::failure(kind.status());
     trigger.kind = kind.value();
@@ -285,11 +291,13 @@ Result<CarrierTrigger> decodeTrigger(const Value& value, std::string path) {
 
 Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "Impact must be an object", path);
+    if (!object) return Result<CarrierImpact>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Impact must be an object"), std::string(path), {},
+                                                "weapon.carrier.recipe"));
     CarrierImpact impact;
     std::string kindText;
     if (!readString(*object, "kind", kindText))
-        return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "Impact requires kind", path + ".kind");
+        return Result<CarrierImpact>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Impact requires kind"), std::string(path + ".kind"), {},
+                                                "weapon.carrier.recipe"));
     auto kind = parseImpactKind(kindText, path + ".kind");
     if (!kind.ok()) return Result<CarrierImpact>::failure(kind.status());
     impact.kind = kind.value();
@@ -325,12 +333,12 @@ Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
         if (const auto* text = child->getIf<std::string>()) {
             auto parsed = LogicalId::parse(*text);
             if (!parsed.has_value())
-                return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "Invalid childRecipeId",
-                                            path + ".childRecipeId");
+                return Result<CarrierImpact>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Invalid childRecipeId"), std::string(path + ".childRecipeId"), {},
+                                                "weapon.carrier.recipe"));
             impact.childRecipeId = std::move(*parsed);
         } else if (!child->isNull()) {
-            return failT<CarrierImpact>(DiagnosticCode::InvalidArgument, "childRecipeId must be a string",
-                                        path + ".childRecipeId");
+            return Result<CarrierImpact>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("childRecipeId must be a string"), std::string(path + ".childRecipeId"), {},
+                                                "weapon.carrier.recipe"));
         }
     }
     return Result<CarrierImpact>::success(impact);
@@ -349,7 +357,8 @@ Result<CarrierRecipe> decodePreset(const Value::Object& object) {
     auto speedField = optionalDouble(object, "speed", "speed");
     if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
     if (!speedField.value().has_value() || !(*speedField.value() > 0.0))
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Preset requires positive speed", "speed");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Preset requires positive speed"), std::string("speed"), {},
+                                                "weapon.carrier.recipe"));
     recipe.speed = *speedField.value();
 
     double damage = 0.0;
@@ -489,13 +498,15 @@ Result<CarrierRecipe> decodeFull(const Value::Object& object) {
     auto speedField = optionalDouble(object, "speed", "speed");
     if (!speedField.ok()) return Result<CarrierRecipe>::failure(speedField.status());
     if (!speedField.value().has_value() || !(*speedField.value() > 0.0))
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Recipe requires positive speed", "speed");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Recipe requires positive speed"), std::string("speed"), {},
+                                                "weapon.carrier.recipe"));
     recipe.speed = *speedField.value();
 
     const auto* motion = field(object, "motion");
     if (!motion) motion = field(object, "motionOps");
     if (!motion || !motion->isArray())
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Full recipe requires motion array", "motion");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Full recipe requires motion array"), std::string("motion"), {},
+                                                "weapon.carrier.recipe"));
     for (std::size_t i = 0; i < motion->arraySize(); ++i) {
         auto op = decodeMotionOp(motion->at(i), "motion[" + std::to_string(i) + "]");
         if (!op.ok()) return Result<CarrierRecipe>::failure(op.status());
@@ -504,7 +515,8 @@ Result<CarrierRecipe> decodeFull(const Value::Object& object) {
 
     const auto* triggers = field(object, "triggers");
     if (!triggers || !triggers->isArray())
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Full recipe requires triggers array", "triggers");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Full recipe requires triggers array"), std::string("triggers"), {},
+                                                "weapon.carrier.recipe"));
     for (std::size_t i = 0; i < triggers->arraySize(); ++i) {
         auto trigger = decodeTrigger(triggers->at(i), "triggers[" + std::to_string(i) + "]");
         if (!trigger.ok()) return Result<CarrierRecipe>::failure(trigger.status());
@@ -513,7 +525,8 @@ Result<CarrierRecipe> decodeFull(const Value::Object& object) {
 
     const auto* impacts = field(object, "impacts");
     if (!impacts || !impacts->isArray())
-        return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Full recipe requires impacts array", "impacts");
+        return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Full recipe requires impacts array"), std::string("impacts"), {},
+                                                "weapon.carrier.recipe"));
     for (std::size_t i = 0; i < impacts->arraySize(); ++i) {
         auto impact = decodeImpact(impacts->at(i), "impacts[" + std::to_string(i) + "]");
         if (!impact.ok()) return Result<CarrierRecipe>::failure(impact.status());
@@ -529,7 +542,8 @@ Result<CarrierRecipe> decodeFull(const Value::Object& object) {
 
 Result<CarrierRecipe> decodeCarrierRecipe(const Value& value) {
     const auto* object = value.getIf<Value::Object>();
-    if (!object) return failT<CarrierRecipe>(DiagnosticCode::InvalidArgument, "Carrier recipe must be an object", "");
+    if (!object) return Result<CarrierRecipe>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Carrier recipe must be an object"), std::string(""), {},
+                                                "weapon.carrier.recipe"));
     if (field(*object, "motionOps") || field(*object, "triggers") || field(*object, "impacts")) {
         if (const auto* motion = field(*object, "motion"); motion && motion->isString()) {
             // Preset with convenience motion string plus optional explicit arrays is ambiguous —

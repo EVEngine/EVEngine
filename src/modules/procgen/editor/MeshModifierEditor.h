@@ -19,12 +19,12 @@ public:
     /** @brief Construct a controller for one mesh document. */
     explicit MeshModifierEditor(std::string targetId);
     /** @brief Atomically install the complete mesh-modifier panel composition. */
-    [[nodiscard]] procgen_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] procgen_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
     /** @brief Activate graph, spline, sculpt, or uvPaint and update semantic focus. */
-    [[nodiscard]] procgen_editing::EditorResult<void> activateTool(editor::EditorWorkspace& workspace,
+    [[nodiscard]] procgen_editing::Result<void> activateTool(editor::EditorWorkspace& workspace,
                                                                    std::string tool);
     /** @brief Observe an externally owned document revision without copying its state. */
-    [[nodiscard]] procgen_editing::EditorResult<void> observeRevision(std::string document, std::uint64_t revision);
+    [[nodiscard]] procgen_editing::Result<void> observeRevision(std::string document, std::uint64_t revision);
     const std::string& targetId() const noexcept { return targetId_; }
     /** @brief Active tool. */
     const std::string& activeTool() const noexcept { return activeTool_; }

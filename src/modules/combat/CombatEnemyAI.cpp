@@ -7,11 +7,6 @@
 namespace eve::combat {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 double distance3(double ax, double ay, double az, double bx, double by, double bz) {
     const double dx = ax - bx;
     const double dy = ay - by;
@@ -22,11 +17,15 @@ double distance3(double ax, double ay, double az, double bx, double by, double b
 }  // namespace
 
 Result<void> CombatEnemyDefinition::validate() const {
-    if (!subject.isValid()) return invalid("enemy subject is nil", "subject");
-    if (ownerId.empty()) return invalid("enemy owner id is empty", "ownerId");
+    if (!subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy subject is nil", "subject"));
+    if (ownerId.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy owner id is empty", "ownerId"));
     if (!std::isfinite(nearRadius) || nearRadius <= 0.0 || !std::isfinite(midRadius) || midRadius < nearRadius)
-        return invalid("enemy radii are invalid", "radius");
-    if (attackCooldownTicks == 0) return invalid("enemy attack cooldown must be positive", "attackCooldownTicks");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy radii are invalid", "radius"));
+    if (attackCooldownTicks == 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "enemy attack cooldown must be positive", "attackCooldownTicks"));
     return Result<void>::success();
 }
 
@@ -47,8 +46,10 @@ Result<void> CombatEnemyIntentSource::unregisterEnemy(SubjectRef subject) {
 }
 
 Result<void> CombatEnemyIntentSource::setPosition(SubjectRef subject, double x, double y, double z) {
-    if (!subject.isValid()) return invalid("subject is nil", "subject");
-    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) return invalid("pose is invalid", "pose");
+    if (!subject.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "subject is nil", "subject"));
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "pose is invalid", "pose"));
     poses_[subject.format()] = Pose{x, y, z};
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -58,7 +59,8 @@ Result<void> CombatEnemyIntentSource::setLightAction(SubjectRef subject, Logical
     if (found == enemies_.end())
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "enemy was not found", subject.format()));
-    if (actionId.format().empty()) return invalid("light action id is empty", "actionId");
+    if (actionId.format().empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "light action id is empty", "actionId"));
     found->second.lightAction = std::move(actionId);
     found->second.hasAction   = true;
     return Result<void>::success(Status::success(StatusCode::Applied));

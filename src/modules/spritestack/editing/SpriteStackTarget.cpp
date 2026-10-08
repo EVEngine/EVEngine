@@ -129,7 +129,7 @@ PropertyReadResult SpriteStackDocumentTarget::read(const SelectionSnapshot& s, c
         value = v.outlineWidth;
     return {PropertyReadState::Value, std::move(value), {}};
 }
-EditorResult<DomainOperation> SpriteStackDocumentTarget::replacement(EditorValue content,
+Result<DomainOperation> SpriteStackDocumentTarget::replacement(EditorValue content,
                                                                       std::string property) const {
     DomainOperation op;
     op.type        = "spritestack.document.replace.v1";
@@ -142,7 +142,7 @@ EditorResult<DomainOperation> SpriteStackDocumentTarget::replacement(EditorValue
     op.mergeKey = "spritestack:" + id_ + ":" + property;
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> SpriteStackDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> SpriteStackDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                                  const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -191,7 +191,7 @@ EditorResult<DomainOperation> SpriteStackDocumentTarget::makeSet(const Selection
                                                      "SpriteStack edit violates bake budgets");
     return replacement(candidate.contentValue(), p.value());
 }
-EditorResult<DomainOperation> SpriteStackDocumentTarget::makeReset(const SelectionSnapshot& s,
+Result<DomainOperation> SpriteStackDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                    const PropertyPath&      p) const {
     auto d = schema(s).find(p);
     if (!d)
@@ -239,7 +239,7 @@ std::vector<EditorDiagnostic> SpriteStackDocumentTarget::validate() const {
             "SpriteStack presentation values are invalid"));
     return d;
 }
-EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "spritestack.document.replace.v1" ||
         !op.payload.isWithinLimits(5, 64, 4096))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.operation"),
@@ -314,7 +314,7 @@ EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainO
 std::unique_ptr<IDomainOperationTarget> SpriteStackDocumentTarget::cloneDomainState() const {
     return std::make_unique<SpriteStackDocumentTarget>(*this);
 }
-EditorResult<void> SpriteStackDocumentTarget::commitDomainState(
+Result<void> SpriteStackDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<SpriteStackDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -326,7 +326,7 @@ EditorResult<void> SpriteStackDocumentTarget::commitDomainState(
 EditorValue SpriteStackDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> SpriteStackDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> SpriteStackDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *v = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

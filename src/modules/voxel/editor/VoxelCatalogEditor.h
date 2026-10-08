@@ -47,13 +47,13 @@ public:
      * @brief Install Models / Viewport / Tools / Inspector panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] voxel_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] voxel_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
-    [[nodiscard]] voxel_editing::EditorResult<void> selectModel(std::string id);
-    [[nodiscard]] voxel_editing::EditorResult<void> setTool(std::string tool);
-    [[nodiscard]] voxel_editing::EditorResult<void> setViewport(float width, float height);
-    [[nodiscard]] voxel_editing::EditorResult<void> orbit(float yawDelta, float pitchDelta);
-    [[nodiscard]] voxel_editing::EditorResult<void> pointerDown(float x, float y);
+    [[nodiscard]] voxel_editing::Result<void> selectModel(std::string id);
+    [[nodiscard]] voxel_editing::Result<void> setTool(std::string tool);
+    [[nodiscard]] voxel_editing::Result<void> setViewport(float width, float height);
+    [[nodiscard]] voxel_editing::Result<void> orbit(float yawDelta, float pitchDelta);
+    [[nodiscard]] voxel_editing::Result<void> pointerDown(float x, float y);
     /**
      * @brief MagicaVoxel attach/erase using a world-space camera ray.
      * @param ox Ray origin X in model space.
@@ -63,24 +63,24 @@ public:
      * @param dy Ray direction Y.
      * @param dz Ray direction Z.
      */
-    [[nodiscard]] voxel_editing::EditorResult<void> pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
+    [[nodiscard]] voxel_editing::Result<void> pointerWorldRay(float ox, float oy, float oz, float dx, float dy,
                                                                     float dz);
     /** @brief Sets the voxel. */
-    [[nodiscard]] voxel_editing::EditorResult<void> setVoxel(int x, int y, int z, bool occupied);
+    [[nodiscard]] voxel_editing::Result<void> setVoxel(int x, int y, int z, bool occupied);
     /** @brief Sets the selected socket. */
-    [[nodiscard]] voxel_editing::EditorResult<void> setSelectedSocket(std::string tag, std::string kind);
+    [[nodiscard]] voxel_editing::Result<void> setSelectedSocket(std::string tag, std::string kind);
     /** @brief Select face. */
-    [[nodiscard]] voxel_editing::EditorResult<void> selectFace(int face);
+    [[nodiscard]] voxel_editing::Result<void> selectFace(int face);
     /** @brief Creates model. */
-    [[nodiscard]] voxel_editing::EditorResult<void> createModel(std::string id, std::string name, int sizeX, int sizeY,
+    [[nodiscard]] voxel_editing::Result<void> createModel(std::string id, std::string name, int sizeX, int sizeY,
                                                                 int sizeZ);
     /** @brief Delete selected model. */
-    [[nodiscard]] voxel_editing::EditorResult<void> deleteSelectedModel();
+    [[nodiscard]] voxel_editing::Result<void> deleteSelectedModel();
 
     /** @brief Undo. */
-    [[nodiscard]] voxel_editing::EditorResult<editor::TransactionReceipt> undo();
+    [[nodiscard]] voxel_editing::Result<editor::TransactionReceipt> undo();
     /** @brief Redo. */
-    [[nodiscard]] voxel_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] voxel_editing::Result<editor::TransactionReceipt> redo();
 
     /** @brief Can undo. */
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
@@ -156,12 +156,12 @@ private:
         float depth = 0;
     };
 
-    [[nodiscard]] voxel_editing::EditorResult<void> commit(
-        voxel_editing::EditorResult<voxel_editing::DomainOperation> operation, std::string label);
-    [[nodiscard]] voxel_editing::EditorResult<void> refreshPreview();
+    [[nodiscard]] voxel_editing::Result<void> commit(
+        voxel_editing::Result<voxel_editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] voxel_editing::Result<void> refreshPreview();
     void                                            seedProject();
     void                                            rebuildScreen();
-    [[nodiscard]] voxel_editing::EditorResult<void> applyPick(const voxel_editing::VoxelPick& pick);
+    [[nodiscard]] voxel_editing::Result<void> applyPick(const voxel_editing::VoxelPick& pick);
     void                                            cameraAxes(float& fx, float& fy, float& fz, float& rx, float& ry,
                                                                float& rz, float& ux, float& uy, float& uz) const;
     editor::SelectionSnapshot                       selection() const;

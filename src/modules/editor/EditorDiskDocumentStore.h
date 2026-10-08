@@ -23,9 +23,9 @@ public:
     explicit DiskAtomicDocumentStore(std::filesystem::path projectRoot);
 
     /** @brief Read and validate the latest atomic document envelope. */
-    EditorResult<StoredDocument> read(const std::string& resourceUri) const override;
+    Result<StoredDocument> read(const std::string& resourceUri) const override;
     /** @brief CAS and atomically replace one document envelope on disk. */
-    EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
+    Result<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,
                                                 const std::string& expectedContentHash,
                                                 const EditorValue& content) override;
 
@@ -37,7 +37,7 @@ public:
     }
 
 private:
-    static EditorResult<StoredDocument> failure(EditorStatus status, const char* rule, std::string message);
+    static Result<StoredDocument> failure(EditorStatus status, const char* rule, std::string message);
     bool replace(const std::filesystem::path& temporary, const std::filesystem::path& destination) const;
 
     std::filesystem::path                             root_;
@@ -67,9 +67,9 @@ public:
         : store_(store), projectId_(std::move(projectId)) {}
 
     /** @brief Write one revisioned draft under autosave://project/document.draft. */
-    EditorResult<StoredDocument> writeDraft(const DocumentSnapshot& snapshot, const EditorValue& content);
+    Result<StoredDocument> writeDraft(const DocumentSnapshot& snapshot, const EditorValue& content);
     /** @brief Read a draft and validate its schema. */
-    EditorResult<AutosaveDraft> readDraft(const DocumentId& document) const;
+    Result<AutosaveDraft> readDraft(const DocumentId& document) const;
     /** @brief True when a newer draft differs from the current formal disk base. */
     bool shouldOfferRecovery(const AutosaveDraft& draft, const DocumentSnapshot& formal) const;
     /** @brief Return the stable draft URI for one document. */

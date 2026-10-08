@@ -11,7 +11,7 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template<class T> using EditorResult = eve::editing::Result<T>;
+using editing::Result;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
 class EVENGINE_API_ORCHESTRATION TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
                                                              public virtual IEditableTarget,
@@ -28,11 +28,11 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation&) override;
+    Result<void> applyDomainOperation(const DomainOperation&) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot&) const override;
     /** @brief Schema. */
@@ -40,10 +40,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath&,
+    Result<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath&,
                                           const EditorValue&, PropertySetMode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    Result<DomainOperation> makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Recipe. */
     const std::string& recipe() const { return recipe_; }
     /** @brief Values. */
@@ -53,12 +53,12 @@ public:
     /** @brief Snapshot value. */
     EditorValue snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue&);
+    Result<void> loadSnapshot(const EditorValue&);
 private:
     /** @brief Matches. */
     bool matches(const SelectionSnapshot&) const;
     /** @brief Initialize defaults. */
-    EditorResult<void> initializeDefaults();
+    Result<void> initializeDefaults();
     /** @brief Content value. */
     EditorValue contentValue() const;
     std::string         id_, recipe_;
@@ -74,7 +74,7 @@ public:
     /** @brief Texture recipe preview runtime. */
     ~TextureRecipePreviewRuntime();
     /** @brief Generate. */
-    EditorResult<TextureRecipePreviewArtifact> generate(const TextureRecipeTarget&);
+    Result<TextureRecipePreviewArtifact> generate(const TextureRecipeTarget&);
     /** @brief Access the generated image. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid until the next generation or runtime destruction. */
     const image::ImageData* image() const { return image_.get(); }
     /** @brief Revision. */

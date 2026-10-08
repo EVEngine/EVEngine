@@ -47,13 +47,13 @@ public:
     /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.curve-document"); }
     /** @brief Plan creation or replacement of a scalar key. */
-    virtual EditorResult<DomainOperation> makeSetKey(const EditorCurveKey& key) const = 0;
+    virtual Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const = 0;
     /** @brief Plan deletion of a scalar key. */
-    virtual EditorResult<DomainOperation> makeDeleteKey(const StableId& key) const = 0;
+    virtual Result<DomainOperation> makeDeleteKey(const StableId& key) const = 0;
     /** @brief Plan creation or replacement of a gradient stop. */
-    virtual EditorResult<DomainOperation> makeSetStop(const EditorGradientStop& stop) const = 0;
+    virtual Result<DomainOperation> makeSetStop(const EditorGradientStop& stop) const = 0;
     /** @brief Plan deletion of a gradient stop. */
-    virtual EditorResult<DomainOperation> makeDeleteStop(const StableId& stop) const = 0;
+    virtual Result<DomainOperation> makeDeleteStop(const StableId& stop) const = 0;
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
@@ -72,20 +72,20 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Make set key. */
-    EditorResult<DomainOperation> makeSetKey(const EditorCurveKey& key) const override;
+    Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const override;
     /** @brief Make delete key. */
-    EditorResult<DomainOperation> makeDeleteKey(const StableId& key) const override;
+    Result<DomainOperation> makeDeleteKey(const StableId& key) const override;
     /** @brief Make set stop. */
-    EditorResult<DomainOperation> makeSetStop(const EditorGradientStop& stop) const override;
+    Result<DomainOperation> makeSetStop(const EditorGradientStop& stop) const override;
     /** @brief Make delete stop. */
-    EditorResult<DomainOperation> makeDeleteStop(const StableId& stop) const override;
+    Result<DomainOperation> makeDeleteStop(const StableId& stop) const override;
     /** @brief Return scalar keys in stable timeline order. */
     std::vector<EditorCurveKey> keys() const;
     /** @brief Return gradient stops in stable timeline order. */
@@ -99,7 +99,7 @@ public:
     /** @brief Capture deterministic schema-version-one timeline data. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated timeline snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                            id_;

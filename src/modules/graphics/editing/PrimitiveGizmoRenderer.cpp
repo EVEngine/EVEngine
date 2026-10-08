@@ -14,7 +14,7 @@ namespace {
 
 eve::Result<graphics::PrimitiveDrawStatistics> failure(std::string message, std::string path) {
     return eve::Result<graphics::PrimitiveDrawStatistics>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {},
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path, {},
                                "graphics_editing.primitive_gizmo"));
 }
 

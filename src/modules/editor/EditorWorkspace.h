@@ -53,16 +53,16 @@ public:
     void setTitle(const std::string& title);
 
     /** @brief Register a checked owning panel descriptor. */
-    [[nodiscard]] EditorResult<WorkspacePanelDescriptor> registerPanel(WorkspacePanelDescriptor descriptor);
+    [[nodiscard]] Result<WorkspacePanelDescriptor> registerPanel(WorkspacePanelDescriptor descriptor);
     /** @brief Move a panel using a strongly typed dock region. */
-    [[nodiscard]] EditorResult<WorkspacePanelDescriptor> movePanel(const StableId& id, WorkspaceRegion region,
+    [[nodiscard]] Result<WorkspacePanelDescriptor> movePanel(const StableId& id, WorkspaceRegion region,
                                                                   int order);
     /** @brief Remove a panel and return its final owning descriptor. */
-    [[nodiscard]] EditorResult<WorkspacePanelDescriptor> removePanel(const StableId& id);
+    [[nodiscard]] Result<WorkspacePanelDescriptor> removePanel(const StableId& id);
     /** @brief Activate a visible panel with structured not-found/rejected results. */
-    [[nodiscard]] EditorResult<WorkspacePanelDescriptor> activatePanel(const StableId& id);
+    [[nodiscard]] Result<WorkspacePanelDescriptor> activatePanel(const StableId& id);
     /** @brief Return an owning panel snapshot instead of an ambiguous empty field. */
-    [[nodiscard]] EditorResult<WorkspacePanelDescriptor> panelAt(std::size_t index) const;
+    [[nodiscard]] Result<WorkspacePanelDescriptor> panelAt(std::size_t index) const;
 
     /**
      * @brief Register a panel descriptor.
@@ -124,7 +124,7 @@ public:
     /** @brief Set a project-defined mode such as edit, play, material, or animation. */
     bool setMode(const std::string& mode);
     /** @brief Set a strongly identified workspace mode. */
-    [[nodiscard]] EditorResult<StableId> setModeId(StableId mode);
+    [[nodiscard]] Result<StableId> setModeId(StableId mode);
     /** @brief Current project-defined mode. */
     const std::string& getMode() const { return mode_; }
 
@@ -135,11 +135,11 @@ public:
     bool select(const std::string& channel, const std::string& domain, const std::string& target,
                 const std::string& item, const std::string& type, bool additive);
     /** @brief Select one already typed item without string domain parsing. */
-    [[nodiscard]] EditorResult<SelectionSnapshot> selectItem(std::string channel, SelectionItem item, bool additive);
+    [[nodiscard]] Result<SelectionSnapshot> selectItem(std::string channel, SelectionItem item, bool additive);
     /** @brief Clear one semantic selection channel. */
     bool clearSelection(const std::string& channel);
     /** @brief Clear one selection channel without discarding diagnostics. */
-    [[nodiscard]] EditorResult<SelectionSnapshot> clearSelectionChecked(const std::string& channel);
+    [[nodiscard]] Result<SelectionSnapshot> clearSelectionChecked(const std::string& channel);
     /** @brief Number of selected items in a channel. */
     int getSelectionCount(const std::string& channel) const;
     /** @brief Selected stable item id by channel/index. */
@@ -153,7 +153,7 @@ public:
     /** @brief Set UI-toolkit-independent focus for a channel. */
     bool focus(const std::string& channel, const std::string& surface, const std::string& item);
     /** @brief Focus a strongly identified surface and item without discarding diagnostics. */
-    [[nodiscard]] EditorResult<EditorFocusSnapshot> focusItem(const std::string& channel, StableId surface,
+    [[nodiscard]] Result<EditorFocusSnapshot> focusItem(const std::string& channel, StableId surface,
                                                               StableId item);
     /** @brief Focused surface id for a channel. */
     std::string getFocusedSurface(const std::string& channel) const;

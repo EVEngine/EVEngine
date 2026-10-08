@@ -20,7 +20,7 @@ using editing::PropertyFlag; using editing::PropertyPath; using editing::Propert
 using editing::PropertyReadState; using editing::PropertySchema; using editing::PropertySetMode;
 using editing::PropertyType; using editing::RuleId; using editing::SelectionSnapshot; using editing::TargetDescriptor;
 using editing::TargetId;
-template <class T> using EditorResult = editing::Result<T>;
+using editing::Result;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 
 /** @brief UI-neutral, serializable material authoring target. */
@@ -41,11 +41,11 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Current revision. */
@@ -55,16 +55,16 @@ public:
     /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
 
     /** @brief Capture deterministic content suitable for DocumentService persistence. */
     EditorValue snapshotValue() const override;
     /** @brief Replace content when opening a persisted material document. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
     /** @brief Validate cross-field authoring rules without mutating the target. */
     std::vector<EditorDiagnostic> validate() const;
 
@@ -73,7 +73,7 @@ private:
     static PropertySchema materialSchema();
     static std::map<std::string, EditorValue> defaults();
     /** @brief Validate assignment. */
-    static EditorResult<void> validateAssignment(const PropertyDescriptor& descriptor,
+    static Result<void> validateAssignment(const PropertyDescriptor& descriptor,
                                                  const EditorValue& value);
     /** @brief Selection matches. */
     bool selectionMatches(const SelectionSnapshot& selection) const;
@@ -88,7 +88,7 @@ public:
     /** @brief Releases IMaterialRuntimeSink resources. */
     virtual ~IMaterialRuntimeSink() = default;
     /** @brief Publish a candidate; failure must leave the runtime material unchanged. */
-    virtual EditorResult<void> publish(const MaterialDocumentTarget& candidate) = 0;
+    virtual Result<void> publish(const MaterialDocumentTarget& candidate) = 0;
 };
 
 /** @brief Candidate-first material operation target with live commit/undo publication. */
@@ -114,11 +114,11 @@ public:
      */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Mutable authoring document used by property inspectors. */
     MaterialDocumentTarget& authoringTarget() { return document_; }
@@ -131,7 +131,7 @@ public:
      * @remarks Render/editor thread only, synchronous, and may call the configured runtime sink without holding a
      * lock.
      */
-    [[nodiscard]] EditorResult<void> reloadSnapshot(const EditorValue& snapshot);
+    [[nodiscard]] Result<void> reloadSnapshot(const EditorValue& snapshot);
 
 private:
     MaterialDocumentTarget document_;
@@ -155,9 +155,9 @@ public:
     /** @brief Releases IMaterialRuntimeAssetResolver resources. */
     virtual ~IMaterialRuntimeAssetResolver() = default;
     /** @brief Resolve a texture asset reference to a borrowed live texture. */
-    virtual EditorResult<graphics::Texture*> resolveTexture(const std::string& asset) const = 0;
+    virtual Result<graphics::Texture*> resolveTexture(const std::string& asset) const = 0;
     /** @brief Resolve a shader asset reference to a borrowed live shader. */
-    virtual EditorResult<graphics::Shader*> resolveShader(const std::string& asset) const = 0;
+    virtual Result<graphics::Shader*> resolveShader(const std::string& asset) const = 0;
 };
 
 /** @brief Built-in legacy-material publisher for one borrowed Renderable3D. */
@@ -169,7 +169,7 @@ public:
     /** @brief Renderable 3 d material runtime sink. */
     ~Renderable3DMaterialRuntimeSink() override;
     /** @brief Publish. */
-    EditorResult<void> publish(const MaterialDocumentTarget& candidate) override;
+    Result<void> publish(const MaterialDocumentTarget& candidate) override;
 
 private:
     struct Impl;

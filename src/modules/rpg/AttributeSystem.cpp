@@ -8,7 +8,7 @@ namespace eve::rpg {
 namespace {
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path);
 }
 
 eve::Result<ModifierId> actorRequired(RPGActor*) {

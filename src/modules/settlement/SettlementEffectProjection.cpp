@@ -12,7 +12,7 @@ namespace {
 template <class T>
 eve::Result<T> invalid(std::string message, std::string path) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
 }
 
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {

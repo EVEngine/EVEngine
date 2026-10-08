@@ -18,7 +18,7 @@ public:
         /** @brief Previews. */
         : previews_(previews), graphics_(graphics) {}
     /** @brief Renders . */
-    EditorResult<OffscreenPreviewArtifact> render(const StylizeRecipeTarget& document, graphics::Texture* source,
+    Result<OffscreenPreviewArtifact> render(const StylizeRecipeTarget& document, graphics::Texture* source,
                                                   const StableId& previewId, int width, int height) const;
 
 private:

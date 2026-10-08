@@ -12,7 +12,7 @@ namespace eve::biome_editor {
 namespace {
 
 template <class T = void>
-biome_editing::EditorResult<T> editorError(biome_editing::EditorStatus status, std::string rule, std::string message) {
+biome_editing::Result<T> editorError(biome_editing::EditorStatus status, std::string rule, std::string message) {
     return eve::editing::failed<T>(status, biome_editing::RuleId(std::move(rule)), std::move(message));
 }
 
@@ -21,7 +21,7 @@ biome_editing::EditorResult<T> editorError(biome_editing::EditorStatus status, s
 BiomeRulesEditor::SpatialResolver::SpatialResolver(procgen::SpatialData* forest, procgen::SpatialData* clearing)
     : forest_(forest), clearing_(clearing) {}
 
-biome_editing::EditorResult<procgen::SpatialData*> BiomeRulesEditor::SpatialResolver::resolve(
+biome_editing::Result<procgen::SpatialData*> BiomeRulesEditor::SpatialResolver::resolve(
     const std::string& asset) const {
     if (asset == "asset://preview/forest.spatial")
         return eve::editing::applied<procgen::SpatialData*>(forest_);
@@ -69,7 +69,7 @@ void BiomeRulesEditor::seedPreviewDocument() {
     if (!loaded.ok()) loaded.ignore("biome editor keeps defaults when the preview snapshot is rejected");
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
+biome_editing::Result<void> BiomeRulesEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -111,10 +111,10 @@ editor::SelectionSnapshot BiomeRulesEditor::selection() const {
     return snapshot;
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::commit(
-    biome_editing::EditorResult<biome_editing::DomainOperation> operation, std::string label) {
+biome_editing::Result<void> BiomeRulesEditor::commit(
+    biome_editing::Result<biome_editing::DomainOperation> operation, std::string label) {
     if (!operation.ok())
-        return biome_editing::EditorResult<void>::failure(operation.status());
+        return biome_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("biome.rules.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
@@ -127,21 +127,21 @@ biome_editing::EditorResult<void> BiomeRulesEditor::commit(
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
         if (!discarded.ok()) discarded.ignore("pending biome transaction already inactive");
-        return biome_editing::EditorResult<void>::failure(appended.status());
+        return biome_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return biome_editing::EditorResult<void>::failure(committed.status());
+        return biome_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::refreshPreview() {
+biome_editing::Result<void> BiomeRulesEditor::refreshPreview() {
     auto published = runtime_.publish(target_, resolver_);
     if (!published.ok())
-        return biome_editing::EditorResult<void>::failure(published.status());
+        return biome_editing::Result<void>::failure(published.status());
     auto generated = runtime_.preview(&forestDomain_, spacing_, seed_, 0.0f, runtime_.revision());
     if (!generated.ok())
-        return biome_editing::EditorResult<void>::failure(generated.status());
+        return biome_editing::Result<void>::failure(generated.status());
     std::vector<PreviewPoint> next;
     const auto&               points = generated.value();
     if (points) {
@@ -159,7 +159,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::refreshPreview() {
     return eve::editing::applied<void>();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::selectLayer(std::string id) {
+biome_editing::Result<void> BiomeRulesEditor::selectLayer(std::string id) {
     bool found = false;
     for (const auto& layer : target_.layers())
         if (layer.id.value() == id) found = true;
@@ -170,7 +170,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::selectLayer(std::string id) 
     return eve::editing::applied<void>();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::selectAsset(std::string id) {
+biome_editing::Result<void> BiomeRulesEditor::selectAsset(std::string id) {
     bool found = false;
     for (const auto& layer : target_.layers())
         for (const auto& asset : layer.assets)
@@ -182,7 +182,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::selectAsset(std::string id) 
     return eve::editing::applied<void>();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::setLayerDensity(double density) {
+biome_editing::Result<void> BiomeRulesEditor::setLayerDensity(double density) {
     if (selectedType_ != "biome.layer")
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
                            "A layer must be selected to change density");
@@ -199,7 +199,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::setLayerDensity(double densi
     return applied;
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::setLayerPriority(int priority) {
+biome_editing::Result<void> BiomeRulesEditor::setLayerPriority(int priority) {
     if (selectedType_ != "biome.layer")
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
                            "A layer must be selected to change priority");
@@ -209,7 +209,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::setLayerPriority(int priorit
                   "Set layer priority");
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::setAssetWeight(double weight) {
+biome_editing::Result<void> BiomeRulesEditor::setAssetWeight(double weight) {
     if (selectedType_ != "biome.asset")
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
                            "An asset must be selected to change weight");
@@ -218,7 +218,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::setAssetWeight(double weight
                   "Set asset weight");
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::createLayer(std::string id, std::string name) {
+biome_editing::Result<void> BiomeRulesEditor::createLayer(std::string id, std::string name) {
     biome_editing::BiomeLayerValue layer;
     layer.id           = biome_editing::ObjectId(std::move(id));
     layer.name         = std::move(name);
@@ -229,7 +229,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::createLayer(std::string id, 
     return selectLayer(layer.id.value());
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::deleteSelectedLayer() {
+biome_editing::Result<void> BiomeRulesEditor::deleteSelectedLayer() {
     if (selectedType_ != "biome.layer")
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
                            "A layer must be selected to delete it");
@@ -240,7 +240,7 @@ biome_editing::EditorResult<void> BiomeRulesEditor::deleteSelectedLayer() {
     return eve::editing::applied<void>();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::createAsset(std::string id, std::string asset) {
+biome_editing::Result<void> BiomeRulesEditor::createAsset(std::string id, std::string asset) {
     const auto* layer = selectedLayer();
     if (!layer)
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
@@ -253,14 +253,14 @@ biome_editing::EditorResult<void> BiomeRulesEditor::createAsset(std::string id, 
     return selectAsset(value.id.value());
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::deleteSelectedAsset() {
+biome_editing::Result<void> BiomeRulesEditor::deleteSelectedAsset() {
     if (selectedType_ != "biome.asset")
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.selection",
                            "An asset must be selected to delete it");
     return commit(target_.makeDeleteAsset(biome_editing::ObjectId(selectedId_)), "Delete asset");
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::addExclusion(std::string spatialAsset) {
+biome_editing::Result<void> BiomeRulesEditor::addExclusion(std::string spatialAsset) {
     auto next = target_.exclusions();
     next.push_back(std::move(spatialAsset));
     const auto previous = points_;
@@ -273,18 +273,18 @@ biome_editing::EditorResult<void> BiomeRulesEditor::addExclusion(std::string spa
     return applied;
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::removeExclusion(std::string spatialAsset) {
+biome_editing::Result<void> BiomeRulesEditor::removeExclusion(std::string spatialAsset) {
     auto next = target_.exclusions();
     std::erase(next, spatialAsset);
     return commit(target_.makeSetExclusions(std::move(next)), "Remove exclusion");
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::setSeed(std::uint32_t seed) {
+biome_editing::Result<void> BiomeRulesEditor::setSeed(std::uint32_t seed) {
     seed_ = seed;
     return refreshPreview();
 }
 
-biome_editing::EditorResult<void> BiomeRulesEditor::setSpacing(float spacing) {
+biome_editing::Result<void> BiomeRulesEditor::setSpacing(float spacing) {
     if (!std::isfinite(spacing) || spacing <= 0.0f)
         return editorError(biome_editing::EditorStatus::Rejected, "editor.biome.spacing",
                            "Biome preview spacing must be positive");
@@ -292,21 +292,21 @@ biome_editing::EditorResult<void> BiomeRulesEditor::setSpacing(float spacing) {
     return refreshPreview();
 }
 
-biome_editing::EditorResult<editor::TransactionReceipt> BiomeRulesEditor::undo() {
+biome_editing::Result<editor::TransactionReceipt> BiomeRulesEditor::undo() {
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return biome_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return biome_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
-biome_editing::EditorResult<editor::TransactionReceipt> BiomeRulesEditor::redo() {
+biome_editing::Result<editor::TransactionReceipt> BiomeRulesEditor::redo() {
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
     if (!previewed.ok())
-        return biome_editing::EditorResult<editor::TransactionReceipt>::failure(previewed.status());
+        return biome_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 

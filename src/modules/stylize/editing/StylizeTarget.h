@@ -45,8 +45,7 @@ using editing::RuleId;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-template <class T>
-using EditorResult     = editing::Result<T>;
+using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -77,11 +76,11 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -89,17 +88,17 @@ public:
     /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Plan insertion of a known style under a stable pass ID. */
-    EditorResult<DomainOperation> makeCreate(const ObjectId& id, const std::string& style) const;
+    Result<DomainOperation> makeCreate(const ObjectId& id, const std::string& style) const;
     /** @brief Plan removal of one pass. */
-    EditorResult<DomainOperation> makeDelete(const ObjectId& id) const;
+    Result<DomainOperation> makeDelete(const ObjectId& id) const;
     /** @brief Plan stable reordering by destination index. */
-    EditorResult<DomainOperation> makeMove(const ObjectId& id, std::size_t index) const;
+    Result<DomainOperation> makeMove(const ObjectId& id, std::size_t index) const;
     /** @brief Return ordered immutable pass values. */
     std::vector<StylizePassValue> passes() const;
     /** @brief Validate style existence, stage compatibility, parameters and budgets. */
@@ -107,7 +106,7 @@ public:
     /** @brief Capture schema-version-one ordered recipe. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load and validate a persisted recipe. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Matches. */
@@ -115,7 +114,7 @@ private:
     /** @brief Content value. */
     EditorValue                          contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation>        replacement(EditorValue payload, std::string property = {}) const;
+    Result<DomainOperation>        replacement(EditorValue payload, std::string property = {}) const;
     std::string                          id_;
     std::map<ObjectId, StylizePassValue> passes_;
     std::vector<ObjectId>                order_;
@@ -129,9 +128,9 @@ public:
     /** @brief Stylize recipe runtime. */
     ~StylizeRecipeRuntime();
     /** @brief Compile a complete candidate before replacing the active generation. */
-    EditorResult<void> publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics);
+    Result<void> publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics);
     /** @brief Apply the active post recipe into an explicit destination Canvas. */
-    EditorResult<void> apply(graphics::Graphics* graphics, graphics::Texture* source, graphics::Canvas* destination,
+    Result<void> apply(graphics::Graphics* graphics, graphics::Texture* source, graphics::Canvas* destination,
                              Revision expectedRevision) const;
     /** @brief Revision of the compiled generation, or zero before publication. */
     Revision revision() const { return revision_; }

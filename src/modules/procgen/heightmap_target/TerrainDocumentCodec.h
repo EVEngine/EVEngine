@@ -30,7 +30,7 @@ struct TerrainDocumentData {
  * @return An owning deterministic value snapshot suitable for DocumentService.
  * @thread Owner/editor thread; does not retain references or invoke callbacks.
  */
-[[nodiscard]] EVENGINE_API_EDITORS editor::EditorResult<editor::EditorValue> encodeTerrainDocument(
+[[nodiscard]] EVENGINE_API_EDITORS editor::Result<editor::EditorValue> encodeTerrainDocument(
     const procgen::Heightmap& heightmap, float spacingX, float spacingZ, const TerrainDocumentLimits& limits = {});
 
 /**
@@ -38,7 +38,7 @@ struct TerrainDocumentData {
  * @return Owning data; unknown fields, versions, non-finite values and oversized grids are rejected.
  * @thread Worker-safe for an immutable input value; does not retain input references.
  */
-[[nodiscard]] EVENGINE_API_EDITORS editor::EditorResult<TerrainDocumentData> decodeTerrainDocument(
+[[nodiscard]] EVENGINE_API_EDITORS editor::Result<TerrainDocumentData> decodeTerrainDocument(
     const editor::EditorValue& value, const TerrainDocumentLimits& limits = {});
 
 }  // namespace eve::heightmap_target

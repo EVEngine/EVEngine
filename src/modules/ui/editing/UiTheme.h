@@ -35,8 +35,7 @@ using editing::RuleId;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-template <class T>
-using EditorResult     = editing::Result<T>;
+using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -82,11 +81,11 @@ public:
     void* queryCapability(const CapabilityId& capability) override;
 
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Borrow authored themes in catalog order. */
     const std::vector<UiThemeAsset>& themes() const noexcept { return themes_; }
@@ -94,24 +93,24 @@ public:
     const ObjectId& activeId() const noexcept { return activeId_; }
 
     /** @brief Copy one named theme, or NotFound. */
-    EditorResult<UiThemeAsset> theme(const ObjectId& id) const;
+    Result<UiThemeAsset> theme(const ObjectId& id) const;
     /** @brief Runtime name written to ui::globalThemeName(): dark, light, or custom. */
     std::string runtimeName(const ObjectId& id) const;
 
     /** @brief Make create from preset. */
-    [[nodiscard]] EditorResult<DomainOperation> makeCreateFromPreset(const ObjectId& id, std::string name,
+    [[nodiscard]] Result<DomainOperation> makeCreateFromPreset(const ObjectId& id, std::string name,
                                                                      UiThemeBasePreset preset) const;
     /** @brief Make duplicate. */
-    [[nodiscard]] EditorResult<DomainOperation> makeDuplicate(const ObjectId& source, const ObjectId& id,
+    [[nodiscard]] Result<DomainOperation> makeDuplicate(const ObjectId& source, const ObjectId& id,
                                                               std::string name) const;
     /** @brief Make rename. */
-    [[nodiscard]] EditorResult<DomainOperation> makeRename(const ObjectId& id, std::string name) const;
+    [[nodiscard]] Result<DomainOperation> makeRename(const ObjectId& id, std::string name) const;
     /** @brief Make delete. */
-    [[nodiscard]] EditorResult<DomainOperation> makeDelete(const ObjectId& id) const;
+    [[nodiscard]] Result<DomainOperation> makeDelete(const ObjectId& id) const;
     /** @brief Make set active. */
-    [[nodiscard]] EditorResult<DomainOperation> makeSetActive(const ObjectId& id) const;
+    [[nodiscard]] Result<DomainOperation> makeSetActive(const ObjectId& id) const;
     /** @brief Make reset to base. */
-    [[nodiscard]] EditorResult<DomainOperation> makeResetToBase(const ObjectId& id) const;
+    [[nodiscard]] Result<DomainOperation> makeResetToBase(const ObjectId& id) const;
 
     /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
@@ -120,22 +119,22 @@ public:
     /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
 
     /** @brief Snapshot value. */
     EditorValue            snapshotValue() const override;
     /** @brief Loads snapshot. */
-    EditorResult<void>     loadSnapshot(const EditorValue& snapshot);
+    Result<void>     loadSnapshot(const EditorValue& snapshot);
     /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
 
 private:
     /** @brief Replacement. */
-    EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
     /** @brief Content value. */
     EditorValue                   contentValue() const;
     /** @brief Matches. */
@@ -188,7 +187,7 @@ public:
      * @brief Replace the process global theme with the catalog's active asset.
      * @remarks Does not mutate the catalog. Failed validation leaves globalTheme unchanged.
      */
-    [[nodiscard]] EditorResult<void> publish(const UiThemeCatalogTarget& catalog) const;
+    [[nodiscard]] Result<void> publish(const UiThemeCatalogTarget& catalog) const;
 };
 
 }  // namespace eve::ui_editing

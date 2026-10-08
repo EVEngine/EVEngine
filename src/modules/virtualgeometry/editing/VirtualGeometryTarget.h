@@ -21,8 +21,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -74,11 +73,11 @@ public:
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    EditorResult<void>                commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    Result<void>                commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Current revision. */
     eve::Result<eve::Revision>        currentRevision(const SelectionSnapshot& selection) const override;
     /** @brief Schema. */
@@ -86,10 +85,10 @@ public:
     /** @brief Reads . */
     PropertyReadResult                read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
     /** @brief Make set. */
-    EditorResult<DomainOperation>     makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    Result<DomainOperation>     makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                               const EditorValue& value, PropertySetMode mode) const override;
     /** @brief Make reset. */
-    EditorResult<DomainOperation>     makeReset(const SelectionSnapshot& selection,
+    Result<DomainOperation>     makeReset(const SelectionSnapshot& selection,
                                                 const PropertyPath&      path) const override;
     /** @brief Value. */
     const VirtualGeometryImportValue& value() const { return value_; }
@@ -98,7 +97,7 @@ public:
     /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
     /** @brief Loads snapshot. */
-    EditorResult<void>            loadSnapshot(const EditorValue& snapshot);
+    Result<void>            loadSnapshot(const EditorValue& snapshot);
 
 private:
     /** @brief Matches. */
@@ -106,7 +105,7 @@ private:
     /** @brief Content value. */
     EditorValue                   contentValue() const;
     /** @brief Replacement. */
-    EditorResult<DomainOperation> replacement(EditorValue content, std::string property) const;
+    Result<DomainOperation> replacement(EditorValue content, std::string property) const;
     std::string                   id_;
     VirtualGeometryImportValue    value_;
 };
@@ -123,7 +122,7 @@ public:
     /** @brief Releases IVirtualGeometryMeshResolver resources. */
     virtual ~IVirtualGeometryMeshResolver() = default;
     /** @brief Return an owned triangulated mesh for one asset generation. */
-    virtual EditorResult<VirtualGeometryMeshData> resolve(const std::string& assetId) const = 0;
+    virtual Result<VirtualGeometryMeshData> resolve(const std::string& assetId) const = 0;
 };
 
 /** @brief One sample in the logarithmic camera-distance LOD cost curve. */
@@ -152,7 +151,7 @@ public:
     /** @brief Virtual geometry build runtime. */
     ~VirtualGeometryBuildRuntime();
     /** @brief Resolve, validate and build fully before replacing the active asset. */
-    EditorResult<VirtualGeometryBuildArtifact> build(const VirtualGeometryDocumentTarget& document,
+    Result<VirtualGeometryBuildArtifact> build(const VirtualGeometryDocumentTarget& document,
                                                      const IVirtualGeometryMeshResolver&  resolver);
     /** @brief Access the published asset. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid
      * until the next build or runtime destruction. */

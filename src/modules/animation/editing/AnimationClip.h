@@ -84,17 +84,17 @@ public:
     /** @brief Compatibility spelling retained for existing editor tools. */
     static CapabilityId editorCapabilityId() { return editingCapabilityId(); }
     /** @brief Plan replacement of duration, sample rate and looping settings. */
-    virtual EditorResult<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const = 0;
+    virtual Result<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const = 0;
     /** @brief Plan creation or replacement of a complete stable bone track. */
-    virtual EditorResult<DomainOperation> makeSetTrack(const AnimationBoneTrack& track) const = 0;
+    virtual Result<DomainOperation> makeSetTrack(const AnimationBoneTrack& track) const = 0;
     /** @brief Plan removal of a stable bone track. */
-    virtual EditorResult<DomainOperation> makeDeleteTrack(const StableId& track) const = 0;
+    virtual Result<DomainOperation> makeDeleteTrack(const StableId& track) const = 0;
     /** @brief Plan creation or replacement of an event marker. */
-    virtual EditorResult<DomainOperation> makeSetEvent(const AnimationEventRecord& event) const = 0;
+    virtual Result<DomainOperation> makeSetEvent(const AnimationEventRecord& event) const = 0;
     /** @brief Plan removal of an event marker. */
-    virtual EditorResult<DomainOperation> makeDeleteEvent(const StableId& event) const = 0;
+    virtual Result<DomainOperation> makeDeleteEvent(const StableId& event) const = 0;
     /** @brief Plan replacement of a bone mask weight. */
-    virtual EditorResult<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const = 0;
+    virtual Result<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const = 0;
 };
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
@@ -114,24 +114,24 @@ public:
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
     /** @brief Applies domain operation. */
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
     /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
     /** @brief Commits domain state. */
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
     /** @brief Make set settings. */
-    EditorResult<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const override;
+    Result<DomainOperation> makeSetSettings(double duration, double sampleRate, bool loop) const override;
     /** @brief Make set track. */
-    EditorResult<DomainOperation> makeSetTrack(const AnimationBoneTrack& track) const override;
+    Result<DomainOperation> makeSetTrack(const AnimationBoneTrack& track) const override;
     /** @brief Make delete track. */
-    EditorResult<DomainOperation> makeDeleteTrack(const StableId& track) const override;
+    Result<DomainOperation> makeDeleteTrack(const StableId& track) const override;
     /** @brief Make set event. */
-    EditorResult<DomainOperation> makeSetEvent(const AnimationEventRecord& event) const override;
+    Result<DomainOperation> makeSetEvent(const AnimationEventRecord& event) const override;
     /** @brief Make delete event. */
-    EditorResult<DomainOperation> makeDeleteEvent(const StableId& event) const override;
+    Result<DomainOperation> makeDeleteEvent(const StableId& event) const override;
     /** @brief Make set mask. */
-    EditorResult<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const override;
+    Result<DomainOperation> makeSetMask(const AnimationMaskEntry& mask) const override;
 
     /** @brief Clip duration in seconds. */
     double duration() const noexcept { return duration_; }
@@ -152,7 +152,7 @@ public:
     /** @brief Capture deterministic schema-version-one clip data. */
     EditorValue snapshotValue() const override;
     /** @brief Atomically load deterministic schema-version-one clip data. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                              id_;
@@ -168,18 +168,18 @@ private:
  *  @param value Owning track object with id, bone and keys.
  *  @return Applied track, or a structured rejection when required fields are missing.
  *  @thread Main/composition thread; payload is copied and not retained. */
-[[nodiscard]] EditorResult<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value);
+[[nodiscard]] Result<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value);
 /** @brief Parse one authored event marker from an owning Value payload.
  *  @param value Owning event object with id, time, name and payload.
  *  @return Applied event, or a structured rejection when required fields are missing.
  *  @thread Main/composition thread; payload is copied and not retained. */
-[[nodiscard]] EditorResult<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value);
+[[nodiscard]] Result<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value);
 
 /** @brief Optional bridge producing a real runtime AnimClip from an editor document. */
 class EVENGINE_API_DOMAINS AnimationClipRuntimeBuilder {
 public:
     /** @brief Build a new runtime clip; caller owns the result. */
-    EditorResult<animation::AnimClip*> build(const AnimationClipDocumentTarget& document,
+    Result<animation::AnimClip*> build(const AnimationClipDocumentTarget& document,
                                              const animation::AnimSkeleton* skeleton) const;
 };
 

@@ -48,24 +48,24 @@ public:
      * @brief Install Modules / Preview / Inspector / Debug Stages panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] procgen_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] procgen_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
-    [[nodiscard]] procgen_editing::EditorResult<void> loadModule(procgen_editing::ProcgenScriptModuleSpec spec);
-    [[nodiscard]] procgen_editing::EditorResult<void> loadModule(std::string uri, std::string id,
+    [[nodiscard]] procgen_editing::Result<void> loadModule(procgen_editing::ProcgenScriptModuleSpec spec);
+    [[nodiscard]] procgen_editing::Result<void> loadModule(std::string uri, std::string id,
                                                                  std::string displayName, std::string kind,
                                                                  const procgen_editing::EditorValue& schema);
 
     /** @brief Sets the param. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setParam(std::string key,
+    [[nodiscard]] procgen_editing::Result<void> setParam(std::string key,
                                                                procgen_editing::EditorValue value);
     /** @brief Sets the int. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setInt(std::string key, int value);
+    [[nodiscard]] procgen_editing::Result<void> setInt(std::string key, int value);
     /** @brief Sets the float. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setFloat(std::string key, double value);
+    [[nodiscard]] procgen_editing::Result<void> setFloat(std::string key, double value);
     /** @brief Sets the bool. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setBool(std::string key, bool value);
+    [[nodiscard]] procgen_editing::Result<void> setBool(std::string key, bool value);
     /** @brief Sets the string. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setString(std::string key, std::string value);
+    [[nodiscard]] procgen_editing::Result<void> setString(std::string key, std::string value);
 
     /**
      * @brief Copy a successful generation into the preview cache.
@@ -75,7 +75,7 @@ public:
      * @ownership @p points is borrowed for this call only.
      * @lifetime @p points must outlive this call.
      */
-    [[nodiscard]] procgen_editing::EditorResult<void> publishPreview(const procgen::PointSet* points,
+    [[nodiscard]] procgen_editing::Result<void> publishPreview(const procgen::PointSet* points,
                                                                      std::string stage, std::uint64_t expectedRevision);
     /**
      * @brief Copy an intermediate debug stage without changing the displayed output unless it is selected.
@@ -83,21 +83,21 @@ public:
      * @ownership @p points is borrowed for this call only.
      * @lifetime @p points must outlive this call.
      */
-    [[nodiscard]] procgen_editing::EditorResult<void> publishStage(const procgen::PointSet* points, std::string stage);
-    [[nodiscard]] procgen_editing::EditorResult<void> failPreview(std::string message,
+    [[nodiscard]] procgen_editing::Result<void> publishStage(const procgen::PointSet* points, std::string stage);
+    [[nodiscard]] procgen_editing::Result<void> failPreview(std::string message,
                                                                   std::uint64_t expectedRevision);
     /** @brief Select stage. */
-    [[nodiscard]] procgen_editing::EditorResult<void> selectStage(std::string stage);
+    [[nodiscard]] procgen_editing::Result<void> selectStage(std::string stage);
     /** @brief Sets the point budget. */
-    [[nodiscard]] procgen_editing::EditorResult<void> setPointBudget(int budget);
+    [[nodiscard]] procgen_editing::Result<void> setPointBudget(int budget);
     /**
      * @brief Choose whether the presenter should rebuild on every parameter commit.
      * @param enabled True for continuous rebuild after each committed edit.
      */
-    [[nodiscard]] procgen_editing::EditorResult<void> setLive(bool enabled);
+    [[nodiscard]] procgen_editing::Result<void> setLive(bool enabled);
 
-    [[nodiscard]] procgen_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] procgen_editing::EditorResult<editor::TransactionReceipt> redo();
+    [[nodiscard]] procgen_editing::Result<editor::TransactionReceipt> undo();
+    [[nodiscard]] procgen_editing::Result<editor::TransactionReceipt> redo();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
     /** @brief Can redo. */
@@ -172,8 +172,8 @@ private:
         std::uint32_t seed = 1;
     };
 
-    [[nodiscard]] procgen_editing::EditorResult<void> commit(
-        procgen_editing::EditorResult<editing::DomainOperation> operation, std::string label);
+    [[nodiscard]] procgen_editing::Result<void> commit(
+        procgen_editing::Result<editing::DomainOperation> operation, std::string label);
     editor::SelectionSnapshot selection() const;
     /**
      * @brief Borrow one schema row.
@@ -189,7 +189,7 @@ private:
      * @ownership Argument is borrowed for this call only.
      * @lifetime @p points must outlive this call.
      */
-    [[nodiscard]] procgen_editing::EditorResult<std::vector<PreviewPoint>> copyPoints(
+    [[nodiscard]] procgen_editing::Result<std::vector<PreviewPoint>> copyPoints(
         const procgen::PointSet* points) const;
     const std::vector<PreviewPoint>& displayedPoints() const;
 
