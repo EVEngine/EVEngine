@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include "common/Result.h"
 
 namespace eve::graphics {
 class IResourceFactory;
@@ -51,5 +52,18 @@ EVENGINE_API_WORLD graphics::Renderable3D *buildRenderable(graphics::IResourceFa
 EVENGINE_API_WORLD std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx,
                                                                           ModelData                  *model,
                                                                           const ModelRenderOptions   &options = {});
+
+/**
+ * @brief Generate the PBR vegetation-motion rest stream for one imported mesh.
+ * @param model Borrowed decoded model used to recover the authored vertex positions and node transform.
+ * @param meshIndex Mesh index used by buildRenderable with the default baked-world option.
+ * @param renderable Borrowed matching renderable whose graphics-owned Mesh receives the stream.
+ * @return Success after atomic stream replacement, or InvalidArgument without changing the mesh.
+ * @ownership Retains no pointers and invokes no callbacks. Model, renderable, and mesh remain caller/factory-owned.
+ * @thread Render-thread affine because the destination Mesh is mutable render state.
+ * @cost O(vertex count) CPU work and nine floats of persistent mesh storage per vertex; call once per prototype.
+ */
+[[nodiscard]] Result<void> prepareFoliageDeformation(ModelData &model, int meshIndex,
+                                                     graphics::Renderable3D &renderable);
 
 }  // namespace eve::model3d

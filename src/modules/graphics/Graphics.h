@@ -1941,6 +1941,18 @@ public:
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */
     Water *newWater();
+    /** @brief Apply a source-derived foliage wind profile using graphics-owned shared field textures.
+     * The first successful call uploads one 1x1x9 neutral motion array and one deterministic 4x4 noise texture;
+     * subsequent calls reuse them. Existing PBR textures and translucency remain unchanged.
+     * @return Failure before material publication, or a validated object-motion snapshot.
+     * @ownership Material is borrowed; Graphics owns both shared textures until shutdown.
+     * @thread Render thread only; synchronous and callback-free.
+     * @cost First call performs two tiny GPU uploads; later calls copy one material snapshot.
+     */
+    [[nodiscard]] Result<void> configureFoliageWind(Material *material, float directionX, float directionZ,
+                                                    float strength, float bending, float bendingSpeed, float branch,
+                                                    float branchSpeed, float flutter, float flutterSpeed,
+                                                    float fadeDistance, float bendFactor);
     /** @brief Create an incremental six-face HDR reflection-probe capture.
      * @ownership The caller owns the returned capture object. */
     ReflectionProbeCapture *newReflectionProbeCapture();
@@ -2258,6 +2270,8 @@ protected:
     int reflectionCompositeWidth_ = 0;
     int reflectionCompositeHeight_ = 0;
     Texture *finalSceneTexture_ = nullptr;
+    Texture                                                *foliageWindMotionTexture_  = nullptr;
+    Texture                                                *foliageWindNoiseTexture_   = nullptr;
     std::unique_ptr<Outline> pipelineOutline_;
 
     /** @brief FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
