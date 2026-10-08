@@ -107,6 +107,7 @@ PlacementSystem::registerValidateRule("needGold",
 | 方法 | 说明 |
 |------|------|
 | `setOrigin` / `setCellSize` / `worldToCell*` / `cellToWorld*` | 坐标 |
+| `getId` / `getWidth` / `getHeight` / `destroy` | 世界身份、格网尺寸与释放 |
 | `fillTerrain` / `setTerrain` / `getTerrain` | 地形语义 |
 | `canPlace` / `canPlaceReason` / `placeAt` / `placeAtWorld` / `placeGhost` | 放置 |
 | `removeBuilding` / `moveBuilding` / `clearBuildings` | 拆除与移动 |
@@ -118,6 +119,14 @@ PlacementSystem::registerValidateRule("needGold",
 |------|------|
 | `setBuildingId` / `setCell` / `setFromWorld` / `setRotationDeg` / `rotateBy` | 姿态 |
 | `validate(world)` / `isValid` / `getReason` | 校验结果 |
+| `destroy` | 释放鬼影 |
+
+### `PlacementSession`
+
+| 方法 | 说明 |
+|------|------|
+| `startPlacement` / `updateFromSurface` / `updateFromWorld` / `setMode` / `execute` | 会话放置流 |
+| `isActive` / `destroy` | 会话是否进行中、释放 |
 
 ## 生命周期注意
 
