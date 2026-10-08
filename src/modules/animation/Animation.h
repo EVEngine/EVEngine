@@ -14,6 +14,10 @@
 #include <unordered_map>
 #include <vector>
 
+namespace ssq {
+class Class;
+}
+
 namespace eve::model3d {
 class ModelData;
 }
@@ -216,8 +220,10 @@ public:
     PhysicalBalancePose* newPhysicalBalancePose(AnimSkeleton* skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
-     * `*.anim.txt` test fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData.
+     * @remarks Linked only when `OPTIONAL_DEPS model3d` is enabled
+     *          (`AnimationModelImport.cpp`). Prefer fixture text helpers when
+     *          model3d is trimmed.
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
     /** @brief Creates a clip from model. @ownership Caller deletes unless documented otherwise. */
@@ -369,5 +375,11 @@ private:
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };
+
+/**
+ * @brief Register ModelData/Assimp import factories when AnimationModelImport.cpp
+ *        is linked (`OPTIONAL_DEPS model3d`).
+ */
+void exposeAnimationModelImportBindings(ssq::Class &cls);
 
 }  // namespace eve::animation

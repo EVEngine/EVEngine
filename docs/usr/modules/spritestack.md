@@ -75,8 +75,9 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
   纹理，可释放原图。
 - 叠片使用 alpha 混合 + 深度测试（不写深度）的管线，同堆切片每帧按相机距离
   由远到近排序；跨叠片的重叠由绘制顺序决定。
-- Vulkan 与原生 WebGPU 均可用；WebGPU 使用专用 WGSL 卡片 shader。当前 Web/WASM
-  精简模块组仍不包含 SpriteStack。
+- Vulkan 与 WebGPU（含浏览器 `web` 档）均可用；WebGPU 使用专用 WGSL 卡片
+  shader。`slicePrimitive` / 图集叠片不依赖 Assimp；`sliceModel` 仅在链接了
+  `model3d` 时编入（桌面 `2d`/`3d`/`full`），WASM 上用预制图层即可。
 - 不要每帧重新切片或重新上传纹理；只在物体形状变化时重建。
 - `updateMeshVertices`（合批内部使用）与 GPU 同步，重建频率越高开销越大。
 

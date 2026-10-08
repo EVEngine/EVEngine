@@ -127,43 +127,32 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
     if (!readImportText(fs, tilesetsPath, tilesetsText))
         return fail("map.import.rpgmaker.tilesets-read-failed", "Could not read Tilesets.json", tilesetsPath);
 
-    auto                               *dataModule = eve::data::DataModule::create();
-    std::string                         decodeError;
-    std::unique_ptr<data::JsonDocument> mapDocument(dataModule->decodeJson(mapText, &decodeError));
-    if (!mapDocument || !mapDocument->isObject()) return fail("map.import.rpgmaker.map-invalid", decodeError, mapPath);
-    std::unique_ptr<data::JsonDocument> tilesetsDocument(dataModule->decodeJson(tilesetsText, &decodeError));
-    if (!tilesetsDocument || !tilesetsDocument->isArray())
+    std::string decodeError;
+    auto        mapDocument = eve::json::Document::parse(mapText, &decodeError);
+    if (!mapDocument.valid() || !mapDocument.root().isObject())
+        return fail("map.import.rpgmaker.map-invalid", decodeError, mapPath);
+    auto tilesetsDocument = eve::json::Document::parse(tilesetsText, &decodeError);
+    if (!tilesetsDocument.valid() || !tilesetsDocument.root().isArray())
         return fail("map.import.rpgmaker.tilesets-invalid", decodeError, tilesetsPath);
 
-    auto                   map       = mapDocument->object();
-    const int              width     = map && map->has("width") ? asInt(map->get("width"), 0) : 0;
-    const int              height    = map && map->has("height") ? asInt(map->get("height"), 0) : 0;
-    const int              tilesetId = map && map->has("tilesetId") ? asInt(map->get("tilesetId"), 0) : 0;
-    Poco::JSON::Array::Ptr rawData;
-    try {
-        rawData = map ? map->getArray("data") : nullptr;
-    } catch (...) {
-    }
+    const Json map       = mapDocument.root();
+    const int  width     = map.has("width") ? map.getInt("width", 0) : 0;
+    const int  height    = map.has("height") ? map.getInt("height", 0) : 0;
+    const int  tilesetId = map.has("tilesetId") ? map.getInt("tilesetId", 0) : 0;
+    const Json rawData   = map.get("data");
     const size_t planeSize = size_t(std::max(0, width) * std::max(0, height));
-    if (width <= 0 || height <= 0 || !rawData || rawData->size() < planeSize * 4)
+    if (width <= 0 || height <= 0 || !rawData.isArray() || rawData.size() < planeSize * 4)
         return fail("map.import.rpgmaker.map-shape-invalid", "Map data must contain four tile planes", mapPath);
 
-    auto                    tilesets = tilesetsDocument->array();
-    Poco::JSON::Object::Ptr tileset;
-    try {
-        if (tilesets && tilesetId > 0 && size_t(tilesetId) < tilesets->size())
-            tileset = tilesets->getObject(unsigned(tilesetId));
-    } catch (...) {
-    }
-    if (!tileset) return fail("map.import.rpgmaker.tileset-not-found", "Map tilesetId is not present", tilesetsPath);
+    const Json tilesets = tilesetsDocument.root();
+    Json       tileset;
+    if (tilesetId > 0 && size_t(tilesetId) < tilesets.size()) tileset = tilesets.at(size_t(tilesetId));
+    if (!tileset.isObject())
+        return fail("map.import.rpgmaker.tileset-not-found", "Map tilesetId is not present", tilesetsPath);
 
-    Poco::JSON::Array::Ptr names, flags;
-    try {
-        names = tileset->getArray("tilesetNames");
-        flags = tileset->getArray("flags");
-    } catch (...) {
-    }
-    if (!names || names->size() < 9 || !flags)
+    const Json names = tileset.get("tilesetNames");
+    const Json flags = tileset.get("flags");
+    if (!names.isArray() || names.size() < 9 || !flags.isArray())
         return fail("map.import.rpgmaker.tileset-shape-invalid", "Tileset requires nine sheet names and passage flags",
                     tilesetsPath);
 
@@ -171,7 +160,7 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
     for (int z = 0; z < 4; ++z) {
         planes[size_t(z)].resize(planeSize);
         for (size_t cell = 0; cell < planeSize; ++cell)
-            planes[size_t(z)][cell] = uint32_t(asInt(rawData->get(unsigned(size_t(z) * planeSize + cell)), 0));
+            planes[size_t(z)][cell] = asUInt32(rawData.at(size_t(z) * planeSize + cell), 0);
     }
 
     struct SheetSpec {
@@ -191,7 +180,7 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
     const std::filesystem::path        projectRoot = std::filesystem::path(tilesetsPath).parent_path().parent_path();
     std::vector<TilesetInfo>           infos;
     for (const auto &sheet : sheets) {
-        const std::string name = asString(names->get(unsigned(sheet.nameIndex)));
+        const std::string name = names.at(size_t(sheet.nameIndex)).asString();
         if (name.empty()) continue;
         TilesetInfo info;
         info.firstGid = sheet.firstGid;
@@ -220,11 +209,11 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
         std::vector<int> configuredGids;
         for (uint32_t rawGid : planes[size_t(z)]) {
             const int gid = int(tileGid(rawGid));
-            if (gid <= 0 || size_t(gid) >= flags->size()) continue;
+            if (gid <= 0 || size_t(gid) >= flags.size()) continue;
             if (std::find(configuredGids.begin(), configuredGids.end(), gid) != configuredGids.end()) continue;
             configuredGids.push_back(gid);
             layer->tileset()->visuals.push_back(rpgMakerVisual(gid));
-            const int flag       = asInt(flags->get(unsigned(gid)), 0);
+            const int flag       = flags.at(size_t(gid)).asInt(0);
             uint8_t   directions = 0x0f;
             if (flag & 0x08) directions &= uint8_t(~0x01);  // up / north
             if (flag & 0x04) directions &= uint8_t(~0x02);  // right / east
@@ -266,8 +255,8 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
             bool allowed = true;
             for (int z = 3; z >= 0; --z) {
                 const int gid = int(tileGid(planes[size_t(z)][cell]));
-                if (gid <= 0 || size_t(gid) >= flags->size()) continue;
-                const int flag = asInt(flags->get(unsigned(gid)), 0);
+                if (gid <= 0 || size_t(gid) >= flags.size()) continue;
+                const int flag = flags.at(size_t(gid)).asInt(0);
                 if (flag & 0x10) continue;
                 allowed = (flag & rpgBits[direction]) == 0;
                 break;
@@ -276,8 +265,8 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
         }
         for (int z = 0; z < 4; ++z) {
             const int gid = int(tileGid(planes[size_t(z)][cell]));
-            if (gid <= 0 || size_t(gid) >= flags->size()) continue;
-            const int flag = asInt(flags->get(unsigned(gid)), 0);
+            if (gid <= 0 || size_t(gid) >= flags.size()) continue;
+            const int flag = flags.at(size_t(gid)).asInt(0);
             if (flag & 0x10) profile.semantics |= kStar;
             if (flag & 0x20) profile.semantics |= kLadder;
             if (flag & 0x40) profile.semantics |= kBush;
@@ -302,16 +291,16 @@ EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const st
     }
     receipt.navigationLayer->rebuildSpatialIndex();
 
-    if (rawData->size() >= planeSize * 5) {
+    if (rawData.size() >= planeSize * 5) {
         bool hasShadow = false;
         for (size_t cell = 0; cell < planeSize; ++cell)
-            hasShadow = hasShadow || (asInt(rawData->get(unsigned(planeSize * 4 + cell)), 0) & 0x0f);
+            hasShadow = hasShadow || (rawData.at(planeSize * 4 + cell).asInt(0) & 0x0f);
         if (hasShadow) {
             receipt.shadowLayer = TileLayer::createLayer(width * 2, height * 2, 24.f, 24.f);
             receipt.shadowLayer->setLayer(2);
             receipt.shadowLayer->setTint(0.f, 0.f, 0.f, 0.5f);
             for (size_t cell = 0; cell < planeSize; ++cell) {
-                const int bits = asInt(rawData->get(unsigned(planeSize * 4 + cell)), 0) & 0x0f;
+                const int bits = rawData.at(planeSize * 4 + cell).asInt(0) & 0x0f;
                 const int x = int(cell % size_t(width)), y = int(cell / size_t(width));
                 for (int part = 0; part < 4; ++part)
                     if (bits & (1 << part)) receipt.shadowLayer->setTile(x * 2 + part % 2, y * 2 + part / 2, 1);

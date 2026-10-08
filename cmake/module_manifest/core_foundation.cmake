@@ -102,7 +102,8 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
                    DEPS action attributes decision definitions dnut_interpreter effects inventory production settlement transaction)
 # L0 -- foundation (continued)
-eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
@@ -154,7 +155,8 @@ eve_declare_module(NAME action LIB EVAction LAYER 1 SCRIPT Action SLOT action
 # compiler, the compiled sequence model and the cross-frame interpreter. Domain
 # vocabularies (dialogue lines and pools, RPG story steps) are registered by the
 # modules that own them; this core never interprets a domain payload.
-eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1)
+eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1
+                   GROUP minimal 2d 3d web)
 # L2 -- combat resolution and optional adapters consuming the action protocol
 # Optional persistent GameEventLog adapter for action timeline events.
 eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
