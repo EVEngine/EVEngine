@@ -92,6 +92,10 @@ struct Aabb {
         max.y = std::max(max.y, p.y);
         max.z = std::max(max.z, p.z);
     }
+    void expand(const Aabb& other) {
+        expand(other.min);
+        expand(other.max);
+    }
     [[nodiscard]] float distance2(Vec3 p) const {
         const float dx = p.x < min.x ? min.x - p.x : (p.x > max.x ? p.x - max.x : 0.f);
         const float dy = p.y < min.y ? min.y - p.y : (p.y > max.y ? p.y - max.y : 0.f);

@@ -127,7 +127,9 @@ TEST_CASE("procgen.meshAdhereLive.paramsChangeRevisionAndRemoveRestores") {
     CHECK(live.revision() > rev1);
     REQUIRE(live.derivedMesh() != nullptr);
     const float y2 = live.derivedMesh()->getPositionY(0);
-    CHECK(std::fabs(y2 - y1) > 1e-6f || live.revision() > rev1);
+    CHECK(live.revision() > rev1);
+    (void)y1;
+    (void)y2;
 
     const int sourceVerts = cube.getVertexCount();
     live.removeSetup();
