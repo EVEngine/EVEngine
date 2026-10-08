@@ -6,6 +6,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveDifferentialErosionInput public API. */
 struct CaveDifferentialErosionInput {
     float    x        = 0.f;
     float    y        = 0.f;
@@ -16,6 +17,7 @@ struct CaveDifferentialErosionInput {
     uint32_t seed     = 0;
 };
 
+/** @brief CaveDifferentialErosionSample public API. */
 struct CaveDifferentialErosionSample {
     float hostRetreat    = 0.f;
     float veinProtection = 0.f;
@@ -27,6 +29,7 @@ struct CaveDifferentialErosionSample {
  * @return Bounded host retreat and the local resistant-vein protection weight.
  */
 EVENGINE_API_DOMAINS CaveDifferentialErosionSample
+/** @brief Sample cave differential vein erosion. */
 sampleCaveDifferentialVeinErosion(const CaveDifferentialErosionInput& input);
 
 }  // namespace eve::procgen

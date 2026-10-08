@@ -51,6 +51,7 @@ struct CommandRequest {
 
 /** @brief Structured response to a request emitted by a command node. */
 struct CommandResponse {
+    /** @brief Status public API. */
     enum class Status : std::uint8_t { Completed, Blocked, Failed };
 
     Status      status = Status::Completed;
@@ -98,18 +99,25 @@ public:
     }
 
     /** @copydoc eve::decision::EvaluationContext::value */
+    /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::hasTag */
+    /** @brief True when tag. */
     [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
     /** @copydoc eve::decision::EvaluationContext::attribute */
+    /** @brief Attribute. */
     [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::resource */
+    /** @brief Resource. */
     [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::state */
+    /** @brief State. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::authority */
+    /** @brief Authority. */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc eve::decision::EvaluationContext::policy */
+    /** @brief Policy. */
     [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view  name,
                                                                        const eve::Value& arguments) const override;
 

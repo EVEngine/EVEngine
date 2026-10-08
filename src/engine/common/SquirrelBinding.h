@@ -128,11 +128,13 @@ EVENGINE_API_FOUNDATION void markResultHasValue(ssq::Table& result);
  *          failure. It therefore never relies on a domain `lastError` slot.
  */
 template <class T, class Projector>
+/** @brief Project result. */
 [[nodiscard]] ssq::Table projectResult(HSQUIRRELVM vm, Result<T>&& result, Projector&& projector) {
     if (!result.ok()) return projectStatusResult(vm, result.status());
 
     const Status status  = result.status();
     T            payload = std::move(result).takeValue();
+    /** @brief Project status result. */
     return projectStatusResult(vm, status, std::invoke(std::forward<Projector>(projector), std::move(payload)));
 }
 

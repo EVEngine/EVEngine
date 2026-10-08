@@ -15,6 +15,7 @@ namespace eve::physics {
  */
 class EVENGINE_API_WORLD DistanceField3D {
 public:
+    /** @brief Distance field 3 d. */
     DistanceField3D(int width, int height, int depth, float cellSize, float originX,
                     float originY, float originZ, float outsideDistance);
 

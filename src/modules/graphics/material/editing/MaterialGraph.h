@@ -59,7 +59,9 @@ struct MaterialCompileResult {
 /** @brief Minimal material domain with typed pin validation and deterministic compile artifacts. */
 class EVENGINE_API_BACKENDS MaterialGraphDomain final : public IGraphDomainProvider {
 public:
+    /** @brief Domain. */
     std::string             domain() const override { return "material"; }
+    /** @brief Can connect. */
     GraphConnectionDecision canConnect(const GraphPinRecord& from, const GraphPinRecord& to) const override;
     /** @brief Compile a material graph without mutating preview state. */
     MaterialCompileResult compile(const GraphDocumentData& graph) const;

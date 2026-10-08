@@ -62,6 +62,7 @@ class EVENGINE_API_DOMAINS SplinePolyline {
 public:
     /** @brief Construct from an owning sequence of sampled points. */
     explicit SplinePolyline(std::vector<std::vector<SplineSample>> chunks = {}, bool closed = false)
+        /** @brief Chunks. */
         : chunks_(std::move(chunks)), closed_(closed) {}
     /** @brief Return sampled point count. */
     [[nodiscard]] int count() const noexcept;

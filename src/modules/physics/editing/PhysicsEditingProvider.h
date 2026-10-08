@@ -13,6 +13,7 @@ namespace eve::physics_editing {
 /** @brief Open capability for constructing collider authoring targets without editor type switches. */
 class IPhysicsEditingFactory {
 public:
+    /** @brief Releases IPhysicsEditingFactory resources. */
     virtual ~IPhysicsEditingFactory() = default;
     /**
      * @brief Create an independently owned collider publishing target.

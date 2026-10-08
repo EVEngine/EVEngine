@@ -37,6 +37,7 @@ EVENGINE_API_WORLD bool applyConfigText(TileLayer *layer, const std::string &jso
  */
 bool loadConfigFile(TileLayer *layer, const std::string &path, std::string *error = nullptr);
 
+/** @brief Reloads config file. */
 bool reloadConfigFile(TileLayer *layer, std::string *error = nullptr);
 
 /**
@@ -53,6 +54,7 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path,
  * Returns created layers (empty on failure). All share the same Resource.path for reload.
  */
 EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
+/** @brief Loads map file. */
 EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
                                                         std::string *error = nullptr);
 

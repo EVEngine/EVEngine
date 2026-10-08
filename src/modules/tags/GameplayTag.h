@@ -28,6 +28,7 @@ struct GameplayTagDefinition {
     std::string   name;
     std::string   description;
 
+    /** @brief Operator ==. */
     bool operator==(const GameplayTagDefinition&) const = default;
 };
 

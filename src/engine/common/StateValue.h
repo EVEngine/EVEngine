@@ -19,6 +19,7 @@ namespace eve {
  */
 class EVENGINE_API_FOUNDATION StateValue {
 public:
+    /** @brief Kind public API. */
     enum class Kind { Null, Int, Float, Bool, String, Array, Object };
 
     /** @brief Null value. */

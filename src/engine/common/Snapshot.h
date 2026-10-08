@@ -172,6 +172,7 @@ private:
         std::string   schema;
         std::uint64_t from = 0;
 
+        /** @brief Operator <. */
         friend bool operator<(const Key& left, const Key& right) noexcept {
             return left.schema < right.schema || (left.schema == right.schema && left.from < right.from);
         }

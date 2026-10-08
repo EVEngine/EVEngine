@@ -23,11 +23,16 @@ public:
     /** @brief Bind a document and exact immutable schema; both must outlive this adapter. */
     DefinitionSchemaFormTarget(DefinitionDocument* document,
                                const schema::SchemaDefinition* schema);
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
     /** @brief Diagnose schema/document identity, missing required fields and current value constraints. */

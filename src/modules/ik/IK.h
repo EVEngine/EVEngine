@@ -19,12 +19,18 @@ class Solver3D;
 class EVENGINE_API_FOUNDATION IK : public Module {
 public:
     Module_REG(IK);
+    /** @brief Default-constructs the IK module. */
     IK() = default;
+    /** @brief No owned skeletons/solvers; factories return caller-owned pointers. */
     ~IK() override = default;
 
+    /** @brief Creates an empty 2D skeleton. @ownership Caller deletes. */
     Skeleton2D *newSkeleton2D();
+    /** @brief Creates an empty 3D skeleton. @ownership Caller deletes. */
     Skeleton3D *newSkeleton3D();
+    /** @brief Creates a 2D FABRIK solver. @ownership Caller deletes. */
     Solver2D   *newSolver2D();
+    /** @brief Creates a 3D FABRIK solver. @ownership Caller deletes. */
     Solver3D   *newSolver3D();
 };
 

@@ -26,6 +26,7 @@ struct AbilityIntent {
  */
 class IAbilityIntentSource {
 public:
+    /** @brief Releases IAbilityIntentSource resources. */
     virtual ~IAbilityIntentSource() = default;
 
     /** @brief Produce at most one intent for the supplied deterministic simulation tick. */

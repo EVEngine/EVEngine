@@ -65,6 +65,7 @@ class ISceneCameraProjection {
 public:
     static constexpr const char* capabilityName = "ISceneCameraProjection";
 
+    /** @brief Releases ISceneCameraProjection resources. */
     virtual ~ISceneCameraProjection() = default;
 
     /**

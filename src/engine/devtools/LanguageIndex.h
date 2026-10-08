@@ -12,21 +12,25 @@
 
 namespace eve::dev::lsp {
 
+/** @brief Position public API. */
 struct Position {
     size_t line      = 0;
     size_t character = 0;
 };
 
+/** @brief Range public API. */
 struct Range {
     Position start;
     Position end;
 };
 
+/** @brief Location public API. */
 struct Location {
     std::string uri;
     Range       range;
 };
 
+/** @brief TextEdit public API. */
 struct TextEdit {
     Location    location;
     std::string newText;
@@ -63,7 +67,9 @@ struct SemanticToken {
 /** @brief Cross-file semantic index for EveScript source modules. */
 class EVENGINE_API_FOUNDATION WorkspaceIndex {
 public:
+    /** @brief Workspace index. */
     WorkspaceIndex();
+    /** @brief Workspace index. */
     ~WorkspaceIndex();
     WorkspaceIndex(const WorkspaceIndex&)            = delete;
     WorkspaceIndex& operator=(const WorkspaceIndex&) = delete;

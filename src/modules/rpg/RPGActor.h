@@ -33,12 +33,15 @@ class Party;
 /** @brief 属性 / 状态 / 技能三表合一的 ECS 实体。 */
 class EVENGINE_API_PLATFORM RPGActor : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(RPGActor, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 属性组件：AttributeSet 是属性状态与计算的唯一权威真源。 */
     struct Attributes {
+        /** @brief Constructs a Attributes. */
         Attributes() : values(std::string{}) {}
 
         ::eve::attributes::AttributeSet values;

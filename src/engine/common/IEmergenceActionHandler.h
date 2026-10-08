@@ -28,6 +28,7 @@ class IEmergenceActionHandler {
 public:
     static constexpr const char* capabilityName = "IEmergenceActionHandler";
 
+    /** @brief Releases IEmergenceActionHandler resources. */
     virtual ~IEmergenceActionHandler() = default;
 
     /**

@@ -144,27 +144,39 @@ private:
  */
 class EVENGINE_API_WORLD AnimClip {
 public:
+    /** @brief Anim clip. */
     explicit AnimClip(std::string name = "");
+    /** @brief Anim clip. */
     ~AnimClip();
 
     AnimClip(const AnimClip&)            = delete;
     AnimClip& operator=(const AnimClip&) = delete;
 
+    /** @brief Sets the name. */
     void        setName(const std::string& name) { name_ = name; }
+    /** @brief Returns the name. */
     std::string getName() const { return name_; }
 
+    /** @brief Sets the duration. */
     void  setDuration(float seconds);
+    /** @brief Returns the duration. */
     float getDuration() const { return duration_; }
 
+    /** @brief Sets the loop. */
     void setLoop(bool loop) { loop_ = loop; }
+    /** @brief Returns the loop. */
     bool getLoop() const { return loop_; }
 
     /** @brief Sample rate hint used by MotionDatabase baking (Hz). */
     void  setSampleRate(float hz);
+    /** @brief Returns the sample rate. */
     float getSampleRate() const { return sampleRate_; }
 
+    /** @brief Adds position key. */
     void addPositionKey(int boneIndex, float time, float x, float y, float z);
+    /** @brief Adds rotation key. */
     void addRotationKey(int boneIndex, float time, float x, float y, float z, float w);
+    /** @brief Adds scale key. */
     void addScaleKey(int boneIndex, float time, float x, float y, float z);
     /** @brief Replace and re-sort one position key. @return False when the bone or key index is invalid. */
     bool setPositionKey(int boneIndex, int keyIndex, float time, float x, float y, float z);
@@ -227,24 +239,40 @@ public:
     /** @brief Map local time into target marker space, falling back to normalized duration. */
     float mapSyncTimeTo(float time, const AnimClip* target) const;
 
+    /** @brief Returns the position key count. */
     int getPositionKeyCount(int boneIndex) const;
+    /** @brief Returns the rotation key count. */
     int getRotationKeyCount(int boneIndex) const;
+    /** @brief Returns the scale key count. */
     int getScaleKeyCount(int boneIndex) const;
 
+    /** @brief Returns the position key time. */
     float getPositionKeyTime(int boneIndex, int keyIndex) const;
+    /** @brief Returns the position key x. */
     float getPositionKeyX(int boneIndex, int keyIndex) const;
+    /** @brief Returns the position key y. */
     float getPositionKeyY(int boneIndex, int keyIndex) const;
+    /** @brief Returns the position key z. */
     float getPositionKeyZ(int boneIndex, int keyIndex) const;
 
+    /** @brief Returns the rotation key time. */
     float getRotationKeyTime(int boneIndex, int keyIndex) const;
+    /** @brief Returns the rotation key x. */
     float getRotationKeyX(int boneIndex, int keyIndex) const;
+    /** @brief Returns the rotation key y. */
     float getRotationKeyY(int boneIndex, int keyIndex) const;
+    /** @brief Returns the rotation key z. */
     float getRotationKeyZ(int boneIndex, int keyIndex) const;
+    /** @brief Returns the rotation key w. */
     float getRotationKeyW(int boneIndex, int keyIndex) const;
 
+    /** @brief Returns the scale key time. */
     float getScaleKeyTime(int boneIndex, int keyIndex) const;
+    /** @brief Returns the scale key x. */
     float getScaleKeyX(int boneIndex, int keyIndex) const;
+    /** @brief Returns the scale key y. */
     float getScaleKeyY(int boneIndex, int keyIndex) const;
+    /** @brief Returns the scale key z. */
     float getScaleKeyZ(int boneIndex, int keyIndex) const;
 
     /**

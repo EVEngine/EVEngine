@@ -29,6 +29,7 @@ struct EVENGINE_API_DOMAINS GeometryCollectionInstanceSnapshot {
     static constexpr std::string_view SchemaId      = "physics:geometry-collection-instance";
     static constexpr std::uint32_t    SchemaVersion = 1;
 
+    /** @brief BoneSnapshot public API. */
     struct BoneSnapshot {
         std::uint8_t state = 0;
         bool         anchored = false;
@@ -38,6 +39,7 @@ struct EVENGINE_API_DOMAINS GeometryCollectionInstanceSnapshot {
         float        halfExtentY = 0.5f;
         float        halfExtentZ = 0.5f;
     };
+    /** @brief EdgeSnapshot public API. */
     struct EdgeSnapshot {
         int   boneA = 0;
         int   boneB = 0;

@@ -65,27 +65,38 @@ struct MotionLocomotionSample {
  */
 class EVENGINE_API_WORLD MotionMatcher {
 public:
+    /** @brief Motion matcher. */
     MotionMatcher(AnimSkeleton* skeleton, MotionDatabase* database);
+    /** @brief Motion matcher. */
     ~MotionMatcher();
 
     MotionMatcher(const MotionMatcher&)            = delete;
     MotionMatcher& operator=(const MotionMatcher&) = delete;
 
+    /** @brief Returns the skeleton. */
     AnimSkeleton*   getSkeleton() const { return skeleton_; }
+    /** @brief Returns the database. */
     MotionDatabase* getDatabase() const { return database_; }
 
     /** @brief Desired planar velocity in character/world XZ (units/sec). */
     void  setDesiredVelocity(float x, float z);
+    /** @brief Returns the desired velocity x. */
     float getDesiredVelocityX() const { return desiredVelX_; }
+    /** @brief Returns the desired velocity z. */
     float getDesiredVelocityZ() const { return desiredVelZ_; }
 
     /** @brief Desired facing yaw (radians, Y-up). */
     void  setDesiredYaw(float yaw);
+    /** @brief Returns the desired yaw. */
     float getDesiredYaw() const { return desiredYaw_; }
 
+    /** @brief Sets the search interval. */
     void  setSearchInterval(float seconds);
+    /** @brief Returns the search interval. */
     float getSearchInterval() const { return searchInterval_; }
+    /** @brief Sets the blend time. */
     void  setBlendTime(float seconds);
+    /** @brief Returns the blend time. */
     float getBlendTime() const { return blendTime_; }
     /**
      * @brief Configure the inclusive playback-rate interval used to reconcile query and selected trajectory speed.
@@ -99,17 +110,26 @@ public:
      */
     [[nodiscard]] eve::Result<void> setPlayRateRange(float minimum, float maximum);
     float getPlayRateMinimum() const { return playRateMin_; }
+    /** @brief Returns the play rate maximum. */
     float getPlayRateMaximum() const { return playRateMax_; }
+    /** @brief Returns the play rate. */
     float getPlayRate() const { return playRate_; }
+    /** @brief Sets the trajectory weight. */
     void  setTrajectoryWeight(float w);
+    /** @brief Returns the trajectory weight. */
     float getTrajectoryWeight() const { return trajWeight_; }
+    /** @brief Sets the pose weight. */
     void  setPoseWeight(float w);
+    /** @brief Returns the pose weight. */
     float getPoseWeight() const { return poseWeight_; }
+    /** @brief Sets the velocity weight. */
     void  setVelocityWeight(float w);
+    /** @brief Returns the velocity weight. */
     float getVelocityWeight() const { return velWeight_; }
 
     /** @brief Keep continuous playback within this frame radius of the live playhead, including loop seams. */
     void setIgnoreRadius(int frames);
+    /** @brief Returns the ignore radius. */
     int  getIgnoreRadius() const { return ignoreRadius_; }
     /** @brief Set how long an already selected baked pose is excluded from new candidates.
      * @param seconds Finite duration in [0,10]. Zero clears and disables history.
@@ -121,11 +141,16 @@ public:
     [[nodiscard]] eve::Result<void> setPoseReselectHistory(float seconds);
     float getPoseReselectHistory() const { return poseReselectHistory_; }
 
+    /** @brief Returns the matched frame. */
     int   getMatchedFrame() const { return matchedFrame_; }
+    /** @brief Returns the matched clip index. */
     int   getMatchedClipIndex() const;
+    /** @brief Returns the matched time. */
     float getMatchedTime() const { return matchedTime_; }
+    /** @brief Returns the last search cost. */
     float getLastSearchCost() const { return lastCost_; }
 
+    /** @brief Returns the pose. */
     AnimPose* getPose();
 
     /** @brief Atomically replace searchable intervals, retaining original database frame IDs.

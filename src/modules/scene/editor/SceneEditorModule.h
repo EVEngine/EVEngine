@@ -12,7 +12,9 @@ namespace eve::scene_editor {
 class EVENGINE_API_EDITORS SceneEditorModule final : public Module {
 public:
     Module_REG(SceneEditorModule);
+    /** @brief Scene editor module. */
     SceneEditorModule();
+    /** @brief Scene editor module. */
     ~SceneEditorModule() override;
 
 private:

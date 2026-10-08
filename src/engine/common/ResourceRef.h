@@ -39,6 +39,7 @@ enum class ResourceRefKind : std::uint8_t {
 
 /** @brief Writes a resource-reference alternative for diagnostics. */
 inline std::ostream& operator<<(std::ostream& stream, ResourceRefKind kind) {
+    /** @brief Resource ref kind name. */
     return stream << resourceRefKindName(kind);
 }
 
@@ -225,6 +226,7 @@ private:
 namespace std {
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::AssetRef> {
     /** @brief Hash an AssetRef by its persistent identity. */
     std::size_t operator()(const eve::AssetRef& value) const noexcept {
@@ -233,6 +235,7 @@ struct hash<eve::AssetRef> {
 };
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::DefinitionRef> {
     /** @brief Hash a DefinitionRef by its logical identity. */
     std::size_t operator()(const eve::DefinitionRef& value) const noexcept {
@@ -241,6 +244,7 @@ struct hash<eve::DefinitionRef> {
 };
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::ObjectRef> {
     /** @brief Hash an ObjectRef by its persistent identity. */
     std::size_t operator()(const eve::ObjectRef& value) const noexcept {

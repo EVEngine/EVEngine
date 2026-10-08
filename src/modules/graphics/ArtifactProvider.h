@@ -37,6 +37,7 @@ struct GraphicsArtifactDescriptor {
     /** @brief Actual backend index element size when a live upload exists. */
     std::uint32_t backendIndexElementSize = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const GraphicsArtifactDescriptor&, const GraphicsArtifactDescriptor&) = default;
 };
 

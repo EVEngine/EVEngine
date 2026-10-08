@@ -38,16 +38,20 @@ struct MotionNormalizationRange {
  */
 class EVENGINE_API_WORLD MotionDatabase {
 public:
+    /** @brief Motion database. */
     explicit MotionDatabase(AnimSkeleton* skeleton);
+    /** @brief Motion database. */
     ~MotionDatabase();
 
     MotionDatabase(const MotionDatabase&)            = delete;
     MotionDatabase& operator=(const MotionDatabase&) = delete;
 
+    /** @brief Returns the skeleton. */
     AnimSkeleton* getSkeleton() const { return skeleton_; }
 
     /** @brief Include bone world position in pose features (by index). */
     void addFeatureBone(int boneIndex);
+    /** @brief Adds feature bone by name. */
     void addFeatureBoneByName(const std::string& name);
 
     /** @brief Configure the locomotion layout before baking or creating matchers.
@@ -108,10 +112,14 @@ public:
      * Mixamo clips typically want hips (`mixamorig:Hips`).
      */
     void setRootBone(int boneIndex);
+    /** @brief Returns the root bone. */
     int  getRootBone() const { return rootBone_; }
+    /** @brief Sets the root bone by name. */
     void setRootBoneByName(const std::string& name);
 
+    /** @brief Adds clip. */
     void addClip(AnimClip* clip);
+    /** @brief Returns the clip count. */
     int  getClipCount() const { return static_cast<int>(clips_.size()); }
 
     /** @brief Bake all clips into searchable frames. Call after addClip / feature bones.
@@ -123,16 +131,24 @@ public:
      * callbacks or retained jobs.
      */
     void bake();
+    /** @brief True when baked. */
     bool isBaked() const { return baked_; }
 
+    /** @brief Returns the frame count. */
     int getFrameCount() const { return static_cast<int>(frames_.size()); }
+    /** @brief Returns the feature size. */
     int getFeatureSize() const { return featureSize_; }
 
+    /** @brief Returns the frame time. */
     float     getFrameTime(int frameIndex) const;
+    /** @brief Returns the frame clip index. */
     int       getFrameClipIndex(int frameIndex) const;
+    /** @brief Returns the clip. */
     AnimClip* getClip(int clipIndex) const;
 
+    /** @brief Returns the feature bone count. */
     int getFeatureBoneCount() const { return static_cast<int>(featureBones_.size()); }
+    /** @brief Returns the feature bone. */
     int getFeatureBone(int index) const;
 
     /** @brief Copy feature vector into out[0..featureSize). */
@@ -140,6 +156,7 @@ public:
     /** @brief Normalize a query with statistics computed by bake(). */
     void normalizeFeature(std::vector<float>& feature) const;
 
+    /** @brief Frame public API. */
     struct Frame {
         int                clipIndex = 0;
         float              time      = 0.f;

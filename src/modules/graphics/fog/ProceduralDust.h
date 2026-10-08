@@ -16,6 +16,7 @@ struct DustParticle {
     glm::vec3 position{0.f};
     float size = 0.02f;
     float brightness = 1.f;
+    /** @brief Band public API. */
     enum class Band : uint8_t { Fine = 0, Mid = 1 } band = Band::Fine;
 };
 

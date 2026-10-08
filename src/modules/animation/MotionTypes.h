@@ -21,12 +21,15 @@ struct MotionHandle {
     std::uint32_t index      = 0;
     std::uint32_t generation = 0;
 
+    /** @brief True when null. */
     [[nodiscard]] constexpr bool isNull() const noexcept { return generation == 0; }
 
+    /** @brief Operator ==. */
     [[nodiscard]] constexpr bool operator==(const MotionHandle &other) const noexcept {
         return index == other.index && generation == other.generation;
     }
 
+    /** @brief Operator !=. */
     [[nodiscard]] constexpr bool operator!=(const MotionHandle &other) const noexcept {
         return !(*this == other);
     }
@@ -82,6 +85,7 @@ class IMotionFloatSink {
 public:
     static constexpr const char *capabilityName = "IMotionFloatSink";
 
+    /** @brief Releases IMotionFloatSink resources. */
     virtual ~IMotionFloatSink() = default;
 
     /** @brief Write the latest interpolated value. */
@@ -93,8 +97,10 @@ class IMotionVec2Sink {
 public:
     static constexpr const char *capabilityName = "IMotionVec2Sink";
 
+    /** @brief Releases IMotionVec2Sink resources. */
     virtual ~IMotionVec2Sink() = default;
 
+    /** @brief Writes . */
     [[nodiscard]] virtual eve::Result<void> write(MotionVec2 value) = 0;
 };
 
@@ -103,8 +109,10 @@ class IMotionVec3Sink {
 public:
     static constexpr const char *capabilityName = "IMotionVec3Sink";
 
+    /** @brief Releases IMotionVec3Sink resources. */
     virtual ~IMotionVec3Sink() = default;
 
+    /** @brief Writes . */
     [[nodiscard]] virtual eve::Result<void> write(MotionVec3 value) = 0;
 };
 
@@ -113,8 +121,10 @@ class IMotionColorSink {
 public:
     static constexpr const char *capabilityName = "IMotionColorSink";
 
+    /** @brief Releases IMotionColorSink resources. */
     virtual ~IMotionColorSink() = default;
 
+    /** @brief Writes . */
     [[nodiscard]] virtual eve::Result<void> write(MotionColor value) = 0;
 };
 
@@ -123,8 +133,10 @@ class IMotionQuatSink {
 public:
     static constexpr const char *capabilityName = "IMotionQuatSink";
 
+    /** @brief Releases IMotionQuatSink resources. */
     virtual ~IMotionQuatSink() = default;
 
+    /** @brief Writes . */
     [[nodiscard]] virtual eve::Result<void> write(MotionQuat value) = 0;
 };
 
@@ -134,8 +146,10 @@ public:
  */
 class EVENGINE_API_WORLD FloatPointerSink final : public IMotionFloatSink {
 public:
+    /** @brief Float pointer sink. */
     explicit FloatPointerSink(float *target) : target_(target) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(float value) override;
 
 private:
@@ -148,8 +162,10 @@ private:
  */
 class EVENGINE_API_WORLD FloatBufferSink final : public IMotionFloatSink {
 public:
+    /** @brief Float buffer sink. */
     FloatBufferSink(float *buffer, std::size_t index) : buffer_(buffer), index_(index) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(float value) override;
 
 private:
@@ -164,8 +180,10 @@ private:
  */
 class EVENGINE_API_WORLD Vec2PointerSink final : public IMotionVec2Sink {
 public:
+    /** @brief Vec 2 pointer sink. */
     Vec2PointerSink(float *x, float *y) : x_(x), y_(y) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(MotionVec2 value) override;
 
 private:
@@ -179,8 +197,10 @@ private:
  */
 class Vec3PointerSink final : public IMotionVec3Sink {
 public:
+    /** @brief Constructs a Vec3PointerSink. */
     Vec3PointerSink(float *x, float *y, float *z) : x_(x), y_(y), z_(z) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(MotionVec3 value) override;
 
 private:
@@ -195,8 +215,10 @@ private:
  */
 class EVENGINE_API_WORLD ColorPointerSink final : public IMotionColorSink {
 public:
+    /** @brief Color pointer sink. */
     ColorPointerSink(float *r, float *g, float *b, float *a) : r_(r), g_(g), b_(b), a_(a) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(MotionColor value) override;
 
 private:
@@ -212,8 +234,10 @@ private:
  */
 class EVENGINE_API_WORLD QuatPointerSink final : public IMotionQuatSink {
 public:
+    /** @brief Quat pointer sink. */
     QuatPointerSink(float *x, float *y, float *z, float *w) : x_(x), y_(y), z_(z), w_(w) {}
 
+    /** @brief Writes . */
     [[nodiscard]] eve::Result<void> write(MotionQuat value) override;
 
 private:

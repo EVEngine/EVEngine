@@ -38,9 +38,13 @@ namespace eve::fluids {
 /** @brief Zero the linked-list cell heads. */
 inline const char* kFluidClearGrid = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint resX = uint(pc.d[14]);
@@ -53,11 +57,17 @@ void main() {
 /** @brief Insert every particle into its grid cell (linked list via atomicExchange). */
 inline const char* kFluidBuildGrid = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
@@ -76,15 +86,24 @@ void main() {
 /** @brief Density, gradient sum and PBF lambda in one pass (mirror computeDensitiesAndGrads + computeLambdas). */
 inline const char* kFluidDensityLambda = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
+/** @brief Layout. */
 layout(set = 0, binding = 4) buffer Dens { float d[]; } dens;
+/** @brief Layout. */
 layout(set = 0, binding = 6) buffer Lambda { float l[]; } lam;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Poly 6. */
 float poly6(float r2, float h) {
     float h2 = h * h;
     if (r2 >= h2 || r2 <= 0.0) return 0.0;
@@ -92,6 +111,7 @@ float poly6(float r2, float h) {
     return 315.0 / (64.0 * 3.14159265358979 * pow(h, 9.0)) * q * q * q;
 }
 
+/** @brief Spiky grad. */
 vec3 spikyGrad(vec3 dx, float h) {
     float r2 = dot(dx, dx);
     if (r2 >= h * h || r2 <= 1e-12) return vec3(0.0);
@@ -101,6 +121,7 @@ vec3 spikyGrad(vec3 dx, float h) {
     return dx * (k * q * q / r);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
@@ -143,14 +164,22 @@ void main() {
 /** @brief Accumulate PBF position deltas into the (reused) grad buffer. */
 inline const char* kFluidComputeDelta = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
+/** @brief Layout. */
 layout(set = 0, binding = 6) buffer Lambda { float l[]; } lam;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Spiky grad. */
 vec3 spikyGrad(vec3 dx, float h) {
     float r2 = dot(dx, dx);
     if (r2 >= h * h || r2 <= 1e-12) return vec3(0.0);
@@ -160,6 +189,7 @@ vec3 spikyGrad(vec3 dx, float h) {
     return dx * (k * q * q / r);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
@@ -197,20 +227,30 @@ void main() {
 /** @brief Apply PBF deltas and re-project onto the SDF surface. */
 inline const char* kFluidApplyDelta = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer Vel { vec4 v[]; } vel;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
+/** @brief Layout. */
 layout(set = 0, binding = 5) buffer Sdf { float d[]; } sdf;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Sdf value. */
 float sdfValue(ivec3 res, int x, int y, int z) {
     int idx = x + res.x * (y + res.y * z);
     return sdf.d[idx];
 }
 
+/** @brief Sdf sample. */
 float sdfSample(vec3 p) {
     ivec3 res = ivec3(int(pc.d[21]), int(pc.d[22]), int(pc.d[23]));
     vec3 o = vec3(pc.d[24], pc.d[25], pc.d[26]);
@@ -238,13 +278,18 @@ float sdfSample(vec3 p) {
     return c0 + (c1 - c0) * t.z + outside;
 }
 
+/** @brief Sdf grad. */
 vec3 sdfGrad(vec3 p) {
     float e = pc.d[27];
+    /** @brief Vec 3. */
     return vec3(sdfSample(p + vec3(e, 0.0, 0.0)) - sdfSample(p - vec3(e, 0.0, 0.0)),
+                /** @brief Sdf sample. */
                 sdfSample(p + vec3(0.0, e, 0.0)) - sdfSample(p - vec3(0.0, e, 0.0)),
+                /** @brief Sdf sample. */
                 sdfSample(p + vec3(0.0, 0.0, e)) - sdfSample(p - vec3(0.0, 0.0, e))) / (2.0 * e);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
@@ -285,15 +330,24 @@ void main() {
 /** @brief Viscosity + cohesion + adhesion + gravity + integration + SDF projection. */
 inline const char* kFluidIntegrate = R"GLSL(
 #version 450
+/** @brief Layout. */
 layout(local_size_x = 64) in;
+/** @brief Layout. */
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+/** @brief Layout. */
 layout(set = 0, binding = 1) buffer Vel { vec4 v[]; } vel;
+/** @brief Layout. */
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
+/** @brief Layout. */
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
+/** @brief Layout. */
 layout(set = 0, binding = 5) buffer Sdf { float d[]; } sdf;
+/** @brief Layout. */
 layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
+/** @brief Layout. */
 layout(push_constant) uniform PC { float d[32]; } pc;
 
+/** @brief Poly 6. */
 float poly6(float r2, float h) {
     float h2 = h * h;
     if (r2 >= h2 || r2 <= 0.0) return 0.0;
@@ -301,17 +355,20 @@ float poly6(float r2, float h) {
     return 315.0 / (64.0 * 3.14159265358979 * pow(h, 9.0)) * q * q * q;
 }
 
+/** @brief Cohesion kernel. */
 float cohesionKernel(float r, float h) {
     if (r >= h || r <= 1e-9) return 0.0;
     float q = h - r;
     return 32.0 / (3.14159265358979 * pow(h, 9.0)) * q * q * q * r * r * r;
 }
 
+/** @brief Sdf value. */
 float sdfValue(ivec3 res, int x, int y, int z) {
     int idx = x + res.x * (y + res.y * z);
     return sdf.d[idx];
 }
 
+/** @brief Sdf sample. */
 float sdfSample(vec3 p) {
     ivec3 res = ivec3(int(pc.d[21]), int(pc.d[22]), int(pc.d[23]));
     vec3 o = vec3(pc.d[24], pc.d[25], pc.d[26]);
@@ -339,13 +396,18 @@ float sdfSample(vec3 p) {
     return c0 + (c1 - c0) * t.z + outside;
 }
 
+/** @brief Sdf grad. */
 vec3 sdfGrad(vec3 p) {
     float e = pc.d[27];
+    /** @brief Vec 3. */
     return vec3(sdfSample(p + vec3(e, 0.0, 0.0)) - sdfSample(p - vec3(e, 0.0, 0.0)),
+                /** @brief Sdf sample. */
                 sdfSample(p + vec3(0.0, e, 0.0)) - sdfSample(p - vec3(0.0, e, 0.0)),
+                /** @brief Sdf sample. */
                 sdfSample(p + vec3(0.0, 0.0, e)) - sdfSample(p - vec3(0.0, 0.0, e))) / (2.0 * e);
 }
 
+/** @brief Main. */
 void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);

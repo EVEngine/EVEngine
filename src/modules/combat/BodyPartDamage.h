@@ -24,6 +24,7 @@ public:
     /** @brief Return the multiplier for a part, or 1.0 when unregistered. */
     [[nodiscard]] double multiplier(std::string_view bodyPart) const noexcept;
     /** @copydoc IDamageRule::evaluate */
+    /** @brief Evaluate. */
     [[nodiscard]] Result<DamageAmounts> evaluate(const DamageRequest& request,
                                                  const CombatState&   target) const override;
     /**

@@ -15,12 +15,18 @@ class LevelDocument;
 /** @brief Plug-in contract for importing and exporting a level representation. */
 class LevelFormat {
 public:
+    /** @brief Releases LevelFormat resources. */
     virtual ~LevelFormat()                                                  = default;
+    /** @brief Id. */
     virtual std::string              id() const                             = 0;
+    /** @brief Extensions. */
     virtual std::vector<std::string> extensions() const                     = 0;
+    /** @brief Can read. */
     virtual bool                     canRead(const std::string& text) const = 0;
 
+    /** @brief Reads . */
     [[nodiscard]] virtual eve::Result<std::unique_ptr<LevelDocument>> read(const std::string& text) const     = 0;
+    /** @brief Writes . */
     [[nodiscard]] virtual eve::Result<std::string>                    write(const LevelDocument& level) const = 0;
 };
 
@@ -35,6 +41,7 @@ public:
  */
 class EVENGINE_API_DOMAINS LevelFormatRegistry {
 public:
+    /** @brief Level format registry. */
     LevelFormatRegistry();
 
     // std::vector<std::unique_ptr<LevelFormat>> makes the implicit copy operations
@@ -43,18 +50,27 @@ public:
     // the registry was never copyable in practice.
     LevelFormatRegistry(const LevelFormatRegistry&)            = delete;
     LevelFormatRegistry& operator=(const LevelFormatRegistry&) = delete;
+    /** @brief Level format registry. */
     LevelFormatRegistry(LevelFormatRegistry&&)                 = default;
+    /** @brief Operator =. */
     LevelFormatRegistry& operator=(LevelFormatRegistry&&)      = default;
 
+    /** @brief Registers format. */
     [[nodiscard]] eve::Result<void> registerFormat(std::unique_ptr<LevelFormat> format);
+    /** @brief Returns the format count. */
     int                             getFormatCount() const { return static_cast<int>(formats_.size()); }
+    /** @brief Returns the format id. */
     std::string                     getFormatId(int index) const;
+    /** @brief Detect. */
     std::string                     detect(const std::string& path, const std::string& text) const;
 
+    /** @brief Decode. */
     [[nodiscard]] eve::Result<std::unique_ptr<LevelDocument>> decode(const std::string& format,
                                                                      const std::string& text) const;
+    /** @brief Encode. */
     [[nodiscard]] eve::Result<std::string> encode(const std::string& format, const LevelDocument& level) const;
 
+    /** @brief Loads . */
     [[nodiscard]] eve::Result<std::unique_ptr<LevelDocument>> load(const std::string& path,
                                                                    const std::string& format = {}) const;
     /** @brief Encode then atomically replace a file; failures preserve an existing destination.

@@ -56,6 +56,7 @@ public:
     [[nodiscard]] bool hasBoundBattle() const noexcept { return bound_; }
 
     /** @copydoc sensing::ILineOfSightQuery::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<sensing::LineOfSightResult> query(const sensing::TargetLocation& from,
                                                            const sensing::TargetLocation& to) const override;
 

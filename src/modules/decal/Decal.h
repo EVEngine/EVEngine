@@ -29,7 +29,9 @@ namespace eve::decal {
 class EVENGINE_API_WORLD Decal : public Module {
 public:
     Module_REG(Decal);
+    /** @brief Decal. */
     Decal();
+    /** @brief Decal. */
     ~Decal() override;
 
     /** @brief Spawn a decal at (x,y,z) facing along (nx,ny,nz); returns id. */
@@ -58,9 +60,13 @@ public:
                                                  float maxLayers);
     /** @brief Configure normalized edge-mask feather width in [0, 0.49]. */
     [[nodiscard]] DecalEdgeFadeStatus setEdgeFade(int id, float width);
+    /** @brief Removes . */
     bool remove(int id);
+    /** @brief Clears all. */
     void clearAll();
+    /** @brief Returns the number of . */
     int count();
+    /** @brief Sets the limit. */
     void setLimit(const std::string &kind, int limit);
     /** @brief Advance ages / evict expired; call once per frame. */
     void update(float dt);

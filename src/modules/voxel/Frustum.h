@@ -32,15 +32,22 @@ struct Frustum {
             }
         };
         // left, right, bottom, top, near, far
+        /** @brief Sets the value. */
         set(0, m(3, 0) + m(0, 0), m(3, 1) + m(0, 1), m(3, 2) + m(0, 2), m(3, 3) + m(0, 3));
+        /** @brief Sets the value. */
         set(1, m(3, 0) - m(0, 0), m(3, 1) - m(0, 1), m(3, 2) - m(0, 2), m(3, 3) - m(0, 3));
+        /** @brief Sets the value. */
         set(2, m(3, 0) + m(1, 0), m(3, 1) + m(1, 1), m(3, 2) + m(1, 2), m(3, 3) + m(1, 3));
+        /** @brief Sets the value. */
         set(3, m(3, 0) - m(1, 0), m(3, 1) - m(1, 1), m(3, 2) - m(1, 2), m(3, 3) - m(1, 3));
+        /** @brief Sets the value. */
         set(4, m(3, 0) + m(2, 0), m(3, 1) + m(2, 1), m(3, 2) + m(2, 2), m(3, 3) + m(2, 3));
+        /** @brief Sets the value. */
         set(5, m(3, 0) - m(2, 0), m(3, 1) - m(2, 1), m(3, 2) - m(2, 2), m(3, 3) - m(2, 3));
         return f;
     }
 
+    /** @brief Intersects aabb. */
     bool intersectsAABB(float minX, float minY, float minZ, float maxX, float maxY,
                         float maxZ) const {
         for (int i = 0; i < 6; ++i) {

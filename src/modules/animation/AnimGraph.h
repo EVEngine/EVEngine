@@ -25,33 +25,55 @@ class AnimSkeleton;
  */
 class EVENGINE_API_WORLD AnimGraph : public IAnimPoseSource {
 public:
+    /** @brief Anim graph. */
     explicit AnimGraph(AnimSkeleton* skeleton);
+    /** @brief Anim graph. */
     ~AnimGraph() override = default;
 
     AnimGraph(const AnimGraph&)            = delete;
     AnimGraph& operator=(const AnimGraph&) = delete;
 
+    /** @brief Adds clip. */
     int addClip(AnimClip* clip);
+    /** @brief Adds blend. */
     int addBlend(int a, int b, float weight = 0.5f);
+    /** @brief Adds additive. */
     int addAdditive(int base, int additive, float weight = 1.f);
+    /** @brief Adds layer. */
     int addLayer(int base, int overlay, float weight = 1.f);
+    /** @brief Adds one shot. */
     int addOneShot(int base, int shot, float fadeIn = 0.1f, float fadeOut = 0.1f);
+    /** @brief Adds blend space 1 d. */
     int addBlendSpace1D();
+    /** @brief Adds blend space 2 d. */
     int addBlendSpace2D();
 
+    /** @brief Adds blend space 1 d point. */
     void addBlendSpace1DPoint(int node, float x, int child);
+    /** @brief Adds blend space 2 d point. */
     void addBlendSpace2DPoint(int node, float x, float y, int child);
+    /** @brief Sets the bone mask. */
     void setBoneMask(int node, int boneIndex, float weight, bool includeChildren = false);
+    /** @brief Clears bone mask. */
     void clearBoneMask(int node);
 
+    /** @brief Sets the root. */
     void setRoot(int node);
+    /** @brief Returns the root. */
     int  getRoot() const { return root_; }
+    /** @brief Returns the node count. */
     int  getNodeCount() const { return static_cast<int>(nodes_.size()); }
+    /** @brief Sets the weight. */
     void setWeight(int node, float weight);
+    /** @brief Sets the position 1 d. */
     void setPosition1D(int node, float x);
+    /** @brief Sets the position 2 d. */
     void setPosition2D(int node, float x, float y);
+    /** @brief Sets the speed. */
     void setSpeed(int node, float speed);
+    /** @brief Trigger. */
     void trigger(int node);
+    /** @brief True when one shot active. */
     bool isOneShotActive(int node) const;
 
     /**
@@ -79,7 +101,9 @@ public:
      * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
      */
     AnimSkeleton*                     getSkeleton() const override { return skeleton_; }
+    /** @brief True when current tick. */
     [[nodiscard]] bool                hasCurrentTick() const noexcept override { return hasLastTick_; }
+    /** @brief Current tick. */
     [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
 
 private:

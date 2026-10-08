@@ -7,15 +7,20 @@ namespace eve {
 
 // Prints "[startup] <name>: X.X ms" to stderr when the scope exits.
 // Temporary diagnostics for startup profiling; remove once startup is fast.
+/** @brief StartupStage public API. */
 class StartupStage {
 public:
+    /** @brief Constructs a StartupStage. */
     explicit StartupStage(const char* name)
+        /** @brief Name. */
         : name_(name), t0_(std::chrono::steady_clock::now()) {}
 
+    /** @brief Releases StartupStage resources. */
     ~StartupStage() {
         const double ms =
             std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0_)
                 .count();
+        /** @brief Fprintf. */
         std::fprintf(stderr, "[startup] %s: %.1f ms\n", name_, ms);
     }
 

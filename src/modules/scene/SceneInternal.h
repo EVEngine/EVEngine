@@ -21,27 +21,36 @@ namespace {
  * registry's key, so an unknown name and a kind whose module was trimmed out
  * are the same case: -1.
  */
+/** @brief Link kind from string. */
 int linkKindFromString(const std::string &kind) { return findLinkKind(kind.c_str()); }
 
+/** @brief Synchronizes mode from string. */
 int syncModeFromString(const std::string &mode) {
     return mode == "body" ? 1 : 0;
 }
 
+/** @brief Node quaternion. */
 glm::quat nodeQuaternion(const SceneNode &n) {
+    /** @brief Angle axis. */
     return glm::angleAxis(n.yaw, glm::vec3(0.f, 1.f, 0.f)) *
+           /** @brief Angle axis. */
            glm::angleAxis(n.pitch, glm::vec3(1.f, 0.f, 0.f)) *
+           /** @brief Angle axis. */
            glm::angleAxis(n.roll, glm::vec3(0.f, 0.f, 1.f));
 }
 
 /** Decompose a world matrix into position / euler(yaw,pitch,roll) / scale. */
+/** @brief Decompose world. */
 void decomposeWorld(const glm::mat4 &w, glm::vec3 &pos, glm::vec3 &euler,
                     glm::vec3 &scale) {
     pos = glm::vec3(w[3]);
+    /** @brief C 0. */
     glm::vec3 c0(w[0]), c1(w[1]), c2(w[2]);
     scale = glm::vec3(glm::length(c0), glm::length(c1), glm::length(c2));
     if (scale.x > 1e-8f) c0 /= scale.x;
     if (scale.y > 1e-8f) c1 /= scale.y;
     if (scale.z > 1e-8f) c2 /= scale.z;
+    /** @brief Rot. */
     glm::mat3 rot(c0, c1, c2);
     glm::quat q = glm::quat_cast(rot);
     glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)

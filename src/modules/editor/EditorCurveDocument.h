@@ -42,7 +42,9 @@ struct EditorCurvePreview {
 /** @brief Stable key/gradient editing capability shared by effects and animation presenters. */
 class ICurveDocumentEditTarget {
 public:
+    /** @brief Releases ICurveDocumentEditTarget resources. */
     virtual ~ICurveDocumentEditTarget() = default;
+    /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.curve-document"); }
     /** @brief Plan creation or replacement of a scalar key. */
     virtual Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const = 0;
@@ -61,18 +63,28 @@ class EVENGINE_API_ORCHESTRATION EditorCurveDocument final : public ::eve::editi
                                                              public IDomainOperationTargetStaging,
                                                              public ICurveDocumentEditTarget {
 public:
+    /** @brief Editor curve document. */
     explicit EditorCurveDocument(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Make set key. */
     Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const override;
+    /** @brief Make delete key. */
     Result<DomainOperation> makeDeleteKey(const StableId& key) const override;
+    /** @brief Make set stop. */
     Result<DomainOperation> makeSetStop(const EditorGradientStop& stop) const override;
+    /** @brief Make delete stop. */
     Result<DomainOperation> makeDeleteStop(const StableId& stop) const override;
     /** @brief Return scalar keys in stable timeline order. */
     std::vector<EditorCurveKey> keys() const;

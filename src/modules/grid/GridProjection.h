@@ -1,6 +1,10 @@
 #pragma once
 #include "common/Export.h"
 
+/**
+ * @file GridProjection.h
+ * @brief Pure cell/world projection helpers for GridConfig.
+ */
 
 #include "grid/GridConfig.h"
 
@@ -10,28 +14,36 @@
 
 namespace eve::grid {
 
-/** cell -> 平面坐标 (px, py)。XY 平面：世界 (x, y)；XZ 平面：世界 (x, z)。 */
+/**
+ * @brief Maps a cell to planar coordinates (px, py).
+ * On XY plane these are world (x, y); on XZ plane they are world (x, z).
+ */
 EVENGINE_API_FOUNDATION void cellToWorld(const GridConfig &cfg, int cx, int cy, float &px, float &py);
 
-/** 2D 排序键（格脚点 Y，与 map::tileToDepthY 语义一致）；XZ 平面不使用。 */
+/**
+ * @brief 2D sort key (cell foot Y), matching map::tileToDepthY semantics.
+ * Unused on the XZ plane.
+ */
 EVENGINE_API_FOUNDATION float cellToDepthY(const GridConfig &cfg, int cx, int cy);
 
 /**
- * 平面坐标 -> 最近格子。staggered / hex 采用有界最近邻搜索
- * （mapW / mapH 提供搜索范围，与 Tiled 拾取语义一致）。
+ * @brief Maps planar coordinates to the nearest cell.
+ * Staggered/hex layouts use a bounded nearest-neighbor search; mapW/mapH
+ * bound the search range (Tiled-compatible pick semantics).
  */
 EVENGINE_API_FOUNDATION void worldToCell(const GridConfig &cfg, float px, float py, int &cx, int &cy, int mapW = 1,
                                          int mapH = 1);
 
 /**
- * 旋转后的占地局部格枚举。mask 为行主序 w*h（空 = 实心矩形）。
- * steps：cardinal 为 90° 步数（0..3）；hexMode 为 60° 步数（0..5）。
- * 回调收到归一化局部坐标（旋转后包围盒最小角归零，原点格为锚点）。
+ * @brief Enumerates local cells of a rotated footprint.
+ * @param mask Row-major w*h occupancy (empty = solid rectangle).
+ * @param steps Cardinal: 90° steps (0..3); hexMode: 60° steps (0..5).
+ * Callback receives normalized local coords (bbox min corner at origin, anchor at origin cell).
  */
 EVENGINE_API_FOUNDATION void foreachRotatedFootprint(int w, int h, const std::vector<uint8_t> &mask, int steps,
                                                      bool hexMode, const std::function<void(int lx, int ly)> &fn);
 
-/** 旋转后的占地包围盒尺寸。 */
+/** @brief Axis-aligned size of a footprint after rotation. */
 EVENGINE_API_FOUNDATION void rotatedFootprintSize(int w, int h, const std::vector<uint8_t> &mask, int steps,
                                                   bool hexMode, int &outW, int &outH);
 

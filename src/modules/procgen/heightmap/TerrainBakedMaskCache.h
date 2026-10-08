@@ -13,9 +13,13 @@ class Heightmap;
  */
 class EVENGINE_API_DOMAINS TerrainBakedMaskCache {
 public:
+    /** @brief Terrain baked mask cache. */
     TerrainBakedMaskCache();
+    /** @brief Terrain baked mask cache. */
     ~TerrainBakedMaskCache();
+    /** @brief Terrain baked mask cache. */
     TerrainBakedMaskCache(TerrainBakedMaskCache&&) noexcept;
+    /** @brief Operator =. */
     TerrainBakedMaskCache& operator=(TerrainBakedMaskCache&&) noexcept;
     TerrainBakedMaskCache(const TerrainBakedMaskCache&) = delete;
     TerrainBakedMaskCache& operator=(const TerrainBakedMaskCache&) = delete;

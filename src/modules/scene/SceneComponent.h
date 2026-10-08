@@ -14,14 +14,18 @@ namespace eve::scene {
  */
 class EVENGINE_API_PLATFORM SceneComponent {
 public:
+    /** @brief Scene component. */
     virtual ~SceneComponent() = default;
 
+    /** @brief Builds . */
     virtual NodeDesc build() = 0;
 
     /** @brief Called once when the component is attached to a host. */
     virtual void onMount(SceneHost *host) {}
 
+    /** @brief Attaches . */
     void attach(SceneHost *host);
+    /** @brief Mounts as. */
     void mountAs(const std::string &hostName);
     /**
      * @brief Returns the currently attached host, or null before attach.
@@ -36,7 +40,9 @@ public:
     /** @brief Rebuild tree onto host (reconcile by key when possible). */
     void rebuild(bool forceFull = false);
 
+    /** @brief Mark dirty. */
     void markDirty() { dirty_ = true; }
+    /** @brief True when dirty. */
     bool isDirty() const { return dirty_; }
 
     /** @brief If dirty, rebuild and clear flag. Returns true if rebuilt. */

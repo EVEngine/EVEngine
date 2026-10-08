@@ -17,42 +17,55 @@ namespace eve::spatial {
  */
 class EVENGINE_API_FOUNDATION Octree {
 public:
-    /** @brief 创建覆盖 [minX..maxX]×[minY..maxY]×[minZ..maxZ] 的八叉树。 */
+    /** @brief Creates an octree covering the given 3D bounds. */
     Octree(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
            int maxDepth = 8, int maxPerNode = 8);
+    /** @brief Releases tree nodes. */
     ~Octree() = default;
 
     Octree(const Octree &)            = delete;
     Octree &operator=(const Octree &) = delete;
 
-    /** @brief 清空全部对象。 */
+    /** @brief Removes all stored entries. */
     void clear();
-    /** @brief 插入一个 AABB 对象；false 表示越界或已存在。 */
+    /** @brief Inserts an item AABB; false if out of bounds or id already present. */
     bool insert(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
-    /** @brief 移除 / 更新一个对象。 */
+    /** @brief Removes an item by id; false if unknown. */
     bool remove(int id);
+    /** @brief Moves an existing item to a new AABB; false if unknown or out of bounds. */
     bool update(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
-    /** @brief 对象是否存在。 */
+    /** @brief True if the id is currently stored. */
     bool contains(int id) const;
+    /** @brief Number of stored ids. */
     int  getCount() const { return static_cast<int>(items_.size()); }
 
-    /** @brief 查询：点 / AABB / 球体，命中写入结果缓冲区。 */
+    /** @brief Finds items overlapping a point; fills the result buffer. @return Hit count. */
     int queryPoint(float x, float y, float z);
+    /** @brief Finds items overlapping an AABB; fills the result buffer. @return Hit count. */
     int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief Finds items overlapping a sphere; fills the result buffer. @return Hit count. */
     int querySphere(float cx, float cy, float cz, float radius);
 
-    /** @brief 最近一次查询的结果。 */
+    /** @brief Number of hits from the last query*. */
     int getResultCount() const { return results_.getCount(); }
+    /** @brief Hit id at dense index from the last query*, or -1. */
     int getResultId(int index) const { return results_.getId(index); }
 
-    /** @brief 根包围盒与分裂参数。 */
+    /** @brief Root/world minimum X. */
     float getMinX() const { return rootBounds_.minX; }
+    /** @brief Root/world minimum Y. */
     float getMinY() const { return rootBounds_.minY; }
+    /** @brief Root/world minimum Z. */
     float getMinZ() const { return rootBounds_.minZ; }
+    /** @brief Root/world maximum X. */
     float getMaxX() const { return rootBounds_.maxX; }
+    /** @brief Root/world maximum Y. */
     float getMaxY() const { return rootBounds_.maxY; }
+    /** @brief Root/world maximum Z. */
     float getMaxZ() const { return rootBounds_.maxZ; }
+    /** @brief Maximum subdivision depth. */
     int   getMaxDepth() const { return maxDepth_; }
+    /** @brief Item capacity before a node splits. */
     int   getMaxPerNode() const { return maxPerNode_; }
 
 private:

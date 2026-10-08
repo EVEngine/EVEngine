@@ -12,28 +12,45 @@ namespace eve::building {
 
 class PlacementWorld;
 
+/** @brief EVENGINE_API_WORLD public API. */
 class EVENGINE_API_WORLD Ghost {
 public:
+    /** @brief Ghost. */
     Ghost() = default;
+    /** @brief Ghost. */
     ~Ghost() = default;
 
+    /** @brief Destroys . */
     void destroy();
 
+    /** @brief Returns the building id. */
     std::string getBuildingId() const { return buildingId_; }
+    /** @brief Sets the building id. */
     void setBuildingId(const std::string &id);
 
+    /** @brief Returns the cell x. */
     int getCellX() const { return cellX_; }
+    /** @brief Returns the cell y. */
     int getCellY() const { return cellY_; }
+    /** @brief Sets the cell. */
     void setCell(int cellX, int cellY);
 
+    /** @brief Returns the world x. */
     float getWorldX() const { return worldX_; }
+    /** @brief Returns the world y. */
     float getWorldY() const { return worldY_; }
+    /** @brief Sets the world. */
     void setWorld(float worldX, float worldY);
+    /** @brief Returns the elevation. */
     float getElevation() const { return elevation_; }
+    /** @brief Sets the elevation. */
     void setElevation(float elevation);
 
+    /** @brief Returns the rotation deg. */
     float getRotationDeg() const { return rotationDeg_; }
+    /** @brief Sets the rotation deg. */
     void setRotationDeg(float deg);
+    /** @brief Rotate by. */
     void rotateBy(float deltaDeg);
     /** @brief Current placement domain (`cell`, `edge`, `corner`, or `free`). */
     std::string getPlacementKind() const { return placementKind_; }
@@ -46,7 +63,9 @@ public:
     /** @brief Set an exact unsnapped world-plane anchor for a free-domain definition. */
     void setFree(PlacementWorld *world, float worldX, float worldY, float elevation = 0.f);
 
+    /** @brief True when valid. */
     bool isValid() const { return valid_; }
+    /** @brief Returns the reason. */
     std::string getReason() const { return reason_; }
     /** @brief Surface identity captured by the last successful setFromSurface call. */
     std::string getSurfaceId() const { return surfaceId_; }
@@ -74,8 +93,10 @@ public:
     /** @brief 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
     void setFromWorld(PlacementWorld *world, float worldX, float worldY);
     /** 3D 版本：真实世界坐标 (wx, wy, wz)，按世界平面轴映射后吸附。 */
+    /** @brief Sets the from world 3 d. */
     void setFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ);
     /** 通过注册的放置表面（如内置 "plane"）刷新位姿。 */
+    /** @brief Sets the from surface. */
     void setFromSurface(PlacementWorld *world, const std::string &surface, float x, float y);
     /** @brief 对当前姿态做校验，写入 valid_/reason_。 */
     bool validate(PlacementWorld *world);

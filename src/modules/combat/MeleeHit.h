@@ -111,6 +111,7 @@ struct MeleeHitFrame {
  */
 class IMeleePoseSource {
 public:
+    /** @brief Releases IMeleePoseSource resources. */
     virtual ~IMeleePoseSource() = default;
     /**
      * @brief Resolve the current world pose for one subject's active hitbox.

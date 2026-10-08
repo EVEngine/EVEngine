@@ -26,16 +26,26 @@ public:
     using owner_type                         = std::uint64_t;
     static constexpr index_type invalidIndex = LocalHandle::invalidIndex;
 
+    /** @brief Constructs a PrimitiveHandle. */
     constexpr PrimitiveHandle() noexcept = default;
+    /** @brief Constructs a PrimitiveHandle. */
     constexpr PrimitiveHandle(owner_type owner, index_type index, generation_type generation) noexcept
+        /** @brief Owner. */
         : owner_(owner), local_(index, generation) {}
+    /** @brief True when valid. */
     [[nodiscard]] constexpr bool            isValid() const noexcept { return owner_ != 0 && local_.isValid(); }
+    /** @brief Index. */
     [[nodiscard]] constexpr index_type      index() const noexcept { return local_.index(); }
+    /** @brief Generation. */
     [[nodiscard]] constexpr generation_type generation() const noexcept { return local_.generation(); }
+    /** @brief Owner. */
     [[nodiscard]] constexpr owner_type      owner() const noexcept { return owner_; }
+    /** @brief Next generation. */
     [[nodiscard]] static constexpr std::optional<generation_type> nextGeneration(generation_type current) noexcept {
+        /** @brief Next generation. */
         return LocalHandle::nextGeneration(current);
     }
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const PrimitiveHandle&, const PrimitiveHandle&) noexcept = default;
 
 private:
@@ -48,20 +58,24 @@ struct PrimitivePolyline3D {
     std::vector<glm::vec3> points;
     bool                   closed = false;
 };
+/** @brief PrimitiveAabb3D public API. */
 struct PrimitiveAabb3D {
     glm::vec3 minimum{0.f};
     glm::vec3 maximum{0.f};
 };
+/** @brief PrimitiveObb3D public API. */
 struct PrimitiveObb3D {
     glm::vec3                center{0.f};
     std::array<glm::vec3, 3> halfAxes{{{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}}};
 };
+/** @brief PrimitiveDisk3D public API. */
 struct PrimitiveDisk3D {
     glm::vec3     center{0.f};
     glm::vec3     normal{0.f, 1.f, 0.f};
     float         radius   = 1.f;
     std::uint32_t segments = 32;
 };
+/** @brief PrimitiveArc3D public API. */
 struct PrimitiveArc3D {
     glm::vec3     center{0.f};
     glm::vec3     normal{0.f, 1.f, 0.f};
@@ -71,23 +85,27 @@ struct PrimitiveArc3D {
     float         sweepRadians = 1.f;
     std::uint32_t segments     = 32;
 };
+/** @brief PrimitiveSphere3D public API. */
 struct PrimitiveSphere3D {
     glm::vec3     center{0.f};
     float         radius   = 1.f;
     std::uint32_t segments = 32;
 };
+/** @brief PrimitiveCapsule3D public API. */
 struct PrimitiveCapsule3D {
     glm::vec3     a{0.f};
     glm::vec3     b{0.f, 1.f, 0.f};
     float         radius   = 1.f;
     std::uint32_t segments = 32;
 };
+/** @brief PrimitiveCylinder3D public API. */
 struct PrimitiveCylinder3D {
     glm::vec3     a{0.f};
     glm::vec3     b{0.f, 1.f, 0.f};
     float         radius   = 1.f;
     std::uint32_t segments = 32;
 };
+/** @brief PrimitiveCone3D public API. */
 struct PrimitiveCone3D {
     glm::vec3     apex{0.f};
     glm::vec3     axis{0.f, 1.f, 0.f};
@@ -95,6 +113,7 @@ struct PrimitiveCone3D {
     float         radius   = 1.f;
     std::uint32_t segments = 32;
 };
+/** @brief PrimitiveGrid3D public API. */
 struct PrimitiveGrid3D {
     glm::vec3     origin{0.f};
     glm::vec3     axisU{1.f, 0.f, 0.f};
@@ -102,12 +121,14 @@ struct PrimitiveGrid3D {
     std::uint32_t cellsU = 10;
     std::uint32_t cellsV = 10;
 };
+/** @brief PrimitiveArrow3D public API. */
 struct PrimitiveArrow3D {
     glm::vec3 from{0.f};
     glm::vec3 to{0.f, 1.f, 0.f};
     float     headLength = 0.2f;
     float     headRadius = 0.1f;
 };
+/** @brief PrimitiveFrustum3D public API. */
 struct PrimitiveFrustum3D {
     std::array<glm::vec3, 8> corners{};
 };
@@ -124,8 +145,11 @@ struct PrimitiveDescriptor3D {
     bool                visible = true;
 };
 
+/** @brief PrimitiveUpdateStatus public API. */
 enum class PrimitiveUpdateStatus : std::uint8_t { Updated, Unchanged };
+/** @brief PrimitiveRemoveStatus public API. */
 enum class PrimitiveRemoveStatus : std::uint8_t { Removed };
+/** @brief PrimitiveBatchUpdate public API. */
 struct PrimitiveBatchUpdate {
     PrimitiveHandle       handle;
     PrimitiveDescriptor3D descriptor;
@@ -142,13 +166,17 @@ struct PrimitiveBatchUpdate {
  */
 class EVENGINE_API_BACKENDS PrimitiveScene {
 public:
+    /** @brief Primitive scene. */
     PrimitiveScene();
     PrimitiveScene(const PrimitiveScene&)                                        = delete;
     PrimitiveScene& operator=(const PrimitiveScene&)                             = delete;
     PrimitiveScene(PrimitiveScene&&)                                             = delete;
     PrimitiveScene&                                  operator=(PrimitiveScene&&) = delete;
+    /** @brief Adds . */
     [[nodiscard]] eve::Result<PrimitiveHandle>       add(PrimitiveDescriptor3D descriptor);
+    /** @brief Updates . */
     [[nodiscard]] eve::Result<PrimitiveUpdateStatus> update(PrimitiveHandle handle, PrimitiveDescriptor3D descriptor);
+    /** @brief Removes . */
     [[nodiscard]] eve::Result<PrimitiveRemoveStatus> remove(PrimitiveHandle handle);
     /** @brief Atomically replaces several live descriptors after validating every handle. */
     [[nodiscard]] eve::Result<std::size_t> updateMany(std::span<const PrimitiveBatchUpdate> updates);
@@ -188,6 +216,7 @@ public:
      * @reentrancy Does not invoke callbacks.
      */
     void                      render(PrimitiveSceneCanvas3D& canvas) const;
+    /** @brief Returns the size of . */
     [[nodiscard]] std::size_t size() const noexcept { return liveCount_; }
 
 private:

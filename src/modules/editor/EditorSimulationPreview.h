@@ -37,6 +37,7 @@ struct SimulationBakeResult {
 /** @brief Cloneable backend boundary for physics/crowd/fluid editor simulation previews. */
 class IEditorSimulationBackend {
 public:
+    /** @brief Releases IEditorSimulationBackend resources. */
     virtual ~IEditorSimulationBackend() = default;
     /** @brief Clone complete simulation state so preview never mutates the live world. */
     virtual std::unique_ptr<IEditorSimulationBackend> cloneForPreview() const = 0;

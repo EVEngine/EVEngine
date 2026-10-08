@@ -31,10 +31,13 @@ using eve::Color;
  */
 class EVENGINE_API_WORLD TileLayer : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TileLayer, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Config public API. */
     struct Config {
         int mapW = 0;
         int mapH = 0;
@@ -52,6 +55,7 @@ public:
     };
 
     struct Tiles {
+        /** @brief Chunk public API. */
         struct Chunk {
             int nonEmpty = 0;
         };
@@ -66,16 +70,19 @@ public:
     };
 
     struct Tileset {
+        /** @brief AnimationFrame public API. */
         struct AnimationFrame {
             int gid = 0;
             int durationMs = 100;
         };
 
+        /** @brief Animation public API. */
         struct Animation {
             int gid = 0;
             std::vector<AnimationFrame> frames;
         };
 
+        /** @brief TerrainRule public API. */
         struct TerrainRule {
             int gid = 0;
             int terrain = 0;
@@ -90,6 +97,7 @@ public:
             uint32_t    seed    = 0;
         };
 
+        /** @brief CustomData public API. */
         struct CustomData {
             int gid = 0;
             std::string name;
@@ -99,6 +107,7 @@ public:
 
         /** @brief Per-GID visual metadata emitted by a project-defined asset pipeline. */
         struct Visual {
+            /** @brief Subtile public API. */
             struct Subtile {
                 int   x       = 0;
                 int   y       = 0;
@@ -108,11 +117,13 @@ public:
                 float offsetY = 0.f;
             };
 
+            /** @brief SubtileFrame public API. */
             struct SubtileFrame {
                 std::vector<Subtile> parts;
                 int                  durationMs = 500;
             };
 
+            /** @brief CollisionShape public API. */
             struct CollisionShape {
                 float x      = 0.f;
                 float y      = 0.f;

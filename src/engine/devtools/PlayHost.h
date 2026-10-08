@@ -24,6 +24,7 @@ namespace eve::dev {
  */
 class IPlayHostRuntime {
 public:
+    /** @brief Releases IPlayHostRuntime resources. */
     virtual ~IPlayHostRuntime() = default;
 
     /** @brief Whether the host clock is paused. */

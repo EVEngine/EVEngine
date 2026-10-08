@@ -29,6 +29,7 @@ struct ArchSpaceViewportRay {
  */
 class IArchSpaceViewportAdapter {
 public:
+    /** @brief Releases IArchSpaceViewportAdapter resources. */
     virtual ~IArchSpaceViewportAdapter() = default;
 
     /** @brief Build a world ray for one normalized pointer event. */
@@ -44,25 +45,42 @@ public:
  */
 class EVENGINE_API_EDITORS ArchSpaceWallDrawTool final : public IEditorTool {
 public:
+    /** @brief Arch space wall draw tool. */
     ArchSpaceWallDrawTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 
+    /** @brief Descriptor. */
     const ToolDescriptor& descriptor() const override { return descriptor_; }
+    /** @brief Sets the viewport adapter. */
     void                  setViewportAdapter(IArchSpaceViewportAdapter* viewport);
+    /** @brief Sets the authority. */
     void                  setAuthority(editing::IEditAuthority* authority);
+    /** @brief Sets the level id. */
     void                  setLevelId(std::string levelId);
+    /** @brief Sets the wall height. */
     void                  setWallHeight(double height) { wallHeight_ = height; }
+    /** @brief Sets the wall thickness. */
     void                  setWallThickness(double thickness) { wallThickness_ = thickness; }
+    /** @brief Sets the contiguous. */
     void                  setContiguous(bool enabled) { contiguous_ = enabled; }
+    /** @brief Sets the id prefix. */
     void                  setIdPrefix(std::string prefix) { idPrefix_ = std::move(prefix); }
 
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext& context, const EditorPointerEvent& event) override;
+    /** @brief Deactivate. */
     void         deactivate(EditorContext& context) override;
+    /** @brief Cancel. */
     void         cancel(EditorContext& context) override;
+    /** @brief Draws overlay. */
     void         drawOverlay(EditorContext& context, IEditorOverlay& overlay) override;
+    /** @brief Inspect. */
     void         inspect(EditorContext& context, IEditorInspector& inspector) override;
 
+    /** @brief True when drawing. */
     [[nodiscard]] bool                                              isDrawing() const { return drawing_; }
+    /** @brief Last receipt. */
     [[nodiscard]] const std::optional<editing::TransactionReceipt>& lastReceipt() const { return lastReceipt_; }
+    /** @brief Last wall id. */
     [[nodiscard]] const std::string&                                lastWallId() const { return lastWallId_; }
 
 private:
@@ -93,24 +111,40 @@ private:
 /** @brief Click-to-place door/window tool committing `makeCreateOpening` on the nearest wall. */
 class EVENGINE_API_EDITORS ArchSpaceOpeningPlaceTool final : public IEditorTool {
 public:
+    /** @brief Arch space opening place tool. */
     ArchSpaceOpeningPlaceTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 
+    /** @brief Descriptor. */
     const ToolDescriptor& descriptor() const override { return descriptor_; }
+    /** @brief Sets the viewport adapter. */
     void                  setViewportAdapter(IArchSpaceViewportAdapter* viewport);
+    /** @brief Sets the authority. */
     void                  setAuthority(editing::IEditAuthority* authority);
+    /** @brief Sets the opening kind. */
     void                  setOpeningKind(archspace::OpeningKind kind) { kind_ = kind; }
+    /** @brief Sets the width. */
     void                  setWidth(double width) { width_ = width; }
+    /** @brief Sets the height. */
     void                  setHeight(double height) { height_ = height; }
+    /** @brief Sets the sill. */
     void                  setSill(double sill) { sill_ = sill; }
+    /** @brief Sets the id prefix. */
     void                  setIdPrefix(std::string prefix) { idPrefix_ = std::move(prefix); }
 
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext& context, const EditorPointerEvent& event) override;
+    /** @brief Deactivate. */
     void         deactivate(EditorContext& context) override;
+    /** @brief Cancel. */
     void         cancel(EditorContext& context) override;
+    /** @brief Draws overlay. */
     void         drawOverlay(EditorContext& context, IEditorOverlay& overlay) override;
+    /** @brief Inspect. */
     void         inspect(EditorContext& context, IEditorInspector& inspector) override;
 
+    /** @brief Last receipt. */
     [[nodiscard]] const std::optional<editing::TransactionReceipt>& lastReceipt() const { return lastReceipt_; }
+    /** @brief Last opening id. */
     [[nodiscard]] const std::string&                                lastOpeningId() const { return lastOpeningId_; }
 
 private:
@@ -140,23 +174,38 @@ private:
 /** @brief Click-to-place furniture tool committing `makePlaceItem` with catalog id + yaw. */
 class EVENGINE_API_EDITORS ArchSpaceItemPlaceTool final : public IEditorTool {
 public:
+    /** @brief Arch space item place tool. */
     ArchSpaceItemPlaceTool(IArchSpaceViewportAdapter* viewport, editing::IEditAuthority* authority);
 
+    /** @brief Descriptor. */
     const ToolDescriptor& descriptor() const override { return descriptor_; }
+    /** @brief Sets the viewport adapter. */
     void                  setViewportAdapter(IArchSpaceViewportAdapter* viewport);
+    /** @brief Sets the authority. */
     void                  setAuthority(editing::IEditAuthority* authority);
+    /** @brief Sets the level id. */
     void                  setLevelId(std::string levelId);
+    /** @brief Sets the catalog id. */
     void                  setCatalogId(std::string catalogId);
+    /** @brief Sets the yaw degrees. */
     void                  setYawDegrees(double yaw) { yawDegrees_ = yaw; }
+    /** @brief Sets the id prefix. */
     void                  setIdPrefix(std::string prefix) { idPrefix_ = std::move(prefix); }
 
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext& context, const EditorPointerEvent& event) override;
+    /** @brief Deactivate. */
     void         deactivate(EditorContext& context) override;
+    /** @brief Cancel. */
     void         cancel(EditorContext& context) override;
+    /** @brief Draws overlay. */
     void         drawOverlay(EditorContext& context, IEditorOverlay& overlay) override;
+    /** @brief Inspect. */
     void         inspect(EditorContext& context, IEditorInspector& inspector) override;
 
+    /** @brief Last receipt. */
     [[nodiscard]] const std::optional<editing::TransactionReceipt>& lastReceipt() const { return lastReceipt_; }
+    /** @brief Last item id. */
     [[nodiscard]] const std::string&                                lastItemId() const { return lastItemId_; }
 
 private:

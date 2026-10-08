@@ -28,7 +28,9 @@ class UIHost;
  */
 class EVENGINE_API_WORLD DatabasePanel {
 public:
+    /** @brief Database panel. */
     DatabasePanel() = default;
+    /** @brief Database panel. */
     ~DatabasePanel();
     DatabasePanel(const DatabasePanel&) = delete;
     DatabasePanel& operator=(const DatabasePanel&) = delete;

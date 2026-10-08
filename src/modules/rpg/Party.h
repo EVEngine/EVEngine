@@ -35,9 +35,13 @@ public:
     /** @brief Clear every relationship without destroying actors. */
     void clear();
 
+    /** @brief Returns the number of . */
     int count() const;
+    /** @brief True if active. */
     bool contains(const std::string &memberId) const;
+    /** @brief True when stale members. */
     bool hasStaleMembers() const;
+    /** @brief Returns the member id. */
     std::string getMemberId(int index) const;
     /**
      * @brief Resolve a member by ordered index.

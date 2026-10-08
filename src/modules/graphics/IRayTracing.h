@@ -27,6 +27,7 @@ class EVENGINE_API_BACKENDS_INLINE IRayTracing {
 public:
     static constexpr const char* capabilityName = "IRayTracing";
 
+    /** @brief I ray tracing. */
     virtual ~IRayTracing() = default;
 
     /** @brief True when the active Graphics device enabled the KHR RT path. */

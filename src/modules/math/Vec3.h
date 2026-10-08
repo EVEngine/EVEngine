@@ -15,10 +15,15 @@ public:
 
     /** @brief Component accessors. */
     float getX() const { return x_; }
+    /** @brief Y component. */
     float getY() const { return y_; }
+    /** @brief Z component. */
     float getZ() const { return z_; }
+    /** @brief Sets the X component. */
     void  setX(float x) { x_ = x; }
+    /** @brief Sets the Y component. */
     void  setY(float y) { y_ = y; }
+    /** @brief Sets the Z component. */
     void  setZ(float z) { z_ = z; }
     /** @brief Sets all three components. */
     void  set(float x, float y, float z) {
@@ -29,6 +34,7 @@ public:
 
     /** @brief Magnitude (and squared magnitude). */
     float length() const { return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_); }
+    /** @brief Squared Euclidean magnitude. */
     float lengthSquared() const { return x_ * x_ + y_ * y_ + z_ * z_; }
 
     /** @brief Normalizes in place / returns a normalized copy. */
@@ -38,6 +44,7 @@ public:
     /** @brief Dot/cross product and distance. */
     float  dot(const Vec3 *other) const;
     Vec3 *cross(const Vec3 *other) const;
+    /** @brief Euclidean distance to other. */
     float  distanceTo(const Vec3 *other) const;
 
     /** @brief Arithmetic helpers returning new (caller-owned) vectors. */

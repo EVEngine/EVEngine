@@ -18,20 +18,26 @@ struct SceneTransformValue {
     double scaleY = 1.0;
     double scaleZ = 1.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const SceneTransformValue&) const = default;
 };
 
 /** @brief Capability implemented by document and live scene targets. */
 class ITransformEditTarget {
 public:
+    /** @brief Releases ITransformEditTarget resources. */
     virtual ~ITransformEditTarget() = default;
+    /** @brief Editing capability id. */
     static editing::CapabilityId editingCapabilityId() {
+        /** @brief Capability id. */
         return editing::CapabilityId("eve.editor.target.transform");
     }
     /** @brief Compatibility spelling retained for existing editor tools. */
     static editing::CapabilityId editorCapabilityId() { return editingCapabilityId(); }
+    /** @brief Reads transform. */
     [[nodiscard]] virtual editing::Result<SceneTransformValue> readTransform(
         const editing::ObjectId& id) const = 0;
+    /** @brief Make set transform. */
     [[nodiscard]] virtual editing::Result<editing::DomainOperation> makeSetTransform(
         const editing::ObjectId& id, const SceneTransformValue& transform) const = 0;
 };

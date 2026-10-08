@@ -12,6 +12,7 @@ class Source;
 
 /** @brief One Pcg audio-zone track timing and gain profile. */
 struct AudioZoneItem { float volume=1.f, fadeInTime=5.f, fadeOutTime=5.f, duration=0.f; };
+/** @brief AudioZonePhase public API. */
 enum class AudioZonePhase : std::uint8_t { Active, BecomingInactive, Inactive };
 /** @brief Caller-owned Pcg audio-zone configuration and track list. */
 class EVENGINE_API_BACKENDS AudioZoneProfile {

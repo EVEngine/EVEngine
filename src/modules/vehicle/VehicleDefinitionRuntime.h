@@ -73,10 +73,13 @@ public:
         Vehicle& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
+    /** @brief Vehicle definition runtime. */
     VehicleDefinitionRuntime(VehicleDefinitionRuntime&&) noexcept            = default;
+    /** @brief Operator =. */
     VehicleDefinitionRuntime& operator=(VehicleDefinitionRuntime&&) noexcept = default;
     VehicleDefinitionRuntime(const VehicleDefinitionRuntime&)                = delete;
     VehicleDefinitionRuntime& operator=(const VehicleDefinitionRuntime&)     = delete;
+    /** @brief Vehicle definition runtime. */
     ~VehicleDefinitionRuntime()                                              = default;
 
     /** @brief Borrow common instance identity and exact definition generation. */

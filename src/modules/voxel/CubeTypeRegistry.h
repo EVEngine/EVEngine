@@ -17,8 +17,10 @@
 
 namespace eve::voxel {
 
+/** @brief EVENGINE_API_DOMAINS public API. */
 class EVENGINE_API_DOMAINS CubeTypeRegistry {
 public:
+    /** @brief Cube type registry. */
     CubeTypeRegistry() = default;
 
     /**
@@ -51,6 +53,7 @@ public:
     /** @brief 类型总数（含方向变体，不含空气占位）。 */
     int variantCount() const { return int(types_.size()) - 1; }
 
+    /** @brief Clears . */
     void clear();
 
     /** @brief 进程级空注册表（默认参数与向后兼容回退用）。 */

@@ -88,8 +88,10 @@ public:
      * @return Projected success/failure table.
      */
     template <class Fn>
+    /** @brief Checked. */
     [[nodiscard]] ssq::Table checked(bool ready, std::string nullMessage, Fn&& fn, std::string path = {}) const {
         if (!ready) return failInvalid(std::move(nullMessage), std::move(path));
+        /** @brief Project result. */
         return projectResult(vm_, std::forward<Fn>(fn)());
     }
 
@@ -103,7 +105,9 @@ public:
      * @return Projected success/failure table.
      */
     template <class T, class Fn>
+    /** @brief Checked. */
     [[nodiscard]] ssq::Table checked(T* self, std::string nullMessage, Fn&& fn, std::string path = {}) const {
+        /** @brief Checked. */
         return checked(self != nullptr, std::move(nullMessage), std::forward<Fn>(fn), std::move(path));
     }
 
@@ -122,6 +126,7 @@ private:
  * @remarks Prefer this (or `cls.addFunc("literal", ...)`) over building names at runtime.
  */
 template <class F>
+/** @brief Binds method. */
 inline void bindMethod(ssq::Class& cls, const char* name, F&& fn) {
     cls.addFunc(name, std::forward<F>(fn));
 }
@@ -136,6 +141,7 @@ inline void bindMethod(ssq::Class& cls, const char* name, F&& fn) {
  * @param whenNull Value returned for a null self.
  */
 template <class ScriptT, class Getter>
+/** @brief Binds null safe. */
 inline void bindNullSafe(ssq::Class& cls, const char* name, Getter getter,
                          std::invoke_result_t<Getter, ScriptT&> whenNull) {
     cls.addFunc(name, [getter = std::move(getter), whenNull = std::move(whenNull)](ScriptT* self) {

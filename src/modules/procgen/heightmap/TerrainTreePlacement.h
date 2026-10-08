@@ -89,9 +89,13 @@ struct TerrainTreeTile {
  */
 class EVENGINE_API_DOMAINS TerrainMultiTreeWorkspace {
 public:
+    /** @brief Terrain multi tree workspace. */
     TerrainMultiTreeWorkspace();
+    /** @brief Terrain multi tree workspace. */
     ~TerrainMultiTreeWorkspace();
+    /** @brief Terrain multi tree workspace. */
     TerrainMultiTreeWorkspace(TerrainMultiTreeWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiTreeWorkspace& operator=(TerrainMultiTreeWorkspace&&) noexcept;
     TerrainMultiTreeWorkspace(const TerrainMultiTreeWorkspace&) = delete;
     TerrainMultiTreeWorkspace& operator=(const TerrainMultiTreeWorkspace&) = delete;

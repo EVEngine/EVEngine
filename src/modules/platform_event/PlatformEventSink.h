@@ -27,9 +27,11 @@ namespace eve::platform_event {
 
 class Message;
 
+/** @brief EVENGINE_API_FOUNDATION public API. */
 class EVENGINE_API_FOUNDATION IPlatformEventSink {
 public:
     /** Dispatch order; lower runs first. */
+    /** @brief Priority public API. */
     enum Priority {
         kObserver = 0,   // sees everything before anyone claims it (UI)
         kSurface  = 10,  // window / swapchain lifecycle

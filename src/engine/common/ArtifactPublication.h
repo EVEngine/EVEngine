@@ -101,6 +101,7 @@ struct PublicationView {
  */
 class PreparedPublication {
 public:
+    /** @brief Releases PreparedPublication resources. */
     virtual ~PreparedPublication() = default;
     /** @brief Make the prepared mutation observable; the operation cannot fail. */
     virtual void commit() noexcept = 0;
@@ -111,6 +112,7 @@ public:
 /** @brief Base contract for a consumer-owned artifact provider. */
 class EVENGINE_API_FOUNDATION ProviderContract {
 public:
+    /** @brief Provider contract. */
     virtual ~ProviderContract() = default;
 
     /**
@@ -145,6 +147,7 @@ public:
 class ISceneArtifactAdapter : public ProviderContract {
 public:
     static constexpr const char* capabilityName = "eve.procgen.ISceneArtifactAdapter";
+    /** @brief Releases ISceneArtifactAdapter resources. */
     ~ISceneArtifactAdapter() override           = default;
 };
 
@@ -152,6 +155,7 @@ public:
 class IMapArtifactAdapter : public ProviderContract {
 public:
     static constexpr const char* capabilityName = "eve.procgen.IMapArtifactAdapter";
+    /** @brief Releases IMapArtifactAdapter resources. */
     ~IMapArtifactAdapter() override             = default;
 };
 
@@ -159,6 +163,7 @@ public:
 class IGraphicsArtifactAdapter : public ProviderContract {
 public:
     static constexpr const char* capabilityName = "eve.procgen.IGraphicsArtifactAdapter";
+    /** @brief Releases IGraphicsArtifactAdapter resources. */
     ~IGraphicsArtifactAdapter() override        = default;
 };
 
@@ -166,6 +171,7 @@ public:
 class IPhysicsArtifactAdapter : public ProviderContract {
 public:
     static constexpr const char* capabilityName = "eve.procgen.IPhysicsArtifactAdapter";
+    /** @brief Releases IPhysicsArtifactAdapter resources. */
     ~IPhysicsArtifactAdapter() override         = default;
 };
 

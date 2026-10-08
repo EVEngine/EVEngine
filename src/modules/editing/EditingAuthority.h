@@ -15,6 +15,7 @@ namespace eve::editing {
 /** @brief Final validation and commit boundary for editor mutations. */
 class IEditAuthority {
 public:
+    /** @brief Releases IEditAuthority resources. */
     virtual ~IEditAuthority() = default;
 
     /** @brief Validate a transaction without mutating its target. */
@@ -37,9 +38,12 @@ public:
     /** @brief Bind a non-owning operation target. */
     explicit LocalWorldAuthority(IDomainOperationTarget* target) : target_(target) {}
 
+    /** @brief Preflight. */
     Result<AuthorityPlan>      preflight(const TransactionSpec&           transaction,
                                                std::span<const DomainOperation> operations) override;
+    /** @brief Commits commit. */
     Result<TransactionReceipt> commit(const AuthorityPlan& plan) override;
+    /** @brief Compensate. */
     Result<TransactionReceipt> compensate(const TransactionReceipt& receipt) override;
 
 private:
@@ -60,9 +64,12 @@ private:
 /** @brief Authority that permits discovery and dry-run but rejects commits. */
 class EVENGINE_API_PLATFORM ReadOnlyAuthority final : public IEditAuthority {
 public:
+    /** @brief Preflight. */
     Result<AuthorityPlan>      preflight(const TransactionSpec&           transaction,
                                                std::span<const DomainOperation> operations) override;
+    /** @brief Commits commit. */
     Result<TransactionReceipt> commit(const AuthorityPlan& plan) override;
+    /** @brief Compensate. */
     Result<TransactionReceipt> compensate(const TransactionReceipt& receipt) override;
 };
 

@@ -23,7 +23,9 @@ class ParticleEmitter;
  */
 class EVENGINE_API_DOMAINS ParticleEmitterPool {
 public:
+    /** @brief Particle emitter pool. */
     ParticleEmitterPool() = default;
+    /** @brief Particle emitter pool. */
     ~ParticleEmitterPool();
 
     ParticleEmitterPool(const ParticleEmitterPool&)            = delete;

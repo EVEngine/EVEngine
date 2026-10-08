@@ -58,7 +58,9 @@ public:
                                                                       const SkillDamageSpec &spec);
     /** @brief Compatibility facade; invalid definitions are ignored. */
     static void registerSkillDamage(const std::string &skillId, const SkillDamageSpec &spec);
+    /** @brief Finds skill damage. */
     static const SkillDamageSpec *findSkillDamage(const std::string &skillId);
+    /** @brief Clears skill damage. */
     static void clearSkillDamage();
 
     /**

@@ -136,11 +136,15 @@ class EVENGINE_API_ORCHESTRATION VoxelCatalogTarget final : public ::eve::editin
                                                             public IPropertyProvider,
                                                             public IEditingSnapshotProvider {
 public:
+    /** @brief Voxel catalog target. */
     explicit VoxelCatalogTarget(std::string id);
 
+    /** @brief Property capability id. */
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.voxel-catalog-properties"); }
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
 
     /**
@@ -151,21 +155,33 @@ public:
      */
     void* queryCapability(const CapabilityId&) override;
 
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
+    /** @brief Schema. */
     PropertySchema                          schema(const SelectionSnapshot&) const override;
+    /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make set. */
     Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
 
+    /** @brief Make create model. */
     [[nodiscard]] Result<DomainOperation> makeCreateModel(const VoxelModelValue&) const;
+    /** @brief Make delete model. */
     [[nodiscard]] Result<DomainOperation> makeDeleteModel(const ObjectId&) const;
+    /** @brief Make set voxel. */
     [[nodiscard]] Result<DomainOperation> makeSetVoxel(const ObjectId& model, int x, int y, int z,
                                                              bool occupied) const;
 
+    /** @brief Models. */
     const std::vector<VoxelModelValue>& models() const { return models_; }
     /**
      * @brief Look up a sculpted model by stable id.
@@ -176,15 +192,22 @@ public:
      */
     const VoxelModelValue* findModel(const ObjectId&) const;
 
+    /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const override;
+    /** @brief Loads snapshot. */
     Result<void>            loadSnapshot(const EditorValue&);
 
+    /** @brief Hull join partners. */
     [[nodiscard]] std::vector<ObjectId> hullJoinPartners(const ObjectId& model, int face) const;
 
 private:
+    /** @brief Matches. */
     bool                          matches(const SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue                   contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation> replacement(EditorValue, std::string = {}) const;
     /**
      * @brief Mutable model lookup used by occupancy edits.

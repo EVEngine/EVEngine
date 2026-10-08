@@ -78,8 +78,11 @@ class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public ::eve::edit
                                                               public IDomainOperationTargetStaging,
                                                               public IPropertyProvider {
 public:
+    /** @brief Avatar document target. */
     explicit AvatarDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId                                targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -87,35 +90,60 @@ public:
      * @lifetime Valid until this target is destroyed or the capability is explicitly invalidated.
      */
     void*                                   queryCapability(const CapabilityId&) override;
+    /** @brief Applies domain operation. */
     Result<void>                      applyDomainOperation(const DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     Result<void>                      commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>              currentRevision(const SelectionSnapshot&) const override;
+    /** @brief Schema. */
     PropertySchema                          schema(const SelectionSnapshot&) const override;
+    /** @brief Reads . */
     PropertyReadResult                      read(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make set. */
     Result<DomainOperation>           makeSet(const SelectionSnapshot&, const PropertyPath&, const EditorValue&,
                                                     PropertySetMode) const override;
+    /** @brief Make reset. */
     Result<DomainOperation>           makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
     /** @brief Change backend kind and model source. */
     Result<DomainOperation>             makeSetSource(std::string kind, std::string asset) const;
+    /** @brief Make create layer. */
     Result<DomainOperation>             makeCreateLayer(const AvatarLayerValue&) const;
+    /** @brief Make delete layer. */
     Result<DomainOperation>             makeDeleteLayer(const ObjectId&) const;
+    /** @brief Make create parameter. */
     Result<DomainOperation>             makeCreateParameter(const AvatarParameterValue&) const;
+    /** @brief Make delete parameter. */
     Result<DomainOperation>             makeDeleteParameter(const ObjectId&) const;
+    /** @brief Make create expression. */
     Result<DomainOperation>             makeCreateExpression(const AvatarExpressionValue&) const;
+    /** @brief Make delete expression. */
     Result<DomainOperation>             makeDeleteExpression(const ObjectId&) const;
+    /** @brief Kind. */
     const std::string&                        kind() const { return kind_; }
+    /** @brief Source asset. */
     const std::string&                        sourceAsset() const { return sourceAsset_; }
+    /** @brief Layers. */
     const std::vector<AvatarLayerValue>&      layers() const { return layers_; }
+    /** @brief Parameters. */
     const std::vector<AvatarParameterValue>&  parameters() const { return parameters_; }
+    /** @brief Expressions. */
     const std::vector<AvatarExpressionValue>& expressions() const { return expressions_; }
+    /** @brief Validate. */
     std::vector<EditorDiagnostic>             validate() const;
+    /** @brief Snapshot value. */
     EditorValue                               snapshotValue() const;
+    /** @brief Loads snapshot. */
     Result<void>                        loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool                               matches(const SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue                        contentValue() const;
+    /** @brief Replacement. */
     Result<DomainOperation>      replacement(EditorValue, std::string = {}) const;
     std::string                        id_, kind_ = "image", sourceAsset_;
     std::vector<AvatarLayerValue>      layers_;
@@ -126,21 +154,27 @@ private:
 /** @brief Resolves image-layer textures for candidate publication. */
 class IAvatarTextureResolver {
 public:
+    /** @brief Releases IAvatarTextureResolver resources. */
     virtual ~IAvatarTextureResolver()                                          = default;
+    /** @brief Texture. */
     virtual Result<graphics::Texture*> texture(const std::string&) const = 0;
 };
 
 /** @brief Candidate-first live AvatarInstance generation. */
 class EVENGINE_API_ORCHESTRATION AvatarDocumentRuntime {
 public:
+    /** @brief Avatar document runtime. */
     AvatarDocumentRuntime();
+    /** @brief Avatar document runtime. */
     ~AvatarDocumentRuntime();
     /** @brief Build all layers, metadata and expressions before replacing the live generation.
      * @param textures Optional borrowed resolver; it is used only during this call and is never retained.
      * @lifetime The caller must keep textures alive for the duration of publish.
      */
     Result<void>      publish(const AvatarDocumentTarget&, const IAvatarTextureResolver* textures = nullptr);
+    /** @brief Instance. */
     avatar::AvatarInstance* instance() const { return instance_.get(); }
+    /** @brief Revision. */
     Revision                revision() const { return revision_; }
 
 private:

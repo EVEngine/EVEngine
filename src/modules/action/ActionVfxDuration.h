@@ -19,6 +19,7 @@ namespace eve::action {
 class IActionVfxDurationProvider {
 public:
     static constexpr const char* capabilityName = "IActionVfxDurationProvider";
+    /** @brief Releases IActionVfxDurationProvider resources. */
     virtual ~IActionVfxDurationProvider() = default;
 
     /**

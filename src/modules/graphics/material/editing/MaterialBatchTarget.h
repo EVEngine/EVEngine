@@ -9,6 +9,7 @@ namespace eve::material_editing {
 /** @brief Atomic publication boundary for a complete multi-material candidate. */
 class IMaterialBatchRuntimeSink {
 public:
+    /** @brief Releases IMaterialBatchRuntimeSink resources. */
     virtual ~IMaterialBatchRuntimeSink() = default;
     /** @brief Publish every candidate as one transaction.
      * @param candidates Borrowed immutable documents valid only for this synchronous call.
@@ -34,32 +35,46 @@ public:
     MaterialBatchTarget(std::string id, std::vector<MaterialDocumentTarget> materials,
                         IMaterialBatchRuntimeSink* sink = nullptr);
 
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query property or snapshot capabilities.
      * @return Borrowed pointer owned by this target, or null.
      * @lifetime Valid until this target is destroyed.
      */
     void*                            queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
     [[nodiscard]] Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
     [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     [[nodiscard]] eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                           schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
     [[nodiscard]] Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                         const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
     [[nodiscard]] Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                                           const PropertyPath&      path) const override;
+    /** @brief Snapshot value. */
     EditorValue                                 snapshotValue() const override;
 
     /** @brief Return owning material IDs in batch order. */
     std::vector<editing::StableId> materialIds() const;
 
 private:
+    /** @brief Selected indices. */
     [[nodiscard]] Result<std::vector<std::size_t>> selectedIndices(const SelectionSnapshot& selection) const;
+    /** @brief Replacement. */
     [[nodiscard]] Result<DomainOperation>          replacement(std::vector<MaterialDocumentTarget> candidates,
                                                                      const PropertyPath&                 path) const;
+    /** @brief Publish and adopt. */
     [[nodiscard]] Result<void> publishAndAdopt(std::vector<MaterialDocumentTarget> candidates,
                                                      editing::Revision candidateRevision,
                                                      const EditRegion& candidateDirty);
